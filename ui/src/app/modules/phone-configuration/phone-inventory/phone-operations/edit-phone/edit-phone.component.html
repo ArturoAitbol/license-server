@@ -1,0 +1,277 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Edit Phone</label>
+    <button type="button" class="close" aria-label="Close" (click)="hideModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #phoneForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="phoneName" class="form-label">Phone Name: </label>
+                        <input required type="text" id="phoneName" name="phoneName" placeholder="Enter Name"
+                            class="form-control" [disabled]="phone.model=='MPP'" [(ngModel)]="phone.name"
+                            #phoneName="ngModel" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="vendor" class="form-label">Vendor:</label>
+                        <select forbiddenValue="0" [(ngModel)]="selectedVendorId" name="vendor"
+                            [disabled]="phone.model=='MPP' || phone.model=='WEBEX-TEAMS' || phone.model=='MS-TEAMS'"
+                            (change)="onSelectVendor($event.target.value)" id="vendor" class="form-control">
+                            <option disabled selected value="0">Select Vendor</option>
+                            <option *ngFor="let vendor of newList" [value]="vendor.id"
+                                [disabled]="vendor.disabled === false" [selected]="vendor.id === selectedVendorId">
+                                {{vendor.name| poly}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group"
+                        *ngIf="selectedVendorId==1 || selectedVendorId==2 || selectedVendorId==5 || selectedVendorId==4 || selectedVendorId==6">
+                        <label for="model" class="form-label">Model:</label>
+                        <input *ngIf="selectedModelId!=2 && selectedVendorId!=6" required type="text" id="model" name="model"
+                            placeholder="Enter Model" class="form-control" [(ngModel)]="phone.subModel" #model="ngModel"
+                            autocomplete="off" [disabled]="selectedVendorId==2 || phone.freezeMAC">
+                        <input *ngIf="selectedModelId==2" required type="text" id="model" name="model"
+                            value="Webex Teams" class="form-control" autocomplete="off" disabled>
+                        <input *ngIf="selectedVendorId==6" required type="text" id="model" name="model"
+                            value="MS-TEAMS" class="form-control" autocomplete="off" disabled>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group" *ngIf="selectedVendorId==2 || selectedVendorId==5 || selectedVendorId==4">
+                        <label for="username" class="form-label">Username:</label>
+                        <input required type="text" id="username" name="username" placeholder="Enter Username"
+                            class="form-control" [(ngModel)]="phone.username" #username="ngModel" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group" *ngIf="selectedVendorId!=2 && selectedVendorId!=5 && selectedVendorId!=4">
+                        <label for="ip4Address" class="form-label">IPv4 Address:</label>
+                        <input [disabled]="phone.model=='MPP' || phone.model=='WEBEX-TEAMS' || phone.model=='MS-TEAMS'" type="text" id="ip4Address"
+                            name="ip4Address" placeholder="Enter IP Address" class="form-control" required
+                            [(ngModel)]="phone.ipAddress" pattern="(\d{1,3}\.){3}\d{1,3}" #ip4Address="ngModel"
+                            autocomplete="off">
+                    </div>
+                    <div class="form-group" *ngIf="selectedVendorId == 2 || selectedVendorId==5 || selectedVendorId==4">
+                        <label for="password" class="form-label">Password:</label>
+                        <input required type="password" id="password" name="password" placeholder="Enter Password"
+                            class="form-control" [(ngModel)]="phone.password" #password="ngModel" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group" *ngIf="selectedVendorId!=2 && selectedVendorId!=5 && selectedVendorId!=4">
+                        <label for="ip6Address" class="form-label">IPv6 Address:</label>
+                        <input [disabled]="phone.model=='MPP' || phone.model=='WEBEX-TEAMS'" type="text" id="ip6Address"
+                            name="ip6Address" placeholder="Enter IP Address" class="form-control"
+                            [(ngModel)]="phone.ipSixAddress" #ip6Address="ngModel" autocomplete="off">
+                    </div>
+                    <div class="form-group" *ngIf="selectedVendorId == 2 || selectedVendorId==5 || selectedVendorId==4">
+                        <label for="macAddress" class="form-label">MAC Address:</label>
+                        <input required type="text" id="macAddress" name="macAddress" placeholder="Enter MAC Address"
+                            class="form-control" [(ngModel)]="phone.macAddress" #macAddress="ngModel"
+                            [disabled]="selectedVendorId==2 || phone.freezeMAC" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <!-- <div class="form-group" *ngIf="selectedVendorId!=2 && selectedVendorId!=5 && selectedVendorId!=4">
+                        <label for="macAddress1" class="form-label">MAC Address</label>
+                        <input required type="text" id="macAddress1" name="macAddress1" placeholder="Enter MAC Address"
+                            [disabled]="phone.model=='MPP'" class="form-control" [(ngModel)]="phone.macAddress"
+                            #macAddress1="ngModel" autocomplete="off">
+                    </div> -->
+                    <div class="form-group"
+                        *ngIf="selectedVendorId!=2 && selectedVendorId!=5 && selectedVendorId!=4">
+                        <label *ngIf="!isMPPRequired" for="macAddress1" class="form-label">UUID:</label>
+                        <input type="text" id="macAddress1" name="macAddress1" placeholder="Enter MAC Address"
+                            class="form-control" [(ngModel)]="phone.macAddress" #macAddress1="ngModel" [disabled]="true"
+                            *ngIf="!isMPPRequired" autocomplete="off">
+                        <label *ngIf="isMPPRequired" for="macAddress1" class="form-label">MAC Address:</label>
+                        <input required forbiddenValue="1" type="text" id="macAddress1" name="macAddress1"
+                            placeholder="Enter MAC Address" class="form-control" [(ngModel)]="phone.macAddress"
+                            [disabled]="selectedVendorId==2 || phone.freezeMAC" #macAddress1="ngModel"
+                            *ngIf="isMPPRequired" autocomplete="off">
+                    </div>
+                    <div class="form-group" *ngIf="selectedVendorId == 2 || selectedVendorId==5 || selectedVendorId==4">
+                        <label for="ipAddress" class="form-label">IPv4 Address:</label>
+                        <input type="text" id="ipAddress" name="ipAddress" placeholder="Enter IP Address"
+                            class="form-control" [(ngModel)]="phone.ipAddress" pattern="(\d{1,3}\.){3}\d{1,3}"
+                            #ipAddress="ngModel" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="selectedModelId==2 || selectedVendorId==6 ">
+                <!-- DID -->
+                <div class="col">
+                    <div class="form-group">
+                        <label for="did" class="form-label">DID:</label>
+                        <input required type="text" id="did" name="did" placeholder="Enter DID" class="form-control"
+                            [(ngModel)]="phone.primaryDid" #did="ngModel" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="fomr-group">
+                        <label for="did" class="form-label">Email:</label>
+                        <input required type="text" id="user" name="user" placeholder="Enter Email" class="form-control"
+                            [(ngModel)]="phone.uri" #user="ngModel" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="selectedModelId==2 || selectedVendorId==6 ">
+                <div class="col">
+                    <label for="username" class="form-label">Username:</label>
+                    <input type="text" id="username" name="username" placeholder="Enter Username" class="form-control"
+                        [(ngModel)]="phone.username" #username="ngModel" autocomplete="nope">
+                </div>
+                <div class="col">
+                    <label for="password" class="form-label">Password:</label>
+                    <input required type="password" id="password" name="password" placeholder="Enter Password"
+                        class="form-control" [(ngModel)]="phone.password" #password="ngModel" autocomplete="nope">
+                </div>
+            </div>
+            <div class="row" *ngIf="selectedVendorId==2 || selectedVendorId==5 || selectedVendorId==4">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="relay" class="form-label">Relay Name:</label>
+                        <ng-select class="form-control" [items]="relaysList" name="relay" labelForId="relay"
+                            [(ngModel)]="phone.onPOINTOprId" bindLabel="name" bindValue="id"
+                            placeholder="Select Relay Name" (change)="onChangeRelay($event)" [virtualScroll]="true">
+                        </ng-select>
+                    </div>
+                </div>
+            </div>
+            <!-- PCAP details -->
+            <div class="row" *ngIf="selectedVendorId == 2" style="margin-top: 2%;">
+                <div class="col-12">
+                    <label class="lines-label">Remote Capture Details</label>
+                    <hr>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group" *ngIf="selectedVendorId == 2">
+                        <label for="remoteCaptureUserNameField" class="form-label">Remote Capture Username:</label>
+                        <input type="text" id="remoteCaptureUserNameField" name="remoteCaptureUserNameField"
+                            placeholder="Enter Remote Capture Username" class="form-control"
+                            [(ngModel)]="phone.remoteCaptureUsername" #remoteCaptureUserNameField="ngModel"
+                            autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group" *ngIf="selectedVendorId == 2">
+                        <label for="remotePcapField" class="form-label">Remote Capture Password:</label>
+                        <input type="password" id="remotePcapField" name="remotePcapField"
+                            placeholder="Enter Remote Capture Password" class="form-control"
+                            [(ngModel)]="phone.remoteCapturePassword" #remotePcapField="ngModel" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group" *ngIf="selectedVendorId == 2">
+                        <label for="remotePcapTlsField" class="form-label">Remote Capture TLS Port:</label>
+                        <input type="text" id="remotePcapTlsField" name="remotePcapTlsField"
+                            placeholder="Enter Remote Capture TLS Port" class="form-control"
+                            [(ngModel)]="phone.remoteCapturePort"
+                            onkeypress="return event.charCode>=48 && event.charCode<=57" #remotePcapTlsField="ngModel"
+                            autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group" *ngIf="selectedVendorId == 2">
+                        <label for="remoteCaptureField" class="form-label">Remote Capture Interface:</label>
+                        <input type="text" id="remoteCaptureField" name="remoteCaptureField"
+                            placeholder="Enter Remote Capture Interface" class="form-control"
+                            [(ngModel)]="phone.remoteCaptureInterface" #remoteCaptureField="ngModel" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="linesContainer" style="border: thin solid #EAEAEA" *ngIf="selectedModelId!=2 && selectedVendorId !=6">
+            <div style="margin-left:15px;">
+                <label class="lines-label">Lines: <span style="color: #BC2426; font-size: 10px;">
+                        (at least one line is required)*
+                    </span></label><br>
+                <div *ngFor="let line of linesList; let i = index" style="margin-right:10px;">
+                    <hr>
+                    <div class="row">
+                        <div *ngIf="phone.model !='MPP'" class="col-1"
+                            style="text-align: center;padding-top: 55px;vertical-align: middle;">
+                            <button class="plus-btn" (click)=deleteLine(i)><i class="fa fa-minus" aria-hidden="true"
+                                    style="color: #7694B7;"></i></button>
+                        </div>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-2">
+                                    <label for="lineNumber{{i}}" title="Line Number allows only 0-9"
+                                        class="form-label">Line Number:</label>
+                                    <input id="lineNumber{{i}}" required name="lineNumber{{i}}"
+                                        title="Line Number allows only 0-9"
+                                        onkeypress="return event.charCode>=48 && event.charCode<=57"
+                                        [disabled]="phone.model=='MPP'" placeholder="Line No."
+                                        #lineNumber{{i}}="ngModel" class="form-control"
+                                        [(ngModel)]="linesList[i].lineNumber">
+                                </div>
+                                <div class="col-5">
+                                    <label for="lineExtension{{i}}" title="Extension allows only 0-9,+,#,;"
+                                        class="form-label">Extension:</label>
+                                    <input required title="Extension allows only 0-9,+,#,;"
+                                        onkeypress="return event.charCode>=48 && event.charCode<=57 || event.charCode==35 || event.charCode==43 || event.charCode==59"
+                                        id="lineExtension{{i}}" name="lineExtension{{i}}" placeholder="Enter Extension"
+                                        [disabled]="linesList[i]['callServerManaged']" class="form-control"
+                                        [(ngModel)]="linesList[i].dn">
+                                </div>
+                                <div class="col-5">
+                                    <label for="lineDID{{i}}" title="DID allows only 0-9,+,#,;"
+                                        class="form-label">DID:</label>
+                                    <input required title="DID allows only 0-9,+,#,;"
+                                        onkeypress="return event.charCode>=48 && event.charCode<=57 || event.charCode==35 || event.charCode==43 || event.charCode==59"
+                                        id="lineDID{{i}}" name="lineDID{{i}}" placeholder="DID"
+                                        [disabled]="linesList[i]['callServerManaged']" class="form-control"
+                                        [(ngModel)]="linesList[i].did">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <label for="lineE164{{i}}" title="E164 allows only 0-9,+,#,;"
+                                        class="form-label">E164:</label>
+                                    <input title="E164 allows only 0-9,+,#,;"
+                                        onkeypress="return event.charCode>=48 && event.charCode<=57 || event.charCode==35 || event.charCode==43 || event.charCode==59"
+                                        id="lineE164{{i}}" name="lineE164{{i}}" placeholder="E164" class="form-control"
+                                        [disabled]="linesList[i]['callServerManaged']" [(ngModel)]="linesList[i].e164">
+                                </div>
+                                <div class="col-5">
+                                    <label for="lineUri{{i}}" class="form-label">Uri:</label>
+                                    <input type="text" id="lineUri{{i}}" name="lineUri{{i}}"
+                                        placeholder="Enter Line URI" [disabled]="phone.model=='MPP'"
+                                        class="form-control" [(ngModel)]="linesList[i].uri">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button *ngIf="phone.model !='MPP'" style="margin-left:1.5px;" class="plus-btn" (click)=addLine()><i
+                        class="fa fa-plus" aria-hidden="true" style="color: #7694B7;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="form-group">
+            <button class="modal-cancel-btn" (click)="hideModal()">
+                Cancel
+            </button>
+            <button type="submit" class="modal-scs-btn" (click)="updatePhone()"
+                [disabled]="(phoneForm.form.invalid || !phoneForm.form.dirty || canUpdateForm())">
+                Update
+            </button>
+        </div>
+    </div>
+</form>

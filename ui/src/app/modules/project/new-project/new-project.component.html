@@ -1,0 +1,56 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">New Project</label>
+    <button type="button" class="close" aria-label="Close" (click)="hideModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #projectForm="ngForm">
+    <div class="modal-body" [ngStyle]="{'height': bodyHeight}" id="modalBody">
+        <div class="mycontainer">
+            <div class="form-group">
+                <label for="projectName" class="form-label">Project Name</label>
+                <input required type="text" name="projectName" placeholder="Enter Name" class="form-control" [(ngModel)]="project.name" #projectName="ngModel">
+            </div>
+            <div class="form-group">
+                <label for="testPlan" class="form-label">Test Plan</label>
+                <ng-select class="form-control" [items]="testPlans" name="testPlan" labelForId="testPlan" bindLabel="name" bindValue="id" placeholder="Select or search a test Plan" (change)="loadResourcesForPlan($event)" (open)="resizeBody('open');" (close)="resizeBody('close')"
+                    [virtualScroll]="true" [ngStyle]="{'border-left':(selectedTestPlan ==false)?'5px solid #BC2426':''}">
+                </ng-select>
+            </div>
+            <div *ngIf="selectedTestPlan" class="form-group">
+                <!-- Phone list -->
+                <div class="phoneList" *ngFor="let pool of requiredPools; let i = index">
+                    <label class="form-label">Phone List {{pool.name.toUpperCase()}}</label>
+                    <ng-select class="form-control" [items]="allPhoneLists" bindLabel="name" bindValue="id" [virtualScroll]="true" placeholder="Select or search a pool" (change)="addSelectedPhonePool(i, $event)" (open)="resizeBody('open');" (close)="resizeBody('close')"
+                        [ngStyle]="{'border-left':(selectedPools[i]?.id ==null)?'5px solid #BC2426':''}">
+                    </ng-select>
+                    <br>
+                </div>
+                <!-- Server list -->
+                <div class="phoneList" *ngFor="let reqServer of requiredServers; let i = index">
+                    <label class="form-label">Call Server {{reqServer.name.toUpperCase()}}</label>
+                    <ng-select class="form-control" [items]="allServers[i]" bindLabel="name" bindValue="id" [virtualScroll]="true" placeholder="Select or search a server" (change)="addSelectedServer(i, $event)" (open)="resizeBody('open');" (close)="resizeBody('close')" ng-select
+                        [ngStyle]="{'border-left':(selectedServers[i]?.id ==null)?'5px solid #BC2426':''}">
+                    </ng-select>
+                    <br>
+                </div>
+                <!-- User list -->
+                <div class="phoneList" *ngFor="let user of requiredUserPools; let i = index">
+                    <label class="form-label">User List {{user.name.toUpperCase()}}</label>
+                    <ng-select class="form-control" [items]="allUserLists" bindLabel="name" bindValue="id" [virtualScroll]="true" placeholder="Select or search a user pool" (change)="addSelectedUserPool(i, $event)" (open)="resizeBody('open');" (close)="resizeBody('close')"
+                        ng-select [ngStyle]="{'border-left':(selectedUserPools[i]?.id ==null)?'5px solid #BC2426':''}">
+                    </ng-select>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-cancel-btn" (click)="hideModal()">
+            Cancel
+        </button>
+        <button type="submit" class="modal-scs-btn" (click)="createProject()" [disabled]="!projectForm.form.valid || checkPhonePoolCount || checkServerPoolCount" (keydown.enter)="$event.preventDefault()">
+            Create
+        </button>
+    </div>
+</form>

@@ -1,0 +1,61 @@
+.title {
+  font-family: 'Helvetica Neue Regular';
+  color: #0E2346 !important;
+  font-size: 18px;
+  float: left;
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 100%;
+}
+
+.countNumber {
+  font-family: 'Helvetica Neue Regular';
+  color: #333f4d;
+  font-size: 25px;
+  float: left;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.quickActions {
+  font-family: sans-serif;
+  color: #43425D;
+  font-size: 15px;
+  float: left;
+  width: 100%;
+  padding: 7px;
+  padding-left: 12px;
+}
+
+.LicenseTrackers {
+  font-family: sans-serif;
+  color: #43425D;
+  font-size: 15px;
+  float: left;
+  width: 100%;
+  padding-left: 12px;
+}
+
+#imgNewTestCase {
+  padding: 10px;
+  /* border-radius: 100%; */
+}
+
+.detail {
+  background: #f1f0f0;
+  height: fit-content;
+  width: 98%;
+}
+
+.action-btn {
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+  font-family: sans-serif;
+  color: #43425D;
+  font-size: 15px;
+}

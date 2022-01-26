@@ -1,0 +1,509 @@
+.projects {
+    background: #f1f0f0;
+    height: 90%;
+    width: 95%;
+    margin-left: 55px;
+    padding-bottom: 7vh;
+}
+
+.view-title {
+    font-family: "Helvetica Neue Regular";
+    font-style: normal;
+    font-size: 20px;
+}
+
+.project-count {
+    font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+td, th {
+    text-align: center;
+    vertical-align: middle;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+th {
+    font-family: 'Helvetica Neue Regular';
+    color: #414141;
+    font-size: 14px
+}
+
+.regular-text {
+    font-family: 'Helvetica Neue Regular';
+    color: #414141;
+    font-size: 14px;
+    margin-bottom: 0px;
+}
+
+.btn-new {
+    background: none;
+    color: #7694B7;
+    border: 0;
+    font-size: 14px;
+    font-family: 'Helvetica Neue Regular';
+    margin-left: 22px;
+}
+
+.btn-new:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+:host>>>.popover>.arrow {
+    display: none;
+}
+
+:host>>>.popover {
+    background-color: #FFFFFF;
+    color: #FFFFFF;
+}
+
+:host>>>.popover.bottom {
+    margin-top: -5px !important;
+    margin-left: -55px !important;
+}
+
+.pop-option {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    font-family: 'Helvetica Neue Regular';
+    color: #7694B7;
+    font-size: 12px;
+}
+
+.btn-opt {
+    background: none;
+    border: 0;
+}
+
+.btn-opt:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.circle-menu {
+    color: #6A6A6A;
+    font-size: 4px;
+}
+
+.run-btn {
+    background-color: #7694B7;
+    border-radius: 100%;
+    height: 27px;
+    width: 28px;
+    border: 0;
+    margin-top: -3px;
+}
+
+.run-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.pause-btn {
+    background-color: #7694B7;
+    border-radius: 100%;
+    height: 27px;
+    width: 28px;
+    border: 0;
+    margin-top: -3px;
+}
+
+.pause-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.loading {
+    height: 30px;
+    width: 30px;
+}
+
+.stop-btn {
+    color: #FFFFFF;
+    background-color: #E67C7C;
+    border-radius: 45px;
+    font-family: "Helvetica Neue Regular";
+    font-style: normal;
+    border: 0;
+    font-size: 14px;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: -3px;
+}
+
+.stop-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.projects-list {
+    width: 96%;
+    margin-left: 12px;
+}
+
+.templateClass {
+    background: none;
+}
+
+.projects-list .test {
+    width: 100%;
+}
+
+.title {
+    font-family: 'Helvetica Neue Regular';
+    color: #7694B7;
+    font-size: 14px;
+    float: right;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.run-opts {
+    text-align: left;
+    font-family: 'Helvetica Neue Regular';
+    color: rgb(0, 0, 0);
+    font-size: 13px;
+}
+
+.run-times {
+    width: 40px;
+    background: none;
+    text-align: left;
+    font-family: 'Helvetica Neue Regular';
+    color: rgb(0, 0, 0);
+    font-size: 12px;
+    border: 2px solid #203C66;
+    border-radius: 4px;
+}
+
+.scs-btn {
+    font-family: 'Helvetica Neue Regular';
+    font-style: normal;
+    color: #FFFFFF;
+    background: #7694B7;
+    font-size: 14px;
+    opacity: 100%;
+    border: 0;
+    border-radius: 45px;
+    height: 28px;
+    width: 80px;
+}
+
+.scs-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+.grpt-btn {
+    font-family: 'Helvetica Neue Regular';
+    font-style: normal;
+    color: #FFFFFF;
+    background: #7694B7;
+    font-size: 14px;
+    opacity: 100%;
+    border: 0;
+    border-radius: 45px;
+    height: 35px;
+    width: 115px;
+}
+
+.grpt-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+.report-footer-options{
+    margin: auto;
+}
+.cancel-btn {
+    font-family: 'Helvetica Neue Regular';
+    font-style: normal;
+    color: #7694B7;
+    font-size: 14px;
+    opacity: 100%;
+    background: #FFFFFF;
+    border: 0;
+    height: 28px;
+    width: 80px;
+}
+
+.cancel-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    padding-right: 0;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.projects #checkbox {
+    padding-right: 0%;
+}
+
+.container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 2px;
+    margin-left: 10px;
+    height: 15px;
+    width: 15px;
+    background-color: none;
+    outline-style: solid;
+    outline-color: #203C66;
+    outline-width: 1.5pt;
+}
+
+.checkmarkTCP {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: -3px;
+    margin-left: 10px;
+    height: 15px;
+    width: 15px;
+    background-color: none;
+    outline-style: solid;
+    outline-color: #ccc;
+    outline-width: 1.5pt;
+}
+
+.container:hover input~.checkmark {
+    background-color: #ccc;
+}
+
+.container:hover input~.checkmarkTCP {
+    background-color: #ccc;
+}
+
+.container input:checked~.checkmark {
+    background-color: #203C66;
+}
+
+.container input:checked~.checkmarkTCP {
+    background-color: white;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkmarkTCP:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.container input:checked~.checkmark:after {
+    display: block;
+}
+
+.container input:checked~.checkmarkTCP:after {
+    display: block;
+}
+
+.container .checkmark:after {
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.container .checkmarkTCP:after {
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid #203C66;
+    outline-color: #203C66;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.search-bar {
+    width: 90%;
+    height: 42px;
+    border-color: #EAEAEA;
+    border-width: 1px;
+    border-style: solid;
+    font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, sans-serif;
+    font-style: normal;
+    font-size: 15px;
+    color: #333333;
+    background: #FFFFFF url(src/assets/images/icons/search_icon.svg) left no-repeat;
+    background-size: 25px 20px;
+    padding-left: 30px;
+}
+
+.select-all {
+    color: #203C66;
+    font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 12px;
+    width: 120px;
+    margin-right: 0;
+}
+
+.action-btn {
+    color: #203C66;
+    font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 12px;
+    background: none;
+    border: none;
+}
+
+.action-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.col-project {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.check-all {
+    outline-style: solid;
+    outline-color: #203C66;
+    outline-width: 1.5pt;
+}
+
+.form-label {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    color: #414141;
+}
+
+.lists-panel {
+    height: 300px;
+    background-color: #EAEAEA;
+    opacity: 1;
+}
+
+.item-names {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333F4D;
+}
+
+.header-text {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #000000;
+    font-weight: 900;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.mod-create-btn {
+    font-family: "Helvetica Neue Regular";
+    font-style: normal;
+    color: #ffffff;
+    background: #7694B7;
+    font-size: 14px;
+    opacity: 100%;
+    border: 0;
+    border-radius: 45px;
+    height: 28px;
+    width: 123.07px;
+}
+
+.mod-cancel-btn {
+    font-family: "Helvetica Neue Regular";
+    font-style: normal;
+    color: #7694B7;
+    font-size: 14px;
+    background: #ffffff;
+    opacity: 100%;
+    border: 0;
+    height: 28px;
+    width: 123.07px;
+}
+
+.mod-cancel-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.mod-create-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* IE10+ specific styles go here */
+
+@media screen and (-ms-high-contrast: active), screen and (-ms-high-contrast: none) {
+    .run-footer-options {
+        width: 40%;
+        margin-right: 30%;
+    }
+}
+
+@supports (-webkit-appearance:none) {
+    .run-footer-options {
+        width: 40%;
+        margin: 0 auto;
+    }
+}
+
+.active {
+    background-color: #7694B7 !important;
+    color: #FFFFFF !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+
+/* input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+} */
+
+/* Firefox */
+/* input[type=number] {
+    -moz-appearance: textfield;
+} */
+
+::ng-deep bs-datepicker-container {
+    margin-right: 10% !important;
+}
+
+::ng-deep bs-datepicker-container tbody {
+    overflow: hidden !important;
+}
+.strap-line{
+    border: none;
+}
+.report-count{
+    padding-top: 5px;
+}

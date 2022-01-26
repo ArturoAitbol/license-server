@@ -1,0 +1,105 @@
+<div class="modal-header" draggableModal>
+  <label class="modal-title">{{testCase.name}}</label>
+  <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="mycontainer">
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label"><b>Tags:</b></label>
+        </div>
+        <div class="col-md-9">
+          <button type="button" *ngFor="let tag of testCase.tagArray" class="btn item-tags">#{{tag}}</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label"><b>Description:</b></label>
+        </div>
+        <div class="col-md-9">
+          <p class="form-label">{{testCase.description}}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label"><b>Creation Date:</b></label>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">{{testCase.creationDate}}</label>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label"><b>Last edition:</b></label>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">{{testCase.lastModified}}</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label"><b>Estimated Run Time:</b></label>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">{{testCase.estimatedTime}} Seconds</label>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label"><b>Publish Status:</b></label>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">{{testCase.published}}</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label"><b>Resources Needed:</b></label>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">{{testCase.resources}} resource(s)</label>
+          <!-- <table>
+            <thead>
+              <th>Name</th>
+              <th>Type</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let resource of testCase.resources">
+                <td>{{resource.name}}</td>
+                <td>{{resource.type}}</td>
+              </tr>
+            </tbody>
+          </table> -->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label"><b>Actions Count:</b></label>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">{{testCase.actionsCount}} actions</label>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="form-group">
+      <label for="testCaseName" class="form-label">Test Case Name</label>
+      <input required minlength="1" type="text" name="testCaseName" placeholder="Enter Name" class="form-control"
+        [(ngModel)]="test.name" #testName="ngModel">
+    </div>
+    <div class="form-group">
+      <label for="associatedTags" class="form-label">Associated Tags</label>
+      <label class="form-label-clear">&nbsp;(Separated by commas)</label>
+      <textarea minlength="3" rows="2" placeholder="Enter Tags" name="associatedTags" class="form-control"
+        [(ngModel)]="test.tags"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="descriptionText" class="form-label">Description</label>
+      <textarea rows="2" minlength="5" placeholder="What does this test case do?" name="descriptionText"
+        class="form-control" [(ngModel)]="test.description"></textarea>
+    </div> -->
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="modal-scs-btn" (click)="closeModal()">
+    Ok
+  </button>
+</div>

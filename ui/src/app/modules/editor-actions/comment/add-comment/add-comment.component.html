@@ -1,0 +1,27 @@
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="form-group row">
+                <div class="col-12">
+                    <textarea class="form-control" maxlength='180' name="commentField" id="commentField" cols="10" rows="5" [(ngModel)]="commentMessage"></textarea>
+                </div>
+            </div>
+            <p style="float: right;font-size: 12px;">
+                {{commentMessage.length}}/180
+            </p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="cancel()" class="modal-cancel-btn">
+        Cancel
+      </button>
+        <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+          <span *ngIf="!actionToEdit">
+           Add
+          </span>
+          <span *ngIf="actionToEdit">
+            Update
+          </span>
+      </button>
+    </div>
+</form>

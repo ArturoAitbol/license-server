@@ -1,0 +1,58 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">List Details - {{list.name}}</label>
+    <button type="button" class="close" aria-label="Close" (click)="hideModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="mycontainer">
+        <div class="row">
+            <div class="col">
+                <label class="subtitle-label">Phones in {{list.name}}:</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" style="height: 250px;">
+                <data-table [columnDefs]="phoneColumns" [data]="list.phones" [selectedHeight]="'20vh'" [dataflow]="isRequestCompleted" [colsTag]="'list-details'">
+                    <tableRow>
+                        <ng-template let-item="item" class="templateClass">
+                            <tr class="strip-table">
+                                <td class="regular-text" style="max-width:50px;overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap;" [width]="getColumnWidth(phoneColumns[0])" title="{{item.name}}">
+                                    {{item.name |blank}}
+                                </td>
+                                <td class="regular-text" style="max-width:40px;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [width]="getColumnWidth(phoneColumns[1])" title="{{item.macAddress}}">
+                                    {{item.macAddress|blank}}
+                                </td>
+                                <td class="regular-text" style="max-width:40px;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [width]="getColumnWidth(phoneColumns[2])" title="{{item.ipAddress}}">
+                                    {{item.ipAddress|blank}}
+                                </td>
+                                <td class="regular-text" style="max-width:40px;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [width]="getColumnWidth(phoneColumns[3])" title="{{item.primaryUser}}">
+                                    {{item.primaryUser|blank}}
+                                </td>
+                                <td class="regular-text" style="max-width:30px;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [width]="getColumnWidth(phoneColumns[4])" title="{{item.primaryExtension}}">
+                                    {{item.primaryExtension|blank}}
+                                </td>
+                                <td class="regular-text" style="max-width:40px;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [width]="getColumnWidth(phoneColumns[5])" title="{{item.primaryDid}}">
+                                    {{item.primaryDid|blank}}
+                                </td>
+                                <td class="regular-text" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [width]="getColumnWidth(phoneColumns[6])" title="{{item.vendor | poly}}">
+                                    {{ (item.vendor|blank |poly)}}
+                                </td>
+                                <td class="regular-text" style="max-width:40px;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [style.color]="getColor(item.phoneState,item.vendor)" [width]="getColumnWidth(phoneColumns[7])" title="{{item.phoneState }}">
+                                    {{(item.vendor.toString().toLowerCase() == 'cisco') ? (item.phoneState | titlecase) : 'N/A' }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tableRow>
+                </data-table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="form-group">
+        <button class="modal-scs-btn" (click)="hideModal()">
+            Close
+        </button>
+    </div>
+</div>

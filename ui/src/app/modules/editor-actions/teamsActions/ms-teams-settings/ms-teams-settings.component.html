@@ -1,0 +1,242 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Settings</label>
+    <button type="button" class="close" aria-label="Close" (click)="cancel()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="form-group row">
+                <label for="Phone" class="col-sm-1 col-form-label phone-label"> Phone </label>
+                <div class="col-sm-2">
+                    <select [title]="selectedPhone" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedPhone" id="phone" name="phone" #phone="ngModel">
+                        <option disabled selected value="">Select Phone</option>
+                        <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}
+                        </option>
+                    </select>
+                </div>
+                <label for="configLabel" class="col-sm-1 col-form-label phone-label">Config</label>
+                <div class="col-sm-3">
+                    <select [title]="selectedConfig" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedConfig" id="configLabel" name="configLabel" #configLabel="ngModel">
+                        <option disabled selected value="">Select Config</option>
+                        <option *ngFor="let configName of configList" value="{{configName.label}}">{{configName.label}}
+                        </option>
+                    </select>
+                </div>
+                <label for="callForwardLabel" *ngIf="enableCallForwardingFields()"
+                    class="col-sm-2 pr-0 col-form-label phone-label ">Forwarding Type</label>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" *ngIf="enableCallForwardingFields()" class="form-control"
+                        [(ngModel)]="selectedCallForwardType" id="callForwardLabel" name="callForwardLabel"
+                        #callForwardLabel="ngModel">
+                        <option disabled selected value="">Select Type</option>
+                        <option value="Always">Always</option>
+                        <option value="No Answer">No Answer</option>
+                    </select>
+                </div>
+            </div>
+            <!-- simultaneous ring fields -->
+            <hr class="separator" *ngIf="enableSimultaneousRingFields()">
+            <div class="form-group row" *ngIf="enableSimultaneousRingFields()">
+                <label class="col-sm-1 col-form-label phone-label"> State </label>
+                <div class="col-sm-2">
+                    <select [title]="selectedState" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedState" id="stateField"
+                        (change)="onChangeSimultaneousState($event.target.value)" name="stateField"
+                        #stateField="ngModel">
+                        <option disabled selected value="">Select State</option>
+                        <option value="Enable">Enable</option>
+                        <option value="Disable">Disable</option>
+                    </select>
+                </div>
+                <label class="col-sm-2 col-form-label phone-label" *ngIf="enableDestinationTypeFields()">
+                    Destination Type
+                </label>
+                <div class="col-sm-3 " *ngIf="enableDestinationTypeFields()">
+                    <select [title]="selectedDestinationType" required forbiddenValue="" class="form-control"
+                        (change)="onChangeDestinationType()" [(ngModel)]="selectedDestinationType" id="Destination type"
+                        name="Destinationtype" #Destinationtype="ngModel">
+                        <option disabled selected value="">Select Destination type</option>
+                        <option value="DID">Number</option>
+                        <option value="SIP-URI">SIP-URI</option>
+                        <option value="Group">Group</option>
+                    </select>
+                </div>
+                <label class="col-sm-1 col-form-label phone-label" *ngIf="enableSimultaneousResourceGroupFields()">
+                    Resource Group
+                </label>
+                <div class="col-sm-3 " *ngIf="enableSimultaneousResourceGroupFields()">
+                    <select [title]="selectedResourceGroup" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedResourceGroup" id="resourceGroupField" name="resourceGroupField"
+                        #resourceGroupField="ngModel">
+                        <option disabled selected value="">Select Group</option>
+                        <option [value]="item.name" *ngFor="let item of groupInventoryList">{{item.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <hr class="separator"
+            *ngIf="selectedDestinationType !== '' &&selectedDestinationType !== GROUP &&  selectedConfig===SIMULTANEOUS_RING_TYPE">
+            <div class="form-group row" *ngIf="enableSimultaneousForwardingToFields()">
+                <label for="ForwordingTo" class="col-sm-2 col-form-label phone-label">Forwarding To</label>
+                <div class="ng-autocomplete col-sm-3">
+                    <ng-autocomplete [data]="resourcesBk" [(ngModel)]="forwardValue" id="forwardTo" #forwardTo
+                    [placeholder]="'Enter Phone'" name="forwardTo" style="padding: 0px !important;"
+                    class="form-control col autocomplete-wrap" [searchKeyword]="keyword" (selected)='selectEvent($event)'
+                    (inputChanged)='onChangeSearch($event)' (inputFocused)='onFocused($event)'
+                    [itemTemplate]="itemTemplate">
+                </ng-autocomplete>
+                <ng-template #itemTemplate let-item>
+                    <a [innerHTML]="item.name" [title]="item.name"></a>
+                </ng-template>
+
+                <ng-template #notFoundTemplate let-notFound>
+                    <div [innerHTML]="notFound"></div>
+                </ng-template>
+                </div>
+            </div>
+            <div class="row form-group" *ngIf="enableSimultaneousResourceGroupFields()">
+                <label class="col-sm-1 col-form-label phone-label" *ngIf="enableSimultaneousResourceGroupFields()">
+                    Ring Type
+                </label>
+                <div class="col-sm-3 " *ngIf="enableSimultaneousResourceGroupFields()">
+                    <select [title]="selectedRingType" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedRingType" id="ringTypeField" name="ringTypeField" #ringTypeField="ngModel">
+                        <option disabled selected value="">Select Ring Type</option>
+                        <option [value]="type" *ngFor="let type of ringTypes">{{type}}</option>
+                    </select>
+                </div>
+            </div>
+            <!-- call forwarding fields -->
+            <hr class="separator" *ngIf="enableCallForwardingFields()">
+            <div class="form-group row" *ngIf="enableCallForwardingFields()">
+                <label class="col-sm-1 col-form-label phone-label"> State </label>
+                <div class="col-sm-2">
+                    <select [title]="selectedState" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedState" id="stateField" name="stateField" #stateField="ngModel">
+                        <option disabled selected value="">Select State</option>
+                        <option value="Enable">Enable</option>
+                        <option value="Disable">Disable</option>
+                    </select>
+                </div>
+                <label class="col-sm-4 col-form-label phone-label"
+                    *ngIf="selectedState === DISABLE_STATE && selectedCallForwardType !=ALWAYS_STATE">
+                    Ring for this many seconds before redirecting </label>
+                <div class="col-sm-3" *ngIf="selectedState === DISABLE_STATE&& selectedCallForwardType !=ALWAYS_STATE">
+                    <select [title]="selectedTime" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedTime" id="stateField" name="timeField" #timeField="ngModel">
+                        <option value="10">10 seconds</option>
+                        <option selected value="20">20 seconds</option>
+                        <option value="30">30 seconds</option>
+                        <option value="40">40 seconds</option>
+                        <option value="50">50 seconds</option>
+                        <option value="60">60 seconds</option>
+                    </select>
+                </div>
+                <label class="col-sm-2 col-form-label phone-label" *ngIf="selectedState===ENABLE_STATE">
+                    Destination Type
+                </label>
+                <div class="col-sm-3 " *ngIf="selectedState===ENABLE_STATE">
+                    <select [title]="selectedDestinationType" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedDestinationType" id="Destination type" name="Destinationtype"
+                        #Destinationtype="ngModel">
+                        <option disabled selected value="">Select Destination type</option>
+                        <option value="DID">Number</option>
+                        <option value="SIP-URI">SIP-URI</option>
+                        <option value="Group">Group</option>
+                    </select>
+                </div>
+                <label class="col-sm-1 col-form-label phone-label" *ngIf="enableCallForwardingResourceGroupFields()">
+                    Resource Group
+                </label>
+                <div class="col-sm-3 " *ngIf="enableCallForwardingResourceGroupFields()">
+                    <select [title]="selectedResourceGroup" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedResourceGroup" id="resourceGroupField" name="resourceGroupField"
+                        #resourceGroupField="ngModel">
+                        <option disabled selected value="">Select Group</option>
+                        <option [value]="item.name" *ngFor="let item of groupInventoryList">{{item.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group" *ngIf="enableCallForwardingResourceGroupFields()">
+                <label class="col-sm-1 col-form-label phone-label">
+                    Ring Type
+                </label>
+                <div class="col-sm-3 ">
+                    <select [title]="selectedRingType" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedRingType" id="ringTypeField" name="ringTypeField" #ringTypeField="ngModel">
+                        <option disabled selected value="">Select Ring Type</option>
+                        <option [value]="type" *ngFor="let type of ringTypes">{{type}}</option>
+                    </select>
+                </div>
+            </div>
+            <hr class="separator"
+                *ngIf="selectedDestinationType !== '' &&selectedDestinationType !== GROUP &&  selectedConfig===CALL_FORWARDING">
+            <div class="form-group row"
+                *ngIf="selectedDestinationType !== '' &&selectedDestinationType !== GROUP &&  selectedConfig===CALL_FORWARDING">
+                <label for="ForwordingTo" class="col-sm-2 col-form-label phone-label">Forwarding To</label>
+                <div class="ng-autocomplete col-sm-3">
+                    <ng-autocomplete [data]="resourcesBk" [(ngModel)]="forwardValue" id="forwardTo" #forwardTo
+                    [placeholder]="'Enter Phone'" name="forwardTo" style="padding: 0px !important;"
+                    class="form-control col autocomplete-wrap" [searchKeyword]="keyword" (selected)='selectEvent($event)'
+                    (inputChanged)='onChangeSearch($event)' (inputFocused)='onFocused($event)'
+                    [itemTemplate]="itemTemplate">
+                </ng-autocomplete>
+                <ng-template #itemTemplate let-item>
+                    <a [innerHTML]="item.name" [title]="item.name"></a>
+                </ng-template>
+
+                <ng-template #notFoundTemplate let-notFound>
+                    <div [innerHTML]="notFound"></div>
+                </ng-template>
+                </div>
+                <label class="col-sm-4 col-form-label phone-label"
+                    *ngIf="selectedState === ENABLE_STATE && selectedCallForwardType !=ALWAYS_STATE">
+                    Ring for this many seconds before redirecting </label>
+                <div class="col-sm-3" *ngIf="selectedState === ENABLE_STATE && selectedCallForwardType !=ALWAYS_STATE">
+                    <select [title]="selectedTime" required forbiddenValue="" class="form-control"
+                        [(ngModel)]="selectedTime" id="stateField" name="timeField" #timeField="ngModel">
+                        <option value="10">10 seconds</option>
+                        <option selected value="20">20 seconds</option>
+                        <option value="30">30 seconds</option>
+                        <option value="40">40 seconds</option>
+                        <option value="50">50 seconds</option>
+                        <option value="60">60 seconds</option>
+                    </select>
+                </div>
+            </div>
+            <hr class="separator">
+            <div class="form-group row">
+                <label for="failure" class="col-sm-3 col-form-label phone-label">Continue OnFailure</label>
+                <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+                    <label class="phone-label">
+                        <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure"
+                            #failure="ngModel">&nbsp;
+                        <span>True</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                        <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure"
+                            #failure="ngModel">
+                        &nbsp;
+                        <span>False</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="cancel()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+            <span *ngIf="!actionToEdit">
+                Insert Action
+            </span>
+            <span *ngIf="actionToEdit">
+                Update Action
+            </span>
+        </button>
+    </div>
+</form>

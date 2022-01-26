@@ -1,0 +1,88 @@
+<div class="modal-header" draggableModal>
+  <label class="modal-title">Set Configuration</label>
+  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+  <div class="modal-body">
+    <div class="mycontainer">
+      <div class="form-group row">
+        <label for="parameterField" class="col-sm-3 col-form-label phone-label">Configuration Param</label>
+        <div class="col-sm-3">
+          <input required type="text" placeholder="Enter parameter" class="form-control" [(ngModel)]="configParam"
+            name="parameterField" #expressionField="ngModel">
+        </div>
+        <label for="device" class="col-sm-2 col-form-label phone-label">Phone</label>
+        <div class="col-sm-3">
+          <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedDevice"
+            (change)="onSelectDevice($event.target.value)" id="device" name="device" #device="ngModel">
+            <option disabled selected value="">Select Resource</option>
+            <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}</option>
+          </select>
+        </div>
+      </div>
+      <hr class="separator">
+      <div class="form-group row">
+        <label for="valueField" class="col-sm-3 col-form-label phone-label">Configuration Value</label>
+        <div class="col-sm-3">
+          <input type="text" placeholder="Enter value" class="form-control" [(ngModel)]="configValue" name="valueField"
+            #expressionField="ngModel">
+        </div>
+        <div [ngClass]="{'col-sm-2': enableConfig,'col-sm-3':!enableConfig}">
+          <label for="enable360Config" class="phone-label form-label" style="padding-top: 6px;">
+            <input id="enable360Config" name="enable360Config" #enable360Config="ngModel" type="checkbox"
+              ngDefaultControl [(ngModel)]="enableConfig">&nbsp;&nbsp;&nbsp;Sync 360 config
+          </label>
+        </div>
+        <div class="col-sm-3" *ngIf="enableConfig">
+          <select required forbiddenValue="" class="form-control" [(ngModel)]="config360Param"
+            (change)="onSelectDevice($event.target.value)" id="enable360ConfigParameterField"
+            name="enable360ConfigParameterField" #enable360ConfigParameterField="ngModel">
+            <option disabled selected value="">Select Parameter</option>
+            <option *ngFor="let parameterName of paramArray" value="{{parameterName}}">{{parameterName}}</option>>
+          </select>
+        </div>
+      </div>
+      <hr class="separator">
+      <div class="form-group row">
+
+        <label for="failure" class="col-sm-3 col-form-label phone-label">Continue OnFailure</label>
+        <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+          <label class="phone-label">
+            <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure" #failure="ngModel">&nbsp;
+            <span>True</span>
+          </label>&nbsp;
+          <label class="phone-label">
+            <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure" #failure="ngModel">
+            &nbsp;
+            <span>False</span>
+          </label>
+        </div>
+        <div class="col-sm-2">
+          <label for="forceActionField" class=" phone-label form-label" style="padding-top: 6px;">
+            <input id="forceActionField" name="forceActionField" #forceActionField type="checkbox"
+              [(ngModel)]="forceAction">&nbsp;Force Action
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div *ngIf="title" class="mr-auto"
+      style="background-color: #7694B7; height: 30px; width: 30px; border-radius: 100%; margin-top:-2%">
+      <img src="assets/images/icons/info.svg" title="{{title}}" style="width:30px; height:30px;">
+    </div>
+    <button (click)="cancel()" class="modal-cancel-btn">
+      Cancel
+    </button>
+    <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+      <span *ngIf="!actionToEdit">
+        Insert Action
+      </span>
+      <span *ngIf="actionToEdit">
+        Update Action
+      </span>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,140 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Validate Led Status</label>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="cancel()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="row">
+                <div class="col-sm-2">
+                    <label class="phone-label">Phone</label>
+                </div>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedPhone"
+                        (change)="onSelectPhone($event.target.value)" id="phone" name="phone" #phone="ngModel">
+                        <option disabled selected value="">Select Phone</option>
+                        <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label class="phone-label">Line</label>
+                </div>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedLine" id="line"
+                        name="line" #line="ngModel">
+                        <option disabled selected value="">Select Line</option>
+                        <option *ngFor="let line of lines" value="{{line}}">{{line}}</option>
+                    </select>
+                </div>
+            </div>
+            <!--  Led Status -->
+            <hr class="separator" *ngIf="selectedPhoneObj?.vendor != ''">
+            <div class="row" *ngIf="selectedPhoneObj?.vendor != ''">
+                <div class="col-2">
+                    <label class="phone-label">Color</label>
+                </div>
+                <div class="col-10">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td style="width: 120px">
+                                    <label class="phone-label">
+                                        <input type="radio" value="none" [(ngModel)]="ledStatus"
+                                            name="ledStatus">&nbsp;None&nbsp;
+                                    </label>
+                                </td>
+                                <td style="width: 120px">
+                                    <label class="phone-label">
+                                        <input type="radio" value="Green" [(ngModel)]="ledStatus" name="ledStatus">
+                                        &nbsp;Green&nbsp;
+                                    </label>
+                                </td>
+                                <td style="width: 120px">
+                                    <label class="phone-label">
+                                        <input type="radio" value="Red" [(ngModel)]="ledStatus"
+                                            name="ledStatus">&nbsp;Red&nbsp;
+                                    </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <hr class="separator" *ngIf="selectedPhoneObj?.vendor.toLowerCase() == 'polycom'">
+            <div class="row" *ngIf="selectedPhoneObj?.vendor.toLowerCase() == 'polycom'">
+                <!-- state -->
+                <div class="col-sm-2">
+                    <label class="phone-label">State</label>
+                </div>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedState" id="stateField"
+                        name="stateField" #stateField="ngModel">
+                        <option disabled selected value="">Select State</option>
+                        <option *ngFor="let state of states" [value]="state.value">{{state.label}}</option>
+                    </select>
+                </div>
+
+            </div>
+            <hr class="separator" *ngIf="selectedPhoneObj?.vendor.toLowerCase() == 'yealink'">
+            <div class="row" *ngIf="selectedPhoneObj?.vendor.toLowerCase() == 'yealink'">
+                <!-- mode -->
+                <div class="col-sm-2">
+                    <label class="phone-label">Mode</label>
+                </div>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedMode" id="modeField"
+                        name="modeField" #modeField="ngModel">
+                        <option disabled selected value="">Select Mode</option>
+                        <option *ngFor="let mode of modes" [value]="mode">{{mode | titlecase}}</option>
+                    </select>
+                </div>
+                <!-- flash -->
+                <div class="col-sm-2">
+                    <label class="phone-label">Flash</label>
+                </div>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedFlashType"
+                        id="flashField" name="flashField" #flashField="ngModel">
+                        <option disabled selected value="">Select Flash</option>
+                        <option *ngFor="let item of flash" [value]="item">{{item | titlecase}}</option>
+                    </select>
+                </div>
+            </div>
+            <hr class="separator">
+            <div class="row">
+                <label for="failure" class="col-sm-3 col-form-label phone-label">Continue On
+                    Failure</label>
+                <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+                    <label class="phone-label">
+                    <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure" #failure="ngModel">&nbsp;
+                    <span>True</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                    <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure" #failure="ngModel">
+                    &nbsp;
+                    <span>False</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="title" class="mr-auto"
+            style="background-color: #7694B7; height: 30px; width: 30px; border-radius: 100%; margin-top:-2%">
+            <img src="assets/images/icons/info.svg" title="{{title}}" style="width:30px; height:30px;">
+        </div>
+        <button (click)="cancel()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+            <span *ngIf="!actionToEdit">
+                Insert Action
+            </span>
+            <span *ngIf="actionToEdit">
+                Update Action
+            </span>
+        </button>
+    </div>
+</form>

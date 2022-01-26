@@ -1,0 +1,53 @@
+body {
+    font-size: 12px;
+    font-family: Sans-Serif;
+}
+
+h2 {
+    margin: 0.5em 0 0.1em;
+    text-align: center;
+    font-size: 20px;
+    background-color: #7694B7;
+    color: #ffffff;
+    width: 99%;
+}
+
+.top {
+    text-align: center;
+}
+
+.textInput {
+    display: block;
+    width: 49%;
+    float: left;
+}
+
+textarea {
+    width: 99%;
+    height: 500px;
+    border-bottom-width: 5px;
+    border-bottom-color: #7694B7;
+    border-left-width: 3px;
+    border-left-color: #7694B7;
+}
+
+label:hover {
+    /* text-decoration: underline; */
+    cursor: pointer;
+}
+
+.spacer {
+    margin-left: 10px;
+}
+
+.viewType {
+    font-size: 20px;
+    clear: both;
+    text-align: center;
+    padding: 1em;
+}
+
+#diffoutput {
+    table-layout: fixed;
+    width: 100%;
+}

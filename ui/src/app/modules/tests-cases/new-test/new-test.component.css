@@ -1,0 +1,62 @@
+.form-label {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    color: #414141;
+}
+
+.lines-label {
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    color: #414141;
+}
+
+.form-label-clear {
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #BEBEBE;
+}
+
+.form-control {
+    color: #414141;
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-control::placeholder {
+    color: #BEBEBE;
+    font-style: italic;
+}
+
+.linesContainer {
+    min-height: 100px;
+}
+
+.plus-btn {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: thin solid #EAEAEA;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 45px;
+    outline: none;
+}
+
+.close {
+  margin-right: -18px;
+  margin-top: -15px;
+}
+
+.close:focus {
+	outline: none;
+    box-shadow: none;
+}
+.error-msg{
+    color: #a94442;
+    font-size: smaller;
+    display: block;
+    margin-bottom:8px; 
+}

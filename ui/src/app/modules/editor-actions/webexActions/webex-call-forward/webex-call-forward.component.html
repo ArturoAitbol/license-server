@@ -1,0 +1,114 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Call Forward</label>
+    <button type="button" class="close" aria-label="Close" (click)="cancel()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+    <div class="modal-body" id="modalBody">
+        <div class="mycontainer">
+            <div [ngStyle]="{'border':(!actionToEdit)?'thin solid #EAEAEA':'none'}">
+                <div class="row" style="margin-top: 5px !important;">
+                    <div class="col-12">
+                        <button *ngIf="!actionToEdit" style="margin-right:5px;float: right;" class="plus-btn"
+                            (click)="add()">
+                            <i class="fa fa-plus" aria-hidden="true" style="color: #7694B7;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div *ngFor="let item of callForwardingList; let i = index;">
+                    <div class="form-group row" style="margin-left: 15px;">
+                        <!-- resource -->
+                        <label for="resourceField" class="col-sm-2 col-form-label phone-label">Phone</label>
+                        <div class="col-sm-3">
+                            <select required forbiddenValue="" class="form-control"
+                                [(ngModel)]="callForwardingList[i].phone" id="resourceField{{i}}"
+                                name="resourceField{{i}}" #resourceField{{i}}="ngModel">
+                                <option disabled selected value="">Select Phone</option>
+                                <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}
+                                </option>
+                            </select>
+                        </div>
+                        <!-- Diversion Reason -->
+                        <label class="col-sm-2 col-form-label phone-label"> Diversion Reason </label>
+                        <div class="col-sm-3">
+                            <select required forbiddenValue="" class="form-control"
+                                [(ngModel)]="callForwardingList[i].diversionReason" id="diversionReasonField{{i}}"
+                                name="diversionReasonField{{i}}" #diversionReasonField{{i}}="ngModel">
+                                <option disabled selected value="">Select Reason</option>
+                                <option *ngFor="let reason of diversionReasonList" value="{{reason.name}}">
+                                    {{reason.name}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row" style="margin-left: 15px;">
+                        <!-- state -->
+                        <label class="col-sm-2 col-form-label phone-label"> State </label>
+                        <div class="col-sm-3">
+                            <select required forbiddenValue="" class="form-control"
+                                [(ngModel)]="callForwardingList[i].state" id="stateField{{i}}" name="stateField{{i}}"
+                                #stateField{{i}}="ngModel">
+                                <option disabled selected value="">Select State</option>
+                                <option value="Enable">Enable</option>
+                                <option value="Disable">Disable</option>
+
+                            </select>
+                        </div>
+                        <!-- diversion destination -->
+                        <label *ngIf="callForwardingList[i].state=='Enable'"
+                            class="col-sm-2 col-form-label phone-label">Set Number</label>
+                        <div *ngIf="callForwardingList[i].state=='Enable'" class="col-sm-3">
+                            <input [disabled]="callForwardingList[i].diversionReason=='Disable'"
+                                title="Call Forward allows only 0-9 #,*,+" required type="text"
+                                name="diversionField{{i}}" id="diversionField{{i}}" placeholder="Enter Number"
+                                class="form-control" [(ngModel)]="callForwardingList[i].diversionDestination"
+                                #diversionField{{i}}="ngModel" onkeypress='return event.charCode >= 48 && event.charCode <= 57 ||
+                                  event.charCode==35 || event.charCode==42 || event.charCode==43'>
+                        </div>
+                        <div class="col" *ngIf="i !=0" style="text-align: right;margin-right: 1%;">
+                            <button class="plus-btn" (click)="delete(i)">
+                                <i class="fa fa-minus" aria-hidden="true" style="color: #7694B7;"></i>
+                            </button>
+                        </div>
+                    </div>
+                  
+                    <hr *ngIf=" i != callForwardingList.length-1" class="separator"
+                        style="margin-left: 30px;margin-right: 30px;">
+
+                </div>
+                <div class="form-group row" style="margin-left: 15px;">
+                     <label for="forceActionField" class=" phone-label form-label col-sm-3 text-left" style="padding-top: 6px;">
+                        <input id="forceActionField" name="forceActionField" #forceActionField type="checkbox" [(ngModel)]="forceAction">&nbsp;Force
+                        Action
+                     </label>
+                       <label for="failure" class="col-sm-3 col-form-label phone-label">Continue OnFailure</label>
+                       <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+                         <label class="phone-label">
+                           <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure" #failure="ngModel">&nbsp;
+                           <span>True</span>
+                         </label>&nbsp;
+                         <label class="phone-label">
+                           <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure" #failure="ngModel">
+                           &nbsp;
+                           <span>False</span>
+                         </label>
+                       </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="cancel()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+            <span *ngIf="!actionToEdit">
+                Insert Action
+            </span>
+            <span *ngIf="actionToEdit">
+                Update Action
+            </span>
+        </button>
+    </div>
+</form>

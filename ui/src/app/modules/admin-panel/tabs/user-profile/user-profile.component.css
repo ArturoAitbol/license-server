@@ -1,0 +1,83 @@
+.regular-text {
+    font-family: 'Helvetica Neue Regular';
+    color: #414141;
+    font-size: 14px;
+}
+
+.btn-new {
+    margin-top: 14px;
+    background: none;
+    color: #7694B7;
+    border: 0;
+    font-size: 14px;
+    font-family: 'Helvetica Neue Regular';
+}
+
+.count {
+    margin-top: 14px;
+    font-family: 'Helvetica Neue Regular';
+    color: #43425d;
+    font-size: 14px;
+}
+
+td {
+    text-align: center;
+    vertical-align: middle;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pop-option {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    font-family: 'Helvetica Neue Regular';
+    color: #7694B7;
+    font-size: 12px;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
+
+.btn-opt {
+    background: none;
+    border: 0;
+}
+
+.circle-menu {
+    color: #6A6A6A;
+    font-size: 4px;
+}
+
+
+:host >>> .popover > .arrow {
+    display: none;
+}
+
+:host >>> .popover {
+    background-color: #FFFFFF;
+    color: #FFFFFF;
+}
+
+
+:host >>> .popover.bottom {
+    margin-top: -5px !important;
+    margin-left: -55px !important;
+}
+
+.title {
+    font-family: 'Helvetica Neue Regular';
+    color: #43425d;
+    font-size: 18px;
+    float: left;
+    padding-left: 16px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.role-text {
+    font-size: 14px;
+    font-weight: bold;
+}

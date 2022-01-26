@@ -1,0 +1,68 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Edit Project</label>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="cancelAction()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #projectForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="form-group">
+                <label for="projectName" class="form-label">Project Name</label>
+                <input id="projectName" required type="text" name="projectName" placeholder="Enter Name" class="form-control" #projectName="ngModel" [(ngModel)]="project.name">
+            </div>
+            <div class="form-group">
+                <label for="testPlan" class="form-label">Test Plan</label>
+                <input id="testPlan" type="text" class="form-control" name="testPlan" disabled value="{{project.testPlanDto.name}}">
+            </div>
+            <div class="form-group" *ngIf="!hidePoolDetails">
+                <!-- Phone list -->
+                <div class="phoneList" *ngFor="let pool of requiredPools; let i = index">
+                    <label class="form-label">Phone List {{pool.name.toUpperCase()}}</label>
+                    <select class="form-control" (change)="addSelectedPhonePool(i, $event.target.value); projectForm.form.markAsDirty();" [ngStyle]="{'border-left':(selectedPools[i]?.id ==null)?'5px solid #BC2426':''}">
+                        <option disabled selected value="-1">Select Pool</option>
+                        <option *ngFor="let phoneList of allPhoneLists" [value]="phoneList.id"
+                            [selected]="phoneList.id === this.currentProjectPools[i]?.phonePoolDto?.id">
+                            {{phoneList.name}}
+                        </option>
+                    </select>
+                    <br>
+                </div>
+                <!-- Server list -->
+                <div class="phoneList" *ngFor="let reqServer of requiredServers; let i = index">
+                    <label class="form-label">Call Server {{reqServer.name.toUpperCase()}}</label>
+                    <select class="form-control" [ngStyle]="{'border-left':(selectedServers[i]?.id ==null)?'5px solid #BC2426':''}" (change)="addSelectedServer(i, $event.target.value); projectForm.form.markAsDirty();">
+                        <option disabled selected value="-1">Select Server</option>
+                        <option *ngFor="let server of allServers[i]" [value]="server.id"
+                            [selected]="server.id === this.currentProjectServers[i]?.callServerDto?.id">{{server.name}}
+                        </option>
+                    </select>
+                    <br>
+                </div>
+                <!-- User list -->
+                <div class="phoneList" *ngFor="let pool of requiredUserPools; let i = index">
+                    <label class="form-label">User List {{pool.name.toUpperCase()}}</label>
+                    <select class="form-control" (change)="addSelectedUserPool(i, $event.target.value); projectForm.form.markAsDirty();" [ngStyle]="{'border-left':(selectedUserPools[i]?.id ==null)?'5px solid #BC2426':''}">
+                        <option disabled selected value="-1">Select Pool</option>
+                        <option *ngFor="let userList of allUserLists" [value]="userList.id"
+                            [selected]="userList.id === this.currentProjectUserPools[i]?.deviceUserListDto?.id">
+                            {{userList.name}}
+                        </option>
+                    </select>
+                    <br>
+                </div>
+            </div>
+            <div class="form-group" *ngIf="hidePoolDetails" style="text-align:center;">
+                <h6>Loading Resource Details ...</h6>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="cancelAction()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="updateProject()" [disabled]="projectForm.form.invalid || !projectForm.form.dirty">
+            Update
+        </button>
+    </div>
+</form>

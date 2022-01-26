@@ -1,0 +1,104 @@
+.btn-download {
+  background: none;
+  color: #7694B7;
+  border: 0;
+  font-size: 14px;
+  font-family: 'Helvetica Neue Regular';
+  margin-top: 7px;
+}
+
+.buttonPhoneInactive {
+  outline: 0px;
+  font-size: 14px;
+  color: #414141;
+  background-color: transparent;
+  border: none;
+  opacity: 0.7;
+  box-shadow: none;
+  font-family: 'Helvetica Neue Medium';
+}
+
+.buttonPhoneActive {
+  outline: 0px;
+  font-size: 14px;
+  color: #414141;
+  background-color: transparent;
+  border-width: 2px;
+  border-color: #7694B7;
+  border-right: none;
+  border-left: none;
+  border-top: none;
+  box-shadow: none;
+  font-family: 'Helvetica Neue Medium';
+}
+
+.modal-scs-btn {
+  font-family: 'Helvetica Neue Regular';
+  font-style: normal;
+  color: #FFFFFF;
+  background: #7694B7;
+  font-size: 14px;
+  opacity: 100%;
+  border: 0;
+  border-radius: 45px;
+  height: 28px;
+  outline: none;
+}
+
+.modal-scs-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.tabs {
+  margin-left: 15px;
+  margin-top: 25px;
+}
+
+.phone-img {
+  height: 116px;
+  width: 145.25px;
+}
+
+.basic-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.title-label {
+  font-family: 'Helvetica Neue Medium';
+  font-size: 15px;
+  color: #414141;
+  font-weight: bold;
+}
+
+.att-title {
+  font-family: 'Segoe UI Regular';
+  font-size: 14px;
+  color: #000000;
+  font-weight: bold;
+}
+
+.att-value {
+  color: #414141;
+  font-family: 'Segoe UI Regular';
+  font-size: 14px;
+}
+
+.contained-element {
+  font-family: 'Segoe UI Regular';
+  font-size: 13px;
+  text-align: center;
+}
+
+.regular-text {
+  font-family: 'Helvetica Neue Regular';
+  color: #414141;
+  font-size: 12px;
+}
+
+.table-label {
+  font-family: 'Segoe UI Regular';
+  font-size: 14px;
+  color: #414141;
+}

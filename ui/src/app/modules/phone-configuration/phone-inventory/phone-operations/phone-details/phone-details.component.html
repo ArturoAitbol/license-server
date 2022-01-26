@@ -1,0 +1,358 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Phone details - {{basicInfo?.name}}</label>
+    <button type="button" class="close" aria-label="Close" (click)="hideModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body" style="padding-bottom: 30px">
+    <div class="row">
+        <div class="col-md-2">
+            <button (click)="changeView('basic')" [ngClass]="{'buttonPhoneActive':detailsView == 'basic','buttonPhoneInactive':detailsView == 'management' || detailsView == 'network' }">
+                Basic Information
+            </button>
+        </div>
+        <div class="col-md-2">
+            <button *ngIf="phone?.vendor.toLowerCase() == 'cisco' || phone?.vendor.toLowerCase() == 'polycom'|| phone?.vendor.toLowerCase() == 'poly'" (click)="changeView('management')" [ngClass]="{'buttonPhoneActive':detailsView == 'management','buttonPhoneInactive':detailsView == 'basic' || detailsView == 'network'}">
+                Management Actions
+            </button>
+        </div>
+        <div class="col-md-2">
+            <button *ngIf="phone?.vendor.toLowerCase() == 'cisco'" (click)="changeView('network')" [ngClass]="{'buttonPhoneActive':detailsView == 'network','buttonPhoneInactive':detailsView == 'basic' || detailsView == 'management'}">
+                Network Settings
+            </button>
+        </div>
+        <!-- <div class="col-md-2">
+            <button *ngIf="phone?.vendor.toLowerCase() == 'cisco'" (click)="changeView('troubleshoot')"
+                [ngClass]="{'buttonPhoneActive':detailsView == 'troubleshoot','buttonPhoneInactive':detailsView == 'basic' || detailsView == 'management' || detailsView == 'network'}">
+                Troubleshooting
+            </button>
+        </div> -->
+    </div>
+    <div *ngIf="detailsView == 'basic'" class="tabs">
+        <div class="row">
+            <div class="col-md-2">
+                <img [src]="imgSrc" class="phone-img">
+            </div>
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-2" style="text-align: center;">
+                        <label class="table-label"><b>MAC</b></label>
+                    </div>
+                    <div class="col-md-4" style="text-align: center;">
+                        <label class="table-label"><b>Broadworks User (Primary User)</b></label>
+                    </div>
+                    <div class="col-md-3" style="text-align: center;">
+                        <label class="table-label"><b>Connection Status</b></label>
+                    </div>
+                    <div class="col-md-3" style="text-align: center;">
+                        <label class="table-label"><b>Serial Number</b></label>
+                    </div>
+                </div>
+                <div class="row"></div>
+                <div class="row">
+                    <div class="col-md-2" style="text-align: center;"><label class="table-label">{{basicInfo?.macAddress|blank}}</label></div>
+                    <div class="col-md-4" style="text-align: center;"><label class="table-label">{{basicInfo?.primaryUser |blank}}</label></div>
+                    <div class="col-md-3" style="text-align: center;"><label class="table-label">{{basicInfo?.phoneState | titlecase |blank}}</label></div>
+                    <div class="col-md-3" style="text-align: center;"><label class="table-label">{{basicInfo?.serialNumber |blank}}</label></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2" style="text-align: center;">
+                        <label class="table-label"><b>Vendor</b></label>
+                    </div>
+                    <div class="col-md-4" style="text-align: center;">
+
+                        <label class="table-label"><b>Model</b></label>
+                    </div>
+                    <div class="col-md-3" style="text-align: center;">
+
+                        <label class="table-label"><b>Firmware version</b></label>
+                    </div>
+                    <div class="col-md-3" style="text-align: center;">
+                        <label class="table-label"><b>Relay</b></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2" style="text-align: center;">
+                        <label class="table-label">{{basicInfo?.vendor|blank}}</label>
+                    </div>
+                    <div class="col-md-4" style="text-align: center;">
+                        <label class="table-label">{{basicInfo?.subModel |blank}}</label>
+                    </div>
+                    <div class="col-md-3" style="text-align: center;">
+                        <label class="table-label">{{basicInfo?.firmwareVersion |blank}}</label>
+                    </div>
+                    <div class="col-md-3" style="text-align: center;"><label class="table-label">{{basicInfo?.oprDto?.name | blank}}</label></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-8">
+                <hr>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-8">
+                <label style="font-size: 16px;" class="table-label"><b>Line Info</b></label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-2" style="text-align: center;">
+                        <label class="table-label"><b>Line</b></label>
+                    </div>
+                    <div class="col-md-2" style="text-align: center;">
+                        <label class="table-label"><b>Ext 1</b></label>
+                    </div>
+                    <div class="col-md-2" style="text-align: center;">
+                        <label class="table-label"><b>E164</b></label>
+                    </div>
+                    <div class="col-md-4" style="text-align: center;">
+                        <label class="table-label"><b>SIP URI</b></label>
+                    </div>
+                </div>
+                <div class="row" *ngFor="let line of lineInfo">
+                    <div class="col-md-2" style="text-align: center;">
+                        <label class="table-label">{{line?.lineNumber |blank}}</label>
+                    </div>
+                    <div class="col-md-2" style="text-align: center;">
+                        <label class="table-label">{{line?.dn |blank}}</label>
+                    </div>
+                    <div class="col-md-2" style="text-align: center;">
+                        <label class="table-label">{{line?.e164|blank}}</label>
+                    </div>
+                    <div class="col-md-4" style="text-align: center;">
+                        <label class="table-label">{{line?.uri|blank}}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+    <div *ngIf="detailsView == 'management'" class="tabs">
+        <div class="row">
+            <div class="col-lg-10">
+            </div>
+            <div class="col-lg-2" *ngIf="phone?.vendor.toLowerCase() == 'cisco'"><label class="regular-text">Logging Level</label></div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10">
+            </div>
+            <div class="col-lg-2" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <select forbiddenValue="" class="form-control" [(ngModel)]="selectedLogType" id="logLevelField" name="logLevelField" #logLevelField="ngModel">
+                    <option disabled selected value="">Select Level</option>
+                    <option *ngFor="let level of logLevels" [value]="level">{{level}}</option>
+                </select>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-2" style="text-align: center" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <button class="modal-scs-btn " (click)="rebootPhone()" [disabled]="checkButtonStats() || basicInfo?.phoneState != 'AVAILABLE'">
+                    Reboot
+                </button>
+            </div>
+            <div class="col-lg-2" style="text-align: center" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <button class="modal-scs-btn" (click)="syncPhoneConfig()" [disabled]="checkButtonStats() || basicInfo?.phoneState != 'AVAILABLE'">
+                    Phone Sync
+                </button>
+            </div>
+            <div class="col-lg-2" style="text-align: center" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <button class="modal-scs-btn" (click)="singlePhoneConfig()" [disabled]="checkButtonStats() || basicInfo?.phoneState != 'AVAILABLE'">
+                    View Config
+                </button>
+            </div>
+            <div class="col-lg-2" style="text-align: center" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <button class="modal-scs-btn" style="width: 150px;height:30px;" (click)="traceOperations()" [disabled]="checkButtonStats() || basicInfo?.phoneState != 'AVAILABLE' || checkValidButtonName() ">
+                    {{captureText}}
+                </button>
+            </div>
+            <div class="col-lg-2" style="text-align: center">
+                <button class="modal-scs-btn" [disabled]="basicInfo?.phoneState != 'AVAILABLE'" (click)="initiateMOSScore()" style="width: 150px;height:30px;">
+                    Get MOS Score
+                </button>
+            </div>
+            <div class="col-lg-2" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <button class="modal-scs-btn" (click)="startDebugging()" style="width: 150px;height:30px;">
+                    Set Logging Level
+                </button>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+            <div class="col-lg-2 contained-element" style="padding: 0px;" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <label class="regular-text" *ngIf="executionChecker(basicInfo?.rebootStatus)">Last
+                    rebooted: {{basicInfo?.rebootEnd_tsString  | na}}</label>
+                <label class="regular-text" *ngIf="!executionChecker(basicInfo?.rebootStatus)">Last
+                    rebooted: {{basicInfo?.rebootStart_tsString  | na}}</label>
+            </div>
+            <div class="col-lg-2 contained-element" style="padding: 0px;" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <label class="regular-text" *ngIf="executionChecker(basicInfo?.syncupState)">Last
+                    initiated: {{basicInfo?.syncupCompletedDate_tsString  | na}}</label>
+                <label class="regular-text" *ngIf="!executionChecker(basicInfo?.syncupState)">Last
+                    initiated: {{basicInfo?.syncupStartDate_tsString | na}}</label>
+            </div>
+            <div class="col-lg-2" *ngIf="phone?.vendor.toLowerCase() == 'cisco'"></div>
+            <div class="col-lg-2 contained-element" style="padding: 0px;" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <button *ngIf="basicInfo.traceStatus!= null && basicInfo?.traceStatus.toLowerCase() == 'stopped'" style="margin-top: 0px; font-size: 13px;" class="btn-download" (click)="getPacketCapture()">Get
+                    Packet Capture
+                </button>
+                <button *ngIf="basicInfo.traceStatus!= null && basicInfo?.traceStatus.toLowerCase() == 'completed'" style="margin-top: 0px; font-size: 13px;" class="btn-download" (click)="getLogs()">Download pcap
+                </button>
+            </div>
+            <div class="col-lg-2 contained-element">
+                <label class="regular-text" *ngIf="basicInfo?.mosScoreEnd_tsString">
+                    Last initiated: {{basicInfo?.mosScoreEnd_tsString  | na}}
+                </label>
+                <label class="regular-text" *ngIf="basicInfo?.mosScoreEnd_tsString==''">
+                    Last initiated: {{'N/A'}}
+                </label>
+
+                <br>
+                <label *ngIf="basicInfo.mosLQ != null && basicInfo.mosCQ != null" class="regular-text">
+                    <strong>MOSLQ :</strong> {{(basicInfo?.mosLQ != '') ? basicInfo?.mosLQ : 'N/A'}}&nbsp; &nbsp;
+                    <strong>MOSCQ :</strong> {{(basicInfo?.mosCQ != '') ? basicInfo?.mosCQ : 'N/A'}}
+                </label>
+            </div>
+            <div class="col-lg-2 contained-element" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <label class="regular-text">
+                    Last modified: {{basicInfo?.loggingLevelEnd_tsString  | na}}
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-2 contained-element" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <label *ngIf="basicInfo.rebootStatus != null" class="regular-text">Status:&nbsp;</label>
+                <label *ngIf="basicInfo.rebootStatus != null" class="regular-text" [style.color]="getColor(basicInfo?.rebootStatus)">{{basicInfo?.rebootStatus | titlecase |inProgress}}</label>
+            </div>
+            <div class="col-lg-2 contained-element" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <label *ngIf="basicInfo.syncupState != null" class="regular-text">Status:&nbsp;</label>
+                <label *ngIf="basicInfo.syncupState != null" class="regular-text" [style.color]="getColor(basicInfo?.syncupState)">{{basicInfo?.syncupState | titlecase |inProgress}}</label>
+            </div>
+            <div class="col-lg-2" *ngIf="phone?.vendor.toLowerCase() == 'cisco'"></div>
+            <div class="col-lg-2 contained-element" *ngIf="phone?.vendor.toLowerCase() == 'cisco'">
+                <label *ngIf="basicInfo.traceStatus != null" class="regular-text">Status:&nbsp;</label>
+                <label *ngIf="basicInfo.traceStatus != null" class="regular-text" [style.color]="getColor(basicInfo?.traceStatus)">{{basicInfo?.traceStatus | titlecase | trace}}</label>
+            </div>
+            <div class="col-lg-2 contained-element">
+                <label *ngIf="basicInfo.mosScoreStatus != null" class="regular-text">Status :</label>
+                <label *ngIf="basicInfo.mosScoreStatus != null" class="regular-text" [style.color]="getColor(basicInfo?.mosScoreStatus)">
+                    &nbsp;{{basicInfo?.mosScoreStatus | titlecase |inProgress}}
+                </label>
+            </div>
+            <div class="col-lg-2 contained-element">
+                <label *ngIf="basicInfo.loggingLevelStatus != null" class="regular-text">Status:&nbsp;</label>
+                <label *ngIf="basicInfo.loggingLevelStatus != null" class="regular-text" [style.color]="getColor(basicInfo?.loggingLevelStatus)">{{basicInfo?.loggingLevelStatus | titlecase |inProgress}}</label>
+            </div>
+        </div>
+        <!-- warning message -->
+        <div class="row" *ngIf="basicInfo?.firmwareUpgradeStatus == 'INITIATED' || basicInfo?.firmwareUpgradeStatus == 'INPROGRESS' || basicInfo?.firmwareUpgradeStatus == 'REBOOTING'">
+            <span style="background-color: #fff3cd">
+                <img src="assets/images/icons/forbidden_icon.png" height="16px" width="16px">
+                <span
+                    style="font-family: 'Helvetica Neue Regular' !important;font-size: smaller; color: #856404;">&nbsp;Firmware
+                    upgrade is in progress. Cannot perform management actions at the moment. </span>
+            </span>
+        </div>
+    </div>
+
+    <div *ngIf="detailsView == 'network'" class="tabs">
+        <div class="row">
+            <div class="col-lg-3">
+                <label class="title-label">
+                    IP Mode (IPv4 / IPv6 / Dual):
+                </label>
+            </div>
+            <div class="col-lg-2">
+                <span class="att-value">
+                    {{networkConfig?.ip_mode}}</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6" *ngIf="networkConfig?.ip_mode!=null && (networkConfig?.ip_mode == 'Dual Mode' || networkConfig?.ip_mode =='IPv4 Only')">
+                <label class="title-label">IPv4 Settings</label>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Connection Type (Static / DHCP):</label></div>
+                    <div class="col-md-3"><label class="att-value">{{networkConfig?.ipv4_connection_type | none}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Static IP:</label></div>
+                    <div class="col-md-3"><label class="att-value">{{networkConfig?.ipv4_static_ip | none}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">NetMask:</label></div>
+                    <div class="col-md-3"><label class="att-value">{{networkConfig?.ipv4_netmask | none}}</label></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Gateway:</label></div>
+                    <div class="col-md-3"><label class="att-value">{{networkConfig?.ipv4_gateway | none}}</label></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Primary DNS:</label></div>
+                    <div class="col-md-3"><label class="att-value">{{networkConfig?.ipv4_primary_dns | none}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Secondary DNS:</label></div>
+                    <div class="col-md-3"><label class="att-value">{{networkConfig?.ipv4_secondary_dns | none}}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" *ngIf="networkConfig?.ip_mode == 'Dual Mode' || networkConfig?.ip_mode =='IPv6 Only'">
+                <label class="title-label">IPv6 Settings</label>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Connection Type (Static / DHCP):</label></div>
+                    <div class="col-md-2"><label class="att-value">{{networkConfig?.ipv6_connection_type | none}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Static IP:</label></div>
+                    <div class="col-md-2"><label class="att-value">{{networkConfig?.ipv6_static_ip | none}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">NetMask:</label></div>
+                    <div class="col-md-2"><label class="att-value">{{networkConfig?.ipv6_netmask | none}}</label></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Gateway:</label></div>
+                    <div class="col-md-2"><label class="att-value">{{networkConfig?.ipv6_gateway | none}}</label></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Primary DNS:</label></div>
+                    <div class="col-md-2"><label class="att-value">{{networkConfig?.ipv6_primary_dns | none}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Secondary DNS:</label></div>
+                    <div class="col-md-2"><label class="att-value">{{networkConfig?.ipv6_secondary_dns | none}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Broadcast Echo (Enabled / Disabled:)</label></div>
+                    <div class="col-md-2"><label class="att-value">{{networkConfig?.ipv6_broadcast_echo | none}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><label class="att-title">Auto Config (Enabled / Disabled:)</label></div>
+                    <div class="col-md-2"><label class="att-value">{{networkConfig?.ipv6_autoconfig | none}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="form-group">
+        <button class="modal-scs-btn" (click)="hideModal()">
+            Close
+        </button>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="adminpanel">
+    <div class="row">
+        <div class="col-lg-9">
+            <label class="view-title">Admin Panel</label>&nbsp;&nbsp;&nbsp;
+            <button style="margin: 5px;" *ngFor="let tab of tabs"
+                [ngClass]="{'buttonActive':tab.active,'buttonInactive':!tab.active}"
+                (click)="changeView(tab.id); showSearchBar(tab.enableSearch);">{{tab.name}}</button>
+        </div>
+        <div *ngIf="searchBar" class="col-lg-3" style="margin-top: 17px;">
+            <input type="text" placeholder="Search" name="name" id="searchbar" class="search-bar"
+                [(ngModel)]="searchQuery">
+        </div>
+    </div>
+    <div style="width: 95%;margin-left:0px;margin-top:5px;">
+        <!-- <dashboard-tab *ngIf=" availableTabs[0].active">
+        </dashboard-tab> -->
+        <div *ngIf="!_roleIsUser">
+            <provisioning-tab *ngIf="availableTabs[0].active" [searchQuery]="searchQuery"></provisioning-tab>
+            <app-relay *ngIf="availableTabs[1].active" [searchQuery]="searchQuery"></app-relay>
+            <users-tab *ngIf="availableTabs[2].active" [searchQuery]="searchQuery"></users-tab>
+            <app-user-profile *ngIf="availableTabs[3]['active']" [searchQuery]="searchQuery"></app-user-profile>
+            <!-- <db-tab *ngIf="availableTabs[3].active"></db-tab> -->
+            <license-tab *ngIf="availableTabs[4].active" [searchQuery]="searchQuery"></license-tab>
+            <!-- <smtp-tab *ngIf="availableTabs[5].active"></smtp-tab> -->
+            <!-- <snmp-tab *ngIf="availableTabs[6].active"></snmp-tab> -->
+            <!-- <links-tab *ngIf="availableTabs[7].active"></links-tab> -->
+            <settings-tab *ngIf="availableTabs[5].active"></settings-tab>
+			<app-logs *ngIf="availableTabs[6].active"></app-logs>
+            <app-upload-file *ngIf="availableTabs[7].active" [searchQuery]="searchQuery"></app-upload-file>
+        </div>
+        <div *ngIf="_roleIsUser">
+            <license-tab *ngIf="availableTabs[4].active"></license-tab>
+            <settings-tab *ngIf="availableTabs[5].active"></settings-tab>
+        </div>
+    </div>
+</div>

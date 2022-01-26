@@ -1,0 +1,432 @@
+<div class="projects">
+    <div class="row" style="margin-top: 17px;">
+        <div class="col-lg-9">
+            <label class="view-title">Project Manager</label>&nbsp;&nbsp;
+            <button type="button" class="btn-new" (click)="createProject()">Create a New Project</button>
+        </div>
+        <div class="col-lg-3">
+            <input type="text" placeholder="Search" name="name" id="searchbar" class="search-bar"
+                [(ngModel)]="searchQuery">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2">
+            <label class="project-count">
+                Project Count:
+                {{ (projects | filter: {
+                name: searchQuery,
+                status: searchQuery,
+                totalPools: searchQuery,
+                scheduled: searchQuery,
+                lastRunDateAsString: searchQuery,
+                testPlanName: searchQuery
+                }).length }}
+                <i *ngIf="searchQuery" class="fa fa-filter" aria-hidden="true"></i>
+            </label>
+        </div>
+        <div class="col-4"></div>
+        <!-- from & to date -->
+        <div class="col-6" style="margin-top: 8px;">
+            <div class="row">
+                <div class="col-1" style="margin-left: 4%;"></div>
+                <div class="col-1">
+                    <label style="margin-top: 5px;" for="fromDate">From</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" #datepickerFull="bsDatepicker" bsDatepicker name="fromDate"
+                        placeholder="Start Date" (onHidden)="onChangeDate()" id="fromDate" [(ngModel)]="fromDate"
+                        [maxDate]="maxStartDate" [bsConfig]="bsConfig">
+                </div>
+                <div class="col-1">
+                    <label style="margin-top: 5px;" for="toDate">To</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" #datepickerFull="bsDatepicker" bsDatepicker name="toDate"
+                        placeholder="End Date" (onHidden)="onChangeDate()" id="toDate" [(ngModel)]="toDate"
+                        [maxDate]="maxEndDate" [minDate]="minEndDate" [bsConfig]="bsConfig">
+                </div>
+                <div class="col-1"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-2 col-project">
+            <label class="container select-all" style="margin-left: 25px;">
+                <input type="checkbox" [(ngModel)]="allProjectsChecked" data-md-icheck
+                    [disabled]="(projects | filter: {name: searchQuery, status: searchQuery}).length == 0 || projects.length==0"
+                    (change)="selectAllProjects(); toggleVisibility($event);" style="width: 50%; height: 100%;" />
+                <button *ngIf="markedProjects" class="action-btn">Unselect All</button>
+                <button *ngIf="!markedProjects" class="action-btn">Select All</button>
+                <span class="checkmark"></span>
+            </label>
+        </div>
+        <div class="col-8" style="margin-top: 8px;margin-left: -5%;">
+            <div class="row">
+                <div class="col-1">
+                    <button class="action-btn" [disabled]="getDeleteStatus()"
+                        (click)="deleteConfirmation(deleteAllModal)">Delete
+                    </button>
+                </div>
+                <div class="col-2">
+                    <button class="action-btn" [disabled]="getDeleteStatus() ||disabledDownloadButton"
+                        (click)="downloadLogs()">
+                        Download Logs
+                    </button>
+                </div>
+                <div class="col-3" style="margin-left: -3%;">
+                    <button class="action-btn" [disabled]="getDeleteStatus() ||disabledReportButton "
+                        (click)="goToDownloadReports(downloadReport)">
+                        Download Report
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-2" *ngIf="false">
+            <label class="project-count">
+                Project Count:
+                {{ (projects | filter: {name: searchQuery, status: searchQuery}).length }}
+                <i *ngIf="searchQuery" class="fa fa-filter" aria-hidden="true"></i>
+            </label>
+        </div>
+        <div class="col-2" style="margin-top: 8px;margin-left: 3%;" *ngIf="true">
+            <button [disabled]="fromDate ==undefined && toDate==undefined" style="float: right;" class="action-btn"
+                (click)="resetFilters()"> Reset Filters</button>
+        </div>
+    </div>
+    <!-- <div *ngIf="loadingProjects" style="text-align:center;">
+        <div class="row" style="text-align:center; margin-top:5.5%;">
+            <div class="col"></div>
+            <div class="col">
+                <h3>Loading Projects</h3>
+                <img class="loading" style="width: 50px;height:50px;" src="assets/images/loading.gif" alt="Loading">
+            </div>
+            <div class="col"></div>
+        </div>
+    </div> -->
+    <div class="row">
+        <div class="projects-list">
+            <data-table #projectsGrid [columnDefs]="projectColumns"
+                [data]="projects | filter: {name: searchQuery, status: searchQuery}" [selectedHeight]="tableHeight"
+                [colsTag]="'projects-view'" [dataflow]="isRequestCompleted">
+                <tableRow>
+                    <ng-template let-item="item" class="templateClass">
+                        <tr class="strip-table" style="width:100%" (click)="hideLastRun(item)">
+                            <td id="checkbox" [width]="getColumnWidth(projectColumns[0])"
+                                (click)="$event.stopPropagation();">
+                                <label class="container" style="margin-top:3px;">
+                                    <input type="checkbox" [(ngModel)]="item.selected" data-md-icheck
+                                        (change)="checkIfAllProjectsSelected(); toggleVisibility($event);">
+                                    <span class="checkmarkTCP"
+                                        [style.outline-color]="!item.selected ? '#BEBEBE' : '#203C66'"></span>
+                                </label>
+                            </td>
+                            <td style="max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;text-align: left; cursor: pointer;"
+                                [width]="getColumnWidth(projectColumns[1])" title="{{item.name}}">
+                                <img *ngIf="item.scheduled" src="assets/images/icons/scheduled.svg"
+                                    style="height: 25px; width:26px; margin-left:-5px;"> {{item.name}}
+                            </td>
+                            <td style="max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;text-align: left;"
+                                [width]="getColumnWidth(projectColumns[2])" title="{{item.testPlanName}}">
+                                {{item.testPlanName}}
+                            </td>
+                            <td class="regular-text" [width]="getColumnWidth(projectColumns[3])">
+                                <button class="action-btn"
+                                    (click)="$event.stopPropagation();showProjectPhonesLists(item);">
+                                    {{item.totalPools}}</button>
+                            </td>
+                            <td [width]="getColumnWidth(projectColumns[4])">
+                                <!-- <label class="regular-text">{{item.lastRunDate | date:'medium'}}</label> -->
+                                <label class="regular-text">{{item.lastRunDateString}}</label>
+                            </td>
+                            <td [width]="getColumnWidth(projectColumns[5])">
+                                <label class="regular-text">{{item.scheduled.toString()|titlecase}}</label>
+                            </td>
+                            <td [width]="getColumnWidth(projectColumns[6])">
+                                <div *ngIf="fromDate==undefined || toDate ==undefined">
+                                    <button (click)="$event.stopPropagation();scheduleProject(item)"
+                                        style="background:none; border: 0;">
+                                        <img src="assets/images/icons/scheduler.svg"
+                                            style="height: 25px; width:26px; margin-left:-5px;">
+                                    </button>
+                                    <img class="loading" *ngIf="isLoading(item.status.toLowerCase())"
+                                        src="assets/images/loading.gif" alt="Loading">
+                                    <button *ngIf="item.status.toLowerCase()==='idle'" [disabled]="item.disable"
+                                        (click)="$event.stopPropagation();openRunModal(template,validateResources, item)"
+                                        class="run-btn" id="runProjectBtn">
+                                        <img src="assets/images/icons/playButton.svg"
+                                            style="height: 25px; width:26px; margin-left:-6px;">
+                                    </button>
+                                    <button *ngIf="item.status.toLowerCase()==='running'"
+                                        (click)="$event.stopPropagation();stopProject(item)" class="stop-btn"
+                                        id="stopProjectBtn">Stop
+                                    </button>
+                                </div>
+                            </td>
+                            <td [width]="getColumnWidth(projectColumns[7])">
+                                <ng-template #popTemplate>
+                                    <div>
+                                        <ul style="list-style: none; margin: 0; padding: 0;">
+                                            <li *ngIf="!isInExecution(item.status)">
+                                                <button class="pop-option"
+                                                    (click)="$event.stopPropagation();editProject(item);">
+                                                    Edit
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button class="pop-option"
+                                                    (click)="$event.stopPropagation();viewLastRun(item);">
+                                                    View Last Run
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button class="pop-option"
+                                                    (click)="$event.stopPropagation();viewRunHistory(item.id);">
+                                                    View Run History
+                                                </button>
+                                            </li>
+                                            <!-- <li *ngIf="item.status.toLowerCase()!=='running'"><button class="pop-option" -->
+                                            <li *ngIf="!isInExecution(item.status)">
+                                                <button class="pop-option" [disabled]="!userEnabled('ROLE_USER')"
+                                                    (click)="$event.stopPropagation();deleteProject(item.id);">
+                                                    Delete
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </ng-template>
+                                <button type="button" class="btn-opt" #pop="bs-popover" [popover]="popTemplate"
+                                    *ngIf="fromDate==undefined && toDate ==undefined" placement="bottom"
+                                    [outsideClick]="true" (click)="$event.stopPropagation();"
+                                    (onShown)="closeOldPop(pop)" data-container="body">
+                                    <a style="font-size: 1.4rem; letter-spacing: -2px;color: #5F5F5F;">...</a>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="item.showLast && (fromDate==undefined || toDate==undefined)">
+                            <td colspan="10" style="padding: 0;">
+                                <last-run [run]="item.lastRun" [multiple]="false"></last-run>
+                            </td>
+                        </tr>
+                        <tr *ngIf="item.showLast && (fromDate!=undefined && toDate!=undefined)">
+                            <td colspan="10" style="padding: 0;">
+                                <last-run [instances]="item.runInstances" [multiple]="true"></last-run>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tableRow>
+            </data-table>
+        </div>
+    </div>
+</div>
+
+<ng-template #template>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title">Run Project</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="margin-left: 15px; margin-right: 15px;">
+        <div class="actions-list">
+            <table class="table strip-table">
+                <tbody>
+                    <tr>
+                        <td>
+                            <input id="runOnceField" type="radio" [value]="'once'" [checked]="runType === 'once'"
+                                [(ngModel)]="runType" (change)="clearQty()">&nbsp;
+                            <label class="run-opts" id="runOnceLabel">Run Once</label>
+                        </td>
+                        <td *ngIf="!hasDUTTestCase">
+                            <input type="radio" [value]="'times'" [(ngModel)]="runType">&nbsp;
+                            <label class="run-opts" id="runTimesLabel1">Run</label>&nbsp;
+                            <input type="number" step="1" min="1" id="runTimesField"
+                                onkeypress='return event.charCode >= 48 && event.charCode <= 57' class="run-times"
+                                [(ngModel)]="runsQty" [disabled]="runType!=='times'">&nbsp;
+                            <label class="run-opts" id="runTimesLabel2">time(s)</label>
+                        </td>
+                        <td>
+                            <input id="reRunFailureField" type="radio" [value]="'rerun'" [(ngModel)]="runType"
+                                (change)="clearQty()">&nbsp;
+                            <label class="run-opts" id="reRunFailureLabel">Re-Run Failures</label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer" style="margin-left: 15px; margin-right: 15px; margin-top: -10px;">
+        <div class="run-footer-options">
+            <button (click)="modalRef.hide()" class="cancel-btn" id="cancelProjectRunBtn">
+                Cancel
+            </button>
+            <button [disabled]="disabledButton" class="scs-btn" id="runProjectRunBtn" (click)="runProject()">
+                Run
+            </button>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Delete all confirmation -->
+<ng-template #deleteAllModal>
+    <div class="modal-header" draggableModal>
+        <label *ngIf="allProjectsChecked" class="modal-title pull-left">Delete All</label>
+        <label *ngIf="!allProjectsChecked" class="modal-title pull-left">Delete</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide();resetView();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-12">
+                <label *ngIf="allProjectsChecked" class="form-label regular-text">
+                    All Projects will be deleted. Do you wish to proceed?
+                </label>
+                <label *ngIf="!allProjectsChecked" class="form-label regular-text">
+                    Are you sure that you want to delete selected items?
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="mod-cancel-btn" (click)="modalRef.hide();resetView();">
+            No
+        </button>
+        <button class="mod-create-btn" (click)="deleteSelectedProjects()">
+            Yes
+        </button>
+    </div>
+</ng-template>
+
+<!-- run project -->
+<ng-template #validateResources>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title pull-left">Info</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide();resetView();">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="row">
+                <div class="col-12">
+                    <label class="regular-text">
+                        Could not run the project. Please update the project details and try again. Phone pools are not
+                        assigned for the following variables of the test plan.
+                    </label>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-lg-1"></div>
+                <!-- variable  -->
+                <div class="col-lg-3">
+                    <div style="max-height: 500px;">
+                        <data-table [columnDefs]="variableColumns" [data]="variablesList" [selectedHeight]="'30vh'"
+                            [virtualScroll]="false" [colsTag]="'list-variables'">
+                            <tableRow>
+                                <ng-template let-item="item" class="templateClass">
+                                    <tr class="strip-table" (click)="setCurrentList(item)"
+                                        [ngClass]="{'active' : item.active}">
+                                        <td class="regular-text"
+                                            style="cursor: pointer;max-width:50px;overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap;"
+                                            [width]="getColumnWidth(variableColumns[0])" title="{{item.tagName}}">
+                                            {{item.tagName |blank}}
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </tableRow>
+                        </data-table>
+                    </div>
+                </div>
+                <!-- test case name  -->
+                <div class="col-lg-4">
+                    <div style="max-height: 500px;">
+                        <data-table [columnDefs]="testCasesColumns" [data]="testCasesList" [selectedHeight]="'30vh'"
+                            [virtualScroll]="false" [colsTag]="'list-testCases'">
+                            <tableRow>
+                                <ng-template let-item="item" class="templateClass">
+                                    <tr class="strip-table">
+                                        <td class="regular-text"
+                                            style="max-width:50px;overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap;"
+                                            [width]="getColumnWidth(testCasesColumns[0])" title="{{item}}">
+                                            {{item |blank}}
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </tableRow>
+                        </data-table>
+                    </div>
+                </div>
+                <div class="col-lg-4"></div>
+            </div>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-cancel-btn" (click)="downloadValidateResourceList()">Download</button>
+        <button class="mod-create-btn" (click)="resetView();modalRef.hide();">Close</button>
+    </div>
+</ng-template>
+<!-- Download Report -->
+<ng-template #downloadReport>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title">Download report</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body" style="margin-left: 15px;">
+        <div class="actions-list">
+            <div class="row">
+                <div class="col-6">
+                    <input id="runOnceField" type="radio" [value]="'reportsByDate'" [(ngModel)]="reportByDate"
+                    (change)="clearRunReport()">&nbsp;
+                <label class="run-opts" id="runOnceLabel"> By Date</label>
+                </div>
+                <div class="col-6">
+                    <input id="reRunFailureField" type="radio" [value]="'runsReport'" 
+                    [(ngModel)]="runRangeReport" (change)="clearReportByDate()">&nbsp;
+                <label class="run-opts" id="reRunFailureLabel"> By Runs</label>
+                </div>
+            </div>
+            <div class="row" *ngIf="reportByDate">
+                <div class="col-2">
+                    <label style="margin-top: 5px;" for="fromDateReport">From</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" #datepickerFull="bsDatepicker" bsDatepicker name="fromDateReport"
+                        placeholder="Start Date" (onHidden)="onChangeDateForReport()" id="fromDateReport" required
+                        [(ngModel)]="fromDateReport" [minDate]="minReportStartDate" [maxDate]="maxReportStartDate" [bsConfig]="bsConfig">
+                </div>
+                <div class="col-1">
+                    <label style="margin-top: 5px;" for="toDateReport">To</label>
+                </div>
+                <div class="col-4">
+                    <input class="form-control" #datepickerFull="bsDatepicker" bsDatepicker name="toDateReport" required
+                        placeholder="End Date" (onHidden)="onChangeDateForReport()" id="toDateReport" [(ngModel)]="toDateReport"
+                        [maxDate]="maxReportEndDate" [minDate]="minReportEndDate" [bsConfig]="bsConfig">
+                </div>
+                <div class="col-1"></div>
+            </div>
+            <div class="row" *ngIf="runRangeReport">
+                <div class="col-10">
+                    <input id="projectReportByRuns" required class="regular-text form-control" type="number" step="1" placeholder="Number of Runs"
+                    min="1" [(ngModel)]="projectRunRangeReports" name="projectReportByRuns"  (click)="onChangeDisableButton()"
+                    #projectReportByRuns='ngModel'>
+                </div>
+                <div class="col-2"></div>
+                <label *ngIf="projectRunRangeReports!==null" class="report-count col"> Report will contains the last {{projectRunRangeReports}} runs</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer" style="margin-left: 15px; margin-right: 15px; margin-top: -10px;">
+        <div class="report-footer-options">
+            <button (click)="modalRef.hide()" class="cancel-btn" id="cancelProjectRunBtn">
+                Cancel
+            </button>
+            <button class="grpt-btn" id="runProjectRunBtn" (click)="downloadReports()" [disabled]="isDisabledReportButton ">
+                Download
+            </button>
+        </div>
+    </div>
+</ng-template>

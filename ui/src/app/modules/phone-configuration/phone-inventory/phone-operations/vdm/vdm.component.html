@@ -1,0 +1,405 @@
+<div class="vdm">
+    <div class="row" style="margin-top:8px;">
+        <div class="col-12">
+            <button class="btn-blue" style="font-size:15px;" (click)="backToPhones();">
+                <i class="fa fa-long-arrow-left" aria-hidden="true"></i>&nbsp;Back
+            </button>
+        </div>
+    </div>
+    <div class="row" style="margin-top:8px;">
+        <div class="col-12 actions-bar">
+            <label class="view-title"> Configure Device: {{hostname}} </label>
+        </div>
+    </div>
+    <div class="row">
+        <!-- lcd -->
+        <div class="col-6" style="height: fit-content;">
+            <div class="row">
+                <div class="col-7"> </div>
+                <div class="col-3">
+                    <button class="action-btn" (click)="onRefresh()">
+                        <i class="fa fa-refresh"></i>&nbsp;Refresh Display
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <img src="assets/images/vdm/{{model}}.png" class="mx-auto d-block img-fluid" />
+                    <!-- <h3>No Image Available</h3> -->
+                </div>
+                <div class="col-12" style="text-align: center !important;" [ngClass]="imageClass"
+                    *ngIf="!image && showRestartIcon">
+                    <img height="40" width="40" src="assets/images/restart.png" alt="restart-icon">
+                </div>
+                <div class="col-12" *ngIf="!image && !showRestartIcon">
+                    <img [src]="spinnerImage" class="d-flex justify-content-center align-items-center-center"
+                        [ngClass]="imageClass" />
+                </div>
+                <img *ngIf="image" [src]="image" [ngClass]="imageClass" (click)="openModal(template)"
+                    style="cursor: pointer;" />
+            </div>
+        </div>
+        <div class="col-6" *ngIf="!visualDeviceDetails" style="margin-top: 7%;">
+            <img [src]="spinnerImage" class="loading mx-auto d-block" />
+        </div>
+        <!-- config details -->
+        <div class="col-6" style="height: fit-content;" *ngIf="visualDeviceDetails">
+            <div class="row" style="margin-top: 1%;">
+                <div class="col-7"></div>
+                <div class="col-3"></div>
+            </div>
+            <!-- class="col-7" -->
+            <div class="row" style="margin-top: 7%;">
+                <!--                     [ngClass]="{'col-8': softkey?.isOpen || enhancedLineMode?.isOpen ,'col-7': !softkey?.isOpen|| !enhancedLineMode?.isOpen}" -->
+                <div class="col-11">
+                    <accordion [isAnimated]="true" [closeOthers]="true">
+                        <!-- date/time format -->
+                        <accordion-group heading="Date/Time Format" #dateTime>
+                            <img accordion-heading
+                                [ngClass]="{'up_arrow': dateTime?.isOpen ,'down_arrow': !dateTime?.isOpen}"
+                                src="assets/images/icons/dropdown_arrow_icon.svg">
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-8">
+                                    <select id="dateFormat" class="form-control filter-dropdown"
+                                        [(ngModel)]="dateFormate">
+                                        <!-- <option selected value="">
+                                            Select a Date format
+                                        </option> -->
+                                        <option selected value="day/month">day/month</option>
+                                        <option value="month/day">month/day</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-8">
+                                    <select id="timeFormat" class="form-control filter-dropdown"
+                                        [(ngModel)]="timeFormate">
+                                        <!-- <option selected value="">
+                                            Select a Time format
+                                        </option> -->
+                                        <option selected value="12hr">12hr</option>
+                                        <option value="24hr">24hr</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button style="float: right;" class="btn btn-sav" (click)="applyChangesDate()">
+                                        Apply Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </accordion-group>
+                        <!-- display name -->
+                        <accordion-group heading="Display Name" #displayname>
+                            <img accordion-heading
+                                [ngClass]="{'up_arrow': displayname?.isOpen ,'down_arrow': !displayname?.isOpen}"
+                                src="assets/images/icons/dropdown_arrow_icon.svg">
+                            <div class="row">
+                                <div class="col-8">
+                                    <input id="displayName" type="text" placeholder="Enter display name"
+                                        class="form-control" [(ngModel)]="displayName">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button style="float: right;" class="btn btn-sav"
+                                        (click)="saveConfigurations('displayName')">Apply
+                                        Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </accordion-group>
+                        <!-- dnd -->
+                        <accordion-group heading="Do Not Disturb" #doNotDisturb>
+                            <img accordion-heading class="down_arrow"
+                                [ngClass]="{'up_arrow': doNotDisturb?.isOpen ,'down_arrow': !doNotDisturb?.isOpen}"
+                                src="assets/images/icons/dropdown_arrow_icon.svg">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="radio" value="Yes" [(ngModel)]="dnd" class="form-check-input"
+                                                name="optradio">On
+                                        </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="radio" value="No" [(ngModel)]="dnd" class="form-check-input"
+                                                name="optradio">Off
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button style="float: right;" class="btn btn-sav"
+                                        (click)="saveConfigurations('dnd')">Apply
+                                        Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </accordion-group>
+                        <!-- enhanced lines -->
+                        <accordion-group [panelClass]="'custom-lines'" heading="Enhanced Line Mode" #enhancedLineMode>
+                            <img accordion-heading class="down_arrow"
+                                [ngClass]="{'up_arrow': enhancedLineMode?.isOpen ,'down_arrow': !enhancedLineMode?.isOpen}"
+                                src="assets/images/icons/dropdown_arrow_icon.svg">
+                            <form #myActionForm="ngForm">
+                                <div class="row">
+                                    <div class="row" style="margin-bottom: 5px;"
+                                        *ngFor="let line of enhancedLines;let i=index;">
+                                        <!-- index -->
+                                        <div class="col-2" style="text-align: center;padding: 0px;">
+                                            <h5>
+                                                <span class="badge badge-secondary">{{line['index']}}</span>
+                                            </h5>
+                                        </div>
+                                        <!-- name -->
+                                        <div class="col-3" style="padding: 0px 5px;">
+                                            <input type="text" name="name-{{i}}" placeholder="Name" class="form-control"
+                                                [disabled]="!enhancedLines[i]['editable']" id="name-{{i}}"
+                                                #name{{i}}="ngModel" [(ngModel)]="enhancedLines[i]['name']">
+                                        </div>
+                                        <!-- number -->
+                                        <!--  [ngClass]="{'setPadding': '(i>9)'}" -->
+                                        <div class="col-3" style="padding: 0px 5px;">
+                                            <input type="number" step="1" min="0" max="9" name="number-{{i}}"
+                                                id="number-{{i}}" #number{{i}}="ngModel"
+                                                onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+                                                [(ngModel)]="enhancedLines[i]['number']" placeholder="Number"
+                                                [disabled]="!enhancedLines[i]['editable']" class="form-control">
+                                        </div>
+                                        <!-- function type -->
+                                        <div class="col-3" *ngIf="!enhancedLines[i]['editable']"
+                                            style="padding: 0px 5px;" [ngStyle]="{'padding-left':(i>=9)?'2%':''}">
+                                            <input type="text" name="type-{{i}}" placeholder="Line Key"
+                                                [disabled]="!enhancedLines[i]['editable']" id="type-{{i}}"
+                                                #type{{i}}="ngModel" [(ngModel)]="enhancedLines[i]['functionType']"
+                                                class="form-control" style="width: 121px;margin-right: 82px">
+                                        </div>
+                                        <div class="col-3" *ngIf="enhancedLines[i]['editable']"
+                                            style="padding: 0px 5px;" [ngStyle]="{'padding-left':(i>=9)?'2%':''}">
+                                            <select name="type-{{i}}" id="type-{{i}}" #type{{i}}="ngModel"
+                                                [(ngModel)]="enhancedLines[i]['functionType']"
+                                                style="margin-right: 78px;width: 124px;height: 35px"
+                                                class="form-control">
+                                                <option selected value="">Select Line Key</option>
+                                                <option *ngFor="let line of entriesList" value="{{line.functionType}}">
+                                                    {{line.functionType}}</option>
+                                            </select>
+
+                                        </div>
+                                        <!-- <div class="col-3" [ngClass]="{'setPadding': (i<9)}">
+                                            <select forbiddenValue='' required name="type-{{i}}"
+                                                [disabled]="!enhancedLines[i]['editable']" id="type-{{i}}"
+                                                #type{{i}}="ngModel" [(ngModel)]="enhancedLines[i]['functionType']"
+                                                class="form-control">
+                                                <option selected value="">Select</option>
+                                                <option *ngFor="let line of entriesList" value="{{line.functionType}}">
+                                                    {{line.functionType}}</option>
+                                            </select>
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                            </form>
+                            <br>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button style="float: right;" class="btn btn-sav"
+                                        [disabled]="!myActionForm.form.dirty ||myActionForm.form.invalid"
+                                        (click)="saveConfigurations('enhancedLines')">Apply Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </accordion-group>
+                        <accordion-group heading="Softkey" #softkey [panelClass]="'custom'"
+                            (click)="softKeysSelectedRefresh(); softKeysNoSelectedRefresh();">
+                            <img accordion-heading class="down_arrow"
+                                [ngClass]="{'up_arrow': softkey?.isOpen ,'down_arrow': !softkey?.isOpen}"
+                                src="assets/images/icons/dropdown_arrow_icon.svg">
+                            <!-- style="overflow-y: scroll;height: 38vh;" -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <label style="font-size: 14px;" for="listName" class="form-label">
+                                                Select a call state to configure:
+                                            </label>
+                                        </div>
+                                        <div class="col-7">
+                                            <select class="form-control filter-dropdown"
+                                                (change)="selectCallState($event.target.value); softKeysSelectedRefresh(); softKeysNoSelectedRefresh();">
+                                                <option *ngFor="let callState of callStateList"
+                                                    value="{{callState.callState}}">
+                                                    {{callState.name}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6" style="margin-bottom: 3%">
+                                            <label class="chekboxcontainer select-all">
+                                                <input type="checkbox" [(ngModel)]="selectAllUnSelectedSoftKeys"
+                                                    [disabled]="softKeysNoSelected.length==0" data-md-icheck
+                                                    name="selectAllPermission"
+                                                    (change)="onSelectAll('unSelectedSoftKeys');"
+                                                    style="width: 30%; height: 100%;" />
+                                                <span class="checkmark" style="margin-top: 2%;"></span>
+                                            </label> &nbsp;
+                                            <span
+                                                style="font-weight: 500;margin-left: 18%;">{{selectAllUnSelectedSoftKeys? 'Unselect All' : 'Select All'}}</span>
+                                        </div>
+                                        <!-- <div class="col-5" style="margin-top: 1%;">
+                                            <span style="font-weight: 500;">{{selectAllUnSelectedSoftKeys? 'Unselect All' : 'Select All'}}</span>
+                                        </div> -->
+                                        <div class="col-6" style="margin-bottom: 3%">
+                                            <label class="chekboxcontainer select-all">
+                                                <input type="checkbox" [(ngModel)]="selectAllSelectedSoftKeys"
+                                                    data-md-icheck name="selectAllPermission"
+                                                    [disabled]="softKeysSelected.length==0"
+                                                    (change)="onSelectAll('selectedSoftKeys');"
+                                                    style="width: 30%; height: 100%;" />
+                                                <span class="checkmark" style="margin-top: 2%;"></span>
+                                            </label> &nbsp; <span
+                                                style="font-weight: 500;margin-left: 18%;">{{selectAllSelectedSoftKeys ? 'Unselect All' : 'Select All'}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <span style="font-size: 14px;">Available Softkeys</span>
+                                            <div
+                                                style="height: 20em; overflow-y: auto; border: 1px solid rgba(128, 128, 128, 0.5);">
+                                                <ul class="list-group">
+                                                    <li class="list-group-item"
+                                                        *ngFor="let softKey of softKeysNoSelected">
+                                                        <label class="chekboxcontainer key-name">
+                                                            <input type="checkbox"
+                                                                (change)="onChangeUnSelectedSoftKeys(softKey)"
+                                                                [(ngModel)]="softKey.selected">
+                                                            <span class="checkmark" style="margin-top: 4px;"
+                                                                [style.outline-color]="!softKey.selected ? '#BEBEBE' : '#203C66'">
+                                                            </span>
+                                                            &nbsp; <span>{{softKey.name}}</span>
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="col-1"
+                                            style="margin: auto; margin-left: 0; margin-right: 0;padding: 0px;">
+                                            <button class="btn btn-blue" style="cursor: context-menu;">
+                                                <i class="fa fa-caret-right" style="font-size: 38px;cursor: pointer;"
+                                                    (click)="saveSoftKeys()"></i>
+                                            </button>
+                                            <button class="btn btn-blue" style="cursor: context-menu;">
+                                                <i class="fa fa-caret-left" style="font-size: 38px;cursor: pointer;"
+                                                    (click)="unsaveSoftKeys()"></i>
+                                            </button>
+                                        </div>
+                                        <div class="col-5">
+                                            <span style="font-size: 14px;"> Selected Softkeys</span>
+                                            <span style="font-size: 10px;">(ordered by position)</span>
+                                            <div
+                                                style="height: 20em; overflow-y: auto; border: 1px solid rgba(128, 128, 128, 0.5);">
+                                                <ul class="list-group">
+                                                    <li class="list-group-item"
+                                                        *ngFor="let softKey of softKeysSelected">
+                                                        <label class="chekboxcontainer key-name">
+                                                            <input type="checkbox"
+                                                                (change)="onChangeSelectedSoftKeys(softKey)"
+                                                                [(ngModel)]="softKey.selected">
+                                                            <span style="margin-top: 4px;" class="checkmark"
+                                                                [style.outline-color]="!softKey.selected ? '#BEBEBE' : '#203C66'">
+                                                            </span>
+                                                            &nbsp; {{softKey.name}}
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="col-1"
+                                            style="margin: auto; margin-left: 0; margin-right: 0;padding: 0px;">
+                                            <button class="btn btn-blue" style="cursor: context-menu;">
+                                                <i class="fa fa-caret-up" style="font-size: 38px;cursor: pointer;"
+                                                    (click)="upSoftKey()"></i>
+                                            </button>
+                                            <button class="btn btn-blue" style="cursor: context-menu;">
+                                                <i class="fa fa-caret-down" style="font-size: 38px;cursor: pointer;"
+                                                    (click)="downSoftKey()"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button style="float: right;" class="btn btn-sav"
+                                        (click)="saveConfigurations('softKeys')">Apply
+                                        Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </accordion-group>
+                        <!-- speed dial -->
+                        <accordion-group [panelClass]="'custom'" heading="Speed Dial" #speedDial>
+                            <img accordion-heading class="down_arrow"
+                                [ngClass]="{'up_arrow': speedDial?.isOpen ,'down_arrow': !speedDial?.isOpen}"
+                                src="assets/images/icons/dropdown_arrow_icon.svg">
+                            <div class="row" style="margin-bottom: 10px;"
+                                *ngFor="let speedDial of speedDials; let i = index">
+                                <div class="col-2">
+                                    <div class="row">
+                                        <div class="col-12" style="text-align: center;">
+                                            <h4>
+                                                <span class="badge badge-secondary">{{speedDial.index}}</span>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-5">
+                                    <input type="text" placeholder="Enter speed dial name" class="form-control"
+                                        [(ngModel)]="speedDials[i].name">
+                                </div>
+                                <div class="col-5">
+                                    <input type="number" step="1" min="0" max="9"
+                                        onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+                                        placeholder="(  )" class="form-control" [(ngModel)]="speedDials[i].number">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-12">
+                                    <button style="float: right;" class="btn btn-sav"
+                                        (click)="saveConfigurations('speedDials')">Apply
+                                        Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </accordion-group>
+                    </accordion>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #template>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Device: {{hostname}}</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <img [src]="image" alt="spinner" *ngIf="image.includes('loading.gif')" style="display: block;margin: auto;">
+        <img *ngIf="image && !image.includes('loading.gif')" [src]="image" style="width: 100%;"
+            [ngStyle]="{'height':(this.model.toString().startsWith('88')?'53vh':'')}" />
+        <h3 *ngIf="!image">No Image Available</h3>
+    </div>
+</ng-template>

@@ -1,0 +1,35 @@
+<div class="modal-header" draggableModal>
+  <label class="modal-title">Edit Test Plan</label>
+  <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #planForm="ngForm">
+  <div class="modal-body">
+    <div class="mycontainer">
+      <div class="form-group">
+        <label for="testPlanName" class="form-label">Test Plan Name</label>
+        <input required minlength="1" pattern="^(?!.*\/).*$" type="text" name="testPlanName" placeholder="Enter Name"
+          class="form-control" [(ngModel)]="testPlan.name" #testPlanName="ngModel">
+        <div *ngIf="testPlanName.invalid && (testPlanName.dirty || testPlanName.touched)">
+          <div *ngIf="testPlanName?.errors?.pattern">
+            <label class="invalid-message">Test Plan Name doesn't accepts slash "/"</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="descriptionText" class="form-label">Description</label>
+        <textarea rows="2" minlength="5" placeholder="What does this test plan do?" name="descriptionText"
+          class="form-control" [(ngModel)]="testPlan.description"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="closeModal()" class="modal-cancel-btn">
+      Cancel
+    </button>
+    <button class="modal-scs-btn" (click)="editTestPlan()" [disabled]="!planForm.form.valid || !planForm.form.dirty">
+      Update
+    </button>
+  </div>
+</form>

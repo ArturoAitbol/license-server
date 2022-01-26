@@ -1,0 +1,106 @@
+<div class="row" style="background-color:#FFFFFF;">
+    <div class="col-12">
+        <div class="panel panel-default" style="background-color: white;">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="title">Roles&nbsp;</label>
+                        <button type="button" class="btn-new nav-item" (click)="createUserRole()">New Role</button>
+                    </div>
+                    <div class="col-8" style="text-align: right; ">
+                        <label class="count" style="margin-left: 98px;padding-right:2%;">
+                            Roles count:
+                            {{rolesData.length }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-12">
+                    <data-table [data]="rolesData" [selectedHeight]="setDataTableHeight" [columnDefs]="userProfileColumns" [dataflow]="isRequestCompleted" [colsTag]="'user-profile'">
+                        <tableRow>
+                            <ng-template let-item="item" class="templateClass">
+                                <tr class="strip-table">
+                                    <!--  name -->
+                                    <td class="regular-text" [width]="getColumnWidth(userProfileColumns[0])" style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{item.name | blank}} </td>
+                                    <!--  description -->
+                                    <td class="regular-text" [width]="getColumnWidth(userProfileColumns[1])" style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{item.description | blank}} </td>
+                                    <!--  count -->
+                                    <td class="regular-text" [width]="getColumnWidth(userProfileColumns[2])" (click)="viewRoleDetails(item)" style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;cursor: pointer;">
+                                        {{item.userCount | blank}} </td>
+                                    <td [width]="getColumnWidth(userProfileColumns[3])">
+                                        <ng-template #popTemplate>
+                                            <div>
+                                                <ul style="list-style: none; margin: 0; padding: 0;">
+                                                    <li>
+                                                        <button class="pop-option" (click)="$event.stopPropagation();editUserRole(item);pop.hide()">
+                                                            Edit
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="pop-option" (click)="$event.stopPropagation();openDeleteModal(deleteTemplate,item);pop.hide()">
+                                                            Delete
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </ng-template>
+                                        <button type="button" class="btn-opt" #pop="bs-popover" [popover]="popTemplate" placement="bottom" [outsideClick]="true" (click)="$event.stopPropagation();" (onShown)="closeOldPop(pop)" data-container="body">
+                                            <a style="font-size: 1.4rem; letter-spacing: -2px;color: #5F5F5F;">...</a>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </tableRow>
+                    </data-table>
+                    <br>
+                </div>
+            </div>
+
+        </div>
+        <!-- body -->
+    </div>
+</div>
+<ng-template #deleteTemplate>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title pull-left">Delete Role</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="deleteUserRole('no')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <label class="form-label">Unassign the roles from the users</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-cancel-btn" (click)="deleteUserRole('no')">
+            No
+        </button>
+        <button class="modal-scs-btn" (click)="deleteUserRole('yes')">
+            Yes
+        </button>
+    </div>
+</ng-template>
+<!-- List of Roles template -->
+<ng-template #roleTemplate>
+    <div class="modal-header">
+        <label class="modal-title pull-left">User Roles</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-6" *ngFor="let item of rolesDetails;let i=index;">
+                <label class="role-text">
+                    {{item}}
+                </label>
+            </div>
+        </div>
+    </div>
+</ng-template>

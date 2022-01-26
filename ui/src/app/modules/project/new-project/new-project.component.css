@@ -1,0 +1,43 @@
+.form-label {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    color: #414141;
+}
+
+.form-label-clear {
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #BEBEBE;
+}
+
+.form-control {
+    color: #414141;
+    height: auto !important; 
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-control::placeholder {
+    color: #BEBEBE;
+    font-style: italic;
+}
+
+.close {
+    margin-top: -12px;
+}
+
+.close:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.form-control.ng-select {
+    padding: 0;
+}
+
+.modal-title {
+    margin-left: 15px !important;
+}

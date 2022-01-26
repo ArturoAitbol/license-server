@@ -1,0 +1,13 @@
+.pull-left {
+    margin-left: 14px;
+}
+
+.close {
+  margin-right: -18px;
+  margin-top: -15px;
+}
+
+.close:focus {
+	outline: none;
+    box-shadow: none;
+}

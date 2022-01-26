@@ -1,0 +1,504 @@
+.vdm {
+    background: #f1f0f0;
+    height: 90%;
+    width: 95%;
+    margin-left: 32px;
+}
+
+.btn-blue {
+    background: none;
+    color: #7694B7;
+    border: 0;
+    font-size: 14px;
+    font-family: 'Helvetica Neue Regular';
+}
+
+.btn-blue:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.view-title {
+    font-family: "Helvetica Neue Regular";
+    font-style: normal;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.filter-dropdown {
+    /* background: #f7f7f7;
+    border-color: #c9c9c9; */
+    border-width: 1px;
+    /* font-family: "Helvetica Neue Regular"; */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    font-size: 14px;
+    /* color: #7b867b; */
+    /* height: max-content !important; */
+}
+
+.form-control::placeholder {
+    color: #bebebe;
+    font-style: italic;
+}
+
+.action-btn {
+    color: #203C66;
+    font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 12px;
+    background: none;
+    border: none;
+}
+
+.action-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.btn {
+    height: 35px;
+    font-size: 14px;
+    font-style: normal;
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.btn.btn-sav {
+    font-size: 13px;
+    color: #ffffff;
+    background: #7694B7;
+    opacity: 100%;
+}
+
+.list-group-item:nth-child(odd) {
+    background: rgba(255, 255, 255, 1) 0% 0% no-repeat padding-box !important;
+}
+
+.list-group-item:nth-child(even) {
+    background: rgba(118, 148, 183, 0.3) 0% 0% no-repeat padding-box !important;
+}
+
+.checkmark {
+    display: inherit;
+    height: 15px;
+    width: 15px;
+    background-color: white;
+    outline-style: solid;
+    outline-color: #203C66;
+    outline-width: 1.5pt;
+}
+
+.container:hover input~.checkmark {
+    background-color: #ccc;
+}
+
+.container input:checked~.checkmark {
+    background-color: white;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.container input:checked~.checkmark:after {
+    display: block;
+}
+
+.container .checkmark:after {
+    left: 20px;
+    top: 17px;
+    width: 5px;
+    height: 10px;
+    border: solid #203C66;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.container {
+    margin-bottom: 0%;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+#checkbox {
+    padding-right: 0%;
+}
+
+.list-group-item {
+    padding-left: 0%;
+}
+
+.loading {
+    height: 50px !important;
+    width: 50px !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.btn-mod {
+    font-family: 'Helvetica Neue Regular';
+    font-style: normal;
+    color: #FFFFFF;
+    background: #7694B7;
+    font-size: 14px;
+    opacity: 100%;
+    border: 0;
+    border-radius: 45px;
+    outline: none;
+}
+
+:host>>>.panel .card-header {
+    padding: 0 10px 0 0;
+}
+
+:host>>>.panel .card-header .btn-link {
+    color: #333f4d;
+    font-size: 14px
+}
+
+@media only screen and (min-width: 700px) and (max-width:1610px) {
+    ::ng-deep .panel.custom .panel-body {
+        height: 28vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    ::ng-deep .panel.custom-lines .panel-body {
+        height: 28vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+@media only screen and (min-width: 1611px) {
+    ::ng-deep .panel.custom .panel-body {
+        height: 40vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+.down_arrow {
+    float: right;
+    padding-top: 1.5%;
+    /* height: 20px; */
+    height: 18px;
+    margin-top: 5px;
+}
+
+.up_arrow {
+    float: right;
+    padding-bottom: 1.5%;
+    /* height: 20px; */
+    height: 18px;
+    margin-top: 5px;
+    transform: rotate(180deg);
+}
+
+.list-group-item {
+    padding: 0px !important;
+}
+
+.key-name {
+    font-size: 14px !important;
+}
+
+.parentImage {
+    position: relative;
+    height: 190px;
+    /*display: inline;*/
+}
+
+.childImage {
+    position: absolute;
+    bottom: 200px;
+    right: 170px;
+}
+
+.backBox {
+    background-color: darkgray;
+}
+
+.model6821 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10.5%;
+    margin-left: 53.5%;
+    width: 18%;
+    height: 11%;
+}
+
+.loading6821 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model6841 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 49.5%;
+    width: 25.5%;
+    height: 14.5%;
+}
+
+.loading6821 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model6851 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 49%;
+    width: 26%;
+    height: 15%;
+}
+
+.loading6851 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 11.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model7811 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 9%;
+    margin-left: 48.5%;
+    width: 28%;
+    height: 13.3%;
+}
+
+.loading7811 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 9.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model7821 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 49%;
+    width: 27.3%;
+    height: 13%;
+}
+
+.loading7821 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model7841 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 49%;
+    width: 27.3%;
+    height: 13%;
+}
+
+.loading7841 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model7861 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10.5%;
+    margin-left: 43%;
+    width: 26.3%;
+    height: 12%;
+}
+
+.loading7861 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10.5%;
+    margin-left: 51.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model8811 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 48.5%;
+    width: 28.5%;
+    height: 20.3%;
+}
+
+.loading8811 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 13.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model8841 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 48.5%;
+    width: 28.5%;
+    height: 20.3%;
+}
+
+.loading8841 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 13.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model8845 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 13%;
+    margin-left: 48.5%;
+    width: 28%;
+    height: 19.6%;
+}
+
+.loading8845 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 16.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model8851 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 48%;
+    width: 29%;
+    height: 21%;
+}
+
+.loading8851 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 13.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model8861 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 48%;
+    width: 29%;
+    height: 21%;
+}
+
+.loading8861 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 13.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.model8865 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 13%;
+    margin-left: 48.5%;
+    width: 28%;
+    height: 20%;
+}
+
+.loading8865 {
+    z-index: 4;
+    position: absolute;
+    margin-top: 16.5%;
+    margin-left: 57.5%;
+    width: 10%;
+    height: 11%;
+}
+
+.centerLoading {
+    z-index: 4;
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 48%;
+    width: 29%;
+    height: 21%;
+}
+
+.modal-dialog {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.modal-content {
+    height: auto;
+    min-height: 100%;
+    border-radius: 0;
+}

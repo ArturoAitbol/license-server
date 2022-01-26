@@ -1,0 +1,60 @@
+.modal-header {
+  background-color: #C2C3C6;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-family: 'Helvetica Neue Regular';
+  color: #000000;
+}
+
+.modal-body {
+  background: #FFFFFF;
+}
+
+.modal-scs-btn {
+  font-family: 'Helvetica Neue Regular';
+  font-style: normal;
+  color: #FFFFFF;
+  background: #7694B7;
+  font-size: 14px;
+  opacity: 100%;
+  border: 0;
+  border-radius: 45px;
+  height: 28px;
+  width: 123.07px;
+  outline: none;
+}
+
+.modal-scs-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.modal-cancel-btn {
+  font-family: 'Helvetica Neue Regular';
+  font-style: normal;
+  color: #7694B7;
+  font-size: 14px;
+  background: #FFFFFF;
+  opacity: 100%;
+  border: 0;
+  height: 28px;
+  width: 123.07px;
+  outline: none;
+}
+
+.modal-cancel-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.close {
+  margin-right: -18px;
+  margin-top: -15px;
+}
+
+.close:focus {
+  outline: none;
+  box-shadow: none;
+}

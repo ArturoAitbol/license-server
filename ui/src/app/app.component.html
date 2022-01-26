@@ -1,0 +1,57 @@
+<eula-conditions></eula-conditions>
+<div class="main-container" *ngIf="currentUser">
+    <app-header></app-header>
+    <div class="content">
+        <div class="col-lg-12" style="position:fixed; margin-left:-13px; z-index: 5;">
+            <ng-sidebar-container class="sidebar-container col-lg-12" style="position:fixed;">
+                <ng-sidebar #sideMenu [(opened)]="opened" [mode]="mode" [position]="position" [dock]="dock" [dockedSize]="dockedSize" [closeOnClickOutside]="closeOnClickOutside" [closeOnClickBackdrop]="closeOnClickBackdrop" [animate]="animation" [sidebarClass]="'sidebar-menu'"
+                    [ariaLabel]="'SideBar Menu'">
+                    <a aria-hidden="true" style="font-size:27px; padding:9px 20px 20px 10px; position:absolute; height:100%; width:220px; background-color: #0E2346 !important;color: #FFFFFF !important;cursor: pointer;">
+                        <i (click)="toggleOpened()" style="cursor: pointer; margin-top: 0;" [ngClass]="{'iconSidebarMenu': !opened, 'iconSidebarMenu_Blue': opened}">
+                        </i>
+                        <!--  (click)="toggleOpened()" -->
+                        <a closeSidebar class="collapse-item" *ngIf="sideMenu.opened" style="font-family:Arial, Helvetica, sans-serif; font-size:17px;cursor: pointer; margin-top: -1px;">&nbsp;&nbsp;&nbsp;Collapse
+                            Menu
+                        </a>
+                        <i (click)="toggleOpened()" style="cursor: pointer; margin-top: 10px; margin-right: 10px; float: right;" [ngClass]="{'iconSidebarMenu': !opened, 'iconSidebarMenu_Blue': opened}" *ngIf="!sideMenu.opened">
+                        </i>
+                    </a>
+                    <br />
+                    <br />
+                    <div id="menu-options-names" *ngFor="let option of optionsMenu" [routerLink]="[option.redirectsTo]" style="margin-top:28px; position:relative;" class="{{option.name}}">
+                        <div class="row row-collapse-menu" style="margin-left:0; width:220px; padding: 3px 0px;" [ngStyle]="{background:currentPageColor(option)?'white':'#0E2346'}">
+                            <div class="col-lg-10" style="cursor:pointer; padding: 0;">
+                                <img *ngIf="currentPageColor(option) && sideMenu.opened" style="cursor: pointer;height:31px;width:30px; margin-left: 5px;" class="img-fluid" src="./assets/images/icons/{{option.imgActive}}" [routerLink]="[option.redirectsTo]" />
+                                <img *ngIf="!currentPageColor(option) && sideMenu.opened" style="cursor: pointer;height:31px;width:30px; margin-left: 5px;" class="img-fluid" src="./assets/images/icons/{{option.imgLocation}}" [routerLink]="[option.redirectsTo]" />
+
+                                <a [ngStyle]="{color: currentPageColor(option)?'#0E2346':'white'}" *ngIf="sideMenu.opened">
+                                    &nbsp; {{ option.name }}
+                                </a>
+
+                                <img *ngIf="currentPageColor(option) && !sideMenu.opened" style="cursor: pointer;height:31px;width:30px; margin-left: 5px; float: right;     margin-right: -11px;" class="img-fluid" src="./assets/images/icons/{{option.imgActive}}" [routerLink]="[option.redirectsTo]"
+                                />
+                                <img *ngIf="!currentPageColor(option) && !sideMenu.opened" style="cursor: pointer;height:31px;width:30px; margin-left: 5px;float: right;     margin-right: -11px;" class="img-fluid" src="./assets/images/icons/{{option.imgLocation}}" [routerLink]="[option.redirectsTo]"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </ng-sidebar>
+                <div ng-sidebar-content>
+                    <section class="section-content">
+                        <ng-container *ngTemplateOutlet="template"></ng-container>
+                    </section>
+                </div>
+            </ng-sidebar-container>
+        </div>
+    </div>
+    <app-footer></app-footer>
+</div>
+
+<div class="login-container" *ngIf="!currentUser">
+    <ng-container *ngTemplateOutlet="template"></ng-container>
+</div>
+
+<ng-template #template>
+    <router-outlet>
+    </router-outlet>
+</ng-template>

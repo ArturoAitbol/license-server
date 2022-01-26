@@ -1,0 +1,246 @@
+<div class="settings">
+    <div class="row">
+        <div *ngIf="_enableBranding" class="col-6">
+            <div class="row">
+                <div class="col-12">
+                    <div class="panel panel-default col-12" style="height: 155px; background-color: white;">
+                        <div class="title">
+                            Branding
+                            <hr>
+                        </div>
+                        <div class="body">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label style="padding-left:13px;" for="loadLogo" class="form-label">
+                                        <strong> Update Image </strong>
+                                        <!--                                        <br>-->
+                                        (only .png files supported)</label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-5 p-0 ">
+                                        <input #logoInput id="logoInput" type="file" name="logoInput" class="form-control"
+                                               (click)="canOpenFileDialog($event)" accept=".png, image/png"
+                                               (change)="setLogo($event.target.files)">
+                                    </div>
+                                    <div class="col-md-7 flex-container p-0">
+                                        <div  *ngIf="currentLogo !== null">
+                                            <button class="form-control" (click)="clearLogo()"><i
+                                                    class="fa fa-times"></i>Delete
+                                            </button>
+                                        </div>
+                                        <div *ngIf="currentLogo !== null">
+                                            <button class="form-control" (click)="uploadLogo()"><i
+                                                    class="fa fa-upload"></i>&nbsp;Upload
+                                            </button>
+                                        </div>
+                                        <div >
+                                            <button class="form-control" (click)="onResetLogo()">
+                                                <i class="fa fa-undo"></i>&nbsp;Reset
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="panel panel-default col-12" style="height: 80px; background-color: white;">
+                        <div class="body">
+                            <div class="form-group">
+                                <div class="row">
+                                    <label style="padding-left:13px;" for="iconInput" class="form-label">
+                                        <strong>Update Icon </strong>
+                                        (only .ico files supported)</label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-5 p-0">
+                                        <input #iconInput id="iconInput" name="iconInput" type="file" class="form-control"
+                                               accept=".ico, image/x-icon, image/vnd.microsoft.icon"
+                                               (click)="canOpenFileDialog($event)"
+                                               (change)="setIcon($event.target.files)">
+                                    </div>
+                                    <div class="col-md-7 flex-container p-0">
+                                        <div *ngIf="currentIcon !== null">
+                                            <button class="form-control" (click)="clearIcon()"><i
+                                                    class="fa fa-times"></i>Delete
+                                            </button>
+                                        </div>
+                                        <div *ngIf="currentIcon !== null">
+                                            <button class="form-control" (click)="uploadIcon()"><i
+                                                    class="fa fa-upload"></i>&nbsp;Upload
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button class="form-control" (click)="onResetIcon()">
+                                                <i class="fa fa-undo"></i>&nbsp;Reset
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-default col-12">
+                    <!-- title -->
+                    <div class="container" style="background-color: white; height: 100%;">
+                        <div class="title">
+                            Date - Time Format
+                            <hr>
+                        </div>
+                        <!-- body -->
+                        <div class="body">
+                            <div class="form-group  row">
+                                <label class="col-sm-3 col-form-label"> Date Time Format</label>
+                                <div class="col-sm-4 col-form-label">
+                                    <select forbiddenValue="" class="form-control" id="dateFormat" name="dateFormat"
+                                            #dateFormat="ngModel" [(ngModel)]="selectedDateFormat"
+                                            style="color:black;border: 1px solid #ced4da;border-radius: .25rem;">
+                                        <option selected value="">Select Format</option>
+                                        <option *ngFor="let item of dateTimeFormatList" value="{{item}}">{{item}}
+                                        </option>
+                                    </select>
+                                </div>
+                                <!-- set -->
+                                <div class="col-sm-5" style="margin-top: 2%;text-align: right;">
+                                    <button class="create-btn" (click)="setDateTimeList()"
+                                            [disabled]="selectedTimeZone=='' && selectedDateFormat==''">Set
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-sm-3 col-form-label">Time Zone</label>
+                                <div class="col-sm-4 col-form-label">
+                                    <select forbiddenValue="" class="form-control" id="timeZone" name="timeZone"
+                                            #timeZone="ngModel" [(ngModel)]="selectedTimeZone"
+                                            style="color:black;border: 1px solid #ced4da;border-radius: .25rem;">
+                                        <option selected value="">Select Zone</option>
+                                        <option *ngFor="let item of timeZoneList" [value]="item.name">{{item.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- email configuration -->
+        <div *ngIf="_enableEmailNotification" class="col-6">
+            <div class="panel panel-default col-12" style="background-color: white;height: 100%">
+                <!-- title -->
+                <div class="title">
+                    Email Configuration
+                    <hr>
+                </div>
+                <!-- body -->
+                <div class="body email-body">
+                    <form (keydown.enter)="$event.preventDefault()" #emailConfig="ngForm">
+                        <!-- Enable configuration -->
+                        <div class="row">
+                            <label for="enabled" class="col-sm-3 col-form-label">Enabled</label>
+                            <input style="margin-top: 1.7%; " type="checkbox" id="enabled"
+                                   [(ngModel)]="emailConfigurationObj.mailNotificEnabled" name="enabledBox"/>
+                        </div>
+                        <br>
+                        <!-- host -->
+                        <div *ngIf="emailConfigurationObj.mailNotificEnabled ; else mandatory">
+                            <div class="row" style="margin-top:-2.5%;">
+                                <label for="host" class="col-sm-3 col-form-label">Host</label>
+                                <input required type="text" id="host" class="form-control col-sm-8"
+                                       [ngStyle]="{'border-left':(emailConfigurationObj.mailNotificEnabled && emailConfigurationObj.host == '')?'5px solid #BC2426':' 1px grey solid'}"
+                                       style="border: 1px grey solid" [(ngModel)]="emailConfigurationObj.host"
+                                       #host="ngModel" name="host" placeholder="Enter Host">
+                            </div>
+                            <br>
+                            <!-- port -->
+                            <div class="row">
+                                <label for="port" class="col-sm-3 col-form-label">Port</label>
+                                <input required type="text" id="port" class="form-control col-sm-8"
+                                       [ngStyle]="{'border-left':(emailConfigurationObj.mailNotificEnabled && emailConfigurationObj.port == '')?'5px solid #BC2426':' 1px grey solid'}"
+                                       style="border: 1px grey solid" [(ngModel)]="emailConfigurationObj.port"
+                                       #port="ngModel" name="port" placeholder="Enter Port">
+                            </div>
+                            <br>
+                            <!-- recipient -->
+                            <div class="row">
+                                <label for="recipient" class="col-sm-3 col-form-label">Recipients</label>
+                                <textarea required type="text" id="recipient" class="form-control col-sm-8" title="Multiple recipients can be added using comma separated list"
+                                          [ngStyle]="{'border-left':(emailConfigurationObj.mailNotificEnabled && emailConfigurationObj.receipients == '')?'5px solid #BC2426':' 1px grey solid'}"
+                                          style="border: 1px grey solid" [(ngModel)]="emailConfigurationObj.receipients"
+                                          #recipient="ngModel" name="recipient"
+                                          placeholder="Enter recipient"></textarea>
+                            </div>
+                        </div>
+                        <ng-template #mandatory>
+                            <div class="row" style="margin-top:-2.5%;">
+                                <label for="host" class="col-sm-3 col-form-label">Host</label>
+                                <input type="text" id="host" class="form-control col-sm-8"
+                                       style="border: 1px grey solid" [(ngModel)]="emailConfigurationObj.host"
+                                       #host="ngModel" name="host" placeholder="Enter Host">
+                            </div>
+                            <br>
+                            <!-- port -->
+                            <div class="row">
+                                <label for="port" class="col-sm-3 col-form-label">Port</label>
+                                <input type="text" id="port" class="form-control col-sm-8"
+                                       style="border: 1px grey solid" [(ngModel)]="emailConfigurationObj.port"
+                                       #port="ngModel" name="port" placeholder="Enter Port">
+                            </div>
+                            <br>
+                            <!-- recipient -->
+                            <div class="row">
+                                <label for="recipient" class="col-sm-3 col-form-label">Recipients</label>
+                                <textarea type="text" id="recipient" class="form-control col-sm-8" title="Multiple recipients can be added using comma separated list"
+                                          style="border: 1px grey solid" [(ngModel)]="emailConfigurationObj.receipients"
+                                          #recipient="ngModel" name="recipient"
+                                          placeholder="Enter recipient"></textarea>
+                            </div>
+                        </ng-template>
+                        <br>
+                        <!-- authentication -->
+                        <div class="row" style="margin-top:-2.5%">
+                            <label for="authentication" class="col-sm-3  col-form-label">Authentication</label>
+                            <input style="margin-top: 1.7%; " class="input-checkbox" type="checkbox" id="authentication"
+                                   [(ngModel)]="emailConfigurationObj.authentication" name="auth"
+                                   (change)="onChangeAuthentication($event.target.checked)"/>
+                        </div>
+                        <br>
+                        <!-- userName -->
+                        <div class="row" *ngIf="emailConfigurationObj.authentication" style="margin-top:-2.5%">
+                            <label for="userName" class="col-sm-3  col-form-label">User Name</label>
+                            <input type="text" id="userName" class="form-control col-sm-8" required
+                                   [ngStyle]="{'border-left':(!emailConfigurationObj.userName )?'5px solid #BC2426':' 1px grey solid'}"
+                                   style="border: 1px grey solid" [(ngModel)]="emailConfigurationObj.userName"
+                                   #userName="ngModel" name="userName" placeholder="Enter User Name">
+                        </div>
+                        <br *ngIf="emailConfigurationObj.authentication">
+                        <!-- password -->
+                        <div class="row" *ngIf="emailConfigurationObj.authentication">
+                            <label for="password" class="col-sm-3 col-form-label">Password</label>
+                            <input type="password" id="password" class="form-control col-sm-8" required
+                                   [ngStyle]="{'border-left':(!emailConfigurationObj.password)?'5px solid #BC2426':' 1px grey solid'}"
+                                   style="border: 1px grey solid;" [(ngModel)]="emailConfigurationObj.password"
+                                   #password="ngModel" name="password" placeholder="Enter Password">
+                        </div>
+                        <br *ngIf="emailConfigurationObj.authentication">
+                        <!-- save -->
+                        <div class="modal-footer">
+                            <button class="create-btn" (click)="onSave()"
+                                    [disabled]="emailConfig.form.invalid || !emailConfig.form.dirty">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

@@ -1,0 +1,70 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Find Key</label>
+    <button type="button" class="close" aria-label="Close" (click)="cancel()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="form-group row">
+                <label for="phoneField" class="col-sm-1 col-form-label phone-label">Phone</label>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedPhone" id="phoneField"
+                        name="phoneField" #phoneField="ngModel">
+                        <option disabled selected value="">Select Phone</option>
+                        <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}</option>
+                    </select>
+                </div>
+                <label for="labelField" class="col-sm-1 col-form-label phone-label">Label</label>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedLabel" id="labelField"
+                        name="labelField" #labelField="ngModel">
+                        <option disabled selected value="">Select Label</option>
+                        <option *ngFor="let labelName of labels" value="{{labelName}}">{{labelName}}</option>
+                    </select>
+                </div>
+                <label for="displayNameField" class="col-sm-1 col-form-label phone-label">Display Name</label>
+                <div class="col-sm-3">
+                    <input required type="text" name="displayNameField" id="displayNameField"
+                        placeholder="Enter Display Name" class="form-control" [(ngModel)]="displayName"
+                        #displayNameField="ngModel">
+                </div>
+            </div>
+            <hr class="separator">
+            <div class="form-group row">
+                <label for="variableNameField" class="col-sm-1 col-form-label phone-label">Variable Name</label>
+                <div class="col-sm-3">
+                    <input required type="text" name="variableNameField" id="variableNameField"
+                        placeholder="Enter Variable Name" class="form-control" [(ngModel)]="variableName"
+                        #variableNameField="ngModel">
+                </div>
+                  <label for="failure" class="col-sm-3 col-form-label phone-label">Continue OnFailure</label>
+                  <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+                    <label class="phone-label">
+                      <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure" #failure="ngModel">&nbsp;
+                      <span>True</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                      <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure" #failure="ngModel">
+                      &nbsp;
+                      <span>False</span>
+                    </label>
+                  </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="cancel()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+            <span *ngIf="!actionToEdit">
+                Insert Action
+            </span>
+            <span *ngIf="actionToEdit">
+                Update Action
+            </span>
+        </button>
+    </div>
+</form>

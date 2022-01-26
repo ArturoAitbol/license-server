@@ -1,0 +1,101 @@
+.filter-dropdown {
+    margin-top: 37px;
+    margin-right: 20px;
+    float: right;
+    background: #F7F7F7;
+    height: 37px;
+    border-color: #C9C9C9;
+    border-width: 1px;
+    font-family: "Helvetica Neue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, sans-serif;
+    font-style: normal;
+    font-size: 15px;
+    color: #7B867B;
+}
+
+.text-label {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    color: #414141;
+}
+
+.desc-label {
+    font-family: 'Helvetica Neue Regular';
+    font-style: italic;
+    font-size: 14px;
+    color: #414141;
+}
+
+.phone-label {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    color: #414141;
+}
+
+.form-label {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    color: #414141;
+}
+
+.lines-label {
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    color: #414141;
+}
+
+.form-label-clear {
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #BEBEBE;
+}
+
+.form-control {
+    color: #414141;
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-check-input {
+    top: 6px;
+}
+
+.form-control::placeholder {
+    color: #BEBEBE;
+    font-style: italic;
+    font-size: 12px;
+}
+
+.mycontainer {
+    margin-left: -15px !important;
+    margin-right: 25px;
+}
+
+.close {
+    margin-right: -18px;
+    margin-top: -15px;
+}
+
+.close:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.separator {
+    color: #BEBEBE;
+}
+
+.plus-btn {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: thin solid #EAEAEA;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 45px;
+    outline: none;
+}

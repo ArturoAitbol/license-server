@@ -1,0 +1,104 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Settings</label>
+    <button type="button" class="close" aria-label="Close" (click)="cancel()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="form-group row">
+                <label for="Phone" class="col-sm-1 col-form-label phone-label">Phone</label>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedPhone" id="phone"
+                        name="phone" #phone="ngModel">
+                        <option disabled selected value="">Select Phone</option>
+                        <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}
+                        </option>
+                    </select>
+                </div>
+                <label for="configLabel" class="col-sm-1 col-form-label phone-label"
+                    [ngClass]="{'col-sm-2': selectedConfig==='Simultaneous Ring','col-sm-1':selectedConfig!=='Simultaneous Ring'}">Config</label>
+                <div class="col-sm-4">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedConfig"
+                        id="configLabel" name="configLabel" #configLabel="ngModel">
+                        <option disabled selected value="">Select Config</option>
+                        <option *ngFor="let configName of configList" value="{{configName.label}}">{{configName.label}}
+                        </option>
+                    </select>
+                </div>
+                <label *ngIf="selectedConfig==='Answer calls with my video on'"
+                    class="col-sm-1 col-form-label phone-label"> State </label>
+                <div class="col-sm-2" *ngIf="selectedConfig==='Answer calls with my video on'" style="padding: 0px;">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedState" id="stateField"
+                        name="stateField" #stateField="ngModel">
+                        <option disabled selected value="">Select State</option>
+                        <option value="Enable">Enable</option>
+                        <option value="Disable">Disable</option>
+                    </select>
+                </div>
+            </div>
+            <hr class="separator" *ngIf="selectedConfig==='Simultaneous Ring'">
+            <div class="form-group row" *ngIf="selectedConfig==='Simultaneous Ring'">
+                <label class="col-sm-1 col-form-label phone-label"> State </label>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedState" id="stateField"
+                        (change)="onChangeSimultaneousState($event.target.value)" name="stateField" #stateField="ngModel">
+                        <option disabled selected value="">Select State</option>
+                        <option value="Enable">Enable</option>
+                        <option value="Disable">Disable</option>
+                    </select>
+                </div>
+                <label *ngIf="selectedState==='Enable'" class="col-sm-2 col-form-label phone-label">Set Number</label>
+                <div class="col-sm-4" *ngIf="selectedState==='Enable'">
+                    <input title="Set Number allows only 0-9 #,*,+" required type="text" name="setNumberFField"
+                        id="setNumberField" placeholder="Enter Number" class="form-control" [(ngModel)]="number"
+                        #setNumberField="ngModel" onkeypress='return event.charCode >= 48 && event.charCode <= 57 ||
+                          event.charCode==35 || event.charCode==42 || event.charCode==43'>
+                </div>
+            </div>
+            <hr class="separator" *ngIf="selectedState==='Enable'">
+            <div class="form-group row"  *ngIf="selectedState==='Enable'">
+                <label class="col-sm-4 col-form-label phone-label"> Answer confirmation required </label>
+                <div class="col-sm-2">
+                    <input required forbiddenValue="" class="form-control" [(ngModel)]="ansConfirmState" id="ansConfirmState" disabled
+                        (change)="onChangeAnsConfirmState($event.target.value)" name="ansConfirmState" value="Disable">
+                </div>
+            </div>
+            <hr class="separator">
+            <div class="form-group row">
+              <label for="failure" class="col-sm-3 col-form-label phone-label">Continue OnFailure</label>
+              <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+                <label class="phone-label">
+                  <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure" #failure="ngModel">&nbsp;
+                  <span>True</span>
+                </label>&nbsp;
+                <label class="phone-label">
+                  <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure" #failure="ngModel">
+                  &nbsp;
+                  <span>False</span>
+                </label>
+              </div>
+              <div class="col-sm-2">
+                <label for="forceActionField" class=" phone-label form-label" style="padding-top: 6px;">
+                  <input id="forceActionField" name="forceActionField" #forceActionField type="checkbox"
+                    [(ngModel)]="forceAction">&nbsp;Force Action
+                </label>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="cancel()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+            <span *ngIf="!actionToEdit">
+                Insert Action
+            </span>
+            <span *ngIf="actionToEdit">
+                Update Action
+            </span>
+        </button>
+    </div>
+</form>

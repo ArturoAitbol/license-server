@@ -1,0 +1,154 @@
+<div class="modal-header" draggableModal>
+  <label class="modal-title">Conference Start</label>
+  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+  <div class="modal-body">
+    <div class="mycontainer">
+      <div class="form-group row">
+        <!-- conversation -->
+        <label for="conversation" class="col-sm-2 col-form-label phone-label">Conversation ID</label>
+        <div class="col-sm-2">
+          <select required forbiddenValue="" [title]="selectedConversation" (change)="onChangeConversations()" class="form-control"
+            [(ngModel)]="selectedConversation" id="conversation" name="conversation" #deviceLine="ngModel">
+            <option disabled selected value="">Select</option>
+            <option *ngFor="let conversation of conversations" value="{{conversation}}">{{conversation}}
+            </option>
+          </select>
+        </div>
+        <!-- intermediate conversation -->
+        <label for="intermediateConv" class="col-sm-2 col-form-label phone-label" style="margin-top: -10px;" >Intermediate Conversation</label>
+        <div class="col-sm-2">
+          <input type="text" required name="intermediateConv" forbiddenValue="" class="form-control" [title]="intermediateConversation"
+            [(ngModel)]="intermediateConversation" #intermediateConv="ngModel">
+        </div>
+        <!-- dialing type -->
+        <label *ngIf="fromResourceVendor==='polycom'" class="col-sm-1 col-form-label phone-label" for="enblocField" style="margin-top:-10px;">
+          Dialing Type</label>
+        <div class="col-sm-3" *ngIf="fromResourceVendor==='polycom'">
+          <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedDialingType"
+            id="dialingTypeField" name="dialingTypeField" #dialingTypeField="ngModel">
+            <option value="Enbloc" title="Call will be placed using enbloc dialing">Enbloc</option>
+            <option value="Digit-by-digit" title="Call will be placed by sending each dialed digit one by one">
+              Digit-by-digit
+            </option>
+          </select>
+        </div>
+
+      </div>
+      <hr class="separator">
+      <div class="form-group row">
+        <label for="from" class="col-sm-1 col-form-label phone-label">From</label>
+        <div class="col-sm-3">
+          <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedFrom"
+            (change)="onSelectFrom($event.target.value)" id="from" name="from" #from="ngModel">
+            <option disabled selected value="">Select Phone</option>
+            <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}</option>
+          </select>
+        </div>
+        <label for="fromLine" class="col-sm-1 col-form-label phone-label">Line</label>
+        <div class="col-sm-3">
+          <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedFromLine"
+            (change)="onSelectFromLine($event.target.value)" id="fromLine" name="fromLine" #fromLine="ngModel">
+            <option disabled selected value="">Select Line</option>
+            <option *ngFor="let line of lines" value="{{line}}">{{line}}</option>
+          </select>
+        </div>
+        <label for="viaField" class="col-sm-1 col-form-label phone-label">Via</label>
+        <div class="col-sm-3">
+          <select forbiddenValue="" required class="form-control" [(ngModel)]="callVia" id="viaField" name="viaField"
+            #viaField="ngModel">
+            <option disabled selected value="">Select Via</option>
+            <option *ngFor="let via of vias" value="{{via}}">{{via}}</option>
+          </select>
+        </div>
+      </div>
+      <hr class="separator">
+      <div class="form-group row" *ngIf="callVia.toLowerCase() === 'digits'">
+        <label for="digitsField" class="col-sm-1 col-form-label phone-label">Digits</label>
+        <div class="col-sm-3">
+          <input type="text" required name="digitsField" placeholder="Enter digits" class="form-control"
+            [(ngModel)]="digits" pattern="^[\+\d]+$" #digitsField="ngModel">
+        </div>
+      </div>
+      <div class="form-group row" *ngIf="callVia.toLowerCase() !== 'digits'">
+        <label for="to" class="col-sm-1 col-form-label phone-label">To </label>
+        <div class="col-sm-3">
+          <select required forbiddenValue="" class=" form-control" [(ngModel)]="selectedTo"
+            (change)="onSelectTo($event.target.value)" id="to" name="to" #to="ngModel">
+            <option disabled selected value="">Select Phone</option>
+            <option *ngFor="let resource of allResources" value="{{resource.name}}">{{resource.name}}</option>
+          </select>
+        </div>
+        <label for="toLine" class="col-sm-1 col-form-label phone-label">Line</label>
+        <div class="col-sm-3">
+          <select required forbiddenValue="" class=" form-control" [(ngModel)]="selectedToLine"
+            (change)="onSelectToLine($event.target.value)" id="toLine" name="toLine" #toLine="ngModel">
+            <option disabled selected value="">Select Line</option>
+            <option *ngFor="let line of lines" value="{{line}}">{{line}}</option>
+          </select>
+        </div>
+      </div>
+      <hr class="separator">
+      <div class="form-group row">
+        <label for="prefixType" title="Prefix allows only 0-9 #,*,+"
+          class="col-sm-1 col-form-label phone-label">Prefix</label>
+        <div class="col-sm-3">
+          <input type="text" title="Prefix allows only 0-9 #,*,+" name="prefixType" id="prefixType"
+            #prefixType="ngModel" [(ngModel)]="prefix" class="form-control" pattern="^[0-9#*+]*$">
+          <div *ngIf="prefixType.invalid && (prefixType.dirty || prefixType.touched)">
+            <div *ngIf="prefixType?.errors?.pattern">
+              <label class="invalid-message">Prefix allows only 0-9 #,*,+</label>
+            </div>
+          </div>
+        </div>
+        <label for="tailingType" title="Tailing allows only 0-9 #,*,+"
+          class="col-sm-1 col-form-label phone-label">Tailing</label>
+        <div class="col-sm-3">
+          <input title="Tailing allows only 0-9 #,*,+" type="text" name="tailingType" #tailingType="ngModel"
+            id="tailingType" [(ngModel)]="tailing" class="form-control" pattern="^[0-9#*+]*$">
+          <div *ngIf="tailingType.invalid && (tailingType.dirty || tailingType.touched)">
+            <div *ngIf="tailingType?.errors?.pattern">
+              <label class="invalid-message">Tailing allows only 0-9 #,*,+</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="separator">
+      <div class="form-group row">
+        <label for="failure" class="col-sm-3 col-form-label phone-label">Continue On
+          Failure</label>
+        <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+          <label class="phone-label">
+            <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure" #failure="ngModel">&nbsp;
+            <span>True</span>
+          </label>&nbsp;
+          <label class="phone-label">
+            <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure" #failure="ngModel">
+            &nbsp;
+            <span>False</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div *ngIf="title" class="mr-auto"
+      style="background-color: #7694B7; height: 30px; width: 30px; border-radius: 100%; margin-top:-2%">
+      <img src="assets/images/icons/info.svg" title="{{title}}" style="width:30px; height:30px;">
+    </div>
+    <button (click)="cancel()" class="modal-cancel-btn">
+      Cancel
+    </button>
+    <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+      <span *ngIf="!actionToEdit">
+        Insert Action
+      </span>
+      <span *ngIf="actionToEdit">
+        Update Action
+      </span>
+    </button>
+  </div>
+</form>

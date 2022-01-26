@@ -1,0 +1,130 @@
+.form-label {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    color: #414141;
+}
+
+.lines-label {
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    color: #414141;
+}
+
+.form-label-clear {
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #BEBEBE;
+}
+
+.form-control {
+    color: #414141;
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-control::placeholder {
+    color: #BEBEBE;
+    font-style: italic;
+}
+
+.linesContainer {
+    min-height: 100px;
+}
+
+.plus-btn {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: thin solid #EAEAEA;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 45px;
+    outline: none;
+}
+
+.close {
+    margin-right: -18px;
+    margin-top: -15px;
+}
+
+.close:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.btn-download {
+    background: none;
+    color: #7694B7;
+    border: 0;
+    font-size: 14px;
+    font-family: 'Helvetica Neue Regular';
+    margin-top: 7px;
+}
+
+.lifeline-container {
+    max-width: 90em;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-left: 2px solid #EAEAEA;
+    height: 330px;
+    border-bottom: 2px solid #EAEAEA;
+}
+
+.lifeline-panel {
+    height: 310px;
+    background-color: white;
+    opacity: 1;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    /* max-width: 90em; */
+    text-align: justify;
+}
+
+.lifeline-panel:before {
+    content: '';
+    display: block;
+}
+
+.lifeline-panel:after {
+    content: '';
+    display: inline-block;
+    width: 100%;
+}
+
+.events {
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+.events::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    border-top: 3px solid #EAEAEA;
+    background: black;
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.color-close-btn {
+    color: grey;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: smaller;
+}
+
+::ng-deep .theme-blue {}
+
+.phone-img {
+    height: 116px;
+    width: 145.25px;
+}

@@ -1,0 +1,15 @@
+<table style="width: 100%;">
+  <thead class="master-head">
+    <th [width]="getTestColumnWidth(testColumns[i])" *ngFor="let testCol of testColumns; let i = index"
+      [ngStyle]="{'text-align':i !=0 ?'center':'left'}" [ngClass]="sortClass(testCol)" (click)="sortBy(testCol);">
+      {{testCol.header}}
+    </th>
+  </thead>
+  <tbody class="master-body">
+    <tr>
+      <td colspan="10" style="padding: 0;">
+        <test-details [tests]="subResults"></test-details>
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,40 @@
+<div class="panel panel-default">
+    <div class="title">
+        {{title}}
+    </div>
+</div>
+<div class="col-12" style="min-height: 55%">
+    <data-table [columnDefs]="columns" [data]="data" [dataflow]="isRequestCompleted" [selectedHeight]="'8em'" [colsTag]="'widget'">
+        <tableRow>
+            <ng-template let-item="item" class="templateClass">
+                <!-- inventory details -->
+                <tr class="strip-table" *ngIf="title ==='Inventory'">
+                    <td class="regular-text check" align="center" [title]="  (item.name | poly)">
+                        {{(item.name |blank| poly)}}
+                    </td>
+                    <td class="regular-text check" [title]=item.model style="text-align: center;" align="center">
+                        {{item?.model | blank}}
+                    </td>
+                    <td class="regular-text check" [title]=item.count style="text-align: center;" align="center">
+                        {{item?.count |blank}}
+                    </td>
+                </tr>
+                <!-- server details -->
+                <tr class="strip-table" *ngIf="title === 'Server Status'">
+                    <td class="regular-text space" [title]=item.name align="center">
+                        {{item.name |blank}}
+                    </td>
+                    <td class="regular-text space" style="text-align: center;" align="center" title="{{item.ip===null ? '' : item?.ip}}">
+                        {{item?.ip |blank}}
+                    </td>
+                    <td class="regular-text space" style="text-align: center;" align="center" title="{{item.version===null ? '' : item?.version}}">
+                        {{item?.version |blank}}
+                    </td>
+                    <td class="regular-text space" style="text-align: center;" align="center" title="{{item?.connectionStatus === false ? 'Offline' : 'Connected'}}" [ngStyle]="{color: item?.connectionStatus === false ? 'red' : '#333F4D'}">
+                        {{item?.connectionStatus === false ? 'Offline' : 'Connected'}}
+                    </td>
+                </tr>
+            </ng-template>
+        </tableRow>
+    </data-table>
+</div>

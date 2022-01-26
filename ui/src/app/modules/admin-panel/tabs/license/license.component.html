@@ -1,0 +1,462 @@
+<div class="license tab-height-adj" *ngIf="!viewDetails">
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="package-info">
+                <div class="row">
+                    <div class="panel panel-default col-12 pr-0" style="padding-left: 0px !important;">
+                        <div class="title" id="packageDetailsLabel" style="background-color: white;">
+                            tekVizion 360 Package Details
+                            <i style="font-size: 12px !important;" class="fa fa-info-circle" aria-hidden="true"
+                                [title]="toolTipMessage"></i>
+                            <hr>
+                        </div>
+                        <div class="body" style="background-color: white;">
+                            <div class="form-group mb-2">
+                                <div class="row mr-0">
+                                    <div class="col-6">
+                                        <label class=" form-label ">
+                                            <strong class="title-info" id="packageTypeLabel">Type Of Package </strong>
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="package-type" id="packageField">{{licensePackage}}</label>
+                                    </div>
+                                </div>
+                                <div class="row mr-0">
+                                    <!-- <div class="col-6">
+                                        <label class="title-info form-label">
+                                             Purchase Date :
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="license-info form-label">{{licenseDetails?.uploadDate}}</label>
+                                    </div> -->
+                                    <div class="col-6">
+                                        <label class="title-info form-label" id="deviceLicenseLabel">
+                                            Number Of Device tekTokens :
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="license-info form-label"
+                                            id="deviceModelField">{{licenseDetails?.deviceModels}}</label>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="title-info form-label" id="accessLicenseLabel">
+                                            Number Of Access tekTokens :
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="license-info form-label"
+                                            id="devicesField">{{licenseDetails?.devices}}</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-2" *ngIf="deviceLicenseList.length>0">
+                                <div class="row mr-0">
+                                    <div class="col-6 ">
+                                        <label><strong class=" title-info" id="addDevicePackLabel">
+                                                Device Add On Pack(s)</strong></label>
+                                    </div>
+                                    <div class="col-6 ">
+                                        <label class="title-info"
+                                            id="devicePackField">{{deviceLicenseList?.length}}</label>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="title-info form-label" id="dateOfPurchaseLabel">
+                                            Date(s) Of Purchase :    
+                                        </label>
+                                    </div>
+                                    <div class="col-6 horizontal-scroll">
+
+                                        <label class="license-info form-label" id="deviceIssueDateField"
+                                            *ngFor="let date of deviceLicenseList;let i=index">
+                                            {{date?.issueDateString}} <span *ngIf="i!=deviceLicenseList.length-1"
+                                                class="license-info form-label">{{';'}}&nbsp;</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label class="title-info form-label" id="numberOfDeviceLicensesLabel">
+                                            Number Of Device tekTokens :  
+                                        </label>
+                                    </div>
+                                    <div class="col-4 horizontal-scroll">
+                                        <label class="license-info form-label" id="numberOfDeviceLicensesField"
+                                            *ngFor="let deviceModel of deviceLicenseList;let i=index">
+                                            {{deviceModel.deviceModels}} <span *ngIf="i!=deviceLicenseList.length-1"
+                                                class="license-info form-label">{{';'}}&nbsp;</span>
+
+                                        </label>
+                                    </div>
+                                    <!-- <div class="col-6">
+                                            <label class="title-info form-label">
+                                                Expiry Date:     
+                                            </label>
+                                        </div>
+                                        <div class="col-4">
+                                            {{accessLicenseListInfo?.issueDateString}}
+                                        </div> -->
+                                </div>
+                            </div>
+                            <div class="form-group mb-2" *ngIf="accessLicenseList.length>0">
+                                <div class="row mr-0">
+                                    <div class="col-6">
+                                        <label id="addAccessPackLabel"><strong class=" title-info">
+                                                Access Add On Pack(s)</strong></label>
+                                    </div>
+                                    <div class="col-4 mr-0">
+                                        <label class="title-info"
+                                            id="accessLicenseField">{{accessLicenseList?.length}}</label>
+                                    </div>
+                                </div>
+                                <div class="row mr-0">
+                                    <div class="col-6">
+                                        <label class="title-info form-label" id="accessPurchaseDateLabel">
+                                            Date(s) Of Purchase :  
+                                        </label>
+                                    </div>
+                                    <div class=" col-6 horizontal-scroll" style="widows: 420px !important;">
+                                        <label class=" license-info form-label" id="accessIssueDateField"
+                                            *ngFor="let date of accessLicenseList;let i=index">
+                                            {{date.issueDateString}} <span *ngIf="i!=accessLicenseList.length-1"
+                                                class="license-info form-label">{{';'}}&nbsp;</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="title-info form-label" id="numberOfAccessLicensesLabel">
+                                            Number Of Access tekTokens :
+                                        </label>
+                                    </div>
+                                    <div class="col-4 horizontal-scroll">
+                                        <label class="license-info form-label" id="numberOfAccessLicensesField"
+                                            *ngFor="let accesslicens of accessLicenseList;let i=index">
+                                            {{accesslicens.devices}} <span *ngIf="i!=accessLicenseList.length-1"
+                                                class="license-info form-label">{{';'}}&nbsp;</span>
+                                        </label>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <hr>
+                            <div class="panel-footer row mr-0 mb-1" style="margin-top: -10px;">
+                                <div class="col-6">
+                                    <label class="title-info form-label" id="renewalDateLabel"
+                                        [ngStyle]="{'color': renewalDateValue < 60 ? '#CB3333':'#414141'}">
+                                        Renewal Date :
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <label class="license-info form-label" style="font-weight: 400;"
+                                        id="renewalDateField"
+                                        [ngStyle]="{'color': renewalDateValue < 60 ? '#CB3333':'#414141'}">
+                                        {{licenseDetails?.expiryDateString}}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="background-color:#fff; height: fit-content;">
+                <div class="panel panel-default col-12" style="padding-left: 0px;">
+                    <div class="row">
+                        <div class=" col-6 align-self-center">
+                            <div class="title pt-0">Current tekToken Information</div>
+                        </div>
+                        <!-- <div class="col-3" id="viewDetails" [searchQuery]="searchQuery">  -->
+                        <div class="col-3 mb-0 align-self-center">
+                            <label class="view mb-0" (click)="viewLicenseDetails()" id="viewDetailsBtn">
+                                <img src="assets/images/icons/view-more-icon.png" class="sm-icon-width">
+                                <span class="sub-title"> View Details</span>
+                            </label>
+                        </div>
+                        <div class="col-3 p-0 mb-0 align-self-center" id="generateReportBtn">
+                            <label class="sub-title" (click)="$event.stopPropagation();generateLicenseReport();">
+                                <img src="assets/images/icons/genarate-report-icon.png" class="sm-icon-width">
+                                <span class="sub-title"> Generate Report</span>
+                            </label>
+                        </div>
+                    </div>
+                    <hr class="horizantalrolar">
+                    <div class="body">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="title-info form-label" id="licenseKeyLabel">
+                                        tekToken Key :
+                                    </label>
+                                </div>
+                                <div class="col-5">
+                                    <!-- <label [title]="licenseDetails?.licenseKey" id="licenseKeyField"
+                                        class="license-info horizontal-scroll form-label"
+                                        style="max-width: 180%;  color:#414141;">
+                                        {{licenseDetails?.licenseKey}}
+
+                                    </label> -->
+                                    <p [title]="licenseDetails?.licenseKey" id="licenseKeyField"
+                                        class="license-info horizontal-scroll form-label"
+                                        style="word-break: break-word; color:#414141;" id="generateLicenseMacField">
+                                        {{licenseDetails?.licenseKey}}
+                                    </p>
+                                </div>
+                                <div class="col-1" *ngIf="licenseDetails && licenseDetails.licenseKey" style="padding: 0px;">
+                                    <i style="cursor: pointer;" id="clipboardField"
+                                        (click)="copyMessageToClipBoard(licenseDetails.licenseKey)" class="fa fa-clone"
+                                        aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <!-- <div class="row">
+                                <div class="col-5">
+                                    <label class="form-label">
+                                        <strong>Modules Licensed :</strong>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label">
+                                        {{licenseDetails?.availableModules}}
+                                    </label>
+                                </div>
+                            </div> -->
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="title-info form-label" id="deviceLicenseConsumedLabel">
+                                        Device tekTokens <br>(Consumed) :
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <label class="license-info form-label" id="deviceLicenseConsumedField1">
+                                        {{licenseUsage?.consumedDeviceModels}}
+                                    </label>&nbsp;
+                                    <!-- <span style="color: #000!important">&#40;</span>
+                                    <span id="deviceLicenseConsumedField2">
+                                        {{ deviceLicenseConsumption}}&#37; </span><span
+                                        style="color: #000!important">&#41;</span> -->
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="title-info form-label" id="accessLicenseConsumedLabel">
+                                        Access tekTokens<br>(Consumed) :
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <label class="license-info form-label" id="accessLicenseConsumedField1">
+                                        {{licenseUsage?.consumedDevices}}
+                                    </label>&nbsp;
+                                    <!-- <span style="color: #000!important">&#40;</span><span
+                                        id="accessLicenseConsumedField2">
+                                        {{ accessLicenseConsumption}}&#37;
+                                    </span><span style="color: #000!important">&#41;</span> -->
+                                </div>
+                            </div>
+                            <!-- <div class="row" *ngIf="licenseDetails?.oplm">
+                                <div class="col-6">
+                                    <label class=" form-label">
+                                       OPLM :
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <label class=" form-label">
+                                        {{licenseDetails?.oplm}}
+                                    </label>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-xl-6">
+            <!-- upload license button -->
+            <div class=" license-sctn">
+                <div class="row">
+                    <div class="panel panel-default col-12">
+                        <div class="  title" style="background-color: white;">
+                            Update tekToken File
+                            <hr>
+                        </div>
+                        <div class="body" style="background-color: white;">
+                            <div class="form-group row mr-0">
+                                <div class="col-6">
+                                    <label for="loadLicense" class="form-label upload-text">Upload tekToken File</label>
+                                </div>
+                                <div class="col-6">
+                                    <input #loadLicenseInput id="loadLicense" type="file" name="loadLicense"
+                                        class="form-control" (click)="canOpenFileDialog($event)"
+                                        (change)="processLicense($event.target.files)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- generate license MAC -->
+            <div class="row" style="height: 60px;">
+                <div class="panel panel-default col-12">
+                    <div class="title  " style="background-color: white;">
+                        Generate tekToken Key
+                        <hr>
+                    </div>
+                    <br>
+                    <div class="body" style="background-color: white;">
+                        <button id="generateLicenseMacBtn"
+                            title="The key generated by this action will need to be shared with tekVizion to obtain a new license"
+                            class="modal-scs-btn" (click)="onGenerateLicenseMAC()">Generate Key
+                        </button>
+                        <div class="row" style="margin-top: 1%;">
+                            <div class="col-sm-11">
+                                <p style="word-break: break-word;font-size: 12px;" id="generateLicenseMacField">
+                                    {{generatedLicenseMAC}}</p>
+                            </div>
+                            <div class="col-sm-1" *ngIf="generatedLicenseMAC" style="padding: 0px;">
+                                <i style="cursor: pointer;" id="clipboardField"
+                                    (click)="copyMessageToClipBoard(generatedLicenseMAC)" class="fa fa-clone"
+                                    aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="viewDetails">
+    <div>
+        <div class="toBack">
+            <span>&#8592;</span><span (click)="goToBackDetails()"> Back</span>
+        </div>
+        <div class="licenceDetailBox p-3">
+            <div class="row">
+                <div class="col-8">
+                    <div class="licence-tab">
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="count-title">Device tekTokens (Consumed) :
+                                    {{usageinfo?.consumedDeviceModels}}</p>
+                            </div>
+                            <div class="col-6 p-0">
+                                <p class="count-title">Access tekTokens (Consumed) :
+                                    {{usageinfo?.consumedDevices}} </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="count-title" style="font-weight: normal!important;text-align: end;"> Count :
+                        {{(deviceLicenseDetails | filter: { vendor: searchQuery, model: searchQuery, consumption:
+                        searchQuery, osAndFirmware:searchQuery, firstConsumptionDate: searchQuery})?.length}}
+                        <i *ngIf="searchQuery" class="fa fa-filter" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-2">
+                <div class="col-3">
+                    <span class="regular-title-text">Device tekToken Details</span>
+                </div>
+                <div class="col-7">
+                    <div class="count-title" style="font-weight: normal!important;text-align: end;"> Count :
+                        {{(deviceLicenseDetails | filter: { vendor: searchQuery, model: searchQuery, consumption:
+                        searchQuery, osAndFirmware:searchQuery, firstConsumptionDate: searchQuery})?.length}}
+                        <i *ngIf="searchQuery" class="fa fa-filter" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="col-2" style="text-align: right; padding-right: 2%;">
+                    <button class="btn btn-filter filter" (click)="deviceLicenseGrid.openToolPanelModal()"
+                        title="Show/Hide Columns">
+                        <img *ngIf="checkAllHidden()" style="width: 16px;height:20px;margin-top:-2px;"
+                            src="assets/images/icons/show.svg">
+                        <img *ngIf="!checkAllHidden()" style="width: 16px;height:20px;margin-top:-2px;"
+                            src="assets/images/icons/hide.svg">
+
+                    </button>
+                    <button style="margin-left: 10px;" class="btn btn-filter filter"
+                        (click)="deviceLicenseGrid.showFilters()" title="Advanced Search">
+                        <i class="fa fa-filter" aria-hidden="true"></i>
+
+                    </button>
+                </div>
+            </div>
+            <div class="py-2">
+                <data-table #deviceLicenseGrid [columnDefs]="deviceLicenseColumns"
+                    [data]="deviceLicenseDetails | filter :{vendor: searchQuery, 
+                    model: searchQuery, consumption: searchQuery, osAndFirmware:searchQuery, firstConsumptionDate: searchQuery}" [dataflow]="isRequestCompleted"
+                    [selectedHeight]="height" [colsTag]="'viewDeviceInfo'">
+                    <tableFilter>
+                        <ng-template>
+                            <td class="filter-row" [width]="getColumnWidth(deviceLicenseColumns[0])"
+                                [hidden]="deviceLicenseGrid.isHidden('vendor')">
+                                <input type="text" class="form-control" [(ngModel)]="deviceLicenseColumns[0].filter"
+                                    (ngModelChange)="filterData();" />
+                            </td>
+                            <td class="filter-row" [width]="getColumnWidth(deviceLicenseColumns[1])"
+                                [hidden]="deviceLicenseGrid.isHidden('model')">
+                                <input type="text" class="form-control" [(ngModel)]="deviceLicenseColumns[1].filter"
+                                    (ngModelChange)="filterData();" />
+                            </td>
+                            <td class="filter-row" [width]="getColumnWidth(deviceLicenseColumns[2])"
+                                [hidden]="deviceLicenseGrid.isHidden('osAndFirmware')">
+                                <input type="text" class="form-control" [(ngModel)]="deviceLicenseColumns[2].filter"
+                                    (ngModelChange)="filterData();" />
+                            </td>
+
+                            <td class="filter-row" [width]="getColumnWidth(deviceLicenseColumns[3])"
+                                [hidden]="deviceLicenseGrid.isHidden('consumption')">
+                                <input type="text" class="form-control" [(ngModel)]="deviceLicenseColumns[3].filter"
+                                    (ngModelChange)="filterData();" />
+                            </td>
+                            <td class="filter-row" [width]="getColumnWidth(deviceLicenseColumns[4])"
+                                [hidden]="deviceLicenseGrid.isHidden('firstConsumptionDate')">
+                                <input type="text" class="form-control" [(ngModel)]="deviceLicenseColumns[4].filter"
+                                    (ngModelChange)="filterData();" />
+                            </td>
+                        </ng-template>
+                    </tableFilter>
+                    <tableRow>
+                        <ng-template let-item="item" class="templateClass">
+                            <tr class="strip-table main-table-color" style="width:100%;cursor: pointer;"
+                                (click)="viewProjectInfo(item)">
+                                <td class="regular-text" [width]="getColumnWidth(deviceLicenseColumns[0])"
+                                    style="text-align: center;" title="{{item.vendor|poly}}"
+                                    [hidden]="deviceLicenseGrid.isHidden('vendor')">
+                                    {{item.vendor|poly| blank}}
+                                </td>
+                                <td class="regular-text" style="text-align: center;"
+                                    [width]="getColumnWidth(deviceLicenseColumns[1])" title="{{item.model}}"
+                                    [hidden]="deviceLicenseGrid.isHidden('model')">
+                                    {{item.model| blank}}
+                                </td>
+                                <td class="regular-text" style="text-align: center;"
+                                    [width]="getColumnWidth(deviceLicenseColumns[1])" title="{{item.osAndFirmware}}"
+                                    [hidden]="deviceLicenseGrid.isHidden('osAndFirmware')">
+                                    {{item.osAndFirmware| blank}}
+                                </td>
+                                <td class="regular-text"
+                                    style="overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap;"
+                                    [width]="getColumnWidth(deviceLicenseColumns[3])"
+                                    [hidden]="deviceLicenseGrid.isHidden('consumption')" title="{{item.consumption}}">
+                                    {{item.consumption| blank}}
+                                </td>
+                                <td class="regular-text"
+                                    style="overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap;"
+                                    [width]="getColumnWidth(deviceLicenseColumns[4])"
+                                    [hidden]="deviceLicenseGrid.isHidden('firstConsumptionDate')"
+                                    title="{{item.firstConsumptionDate}}">
+                                    {{item.firstConsumptionDate| blank}}
+                                </td>
+                            </tr>
+                            <tr *ngIf="item.showItem">
+                                <td colspan="10" style="padding: 0;">
+                                    <app-device-license-info [getData]="projectDetailInfo"></app-device-license-info>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </tableRow>
+                </data-table>
+            </div>
+        </div>
+    </div>
+</div>

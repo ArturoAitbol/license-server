@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="21" height="15" viewBox="0 0 21 15">
+  <defs>
+    <clipPath id="clip-path">
+      <path id="Path_5959" data-name="Path 5959" d="M15-16.847v5.2a1.494,1.494,0,0,1-1.5,1.488H3.155a.371.371,0,0,0-.265.634L4.152-8.269a.74.74,0,0,1,0,1.051.756.756,0,0,1-1.061,0L.44-9.847a1.478,1.478,0,0,1,0-2.1l2.651-2.629a.756.756,0,0,1,1.061,0,.74.74,0,0,1,0,1.052L2.891-12.276a.372.372,0,0,0,.265.635H12.75a.748.748,0,0,0,.75-.744v-4.461a.747.747,0,0,1,.75-.744.747.747,0,0,1,.75.744M0-18.153v-5.2a1.657,1.657,0,0,1,1.5-1.667H11.845c.334,0,.5-.311.265-.545l-1.262-1.16a.74.74,0,0,1,0-1.052.755.755,0,0,1,1.061,0c.414.41,2.241,2.222,2.651,2.626a1.475,1.475,0,0,1,0,2.1l-2.651,2.623a.756.756,0,0,1-1.061-.011.767.767,0,0,1,0-1.074l1.262-1.3a.438.438,0,0,0-.265-.725H2.25c-.414,0-.75.513-.75.924v4.461a.747.747,0,0,1-.75.744A.747.747,0,0,1,0-18.153" fill="#fff" clip-rule="evenodd"/>
+    </clipPath>
+    <clipPath id="clip-path-2">
+      <path id="Path_5958" data-name="Path 5958" d="M-20-149H295V-644H-20Z" transform="translate(20 644)" fill="#fff"/>
+    </clipPath>
+  </defs>
+  <g id="sync_icon" transform="translate(-7) rotate(90)" clip-path="url(#clip-path)">
+    <g id="Group_12176" data-name="Group 12176" transform="translate(-15 -490)" clip-path="url(#clip-path-2)">
+      <path id="Path_5957" data-name="Path 5957" d="M-5-4.5H17.5V-33H-5Z" transform="translate(16.25 491.25)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

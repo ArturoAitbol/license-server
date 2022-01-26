@@ -1,0 +1,75 @@
+<section *ngIf="loading_status; else loading_div" class="login p-fixed d-flex text-center common-img-bg rsdLoginBg">
+  <div class="auth-fluid" style="margin: auto">
+    <div class="row" style="display:block;">
+      <div class="col-sm-12">
+        <form #loginForm="ngForm">
+          <div class="login-card card-body auth-body">
+            <form class="md-float-material">
+              <div class="text-center">
+                <img src="assets/images/logo_1.png" alt="logo.png">
+              </div>
+              <br>
+              <div class="auth-box">
+                <div class="rsdSignIn">SIGN IN</div>
+                <hr>
+                <p class="text-inverse b-b-default text-left p-b-5"></p>
+                <div class="rsdAlert"></div>
+                <div style="color:#868e96;padding-bottom:4%;font-size:15px;">
+                  Welcome to the tekVizion Automation Platform
+                  <!-- Welcome to
+                  <span style="color:red;">on</span><span style="color: black;">POINT</span> -->
+                </div>
+                <div class="input-group">
+                  <span style="background-color: white; width: 40px; display: flex;" class="input-group-addon">
+                    <img width="18" height="20" src="assets/images/icon_user.png" style="margin: auto">
+                  </span>
+                  <input required type="email" name="usernameField" class="form-control rsdInputField"
+                    placeholder="Email ID" [(ngModel)]="username" #usernameField="ngModel">
+                  <br>
+                  <span class="md-line"></span>
+                </div>
+                <br>
+                <div class="input-group">
+                  <span style="background-color: white; width: 40px; display: flex;" class="input-group-addon">
+                    <img width="18" height="20" src="assets/images/lock_user.png" style="margin: auto">
+                  </span>
+                  <input required minlength="6" type="password" name="passwordField" class="form-control rsdInputField"
+                    placeholder="Password" [(ngModel)]="password" #passwordField="ngModel">
+                  <br>
+                  <span class="md-line"></span>
+                </div>
+                <br>
+                <div class="row m-t-30">
+                  <div class="col-md-12">
+                    <button (click)="onSubmit()" [disabled]="!loginForm.form.valid"
+                      class="rsdLoginButton btn btn-primary btn-md btn-block waves-effect text-center m-b-20">
+                      Login
+                    </button>
+                  </div>
+                </div>
+                <br>
+                <div class="rsdDisclaimer">
+                  By clicking Login, I agree to the
+                  <a target="_blank" style="cursor:pointer"
+                    onclick="javascript:var w = window.open('privacy.html', 'Print preview : Privacy Policy', 'width=750,height=720,scrollbars=yes,top=0,left=0');w.focus();">
+                    <b><i>Privacy and Acceptable Use Policy</i></b><br /> and
+                    <b><i>Terms and Conditions.</i></b></a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </form>
+      </div>
+      <br>
+      <br>
+      <br>
+      <p class="" style="color:#5d858d;text-align:center;clear:both;margin:0 auto;">
+        &#169; 2021 tekVizion PVS inc. All Rights Reserved
+      </p>
+    </div>
+  </div>
+</section>
+
+<ng-template #loading_div>
+  <app-loading></app-loading>
+</ng-template>

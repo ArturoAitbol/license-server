@@ -1,0 +1,57 @@
+.form-label {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    color: #414141;
+}
+
+.form-label-clear {
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #BEBEBE;
+}
+
+.form-control {
+    color: #414141;
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-control::placeholder {
+    color: #BEBEBE;
+    font-style: italic;
+}
+
+.regular-text {
+    font-family: 'Helvetica Neue Regular';
+    color: #414141;
+    font-size: 14px;
+}
+
+.plus-btn {
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: thin solid #EAEAEA;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 45px;
+    outline: none;
+}
+
+.modal-table {
+    table-layout: fixed;
+    text-align: center;
+    vertical-align: middle;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'Helvetica Neue Regular';
+    color: #414141;
+    font-size: 14px
+}
+
+.ng-select {
+    border: none;
+    outline: none;
+}

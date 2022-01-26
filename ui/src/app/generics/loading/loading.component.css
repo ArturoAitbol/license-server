@@ -1,0 +1,72 @@
+#content {
+    width: 100%;
+    height: 5px;
+    background: #000;
+}
+
+.fullwidth .expand {
+    width: 100%;
+    height: 1px;
+    margin: 2px 0;
+    background: #2187e7;
+    position: absolute;
+    box-shadow: 0px 0px 10px 1px rgba(0, 198, 255, 0.7);
+    -moz-animation: fullexpand 10s;
+    -webkit-animation: fullexpand 10s;
+}
+
+@-moz-keyframes fullexpand {
+    0% {
+        width: 0px;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+@-webkit-keyframes fullexpand {
+    0% {
+        width: 0px;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+.rsdLoginBg {
+    background-image: url("../../../assets/images/bg.png");
+    height: 100vh;
+    /* background-repeat: no-repeat; */
+    background-size: 100%;
+}
+
+.loadingLogo {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+}
+
+.loadingPercentage {
+    position: absolute;
+    top: 52%;
+    width: 100%;
+    color: white;
+}
+
+@media screen and (max-width: 400px) {
+    .content {
+        padding-top: 14px;
+    }
+}
+
+#counter_percent {
+    font-family: "Open Sans", Light;
+}
+
+#loading {
+    color: #5d858d;
+    font-size: 14px;
+    font-family: "Open Sans", Regular;
+}

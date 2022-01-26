@@ -1,0 +1,99 @@
+.title {
+    font-family: 'Helvetica Neue Regular';
+    color: #43425d;
+    font-size: 18px;
+    float: left;
+    padding-left: 10px;
+    padding-top: 10px;
+    width: 100%;
+}
+
+.settings {
+    background: #f1f0f0;
+    height: 90%;
+}
+
+.body {
+    float: left;
+    padding-left: 10px;
+    width: 100%;
+}
+
+.uploaded-text {
+    font-family: 'Helvetica Neue Regular';
+    color: #7694B7;
+    opacity: 0.5;
+    font-size: 14px;
+}
+
+.action-btn {
+    background: none;
+    color: #7694B7;
+    border: 0;
+    font-size: 14px;
+    font-family: 'Helvetica Neue Regular';
+    margin-left: 22px;
+}
+
+.form-label {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    color: #414141;
+}
+
+.form-control {
+    font-size: 13px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border: none;
+    background: none;
+    color: #7694B7;
+}
+
+.create-btn {
+    font-family: "Helvetica Neue Regular";
+    font-style: normal;
+    color: #ffffff;
+    background: #7694B7;
+    font-size: 14px;
+    opacity: 100%;
+    border: 0;
+    border-radius: 45px;
+    height: 28px;
+    width: 123.07px;
+}
+
+.email-body input,
+.email-body textarea {
+    color: #414141;
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.col-form-label {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    color: #414141;
+}
+
+strong {
+    font-size: 16px;
+}
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 10px;
+    column-gap: 1em;
+    align-content: space-between;
+  }
+
+@media only screen and (min-width: 700px) and (max-width:1610px) {
+    .email-body {
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: 55vh;
+    }
+}

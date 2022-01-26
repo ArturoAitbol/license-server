@@ -1,0 +1,195 @@
+.new-plan-form {
+    padding-top: 10px;
+    margin-top: 10px;
+    height: 91.5%;
+    width: 100%;
+    margin-left: 16px;
+    background: #FFFFFF;
+}
+
+.container {
+    width: 100%;
+    padding: 0;
+}
+
+.item-modified {
+    display: inline-block;
+    color: #BEBEBE;
+    font-size: 12px;
+    font-family: 'Helvetica Neue Regular';
+    line-height: 0px;
+}
+
+.header {
+    background-color: #EAEAEA;
+    height: 55px;
+    width: 100%;
+    vertical-align: middle;
+    margin-top: -10px;
+}
+
+.close {
+    margin-right: 15px;
+    margin-top: 12px;
+}
+
+.close:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.title {
+    margin-left: 14px;
+    font-size: 20px;
+    font-family: 'Helvetica Neue Regular';
+    color: #414141;
+    margin-top: 12px;
+}
+
+.body {
+    padding-left: 15px;
+    padding-right: 15px;
+    background: #FFFFFF;
+}
+
+.create-btn {
+    float: right;
+    font-family: 'Helvetica Neue Regular';
+    font-style: normal;
+    color: #FFFFFF;
+    background: #7694B7;
+    font-size: 14px;
+    opacity: 100%;
+    border: 0;
+    border-radius: 45px;
+    height: 28px;
+    width: 123.07px;
+}
+
+.cancel-btn {
+    float: right;
+    font-family: 'Helvetica Neue Regular';
+    font-style: normal;
+    color: #7694B7;
+    font-size: 14px;
+    background: #FFFFFF;
+    opacity: 100%;
+    border: 0;
+    height: 28px;
+    width: 123.07px;
+}
+
+.cancel-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.create-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.form-label {
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    color: #414141;
+}
+
+.form-label-clear {
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #BEBEBE;
+}
+
+.form-control {
+    color: #414141;
+    font-size: 14px;
+    font-style: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-control::placeholder {
+    color: #BEBEBE;
+    font-style: italic;
+}
+
+.tests-panel {
+    border: solid 1px #ccc;
+    height: 390px;
+    background: #EAEAEA;
+    border-radius: 4px;
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.footer {
+    text-align-last: center;
+    background: #FFFFFF;
+    margin-top: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.item-name {
+    margin-top: 15px !important;
+    font-family: 'Helvetica Neue Medium';
+    margin-top: 5px;
+    color: #1D252E;
+    font-style: normal;
+    font-size: 18px;
+    display: inline-block;
+    line-height: 1em;
+    width: 35em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.item-description {
+    display: inline-block;
+    color: #7C8694;
+    font-size: 12px;
+    font-family: 'Helvetica Neue Regular';
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 50em;
+}
+
+.item-info {
+    height: 66px;
+    padding-left: 0;
+}
+
+.cases-plans {
+    padding: 0px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.list-item {
+    margin-top: 15px;
+    width: 95%;
+    background: #FFFFFF;
+    margin-bottom: 15px;
+    font-size: 20px;
+    height: 60px;
+    margin-left: 15px;
+}
+
+
+/* Large devices (laptops/desktops, 992px and up) */
+
+@media only screen and (min-width: 992px) {
+    .footer {
+        text-align-last: center;
+        background: #FFFFFF;
+        margin-top: 10px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 20% !important;
+    }
+}

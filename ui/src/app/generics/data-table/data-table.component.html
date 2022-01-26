@@ -1,0 +1,84 @@
+<div class="col-md-12 no-padding wrapper-container">
+    <div class="grid-wrapper">
+        <div class="table-responsive-md">
+            <table class="table grid-header" [ngStyle]="{'width.%': tableWidth ,'max-width.%': tableWidth}">
+                <thead #tableHeader style="width:100%; border: 0;">
+                    <tr style="display: flex;">
+                        <th class="boundary" *ngFor="let item of visibleCols(); let i = index" id="inventoryCol-{{i}}" [width]="getColumnWidth(item)" [ngClass]="sortClass(item)" style="overflow: hidden; text-overflow: ellipsis; vertical-align: middle; padding-right: 0;" (click)="sortBy(item); storeClicked(item,i);">
+                            <!-- <span (click)=" sortBy(item); storeClicked(item,i);"> -->
+                            {{item.header}}
+                            <!-- </span> -->
+                            <!-- <span *ngIf="item.header != '' && i < visibleCols().length - 1" #dragi class="drag" cdkDragLockAxis="x" cdkDrag
+                                (cdkDragEnded)="dragColumn($event, item)"
+                                [cdkDragFreeDragPosition]="dragPosition">&nbsp;</span> -->
+                        </th>
+                    </tr>
+                    <tr style="background-color: #F0EFF0; display: flex;" *ngIf="viewFilters">
+                        <ng-template [ngTemplateOutlet]="filterTemplate"></ng-template>
+                    </tr>
+                </thead>
+                <tbody #tableBody class="grid-scroll data-table-content" [ngStyle]="{'max-height': rowQty > 99 ? '68vh' : (rowQty * 61)+'px'}" *ngIf="data.length > 0 && virtualScroll">
+                    <cdk-virtual-scroll-viewport itemSize="50" minBufferPx="200" maxBufferPx="450" class="example-viewport" [ngStyle]="setScrollStyle()" (scroll)="onScroll()">
+                        <div>
+                            <ng-template *cdkVirtualFor="let item of data;templateCacheSize:50" [ngTemplateOutlet]="rowTemplate" [ngTemplateOutletContext]="{item: item}"></ng-template>
+                        </div>
+                    </cdk-virtual-scroll-viewport>
+                </tbody>
+                <!-- show message when no data is found -->
+                <!-- <div *ngIf="data.length==0" style="text-align:center;">
+                    <h5 style="margin-top: 7.5% "> No Data to Display</h5>
+                </div> -->
+                <div *ngIf="data.length==0" style="text-align:center;">
+                    <ng-container *ngIf="enableDataLoadingMessage(); else elseTemplate">
+                        <h5 *ngIf="dataflow" style="margin-top: 7.5% "> No Data to Display </h5>
+                        <div *ngIf="!dataflow" class="" style="text-align:center;margin-top:5.5%;">
+                            <h5>Loading Data ...</h5>
+                        </div>
+                    </ng-container>
+                    <ng-template #elseTemplate>
+                        <!-- <h5 style="margin-top: 7.5% "> No Data to Display </h5> -->
+                        <h5 *ngIf="dataflow" style="margin-top: 7.5% "> No Data to Display </h5>
+                        <h5 *ngIf="!dataflow" style="margin-top: 7.5% ">Loading Data ... </h5>
+                    </ng-template>
+
+                </div>
+                <tbody #tableBody class="grid-scroll data-table-content" *ngIf="data.length > 0 && !virtualScroll" [ngStyle]="{'max-height':maxHeight}" (scroll)="onScroll()">
+                    <ng-template *ngFor="let item of data;" [ngTemplateOutlet]="rowTemplate" [ngTemplateOutletContext]="{item: item}"></ng-template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<ng-template #toolPanelModal>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title">Show Columns</label>
+        <button type="button" class="close" aria-label="Close" (click)="hideModal()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-6">
+                <div class="row" *ngFor="let column of columnDefs; let i = index">
+                    <div class="col-md-7"><label *ngIf="column.header !='' && i <= columnDefs.length/2">{{column.header}}</label>
+                    </div>
+                    <div class="col-md-3" *ngIf="column.header !='' && i <= columnDefs.length/2">
+                        <ui-switch size="small" color="#6897bb" [disabled]="disableHide(column)" [name]="column.field" [(ngModel)]="!column.hidden" (ngModelChange)="changeHidden(column, i)">
+                        </ui-switch>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row" *ngFor="let column of columnDefs; let i = index">
+                    <div class="col-md-7"><label *ngIf="column.header !='' && i > columnDefs.length/2">{{column.header}}</label>
+                    </div>
+                    <div class="col-md-3" *ngIf="column.header !='' && i > columnDefs.length/2">
+                        <ui-switch size="small" color="#6897bb" [disabled]="disableHide(column)" [name]="column.field" [(ngModel)]="!column.hidden" (ngModelChange)="changeHidden(column, i)">
+                        </ui-switch>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,430 @@
+<div class="vdm">
+    <div class="row" style="margin-top:15px;">
+        <div class="col-12">
+            <button class="btn-blue" style="font-size:15px;" (click)="backToPhones();">
+                <i class="fa fa-long-arrow-left" aria-hidden="true"></i>&nbsp;Back
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <!-- create/apply template -->
+        <div class="col-lg-4" style="background-color: white;height: fit-content;">
+            <div class="row">
+                <div class="col-12">
+                    <br>
+                    <h4>Create/Apply Template</h4>
+                    <br>
+                    <form (keydown.enter)="$event.preventDefault()" #vdmTemplateForm="ngForm" id="modalBody">
+                        <div class="row main-form" style="overflow: auto;"
+                            [ngStyle]="{'height':(dateTime?.isOpen ||displayname?.isOpen || doNotDisturb?.isOpen ||softkey?.isOpen || speedDial?.isOpen)?'68vh':''}">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="title-text">Select Template</label>
+                                    </div>
+                                    <div
+                                        [ngClass]="{'col-sm-8':(selectedTemplateId ==''),'col-sm-5':(selectedTemplateId !='')}">
+                                        <select class=" form-control title-text" [(ngModel)]="selectedTemplateId"
+                                            (change)="onChangeTemplate()" id="toTemplate" name="toTemplate"
+                                            #toTemplate="ngModel">
+                                            <option selected value="">Create New</option>
+                                            <option *ngFor="let item of templatesArray" [value]="item.id">
+                                                {{item.name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br *ngIf="selectedTemplateId ==''">
+                                <div class="row" *ngIf="selectedTemplateId ==''">
+                                    <div class="col-4">
+                                        <label class="title-text">Template Name</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="text" required name="templateName" id="templateName"
+                                            placeholder="Enter Template Name" class="form-control"
+                                            [(ngModel)]="savedTemplate.name" #templateName="ngModel">
+                                    </div>
+                                </div>
+                                <br *ngIf="selectedTemplateId ==''">
+                                <div class="row" *ngIf="selectedTemplateId ==''">
+                                    <div class="col-4">
+                                        <label class="title-text">Description</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <textarea name="desc" id="desc" cols="30" rows="2"
+                                            placeholder="Enter Description" class="form-control"
+                                            [(ngModel)]="description" #desc="ngModel"></textarea>
+                                    </div>
+                                </div>
+                                <br>
+                                <accordion [isAnimated]="true" [closeOthers]="true">
+                                    <!-- date/time format -->
+                                    <accordion-group heading="Date/Time Format" #dateTime>
+                                        <img accordion-heading
+                                            [ngClass]="{'up_arrow': dateTime?.isOpen ,'down_arrow': !dateTime?.isOpen}"
+                                            src="assets/images/icons/dropdown_arrow_icon.svg">
+                                        <div class="row" style="margin-bottom: 10px;">
+                                            <div class="col-12">
+                                                <select id="dateFormat" name="dateFormat"
+                                                    class="form-control filter-dropdown" [(ngModel)]="dateFormate">
+                                                    <option selected value="">
+                                                        Select a Date format
+                                                    </option>
+                                                    <option selected value="day/month">day/month</option>
+                                                    <option value="month/day">month/day</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <select id="timeFormat" name="timeFormat"
+                                                    class="form-control filter-dropdown" [(ngModel)]="timeFormate">
+                                                    <option selected value="">
+                                                        Select a Time format
+                                                    </option>
+                                                    <option selected value="12hr">12hr</option>
+                                                    <option value="24hr">24hr</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </accordion-group>
+                                    <!-- display name -->
+                                    <accordion-group heading="Display Name" #displayname>
+                                        <img accordion-heading
+                                            [ngClass]="{'up_arrow': displayname?.isOpen ,'down_arrow': !displayname?.isOpen}"
+                                            src="assets/images/icons/dropdown_arrow_icon.svg">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <input id="displayName" name="displayName" type="text"
+                                                    placeholder="Enter display name" class="form-control"
+                                                    [(ngModel)]="displayName">
+                                            </div>
+                                        </div>
+                                    </accordion-group>
+                                    <!-- dnd -->
+                                    <accordion-group heading="Do Not Disturb" #doNotDisturb>
+                                        <img accordion-heading class="down_arrow"
+                                            [ngClass]="{'up_arrow': doNotDisturb?.isOpen ,'down_arrow': !doNotDisturb?.isOpen}"
+                                            src="assets/images/icons/dropdown_arrow_icon.svg">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <select id="donotdisturb" class="form-control filter-dropdown"
+                                                    name="donotdisturb" [(ngModel)]="dnd">
+                                                    <option selected value="">Select DND</option>
+                                                    <option value="Yes">On</option>
+                                                    <option value="No">Off</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </accordion-group>
+                                    <!-- soft keys -->
+                                    <accordion-group heading="Softkey" #softkey
+                                        (click)="softKeysSelectedRefresh(); softKeysNoSelectedRefresh();">
+                                        <img accordion-heading class="down_arrow"
+                                            [ngClass]="{'up_arrow': softkey?.isOpen ,'down_arrow': !softkey?.isOpen}"
+                                            src="assets/images/icons/dropdown_arrow_icon.svg">
+                                        <!-- style="overflow-y: scroll;height: 38vh;" -->
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <label for="listName" class="form-label">Select a call state to
+                                                    configure:</label>
+                                                <select class="form-control filter-dropdown"
+                                                    (change)="selectCallState($event.target.value);softKeysSelectedRefresh(); softKeysNoSelectedRefresh();">
+                                                    <option *ngFor="let callState of callStateList"
+                                                        value="{{callState.callState}}">
+                                                        {{callState.name}}</option>
+                                                </select>
+                                                <div class="row">
+                                                    <div class="col-1" style="margin-bottom: 3%">
+                                                        <label class="chekboxcontainer select-all">
+                                                            <input type="checkbox"
+                                                                [(ngModel)]="selectAllUnSelectedSoftKeys" data-md-icheck
+                                                                name="unSelectAllPermission" id="unSelectAllPermission"
+                                                                (change)="onSelectAll('unSelectedSoftKeys');"
+                                                                style="width: 30%; height: 100%;" />
+                                                            <span class="checkmark"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-4" style="margin-top: 2%;">
+                                                        <span
+                                                            style="font-weight: 500;">{{selectAllUnSelectedSoftKeys? 'Unselect All' : 'Select All'}}</span>
+                                                    </div>
+                                                    <div class="col-1" style="margin-bottom: 3%;margin-left: 5%;">
+                                                        <label class="chekboxcontainer select-all">
+                                                            <input type="checkbox"
+                                                                [(ngModel)]="selectAllSelectedSoftKeys" data-md-icheck
+                                                                name="selectAllPermission" id="selectAllPermission"
+                                                                (change)="onSelectAll('selectedSoftKeys');"
+                                                                style="width: 30%; height: 100%;" />
+                                                            <span class="checkmark"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-5" style="margin-top: 2%;">
+                                                        <span
+                                                            style="font-weight: 500;">{{selectAllSelectedSoftKeys ? 'Unselect All' : 'Select All'}}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-5">
+                                                        <span
+                                                            style="font-size: 13px;font-weight: bolder;">Available</span>
+                                                        <div
+                                                            style="height: 20em; overflow-y: auto; border: 1px solid rgba(128, 128, 128, 0.5);">
+                                                            <ul class="list-group">
+                                                                <li class="list-group-item"
+                                                                    *ngFor="let softKey of softKeysNoSelected;let i=index;">
+                                                                    <label class="chekboxcontainer">
+                                                                        <input type="checkbox"
+                                                                            name="unSelectedSoftKeys-{{i}}"
+                                                                            (change)="onChangeUnSelectedSoftKeys(softKey)"
+                                                                            [(ngModel)]="softKey.selected">
+                                                                        <span class="checkmark"
+                                                                            [style.outline-color]="!softKey.selected ? '#BEBEBE' : '#203C66'">
+                                                                        </span>
+                                                                        &nbsp;
+                                                                        <span
+                                                                            style="font-family: inherit;">{{softKey.name}}</span>
+                                                                    </label>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-1"
+                                                        style="margin: auto; margin-left: -4%; margin-right: 0;">
+                                                        <button class="btn btn-blue" (click)="saveSoftKeys()">
+                                                            <i class="fa fa-caret-right" style="font-size: 30px;"></i>
+                                                        </button>
+                                                        <button class="btn btn-blue" (click)="unsaveSoftKeys()">
+                                                            <i class="fa fa-caret-left" style="font-size: 30px;"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <span
+                                                            style="font-size: 13px;font-weight: bolder;">Selected</span>
+                                                        <div
+                                                            style="height: 20em; overflow-y: auto; border: 1px solid rgba(128, 128, 128, 0.5);">
+                                                            <ul class="list-group">
+                                                                <li class="list-group-item"
+                                                                    *ngFor="let softKey of softKeysSelected;let i=index;">
+                                                                    <label class="chekboxcontainer">
+                                                                        <input type="checkbox"
+                                                                            name="selectedSoftKeys-{{i}}"
+                                                                            (change)="onChangeSelectedSoftKeys(softKey)"
+                                                                            [(ngModel)]="softKey.selected">
+                                                                        <span class="checkmark"
+                                                                            [style.outline-color]="!softKey.selected ? '#BEBEBE' : '#203C66'">
+                                                                        </span>
+                                                                        &nbsp;
+                                                                        <span
+                                                                            style="font-family: inherit;">{{softKey.name}}</span>
+                                                                    </label>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-1"
+                                                        style="margin: auto; margin-left: 0; margin-right: 0;">
+                                                        <button class="btn btn-blue" (click)="upSoftKey()">
+                                                            <i class="fa fa-caret-up" style="font-size: 30px;"></i>
+                                                        </button>
+                                                        <button class="btn btn-blue" (click)="downSoftKey()">
+                                                            <i class="fa fa-caret-down" style="font-size: 30px;"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </accordion-group>
+                                    <!-- speed dial -->
+                                    <accordion-group heading="Speed Dial" #speedDial>
+                                        <img accordion-heading class="down_arrow"
+                                            [ngClass]="{'up_arrow': speedDial?.isOpen ,'down_arrow': !speedDial?.isOpen}"
+                                            src="assets/images/icons/dropdown_arrow_icon.svg">
+                                        <div class="row" style="margin-bottom: 10px;"
+                                            *ngFor="let speedDial of speedDials; let i = index">
+                                            <div class="col-2">
+                                                <div class="row">
+                                                    <div class="col-12" style="text-align: center;">
+                                                        <h4>
+                                                            <span
+                                                                class="badge badge-secondary">{{speedDial.index}}</span>
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <input type="text" placeholder="Enter speed dial name"
+                                                    name="speedDialName-{{i}}" class="form-control"
+                                                    [(ngModel)]="speedDials[i].name">
+                                            </div>
+                                            <div class="col-5">
+                                                <input type="number" step="1" min="0" max="9"
+                                                    onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+                                                    placeholder="(  )" class="form-control" name="speedDialNumber-{{i}}"
+                                                    [(ngModel)]="speedDials[i].number">
+                                            </div>
+                                        </div>
+                                    </accordion-group>
+                                </accordion>
+                                <br>
+                                <div class="row" style="margin-bottom: 2%;">
+                                    <div class="col-12">
+                                        <button style="float: right;" class="btn btn-sav"
+                                            [disabled]="!vdmTemplateForm.form.valid"
+                                            (click)="saveTemplateDetails()">{{(selectedTemplateId=='')?'Save Template':'Apply Changes'}}
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- <div class="row" style="margin-bottom: 10px;">
+                                    <div class="col-4">Date format</div>
+                                    <div class="col-6">
+                                        <select id="dateFormat" class="form-control filter-dropdown" name="dateFormat"
+                                            [(ngModel)]="dateFormate">
+                                            <option selected value="">Select Date Format</option>
+                                            <option value="day/month">day/month</option>
+                                            <option value="month/day">month/day</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">Time format</div>
+                                    <div class="col-6">
+                                        <select id="timeFormat" name="timeFormat" class="form-control filter-dropdown"
+                                            [(ngModel)]="timeFormate">
+                                            <option selected value="">Select Time Format</option>
+                                            <option value="12hr">12hr</option>
+                                            <option value="24hr">24hr</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-4">Display Name</div>
+                                    <div class="col-6">
+                                        <input id="displayname" type="text" placeholder="Enter display name"
+                                            name="displayname" class="form-control" [(ngModel)]="displayName">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-4">DND</div>
+                                    <div class="col-6">
+                                        <select id="donotdisturb" class="form-control filter-dropdown"
+                                            name="donotdisturb" [(ngModel)]="dnd">
+                                            <option selected value="">Select DND</option>
+                                            <option value="Yes">On</option>
+                                            <option value="No">Off</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br> -->
+                            </div>
+                        </div>
+                    </form>
+                    <!-- <br>
+                    <div class="row" style="margin-bottom: 2%;">
+                        <div class="col-12">
+                            <button style="float: right;" class="btn btn-sav" [disabled]="!vdmTemplateForm.form.valid"
+                                (click)="saveTemplateDetails()">{{(selectedTemplateId=='')?'Save Template':'Apply Changes'}}
+                            </button>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <!-- phones -->
+        <div class="col-lg-8">
+            <data-table #phoneListGrid [columnDefs]="phoneInventoryColumns" [virtualScroll]="true"
+                [colsTag]="'template'" [data]="phones">
+                <tableRow>
+                    <ng-template let-item="item" class="templateClass">
+                        <tr class="strip-table">
+                            <td class="regular-text" [hidden]="phoneListGrid.isHidden('name')"
+                                style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;text-align: center"
+                                [width]="getColumnWidth(phoneInventoryColumns[0])" title="{{item.name| blank}}">
+                                {{item.name| blank}}
+                            </td>
+                            <td class="regular-text" [hidden]="phoneListGrid.isHidden('macAddress')"
+                                style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;text-align: center"
+                                [width]="getColumnWidth(phoneInventoryColumns[1])" title="{{item.macAddress| blank}}">
+                                {{item.macAddress| blank}}
+                            </td>
+                            <td class="regular-text" [hidden]="phoneListGrid.isHidden('ipAddress')"
+                                style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;text-align: center"
+                                [width]="getColumnWidth(phoneInventoryColumns[2])" title="{{item.ipAddress| blank}}">
+                                {{item.ipAddress| blank}}
+                            </td>
+                            <td class="regular-text" [hidden]="phoneListGrid.isHidden('vendor')"
+                                style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;text-align: center"
+                                [width]="getColumnWidth(phoneInventoryColumns[3])" title="{{item.vendor| blank}}">
+                                {{item.vendor| blank}}
+                            </td>
+                            <td class="regular-text" [hidden]="phoneListGrid.isHidden('model')"
+                                style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;text-align: center"
+                                [width]="getColumnWidth(phoneInventoryColumns[4])" title="{{item.model| blank}}">
+                                {{item.model| blank}}
+                            </td>
+                            <td class="regular-text" [hidden]="phoneListGrid.isHidden('phoneState')"
+                                style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;text-align: center"
+                                [style.color]="getColor(item.phoneState)"
+                                [width]="getColumnWidth(phoneInventoryColumns[5])"
+                                title="{{item.phoneState | titlecase | blank}}">
+                                {{(item.phoneState| titlecase)| blank}}
+                            </td>
+                            <td class="regular-text" [hidden]="phoneListGrid.isHidden('applyChangesStatus')"
+                                [style.color]="getColor(item.applyChangesStatus)"
+                                style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;text-align: center"
+                                [width]="getColumnWidth(phoneInventoryColumns[6])"
+                                title="{{item.applyChangesStatus| titlecase | blank}}">
+                                <span [ngStyle]="{'cursor': (item.applyChangesFailureReason !='')?'pointer':''}"
+                                    (click)="onClickFailureReason(failureReasonModal,item)">
+                                    {{(item.applyChangesStatus| titlecase)| blank }} </span>
+                            </td>
+                            <td class="regular-text" [width]="getColumnWidth(phoneInventoryColumns[7])">
+                                <span title="Navigate to VDM page" class="btn-blue" style="cursor: pointer;"
+                                    (click)="visualDeviceManagement(item);">View</span>
+                                <!-- <ng-template #popTemplate>
+                                    <div>
+                                        <ul style="list-style: none; margin: 0; padding: 0;">
+                                            <li>
+                                                <button class="pop-option"
+                                                    (click)="$event.stopPropagation();visualDeviceManagement(item);pop.hide()">
+                                                    Visual Device Management
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </ng-template>
+                                <button type="button" class="btn-opt" #pop="bs-popover" name="button-{{item.id}}"
+                                    [popover]="popTemplate" [placement]="getPlacement(item)" [outsideClick]="true"
+                                    (click)="$event.stopPropagation();" (onShown)="closeOldPop(pop)"
+                                    data-container="body">
+                                    <a style="font-size: 1.4rem; letter-spacing: -2px;color: #5F5F5F;">...</a>
+                                </button> -->
+                            </td>
+                        </tr>
+                    </ng-template>
+                </tableRow>
+            </data-table>
+        </div>
+    </div>
+</div>
+
+<!-- failure reason modal -->
+<ng-template #failureReasonModal>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title pull-left">Apply Change Failure</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <label class="form-label regular-text">
+                    {{selectedFailure}}
+                </label>
+            </div>
+        </div>
+    </div>
+</ng-template>

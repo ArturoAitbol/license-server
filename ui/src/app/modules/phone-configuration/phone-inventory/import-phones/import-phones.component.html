@@ -1,0 +1,69 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Import Phone(s)</label>
+    <button type="button" class="close" aria-label="Close" (click)="hideModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="mycontainer">
+        <div class="form-group row">
+            <div class="col">
+                <label for="vendor" class="form-label">Vendor:</label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-10">
+                <select required forbiddenValue="0" [(ngModel)]="selectedVendor" name="vendor" (change)="onSelectVendor($event.target.value)"
+                    id="vendor" class="form-control" required>
+                    <option disabled selected value="">Select Vendor</option>
+                    <option *ngFor="let vendor of newList" value={{vendor.name}} [disabled]="vendor.disabled === true">
+                        {{vendor.name| poly }}
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-2" *ngIf="selectedVendor!=''">
+                <button class="btn btn-upload" [disabled]="disabledImportButton" (click)="downloadTemplate()"  title="Download template file">
+                    <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+        <div *ngIf="selectedVendor!=''">
+            <div class="form-group row">
+                <div class="col">
+                    <label for="fileUpload" class="form-label">Upload File:</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <input #fileInput id="fileUpload" type="file" name="fileUpload" class="form-control file-btn"
+                        (change)="processFile($event.target.files)">
+                </div>
+                <div class="col-md-1" *ngIf="loadedFile">
+                    <button class="btn btn-delete" (click)="deleteFile()" title="Delete uploaded file">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <!-- <div class="col-md-1" *ngIf="loadedFile">
+                    <button class="btn btn-upload" (click)="uploadFile()" title="Send uploaded file">
+                        <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                    </button>
+                </div> -->
+                <div class="col-md-1" *ngIf="loadedFile">
+                    <button class="btn btn-validate" (click)="validateFile()" title="Validate File">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="form-group">
+        <button class="modal-cancel-btn" (click)="hideModal()">
+            Cancel
+        </button>
+        <button type="submit" (click)="import()" class="modal-scs-btn" [disabled]="!validatedFile">
+            Import
+        </button>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Edit Test Case</label>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #testForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <!--   test case name  -->
+            <div class="form-group">
+                <input required minlength="1" [pattern]="regexPattern" type="text" name="testCaseName"
+                       placeholder="Enter Name" class="form-control" [(ngModel)]="test.name" #testName="ngModel">
+                <div *ngIf="testName.invalid && (testName.dirty || testName.touched)">
+                    <div *ngIf="testName.errors?.pattern">
+                        <label class="invalid-message">Test Case Name doesn't accepts slash "/" and should not begin
+                            with special characters</label>
+                    </div>
+                </div>
+            </div>
+            <!--   tags  -->
+            <div class="form-group">
+                <label class="form-label">Associated Tags</label>
+                <label class="form-label-clear">&nbsp;(Separated by commas)</label>
+                <textarea minlength="3" rows="2" placeholder="Enter Tags" name="associatedTags" class="form-control"
+                          [(ngModel)]="test.tags"></textarea>
+            </div>
+            <!--   description  -->
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea rows="2" minlength="5" placeholder="What does this test case do?" name="descriptionText"
+                          class="form-control" [(ngModel)]="test.description"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="closeModal()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="editTest()" [disabled]="!testForm.form.valid || !testForm.form.dirty">
+            Update
+        </button>
+    </div>
+</form>

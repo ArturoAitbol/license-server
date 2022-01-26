@@ -1,0 +1,116 @@
+<div class="row" style="background-color:#FFFFFF">
+    <div class="col-12">
+        <div class="panel panel-default" style="background-color: white;">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="title"> Call Servers&nbsp;
+                        </label>
+                        <button type="button" class="btn-new nav-item" (click)="newInstance()">New</button>
+                    </div>
+                    <div class="col-8" style="text-align: right;">
+                        <label class="count" style="margin-left: 98px; padding-right:2%;">
+                            Servers count:
+                            {{ (instances | filter: {
+                            name: searchQuery, vendor: searchQuery, model: searchQuery,
+                            ipAddress: searchQuery,
+                            port: searchQuery,
+                            connectionProtocol: searchQuery,
+                            syncStatus: searchQuery,
+                            relayName:searchQuery
+                        }).length }}
+                            <i *ngIf="searchQuery" class="fa fa-filter" aria-hidden="true"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-12">
+                    <data-table #instancesGrid [columnDefs]="instanceColumns" [dataflow]="isRequestCompleted" [data]="instances | filter: {name: searchQuery, vendor: searchQuery,model: searchQuery,
+                            ipAddress: searchQuery, port: searchQuery,
+                            connectionProtocol: searchQuery,
+                            syncStatus: searchQuery,
+                            relayName:searchQuery
+                        }" [colsTag]="'instances-view'">
+                        <tableRow>
+                            <ng-template let-item="item" class="templateClass">
+                                <tr class="strip-table">
+                                    <td class="regular-text" [width]="getColumnWidth(instanceColumns[0])" [title]="item.name" style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{item.name}}
+                                    </td>
+                                    <td class="regular-text" [width]="getColumnWidth(instanceColumns[1])" [title]="item.vendor" style="max-width: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{item.vendor}}
+                                    </td>
+                                    <td class="regular-text" [title]="item.model" [width]="getColumnWidth(instanceColumns[2])">
+                                        {{item.model}}
+                                    </td>
+                                    <td class="regular-text" [width]="getColumnWidth(instanceColumns[3])" [title]="item.ipAddress" style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{item.ipAddress}}
+                                    </td>
+                                    <td class="regular-text" [width]="getColumnWidth(instanceColumns[4])" [title]="item.relayName | blank" style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{item?.relayName | blank}}
+                                    </td>
+                                    <td class="regular-text" [title]="item.port" [width]="getColumnWidth(instanceColumns[5])">
+                                        {{item.port}}
+                                    </td>
+
+                                    <td class="regular-text" [title]="item.connectionProtocol" [width]="getColumnWidth(instanceColumns[6])">
+                                        {{item.connectionProtocol}}
+                                    </td>
+                                    <td class="regular-text" [title]="(item.syncStatus | inProgress) | titlecase" [width]="getColumnWidth(instanceColumns[7])">
+                                        <span [style.color]="getColor(item.syncStatus)">
+                                            {{(item.syncStatus | inProgress) | titlecase}}</span>
+                                    </td>
+                                    <td class="regular-text" [width]="getColumnWidth(instanceColumns[8])">
+                                        <button type="button" class="btn-new nav-item" *ngIf="item.syncStatus == 'FAILED' || item.syncStatus == 'COMPLETED'" style="margin-top: 0px !important" [disabled]="disabledDownloadButton" (click)="downloadLog(item)">{{'Log'}}</button>
+                                        <span *ngIf="item.syncStatus != 'FAILED' && item.syncStatus != 'COMPLETED'">-</span>
+                                    </td>
+                                    <td class="regular-text" [width]="getColumnWidth(instanceColumns[9])">
+                                        <!-- <img class="loading" *ngIf="isSyncing(item.status.toLowerCase())" src="assets/images/loading.gif"
+                                        alt="Loading"> -->
+                                        <button class="sync-btn" (click)="syncInstance(item)">
+                                            Sync
+                                        </button>
+                                    </td>
+                                    <td class="regular-text" [title]="item.syncEndTsAsString" [width]="getColumnWidth(instanceColumns[10])" style="max-width: 40px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{item.syncEndTsAsString}}
+                                    </td>
+                                    <td class="regular-text" [width]="getColumnWidth(instanceColumns[11])">
+                                        <progressbar *ngIf="item.totalCount !=0" [max]="item.totalCount" [value]="item.completedCount" type="success" [striped]="true" [animate]="(item?.syncStatus=='COMPLETED')?false:true">
+                                            <i style="color: black">
+                                                {{item.completedCount + ' / ' + item.totalCount}}
+                                            </i>
+                                        </progressbar>
+                                    </td>
+                                    <td class="regular-text" [width]="getColumnWidth(instanceColumns[12])">
+                                        <ng-template #popTemplate>
+                                            <div>
+                                                <ul style="list-style: none; margin: 0; padding: 0;">
+                                                    <li>
+                                                        <button class="pop-option" (click)="$event.stopPropagation();editInstance(item);pop.hide()">
+                                                            Edit
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="pop-option" (click)="$event.stopPropagation();deleteInstance(item);pop.hide()">
+                                                            Delete
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </ng-template>
+                                        <button type="button" class="btn-opt" #pop="bs-popover" [popover]="popTemplate" [placement]="getPlacementPosition(item)" [outsideClick]="true" (click)="$event.stopPropagation();" (onShown)="closeOldPop(pop)" data-container="body">
+                                            <a style="font-size: 1.4rem; letter-spacing: -2px;
+                color: #5F5F5F;">...</a>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </tableRow>
+                    </data-table>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

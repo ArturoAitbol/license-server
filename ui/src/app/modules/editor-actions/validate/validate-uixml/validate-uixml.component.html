@@ -1,0 +1,327 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Validate UI</label>
+    <button type="button" class="close" aria-label="Close" (click)="cancel()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="form-group row">
+                <label for="resourceField" class="col-sm-1 col-form-label phone-label">Phone</label>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedResource" (change)="onSelectResource($event.target.value)" id="resourceField" name="resourceField" #resourceField="ngModel">
+                        <option disabled selected value="">Select Phone</option>
+                        <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}</option>
+                    </select>
+                    <!-- {{resource.name}} -->
+                </div>
+                <label *ngIf="selectedPhoneObj?.vendor === 'Polycom'" for="resultKeyField" class=" col-sm-1 col-form-label phone-label pl-0"> ResultIn</label>
+                <div class="col-3" *ngIf="selectedPhoneObj?.vendor === 'Polycom'">
+                    <select forbiddenValue="" class="resultKeyField form-control" [(ngModel)]="selectedResourceKey" required forbiddenValue="" name="resultKeyField" id="resultKeyField" #resultKeyField="ngModel">
+                        <option disabled selected value="">Select ResultIn</option>
+                        <option *ngFor="let key of resourceKeyList" [value]="key">{{key}}</option>
+                    </select>
+                </div>
+                <label for="validateTypeField" class="col-sm-1 col-form-label phone-label pl-0">Validate</label>
+                <div class="col-sm-3 pl-0"  *ngIf="selectedPhoneObj?.vendor != 'Microsoft'">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedValidateType" (change)="onChangeValidateType($event.target.value)" id="validateTypeField" name="validateTypeField" #validateTypeField="ngModel">
+                        <option disabled selected value="">Select Validate</option>
+                        <option *ngFor="let type of validateTypesArray" value="{{type}}">{{type}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 pl-0"  *ngIf="selectedPhoneObj?.vendor === 'Microsoft'">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedValidateType" (change)="onChangeValidateType($event.target.value)" id="validateTypeField" name="validateTypeField" #validateTypeField="ngModel">
+                        <option disabled selected value="">Select Validate</option>
+                        <option *ngFor="let type of validateTeamsType" value="{{type}}">{{type}}</option>
+                    </select>
+                </div>
+
+                <label *ngIf="selectedPhoneObj?.model === 'WEBEX-TEAMS'|| selectedPhoneObj?.vendor === 'Microsoft'" for="typeField" class="col-sm-1 col-form-label phone-label">Type</label>
+                <div class="col-sm-3" *ngIf="selectedPhoneObj?.model === 'WEBEX-TEAMS'">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedType" (change)="onChangeType($event.target.value)" id="typeField" name="typeField" #typeField="ngModel">
+                        <option disabled selected value="">Select Type</option>
+                        <option value="In Call">In Call</option>
+                        <option value="Call History">Call History</option>
+                    </select>
+                </div>
+                <div class="col-sm-3" *ngIf="selectedPhoneObj?.vendor === 'Microsoft'">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedType" (change)="onChangeType($event.target.value)" id="typeField" name="typeField" #typeField="ngModel">
+                        <option disabled selected value="">Select Type</option>
+                        <option value="In Call">In Call</option>
+                        <option value='Incoming Caller ID'>Incoming Caller ID</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row" *ngIf="canDisplaySecondRow()">
+                <label *ngIf="enableValueInputField()" for="elementvalueField" class="col-sm-1 col-form-label phone-label">Value</label>
+                <div class="col-sm-3" *ngIf="enableValueInputField()">
+                    <input required type="text" name="elementvalueField" id="elementvalueField" placeholder="Enter Value" class="form-control" [(ngModel)]="value" #elementvalueField="ngModel">
+                </div>
+                <label *ngIf="canEnableCheckAbsence()" for="checkAbsenceField" class="col-sm-2 col-form-label phone-label">
+                    Check Absence
+                </label>
+                <div *ngIf="canEnableCheckAbsence()" class="col-sm-3" style="margin-top: 5px;margin-left: -20px;">
+                    <label class="phone-label">
+                        <input type="radio" name="checkAbsenceField" [value]="true" [(ngModel)]="checkAbsence"
+                            #checkAbsenceField="ngModel">&nbsp;
+                        <span>True</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                        <input type="radio" name="checkAbsenceField" [value]="false" [(ngModel)]="checkAbsence"
+                            #checkAbsenceField="ngModel">
+                        &nbsp;
+                        <span>False</span>
+                    </label>
+                </div>
+                <!-- <label *ngIf="canEnableCheckFeature()" for="checkAbsenceField" class="col-sm-2 col-form-label phone-label">
+                    Check Feature
+                </label>
+                <div *ngIf="canEnableCheckFeature()" class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+                    <label class="phone-label">
+                        <input type="radio" name="checkAbsenceField" [value]="true" [(ngModel)]="checkAbsence"
+                            #checkAbsenceField="ngModel">&nbsp;
+                        <span>Enable</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                        <input type="radio" name="checkAbsenceField" [value]="false" [(ngModel)]="checkAbsence"
+                            #checkAbsenceField="ngModel">
+                        &nbsp;
+                        <span>Disable</span>
+                    </label>
+                </div> -->
+            </div>
+            <!-- <div class="form-group row" *ngIf="canDisplaySecondRow()">
+                <label for="failure" class="col-sm-3 col-form-label phone-label">Continue On Failure</label>
+                <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;margin-left: -45px;">
+                    <label class="phone-label">
+                        <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure"
+                            #failure="ngModel">&nbsp;
+                        <span>True</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                        <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure"
+                            #failure="ngModel">
+                        &nbsp;
+                        <span>False</span>
+                    </label>
+                </div>
+            </div> -->
+            <div  *ngIf="selectedPhoneObj?.model === 'WEBEX-TEAMS' ||selectedPhoneObj?.vendor === 'Polycom'">
+                <div class="form-group row" *ngIf="selectedValidateType==='Caller ID' " >
+                    <label for="callerNameField" class="col-sm-1 col-form-label phone-label">Name</label>
+                    <div class="col-sm-3">
+                        <input [required]="callerNumber==''" type="text" name="callerNameField" id="callerNameField" placeholder="Enter Name" class="form-control" [(ngModel)]="callerName" #callerNameField="ngModel">
+                    </div>
+                    <label *ngIf="disableNumberFieldForWebex()" for="callerNumberField" class="col-sm-1 col-form-label phone-label">Number</label>
+                    <div class="col-sm-3" *ngIf="disableNumberFieldForWebex()">
+                        <input [required]="callerName==''" type="text" name="callerNumberField" id="callerNumberField" placeholder="Enter Number" class="form-control" [(ngModel)]="callerNumber" #callerNumberField="ngModel">
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="selectedPhoneObj?.vendor === 'Microsoft'">
+                <div class="form-group row" *ngIf="selectedValidateType==='Caller ID' " >
+                    <label for="callerNameField" class="col-sm-1 col-form-label phone-label">Name</label>
+                    <div class="col-sm-3">
+                        <input [required]="callerNumber==''" type="text" name="callerNameField" id="callerNameField" placeholder="Enter Name" class="form-control" [(ngModel)]="callerName" #callerNameField="ngModel">
+                    </div>
+                    <label *ngIf="disableNumberFieldForWebex()" for="callerNumberField" class="col-sm-1 col-form-label phone-label">Number</label>
+                    <div class="col-sm-3" *ngIf="disableNumberFieldForWebex()">
+                        <input [required]="callerName==''" type="text" name="callerNumberField" id="callerNumberField" placeholder="Enter Number" class="form-control" [(ngModel)]="callerNumber" #callerNumberField="ngModel">
+                    </div>
+                    <label for="conversation" class="col-sm-2 col-form-label phone-label">Conversation ID</label>
+                <div class="col-sm-2 pl-0" *ngIf="selectedPhoneObj?.vendor === 'Microsoft'">
+                    <select forbiddenValue="" (change)="onChangeConversations()" class="form-control" [(ngModel)]="selectedConversation" id="conversation" name="conversation" #deviceLine="ngModel" title="Select Conversation">
+                        <option selected value="">Select Conversation</option>
+                        <option *ngFor="let conversation of conversations" value="{{conversation}}">{{conversation}}
+                        </option>
+                    </select>
+                </div>
+                </div>
+            </div>
+            <!-- <div  *ngIf="selectedPhoneObj?.vendor === 'Microsoft'" >
+                <div class="form-group row" *ngIf="selectedValidateType==='Caller ID' " >
+                    <label for="callerNameField" class="col-sm-1 col-form-label phone-label">Name</label>
+                    <div class="col-sm-3">
+                        <input [required]="callerNumber==''" type="text" name="callerNameField" id="callerNameField" placeholder="Enter Name" class="form-control" [(ngModel)]="callerName" #callerNameField="ngModel">
+                    </div>
+                </div>
+            </div> -->
+            
+            <div class="form-group row" *ngIf="selectedValidateType==='HuntGroup Caller ID'">
+                <label for="huntGroupField" class="col-sm-1 col-form-label phone-label">Hunt Group</label>
+                <div class="col-sm-3">
+                    <input [required]="callerNumber=='' && callerName==''" type="text" name="huntGroupField" id="huntGroupField" placeholder="Enter Hunt Group" class="form-control" [(ngModel)]="huntGroupName" #huntGroupField="ngModel">
+                </div>
+                <label for="callerNameField" class="col-sm-1 col-form-label phone-label">Name</label>
+                <div class="col-sm-3">
+                    <input [required]="callerNumber=='' && huntGroupName==''" type="text" name="callerNameField" id="callerNameField" placeholder="Enter Name" class="form-control" [(ngModel)]="callerName" #callerNameField="ngModel">
+                </div>
+                <label *ngIf="selectedType!='Call History'" for="callerNumberField" class="col-sm-1 col-form-label phone-label">Number</label>
+                <div class="col-sm-3" *ngIf="selectedType!='Call History'">
+                    <input [required]="this.callerName=='' && huntGroupName==''" type="text" name="callerNumberField" id="callerNumberField" placeholder="Enter Number" class="form-control" [(ngModel)]="callerNumber" #callerNumberField="ngModel">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label *ngIf="selectedValidateType === 'Soft Key'" for="softkeyField" class="col-sm-1 col-form-label phone-label">SoftKey</label>
+                <div class="col-sm-3" *ngIf="selectedValidateType === 'Soft Key'">
+                    <input required type="text" name="softkeyField" id="softkeyField" placeholder="Enter SoftKey" class="form-control" [(ngModel)]="value" #softkeyField="ngModel">
+                </div>
+                <label *ngIf="selectedValidateType === 'Soft Key'" for="positionField" class="col-sm-1 col-form-label phone-label pl-0">Position</label>
+                <div *ngIf="selectedValidateType === 'Soft Key'" class="col-sm-3 pl-0">
+                    <input type="text" name="positionField" id="positionField" placeholder="Enter Position" class="form-control" [(ngModel)]="position" #positionField="ngModel">
+                </div>
+            </div>
+            <div class="row form-group" *ngIf="selectedValidateType.includes('BLF') || selectedValidateType==='Speed Dial'">
+                <label for="findByField" class="col-sm-1 col-form-label phone-label">FindBy</label>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedFindBy" (change)="onChangeFindBy()" id="findByField" name="findByField" #findByField="ngModel">
+                        <option disabled selected value="">Select FindBy</option>
+                        <option value="Display Name">Display Name</option>
+                        <option *ngIf="selectedPhoneObj?.vendor !== 'Polycom'" value="Line Key">Line Key</option>
+                    </select>
+                </div>
+                <label *ngIf="selectedFindBy==='Line Key'" for="resourceLineField" class="col-sm-1 pl-0 col-form-label phone-label">LineKey</label>
+                <div class="col-sm-3 pl-0" *ngIf="selectedFindBy==='Line Key'">
+                    <input required type="number" min="1" name="resourceLineField" id="resourceLineField" placeholder="Enter LineKey" forbiddenValue='' class="form-control" [(ngModel)]="selectedResourceLine" #resourceLineField="ngModel">
+                </div>
+                <label *ngIf="selectedFindBy==='Display Name'" for="displayNameField" style="margin-top: -8px;" class="col-sm-1 pl-0 col-form-label phone-label">Display Name</label>
+                <div class="col-sm-3 pl-0" *ngIf="selectedFindBy==='Display Name'">
+                    <input required type="text" name="displayNameField" id="displayNameField" placeholder="Enter Display Name" forbiddenValue='' class="form-control" [(ngModel)]="selectedResourceLine" #displayNameField="ngModel">
+                </div>
+                <label *ngIf="selectedPhoneObj?.vendor != 'Yealink' && selectedValidateType==='BLF - State'" for="resourceStateField" class="col-sm-1 col-form-label phone-label pl-0">State</label>
+                <div *ngIf="selectedPhoneObj?.vendor != 'Yealink' && selectedValidateType==='BLF - State'" class="col-sm-3 pl-0">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedState" id="resourceStateField" name="resourceStateField" #resourceStateField="ngModel">
+                        <option disabled selected value="">Select State</option>
+                        <option *ngFor="let state of states" value="{{state}}">{{state}}</option>
+                    </select>
+                </div>
+            </div>
+            <hr class="separator" *ngIf="selectedPhoneObj?.vendor === 'Yealink' && selectedValidateType==='BLF - State'" for="validateBlfField">
+            <div class="row form-group" *ngIf="selectedPhoneObj?.vendor === 'Yealink' && selectedValidateType==='BLF - State'" for="validateBlfField">
+                <label class="col-sm-1 col-form-label phone-label">Color</label>
+
+                <div class="col-10">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td style="width: 120px">
+                                    <label class="phone-label">
+                                        <input type="radio" value="none" [(ngModel)]="ledstatus"
+                                            name="ledstatus">&nbsp;None&nbsp;
+                                    </label>
+                                </td>
+                                <td style="width: 120px">
+                                    <label class="phone-label">
+                                        <input type="radio" value="Green" [(ngModel)]="ledstatus" name="ledstatus">
+                                        &nbsp;Green&nbsp;
+                                    </label>
+                                </td>
+                                <td style="width: 120px">
+                                    <label class="phone-label">
+                                        <input type="radio" value="Red" [(ngModel)]="ledstatus"
+                                            name="ledstatus">&nbsp;Red&nbsp;
+                                    </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <hr class="separator" *ngIf="selectedPhoneObj?.vendor=== 'Yealink' && selectedValidateType==='BLF - State'" for="validateBlfField">
+            <!-- mode -->
+            <div class="row form-group" *ngIf="selectedPhoneObj?.vendor === 'Yealink' && selectedValidateType==='BLF - State'">
+                <label class="col-sm-1 col-form-label phone-label">Mode</label>
+
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedMode1" id="modeField" name="modeField" #modeField="ngModel">
+                        <option disabled selected value="">Select Mode</option>
+                        <option *ngFor="let mode of modes" [value]="mode">{{mode | titlecase}}</option>
+                    </select>
+                </div>
+                <!-- flash -->
+
+                <label class="col-sm-1 col-form-label phone-label pl-0">Flash</label>
+
+                <div class="col-sm-3 pl-0">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedFlashType" id="flashField" name="flashField" #flashField="ngModel">
+                        <option disabled selected value="">Select Flash</option>
+                        <option *ngFor="let item of flash" [value]="item">{{item | titlecase}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group" *ngIf="selectedValidateType ==='ACD Agent State'">
+
+                <label *ngIf="selectedValidateType==='ACD Agent State'" for="resourceStateField" class="col-sm-3 col-form-label phone-label">ACD Agent State</label>
+                <div class="col-sm-3" *ngIf="selectedValidateType==='ACD Agent State'" style="
+                margin-left: -76px;">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedACDState" id="resourceStateField" name="resourceStateField" #resourceStateField="ngModel">
+                        <option disabled selected value="">Select ACD Agent State</option>
+                        <option *ngFor="let acdstate of acdStates" value="{{acdstate}}">{{acdstate}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group" *ngIf="selectedValidateType === 'Soft Key' || selectedValidateType==='Speed Dial' ||selectedValidateType.includes('BLF') || (selectedValidateType ==='Caller ID'&& selectedPhoneObj.model!=='WEBEX-TEAMS') || selectedValidateType ==='ACD Agent State'">
+                <!-- <label for="failure" class="col-sm-3 col-form-label phone-label">Continue On Failure</label>
+                <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;margin-left: -45px;">
+                    <label class="phone-label">
+                        <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure"
+                            #failure="ngModel">&nbsp;
+                        <span>True</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                        <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure"
+                            #failure="ngModel">
+                        &nbsp;
+                        <span>False</span>
+                    </label>
+                </div> -->
+                <label *ngIf="canEnableCheckAbsence()" for="checkAbsenceField" class="col-sm-2 col-form-label phone-label">
+                    Check Absence
+                </label>
+                <div *ngIf="canEnableCheckAbsence()" class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+                    <label class="phone-label">
+                        <input type="radio" name="checkAbsenceField" [value]="true" [(ngModel)]="checkAbsence"
+                            #checkAbsenceField="ngModel">&nbsp;
+                        <span>True</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                        <input type="radio" name="checkAbsenceField" [value]="false" [(ngModel)]="checkAbsence"
+                            #checkAbsenceField="ngModel">
+                        &nbsp;
+                        <span>False</span>
+                    </label>
+                </div>
+            </div>
+            <hr class="separator">
+            <div class="row">
+                <label for="failure" class="col-sm-3 col-form-label phone-label">Continue On
+                    Failure</label>
+                <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+                    <label class="phone-label">
+                    <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure" #failure="ngModel">&nbsp;
+                    <span>True</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                    <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure" #failure="ngModel">
+                    &nbsp;
+                    <span>False</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="cancel()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+            <span *ngIf="!actionToEdit">
+                Insert Action
+            </span>
+            <span *ngIf="actionToEdit">
+                Update Action
+            </span>
+        </button>
+    </div>
+</form>

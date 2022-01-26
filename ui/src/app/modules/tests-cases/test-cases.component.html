@@ -1,0 +1,567 @@
+<div class="mainView">
+    <div class="row">
+        <div class="col-6">
+            <div class="item-list">
+                <div class="row header-row">
+                    <div class="col-test-plan col-7 col-md-7">
+                        <label class="view-title">Test Cases &nbsp;</label>
+                        <label class="elementCount">{{(testCases | filter:{
+                            name: testsQuery,
+                            description: testsQuery,
+                            ownerName: testsQuery,
+                            tags: testsQuery
+                            } | filter:{published: testsFilter})?.length}}
+                            <i *ngIf="testsQuery" class="fa fa-filter" aria-hidden="true"></i></label>
+                        <button type="button" class="btn-new" (click)="createNewTest()">&nbsp;New
+                        </button>
+                        <button type="button" class="btn-new" (click)="openFileBrowser()">Import
+                        </button>
+                        <input #fileInput id="fileInput" type="file" name="fileUpload" multiple="multiple" accept=".zip,.tcs" (change)="processFile($event.target.files,overrideImportModal)" hidden>
+                    </div>
+                    <div class="col-test-plan col-5 col-md-5">
+                        <input type="text" placeholder="Search" name="name" id="testsearchbar" class="search-bar" [(ngModel)]="testsQuery">
+                        <select class="form-control filter-dropdown" (change)="changeTestsFilter($event.target.value)" [(ngModel)]="selectedFilter">
+                            <option selected value="all">All</option>
+                            <option value="published">Published</option>
+                            <option value="local">Local</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row header-row">
+                    <div class="col-3 col-test-plan">
+                        <label class="container select-all" *ngIf="testCases.length>0" style="width: 111px;margin-left: 0px;">
+                            <input type="checkbox" [(ngModel)]="allTestsChecked" data-md-icheck
+                                [disabled]="allTestCasesExistInTestPlan || (testCases | filter: {name: testsQuery,description: testsQuery,tags: testsQuery,testcase: testsQuery}).length==0 || testCases.length==0"
+                                (change)="selectAllTests(); toggleVisibility('test');"
+                                style="width: 30%; height: 100%;" />
+                            <button *ngIf="markedTests" class="action-btn">Unselect All</button>
+                            <button *ngIf="!markedTests" class="action-btn">Select All</button>
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="col-9 adjust" style="margin-top: 8px; margin-left: -3.5em;" *ngIf="!loadingTests && !showPlan">
+                        <button class="action-btn " [disabled]="checkTestsDisabled()" [ngStyle]="{'margin-left':(_isSideBarOpened)?'6%':'0%'}" (click)="openDeleteModal(deleteModal, 'tests')">Delete
+                        </button>
+                        <button class="action-btn adjust-addtoplan" style="margin-left: 2em;" [disabled]="checkTestsDisabled()" (click)="addToExistingPlan(addToPlan)">Add to Test Plan
+                        </button>
+                        <button class="action-btn adjust-addtoplan" style="margin-left: 2em;" [disabled]="checkTestsDisabled() || disabledExportTestButton" (click)="exportTests(exportModal)">Export
+                        </button>
+                        <div style="float: right; margin-right: -4.5rem;" class="adjust-orderby">
+                            <label class="action-btn" for="sortTestCases">Order by: &nbsp;</label>
+                            <select class="sortSelect" id="sortTestCases" (change)="sortTestCases($event.target.value)">
+                                <option selected value="newest">Newest first</option>
+                                <option value="oldest">Oldest first</option>
+                                <option value="a-z">A - Z</option>
+                                <option value="z-a">Z - A</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div *ngIf="(testCases | filter:{ name: testsQuery, description: testsQuery, ownerName: testsQuery, tags: testsQuery} | filter:{published: testsFilter})?.length === 0 && testsQuery!==''" style="text-align:center;">
+                        <h3 style="margin-top: 7.5%"> No matches found for "{{testsQuery}}" </h3>
+                    </div>
+                    <div *ngIf="loadingTests" style="text-align:center;">
+                        <div class="row" style="text-align:center;margin-top: 7.5%;">
+                            <div class="col"></div>
+                            <div class="col">
+                                <h3>Loading Tests</h3>
+                                <img class="loading" style="width: 50px;height:50px;" src="assets/images/loading.gif" alt="Loading">
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                    </div>
+                    <cdk-virtual-scroll-viewport *ngIf="testCases.length>0" cdkDropList [cdkDropListDisabled]="isDropListDisable()" class="items-viewport" itemSize="50" minBufferPx="200" maxBufferPx="450" id="list1" #list1="cdkDropList" [cdkDropListData]="testCases" [cdkDropListConnectedTo]="allDropLists"
+                        (cdkDropListDropped)="drop($event)" (scroll)="onScroll('testCase')">
+                        <div style="min-height: 200px;">
+                            <div class="list-item" *cdkVirtualFor="let test of testCases | filter:{ name: testsQuery, description: testsQuery, ownerName: testsQuery, tags: testsQuery} | filter:{ published: testsFilter}; let i=index; templateCacheSize:50" cdkDrag [cdkDragData]="test"
+                                [cdkDragDisabled]="canDisableDragAndDrop">
+                                <div class="row-test-plan">
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <label class="container">
+                                                <input type="checkbox" *ngIf="!showPlan" [(ngModel)]="test.selected"
+                                                    data-md-icheck
+                                                    (change)="checkIfAllTestsSelected(); toggleVisibility('test');checkIfTestSelected($event, i);">
+                                                <input type="checkbox" *ngIf="showPlan" [(ngModel)]="test.selected"
+                                                    [disabled]="!userEnabled('ROLE_USER')" data-md-icheck
+                                                    (change)="testPlanReference(test, $event);">
+                                                <span class="checkmarkTCP"
+                                                    [style.outline-color]="!test.selected ? '#BEBEBE' : '#203C66'"></span>
+                                            </label>
+                                        </div>
+                                        <!-- <div class="col-5" style="padding-right: 0;">
+                                            <div class="titleCase">
+                                                <span *ngIf="test.executing">
+                                                    <img src="assets/images/icons/play-button.png" width="15" height="15" alt="executing" >
+                                                </span>
+                                                <span class="item-name" title="{{test.name}}" style="cursor:pointer;" (click)="goToTest(test)" (mouseover)="test.hover=true" (mouseleave)="test.hover=false" [ngStyle]="{color: test.hover==true  ? '#203C66' : 'black' }">
+                                                    {{test.name}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" style="padding-right: 0;">
+                                            <label [title]="test.tagArray" *ngFor="let tag of test.tagArray | slice :0:1" [ngClass]="{'item-tags': tag !==''}">
+                                                {{ (tag.length > 11) ? (tag | slice:0:11 |tagPipe) + '...' : (tag) |
+                                                tagPipe }}
+                                            </label>
+                                        </div> -->
+                                        <div class="col-7">
+                                            <!-- <div class="testCase"> -->
+                                            <div class="row">
+                                                <div class="col-10 testCase">
+                                                    <div class="titleCase">
+                                                        <span *ngIf="test.executing">
+                                                            <img src="assets/images/icons/play-button.png" width="15" height="15" alt="executing" >
+                                                        </span>
+                                                        <span class="item-name" title="{{test.name}}" style="cursor:pointer;" (click)="goToTest(test)" (mouseover)="test.hover=true" (mouseleave)="test.hover=false" [ngStyle]="{color: test.hover==true  ? '#203C66' : 'black' }">
+                                                            {{test.name}}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-2">
+                                                    <label [title]="test.tagArray" *ngFor="let tag of test.tagArray | slice :0:1" [ngClass]="{'item-tags': tag !==''}">
+                                                        {{ (tag.length > 11) ? (tag | slice:0:11 |tagPipe) + '...' : (tag) |
+                                                        tagPipe }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <!-- </div> -->
+                                        </div>
+                                        <div class="col-4" style="text-align: right;">
+                                            <span class="item-modified" *ngIf="test.creationDate === test.lastModified">
+                                                Created at {{test.creationDate}}
+                                            </span>
+                                            <span class="item-modified" *ngIf="test.creationDate !== test.lastModified">
+                                                Last modified {{test.lastModified}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:-7px;">
+                                        <div class="col-1"></div>
+                                        <div class="col-5">
+                                            <div class="descriptions">
+                                                <span class="item-description" title="{{test.description}}">
+                                                    {{test.description}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="titleCase">
+                                                <span class="item-description" [title]="test.ownerName">
+                                                    {{'Owned By: ' + test.ownerName}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" style="text-align: right;">
+                                            <button type="button" class="btn-opt" #pop="bs-popover" [popover]="popTemplate" [placement]="getTestPlacement(test)" [outsideClick]="true" (click)="$event.stopPropagation();" (onShown)="closeOldPop(pop,'testCase')" data-container="body">
+                                                <!-- <i class="fa fa-circle circle-menu" aria-hidden="true">&nbsp;</i><i
+                                                    class="fa fa-circle circle-menu" aria-hidden="true">&nbsp;</i><i
+                                                    class="fa fa-circle circle-menu" aria-hidden="true"></i> -->
+                                                <a style="font-size: 1.4rem; letter-spacing: -2px;
+                color: #5F5F5F;">...</a>
+                                            </button>
+                                            <ng-template #popTemplate>
+                                                <div>
+                                                    <ul style="list-style: none; margin: 0; padding: 0;">
+                                                        <li>
+                                                            <button class="pop-option" (click)="$event.stopPropagation();editTestCase(test);pop.hide()">
+                                                                Edit Properties
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button class="pop-option" (click)="$event.stopPropagation();goToTest(test);pop.hide()">
+                                                                Edit
+                                                                Script
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button class="pop-option" (click)="$event.stopPropagation();deleteElement(test, deleteModal,'tests');pop.hide()">
+                                                                Delete
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </cdk-virtual-scroll-viewport>
+                    <div *ngIf="testCases.length==0 && !loadingTests" style="text-align:center;">
+                        <h5 style="margin-top: 7.5% "> No Data to Display</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="item-list" *ngIf="!showPlan">
+                <div class="row header-row">
+                    <div class="col-test-plan col-7 col-md-7">
+                        <label class="view-title">Test Plans &nbsp;</label>
+                        <label class="elementCount">{{(testPlans | filter: {
+                            name: plansQuery,
+                            description: plansQuery,
+                            tags: plansQuery,
+                            testcase: plansQuery
+                            })?.length}}
+                            <i *ngIf="plansQuery" class="fa fa-filter" aria-hidden="true"></i></label>
+                        <button type="button" class="btn-new" title="Drag and Drop to add/delete testcases from the test plan" (click)="createNewPlan()">&nbsp;New
+                        </button>
+                        <button type="button" class="btn-new" (click)="importModelPopUP(importModal)">Import
+                        </button>
+                        <!-- <input #fileInput id="fileInputTestPlan" type="file" name="fileUploadTestPlan" 
+                            accept=".zip,.tcs" (change)="processTestPlanFile($event.target.files,overrideImportModal)" hidden> -->
+                    </div>
+                    <div class="col-test-plan col-5 col-md-5">
+                        <input type="text" placeholder="Search" name="name" id="plansearchbar" class="search-bar" [(ngModel)]="plansQuery">
+                    </div>
+                </div>
+                <div class="row header-row">
+                    <div class="col-2 col-test-plan">
+                        <label class="container select-all" *ngIf="!newPlan && testPlans.length > 0" style="width: 111px;margin-left: 0px;">
+                            <input type="checkbox" [(ngModel)]="allPlansChecked" data-md-icheck
+                                (change)="selectAllPlans(); toggleVisibility('plan');"
+                                [disabled]="(testPlans | filter: {name: plansQuery,description: plansQuery,tags: plansQuery,testcase: plansQuery}).length==0 || testPlans.length==0"
+                                style="width: 30%; height: 100%;" />
+                            <button *ngIf="markedPlans" class="action-btn">Unselect All</button>
+                            <button *ngIf="!markedPlans" class="action-btn">Select All</button>
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="col-3" style="margin-top: 8px;" *ngIf="!loadingPlans">
+                        <button class="action-btn adjust-delete-plan-btn" [disabled]="checkPlansDisabled()" *ngIf="!newPlan && testPlans.length > 0" [ngStyle]="{'margin-left':(_isSideBarOpened)?'10%':'0%'}" (click)="openDeleteModal(deleteModal, 'plans')">Delete
+                        </button>
+                    </div>
+                    <div class="col-3" style="margin-top: 8px;" *ngIf="!newPlan && testPlans.length > 0">
+                        <button class="action-btn adjust-addtoplan" style="margin-left: 2em;" [disabled]="disabledExportButton" (click)="exportPlans()">Export
+                        </button>
+                        <!-- [disabled]="checkTestsDisabled()" -->
+                    </div>
+                    <div class="col-4" style="margin-top: 8px;" *ngIf="!newPlan && testPlans.length > 0">
+                        <div style="float: right; margin-right: -1rem;">
+                            <label class="action-btn" for="sortTestPlans">Order by: &nbsp;</label>
+                            <select class="sortSelect" id="sortTestPlans" (change)="sortTestPlans($event.target.value)">
+                                <option selected value="newest">Newest first</option>
+                                <option value="oldest">Oldest first</option>
+                                <option value="a-z">A - Z</option>
+                                <option value="z-a">Z - A</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="!newPlan">
+                    <div *ngIf="(testPlans | filter: {name: plansQuery, description: plansQuery, tags: plansQuery, testcase: plansQuery})?.length === 0 && plansQuery !== ''" style="text-align:center;">
+                        <h3 style="margin-top: 7.5%"> No matches found for "{{plansQuery}}" </h3>
+                    </div>
+                    <div *ngIf="loadingPlans" style="text-align:center;">
+                        <div class="row" style="text-align:center;margin-top: 7.5%;">
+                            <div class="col"></div>
+                            <div class="col">
+                                <h3>Loading Plans</h3>
+                                <img class="loading" style="width: 50px;height:50px;" src="assets/images/loading.gif" alt="Loading">
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                    </div>
+                    <cdk-virtual-scroll-viewport *ngIf="testPlans.length>0" class="items-viewport" itemSize="50" minBufferPx="200" maxBufferPx="450" (scroll)="onScroll('testPlan')">
+                        <div style="min-height: 200px;">
+                            <div class="list-item" *cdkVirtualFor="let plan of testPlans | filter: { name: plansQuery, description: plansQuery, tags: plansQuery, testcase: plansQuery}; templateCacheSize:50">
+                                <div class="row-test-plan">
+                                    <div class="row">
+                                        <div class="col-1">
+                                            <label class="container">
+                                                <input type="checkbox" [(ngModel)]="plan.selected" data-md-icheck
+                                                    (change)="checkIfAllPlansSelected(); toggleVisibility('plan');">
+                                                <span class="checkmarkTCP"
+                                                    [style.outline-color]="!plan.selected ? '#BEBEBE' : '#203C66'"></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-7">
+                                            <!-- <div class="planCase"> -->
+                                            <div class="row">
+                                                <div class="col-10 planCase">
+                                                    <span class="item-name" [title]="plan.name" style="cursor:pointer;" (click)="goToPlan(plan)" (mouseover)="plan.hover=true" (mouseleave)="plan.hover=false" [ngStyle]="{color: plan.hover==true  ? '#203C66' : 'black' }">
+                                                        {{plan.name}}
+                                                    </span>
+                                                </div>
+                                                <div class="col-2">
+                                                    <span class="item-qty">
+                                                        {{plan.testCaseCount}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <!-- </div> -->
+                                        </div>
+                                        <div class="col-4" style="text-align: right;">
+                                            <span class="item-modified" *ngIf="plan.creationDate === plan.lastModified">
+                                                Created at {{plan.creationDate}}
+                                            </span>
+                                            <span class="item-modified" *ngIf="plan.creationDate !== plan.lastModified">
+                                                Last modified {{plan.lastModified}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:-7px">
+                                        <div class="col-1"></div>
+                                        <div class="col-9">
+                                            <div class="plan-descriptions">
+                                                <span class="item-description" [title]="plan.description">
+                                                    {{plan.description}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-2" style="text-align: right;">
+                                            <button type="button" class="btn-opt" #pop="bs-popover" [popover]="popTemplate" [placement]="getPlanPlacement(plan)" [outsideClick]="true" (click)="$event.stopPropagation();" (onShown)="closeOldPop(pop,'testPlan')" data-container="body">
+                                                <!-- <i class="fa fa-circle circle-menu" aria-hidden="true">&nbsp;</i><i
+                                                    class="fa fa-circle circle-menu" aria-hidden="true">&nbsp;</i><i
+                                                    class="fa fa-circle circle-menu" aria-hidden="true"></i> -->
+                                                <a style="font-size: 1.4rem; letter-spacing: -2px;
+                                                    color: #5F5F5F;">...</a>
+                                            </button>
+                                            <ng-template #popTemplate>
+                                                <div>
+                                                    <ul style="list-style: none; margin: 0; padding: 0;">
+                                                        <!-- <li><button class="pop-option" (click)="$event.stopPropagation();pop.hide()">Show</button></li> -->
+                                                        <li>
+                                                            <button class="pop-option" (click)="$event.stopPropagation();editTestPlan(plan);pop.hide()">
+                                                                Edit
+                                                                Properties
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button class="pop-option" (click)="$event.stopPropagation();goToPlan(plan);pop.hide()">
+                                                                Edit
+                                                                Test Plan
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button class="pop-option" (click)="$event.stopPropagation();deleteElement(plan, deleteModal,'plans');pop.hide()">
+                                                                Delete
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button class="pop-option" (click)="$event.stopPropagation();openCopyModal(plan, copyModal);pop.hide()">
+                                                                Copy
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </cdk-virtual-scroll-viewport>
+                    <div *ngIf="testPlans.length==0 && !loadingPlans" style="text-align:center;">
+                        <h5 style="margin-top: 7.5% "> No Data to Display</h5>
+                    </div>
+
+                </div>
+                <new-plan *ngIf="newPlan" [selectedForNewPlan]="selectedForNewPlan" [allDropLists]="allDropLists">
+                </new-plan>
+            </div>
+            <div class="test-plan" *ngIf="showPlan">
+                <test-plan [allDropLists]="allDropLists"></test-plan>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #deleteModal>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title pull-left">Delete</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="closeDeleteModal('close'+deleteOption)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <label *ngIf="!allTestsChecked && !allPlansChecked" class="form-label">Are you sure that you want to
+                    delete selected items?</label>
+                <label *ngIf="allTestsChecked" class="form-label">All Tests will be deleted. Do you wish to
+                    proceed?</label>
+                <label *ngIf="allPlansChecked" class="form-label">All Test Plans will be deleted. Do you wish to
+                    proceed?</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="cancel-btn" (click)="closeDeleteModal('close'+deleteOption)">
+            No
+        </button>
+        <button class="create-btn" (click)="closeDeleteModal(deleteOption)">
+            Yes
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #addToPlan>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title pull-left">Add to Existing Plan</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide();resetView()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-6">
+                <label for="selectedTests" class="form-label">Selected Tests</label>
+                <div class="tests-panel">
+                    <ul style="height: 300px; padding-left: 2%">
+                        <li *ngFor="let test of auxiliarTests;let i= index" style="list-style-type: none;">
+                            <input type="checkbox" [(ngModel)]="test.selected" (change)="addTestCasesToExistingTestPlan($event, i);">
+                            <label class="testNames">{{test.name}}</label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="testPlans" class="form-label">Test Plans</label><br>
+                <select forbiddenValue="---Select---" [(ngModel)]="selectedPlan" id="plan" class="form-control" (change)="changedPlan($event.target.value)" required>
+                    <option disabled selected value="---Select---">Select Plan</option>
+                    <option value="newPlan">Create New Plan</option>
+                    <option *ngFor="let plan of testPlans" value="{{plan.id}}">{{plan.name}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="cancel-btn" (click)="modalRef.hide();">
+            Cancel
+        </button>
+        <button class="create-btn" [disabled]="!planUpdater" (click)="updateTestPlan()">
+            Add
+        </button>
+    </div>
+</ng-template>
+
+
+<ng-template #copyModal>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title pull-left">Copy Test Plan</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="planName" class="form-label">Test Plan Name</label>
+            <input required minlength="1" pattern="^[A-Za-z0-9 _]*[A-Za-z0-9][A-Za-z0-9 _]*$" type="text" name="planName" placeholder="Enter Name" class="form-control" [(ngModel)]="planToCopy.name" #planName="ngModel">
+        </div>
+        <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea rows="2" placeholder="What does this test plan do?" name="description" class="form-control" [(ngModel)]="planToCopy.description" #planDesc="ngModel"></textarea>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="cancel-btn" (click)="modalRef.hide()">
+            Cancel
+        </button>
+        <button class="create-btn" (click)="saveCopiedPlan()">
+            Copy
+        </button>
+    </div>
+</ng-template>
+<!-- export test case name  -->
+<ng-template #exportModal>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title pull-left">Export TestCases</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="downloadFileNameField" class="form-label">Download File Name</label>
+            <input required minlength="1" type="text" name="downloadFileNameField" id="downloadFileNameField" forbiddenValue='' placeholder="Enter Download File Name" class="form-control" [(ngModel)]="downloadFileName" #downloadFileNameField="ngModel">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="cancel-btn" (click)="modalRef.hide()">
+            Cancel
+        </button>
+        <button class="create-btn" [disabled]="disabledExportButton" (click)="downloadExportTestCases()">
+            Export
+        </button>
+    </div>
+</ng-template>
+<!--import test plane name -->
+<ng-template #importModal>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title pull-left">Import</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-6">
+                <label for="importFileName" class="form-label">Test Plan Name </label>
+                <input required minlength="1" pattern="^(?!.*\/).*$" type="text" placeholder="Enter Test Plan Name" class="form-control" forbiddenValue='' [(ngModel)]="importFileName" name="importFileNameField" id="importFileNameField" #importFileNameField="ngModel">
+                <div *ngIf="importFileNameField.invalid && (importFileNameField.dirty || importFileNameField.touched)">
+                    <div *ngIf="importFileNameField?.errors?.pattern">
+                        <label class="invalid-message">Test Plan Name doesn't accepts slash "/"</label>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center col-md-6" style="padding-top: 36px;">
+                <input #fileInput id="fileInputTestPlan" type="file" name="fileUploadTestPlan" multiple="multiple" accept=".zip,.tcs" (change)="openFileBrowserTestplan($event)">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="cancel-btn" (click)="modalRef.hide()">
+            No
+        </button>
+        <button class="create-btn" (click)="processTestPlanFile(fileData ,overrideImportModal )">
+            import
+        </button>
+    </div>
+</ng-template>
+<ng-template #overrideImportModal>
+    <div class="modal-header" draggableModal>
+        <label class="modal-title pull-left">Would you like to overwrite the following?</label>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="overwriteImportChanges('denied')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <table class="table strip-table inner-table">
+                <tbody style="max-height: 270px;overflow-x: hidden !important;">
+                    <tr *ngFor="let test of overwriteTestList" style="table-layout: fixed">
+                        <td class="regular-text">
+                            <div class="row">
+                                <div class="col-1">
+                                    <label class="container">
+                                        <input type="checkbox" [(ngModel)]="test.selected" data-md-icheck>
+                                        <span class="checkmarkTCP"
+                                            [style.outline-color]="!test.selected ? '#BEBEBE' : '#203C66'"></span>
+                                    </label>
+                                </div>
+                                <div class="col-11">
+                                    <div class="titleCase">
+                                        <span class="item-name" title="{{test.name}}">
+                                            {{test.name}}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="cancel-btn" (click)="overwriteImportChanges('denied')">
+            No
+        </button>
+        <button class="create-btn" (click)="overwriteImportChanges('accepted')">
+            Yes
+        </button>
+    </div>
+</ng-template>

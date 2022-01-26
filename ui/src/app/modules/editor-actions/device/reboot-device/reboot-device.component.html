@@ -1,0 +1,71 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Reboot Device</label>
+    <button type="button" class="close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="form-group row">
+                <!-- resource -->
+                <label for="phone" class="col-sm-1 col-form-label phone-label">Resource</label>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedPhone" id="phone" name="phone" (change)="onChangeResource()" #phone="ngModel">
+                    <option disabled selected value="">Select Device</option>
+                    <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}</option>
+                  </select>
+                </div>
+                <!-- type -->
+                <label for="type" *ngIf="selectedResourceType=='Polycom'" class="col-sm-1 col-form-label phone-label">Type</label>
+                <div class="col-sm-3" *ngIf="selectedResourceType=='Polycom'">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedType" id="type" name="type" #type="ngModel">
+                    <option disabled selected value="">Select Type</option>
+                    <option value="restart">Restart</option>
+                    <option value="reboot">Reboot</option>
+                    <option value="reset">Factory Reset</option>
+                  </select>
+                </div>
+                <label for="type" *ngIf="selectedResourceType=='Yealink'" class="col-sm-1 col-form-label phone-label">Type</label>
+                <div class="col-sm-3" *ngIf="selectedResourceType=='Yealink'">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedType" id="type" name="type" #type="ngModel">
+                    <option disabled selected value="">Select Type</option>
+                    <option value="reboot">Reboot</option>
+                    <option value="reset">Reset</option>
+                  </select>
+                </div>
+               
+            </div>
+            <hr class="separator">
+            <div class="form-group row">
+              <label for="failure" class="col-sm-3 col-form-label phone-label">Continue On Failure</label>
+              <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;margin-left: -45px;">
+                  <label class="phone-label">
+                      <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure"
+                          #failure="ngModel">&nbsp;
+                      <span>True</span>
+                  </label>&nbsp;
+                  <label class="phone-label">
+                      <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure"
+                          #failure="ngModel">
+                      &nbsp;
+                      <span>False</span>
+                  </label>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button (click)="cancel()" class="modal-cancel-btn">
+      Cancel
+    </button>
+        <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+      <span *ngIf="!actionToEdit">
+        Insert Action
+      </span>
+      <span *ngIf="actionToEdit">
+        Update Action
+      </span>
+    </button>
+    </div>
+</form>

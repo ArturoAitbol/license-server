@@ -1,0 +1,13 @@
+.footer {
+  background: #ffffff;
+  height: auto;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  margin: auto;
+  font-family: 'Helvetica Neue Regular';
+  font-size: 13px;
+  color: #414141;
+  text-align: center;
+  padding: 10px;
+}

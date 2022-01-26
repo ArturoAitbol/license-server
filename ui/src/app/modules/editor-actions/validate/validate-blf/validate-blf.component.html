@@ -1,0 +1,156 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Validate BLF</label>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="cancel()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div class="row">
+                <div class="col-sm-2">
+                    <label class="phone-label">Phone</label>
+                </div>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedPhone"
+                        (change)="onSelectPhone($event.target.value)" id="phone" name="phone" #phone="ngModel">
+                        <option disabled selected value="">Select Phone</option>
+                        <option *ngFor="let resource of resources" value="{{resource.name}}">{{resource.name}}</option>
+                    </select>
+                </div>
+               
+                <label for="validateBlfField" class="col-sm-2 col-form-label phone-label">Validate</label>
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedValidateBlfType"
+                    (change)= "onSelectBlf()" name="validateBlfField" id="validateBlfField" #validateBlfField="ngModel">
+                        <option disabled selected value="">Select Validate</option>
+                        <option *ngFor="let blf of validateBlfType" [value]="blf">{{blf}}</option>
+                    </select>
+                </div>      
+                
+            </div>
+            <hr class="separator">           
+            <div class="row form-group">
+               
+                    <label class="col-sm-2 col-form-label phone-label">FindBy</label>
+               
+            <div class="col-sm-3">
+                <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedFindBy"
+                    (change)="onChangeFindBy()" id="findByField" name="findByField" #findByField="ngModel">
+                    <option disabled selected value="">Select FindBy</option>
+                    <option value="Display Name">Display Name</option>
+                    <option value="Line Key">Line Key</option>
+                </select>
+            </div>
+           
+            
+            <label *ngIf="selectedFindBy==='Line Key'" for="resourceLineField"
+            class="col-sm-2 col-form-label phone-label">LineKey</label>
+            
+        <div class="col-sm-3" *ngIf="selectedFindBy==='Line Key'">
+            <input required type="number" name="resourceLineField" id="resourceLineField" min="0"
+                placeholder="Enter LineKey" forbiddenValue='' class="form-control"
+                [(ngModel)]="selectedResourceLine" #resourceLineField="ngModel">
+        </div>
+        
+        <label *ngIf="selectedFindBy==='Display Name'" for="displayNameField" 
+            class="col-sm-2 col-form-label phone-label">Display Name</label>
+      
+        <div class="col-sm-3" *ngIf="selectedFindBy==='Display Name'">
+            <input required type="text" name="displayNameField" id="displayNameField"
+                placeholder="Enter Display Name" forbiddenValue='' class="form-control"
+                [(ngModel)]="selectedResourceLine" #displayNameField="ngModel">
+        </div>
+            </div>
+            <!--  Led Status -->
+            <hr class="separator" *ngIf="selectedValidateBlfType==='BLF - State'" for="validateBlfField">  
+                <div class="row form-group" *ngIf="selectedValidateBlfType==='BLF - State'" for="validateBlfField">
+                    <label class="col-sm-2 col-form-label phone-label">Color</label>
+               
+                <div class="col-10">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td style="width: 120px">
+                                    <label class="phone-label">
+                                        <input type="radio" value="none" [(ngModel)]="ledStatus"
+                                            name="ledStatus">&nbsp;None&nbsp;
+                                    </label>
+                                </td>
+                                <td style="width: 120px">
+                                    <label class="phone-label">
+                                        <input type="radio" value="Green" [(ngModel)]="ledStatus" name="ledStatus">
+                                        &nbsp;Green&nbsp;
+                                    </label>
+                                </td>
+                                <td style="width: 120px">
+                                    <label class="phone-label">
+                                        <input type="radio" value="Red" [(ngModel)]="ledStatus"
+                                            name="ledStatus">&nbsp;Red&nbsp;
+                                    </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+           </div>
+           <hr class="separator" *ngIf="selectedValidateBlfType==='BLF - State'" for="validateBlfField">   
+                <!-- mode -->
+                <div class="row form-group" *ngIf="selectedValidateBlfType==='BLF - State'">
+                    <label class="col-sm-2 col-form-label phone-label">Mode</label>
+
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedMode1" id="modeField"
+                        name="modeField" #modeField="ngModel">
+                        <option disabled selected value="">Select Mode</option>
+                        <option *ngFor="let mode of modes" [value]="mode">{{mode | titlecase}}</option>
+                    </select>
+                </div>
+                <!-- flash -->
+                
+                    <label class="col-sm-2 col-form-label phone-label">Flash</label>
+                
+                <div class="col-sm-3">
+                    <select required forbiddenValue="" class="form-control" [(ngModel)]="selectedFlashType"
+                        id="flashField" name="flashField" #flashField="ngModel">
+                        <option disabled selected value="">Select Flash</option>
+                        <option *ngFor="let item of flash" [value]="item">{{item | titlecase}}</option>
+                    </select>
+                </div>
+            </div>
+            <hr class="separator">  
+            <label for="failure" class="col-sm-5 col-form-label phone-label">Continue On Failure</label>
+                <div class="col-sm-3" style="margin-left: 173px; margin-top: -29px;">
+                    <label class="phone-label">
+                        <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure"
+                            #failure="ngModel">&nbsp;
+                        <span>True</span>
+                    </label>&nbsp;
+                    <label class="phone-label">
+                        <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure"
+                            #failure="ngModel">
+                        &nbsp;
+                        <span>False</span>
+                    </label>
+                </div>
+            </div>
+        
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="title" class="mr-auto"
+            style="background-color: #7694B7; height: 30px; width: 30px; border-radius: 100%; margin-top:-2%">
+            <img src="assets/images/icons/info.svg" title="{{title}}" style="width:30px; height:30px;">
+        </div>
+        <button (click)="cancel()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+            <span *ngIf="!actionToEdit">
+                Insert Action
+            </span>
+            <span *ngIf="actionToEdit">
+                Update Action
+            </span>
+        </button>
+    </div>
+</form>

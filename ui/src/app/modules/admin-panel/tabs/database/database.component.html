@@ -1,0 +1,24 @@
+<div class="row" style="background-color:#FFFFFF; margin-top: 15px;">
+  <div class="db-list col-12">
+    <button type="button" class="btn-new" (click)="createDatabase()">Create Database</button>
+    <br>
+    <data-table #dbsGrid [columnDefs]="dbColumns" data="dbs" [colsTag]="'databases-view'">
+      <tableRow>
+        <ng-template let-item="item" class="templateClass">
+          <tr class="strip-table">
+            <td class="regular-text" [width]="getColumnWidth(dbColumns[0])">{{item.server}} </td>
+            <td class="regular-text" [width]="getColumnWidth(dbColumns[1])">{{item.hostname}} </td>
+            <td class="regular-text" [width]="getColumnWidth(dbColumns[2])">{{item.ipaddress}}</td>
+            <td class="regular-text" [width]="getColumnWidth(dbColumns[3])">{{item.directory}}</td>
+            <td class="regular-text" [width]="getColumnWidth(dbColumns[4])">{{item.username}}</td>
+            <td class="regular-text" [width]="getColumnWidth(dbColumns[5])">{{item.password}}</td>
+            <td class="regular-text" [width]="getColumnWidth(dbColumns[6])">{{item.connectivity}}</td>
+            <td class="regular-text" [width]="getColumnWidth(dbColumns[7])">
+              <label>Edit</label>
+              <label>Backup Now</label></td>
+          </tr>
+        </ng-template>
+      </tableRow>
+    </data-table>
+  </div>
+</div>

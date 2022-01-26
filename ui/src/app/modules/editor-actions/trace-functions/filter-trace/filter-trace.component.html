@@ -1,0 +1,81 @@
+<div class="modal-header" draggableModal>
+  <label class="modal-title">Filter Trace</label>
+  <button type="button" class="close" aria-label="Close" (click)="cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #myActionForm="ngForm">
+  <div class="modal-body">
+    <div class="mycontainer">
+      <div class="form-group row">
+        <label for="inTraceField" class="col-sm-2 col-form-label phone-label">In Trace</label>
+        <div class="col-sm-3">
+          <select required forbiddenValue="" class="form-control" [(ngModel)]="inTrace" id="inTraceField"
+            name="inTraceField" #inTraceField="ngModel">
+            <option disabled selected value="">Select Trace</option>
+            <option *ngFor="let variable of variables" value="{{variable.name}}">{{variable.name}}</option>
+          </select>
+        </div>
+        <label for="outTraceField" class="col-sm-3 col-form-label phone-label">Out Trace</label>
+        <div class="col-sm-3">
+          <select required forbiddenValue="" class="form-control" [(ngModel)]="outTrace" id="outTraceField"
+            name="outTraceField" #outTraceField="ngModel">
+            <option disabled selected value="">Select Trace</option>
+            <option *ngFor="let variable of variables" value="{{variable.name}}">{{variable.name}}</option>
+          </select>
+        </div>
+      </div>
+      <hr class="separator">
+      <div class="form-group row">
+        <label for="expressionField" class="col-sm-2 col-form-label phone-label">Expression</label>
+        <div class="col-sm-3">
+          <input required type="text" placeholder="Enter expression" class="form-control" [(ngModel)]="expression"
+            name="expressionField" #expressionField="ngModel">
+        </div>
+        <label for="expressionField" class="col-sm-3 col-form-label phone-label">MaxWaitTime (in
+          seconds)</label>
+        <div class="col-sm-3">
+          <input required type="text" placeholder="Max wait time" class="form-control" [(ngModel)]="maxWait"
+            name="maxWaitField" #maxWaitField="ngModel">
+        </div>
+      </div>
+      <hr class="separator">
+      <div class="form-group row">
+        <label for="result" class="col-sm-2 col-form-label phone-label">Result In</label>
+        <div class="col-sm-3">
+          <input required type="text" name="resultField" placeholder="Enter result" class="form-control"
+            [(ngModel)]="result" #resultField="ngModel">
+        </div>
+        <label for="failure" class="col-sm-3 col-form-label phone-label">Continue OnFailure</label>
+        <div class="col-sm-3" style="margin-top: 5px;margin-left: 2%; padding-left:0px;">
+          <label class="phone-label">
+            <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure" #failure="ngModel">&nbsp;
+            <span>True</span>
+          </label>&nbsp;
+          <label class="phone-label">
+            <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure" #failure="ngModel">
+            &nbsp;
+            <span>False</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div *ngIf="title" class="mr-auto"
+      style="background-color: #7694B7; height: 30px; width: 30px; border-radius: 100%; margin-top:-2%">
+      <img src="assets/images/icons/info.svg" title="{{title}}" style="width:30px; height:30px;">
+    </div>
+    <button (click)="cancel()" class="modal-cancel-btn">
+      Cancel
+    </button>
+    <button class="modal-scs-btn" (click)="insertAction()" [disabled]="!myActionForm.form.valid">
+      <span *ngIf="!actionToEdit">
+        Insert Action
+      </span>
+      <span *ngIf="actionToEdit">
+        Update Action
+      </span>
+    </button>
+  </div>
+</form>

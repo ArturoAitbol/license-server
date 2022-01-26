@@ -1,0 +1,130 @@
+<div class="modal-header" draggableModal>
+    <label class="modal-title">Declare</label>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="cancel()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<form (keydown.enter)="$event.preventDefault()" #varDefForm="ngForm">
+    <div class="modal-body">
+        <div class="mycontainer">
+            <div *ngFor="let itemResource of resourceList; let i = index">
+                <div class="form-group row">
+                    <label for="varNameField{{i}}" class="col-sm-1 col-form-label phone-label">Declare</label>
+                    <div class="col-sm-3">
+                        <input required type="text" (keydown.space)="$event.preventDefault()" pattern="[^\s]+"
+                            [ngStyle]="{'border-left':(itemResource?.markDirty)?'5px solid #BC2426':'' }"
+                            name="varNameField{{i}}" placeholder="Enter name" class="form-control"
+                            (change)="onChangeInput(i);" [(ngModel)]="resourceList[i].varName" #varNameField="ngModel"
+                            appUniqueResource>
+                    </div>
+                    <label for="resourceField{{i}}" class="col-sm-2 col-form-label phone-label">as Resource:</label>
+                    <div class="col-sm-3">
+                        <select required forbiddenValue="0" [(ngModel)]="resourceList[i].selectedResourceIndex"
+                            (change)="onSelectResource($event.target.value, i)" name="resourceField{{i}}"
+                            id="resourceField{{i}}" class="form-control" #resourceField="ngModel">
+                            <option disabled value="0" selected>Select Resource</option>
+                            <option *ngFor="let resource of resources" value="{{resource.id}}">{{resource.type}}
+                            </option>
+                        </select>
+                    </div>
+                    <label *ngIf="enableDUTCheckbox(i)" for="dut{{i}}"
+                        title="This when checked creates a logic where all the phones in the DUT phone list will be tested using auto-parallelization."
+                        class="col-sm-1 col-form-label phone-label">DUT</label>
+                    <div *ngIf="enableDUTCheckbox(i)" class="col-sm-2">
+                        <input type="checkbox" class="form-check-input" name="dut{{i}}" id="dut{{i}}"
+                            title="This when checked creates a logic where all the phones in the DUT phone list will be tested using auto-parallelization."
+                            [(ngModel)]="resourceList[i].selectedDut">
+                        <button *ngIf="resourceList.length > 1" class="plus-btn" (click)=deleteLine(i)
+                            style="float: right;"><i class="fa fa-minus" aria-hidden="true"
+                                style="color: #7694B7;"></i></button>
+                    </div>
+                    <div *ngIf="!(enableDUTCheckbox(i))" class="col">
+                        <button *ngIf="resourceList.length > 1" class="plus-btn" (click)=deleteLine(i)
+                            style="float: right;"><i class="fa fa-minus" aria-hidden="true"
+                                style="color: #7694B7;"></i></button>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label *ngIf="resourceList[i].vendors && resourceList[i].vendors.length>0" for="vendorsField{{i}}"
+                        class="col-sm-1 col-form-label phone-label">Vendors:</label>
+                    <div *ngIf="resourceList[i].vendors && resourceList[i].vendors.length>0" class="col-sm-3">
+                        <select required forbiddenValue="0" [(ngModel)]="resourceList[i].selectedVendorIndex"
+                            (change)="onSelectVendor($event.target.value, i)" id="vendorsField{{i}}"
+                            name="vendorsField{{i}}" #vendorsField="ngModel" class="form-control">
+                            <option disabled selected value="0">Select Vendor</option>
+                            <option *ngFor="let vendor of resourceList[i].vendors" value={{vendor.id}}>
+                                {{ vendor.name | poly }}</option>
+                        </select>
+                    </div>
+                    <label *ngIf="resourceList[i].models && resourceList[i].selectedResourceIndex !=3 && resourceList[i].selectedResourceIndex !=5 " class="col-sm-2 col-form-label phone-label"
+                        for="models{{i}}">Models:</label>
+                    <div *ngIf="resourceList[i].models && resourceList[i].selectedResourceIndex ==2" class="col-sm-3">
+                        <select required forbiddenValue="0" [(ngModel)]="resourceList[i].selectedModelIndex"
+                            (change)="onSelectModel($event.target.value,i)" id="model{{i}}" name="model{{i}}"
+                            class="form-control">
+                            <option disabled selected value="0">Select Model</option>
+                            <option *ngFor="let model of resourceList[i].models" value={{model.id}}>
+                                {{model.name}}
+                            </option>
+                        </select>
+                    </div>
+                    <div *ngIf="resourceList[i].models && resourceList[i].selectedVendorIndex != 7 && resourceList[i].selectedResourceIndex !=2 && resourceList[i].selectedResourceIndex !=3 && resourceList[i].selectedResourceIndex !=5 "
+                        class="col-sm-3">
+                        <select required forbiddenValue="0" [(ngModel)]="resourceList[i].selectedModelIndex"
+                            (change)="onSelectModel($event.target.value, i)" id="model{{i}}" name="model{{i}}"
+                            class="form-control">
+                            <option disabled selected value="0">Select Model</option>
+                            <option *ngFor="let model of resourceList[i].models" value={{model.id}}>
+                                {{model.name}}
+                            </option>
+                        </select>
+                    </div>
+                    <!-- </div> -->
+                    <!-- <label *ngIf="submodels" class="col-sm-1 col-form-label phone-label" for="submodels">SubModel:</label>
+                            <div *ngIf="submodels" class="col-sm-3">
+                              <select [(ngModel)]="selectedSubModelIndex" (change)="onSelectSubModel($event.target.value)" id="submodels"
+                                name="submodel" class="form-control" style="margin-left: 18px">
+                                <option selected disabled value="0">Select Submodel</option>
+                                <option *ngFor="let submodel of submodels" value={{submodel.id}}>{{submodel.name}}</option>
+                              </select>
+                            </div> -->
+                </div>
+                <hr class="separator" *ngIf="resourceList.length > 1">
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-1">
+                    <button style="margin-left:1.5px;" class=" plus-btn" (click)=addLine()><i class="fa fa-plus"
+                            aria-hidden="true" style="color: #7694B7;"></i></button>
+                </div>
+
+                <!-- <label for="failure" class="col-sm-3 col-form-label phone-label">Continue On
+                Failure</label>
+              <div class="col-sm-3" style="margin-top: 5px; padding-left:0px;">
+                <label class="phone-label">
+                  <input type="radio" name="failure" [value]="true" [(ngModel)]="continueOnFailure" #failure="ngModel">&nbsp;
+                  <span>True</span>
+                </label>&nbsp;
+                <label class="phone-label">
+                  <input type="radio" name="failure" [value]="false" [(ngModel)]="continueOnFailure" #failure="ngModel">
+                  &nbsp;
+                  <span>False</span>
+                </label>
+              </div> -->
+            </div>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div *ngIf="title" class="mr-auto"
+            style="background-color: #7694B7; height: 30px; width: 30px; border-radius: 100%; margin-top:-2%">
+            <img src="assets/images/icons/info.svg" title="{{title}}" style="width:30px; height:30px;">
+        </div>
+        <button (click)="cancel()" class="modal-cancel-btn">
+            Cancel
+        </button>
+        <button class="modal-scs-btn" (click)="insertResource()"
+            [disabled]="!varDefForm.form.valid || _disableInsertButton ">
+            Insert Action
+        </button>
+    </div>
+</form>

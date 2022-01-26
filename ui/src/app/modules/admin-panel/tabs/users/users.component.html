@@ -1,0 +1,123 @@
+<div class="row" style="background-color:#FFFFFF;">
+    <div class="col-12">
+        <div class="panel panel-default" style="background-color: white;">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-4">
+                        <label class="title">Users&nbsp;</label>
+                        <button type="button" class="btn-new nav-item" (click)="createUser()">New</button>
+                        <button type="button" class="btn-new nav-item" [disabled]="!checkForUserSelected" (click)="lockOrUnlockSelectedUser('Unlock')">Lock</button>
+                        <button type="button" class="btn-new nav-item" [disabled]="!checkForUserSelected" (click)="lockOrUnlockSelectedUser('Lock')">Unlock</button>
+
+                    </div>
+                    <div class="col-8" style="text-align: right; ">
+                        <label class="count" style="margin-left: 98px;padding-right:2%;">
+                            Users count:
+                            {{(users| filter: {name: searchQuery, email: searchQuery, role: searchQuery}).length }}
+                        </label>
+                        <i *ngIf="searchQuery" class="fa fa-filter" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2 col-project" style="display: flex;">
+                    <label class="container select-all" style="margin-left: 25px;width: 111px;">
+                        <input type="checkbox" [(ngModel)]="allUsersChecked" data-md-icheck
+                            [disabled]="(users| filter: {name: searchQuery, email: searchQuery, role: searchQuery}).length  == 0 || users.length==0"
+                            (change)="selectAllUsers(); toggleVisibility($event);" style="width: 50%; height: 100%;" />
+                        <button *ngIf="markedUsers" class="action-btn">Unselect All</button>
+                        <button *ngIf="!markedUsers" class="action-btn">Select All</button>
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+                <div class="col-2">
+                    <select class="form-control" [(ngModel)]="type" id="fromLine" style="font-size: 14px;" (change)="onChangeFilter($event.target.value)" name="fromLine" #fromLine="ngModel">
+                        <option selected value="all">All</option>
+                        <option value="locked">Locked</option>
+                        <option value="unlocked">Unlocked</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-12">
+                    <data-table #usersGrid [columnDefs]="userColumns" [dataflow]="isRequestCompleted" [data]="users| filter: {name: searchQuery, email: searchQuery,role: searchQuery}" [selectedHeight]="setDataTableHeight" [colsTag]="'users-view'">
+                        <tableRow>
+                            <ng-template let-item="item" class="templateClass">
+                                <tr class="strip-table">
+                                    <td id="checkbox" [width]="getColumnWidth(userColumns[0])" (click)="$event.stopPropagation();">
+                                        <label class="container" style="margin-top:3px;">
+                                            <input type="checkbox" [(ngModel)]="item.selected" data-md-icheck
+                                                (change)="checkIfAllUsersSelected();isUserLockedController();isUserUnlockedController(); toggleVisibility($event);">
+                                            <span class="checkmarkTCP"
+                                                [style.outline-color]="!item.selected ? '#BEBEBE' : '#203C66'"></span>
+                                        </label>
+                                    </td>
+                                    <td [width]="getColumnWidth(userColumns[1])" (click)="$event.stopPropagation();">
+                                        <span class="icon">
+                                            <i *ngIf="item?.locked" style="font-size: 16px;color:  lightslategray;"
+                                                class="fa fa-lock" aria-hidden="true"></i>
+                                            <i class="fa fa-lock" *ngIf="!item?.locked"
+                                                style="font-size: 16px;display: none;" aria-hidden="true"></i>
+                                        </span>
+                                    </td>
+                                    <td [title]="item.name" class="regular-text"
+                                        style="text-align:left !important;"
+                                        [ngStyle]="{'padding-left':(item.locked)?'':'3%'}"
+                                        [width]="getColumnWidth(userColumns[2])">
+                                        {{item.name}}
+                                    </td>
+                                    <td [title]="item.loginId" class="regular-text"
+                                        [width]="getColumnWidth(userColumns[3])">
+                                        {{item.loginId}} </td>
+                                    <td class="regular-text" [title]="item?.roleName"
+                                        [width]="getColumnWidth(userColumns[4])">{{item?.roleName | blank}}
+                                    </td>
+                                    <td class="regular-text" [title]="item?.hierarchyName" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [width]="getColumnWidth(userColumns[5])">
+                                        {{item?.hierarchyName | blank}}
+                                    </td>
+                                    <td [width]="getColumnWidth(userColumns[6])">
+                                        <ng-template #popTemplate>
+                                            <div>
+                                                <ul style="list-style: none; margin: 0; padding: 0;">
+                                                    <li>
+                                                        <button class="pop-option" (click)="$event.stopPropagation();editUser(item);pop.hide()">
+                                                            Edit
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="pop-option" (click)="$event.stopPropagation();pop.hide();lockOrUnlockUser(item,'')">
+                                                            {{(item?.locked)?'Unlock':'Lock'}}
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="pop-option" (click)="$event.stopPropagation();deleteUser(item);pop.hide()">
+                                                            Delete
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="pop-option" (click)="$event.stopPropagation();resetPassword(item.id);pop.hide()">
+                                                            Reset Password
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </ng-template>
+                                        <button type="button" class="btn-opt" #pop="bs-popover" [popover]="popTemplate" placement="bottom" [outsideClick]="true" (click)="$event.stopPropagation();" (onShown)="closeOldPop(pop)" data-container="body">
+                                            <!-- <i class="fa fa-circle circle-menu" aria-hidden="true">&nbsp;</i>
+                                            <i class="fa fa-circle circle-menu" aria-hidden="true">&nbsp;</i>
+                                            <i class="fa fa-circle circle-menu" aria-hidden="true"></i> -->
+                                            <a style="font-size: 1.4rem; letter-spacing: -2px;
+                color: #5F5F5F;">...</a>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </tableRow>
+                    </data-table>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
