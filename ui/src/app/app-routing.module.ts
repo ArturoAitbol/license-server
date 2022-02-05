@@ -4,7 +4,11 @@ import { LoginPageComponent } from './views/login-page/login-page.component';
 import { AuthGuard } from './guards/auth.guard';
 
 const config: ExtraOptions = {
-  onSameUrlNavigation: 'reload',
+    onSameUrlNavigation: 'reload',
+    relativeLinkResolution: 'legacy'
+}{
+    onSameUrlNavigation: 'reload',
+    relativeLinkResolution: 'legacy'
 };
 
 const routes: Routes = [
