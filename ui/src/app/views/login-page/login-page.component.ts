@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { first } from 'rxjs/operators';
-import { ToastrService } from 'ngx-toastr';
 @Component({
     selector: 'login-page',
     templateUrl: './login-page.component.html',
@@ -17,8 +16,7 @@ export class LoginPageComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private authenticationService: AuthenticationService,
-        private toastr: ToastrService,
+        private authenticationService: AuthenticationService
     ) {
         if (this.authenticationService.currentUserValue) {
             this.router.navigate(['/']);
@@ -36,7 +34,7 @@ export class LoginPageComponent implements OnInit {
         this.authenticationService.login(this.username, this.password)
             .pipe(first()).subscribe((response: any) => {
                 if (!response.success) {
-                    this.toastr.error('Login Failed: ' + response.message, 'Error');
+                    // this.toastr.error('Login Failed: ' + response.message, 'Error');
                 } else {
                     this.router.navigate([this.returnUrl]);
                 }

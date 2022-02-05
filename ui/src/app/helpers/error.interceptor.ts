@@ -3,11 +3,11 @@ import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/c
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthenticationService } from '../services/authentication.service';
-import { ToastrService } from 'ngx-toastr';
+// import { ToastrService } from 'ngx-toastr';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-    constructor(private authenticationService: AuthenticationService, private toastr: ToastrService) { }
+    constructor(private authenticationService: AuthenticationService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(catchError(err => {
@@ -20,7 +20,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                 // location.reload(true);
             }
             if (err.status === 500) {
-                this.toastr.error("Internal Server Error: " + err.error.exception, "Error");
+                // this.toastr.error("Internal Server Error: " + err.error.exception, "Error");
                 // this.authenticationService.logout();
                 // location.reload(true);
             }

@@ -2,7 +2,6 @@ import { Component, OnInit, AfterContentInit, ChangeDetectorRef } from '@angular
 import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 import { User } from './model/user';
-import { UtilService } from './services/util.service';
 import { Role } from './helpers/role';
 
 @Component({
@@ -62,7 +61,6 @@ export class AppComponent implements OnInit, AfterContentInit {
 
     constructor(private router: Router,
         private authenticationService: AuthenticationService,
-        private utilService: UtilService,
         private cdr: ChangeDetectorRef
     ) {
         // this.opened = true;
@@ -73,7 +71,6 @@ export class AppComponent implements OnInit, AfterContentInit {
         this.closeOnClickOutside = false;
         this.closeOnClickBackdrop = false;
         this.animation = true;
-        this.utilService.changedBarState.emit(this.opened);
     }
 
     userEnabled(role: string) {
@@ -110,17 +107,17 @@ export class AppComponent implements OnInit, AfterContentInit {
     }
 
     toggleClosed(): void {
-        this.utilService.changedBarState.emit(this.opened);
+        // this.utilService.changedBarState.emit(this.opened);
     }
 
     toggleOpened(): void {
-        setTimeout(() => {
-            this.checkForTogglePreference();
-            this.opened = !this.opened;
-            this.utilService.changedBarState.emit(this.opened);
-            // store the user preference of toggle in local-storage
-            localStorage.setItem('user-toggle-preference', JSON.stringify(this.opened));
-        }, 0);
+        // setTimeout(() => {
+        //     this.checkForTogglePreference();
+        //     this.opened = !this.opened;
+        //     this.utilService.changedBarState.emit(this.opened);
+        //     // store the user preference of toggle in local-storage
+        //     localStorage.setItem('user-toggle-preference', JSON.stringify(this.opened));
+        // }, 0);
     }
 
     redirectTo(redirectPath: any) {
