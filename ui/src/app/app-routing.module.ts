@@ -6,9 +6,6 @@ import { AuthGuard } from './guards/auth.guard';
 const config: ExtraOptions = {
     onSameUrlNavigation: 'reload',
     relativeLinkResolution: 'legacy'
-}{
-    onSameUrlNavigation: 'reload',
-    relativeLinkResolution: 'legacy'
 };
 
 const routes: Routes = [

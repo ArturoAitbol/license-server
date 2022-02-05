@@ -110,19 +110,19 @@ export class Utility {
     }
 
     public static downloadFile(data: any, filename: string): void {
-        const blob = new Blob([data], { type: 'application/octet-stream' });
-        const url = window.URL.createObjectURL(blob);
-        if (navigator.msSaveOrOpenBlob) {
-            navigator.msSaveBlob(blob, filename);
-        } else {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-        window.URL.revokeObjectURL(url);
+        // const blob = new Blob([data], { type: 'application/octet-stream' });
+        // const url = window.URL.createObjectURL(blob);
+        // if (navigator.msSaveOrOpenBlob) {
+        //     navigator.msSaveBlob(blob, filename);
+        // } else {
+        //     const a = document.createElement('a');
+        //     a.href = url;
+        //     a.download = filename;
+        //     document.body.appendChild(a);
+        //     a.click();
+        //     document.body.removeChild(a);
+        // }
+        // window.URL.revokeObjectURL(url);
     }
     /**
      * get data table height by height of the screen

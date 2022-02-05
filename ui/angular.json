@@ -18,29 +18,13 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets",
-              "src/privacy.html",
-              {
-                "glob": "**/*",
-                "input": "node_modules/@covalent/code-editor/assets/monaco",
-                "output": "/assets/monaco"
-              }
-            ],
+            "assets": ["src/favicon.ico", "src/assets", "src/privacy.html"],
             "styles": [
               "src/styles.css",
               "src/styles.scss",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/font-awesome/css/font-awesome.css",
-              "node_modules/@covalent/core/common/platform.scss",
-              "node_modules/ngx-toastr/toastr.css",
-              "node_modules/ngx-ui-switch/ui-switch.component.css",
-              "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
-              "node_modules/@ng-select/ng-select/themes/default.theme.css"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.js",
               "node_modules/bootstrap/dist/js/bootstrap.js"
             ],
             "vendorChunk": true,
@@ -112,11 +96,7 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "assets": [
-              "src/favicon.ico",
-              "src/assets",
-              "src/privacy.html"
-            ]
+            "assets": ["src/favicon.ico", "src/assets", "src/privacy.html"]
           }
         }
       }

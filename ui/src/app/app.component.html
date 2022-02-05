@@ -1,7 +1,6 @@
-
 <div class="main-container" *ngIf="currentUser">
     <app-header></app-header>
-    <div class="content">
+    <!-- <div class="content">
         <div class="col-lg-12" style="position:fixed; margin-left:-13px; z-index: 5;">
             <ng-sidebar-container class="sidebar-container col-lg-12" style="position:fixed;">
                 <ng-sidebar #sideMenu [(opened)]="opened" [mode]="mode" [position]="position" [dock]="dock" [dockedSize]="dockedSize" [closeOnClickOutside]="closeOnClickOutside" [closeOnClickBackdrop]="closeOnClickBackdrop" [animate]="animation" [sidebarClass]="'sidebar-menu'"
@@ -9,7 +8,6 @@
                     <a aria-hidden="true" style="font-size:27px; padding:9px 20px 20px 10px; position:absolute; height:100%; width:220px; background-color: #0E2346 !important;color: #FFFFFF !important;cursor: pointer;">
                         <i (click)="toggleOpened()" style="cursor: pointer; margin-top: 0;" [ngClass]="{'iconSidebarMenu': !opened, 'iconSidebarMenu_Blue': opened}">
                         </i>
-                        <!--  (click)="toggleOpened()" -->
                         <a closeSidebar class="collapse-item" *ngIf="sideMenu.opened" style="font-family:Arial, Helvetica, sans-serif; font-size:17px;cursor: pointer; margin-top: -1px;">&nbsp;&nbsp;&nbsp;Collapse
                             Menu
                         </a>
@@ -43,7 +41,7 @@
                 </div>
             </ng-sidebar-container>
         </div>
-    </div>
+    </div> -->
     <app-footer></app-footer>
 </div>
 

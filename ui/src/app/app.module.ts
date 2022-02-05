@@ -11,22 +11,25 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './navigation/header/header.component';
 import { FooterComponent } from './navigation/footer/footer.component';
 import { LoginPageComponent } from './views/login-page/login-page.component';
+import { LoadingComponent } from './generics/loading/loading.component';
 import { JwtInterceptor } from './helpers/jwt.interceptor';
 import { ErrorInterceptor } from './helpers/error.interceptor';
-
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
     declarations: [
         AppComponent,
         HeaderComponent,
         FooterComponent,
-        LoginPageComponent
+        LoginPageComponent,
+        LoadingComponent
     ],
     imports: [
         AppRoutingModule,
         BrowserModule,
         BrowserAnimationsModule,
-        HttpClientModule
+        HttpClientModule,
+        FormsModule
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
