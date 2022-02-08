@@ -26,17 +26,21 @@ export class AuthenticationService {
     return this.currentUserSubject.value;
   }
 
+  public setCurrentUserValue(user: any) {
+    this.currentUserSubject.next(user);
+  }
+
   login(username: string, password: string) {
-    return this.http.post<any>(this.apiURL + "/login", { username, password })
-      .pipe(map(data => {
-        if (data.success && data.response.accessToken) {
-          var user = data.response;
-          user.user = username;
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUserSubject.next(user);
-        }
-        return data;
-      }));
+    // return this.http.post<any>(this.apiURL + "/login", { username, password })
+    //   .pipe(map(data => {
+    //     if (data.success && data.response.accessToken) {
+    //       var user = data.response;
+    //       user.user = username;
+    //       localStorage.setItem('currentUser', JSON.stringify(user));
+    //       this.currentUserSubject.next(user);
+    //     }
+    //     return data;
+    //   }));
   }
 
   logout() {

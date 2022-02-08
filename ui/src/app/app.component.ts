@@ -82,10 +82,10 @@ export class AppComponent implements OnInit, AfterContentInit {
     }
 
     ngOnInit() {
-        this.authenticationService.currentUser.subscribe((response: any) => {
-            this.currentUser = response;
-        });
-        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+        // this.authenticationService.currentUser.subscribe((response: any) => {
+        //     this.currentUser = response;
+        // });
+        // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     }
 
     ngAfterContentInit(): void {

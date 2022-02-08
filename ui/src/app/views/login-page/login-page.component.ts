@@ -31,13 +31,20 @@ export class LoginPageComponent implements OnInit {
     }
 
     onSubmit() {
-        this.authenticationService.login(this.username, this.password)
-            .pipe(first()).subscribe((response: any) => {
-                if (!response.success) {
-                    // this.toastr.error('Login Failed: ' + response.message, 'Error');
-                } else {
-                    this.router.navigate([this.returnUrl]);
-                }
-            });
+        const loggedUserDetails = {
+            username: this.username,
+            password: this.password
+        };
+        localStorage.setItem('currentUser', JSON.stringify(loggedUserDetails));
+        this.router.navigate(['/dashboard']);
+        this.authenticationService.setCurrentUserValue(loggedUserDetails);
+        // this.authenticationService.login(this.username, this.password)
+        // .pipe(first()).subscribe((response: any) => {
+        //     if (!response.success) {
+        //         // this.toastr.error('Login Failed: ' + response.message, 'Error');
+        //     } else {
+        //         this.router.navigate([this.returnUrl]);
+        //     }
+        // });
     }
 }

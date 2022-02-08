@@ -1,0 +1,83 @@
+<div class="container-fluid dashboard-content">
+    <main>
+        <h1>Customer License Summary</h1>
+    </main>
+    <section style="float: right;">
+        <button mat-raised-button (click)="addCustomerAccount()">Add Customer Account</button>
+    </section>
+    <section class="table-section">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+            <!-- Customer Account Column -->
+            <ng-container matColumnDef="customerAccounts">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Customer Account">
+                    Customer Account
+                </th>
+                <td mat-cell *matCellDef="let element;let i=index;"> 
+                    <p (click)="onClickAccount(i)" style="cursor: pointer;">
+                        {{element.customerAccounts}} 
+                    </p>
+                </td>
+            </ng-container>
+
+            <!-- Customer SubAccount Column -->
+            <ng-container matColumnDef="customerSubAccounts">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header
+                    sortActionDescription="Sort by Customer SubAccount"> Customer SubAccount </th>
+                <td mat-cell *matCellDef="let element"> {{element.customerSubAccounts}} </td>
+            </ng-container>
+
+            <!-- Purchase Date Column -->
+            <ng-container matColumnDef="purchaseDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Purchase Date">
+                    Purchase Date </th>
+                <td mat-cell *matCellDef="let element"> {{element.purchaseDate}} </td>
+            </ng-container>
+
+            <!-- Package Type Column -->
+            <ng-container matColumnDef="packageType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Package Type">
+                    Package Type </th>
+                <td mat-cell *matCellDef="let element"> {{element.packageType}} </td>
+            </ng-container>
+
+            <!-- Renewal Column -->
+            <ng-container matColumnDef="renewalDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by  Renewal"> Renewal
+                </th>
+                <td mat-cell *matCellDef="let element"> {{element.renewalDate}} </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Status"> Status
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    <span [style.color]="getColor(element.status)">
+                        {{element.status }}
+                    </span>
+                </td>
+            </ng-container>
+
+            <!-- Action Column -->
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef> Action </th>
+                <td mat-cell *matCellDef="let element;let i=index;">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="onModifyLicense(i)">
+                            <span>Modify License</span>
+                        </button>
+                        <button mat-menu-item (click)="onDeleteAccount(i)">
+                            <span>Delete Account</span>
+                        </button>
+                    </mat-menu>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </section>
+</div>

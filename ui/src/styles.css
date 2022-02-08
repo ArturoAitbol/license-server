@@ -1,37 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
 @font-face {
-    font-family: "Helvetica Neue Medium";
-    src: url(./assets/fonts/HelveticaNeue-Medium.otf) format("opentype");
+  font-family: "Helvetica Neue Medium";
+  src: url(./assets/fonts/HelveticaNeue-Medium.otf) format("opentype");
 }
 
 @font-face {
-    font-family: "Helvetica Neue Regular";
-    src: url(./assets/fonts/HelveticaNeue-Regular.otf) format("opentype");
+  font-family: "Helvetica Neue Regular";
+  src: url(./assets/fonts/HelveticaNeue-Regular.otf) format("opentype");
 }
 
 .cdk-drag-animating {
-    transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .modal-title {
-    margin: 0% !important;
+  margin: 0% !important;
 }
 
 /* Close button style for modal */
 .close {
-    margin: -15px 0px 0px 0px !important;
+  margin: -15px 0px 0px 0px !important;
 }
 
 button:focus {
-    outline: 0 !important;
+  outline: 0 !important;
 }
 
 .select-all {
-    color: #203C66;
-    font-family: "Helvetica Neue Regular";
-    font-size: 12px;
+  color: #203c66;
+  font-family: "Helvetica Neue Regular";
+  font-size: 12px;
 }
-
+/* 
 .strip-table:nth-child(odd) {
     background: rgba(255, 255, 255, 1) 0% 0% no-repeat padding-box;
 }
@@ -44,299 +44,310 @@ tbody {
     display: block;
     overflow-y: auto;
 }
-
 thead,
 tbody tr {
     display: table;
     width: 100%;
-    /* table-layout: fixed; */
 }
+ */
 
 .ng-invalid:not(form) {
-    border-left: 5px solid #BC2426;
+  border-left: 5px solid #bc2426;
 }
 
 .invalid-message {
-    color: #BC2426;
-    font-family: "Helvetica Neue Regular";
-    font-size: 12px;
-    display: block;
-    clear: both;
+  color: #bc2426;
+  font-family: "Helvetica Neue Regular";
+  font-size: 12px;
+  display: block;
+  clear: both;
 }
 
 .ng-valid[required],
 .ng-valid.required {
-    border-left: 5px solid #42a948;
+  border-left: 5px solid #42a948;
 }
 
 .close-btn {
-    margin-top: 12px !important;
-    margin-right: 15px !important;
+  margin-top: 12px !important;
+  margin-right: 15px !important;
 }
 
 .modal-scs-btn {
-    font-family: "Helvetica Neue Regular";
-    font-style: normal;
-    color: #ffffff;
-    background: #7694B7;
-    font-size: 14px;
-    opacity: 100%;
-    border: 0;
-    border-radius: 45px;
-    height: 28px;
-    width: 123.07px;
-    outline: none;
+  font-family: "Helvetica Neue Regular";
+  font-style: normal;
+  color: #ffffff;
+  background: #7694b7;
+  font-size: 14px;
+  opacity: 100%;
+  border: 0;
+  border-radius: 45px;
+  height: 28px;
+  width: 123.07px;
+  outline: none;
 }
 
 .modal-scs-btn:focus {
-    outline: none;
-    box-shadow: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .modal-cancel-btn {
-    font-family: "Helvetica Neue Regular";
-    font-style: normal;
-    color: #7694B7;
-    font-size: 14px;
-    opacity: 100%;
-    background: #ffffff;
-    border: 0;
-    height: 28px;
-    width: 123.07px;
-    outline: none;
+  font-family: "Helvetica Neue Regular";
+  font-style: normal;
+  color: #7694b7;
+  font-size: 14px;
+  opacity: 100%;
+  background: #ffffff;
+  border: 0;
+  height: 28px;
+  width: 123.07px;
+  outline: none;
 }
 
 .modal-cancel-btn:focus {
-    outline: none;
-    box-shadow: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .modal-header {
-    background-color: #C2C3C6;
+  background-color: #c2c3c6;
 }
 
 .modal-title {
-    margin-left: 15px;
-    font-size: 22px;
-    font-family: "Helvetica Neue Regular";
-    color: #000000;
+  margin-left: 15px;
+  font-size: 22px;
+  font-family: "Helvetica Neue Regular";
+  color: #000000;
 }
 
 .modal-body {
-    margin-left: 15px;
-    background: #ffffff;
-    max-height: 600px;
-    overflow-y: auto;
+  margin-left: 15px;
+  background: #ffffff;
+  max-height: 600px;
+  overflow-y: auto;
 }
 
 .modal-dialog {
-    overflow-y: initial !important;
+  overflow-y: initial !important;
 }
 
 .col-form-label {
-    font-size: 14px;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    font-style: normal;
-    color: #414141;
+  font-size: 14px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-style: normal;
+  color: #414141;
 }
 
 .form-control {
-    color: #414141;
-    font-size: 14px;
-    font-style: normal;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #414141;
+  font-size: 14px;
+  font-style: normal;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 7px;
-    height: 7px;
+  -webkit-appearance: none;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: #babac0;
-    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  background-color: #babac0;
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 ::-webkit-scrollbar-button {
-    display: none;
+  display: none;
 }
 
 .close {
-    margin-right: 15px;
-    margin-top: -12px;
+  margin-right: 15px;
+  margin-top: -12px;
 }
 
 .close:focus {
-    outline: none;
-    box-shadow: none;
+  outline: none;
+  box-shadow: none;
 }
 
 /* progress bar styles*/
 .customClass .progress-bar {
-    background: #56B6CA;
-    /*background: #203C66;*/
+  background: #56b6ca;
+  /*background: #203C66;*/
 }
 
 .customClass .progress {
-    background: #F3F8F9;
+  background: #f3f8f9;
 }
 
 /*
  check-box styles
 */
 .chekboxcontainer {
-    display: block;
-    position: relative;
-    padding-left: 35px;
-    padding-right: 0;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  padding-right: 0;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .chekboxcontainer input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
 }
 
 .checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin-top: 2px;
-    margin-left: 10px;
-    height: 15px;
-    width: 15px;
-    background-color: none;
-    outline-style: solid;
-    outline-color: #203C66;
-    outline-width: 1.5pt;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 2px;
+  margin-left: 10px;
+  height: 15px;
+  width: 15px;
+  background-color: none;
+  outline-style: solid;
+  outline-color: #203c66;
+  outline-width: 1.5pt;
 }
 
 .checkmarkTCP {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin-top: -3px;
-    margin-left: 10px;
-    height: 15px;
-    width: 15px;
-    background-color: none;
-    outline-style: solid;
-    outline-color: #203C66;
-    outline-width: 1.5pt;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: -3px;
+  margin-left: 10px;
+  height: 15px;
+  width: 15px;
+  background-color: none;
+  outline-style: solid;
+  outline-color: #203c66;
+  outline-width: 1.5pt;
 }
 
-.chekboxcontainer:hover input~.checkmark {
-    background-color: #ccc;
+.chekboxcontainer:hover input ~ .checkmark {
+  background-color: #ccc;
 }
 
-.chekboxcontainer:hover input~.checkmarkTCP {
-    background-color: #ccc;
+.chekboxcontainer:hover input ~ .checkmarkTCP {
+  background-color: #ccc;
 }
 
-.chekboxcontainer input:checked~.checkmark {
-    background-color: #203C66;
+.chekboxcontainer input:checked ~ .checkmark {
+  background-color: #203c66;
 }
 
-.chekboxcontainer input:checked~.checkmarkTCP {
-    background-color: white;
+.chekboxcontainer input:checked ~ .checkmarkTCP {
+  background-color: white;
 }
 
 .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+  content: "";
+  position: absolute;
+  display: none;
 }
 
 .checkmarkTCP:after {
-    content: "";
-    position: absolute;
-    display: none;
+  content: "";
+  position: absolute;
+  display: none;
 }
 
-.chekboxcontainer input:checked~.checkmark:after {
-    display: block;
+.chekboxcontainer input:checked ~ .checkmark:after {
+  display: block;
 }
 
-.chekboxcontainer input:checked~.checkmarkTCP:after {
-    display: block;
+.chekboxcontainer input:checked ~ .checkmarkTCP:after {
+  display: block;
 }
 
 .chekboxcontainer .checkmark:after {
-    left: 5px;
-    top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 .chekboxcontainer .checkmarkTCP:after {
-    left: 5px;
-    top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid #203C66;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #203c66;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 .select-all {
-    color: #203C66;
-    font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, sans-serif;
-    font-size: 12px;
+  color: #203c66;
+  font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular",
+    "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 12px;
 }
 
 .action-btn {
-    color: #203c66;
-    font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular", "Helvetica Neue", Helvetica, sans-serif;
-    font-size: 12px;
-    background: none;
-    border: none;
+  color: #203c66;
+  font-family: "FontAwesome", "HelveticaNeue-Regular", "Helvetica Neue Regular",
+    "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 12px;
+  background: none;
+  border: none;
 }
 
 .action-btn:focus {
-    outline: none;
-    box-shadow: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .ng-sidebar__content--animate {
-    overflow-y: hidden !important;
+  overflow-y: hidden !important;
 }
 .ng-select.ng-select-single .ng-select-container {
-    border: none;
+  border: none;
 }
 .bs-timepicker-field {
-    width: 70px !important;
+  width: 70px !important;
 }
-.form-control.is-invalid, .was-validated .form-control:invalid{
-    background-image: none !important;
+.form-control.is-invalid,
+.was-validated .form-control:invalid {
+  background-image: none !important;
 }
 .bs-datepicker-body table th {
-    font-size: 13px;
-    color: #9aaec1;
-    font-weight: 400;
-    text-align: center;
-    width: 33px;
+  font-size: 13px;
+  color: #9aaec1;
+  font-weight: 400;
+  text-align: center;
+  width: 33px;
 }
-.autocomplete-wrap .autocomplete-container .suggestions-container{
-    position: fixed !important;
-    width: 12% !important;
+.autocomplete-wrap .autocomplete-container .suggestions-container {
+  position: fixed !important;
+  width: 12% !important;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #fafafa !important;
 }

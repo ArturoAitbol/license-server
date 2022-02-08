@@ -1,6 +1,6 @@
 // Angular modules
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,26 +15,35 @@ import { LoadingComponent } from './generics/loading/loading.component';
 import { JwtInterceptor } from './helpers/jwt.interceptor';
 import { ErrorInterceptor } from './helpers/error.interceptor';
 import { FormsModule } from '@angular/forms';
-
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { MaterialModule } from './modules/material/material.module';
+import { DialogComponent } from './generics/loading/dialog/dialog.component';
+import { AddCustomerAccountModalComponent } from './dashboard/add-customer-account-modal/add-customer-account-modal.component';
 @NgModule({
     declarations: [
         AppComponent,
         HeaderComponent,
         FooterComponent,
         LoginPageComponent,
-        LoadingComponent
+        LoadingComponent,
+        DashboardComponent,
+        DialogComponent,
+        AddCustomerAccountModalComponent
     ],
     imports: [
         AppRoutingModule,
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,
-        FormsModule
+        FormsModule,
+        MaterialModule
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    entryComponents: [AddCustomerAccountModalComponent]
 })
 export class AppModule { }

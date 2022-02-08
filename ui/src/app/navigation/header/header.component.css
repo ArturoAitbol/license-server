@@ -55,7 +55,7 @@
 button:focus {
   outline: 0;
 }
-
+/* 
 :host>>>.popover>.arrow {
   display: none;
 }
@@ -70,7 +70,7 @@ button:focus {
 :host>>>.popover.bottom {
   margin-top: 1px !important;
   margin-left: 55px !important;
-}
+} */
 
 .pop-option {
   background-color: Transparent;

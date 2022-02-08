@@ -1,0 +1,15 @@
+.dashboard-content {
+  padding: 20px;
+}
+table {
+  width: 100%;
+}
+.table-section {
+  margin-top: 5%;
+}
+th.mat-sort-header-sorted {
+  color: black;
+}
+.mat-row:hover {
+  background-color: #edf5f7;
+}

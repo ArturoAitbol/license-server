@@ -1,4 +1,6 @@
-.main-container {}
+.main-container {
+  padding: 10px;
+}
 
 .content {
   background: #f1f0f0;
