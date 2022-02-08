@@ -2,7 +2,7 @@
   "name": "license-service-portal",
   "version": "1.0.0",
   "scripts": {
-    "ng-high-memory": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --base-href=/onPOINT/ --configuration production",
+    "ng-high-memory": "node --max_old_space_size=8000 ./node_modules/@angular/cli/bin/ng build --base-href=/license-server/ --configuration production",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",

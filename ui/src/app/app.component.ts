@@ -10,7 +10,7 @@ import { Role } from './helpers/role';
     styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, AfterContentInit {
-    title = 'onPOINT';
+    title = 'license-server';
     opened: boolean;
     mode: string;
     position: string;

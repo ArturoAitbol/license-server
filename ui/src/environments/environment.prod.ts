@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiEndpoint: '/onPOINT/api'
+    apiEndpoint: '/license-server/api'
 };

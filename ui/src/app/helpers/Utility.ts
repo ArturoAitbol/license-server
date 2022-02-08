@@ -13,7 +13,7 @@ export enum PageNames {
 export class Utility {
 
     // tslint:disable-next-line:max-line-length
-    public static readonly LINK_IS_DOWN_MSG = 'Connection to onPOINT link is down. Cannot execute this action at this moment. Please try later';
+    public static readonly LINK_IS_DOWN_MSG = 'Connection to link is down. Cannot execute this action at this moment. Please try later';
 
     /**
      * to sort the list based on last modified date
@@ -189,7 +189,7 @@ export class Utility {
      * @return: string
      */
     public static getDownloadFileName(fileName: string, fileMode: string, fileType: string): string {
-        return 'onPOINT_' + fileName + '_' + fileMode + fileType;
+        return 'license-server' + fileName + '_' + fileMode + fileType;
     }
     public static getDownloadReportFileName(fileName: string, fileMode: string, fileType: string): string {
         return '360AP_' + fileName + '_' + fileMode + fileType;
