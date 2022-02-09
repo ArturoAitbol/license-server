@@ -24,6 +24,17 @@ export class DashboardComponent implements OnInit {
     'renewalDate',
     'status',
     'action'];
+  readonly columnHeader =
+    {
+      'customerAccounts': 'Customer Account',
+      'customerSubAccounts': 'Customer Sub Account',
+      'purchaseDate': 'Purchase Date',
+      'packageType': 'Package Type',
+      'renewalDate': 'Renewal Date',
+      'status': 'Status',
+      'action': 'Action'
+    }
+
   canShow: boolean;
   @ViewChild(MatSort) sort: MatSort;
   dataSource: any = [];
@@ -38,6 +49,7 @@ export class DashboardComponent implements OnInit {
     this.data = this.dashboardService.getCustomerLicense();
     this.dataSource = new MatTableDataSource(this.data);
   }
+
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
   }
@@ -75,6 +87,7 @@ export class DashboardComponent implements OnInit {
       // this.color = res;
     });
   }
+
   onClickAccount(index: number): void {
     console.log(`on click account index: ${index}`);
     this.customerService.setSelectedCustomer(this.data[index]);

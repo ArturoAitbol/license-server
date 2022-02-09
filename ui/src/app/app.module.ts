@@ -14,11 +14,12 @@ import { LoginPageComponent } from './views/login-page/login-page.component';
 import { LoadingComponent } from './generics/loading/loading.component';
 import { JwtInterceptor } from './helpers/jwt.interceptor';
 import { ErrorInterceptor } from './helpers/error.interceptor';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MaterialModule } from './modules/material/material.module';
 import { DialogComponent } from './generics/loading/dialog/dialog.component';
 import { AddCustomerAccountModalComponent } from './dashboard/add-customer-account-modal/add-customer-account-modal.component';
+import { DataTableComponent } from './generics/loading/data-table/data-table.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -28,7 +29,8 @@ import { AddCustomerAccountModalComponent } from './dashboard/add-customer-accou
         LoadingComponent,
         DashboardComponent,
         DialogComponent,
-        AddCustomerAccountModalComponent
+        AddCustomerAccountModalComponent,
+        DataTableComponent
     ],
     imports: [
         AppRoutingModule,
@@ -36,6 +38,7 @@ import { AddCustomerAccountModalComponent } from './dashboard/add-customer-accou
         BrowserAnimationsModule,
         HttpClientModule,
         FormsModule,
+        ReactiveFormsModule,
         MaterialModule
     ],
     providers: [

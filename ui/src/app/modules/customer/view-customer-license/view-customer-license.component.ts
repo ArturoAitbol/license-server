@@ -1,7 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { CustomerService } from 'src/app/services/customer.service';
+import { AddLicenseConsumptionComponent } from './add-license-consumption/add-license-consumption.component';
+import { AddLicenseComponent } from './add-license/add-license.component';
 
 @Component({
   selector: 'app-view-customer-license',
@@ -149,8 +153,13 @@ export class ViewCustomerLicenseComponent implements OnInit {
       action: ''
     }
   ]
+  readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
+  readonly ADD_LICENSE = 'add-new-license';
+
   constructor(
-    private customerSerivce: CustomerService
+    private customerSerivce: CustomerService,
+    private router: Router,
+    public dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -162,8 +171,38 @@ export class ViewCustomerLicenseComponent implements OnInit {
   }
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+    this.equipmentDataSource.sort = this.sort;
+    this.detailedDataSource.sort = this.sort;
+    this.detailedConsumptionDataSource.sort = this.sort;
   }
-
+  onChangeToggle(event: any): void {
+    console.log('event', event.value);
+    switch (event.value) {
+      case this.ADD_LICENSE:
+        this.openDialog(AddLicenseComponent);
+        break;
+      case this.ADD_LICENSE_CONSUMPTION:
+        this.openDialog(AddLicenseConsumptionComponent);
+        break;
+      default:
+        break;
+    }
+  }
   onEdit(index: number) { }
   onDelete(index: number) { }
+  goToDashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  openDialog(component: any): void {
+    const dialogRef = this.dialog.open(component, {
+      width: 'auto',
+      data: { name: '', color: 'this.color ' }
+    });
+    dialogRef.afterClosed().subscribe(res => {
+      console.log('add customer dialog closed');
+      // this.color = res;
+    });
+  }
+
 }

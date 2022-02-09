@@ -2,19 +2,24 @@
     <main>
         <div class="row">
             <div class="col">
+                <button mat-stroked-button (click)="goToDashboard()">Back</button>
+            </div>
+            <div class="col">
                 <h1>{{currentCustomer.customerAccounts}} {{currentCustomer.customerSubAccounts}}</h1>
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle value="bold">Add New License</mat-button-toggle>
-                    <mat-button-toggle value="italic">Add License Consumption</mat-button-toggle>
+                    <mat-button-toggle value="add-new-license" (change)="onChangeToggle($event)">Add New License
+                    </mat-button-toggle>
+                    <mat-button-toggle value="add-license-consumption" (change)="onChangeToggle($event)">Add License
+                        Consumption</mat-button-toggle>
                 </mat-button-toggle-group>
-
             </div>
         </div>
     </main>
     <!-- license summary section -->
     <br>
+    <h3>License Summary</h3>
     <section>
         <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
             <!-- Device Access Limit Column -->
@@ -74,6 +79,7 @@
     </section>
     <!-- Equiment summary section -->
     <br>
+    <h3>Equiment Summary</h3>
     <section>
         <table mat-table [dataSource]="equipmentDataSource" matSort class="mat-elevation-z8">
             <!-- Vendor Column -->
@@ -113,37 +119,29 @@
     </section>
     <!-- Detailed Usage for month section -->
     <br>
+    <h3> Detailed Usage for Month</h3>
     <section>
-        <h4>Choose Month to view License Consumption Details </h4>
         <!-- date range -->
-        <div>
-            <mat-form-field appearance="fill" class="example-form-field">
-                <mat-label>Choose a date</mat-label>
-                <input matInput [matDatepicker]="datepicker">
-                <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
-                <mat-datepicker #datepicker>
-                    <mat-datepicker-actions>
-                        <button mat-button matDatepickerCancel>Cancel</button>
-                        <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
-                    </mat-datepicker-actions>
-                </mat-datepicker>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="example-form-field">
-                <mat-label>Enter a date range</mat-label>
-                <mat-date-range-input [rangePicker]="rangePicker">
-                    <input matStartDate placeholder="Start date">
-                    <input matEndDate placeholder="End date">
-                </mat-date-range-input>
-                <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
-                <mat-date-range-picker #rangePicker>
-                    <mat-date-range-picker-actions>
-                        <button mat-button matDateRangePickerCancel>Cancel</button>
-                        <button mat-raised-button color="primary" matDateRangePickerApply>Apply</button>
-                    </mat-date-range-picker-actions>
-                </mat-date-range-picker>
-            </mat-form-field>
-
+        <div style="display: flex;">
+            <div>
+                <mat-form-field appearance="fill" class="example-form-field">
+                    <mat-label>Enter a date range</mat-label>
+                    <mat-date-range-input [rangePicker]="rangePicker">
+                        <input matStartDate placeholder="Start date">
+                        <input matEndDate placeholder="End date">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #rangePicker>
+                        <mat-date-range-picker-actions>
+                            <button mat-button matDateRangePickerCancel>Cancel</button>
+                            <button mat-raised-button color="primary" matDateRangePickerApply>Apply</button>
+                        </mat-date-range-picker-actions>
+                    </mat-date-range-picker>
+                </mat-form-field>
+            </div>
+            <div>
+                <h5 class="mt-4">Choose Month to View License Consumption Details (default to current Month)</h5>
+            </div>
         </div>
         <br>
         <div class="row">

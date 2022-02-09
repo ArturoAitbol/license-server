@@ -1,0 +1,42 @@
+<div class="container" style="text-align: center;">
+    <h2>Add License</h2>
+    <form [formGroup]="addLicenseForm" (ngSubmit)="submit()">
+        <div class="flex-container">
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Purchase date</mat-label>
+                    <input required matInput [matDatepicker]="picker" formControlName="purchasedDate">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Type</mat-label>
+                    <mat-select required formControlName="type">
+                        <mat-option *ngFor="let item of types" [value]="item">
+                            {{item}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div>
+                <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>Device Access Tokens</mat-label>
+                    <input required matInput value="" formControlName="accessTokens">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>Tokens</mat-label>
+                    <input required matInput value="" formControlName="tokens">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="btn-flex-container">
+            <button mat-stroked-button (click)="onCancel()">Cancel</button>
+            <button mat-raised-button color="primary" [disabled]="!addLicenseForm.valid" type="submit">Submit</button>
+        </div>
+    </form>
+</div>

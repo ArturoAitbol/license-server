@@ -1,0 +1,57 @@
+<div class="container" style="text-align: center;">
+    <h2>Add License</h2>
+    <form [formGroup]="addLicenseConsumptionForm" (ngSubmit)="submit()">
+        <div class="flex-container">
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Date of use</mat-label>
+                    <input matInput [matDatepicker]="picker" required formControlName="dateOfUse">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Vendor</mat-label>
+                    <mat-select required (valueChange)="onChangeVendor($event)" formControlName="vendor">
+                        <mat-option *ngFor="let item of vendorDetailedList" [value]="item.id">
+                            {{item.vendorName}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Model</mat-label>
+                    <mat-select required formControlName="model">
+                        <mat-option *ngFor="let item of models" [value]="item.id">
+                            {{item.model}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Version</mat-label>
+                    <mat-select required formControlName="version">
+                        <mat-option *ngFor="let item of versions" [value]="item.id">
+                            {{item.version}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div>
+                <mat-form-field class="example-full-width" appearance="fill">
+                    <mat-label>MAC Address</mat-label>
+                    <input matInput value="" required placeholder="eg: 00:1b:63:84:45:e6" formControlName="macAddress">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="btn-flex-container">
+            <button mat-stroked-button>Cancel</button>
+            <button mat-raised-button color="primary" [disabled]="!addLicenseConsumptionForm.valid"
+                type="submit">Submit</button>
+        </div>
+    </form>
+</div>
