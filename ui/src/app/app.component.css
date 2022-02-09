@@ -73,15 +73,6 @@ screen and (-ms-high-contrast: none) {
   text-align: center;
 }
 
-.iconSidebarMenu {
-  margin-top: 24px;
-  content: url("../assets/images/icons/menu_icon.png");
-}
-
-.iconSidebarMenu_Blue {
-  margin-top: 22px;
-  content: url("../assets/images/icons/close_arrow_icon.png");
-}
 
 .activeMenu {
   background-color: #FFFFFF !important;
