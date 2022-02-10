@@ -1,5 +1,7 @@
 .main-container {
-  padding: 10px;
+  padding: 1%;
+  /* padding: 10px; */
+  /* margin-top: 60px; */
 }
 
 .content {
@@ -9,92 +11,14 @@
   width: 100%;
   height: 100%;
 }
-
-#menu-options-names {
-  background-color: #0E2346 !important;
-  color: #ffffff !important;
-  font-family: "Helvetica Neue Regular" !important;
-  font-size: 17px;
-  font-weight: lighter;
+.route-content {
+  margin-top: 60px;
 }
-
-.collapse-item {
-  background-color: #0E2346 !important;
-  color: #ffffff !important;
-  font-family: "Helvetica Neue Regular" !important;
-  font-size: 17px;
-  width: 150px !important;
-  height: 150px !important;
-  margin-left: 3%;
-}
-
-#menu-options-names button {
-  float: left;
-  background-color: #0E2346 !important;
-  color: #ffffff;
-  border-color: #0E2346 !important;
-  height: 20px;
-}
-
-/* IE10+ specific styles go here */
-@media screen and (-ms-high-contrast: active),
-screen and (-ms-high-contrast: none) {
-  .section-content {
-    margin-top: 3%;
-    -ms-overflow-style: none;
-  }
-}
-
-.menu-options {
-  background-color: #0E2346 !important;
-  color: #ffffff;
-  border-color: #0E2346 !important;
-  align-items: center;
-  margin-top: 29px;
-}
-
-.ng-sidebar .ng-sidebar__content {
-  background-color: #0E2346 !important;
-}
-
-.fa-bars {
-  margin-top: 16px;
-  background-color: #0E2346 !important;
-  color: #ffffff;
-  border-color: #0E2346 !important;
-}
-
-#sideBarFixed {
-  background-color: #0E2346 !important;
-  height: 100%;
-  width: 3%;
+.position-fixed {
+  z-index: 998;
   position: fixed;
-  z-index: 1;
-  text-align: center;
 }
 
-
-.activeMenu {
-  background-color: #FFFFFF !important;
-}
-
-/* .Phone {
-  margin-top: 29px !important;
-}
-
-.Project {
-  margin-top: 29px !important;
-} */
-
-.modal-xl {
-  width: 100%;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-}
-
-.modal-xl .terms .modal-content {
-  height: 100vh;
-  min-height: 100%;
-  border-radius: 0;
+.example-spacer {
+  flex: 1 1 auto;
 }

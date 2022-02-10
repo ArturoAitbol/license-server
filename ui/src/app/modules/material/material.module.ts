@@ -2,12 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // Angular material modules
-// import { MatTableModule } from '@angular/material/table';
-// import { MatButtonModule } from '@angular/material/button';
-// import { MatSelectModule } from '@angular/material/select';
-// import { MatFormFieldModule } from '@angular/material/form-field';
-// import {MatMenuModule} from '@angular/material/menu';
-// import {MatIconModule} from '@angular/material/icon';
 import { A11yModule } from '@angular/cdk/a11y';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { ClipboardModule } from '@angular/cdk/clipboard';
@@ -56,12 +50,6 @@ import { OverlayModule } from '@angular/cdk/overlay';
   declarations: [],
   imports: [
     CommonModule,
-    // MatTableModule,
-    // MatButtonModule,
-    // MatSelectModule,
-    // MatFormFieldModule,
-    // MatMenuModule,
-    // MatIconModule
     A11yModule,
     CdkAccordionModule,
     ClipboardModule,
@@ -109,12 +97,6 @@ import { OverlayModule } from '@angular/cdk/overlay';
     ScrollingModule,
   ],
   exports: [
-    // MatTableModule,
-    // MatButtonModule,
-    // MatSelectModule,
-    // MatFormFieldModule,
-    // MatMenuModule,
-    // MatIconModule
     A11yModule,
     CdkAccordionModule,
     ClipboardModule,

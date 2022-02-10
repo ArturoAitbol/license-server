@@ -24,6 +24,8 @@ export class LoginPageComponent implements OnInit {
     }
 
     ngOnInit() {
+        localStorage.clear();
+        this.authenticationService.setCurrentUserValue(null);
         setTimeout(() => {
             this.loading_status = true;
         }, 3000);
@@ -35,7 +37,7 @@ export class LoginPageComponent implements OnInit {
             username: this.username,
             password: this.password
         };
-        localStorage.setItem('currentUser', JSON.stringify(loggedUserDetails));
+        // localStorage.setItem(Constants.CURRENT_USER, JSON.stringify(loggedUserDetails));
         this.router.navigate(['/dashboard']);
         this.authenticationService.setCurrentUserValue(loggedUserDetails);
         // this.authenticationService.login(this.username, this.password)

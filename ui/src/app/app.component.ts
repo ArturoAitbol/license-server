@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 import { User } from './model/user';
 import { Role } from './helpers/role';
+import { Constants } from './model/constant';
 
 @Component({
     selector: 'app-root',
@@ -74,7 +75,7 @@ export class AppComponent implements OnInit, AfterContentInit {
     }
 
     userEnabled(role: string) {
-        const currentPermissions: [string] = JSON.parse(localStorage.getItem('currentUser')).roles;
+        const currentPermissions: [string] = JSON.parse(localStorage.getItem(Constants.CURRENT_USER)).roles;
         if (currentPermissions.includes(role) || currentPermissions.includes(Role[1])) {
             return false;
         }
@@ -82,9 +83,15 @@ export class AppComponent implements OnInit, AfterContentInit {
     }
 
     ngOnInit() {
-        // this.authenticationService.currentUser.subscribe((response: any) => {
-        //     this.currentUser = response;
-        // });
+        this.authenticationService.currentUser.subscribe((response: any) => {
+            this.currentUser = response;
+        });
+        if (!this.currentUser) {
+            this.router.navigate(['/login']);
+            // this.currentUser = JSON.parse(localStorage.getItem(Constants.CURRENT_USER))
+            // console.log(this.currentUser);
+
+        }
         // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     }
 
@@ -137,7 +144,9 @@ export class AppComponent implements OnInit, AfterContentInit {
             return false;
         }
     }
-
+    navigateToDashboard(): void {
+        this.router.navigate(['/dashboard']);
+    }
     logout() {
         this.authenticationService.logout();
         this.router.navigate(['/login']);

@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { User } from '../model/user';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { Constants } from '../model/constant';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -18,7 +19,7 @@ export class AuthenticationService {
   constructor(private http: HttpClient, private router: Router) {
     this.loggedIn = new EventEmitter<any>();
     this.closeSession = new EventEmitter<any>();
-    this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
+    this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem(Constants.CURRENT_USER)));
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
@@ -36,7 +37,7 @@ export class AuthenticationService {
     //     if (data.success && data.response.accessToken) {
     //       var user = data.response;
     //       user.user = username;
-    //       localStorage.setItem('currentUser', JSON.stringify(user));
+    //       localStorage.setItem(Constants.CURRENT_USER, JSON.stringify(user));
     //       this.currentUserSubject.next(user);
     //     }
     //     return data;
@@ -44,7 +45,7 @@ export class AuthenticationService {
   }
 
   logout() {
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem(Constants.CURRENT_USER);
     this.currentUserSubject.next(null);
   }
 

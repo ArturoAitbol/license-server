@@ -1,14 +1,40 @@
-<div class="main-container" *ngIf="currentUser">
-    <!-- <app-header></app-header> -->
-    <ng-container *ngTemplateOutlet="template"></ng-container>
-    <!-- <app-footer></app-footer> -->
+<div>
+    <ng-container *ngIf="currentUser; then loggedIn; else loggedOut"> </ng-container>
 </div>
 
-<div class="login-container" *ngIf="!currentUser">
-    <ng-container *ngTemplateOutlet="template"></ng-container>
-</div>
+<ng-template #loggedIn>
+    <section>
+        <div>
+            <mat-toolbar color="primary" class="position-fixed">
+                <span style="cursor: pointer;" (click)="navigateToDashboard()">License Service Portal</span>
+                <span class="example-spacer"></span>
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                    <mat-icon>settings</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item (click)="logout()">
+                        <mat-icon>logout</mat-icon>
+                        <span>Logout</span>
+                    </button>
+                </mat-menu>
 
-<ng-template #template>
-    <router-outlet>
-    </router-outlet>
+
+            </mat-toolbar>
+        </div>
+    </section>
+    <main>
+        <div class="main-container">
+            <div class="route-content">
+                <router-outlet>
+                </router-outlet>
+            </div>
+        </div>
+    </main>
+
+</ng-template>
+<ng-template #loggedOut>
+    <div class="login-container" *ngIf="!currentUser">
+        <router-outlet>
+        </router-outlet>
+    </div>
 </ng-template>
