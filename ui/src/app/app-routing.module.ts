@@ -5,7 +5,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 
 const config: ExtraOptions = {
   onSameUrlNavigation: 'reload',
-  relativeLinkResolution: 'legacy'
+  relativeLinkResolution: 'legacy',
+  useHash: true
 };
 
 const routes: Routes = [
