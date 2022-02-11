@@ -18,11 +18,18 @@ jobs:
     - uses: azure/login@v1
       with:
           creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
-    - name: List directory content
+          
+    - name: Set up Node.js version
+      uses: actions/setup-node@v1
+      with:
+        node-version: ‘13.x’
+        
+    - name: Build Angular web app
       run: |
         cd ./ui
         npm install
         ng build --base-href='/license-server/' --configuration production
+        
     - name: Upload to blob storage
       uses: azure/CLI@v1
       with:
