@@ -18,7 +18,9 @@ jobs:
     - uses: azure/login@v1
       with:
           creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
-          
+    - name: List directory content
+      run: |
+        ls ./
     - name: Upload to blob storage
       uses: azure/CLI@v1
       with:
