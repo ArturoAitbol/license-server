@@ -1,6 +1,6 @@
-# This is a basic workflow to help you get started with Actions
+# Workflow to build and deploy to Azure cloud the License Server UI  
 
-name: Azure Blob Storage License Server CI
+name: License Server CI/CD
 
 # Controls when the workflow will run
 on:
@@ -23,7 +23,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-           # az storage blob upload-batch --account-name <STORAGE_ACCOUNT_NAME> --auth-mode key -d '$web' -s .
+           az storage blob upload-batch --account-name <STORAGE_ACCOUNT_NAME> --auth-mode key -d '$web' -s ./ui/README.md
     - name: Purge CDN endpoint
       uses: azure/CLI@v1
       with:
