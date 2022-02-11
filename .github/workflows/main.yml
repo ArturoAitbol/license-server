@@ -28,7 +28,8 @@ jobs:
       run: |
         cd ./ui
         npm install
-        ng build --base-href='/license-server/' --configuration production
+        npm run build -- "--base-href=/license-server/ --configuration production"
+        # ng build --base-href='/license-server/' --configuration production
         
     - name: Upload to blob storage
       uses: azure/CLI@v1
