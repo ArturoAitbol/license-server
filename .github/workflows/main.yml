@@ -31,11 +31,15 @@ jobs:
         npm run build -- "--base-href=/license-server/ --configuration production"
         # ng build --base-href='/license-server/' --configuration production
         
-    - name: Upload to blob storage
+    - name: Upload to blob storagerun
+      run: |
+        ls ./
+        cd ./ui
       uses: azure/CLI@v1
       with:
         inlineScript: |
            az storage blob upload-batch --account-name lswebappstorage --auth-mode key -d '$web' -s ./dist
+           
     - name: Purge CDN endpoint
       uses: azure/CLI@v1
       with:
