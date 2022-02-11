@@ -20,7 +20,7 @@ jobs:
           creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
     - name: List directory content
       run: |
-        ls ./
+        ls ./ui
     - name: Upload to blob storage
       uses: azure/CLI@v1
       with:
@@ -38,6 +38,6 @@ jobs:
             az logout
       if: always()
   # Debug (ssh into running host)
-    - name: Debug on failure
-      if: failure()
-      uses: mxschmitt/action-tmate@v3
+  #  - name: Debug on failure
+  #    if: failure()
+  #    uses: mxschmitt/action-tmate@v3
