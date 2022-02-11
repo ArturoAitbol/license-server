@@ -20,12 +20,12 @@ jobs:
           creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
     - name: List directory content
       run: |
-        ls ./ui
+        ls ./ui/dtest
     - name: Upload to blob storage
       uses: azure/CLI@v1
       with:
         inlineScript: |
-           az storage blob upload-batch --account-name lswebappstorage --auth-mode key -d '$web' -s ./ui/README.md
+           az storage blob upload-batch --account-name lswebappstorage --auth-mode key -d '$web' -s ./ui/dtest
     - name: Purge CDN endpoint
       uses: azure/CLI@v1
       with:
