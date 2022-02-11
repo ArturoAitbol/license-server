@@ -30,7 +30,7 @@ jobs:
         npm install
         npm run build -- "--base-href=/license-server/ --configuration production"
         # ng build --base-href='/license-server/' --configuration production
-        ls ./ui/dist
+        ls ./dist
         
     - name: Upload to blob storagerun
       uses: azure/CLI@v1
