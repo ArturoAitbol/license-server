@@ -28,7 +28,7 @@ jobs:
       run: |
         cd ./ui
         npm install
-        npm run build -- "--base-href=/license-server/ --configuration production"
+        npm run build --base-href="/license-server/" --configuration production
         # ng build --base-href='/license-server/' --configuration production
         ls ./dist
         
