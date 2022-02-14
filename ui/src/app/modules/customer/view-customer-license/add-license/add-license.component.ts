@@ -25,7 +25,8 @@ export class AddLicenseComponent implements OnInit {
     purchasedDate: ['', Validators.required],
     type: ['', Validators.required],
     accessTokens: ['', Validators.required],
-    tokens: ['', Validators.required]
+    tokens: ['', Validators.required],
+    renewalDate: ['', Validators.required]
   });
   constructor(
     private formBuilder: FormBuilder,

@@ -359,3 +359,8 @@ body {
   align-items: flex-start;
   align-content: flex-start;
 }
+th {
+  font-size: 14px !important;
+  color: black !important;
+  font-weight: 500 !important;
+}

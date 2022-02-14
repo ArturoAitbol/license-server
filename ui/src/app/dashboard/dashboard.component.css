@@ -13,3 +13,8 @@ th.mat-sort-header-sorted {
 .mat-row:hover {
   background-color: #edf5f7;
 }
+.clickable-item {
+  cursor: pointer;
+  color: darkblue;
+  text-decoration: underline !important;
+}

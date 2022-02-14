@@ -13,7 +13,7 @@
                     Customer Account
                 </th>
                 <td mat-cell *matCellDef="let element;let i=index;">
-                    <p (click)="onClickAccount(i)" style="cursor: pointer;">
+                    <p class="clickable-item" (click)="onClickAccount(i)" >
                         {{element.customerAccounts}}
                     </p>
                 </td>
