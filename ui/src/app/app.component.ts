@@ -3,14 +3,17 @@ import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 import { User } from './model/user';
 import { Role } from './helpers/role';
-import { Constants } from './model/constant';
+import { Constants } from './helpers/constants';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { authConfig } from './security/auth.config';
+import { SessionStorageUtil } from './helpers/session-storage';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, AfterContentInit {
+export class AppComponent implements OnInit {
     title = 'license-server';
     opened: boolean;
     mode: string;
@@ -20,7 +23,7 @@ export class AppComponent implements OnInit, AfterContentInit {
     closeOnClickOutside: boolean;
     closeOnClickBackdrop: boolean;
     animation: boolean;
-    currentUser: User = null;
+    currentUser: boolean = false;
     optionsMenu: any[] = [
         {
             name: 'Dashboard',
@@ -60,95 +63,39 @@ export class AppComponent implements OnInit, AfterContentInit {
         },
     ];
 
-    constructor(private router: Router,
+    constructor(
+        private router: Router,
         private authenticationService: AuthenticationService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private oauthService: OAuthService
     ) {
-        // this.opened = true;
-        this.mode = 'push';
-        this.position = 'left';
-        this.dock = true;
-        this.dockedSize = '50px';
-        this.closeOnClickOutside = false;
-        this.closeOnClickBackdrop = false;
-        this.animation = true;
-    }
-
-    userEnabled(role: string) {
-        const currentPermissions: [string] = JSON.parse(localStorage.getItem(Constants.CURRENT_USER)).roles;
-        if (currentPermissions.includes(role) || currentPermissions.includes(Role[1])) {
-            return false;
-        }
-        return true;
+        this.oauthService.configure(authConfig);
+        this.oauthService.loadDiscoveryDocumentAndLogin().then((res) => {
+            console.log('res: ', res);
+            this.currentUser = (res);
+        });
+        this.oauthService.setupAutomaticSilentRefresh()
     }
 
     ngOnInit() {
         this.authenticationService.currentUser.subscribe((response: any) => {
-            this.currentUser = response;
+            setTimeout(() => {
+                // if (!this.currentUser) {
+                //     this.router.navigate(['/login']);
+                // }
+            }, 0);
         });
-        if (!this.currentUser) {
-            this.router.navigate(['/login']);
-            // this.currentUser = JSON.parse(localStorage.getItem(Constants.CURRENT_USER))
-            // console.log(this.currentUser);
-
-        }
-        // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     }
 
-    ngAfterContentInit(): void {
-        const value = localStorage.getItem('user-toggle-preference');
-        this.checkForTogglePreference();
-        // tslint:disable-next-line: max-line-length
-        this.opened = value ? JSON.parse(localStorage.getItem('user-toggle-preference')) : true;
-        this.cdr.detectChanges();
-    }
-
-    /**
-     * check if local-storage has user toggle preference else set true by default
-     */
-    checkForTogglePreference(): void {
-        const value = localStorage.getItem('user-toggle-preference');
-        if (value == null || value == undefined) {
-            localStorage.setItem('user-toggle-preference', JSON.stringify(true));
-        }
-    }
-
-    toggleClosed(): void {
-        // this.utilService.changedBarState.emit(this.opened);
-    }
-
-    toggleOpened(): void {
-        // setTimeout(() => {
-        //     this.checkForTogglePreference();
-        //     this.opened = !this.opened;
-        //     this.utilService.changedBarState.emit(this.opened);
-        //     // store the user preference of toggle in local-storage
-        //     localStorage.setItem('user-toggle-preference', JSON.stringify(this.opened));
-        // }, 0);
-    }
-
-    redirectTo(redirectPath: any) {
-        this.toggleOpened();
-        this.router.navigate([redirectPath]);
-    }
-
-    redirectFromIcon(redirectPath: any) {
-        this.router.navigate([redirectPath]);
-    }
-
-    currentPageColor(option: any) {
-        const currentLocation = this.router.url;
-        if (currentLocation.includes(option.redirectsTo)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
     navigateToDashboard(): void {
         this.router.navigate(['/dashboard']);
     }
+
     logout() {
-        this.authenticationService.logout();
-        this.router.navigate(['/login']);
+        // this.oauthService.revokeTokenAndLogout();
+        this.oauthService.logOut();
+        // this.authenticationService.logout();
+        // this.router.navigate(['/login']);
     }
 }

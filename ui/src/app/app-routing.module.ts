@@ -2,16 +2,18 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule, ExtraOptions } from '@angular/router';
 import { LoginPageComponent } from './views/login-page/login-page.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { RedirectComponent } from './views/redirect/redirect.component';
 
 const config: ExtraOptions = {
   onSameUrlNavigation: 'reload',
   relativeLinkResolution: 'legacy',
-  useHash: true
+  // useHash: true
 };
 
 const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginPageComponent },
+  { path: '', redirectTo: 'redirect', pathMatch: 'full' },
+  // { path: 'login', component: LoginPageComponent },
+  { path: 'redirect', component: RedirectComponent },
   { path: 'dashboard', component: DashboardComponent },
   {
     path: 'customer',

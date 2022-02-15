@@ -1,0 +1,8 @@
+.content {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  background: white;
+  width: 100%;
+  padding: 20%;
+}

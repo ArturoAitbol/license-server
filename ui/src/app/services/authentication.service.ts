@@ -5,7 +5,8 @@ import { map } from 'rxjs/operators';
 import { User } from '../model/user';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
-import { Constants } from '../model/constant';
+import { Constants } from '../helpers/constants';
+import { SessionStorageUtil } from '../helpers/session-storage';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {

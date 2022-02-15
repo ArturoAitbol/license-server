@@ -1,4 +1,5 @@
-import { Constants } from '../model/constant';
+
+import { Constants } from './constants';
 import { Role } from './role';
 
 

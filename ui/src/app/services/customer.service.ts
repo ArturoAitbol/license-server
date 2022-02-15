@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Constants } from '../model/constant';
+import { Injectable } from '@angular/core'; 
+import { Constants } from '../helpers/constants';
 
 @Injectable({
   providedIn: 'root'

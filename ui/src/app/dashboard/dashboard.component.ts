@@ -3,9 +3,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { Constants } from '../helpers/constants';
+import { SessionStorageUtil } from '../helpers/session-storage';
 import { Utility } from '../helpers/Utility';
-import { Constants } from '../model/constant';
 import { CustomerLicense } from '../model/customer-license';
+import { AuthenticationService } from '../services/authentication.service';
 import { CustomerService } from '../services/customer.service';
 import { DashboardService } from '../services/dashboard.service';
 import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
@@ -42,10 +44,13 @@ export class DashboardComponent implements OnInit {
   constructor(
     private dashboardService: DashboardService,
     private customerService: CustomerService,
+    private authService: AuthenticationService,
     public dialog: MatDialog,
     private router: Router
   ) { }
   ngOnInit(): void {
+    const ACCESS_TOKEN = SessionStorageUtil.get(Constants.ACCESS_TOKEN);
+    this.authService.setCurrentUserValue(ACCESS_TOKEN);
     this.data = this.dashboardService.getCustomerLicense();
     this.dataSource = new MatTableDataSource(this.data);
   }

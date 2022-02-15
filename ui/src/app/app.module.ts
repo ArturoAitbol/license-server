@@ -20,6 +20,8 @@ import { MaterialModule } from './modules/material/material.module';
 import { DialogComponent } from './generics/loading/dialog/dialog.component';
 import { AddCustomerAccountModalComponent } from './dashboard/add-customer-account-modal/add-customer-account-modal.component';
 import { DataTableComponent } from './generics/loading/data-table/data-table.component';
+import { OAuthModule } from 'angular-oauth2-oidc';
+import { RedirectComponent } from './views/redirect/redirect.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -30,7 +32,8 @@ import { DataTableComponent } from './generics/loading/data-table/data-table.com
         DashboardComponent,
         DialogComponent,
         AddCustomerAccountModalComponent,
-        DataTableComponent
+        DataTableComponent,
+        RedirectComponent
     ],
     imports: [
         AppRoutingModule,
@@ -39,7 +42,8 @@ import { DataTableComponent } from './generics/loading/data-table/data-table.com
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
-        MaterialModule
+        MaterialModule,
+        OAuthModule.forRoot()
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
