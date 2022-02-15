@@ -72,6 +72,7 @@ export class AppComponent implements OnInit {
         this.oauthService.configure(authConfig);
         this.oauthService.loadDiscoveryDocumentAndLogin().then((res) => {
             this.currentUser = (res);
+            this.router.navigate(['/dashboard']);
         });
         this.oauthService.setupAutomaticSilentRefresh();
     }
