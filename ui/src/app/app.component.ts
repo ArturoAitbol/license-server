@@ -84,6 +84,8 @@ export class AppComponent implements OnInit {
                 // }
             }, 0);
         });
+        console.log('AppComponent.ngOnInit: ', window.location.origin + '/license-server/index.hmtl');
+
         // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     }
 
