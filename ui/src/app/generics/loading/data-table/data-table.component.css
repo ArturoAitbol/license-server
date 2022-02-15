@@ -4,6 +4,3 @@ table {
 th.mat-sort-header-sorted {
   color: black;
 }
-.mat-row:hover {
-  background-color: #edf5f7;
-}

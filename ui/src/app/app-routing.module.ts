@@ -7,11 +7,12 @@ import { RedirectComponent } from './views/redirect/redirect.component';
 const config: ExtraOptions = {
   onSameUrlNavigation: 'reload',
   relativeLinkResolution: 'legacy',
-  // useHash: true
+  // useHash: true,
+  // initialNavigation: 'enabledBlocking'
 };
 
 const routes: Routes = [
-  { path: '', redirectTo: 'redirect', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   // { path: 'login', component: LoginPageComponent },
   { path: 'redirect', component: RedirectComponent },
   { path: 'dashboard', component: DashboardComponent },

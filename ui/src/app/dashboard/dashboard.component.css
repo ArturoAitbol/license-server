@@ -10,9 +10,6 @@ table {
 th.mat-sort-header-sorted {
   color: black;
 }
-.mat-row:hover {
-  background-color: #edf5f7;
-}
 .clickable-item {
   cursor: pointer;
   color: darkblue;

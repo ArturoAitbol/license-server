@@ -71,10 +71,9 @@ export class AppComponent implements OnInit {
     ) {
         this.oauthService.configure(authConfig);
         this.oauthService.loadDiscoveryDocumentAndLogin().then((res) => {
-            console.log('res: ', res);
             this.currentUser = (res);
         });
-        this.oauthService.setupAutomaticSilentRefresh()
+        this.oauthService.setupAutomaticSilentRefresh();
     }
 
     ngOnInit() {
@@ -85,7 +84,7 @@ export class AppComponent implements OnInit {
                 // }
             }, 0);
         });
-        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+        // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     }
 
     navigateToDashboard(): void {
@@ -96,6 +95,6 @@ export class AppComponent implements OnInit {
         // this.oauthService.revokeTokenAndLogout();
         this.oauthService.logOut();
         // this.authenticationService.logout();
-        // this.router.navigate(['/login']);
+        this.router.navigate(['/redirect']);
     }
 }
