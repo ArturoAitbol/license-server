@@ -12,7 +12,7 @@ const config: ExtraOptions = {
 };
 
 const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // { path: 'login', component: LoginPageComponent },
   { path: 'redirect', component: RedirectComponent },
   { path: 'dashboard', component: DashboardComponent },
