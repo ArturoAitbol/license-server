@@ -57,7 +57,7 @@ export class DashboardService {
       purchaseDate: '1/5/2020',
       action: false
     },
-  ]
+  ];
   constructor() { }
 
   public getCustomerLicense(): CustomerLicense[] {

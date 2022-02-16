@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Constants } from '../helpers/constants';
@@ -21,7 +21,7 @@ export class CustomerService {
   /**
    * create new customer
    * @param customerName: string 
-   * @returns 
+   * @returns: Observable 
    */
   public createCustomer(customerName: string) {
     return this.httpClient.post(this.API_URL, { customerName });
@@ -29,15 +29,20 @@ export class CustomerService {
 
   /**
    * fetch customer details list
+   * @returns: Observable
    */
-  public getCustomerList() {
+  public getCustomerList(customerName?: string) {
+    const params = new HttpParams();
+    if (customerName) {
+      params.append('customerName', customerName);
+    }
     const headers = this.getHeaders();
-    return this.httpClient.get<Customer>(this.API_URL, { headers });
+    return this.httpClient.get<Customer>(this.API_URL, { headers, params });
   }
   /**
    * update customer details
    * @param customer: Customer 
-   * @returns 
+   * @returns: Observable 
    */
   public updateCustomer(customer: Customer) {
     return this.httpClient.put(`${this.API_URL}/${customer.customerId}`, customer);
@@ -46,6 +51,7 @@ export class CustomerService {
   /**
    * delete selected customer by customerId
    * @param customerId: string 
+   * @returns: Observable
    */
   public deleteCustomer(customerId: string) {
     return this.httpClient.delete(`${this.API_URL}/${customerId}`);
@@ -55,7 +61,7 @@ export class CustomerService {
 
   /**
    * set the header for the request
-   * @returns HttpHeaders 
+   * @returns: HttpHeaders 
    */
   public getHeaders() {
     const headers = new HttpHeaders();
