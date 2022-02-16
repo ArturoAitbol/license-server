@@ -1,0 +1,67 @@
+<div class="container" style="text-align: center;">
+    <h2>Modify Customer Account</h2>
+    <form class="p-20" [formGroup]="updateForm" (ngSubmit)="submit()">
+        <div class="flex-container">
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Date of Usage</mat-label>
+                    <input matInput required formControlName="dateOfUsage">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Vendor</mat-label>
+                    <input matInput required formControlName="vendor">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Model</mat-label>
+                    <input matInput required formControlName="model">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Version</mat-label>
+                    <input matInput required formControlName="version">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>MAC Address</mat-label>
+                    <input matInput required formControlName="macAddress">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Type</mat-label>
+                    <input matInput required formControlName="type">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Consumption</mat-label>
+                    <input matInput required formControlName="consumption">
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Tokens Used</mat-label>
+                    <input matInput required formControlName="tokensUsed">
+                </mat-form-field>
+            </div>
+        </div>
+        <!-- <div class="btn-flex-container">
+            <button mat-stroked-button (click)="onCancel()">Cancel</button>
+            <button mat-raised-button color="primary" [disabled]="!(updateForm.valid ) || disableSumbitBtn()"
+                type="submit">Submit</button>
+        </div> -->
+        <div mat-dialog-actions [align]="'end'">
+            <button mat-raised-button [mat-dialog-close]="false">
+                Cancel
+            </button>
+            <button mat-raised-button color="primary" [disabled]="!(updateForm.valid ) || disableSumbitBtn()"
+                type="submit">Submit</button>
+        </div>
+    </form>
+</div>

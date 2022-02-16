@@ -2,7 +2,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Created and used Modules
@@ -22,6 +21,8 @@ import { AddCustomerAccountModalComponent } from './dashboard/add-customer-accou
 import { DataTableComponent } from './generics/loading/data-table/data-table.component';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { RedirectComponent } from './views/redirect/redirect.component';
+import { ModifyCustomerAccountComponent } from './dashboard/modify-customer-account/modify-customer-account.component';
+import { ConfirmComponent } from './dialogs/confirm/confirm.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -33,7 +34,9 @@ import { RedirectComponent } from './views/redirect/redirect.component';
         DialogComponent,
         AddCustomerAccountModalComponent,
         DataTableComponent,
-        RedirectComponent
+        RedirectComponent,
+        ModifyCustomerAccountComponent,
+        ConfirmComponent
     ],
     imports: [
         AppRoutingModule,
