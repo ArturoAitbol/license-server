@@ -13,7 +13,7 @@ on:
 env:
   AZURE_FUNCTIONAPP_NAME: tekvLicenseServerPOCFunction
   POM_XML_DIRECTORY: 'azure-functions/'
-  POM_FUNCTIONAPP_NAME: myFunction-1.0-SNAPSHOT.jar
+  POM_FUNCTIONAPP_NAME: myFunction-12345
   JAVA_VERSION: '1.8.x'
 
 jobs:
