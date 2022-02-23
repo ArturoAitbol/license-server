@@ -55,7 +55,7 @@ public class TekvLSGetSubaccountById {
             context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
             
             // Retrive subaccount
-            String sql = "select purchase_date,expiry_date,package_type,status from sub_accounts where id = '" + id + "';";
+            String sql = "select purchase_date,expiry_date,package_type,status from subaccount where id = '" + id + "';";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             // Return a JSON array of subaccounts (id and names)

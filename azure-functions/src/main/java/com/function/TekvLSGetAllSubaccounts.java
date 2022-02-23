@@ -47,7 +47,7 @@ public class TekvLSGetAllSubaccounts {
             context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
             
             // Retrive all subaccounts. TODO: pagination
-            String sql = "select id,name from sub_accounts;";
+            String sql = "select id,name from subaccount;";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             // Return a JSON array of subaccounts (id and names)

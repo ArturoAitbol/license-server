@@ -70,14 +70,14 @@ public class TekvLSCreateCustomer {
             
             context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
             
-            // Insert customer. If customer name exists, insert generates an exception.
-            String sql = "insert into customers (name, email) values ('" + customerName + "','');";
+            // Insert customer. TODO: check if customer name exists?
+            String sql = "insert into customer (name) values ('" + customerName + "');";
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);
             context.getLogger().info("Customer doesn't exist, inserted successfully."); 
 
             // Return the customer id in the response
-            sql = "select id from customers where name = '" + customerName + "';";
+            sql = "select id from customer where name = '" + customerName + "';";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             rs.next();
