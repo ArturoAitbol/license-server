@@ -38,7 +38,7 @@ public class TekvLSGetSubaccountById {
 
         if (id == null) {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
-                       .body("Missing subsccount id.")
+                       .body("Missing subaccount id.")
                        .build();
         } 
         context.getLogger().info("Entering TekvLSGetSubaccountById Azure function. Route: " + id);
@@ -55,19 +55,17 @@ public class TekvLSGetSubaccountById {
             context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
             
             // Retrive subaccount
-            String sql = "select purchase_date,expiry_date,package_type,status from subaccount where id = '" + id + "';";
+            String sql = "select id,name,customer_id from subaccount where id = '" + id + "';";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
-            // Return a JSON array of subaccounts (id and names)
             JSONObject json = new JSONObject();
             if (rs.next() == false) {
                 context.getLogger().info("Subaccount with id='" + id + "' doesn't exist.");
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Subaccount with id='" + id + "' doesn't exist.").build();
             } else {
-                json.put("purchaseDate", rs.getString("purchase_date"));
-                json.put("renewalDate", rs.getString("expiry_date"));
-                json.put("packageType", rs.getString("package_type"));
-                json.put("status", rs.getString("status"));
+                json.put("id", rs.getString("id"));
+                json.put("customerId", rs.getString("customer_id"));
+                json.put("name", rs.getString("name"));
                 return request.createResponseBuilder(HttpStatus.OK)
                            .header("Content-Type", "application/json")
                            .body(json.toString())

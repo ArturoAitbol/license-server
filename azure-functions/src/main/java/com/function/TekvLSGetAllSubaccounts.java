@@ -20,8 +20,8 @@ import org.json.JSONObject;
  */
 public class TekvLSGetAllSubaccounts {
     /**
-     * This function listens at endpoint "/api/subaccounts". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/subaccounts
+     * This function listens at endpoint "/api/subaccounts?customerId={customerId}". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/api/subaccounts?customerId={customerId}
      * 2. curl "{your host}/api/subaccounts"
      */
     @FunctionName("TekvLSGetAllSubaccounts")
@@ -35,6 +35,12 @@ public class TekvLSGetAllSubaccounts {
             final ExecutionContext context) {
 
         context.getLogger().info("Entering TekvLSGetAllSubaccounts Azure function");
+        context.getLogger().info("GET parameters are: " + request.getQueryParameters());
+        // Get the optional customerId parameter
+        String customerId = request.getQueryParameters().getOrDefault("customerId", "");
+        if (customerId.isEmpty()) {
+            context.getLogger().info("customerId parameter is not present");
+        }
         
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
@@ -47,7 +53,9 @@ public class TekvLSGetAllSubaccounts {
             context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
             
             // Retrive all subaccounts. TODO: pagination
-            String sql = "select id,name from subaccount;";
+            String sql = (customerId.isEmpty())? 
+                "select id,name,customer_id from subaccount;" : 
+                "select id,name,customer_id from subaccount where customer_id = '" + customerId + "';";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             // Return a JSON array of subaccounts (id and names)
@@ -57,6 +65,7 @@ public class TekvLSGetAllSubaccounts {
                 JSONObject item = new JSONObject();
                 item.put("id", rs.getString("id"));
                 item.put("name", rs.getString("name"));
+                item.put("customerId", rs.getString("customer_id"));
                 array.put(item);
             }
             json.put("subaccounts", array);
