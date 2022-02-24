@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { first } from 'rxjs/operators';
+import { MsalService } from '@azure/msal-angular';
+import { AuthenticationResult } from '@azure/msal-browser';
 @Component({
     selector: 'login-page',
     templateUrl: './login-page.component.html',
@@ -16,7 +18,8 @@ export class LoginPageComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private authenticationService: AuthenticationService
+        private authenticationService: AuthenticationService,
+        private msalService: MsalService
     ) {
         if (this.authenticationService.currentUserValue) {
             this.router.navigate(['/']);
@@ -29,24 +32,32 @@ export class LoginPageComponent implements OnInit {
         setTimeout(() => {
             this.loading_status = true;
         }, 3000);
-        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+        // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     }
 
+    /**
+     * check whether user is logged in
+     * @returns: boolean 
+     */
+    isLoggedIn(): boolean {
+        return this.msalService.instance.getActiveAccount() != null;
+    }
+    /**
+     * login 
+     */
     onSubmit() {
-        const loggedUserDetails = {
-            username: this.username,
-            password: this.password
-        };
-        // localStorage.setItem(Constants.CURRENT_USER, JSON.stringify(loggedUserDetails));
-        this.router.navigate(['/dashboard']);
-        this.authenticationService.setCurrentUserValue(loggedUserDetails);
-        // this.authenticationService.login(this.username, this.password)
-        // .pipe(first()).subscribe((response: any) => {
-        //     if (!response.success) {
-        //         // this.toastr.error('Login Failed: ' + response.message, 'Error');
-        //     } else {
-        //         this.router.navigate([this.returnUrl]);
-        //     }
-        // });
+        try {
+            this.msalService.loginPopup().subscribe((res: AuthenticationResult) => {
+                console.debug('login res: ', res);
+                this.msalService.instance.setActiveAccount(res.account);
+
+                if (this.isLoggedIn) {
+                    this.authenticationService.loggedIn.emit();
+                    this.router.navigate(['/dashboard']);
+                }
+            });
+        } catch (error) {
+            console.error('error while logging with Azure AD: ', error);
+        }
     }
 }

@@ -32,22 +32,6 @@ export class AuthenticationService {
     this.currentUserSubject.next(user);
   }
 
-  login(username: string, password: string) {
-    // return this.http.post<any>(this.apiURL + "/login", { username, password })
-    //   .pipe(map(data => {
-    //     if (data.success && data.response.accessToken) {
-    //       var user = data.response;
-    //       user.user = username;
-    //       localStorage.setItem(Constants.CURRENT_USER, JSON.stringify(user));
-    //       this.currentUserSubject.next(user);
-    //     }
-    //     return data;
-    //   }));
-  }
 
-  logout() {
-    localStorage.removeItem(Constants.CURRENT_USER);
-    this.currentUserSubject.next(null);
-  }
 
 }
