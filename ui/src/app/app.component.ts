@@ -2,6 +2,7 @@ import { Component, OnInit, AfterContentInit, ChangeDetectorRef, OnDestroy } fro
 import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 import { MsalService } from '@azure/msal-angular';
+import { Constants } from './helpers/constants';
 
 @Component({
     selector: 'app-root',
@@ -48,7 +49,7 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     logout() {
         try {
-            const baseUrl: string = window.location.origin + '/license-server/index.hmtl';
+            const baseUrl: string = Constants.REDIRECT_URL_AFTER_LOGIN;
             this.msalService.logoutPopup({
                 mainWindowRedirectUri: baseUrl
             });

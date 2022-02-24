@@ -52,7 +52,7 @@ import { Constants } from './helpers/constants';
         MsalModule.forRoot(new PublicClientApplication({
             auth: {
                 clientId: Constants.CLIENT_ID,
-                redirectUri:'http://localhost:4200/dashboard'
+                redirectUri: Constants.REDIRECT_URL_AFTER_LOGIN
             }
         }), {
             interactionType: InteractionType.Popup,
