@@ -5,7 +5,7 @@
                 <button mat-stroked-button (click)="goToDashboard()">Back</button>
             </div>
             <div class="col">
-                <h1>{{currentCustomer.customerAccounts}} {{currentCustomer.customerSubAccounts}}</h1>
+                <h1>{{currentCustomer.customerName}} - {{currentCustomer.subaccountName}}</h1>
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
@@ -19,7 +19,7 @@
     </main>
     <!-- license summary section -->
     <br>
-    <h3>License Summary</h3>
+    <h2>License Summary</h2>
     <section>
         <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
             <!-- Device Access Limit Column -->
@@ -79,7 +79,7 @@
     </section>
     <!-- Equiment summary section -->
     <br>
-    <h3>Equiment Summary</h3>
+    <h2>Equiment Summary</h2>
     <section>
         <table mat-table [dataSource]="equipmentDataSource" matSort class="mat-elevation-z8">
             <!-- Vendor Column -->
@@ -119,7 +119,7 @@
     </section>
     <!-- Detailed Usage for month section -->
     <br>
-    <h3> Detailed Usage for Month</h3>
+    <h2> Detailed Usage for Month</h2>
     <section>
         <!-- date range -->
         <div style="display: flex;">

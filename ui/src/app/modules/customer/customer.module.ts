@@ -9,19 +9,25 @@ import { AddLicenseComponent } from './view-customer-license/add-license/add-lic
 import { CustomerRoutingModule } from './customer-routing.module';
 import { MaterialModule } from '../material/material.module';
 import { ModifyLicenseConsumptionDetailsComponent } from './view-customer-license/modify-license-consumption-details/modify-license-consumption-details.component';
+import { ProjectsComponent } from './projects/projects.component';
+import { AddProjectComponent } from './projects/add-project/add-project.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
     ViewCustomerLicenseComponent,
     AddLicenseConsumptionComponent,
     AddLicenseComponent,
-    ModifyLicenseConsumptionDetailsComponent
+    ModifyLicenseConsumptionDetailsComponent,
+    ProjectsComponent,
+    AddProjectComponent,
   ],
   imports: [
     CommonModule,
     CustomerRoutingModule,
     ReactiveFormsModule,
-    MaterialModule
+    MaterialModule,
+    SharedModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

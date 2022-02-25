@@ -17,7 +17,7 @@ export class SubAccountService {
    * @returns: Observable 
    */
   public createSubAccount(data: SubAccount) {
-    return this.httpClient.post(this.API_URL, { data });
+    return this.httpClient.post(this.API_URL, data);
   }
   /**
    * get particular subaccount details by subaccountId

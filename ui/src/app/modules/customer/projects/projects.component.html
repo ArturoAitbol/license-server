@@ -1,0 +1,86 @@
+<div class="container-fluid content">
+    <main>
+        <div class="row">
+            <div class="col">
+                <button mat-stroked-button (click)="goToDashboard()">Back</button>
+            </div>
+            <div class="col">
+                <h1>{{currentCustomer.customerName}} - {{currentCustomer.subaccountName}}</h1>
+            </div>
+            <div class="col">
+                <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
+                    <mat-button-toggle value="add-new-project" (click)="onNewProject()">Add New Project
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+        </div>
+    </main>
+    <!-- project summary section -->
+    <br>
+    <h2>Project Summary</h2>
+    <section>
+        <div class="example-container mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource" matSort>
+                <!-- Project Number Column -->
+                <ng-container matColumnDef="number">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        sortActionDescription="Sort by Project Number">
+                        Project Number
+                    </th>
+                    <td mat-cell *matCellDef="let element;let i=index;">
+                        {{element.number | na}}
+                    </td>
+                </ng-container>
+                <!-- Project Name Column -->
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Project Name">
+                        Project Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.name | na}} </td>
+                </ng-container>
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Status">
+                        Status </th>
+                    <td mat-cell *matCellDef="let element"> {{element.status | na}} </td>
+                </ng-container>
+                <!-- Automation Token Consumed Column -->
+                <ng-container matColumnDef="automationTokensConsumed">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        sortActionDescription="Sort by Automation Token Consumed">
+                        Automation Token Consumed </th>
+                    <td mat-cell *matCellDef="let element"> {{element.automationTokensConsumed | na}} </td>
+                </ng-container>
+                <!-- Open Date Column -->
+                <ng-container matColumnDef="openDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by  Open Date">
+                        Open
+                        Date
+                    </th>
+                    <td mat-cell *matCellDef="let element"> {{element.openDate | na}} </td>
+                </ng-container>
+                <!-- Close Date Column -->
+                <ng-container matColumnDef="closeDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Close Date">
+                        Close
+                        Date
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{element.closeDate | na}}
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <table>
+                <tr *ngIf="!dataSource.data.length">
+                    <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+                        <img *ngIf="isLoadingResults" height="80" width="80" src="assets/images/spinner.gif"
+                            alt="loading spinner gif">
+                        <h3 class="no-data-found" *ngIf="isRequestCompleted">No Data to display</h3>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </section>
+
+</div>

@@ -26,6 +26,8 @@ import { ConfirmComponent } from './dialogs/confirm/confirm.component';
 import { MsalInterceptor, MsalModule } from '@azure/msal-angular';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { Constants } from './helpers/constants';
+import { DataPropertyGetterPipe } from './pipes/data-property-getter.pipe';
+import { SharedModule } from './modules/shared/shared.module';
 @NgModule({
     declarations: [
         AppComponent,
@@ -39,7 +41,8 @@ import { Constants } from './helpers/constants';
         DataTableComponent,
         RedirectComponent,
         ModifyCustomerAccountComponent,
-        ConfirmComponent
+        ConfirmComponent,
+        DataPropertyGetterPipe
     ],
     imports: [
         AppRoutingModule,
@@ -64,7 +67,8 @@ import { Constants } from './helpers/constants';
             protectedResourceMap: new Map([
                 ['https://graph.microsoft.com/v1.0/me', ['user.read']]
             ])
-        })
+        }),
+        SharedModule
         // OAuthModule.forRoot()
     ],
     providers: [

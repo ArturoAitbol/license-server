@@ -11,6 +11,8 @@ export class CustomerService {
   private readonly API_URL: string = environment.apiEndpoint + '/customers';
 
   private selectedCustomer: any;
+  private selectedType: string;
+
   constructor(private httpClient: HttpClient) { }
   //set the selected customer
   setSelectedCustomer(customer: any) { this.selectedCustomer = customer; }
@@ -18,13 +20,20 @@ export class CustomerService {
   getSelectedCustomer() {
     return (this.selectedCustomer) ? this.selectedCustomer : JSON.parse(localStorage.getItem(Constants.SELECTED_CUSTOMER));
   }
+
+  setSelectedType(type: string) { this.selectedType = type; }
+
+  getSelectedType() {
+    return this.selectedType;
+  }
+
   /**
    * create new customer
    * @param customerName: string 
    * @returns: Observable 
    */
-  public createCustomer(customerName: string) {
-    return this.httpClient.post(this.API_URL, { customerName });
+  public createCustomer(newCustomerDetails: Customer) {
+    return this.httpClient.post(this.API_URL, newCustomerDetails);
   }
 
   /**

@@ -1,6 +1,16 @@
 table {
   width: 100%;
 }
-th.mat-sort-header-sorted {
-  color: black;
+
+th,
+td {
+  padding: 10px !important;
+}
+
+mat-form-field {
+  width: 40%;
+}
+
+.text-right {
+  text-align: right !important;
 }

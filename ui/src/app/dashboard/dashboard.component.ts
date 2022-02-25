@@ -81,11 +81,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe(res => {
         this.isLoadingResults = false;
         this.isRequestCompleted = true;
-        console.debug('fork join res ', res);
         const newDataObject: any = res.reduce((current, next) => {
           return { ...current, ...next };
         }, {});
-        console.debug('data object ', newDataObject);
         this.licenseList = newDataObject['licenses'];
         this.subaccountList = newDataObject['subaccounts'];
         this.customersList = newDataObject['customers'];
@@ -118,8 +116,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onHoverTable(index: number) {
     // this.data[index].action = !this.data[index].action;
-    // this.dataSource = new MatTableDataSource([this.data]);
-    console.debug('index: ', index);
+    // this.dataSource = new MatTableDataSource([this.data]); 
   }
   /**
    * on click modify license
@@ -134,7 +131,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * @param index: string
    */
   onDeleteAccount(index: string): void {
-    console.debug(`on delete account index: ${index}`);
     this.openConfirmaCancelDialog();
   }
   /**
@@ -152,7 +148,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     switch (type) {
       case 'add':
         dialogRef = this.dialog.open(AddCustomerAccountModalComponent, {
-          width: 'auto'
+          width: '400px',
+          disableClose: true
         });
         break;
       case 'modify':
@@ -164,6 +161,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     dialogRef.afterClosed().subscribe(res => {
       console.debug(`${type} customer dialog closed: ${res}`);
+      if (res) {
+        this.fetchDataToDisplay();
+      }
     });
   }
   /**
@@ -171,12 +171,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * @param index: string 
    */
   onClickAccount(index: string): void {
-    console.debug(`on click account index: ${index}`);
     this.customerService.setSelectedCustomer(this.data[index]);
     localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(this.data[index]));
     this.router.navigate(['/customer']);
   }
-
+  /**
+   * open confirm cancel dialog
+   */
   openConfirmaCancelDialog() {
     this.dialogService
       .confirmDialog({
@@ -188,6 +189,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe((confirmed) => {
         if (confirmed) console.debug('The user confirmed the action');
       });
+  }
+  /**
+   * open project detail
+   * @param index: string 
+   */
+  openProjectDetails(index: string): void {
+    this.customerService.setSelectedCustomer(this.data[index]);
+    localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(this.data[index]));
+    this.router.navigate(['/customer/projects']);
   }
 
   ngOnDestroy(): void {

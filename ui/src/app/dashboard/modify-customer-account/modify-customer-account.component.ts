@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { Validators, FormBuilder} from '@angular/forms';
+import { Validators, FormBuilder } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -9,8 +9,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class ModifyCustomerAccountComponent implements OnInit {
   updateCustomerForm = this.formBuilder.group({
-    customerAccounts: ['', Validators.required],
-    customerSubAccounts: ['', Validators.required],
+    customerName: ['', Validators.required],
+    subaccountName: ['', Validators.required],
+    customerType: ['', Validators.required],
     purchaseDate: ['', Validators.required],
     packageType: ['', Validators.required],
     renewalDate: ['', Validators.required]
