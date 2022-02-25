@@ -13,41 +13,35 @@ import com.microsoft.azure.functions.annotation.BindingName;
 import java.sql.*;
 import java.util.Optional;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSGetAllLicenses 
+public class TekvLSDeleteProjectById 
 {
     /**
-     * This function listens at endpoint "/api/licenses?subaccountId={subaccountId}". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/licenses?subaccountId={subaccountId}
-     * 2. curl "{your host}/api/subaccounts"
+     * This function listens at endpoint "/api/projects". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/api/projects
      */
-    @FunctionName("TekvLSGetAllLicenses")
+    @FunctionName("TekvLSDeleteProjectById")
     public HttpResponseMessage run(
             @HttpTrigger(
                 name = "req",
-                methods = {HttpMethod.GET},
+                methods = {HttpMethod.DELETE},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "licenses/{id=EMPTY}")
+                route = "projects/{id}")
                 HttpRequestMessage<Optional<String>> request,
                 @BindingName("id") String id,
-            final ExecutionContext context) 
-{
-
-        context.getLogger().info("Entering TekvLSGetAllLicenses Azure function");
+                final ExecutionContext context) 
+    {
+        context.getLogger().info("Entering TekvLSDeleteProjectById Azure function");
         
-        // Build SQL statement
-        String sql = "";
-	if (id.equals("EMPTY")) {
-            sql = "select * from license;";
-        } else {
-            sql = "select * from license where id='" + id +"';";
-        }
-        
+// TODO: I have disabled delete for the moment
+            JSONObject json = new JSONObject();
+            json.put("error", "Function is disabled");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+/*
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
                 + "&user=tekvdbadmin@tekv-db-server"
@@ -56,28 +50,15 @@ public class TekvLSGetAllLicenses
             Connection connection = DriverManager.getConnection(dbConnectionUrl);
             Statement statement = connection.createStatement();) {
             
-            context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+            context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
             
-            // Retrive licenses. TODO: pagination
+            // Delete project
+            String sql = "delete from project where id='" + id +"';";
             context.getLogger().info("Execute SQL statement: " + sql);
-            ResultSet rs = statement.executeQuery(sql);
-            // Return a JSON array of licenses
-            JSONObject json = new JSONObject();
-            JSONArray array = new JSONArray();
-            while (rs.next()) {
-                JSONObject item = new JSONObject();
-                item.put("id", rs.getString("id"));
-                item.put("subaccountId", rs.getString("subaccount_id"));
-                item.put("purchaseDate", rs.getString("purchase_date"));
-                item.put("packageType", rs.getString("package_type"));
-                item.put("renewalDate", rs.getString("renewal_date"));
-                item.put("tokensPurchased", rs.getString("tokens"));
-                item.put("deviceLimit", rs.getString("device_access_limit"));
-                item.put("status", rs.getString("status"));
-                array.put(item);
-            }
-            json.put("licenses", array);
-            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
+            statement.executeUpdate(sql);
+            context.getLogger().info("Project delete successfully."); 
+
+            return request.createResponseBuilder(HttpStatus.OK).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
@@ -91,5 +72,6 @@ public class TekvLSGetAllLicenses
             json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
+*/
     }
 }

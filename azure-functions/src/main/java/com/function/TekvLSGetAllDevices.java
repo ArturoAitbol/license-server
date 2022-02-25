@@ -19,35 +19,44 @@ import org.json.JSONObject;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSGetAllLicenses 
-{
+public class TekvLSGetAllDevices {
     /**
-     * This function listens at endpoint "/api/licenses?subaccountId={subaccountId}". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/licenses?subaccountId={subaccountId}
-     * 2. curl "{your host}/api/subaccounts"
+     * This function listens at endpoint "/api/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/api/devices/{vendor}/{product}/{version}
+     * 2. curl "{your host}/api/devices"
      */
-    @FunctionName("TekvLSGetAllLicenses")
+    @FunctionName("TekvLSGetAllDevices")
     public HttpResponseMessage run(
             @HttpTrigger(
                 name = "req",
                 methods = {HttpMethod.GET},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "licenses/{id=EMPTY}")
+                route = "devices/{vendor=EMPTY}/{product=EMPTY}/{version=EMPTY}")
                 HttpRequestMessage<Optional<String>> request,
-                @BindingName("id") String id,
-            final ExecutionContext context) 
-{
+		@BindingName("vendor") String vendor,
+		@BindingName("product") String product,
+		@BindingName("version") String version,
+            final ExecutionContext context) {
 
-        context.getLogger().info("Entering TekvLSGetAllLicenses Azure function");
-        
-        // Build SQL statement
+        context.getLogger().info("Entering TekvLSGetAllDevices Azure function");
+        context.getLogger().info("vendor=" + vendor + ", product=" + product + ", version=" + version);
+
         String sql = "";
-	if (id.equals("EMPTY")) {
-            sql = "select * from license;";
+	if (vendor.equals("EMPTY")) {
+            sql = "select * from device;";
         } else {
-            sql = "select * from license where id='" + id +"';";
+            sql += " vendor='" + vendor + "' and";
+	    if (!product.equals("EMPTY")) {
+                sql += " product='" + product + "' and";
+	        if (!version.equals("EMPTY")) {
+                    sql += " version='" + version + "' and";
+                }
+            }
+            // Remove the " and"  after the last parameter and add the where clause
+            sql = sql.substring(0, sql.length() - 3);
+            sql = "select * from device where " + sql + ";";
         }
-        
+
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
                 + "&user=tekvdbadmin@tekv-db-server"
@@ -58,25 +67,24 @@ public class TekvLSGetAllLicenses
             
             context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
             
-            // Retrive licenses. TODO: pagination
+            // Execute sql query. TODO: pagination
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
-            // Return a JSON array of licenses
+            // Return a JSON array
             JSONObject json = new JSONObject();
             JSONArray array = new JSONArray();
             while (rs.next()) {
                 JSONObject item = new JSONObject();
                 item.put("id", rs.getString("id"));
-                item.put("subaccountId", rs.getString("subaccount_id"));
-                item.put("purchaseDate", rs.getString("purchase_date"));
-                item.put("packageType", rs.getString("package_type"));
-                item.put("renewalDate", rs.getString("renewal_date"));
-                item.put("tokensPurchased", rs.getString("tokens"));
-                item.put("deviceLimit", rs.getString("device_access_limit"));
-                item.put("status", rs.getString("status"));
+                item.put("vendor", rs.getString("vendor"));
+                item.put("product", rs.getString("product"));
+                item.put("version", rs.getString("version"));
+                item.put("deviceType", rs.getString("device_type"));
+                item.put("granularity", rs.getString("granularity"));
+                item.put("tokensToConsume", rs.getInt("tokens_to_consume"));
                 array.put(item);
             }
-            json.put("licenses", array);
+            json.put("devices", array);
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         }
         catch (SQLException e) {

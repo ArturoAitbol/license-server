@@ -8,7 +8,6 @@ import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
-import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
 import java.util.Optional;
@@ -19,34 +18,23 @@ import org.json.JSONObject;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSGetAllLicenses 
-{
+public class TekvLSGetAllProjects {
     /**
-     * This function listens at endpoint "/api/licenses?subaccountId={subaccountId}". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/licenses?subaccountId={subaccountId}
-     * 2. curl "{your host}/api/subaccounts"
+     * This function listens at endpoint "/api/projects". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/api/projects
+     * 2. curl "{your host}/api/projects"
      */
-    @FunctionName("TekvLSGetAllLicenses")
+    @FunctionName("TekvLSGetAllProjects")
     public HttpResponseMessage run(
             @HttpTrigger(
                 name = "req",
                 methods = {HttpMethod.GET},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "licenses/{id=EMPTY}")
+                route = "projects")
                 HttpRequestMessage<Optional<String>> request,
-                @BindingName("id") String id,
-            final ExecutionContext context) 
-{
+            final ExecutionContext context) {
 
-        context.getLogger().info("Entering TekvLSGetAllLicenses Azure function");
-        
-        // Build SQL statement
-        String sql = "";
-	if (id.equals("EMPTY")) {
-            sql = "select * from license;";
-        } else {
-            sql = "select * from license where id='" + id +"';";
-        }
+        context.getLogger().info("Entering TekvLSGetAllProjects Azure function");
         
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
@@ -58,25 +46,24 @@ public class TekvLSGetAllLicenses
             
             context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
             
-            // Retrive licenses. TODO: pagination
+            // Retrive all projects. TODO: pagination
+            String sql = "select * from project;";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
-            // Return a JSON array of licenses
+            // Return a JSON array of projects
             JSONObject json = new JSONObject();
             JSONArray array = new JSONArray();
             while (rs.next()) {
                 JSONObject item = new JSONObject();
                 item.put("id", rs.getString("id"));
                 item.put("subaccountId", rs.getString("subaccount_id"));
-                item.put("purchaseDate", rs.getString("purchase_date"));
-                item.put("packageType", rs.getString("package_type"));
-                item.put("renewalDate", rs.getString("renewal_date"));
-                item.put("tokensPurchased", rs.getString("tokens"));
-                item.put("deviceLimit", rs.getString("device_access_limit"));
-                item.put("status", rs.getString("status"));
+                item.put("name", rs.getString("name"));
+                item.put("number", rs.getString("number"));
+                item.put("openDate", rs.getString("open_date"));
+                item.put("closeDate", rs.getString("close_date"));
                 array.put(item);
             }
-            json.put("licenses", array);
+            json.put("projects", array);
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         }
         catch (SQLException e) {

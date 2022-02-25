@@ -8,6 +8,7 @@ import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
+import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
 import java.util.Optional;
@@ -18,10 +19,11 @@ import org.json.JSONObject;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSGetAllSubaccounts {
+public class TekvLSGetAllSubaccounts 
+{
     /**
-     * This function listens at endpoint "/api/subaccounts?customerId={customerId}". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/subaccounts?customerId={customerId}
+     * This function listens at endpoint "/api/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/api/subaccounts/{id}
      * 2. curl "{your host}/api/subaccounts"
      */
     @FunctionName("TekvLSGetAllSubaccounts")
@@ -30,16 +32,20 @@ public class TekvLSGetAllSubaccounts {
                 name = "req",
                 methods = {HttpMethod.GET},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "subaccounts")
+                route = "subaccounts/{id=EMPTY}")
                 HttpRequestMessage<Optional<String>> request,
-            final ExecutionContext context) {
+                @BindingName("id") String id,
+            final ExecutionContext context) 
+{
 
         context.getLogger().info("Entering TekvLSGetAllSubaccounts Azure function");
-        context.getLogger().info("GET parameters are: " + request.getQueryParameters());
-        // Get the optional customerId parameter
-        String customerId = request.getQueryParameters().getOrDefault("customerId", "");
-        if (customerId.isEmpty()) {
-            context.getLogger().info("customerId parameter is not present");
+
+        // Build SQL statement
+        String sql = "";
+	if (id.equals("EMPTY")) {
+            sql = "select * from subaccount;";
+        } else {
+            sql = "select * from subaccount where id='" + id +"';";
         }
         
         // Connect to the database
@@ -52,13 +58,10 @@ public class TekvLSGetAllSubaccounts {
             
             context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
             
-            // Retrive all subaccounts. TODO: pagination
-            String sql = (customerId.isEmpty())? 
-                "select id,name,customer_id from subaccount;" : 
-                "select id,name,customer_id from subaccount where customer_id = '" + customerId + "';";
+            // Retrive subaccounts. TODO: pagination
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
-            // Return a JSON array of subaccounts (id and names)
+            // Return a JSON array of subaccounts
             JSONObject json = new JSONObject();
             JSONArray array = new JSONArray();
             while (rs.next()) {

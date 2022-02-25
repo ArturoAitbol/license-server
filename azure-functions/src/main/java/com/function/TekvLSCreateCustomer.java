@@ -37,10 +37,12 @@ public class TekvLSCreateCustomer {
         String requestBody = request.getBody().orElse("");
         context.getLogger().info("Request body: " + requestBody);
         String customerName = "";
+        String customerType = "";
         if (!requestBody.isEmpty()) {
             try {
                 JSONObject jobj = new JSONObject(requestBody);
                 customerName = jobj.getString("customerName");
+                customerType = jobj.getString("customerType");
             } catch (Exception e) {
                 context.getLogger().info("Caught exception: " + e.getMessage());
                 JSONObject json = new JSONObject();
@@ -59,6 +61,12 @@ public class TekvLSCreateCustomer {
             json.put("error", "error: empty customerName parameter");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
+        if (customerType.isEmpty()) {
+            context.getLogger().info("error: empty customerType parameter");
+            JSONObject json = new JSONObject();
+            json.put("error", "error: empty customerType parameter");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+        }
         
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
@@ -71,13 +79,13 @@ public class TekvLSCreateCustomer {
             context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
             
             // Insert customer. TODO: check if customer name exists?
-            String sql = "insert into customer (name) values ('" + customerName + "');";
+            String sql = "insert into customer (name,customer_type) values ('" + customerName + "','" + customerType + "');";
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);
-            context.getLogger().info("Customer doesn't exist, inserted successfully."); 
+            context.getLogger().info("Customer inserted successfully."); 
 
             // Return the customer id in the response
-            sql = "select id from customer where name = '" + customerName + "';";
+            sql = "select id from customer where name = '" + customerName + "' and customer_type = '" + customerType + ";";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             rs.next();
