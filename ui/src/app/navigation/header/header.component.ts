@@ -75,9 +75,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
      * removing the value of isClosed from localStorage
      */
     logout() {
-        localStorage.removeItem('isClosed');
-        this.authenticationService.logout();
-        this.router.navigate(['/login']);
     }
 
     isOnSpecificView(viewName: string) {

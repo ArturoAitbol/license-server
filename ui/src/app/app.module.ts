@@ -19,10 +19,13 @@ import { MaterialModule } from './modules/material/material.module';
 import { DialogComponent } from './generics/loading/dialog/dialog.component';
 import { AddCustomerAccountModalComponent } from './dashboard/add-customer-account-modal/add-customer-account-modal.component';
 import { DataTableComponent } from './generics/loading/data-table/data-table.component';
-import { OAuthModule } from 'angular-oauth2-oidc';
 import { RedirectComponent } from './views/redirect/redirect.component';
 import { ModifyCustomerAccountComponent } from './dashboard/modify-customer-account/modify-customer-account.component';
 import { ConfirmComponent } from './dialogs/confirm/confirm.component';
+// third party modules
+import { MsalInterceptor, MsalModule } from '@azure/msal-angular';
+import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
+import { Constants } from './helpers/constants';
 @NgModule({
     declarations: [
         AppComponent,
@@ -46,11 +49,28 @@ import { ConfirmComponent } from './dialogs/confirm/confirm.component';
         FormsModule,
         ReactiveFormsModule,
         MaterialModule,
-        OAuthModule.forRoot()
+        MsalModule.forRoot(new PublicClientApplication({
+            auth: {
+                clientId: Constants.CLIENT_ID,
+                redirectUri: Constants.REDIRECT_URL_AFTER_LOGIN
+            }
+        }), {
+            interactionType: InteractionType.Popup,
+            authRequest: {
+                scopes: ['user.read']
+            }
+        }, {
+            interactionType: InteractionType.Popup,
+            protectedResourceMap: new Map([
+                ['https://graph.microsoft.com/v1.0/me', ['user.read']]
+            ])
+        })
+        // OAuthModule.forRoot()
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true }
     ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

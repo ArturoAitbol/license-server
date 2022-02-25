@@ -1,103 +1,63 @@
-import { Component, OnInit, AfterContentInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterContentInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
-import { User } from './model/user';
-import { Role } from './helpers/role';
+import { MsalService } from '@azure/msal-angular';
 import { Constants } from './helpers/constants';
-import { OAuthService } from 'angular-oauth2-oidc';
-import { authConfig } from './security/auth.config';
-import { SessionStorageUtil } from './helpers/session-storage';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
     title = 'license-server';
-    opened: boolean;
-    mode: string;
-    position: string;
-    dock: boolean;
-    dockedSize: string;
-    closeOnClickOutside: boolean;
-    closeOnClickBackdrop: boolean;
-    animation: boolean;
     currentUser: boolean = false;
-    optionsMenu: any[] = [
-        {
-            name: 'Dashboard',
-            imgLocation: 'dashboard_icon.svg',
-            imgActive: 'dashboard_current_icon.svg',
-            redirectsTo: '/dashboard',
-            stylePadding: 'padding:3px 0 0 10px;',
-            requiresAdmin: true
-        },
-        {
-            name: 'Phone Manager',
-            imgLocation: 'phone_icon.svg',
-            imgActive: 'phone_current_icon.svg',
-            redirectsTo: '/phoneConfiguration',
-            stylePadding: 'padding:2px 0 0 10px;'
-        },
-        {
-            name: 'Test Manager',
-            imgLocation: 'tests_icon.svg',
-            imgActive: 'tests_current_icon.svg',
-            redirectsTo: '/testCases',
-            stylePadding: 'padding:1px 0 0 10px;'
-        },
-        {
-            name: 'Project Manager',
-            imgLocation: 'projects_icon.svg',
-            imgActive: 'projects_current_icon.svg',
-            redirectsTo: '/projects',
-            stylePadding: 'padding:0px 0 0 10px;'
-        },
-        {
-            name: 'Admin Panel',
-            imgLocation: 'settings_icon.svg',
-            imgActive: 'settings_current_icon.svg',
-            redirectsTo: '/adminPanel',
-            stylePadding: 'padding:0px 0 0 10px;'
-        },
-    ];
 
     constructor(
         private router: Router,
         private authenticationService: AuthenticationService,
-        private cdr: ChangeDetectorRef,
-        private oauthService: OAuthService
-    ) {
-        this.oauthService.configure(authConfig);
-        this.oauthService.loadDiscoveryDocumentAndLogin().then((res) => {
-            this.currentUser = (res);
-            this.router.navigate(['/dashboard']);
-        });
-        this.oauthService.setupAutomaticSilentRefresh();
-    }
+        private msalService: MsalService
+    ) { }
 
     ngOnInit() {
-        this.authenticationService.currentUser.subscribe((response: any) => {
-            setTimeout(() => {
-                // if (!this.currentUser) {
-                //     this.router.navigate(['/login']);
-                // }
-            }, 0);
-        });
         console.log('AppComponent.ngOnInit: ', window.location.origin + '/license-server/index.hmtl');
-
-        // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+        if (!this.isLoggedIn()) {
+            this.router.navigate(['/login']);
+        } else {
+            this.currentUser = this.isLoggedIn();
+            this.navigateToDashboard();
+        }
+        this.authenticationService.loggedIn.subscribe(() => {
+            this.currentUser = this.isLoggedIn();
+        });
     }
-
+    /**
+     * check whether user logged in
+     * @returns: boolean 
+     */
+    isLoggedIn(): boolean {
+        return this.msalService.instance.getActiveAccount() != null;
+    }
+    /**
+     * navigate to dashboard page
+     */
     navigateToDashboard(): void {
         this.router.navigate(['/dashboard']);
     }
-
+    /**
+     * logout 
+     */
     logout() {
-        // this.oauthService.revokeTokenAndLogout();
-        this.oauthService.logOut();
-        // this.authenticationService.logout();
-        this.router.navigate(['/redirect']);
+        try {
+            const baseUrl: string = Constants.REDIRECT_URL_AFTER_LOGIN;
+            this.msalService.logoutPopup({
+                mainWindowRedirectUri: baseUrl
+            });
+        } catch (error) {
+            console.error('error while logout: ', error);
+        }
+    }
+
+    ngOnDestroy(): void {
     }
 }
