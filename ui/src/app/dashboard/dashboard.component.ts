@@ -3,14 +3,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { Constants } from '../helpers/constants';
-import { SessionStorageUtil } from '../helpers/session-storage';
 import { Utility } from '../helpers/Utility';
 import { CustomerLicense } from '../model/customer-license';
-import { AuthenticationService } from '../services/authentication.service';
+import { Customer } from '../model/customer.model';
+import { License } from '../model/license.model';
+import { SubAccount } from '../model/subaccount.model';
 import { CustomerService } from '../services/customer.service';
-import { DashboardService } from '../services/dashboard.service';
 import { DialogService } from '../services/dialog.service';
+import { LicenseService } from '../services/license.service';
+import { SubAccountService } from '../services/sub-account.service';
 import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
 import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
 
@@ -21,8 +24,9 @@ import { ModifyCustomerAccountComponent } from './modify-customer-account/modify
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   readonly displayedColumns: string[] = [
-    'customerAccounts',
-    'customerSubAccounts',
+    'customerName',
+    'subaccountName',
+    'customerType',
     'purchaseDate',
     'packageType',
     'renewalDate',
@@ -30,38 +34,83 @@ export class DashboardComponent implements OnInit, OnDestroy {
     'action'];
   readonly columnHeader =
     {
-      'customerAccounts': 'Customer Account',
-      'customerSubAccounts': 'Customer Sub Account',
+      'customerName': 'Customer Account',
+      'subaccountName': 'Customer Sub Account',
+      'customerType': 'Type',
       'purchaseDate': 'Purchase Date',
       'packageType': 'Package Type',
       'renewalDate': 'Renewal Date',
       'status': 'Status',
       'action': 'Action'
     }
-
-  canShow: boolean;
   @ViewChild(MatSort) sort: MatSort;
   dataSource: any = [];
   data: CustomerLicense[] = [];
+  customersList: any = [];
+  subaccountList: any = [];
+  licenseList: any = [];
+  // flag
+  isLoadingResults: boolean = true;
+  isRequestCompleted: boolean = false;
   constructor(
-    private dashboardService: DashboardService,
     private customerService: CustomerService,
-    private authService: AuthenticationService,
+    private subaccountService: SubAccountService,
+    private licenseService: LicenseService,
     private dialogService: DialogService,
     public dialog: MatDialog,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    const ACCESS_TOKEN = SessionStorageUtil.get(Constants.ACCESS_TOKEN);
-    this.authService.setCurrentUserValue(ACCESS_TOKEN);
-    this.data = this.dashboardService.getCustomerLicense();
     this.dataSource = new MatTableDataSource(this.data);
+    this.fetchDataToDisplay();
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
   }
+
+  private fetchDataToDisplay(): void {
+    this.isRequestCompleted = false;
+    // here we are fetching all the data from the server
+    forkJoin(
+      [this.customerService.getCustomerList(),
+      this.subaccountService.getSubAccountList(),
+      this.licenseService.getLicenseList()
+      ])
+      .subscribe(res => {
+        this.isLoadingResults = false;
+        this.isRequestCompleted = true;
+        console.debug('fork join res ', res);
+        const newDataObject: any = res.reduce((current, next) => {
+          return { ...current, ...next };
+        }, {});
+        console.debug('data object ', newDataObject);
+        this.licenseList = newDataObject['licenses'];
+        this.subaccountList = newDataObject['subaccounts'];
+        this.customersList = newDataObject['customers'];
+        // here we map the customer name and subaccount name to the customer license list
+        this.licenseList.forEach((license: License) => {
+          const subaccountDetails: SubAccount = this.subaccountList.find((e: SubAccount) => e.id == license.subaccountId);
+          if (subaccountDetails) {
+            license.subaccountName = subaccountDetails.name;
+            const customerDetails = this.customersList.find((e: Customer) => e.id === subaccountDetails.customerId);
+            if (customerDetails) {
+              license.customerName = customerDetails.name;
+              license.customerType = customerDetails.type;
+            }
+          }
+        });
+
+        this.data = [...this.licenseList];
+        this.dataSource = new MatTableDataSource(this.data);
+      }, err => {
+        console.debug('error', err);
+        this.isLoadingResults = false;
+        this.isRequestCompleted = true;
+      });
+  }
+
 
   getColor(value: string) {
     return Utility.getColorCode(value);
@@ -70,7 +119,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   onHoverTable(index: number) {
     // this.data[index].action = !this.data[index].action;
     // this.dataSource = new MatTableDataSource([this.data]);
-    console.log('index: ', index);
+    console.debug('index: ', index);
   }
   /**
    * on click modify license
@@ -85,7 +134,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * @param index: string
    */
   onDeleteAccount(index: string): void {
-    console.log(`on delete account index: ${index}`);
+    console.debug(`on delete account index: ${index}`);
     this.openConfirmaCancelDialog();
   }
   /**
@@ -114,7 +163,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         break;
     }
     dialogRef.afterClosed().subscribe(res => {
-      console.log(`${type} customer dialog closed: ${res}`);
+      console.debug(`${type} customer dialog closed: ${res}`);
     });
   }
   /**
@@ -122,7 +171,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * @param index: string 
    */
   onClickAccount(index: string): void {
-    console.log(`on click account index: ${index}`);
+    console.debug(`on click account index: ${index}`);
     this.customerService.setSelectedCustomer(this.data[index]);
     localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(this.data[index]));
     this.router.navigate(['/customer']);
@@ -137,7 +186,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         cancelCaption: 'Cancel',
       })
       .subscribe((confirmed) => {
-        if (confirmed) console.log('The user confirmed the action');
+        if (confirmed) console.debug('The user confirmed the action');
       });
   }
 

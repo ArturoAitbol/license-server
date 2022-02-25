@@ -48,7 +48,7 @@ export class LicenseService {
    * @returns: Observable 
    */
   public updateLicenseDetails(data: License) {
-    return this.httpClient.put(`${this.API_URL}/${data.licenseId}`, data);
+    return this.httpClient.put(`${this.API_URL}/${data.id}`, data);
   }
 
   /**

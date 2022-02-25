@@ -49,7 +49,7 @@ export class SubAccountService {
    * @returns: Observable 
    */
   public updateSubAccount(subAccount: SubAccount) {
-    return this.httpClient.put(`${this.API_URL}/${subAccount.subaccountId}`, subAccount);
+    return this.httpClient.put(`${this.API_URL}/${subAccount.id}`, subAccount);
   }
 
   /**

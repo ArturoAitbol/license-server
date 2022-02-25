@@ -10,23 +10,30 @@
             <!--  class="mat-elevation-z8" -->
             <table mat-table [dataSource]="dataSource" matSort>
                 <!-- Customer Account Column -->
-                <ng-container matColumnDef="customerAccounts">
+                <ng-container matColumnDef="customerName">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header
                         sortActionDescription="Sort by Customer Account">
                         Customer Account
                     </th>
                     <td mat-cell *matCellDef="let element;let i=index;">
                         <p class="clickable-item" (click)="onClickAccount(i)">
-                            {{element.customerAccounts}}
+                            {{element.customerName}}
                         </p>
                     </td>
                 </ng-container>
 
                 <!-- Customer SubAccount Column -->
-                <ng-container matColumnDef="customerSubAccounts">
+                <ng-container matColumnDef="subaccountName">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header
                         sortActionDescription="Sort by Customer SubAccount"> Customer SubAccount </th>
-                    <td mat-cell *matCellDef="let element"> {{element.customerSubAccounts}} </td>
+                    <td mat-cell *matCellDef="let element"> {{element.subaccountName}} </td>
+                </ng-container>
+
+                <!-- Customer Type Column -->
+                <ng-container matColumnDef="customerType">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header
+                        sortActionDescription="Sort by Customer Type"> Customer Type </th>
+                    <td mat-cell *matCellDef="let element"> {{element.customerType}} </td>
                 </ng-container>
 
                 <!-- Purchase Date Column -->
@@ -83,6 +90,15 @@
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <table>
+                <tr *ngIf="!dataSource.data.length">
+                    <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
+                        <img *ngIf="isLoadingResults" height="80" width="80" src="assets/images/spinner.gif"
+                            alt="loading spinner gif">
+                        <h3 class="no-data-found" *ngIf="isRequestCompleted">No Data to display</h3>
+                    </td>
+                </tr>
             </table>
         </div>
     </section>

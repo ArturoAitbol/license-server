@@ -15,10 +15,14 @@ th.mat-sort-header-sorted {
   color: darkblue;
   text-decoration: underline !important;
 }
-
 .example-container {
   position: relative;
   min-height: 200px;
   max-height: 400px;
   overflow: auto;
+}
+.no-data-found {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 50px;
 }
