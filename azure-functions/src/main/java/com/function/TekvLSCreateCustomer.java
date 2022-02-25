@@ -85,7 +85,7 @@ public class TekvLSCreateCustomer {
             context.getLogger().info("Customer inserted successfully."); 
 
             // Return the customer id in the response
-            sql = "select id from customer where name = '" + customerName + "' and customer_type = '" + customerType + ";";
+            sql = "select id from customer where name = '" + customerName + "' and customer_type = '" + customerType + "';";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             rs.next();
