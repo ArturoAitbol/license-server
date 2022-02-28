@@ -13,6 +13,7 @@ import { SubAccount } from '../model/subaccount.model';
 import { CustomerService } from '../services/customer.service';
 import { DialogService } from '../services/dialog.service';
 import { LicenseService } from '../services/license.service';
+import { SnackBarService } from '../services/snack-bar.service';
 import { SubAccountService } from '../services/sub-account.service';
 import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
 import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
@@ -23,28 +24,7 @@ import { ModifyCustomerAccountComponent } from './modify-customer-account/modify
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  readonly displayedColumns: string[] = [
-    'customerName',
-    'subaccountName',
-    'customerType',
-    'purchaseDate',
-    'packageType',
-    'renewalDate',
-    'status',
-    'action'];
-  readonly columnHeader =
-    {
-      'customerName': 'Customer Account',
-      'subaccountName': 'Customer Sub Account',
-      'customerType': 'Type',
-      'purchaseDate': 'Purchase Date',
-      'packageType': 'Package Type',
-      'renewalDate': 'Renewal Date',
-      'status': 'Status',
-      'action': 'Action'
-    }
-  @ViewChild(MatSort) sort: MatSort;
-  dataSource: any = [];
+  displayedColumns: any[] = [];
   data: CustomerLicense[] = [];
   customersList: any = [];
   subaccountList: any = [];
@@ -52,24 +32,83 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
+  readonly VIEW_PROJECTS: string = 'View Project Detail';
+  readonly MODIFY_LICENSE: string = 'Modify License';
+  readonly DELETE_ACCOUNT: string = 'Delete Account';
+
+  actionMenuOptions: any = [
+    this.VIEW_PROJECTS,
+    this.MODIFY_LICENSE,
+    this.DELETE_ACCOUNT
+  ];
   constructor(
     private customerService: CustomerService,
     private subaccountService: SubAccountService,
     private licenseService: LicenseService,
     private dialogService: DialogService,
     public dialog: MatDialog,
+    private snackBarService: SnackBarService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.dataSource = new MatTableDataSource(this.data);
+    this.initColumns();
+
     this.fetchDataToDisplay();
   }
-
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+  /**
+   * initailize the columns settings
+   */
+  initColumns(): void {
+    this.displayedColumns = [
+      {
+        name: 'Customer Account',
+        dataKey: 'customerName',
+        position: 'left',
+        isSortable: true,
+        isClickable: true,
+      },
+      {
+        name: 'Customer Sub Account',
+        dataKey: 'subaccountName',
+        position: 'left',
+        isSortable: true
+      },
+      {
+        name: 'Type',
+        dataKey: 'customerType',
+        position: 'left',
+        isSortable: true
+      },
+      {
+        name: 'Purchase Date',
+        dataKey: 'purchaseDate',
+        position: 'left',
+        isSortable: true
+      },
+      {
+        name: 'Package Type',
+        dataKey: 'packageType',
+        position: 'left',
+        isSortable: true
+      },
+      {
+        name: 'Renewal Date',
+        dataKey: 'renewalDate',
+        position: 'left',
+        isSortable: true
+      },
+      {
+        name: 'Status',
+        dataKey: 'status',
+        position: 'left',
+        isSortable: true
+      }
+    ];
   }
-
+  /**
+   * fetch data to display
+   */
   private fetchDataToDisplay(): void {
     this.isRequestCompleted = false;
     // here we are fetching all the data from the server
@@ -95,13 +134,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
             const customerDetails = this.customersList.find((e: Customer) => e.id === subaccountDetails.customerId);
             if (customerDetails) {
               license.customerName = customerDetails.name;
-              license.customerType = customerDetails.type;
+              license.customerType = customerDetails.customerType;
             }
           }
         });
 
         this.data = [...this.licenseList];
-        this.dataSource = new MatTableDataSource(this.data);
       }, err => {
         console.debug('error', err);
         this.isLoadingResults = false;
@@ -123,8 +161,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * @param index: string
    */
   onModifyLicense(index: string): void {
-    const item = this.dataSource.filteredData[index];
-    this.openDialog('modify', item);
+    // const item = this.dataSource.filteredData[index];
+    // this.openDialog('modify', item);
   }
   /**
    * on click delete account
@@ -153,6 +191,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
         break;
       case 'modify':
+      case this.MODIFY_LICENSE:
         dialogRef = this.dialog.open(ModifyCustomerAccountComponent, {
           width: 'auto',
           data: selectedItemData
@@ -162,6 +201,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(res => {
       console.debug(`${type} customer dialog closed: ${res}`);
       if (res) {
+        this.snackBarService.openSnackBar('Customer created successfully!', 'close');
         this.fetchDataToDisplay();
       }
     });
@@ -170,9 +210,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * 
    * @param index: string 
    */
-  onClickAccount(index: string): void {
-    this.customerService.setSelectedCustomer(this.data[index]);
-    localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(this.data[index]));
+  onClickAccount(object: { selectedRow: any, selectedIndex: number }): void {
+    this.customerService.setSelectedCustomer(object.selectedRow);
+    localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(object.selectedRow));
     this.router.navigate(['/customer']);
   }
   /**
@@ -198,6 +238,38 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.customerService.setSelectedCustomer(this.data[index]);
     localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(this.data[index]));
     this.router.navigate(['/customer/projects']);
+  }
+  /**
+   * sort table
+   * @param sortParameters: Sort 
+   * @returns 
+   */
+  sortData(sortParameters: Sort): any[] {
+    const keyName = sortParameters.active;
+    if (sortParameters.direction === 'asc') {
+      this.data = this.data.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+    } else if (sortParameters.direction === 'desc') {
+      this.data = this.data.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+    } else {
+      return this.data = this.data;
+    }
+  }
+  /**
+   * action row click event
+   * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
+   */
+  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+    switch (object.selectedOption) {
+      case this.VIEW_PROJECTS:
+        this.openProjectDetails(object.selectedIndex);
+        break;
+      case this.MODIFY_LICENSE:
+        this.openDialog(object.selectedOption, object.selectedRow);
+        break;
+      case this.DELETE_ACCOUNT:
+        this.onDeleteAccount(object.selectedIndex);
+        break;
+    }
   }
 
   ngOnDestroy(): void {

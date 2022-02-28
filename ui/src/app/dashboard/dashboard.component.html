@@ -7,102 +7,22 @@
     </div>
     <section class="table-section">
         <div class="example-container mat-elevation-z8">
-            <!--  class="mat-elevation-z8" -->
-            <table mat-table [dataSource]="dataSource" matSort>
-                <!-- Customer Account Column -->
-                <ng-container matColumnDef="customerName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        sortActionDescription="Sort by Customer Account">
-                        Customer Account
-                    </th>
-                    <td mat-cell *matCellDef="let element;let i=index;">
-                        <p class="clickable-item" (click)="onClickAccount(i)">
-                            {{element.customerName| na}}
-                        </p>
-                    </td>
-                </ng-container>
-
-                <!-- Customer SubAccount Column -->
-                <ng-container matColumnDef="subaccountName">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header
-                        sortActionDescription="Sort by Customer SubAccount"> Customer SubAccount </th>
-                    <td mat-cell *matCellDef="let element"> {{element.subaccountName| na}} </td>
-                </ng-container>
-
-                <!-- Customer Type Column -->
-                <ng-container matColumnDef="customerType">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Customer Type">
-                        Customer Type </th>
-                    <td mat-cell *matCellDef="let element"> {{element.customerType | na}} </td>
-                </ng-container>
-
-                <!-- Purchase Date Column -->
-                <ng-container matColumnDef="purchaseDate">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Purchase Date">
-                        Purchase Date </th>
-                    <td mat-cell *matCellDef="let element"> {{element.purchaseDate| na}} </td>
-                </ng-container>
-
-                <!-- Package Type Column -->
-                <ng-container matColumnDef="packageType">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Package Type">
-                        Package Type </th>
-                    <td mat-cell *matCellDef="let element"> {{element.packageType| na}} </td>
-                </ng-container>
-
-                <!-- Renewal Column -->
-                <ng-container matColumnDef="renewalDate">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by  Renewal">
-                        Renewal
-                    </th>
-                    <td mat-cell *matCellDef="let element"> {{element.renewalDate| na}} </td>
-                </ng-container>
-
-                <!-- Status Column -->
-                <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Status">
-                        Status
-                    </th>
-                    <td mat-cell *matCellDef="let element">
-                        <span [style.color]="getColor(element.status)">
-                            {{element.status| na }}
-                        </span>
-                    </td>
-                </ng-container>
-
-                <!-- Action Column -->
-                <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef> Action </th>
-                    <td mat-cell *matCellDef="let element;let i=index;">
-                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                            <mat-icon>more_vert</mat-icon>
-                        </button>
-                        <mat-menu #menu="matMenu">
-                            <button mat-menu-item (click)="openProjectDetails(i)">
-                                <span>View Project Detail</span>
-                            </button>
-                            <button mat-menu-item (click)="onModifyLicense(i)">
-                                <span>Modify License</span>
-                            </button>
-                            <button mat-menu-item (click)="onDeleteAccount(i)">
-                                <span>Delete Account</span>
-                            </button>
-                        </mat-menu>
-                    </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-            <table>
-                <tr *ngIf="!dataSource.data.length">
-                    <td style="text-align: center;" [attr.colspan]="displayedColumns.length">
-                        <img *ngIf="isLoadingResults" height="80" width="80" src="assets/images/spinner.gif"
-                            alt="loading spinner gif">
-                        <h3 class="no-data-found" *ngIf="isRequestCompleted">No Data to display</h3>
-                    </td>
-                </tr>
-            </table>
+            <app-data-table
+                [tableData]="data"
+                [tableColumns]="displayedColumns" 
+                [isFilterable]="false"
+                [isPageable]="false"
+                [isLoadingResults]="isLoadingResults"
+                [isRequestCompleted]="isRequestCompleted"
+                [paginationSizes]="[5,10,20]"
+                [defaultPageSize]="5"
+                (sort)="sortData($event)"
+                [rowActionIcon]="'more_vert'"
+                (rowAction)="rowAction($event)"
+                [actionMenuList]="actionMenuOptions"
+                (clickableRow)="onClickAccount($event)"
+                >
+            </app-data-table>
         </div>
     </section>
 </div>

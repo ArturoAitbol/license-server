@@ -14,3 +14,8 @@ mat-form-field {
 .text-right {
   text-align: right !important;
 }
+.clickable-item {
+  cursor: pointer;
+  color: darkblue;
+  text-decoration: underline !important;
+}
