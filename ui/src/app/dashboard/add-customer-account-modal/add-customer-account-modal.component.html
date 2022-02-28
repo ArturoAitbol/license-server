@@ -25,9 +25,9 @@
                 </mat-form-field>
             </div>
             <div class="btn-flex-container">
-                <button mat-stroked-button (click)="onCancel()">Cancel</button>
-                <button mat-raised-button color="primary" [disabled]="addCustomerForm.invalid"
-                    type="submit">Submit</button>
+                <button type="button" id="cancelBtn" mat-stroked-button (click)="onCancel()">Cancel</button>
+                <button id="submitBtn" mat-raised-button color="primary" [disabled]="addCustomerForm.invalid"
+                    type="button">Submit</button>
             </div>
         </div>
     </form>

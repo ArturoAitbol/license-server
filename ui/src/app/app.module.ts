@@ -17,7 +17,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MaterialModule } from './modules/material/material.module';
 import { AddCustomerAccountModalComponent } from './dashboard/add-customer-account-modal/add-customer-account-modal.component';
-import { DataTableComponent } from './generics/data-table/data-table.component';
 import { RedirectComponent } from './views/redirect/redirect.component';
 import { ModifyCustomerAccountComponent } from './dashboard/modify-customer-account/modify-customer-account.component';
 import { ConfirmComponent } from './dialogs/confirm/confirm.component';
@@ -25,7 +24,6 @@ import { ConfirmComponent } from './dialogs/confirm/confirm.component';
 import { MsalInterceptor, MsalModule } from '@azure/msal-angular';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { Constants } from './helpers/constants';
-import { DataPropertyGetterPipe } from './pipes/data-property-getter.pipe';
 import { SharedModule } from './modules/shared/shared.module';
 @NgModule({
     declarations: [
@@ -36,11 +34,9 @@ import { SharedModule } from './modules/shared/shared.module';
         LoadingComponent,
         DashboardComponent,
         AddCustomerAccountModalComponent,
-        DataTableComponent,
         RedirectComponent,
         ModifyCustomerAccountComponent,
         ConfirmComponent,
-        DataPropertyGetterPipe
     ],
     imports: [
         AppRoutingModule,

@@ -20,7 +20,6 @@ export class AddCustomerAccountModalComponent implements OnInit {
     'Reseller',
   ];
 
-  //  @Inject(MAT_DIALOG_DATA) public data: ModalData
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddCustomerAccountModalComponent>,
@@ -30,14 +29,16 @@ export class AddCustomerAccountModalComponent implements OnInit {
 
   ngOnInit() {
   }
-
+  /**
+   * on cancel dialog
+   */
   onCancel(): void {
     this.dialogRef.close();
   }
-
+  /**
+   * on add customer account
+   */
   addCustomer() {
-
-    // TODO: Use EventEmitter with form value
     console.info(this.addCustomerForm.value);
     const customerObject: any = {
       customerName: this.addCustomerForm.value.customerName,

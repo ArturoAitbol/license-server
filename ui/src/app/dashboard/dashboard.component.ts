@@ -53,7 +53,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initColumns();
-
     this.fetchDataToDisplay();
   }
   /**
@@ -199,10 +198,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         break;
     }
     dialogRef.afterClosed().subscribe(res => {
-      console.debug(`${type} customer dialog closed: ${res}`);
-      if (res) {
-        this.snackBarService.openSnackBar('Customer created successfully!', 'close');
-        this.fetchDataToDisplay();
+      try {
+        console.debug(`${type} customer dialog closed: ${res}`);
+        if (res) {
+          this.snackBarService.openSnackBar('Customer created successfully!', 'close');
+          this.fetchDataToDisplay();
+        }
+      } catch (error) {
+        console.log('error while creating customer', error);
       }
     });
   }
