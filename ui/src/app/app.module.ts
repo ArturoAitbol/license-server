@@ -16,9 +16,8 @@ import { ErrorInterceptor } from './helpers/error.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MaterialModule } from './modules/material/material.module';
-import { DialogComponent } from './generics/loading/dialog/dialog.component';
 import { AddCustomerAccountModalComponent } from './dashboard/add-customer-account-modal/add-customer-account-modal.component';
-import { DataTableComponent } from './generics/loading/data-table/data-table.component';
+import { DataTableComponent } from './generics/data-table/data-table.component';
 import { RedirectComponent } from './views/redirect/redirect.component';
 import { ModifyCustomerAccountComponent } from './dashboard/modify-customer-account/modify-customer-account.component';
 import { ConfirmComponent } from './dialogs/confirm/confirm.component';
@@ -36,7 +35,6 @@ import { SharedModule } from './modules/shared/shared.module';
         LoginPageComponent,
         LoadingComponent,
         DashboardComponent,
-        DialogComponent,
         AddCustomerAccountModalComponent,
         DataTableComponent,
         RedirectComponent,
