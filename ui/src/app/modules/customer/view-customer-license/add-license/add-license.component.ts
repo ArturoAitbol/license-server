@@ -1,50 +1,67 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { License } from 'src/app/model/license.model';
+import { CustomerService } from 'src/app/services/customer.service';
+import { LicenseService } from 'src/app/services/license.service';
 
 @Component({
   selector: 'app-add-license',
   templateUrl: './add-license.component.html',
   styleUrls: ['./add-license.component.css']
 })
-export class AddLicenseComponent implements OnInit {
+export class AddLicenseComponent implements OnInit, OnDestroy {
   types: string[] = [
     'Small',
     'Medium',
     'Large',
     'AddOn '
   ];
-
-  // addLicenseForm = new FormGroup({
-  //   purchasedData: new FormControl('', [Validators.required]),
-  //   type: new FormControl('', [Validators.required]),
-  //   accessTokens: new FormControl('', [Validators.required]),
-  //   tokens: new FormControl('', [Validators.required])
-  // });
+  private currentCustomer: any;
   addLicenseForm = this.formBuilder.group({
-    purchasedDate: ['', Validators.required],
-    type: ['', Validators.required],
-    accessTokens: ['', Validators.required],
-    tokens: ['', Validators.required],
+    purchaseDate: ['', Validators.required],
+    packageType: ['', Validators.required],
+    tokensPurchased: ['', Validators.required],
+    deviceLimit: ['', Validators.required],
     renewalDate: ['', Validators.required]
   });
   constructor(
     private formBuilder: FormBuilder,
+    private customerSerivce: CustomerService,
+    private licenseService: LicenseService,
     public dialogRef: MatDialogRef<AddLicenseComponent>
   ) {
 
   }
 
   ngOnInit() {
+    this.currentCustomer = this.customerSerivce.getSelectedCustomer();
   }
 
   onCancel(): void {
     this.dialogRef.close();
   }
-
+  /**
+   * add license
+   */
   submit() {
-    this.dialogRef.close();
-    // TODO: Use EventEmitter with form value
-    console.info(this.addLicenseForm.value);
+    const { subaccountId } = this.currentCustomer;
+    const licenseObject: License | any = {
+      subaccountId,
+      purchaseDate: this.addLicenseForm.value.purchaseDate,
+      packageType: this.addLicenseForm.value.packageType,
+      tokensPurchased: this.addLicenseForm.value.tokensPurchased,
+      deviceLimit: this.addLicenseForm.value.deviceLimit,
+      renewalDate: this.addLicenseForm.value.renewalDate
+    };
+    this.licenseService.purchaseLicense(licenseObject).subscribe((res: any) => {
+      console.debug(res);
+      this.dialogRef.close(res);
+    });
   }
+
+  ngOnDestroy(): void {
+    this.currentCustomer = null;
+  }
+
 }

@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { ModifyCustomerAccountComponent } from 'src/app/dashboard/modify-customer-account/modify-customer-account.component';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddLicenseConsumptionComponent } from './add-license-consumption/add-license-consumption.component';
 import { AddLicenseComponent } from './add-license/add-license.component';
 import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consumption-details/modify-license-consumption-details.component';
@@ -162,6 +163,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   constructor(
     private customerSerivce: CustomerService,
     private dialogService: DialogService,
+    private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog
   ) { }
@@ -194,7 +196,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   onEdit(index: number) {
     const item = this.detailedConsumptionDataSource.filteredData[index];
     console.log('item', item);
-    
+
     this.openDialog(ModifyLicenseConsumptionDetailsComponent, item);
   }
 
@@ -226,6 +228,9 @@ export class ViewCustomerLicenseComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(res => {
       console.log('add customer dialog closed');
+      if (res) {
+        this.snackBarService.openSnackBar('License added successfully!', '');
+      }
     });
   }
 

@@ -5,7 +5,7 @@
             <div>
                 <mat-form-field appearance="fill">
                     <mat-label>Purchase date</mat-label>
-                    <input required matInput [matDatepicker]="picker" formControlName="purchasedDate">
+                    <input required matInput [matDatepicker]="picker" formControlName="purchaseDate">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
@@ -13,7 +13,7 @@
             <div>
                 <mat-form-field appearance="fill">
                     <mat-label>Type</mat-label>
-                    <mat-select required formControlName="type">
+                    <mat-select required formControlName="packageType">
                         <mat-option *ngFor="let item of types" [value]="item">
                             {{item}}
                         </mat-option>
@@ -24,21 +24,21 @@
             <div>
                 <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>Device Access Tokens</mat-label>
-                    <input required matInput value="" formControlName="accessTokens">
+                    <input required matInput value="" formControlName="tokensPurchased">
                 </mat-form-field>
             </div>
             <div>
                 <mat-form-field class="example-full-width" appearance="fill">
                     <mat-label>Tokens</mat-label>
-                    <input required matInput value="" formControlName="tokens">
+                    <input required matInput value="" formControlName="deviceLimit">
                 </mat-form-field>
             </div>
             <div>
                 <mat-form-field appearance="fill">
                     <mat-label>Renewal Date</mat-label>
-                    <input required matInput [matDatepicker]="picker" formControlName="renewalDate">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
+                    <input required matInput [matDatepicker]="renewalDatepicker" formControlName="renewalDate">
+                    <mat-datepicker-toggle matSuffix [for]="renewalDatepicker"></mat-datepicker-toggle>
+                    <mat-datepicker #renewalDatepicker></mat-datepicker>
                 </mat-form-field>
             </div>
         </div>
