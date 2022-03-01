@@ -18,24 +18,24 @@ import org.json.JSONObject;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSDeleteProjectById 
+public class TekvLSDeleteCustomerById 
 {
     /**
-     * This function listens at endpoint "/api/projects". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/projects
+     * This function listens at endpoint "/api/customers". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/api/customers
      */
-    @FunctionName("TekvLSDeleteProjectById")
+    @FunctionName("TekvLSDeleteCustomerById")
     public HttpResponseMessage run(
             @HttpTrigger(
                 name = "req",
                 methods = {HttpMethod.DELETE},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "projects/{id}")
+                route = "customers/{id}")
                 HttpRequestMessage<Optional<String>> request,
                 @BindingName("id") String id,
                 final ExecutionContext context) 
     {
-        context.getLogger().info("Entering TekvLSDeleteProjectById Azure function");
+        context.getLogger().info("Entering TekvLSDeleteCustomerById Azure function");
         
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
@@ -47,11 +47,11 @@ public class TekvLSDeleteProjectById
             
             context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
             
-            // Delete project
-            String sql = "delete from project where id='" + id +"';";
+            // Delete customer
+            String sql = "delete from customer where id='" + id +"';";
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);
-            context.getLogger().info("Project delete successfully."); 
+            context.getLogger().info("Customer delete successfully."); 
 
             return request.createResponseBuilder(HttpStatus.OK).build();
         }

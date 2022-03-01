@@ -8,6 +8,7 @@ import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
+import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
 import java.util.Optional;
@@ -30,11 +31,20 @@ public class TekvLSGetAllCustomers {
                 name = "req",
                 methods = {HttpMethod.GET},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "customers")
+                route = "customers/{id=EMPTY}")
                 HttpRequestMessage<Optional<String>> request,
+                @BindingName("id") String id,
             final ExecutionContext context) {
 
         context.getLogger().info("Entering TekvLSCustomers Azure function");
+        
+        // Build SQL statement
+        String sql = "";
+	if (id.equals("EMPTY")) {
+            sql = "select * from customer;";
+        } else {
+            sql = "select * from customer where id='" + id +"';";
+        }
         
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
@@ -47,7 +57,6 @@ public class TekvLSGetAllCustomers {
             context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
             
             // Retrive all customers. TODO: pagination
-            String sql = "select * from customer;";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             // Return a JSON array of customers (id and names)

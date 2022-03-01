@@ -8,6 +8,7 @@ import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
+import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
 import java.util.Optional;
@@ -30,11 +31,20 @@ public class TekvLSGetAllProjects {
                 name = "req",
                 methods = {HttpMethod.GET},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "projects")
+                route = "projects/{id=EMPTY}")
                 HttpRequestMessage<Optional<String>> request,
+                @BindingName("id") String id,
             final ExecutionContext context) {
 
         context.getLogger().info("Entering TekvLSGetAllProjects Azure function");
+        
+        // Build SQL statement
+        String sql = "";
+	if (id.equals("EMPTY")) {
+            sql = "select * from project;";
+        } else {
+            sql = "select * from project where id='" + id +"';";
+        }
         
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
@@ -47,7 +57,7 @@ public class TekvLSGetAllProjects {
             context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
             
             // Retrive all projects. TODO: pagination
-            String sql = "select * from project;";
+            sql = "select * from project;";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             // Return a JSON array of projects
