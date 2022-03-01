@@ -17,7 +17,8 @@ import org.json.JSONObject;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSCreateSubaccount {
+public class TekvLSCreateSubaccount 
+{
     /**
      * This function listens at endpoint "/api/subaccounts". Two ways to invoke it using "curl" command in bash:
      * 1. curl -d "HTTP Body" {your host}/api/subaccounts
@@ -30,44 +31,58 @@ public class TekvLSCreateSubaccount {
                 authLevel = AuthorizationLevel.ANONYMOUS,
                 route = "subaccounts")
                 HttpRequestMessage<Optional<String>> request,
-                final ExecutionContext context) {
+                final ExecutionContext context) 
+    {
         context.getLogger().info("Entering TekvLSCreateSubaccount Azure function");
-        
+
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
         context.getLogger().info("Request body: " + requestBody);
-        String subaccountName = "";
-        String customerId = "";
-        if (!requestBody.isEmpty()) {
-            try {
-                JSONObject jobj = new JSONObject(requestBody);
-                subaccountName = jobj.getString("subaccountName");
-                customerId = jobj.getString("customerId");
-            } catch (Exception e) {
-                context.getLogger().info("Caught exception: " + e.getMessage());
-                JSONObject json = new JSONObject();
-                json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-            }
-        } else {
+        if (requestBody.isEmpty()) {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-        if (subaccountName.isEmpty()) {
-            context.getLogger().info("error: empty subaccountName parameter");
+
+        JSONObject jobj;
+        try {
+            jobj = new JSONObject(requestBody);
+        } 
+        catch (Exception e) {
+            context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
-            json.put("error", "error: empty subaccountName parameter");
+            json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-        if (customerId.isEmpty()) {
-            context.getLogger().info("error: empty customerId parameter");
-            JSONObject json = new JSONObject();
-            json.put("error", "error: empty customerId parameter");
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+
+        // The expected parameters (and their coresponding column name in the database) 
+        String[][] mandatoryParams = {
+            {"name","name"}, 
+            {"customerId","customer_id"}
+        };
+        // Build the sql query
+        String sqlPart1 = "";
+        String sqlPart2 = "";
+        for (int i = 0; i < mandatoryParams.length; i++) {
+            try {
+                String paramValue = jobj.getString(mandatoryParams[i][0]);
+                sqlPart1 += mandatoryParams[i][1] + ",";
+                sqlPart2 += "'" + paramValue + "',";
+            } 
+            catch (Exception e) {
+                // Parameter not found
+                context.getLogger().info("Caught exception: " + e.getMessage());
+                JSONObject json = new JSONObject();
+                json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
+                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+            }
         }
-        
+        // Remove the comma after the last parameter and build the SQL statement
+        sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
+        sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
+        String sql = "insert into subaccount (" + sqlPart1 + ") values (" + sqlPart2 + ");";
+
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
                 + "&user=tekvdbadmin@tekv-db-server"
@@ -78,19 +93,19 @@ public class TekvLSCreateSubaccount {
             
             context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
             
-            // Insert subaccount. TODO: check if subaccount name exists?
-            String sql = "insert into subaccount (name,customer_id) values ('" + subaccountName + "','" + customerId + "');";
+            // Insert
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);
-            context.getLogger().info("Subaccount inserted successfully."); 
+            context.getLogger().info("License usage inserted successfully."); 
 
-            // Return the subaccount id in the response
-            sql = "select id from subaccount where name = '" + subaccountName + "' and customer_id = '" + customerId + "';";
+            // Return the id in the response
+            sql = "select id from subaccount where name = '" + jobj.getString("name") + "' and customer_id = '" + jobj.getString("customerId") + "';";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             rs.next();
             JSONObject json = new JSONObject();
-            json.put("subaccountId", rs.getString("id"));
+            json.put("id", rs.getString("id"));
+
             return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
         }
         catch (SQLException e) {

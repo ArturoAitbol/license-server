@@ -90,15 +90,71 @@ public class TekvLSGetAllLicenseUsageDetails {
             rs.next();
             json.put("tokensConsumed", rs.getInt(1));
 
-            context.getLogger().info("Execute SQL statement: " + sql);
-            rs = statement.executeQuery(sql);
-            while (rs.next()) {
-                JSONObject item = new JSONObject();
-                item.put("id", rs.getString("id"));
-                item.put("usageDate", rs.getString("usage_date"));
-                array.put(item);
+            switch (view.toLowerCase()) {
+                case "weekly": {
+                    String sqlAutomationDeviceModelTokensConsumed=
+                        "select sum(tokens_to_consume) from device d inner join license_usage l on d.id=l.device_id and l." +
+                        sqlPart1.substring(0, sqlPart1.length() - 1) +
+                        " and usage_type = 'AutomationPlatform';";
+                    context.getLogger().info("Execute SQL statement: " + sqlAutomationDeviceModelTokensConsumed);
+                    rs = statement.executeQuery(sqlAutomationDeviceModelTokensConsumed);
+                    rs.next();
+                    json.put("automationDeviceModelTokensConsumed", rs.getInt(1));
+
+                    String sqlWeeklyConfigurationTokensConsumed =
+                        "select DATE_PART('week',usage_date), sum(tokens_to_consume) from device d inner join license_usage l on d.id=l.device_id and l." + 
+                        sqlPart1.substring(0, sqlPart1.length() - 1) +
+                        " and usage_type='Configuration' group by DATE_PART('week',usage_date);";
+                    context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
+                    rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
+                    while (rs.next()) {
+                        JSONObject item = new JSONObject();
+                        item.put("weekId", rs.getInt(1));
+                        item.put("tokensConsumed", rs.getInt(2));
+                        array.put(item);
+                    }
+                    json.put("configurationTokens", array);
+                } break;
+                case "equipmentsummary": {
+                    String sqlEquipmentSummary = 
+                        "select distinct d.vendor,d.product,d.version,l.mac_address,l.serial_number from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1;
+                    context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
+                    rs = statement.executeQuery(sqlEquipmentSummary);
+                    while (rs.next()) {
+                        JSONObject item = new JSONObject();
+                        item.put("vendor", rs.getString("vendor"));
+                        item.put("product", rs.getString("product"));
+                        item.put("version", rs.getString("version"));
+                        item.put("macAddress", rs.getString("mac_address"));
+                        item.put("serialNumber", rs.getString("serial_number"));
+                        array.put(item);
+                    }
+                    json.put("equipmentSummary", array);
+                } break;
+                default: {
+                    // This is the default case (all)
+                    String sqlAll = 
+                        "select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,d.tokens_to_consume,l.id " + 
+                        "from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1;
+                    context.getLogger().info("Execute SQL statement: " + sqlAll);
+                    rs = statement.executeQuery(sqlAll);
+                    while (rs.next()) {
+                        JSONObject item = new JSONObject();
+                        item.put("usageDate", rs.getString("usage_date"));
+                        item.put("vendor", rs.getString("vendor"));
+                        item.put("product", rs.getString("product"));
+                        item.put("version", rs.getString("version"));
+                        item.put("macAddress", rs.getString("mac_address"));
+                        item.put("serialNumber", rs.getString("serial_number"));
+                        item.put("usageType", rs.getString("usage_type"));
+                        item.put("tokensConsumed", rs.getString("tokens_to_consume"));
+                        item.put("id", rs.getString("id"));
+                        array.put(item);
+                    }
+                    json.put("usage", array);
+                } break;
             }
-            json.put("licenseUsageDetails", array);
+
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         }
         catch (SQLException e) {

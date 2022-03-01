@@ -63,7 +63,8 @@ public class TekvLSCreateLicenseUsageDetail
             {"usageDate","usage_date"}, 
             {"macAddress","mac_address"}, 
             {"serialNumber","serial_number"}, 
-            {"usageType","usage_type"}};
+            {"usageType","usage_type"}
+        };
         // Build the sql query
         String sqlPart1 = "";
         String sqlPart2 = "";
@@ -101,8 +102,22 @@ public class TekvLSCreateLicenseUsageDetail
             statement.executeUpdate(sql);
             context.getLogger().info("License usage inserted successfully."); 
 
+            // Return the id in the response
+            sql = "select id from license_usage where " + 
+                "subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
+                "project_id = '" + jobj.getString("projectId") + "' and " +
+                "device_id = '" + jobj.getString("deviceId") + "' and " +
+                "mac_address = '" + jobj.getString("macAddress") + "' and " +
+                "serial_number = '" + jobj.getString("serialNumber") + "' and " +
+                "usage_type = '" + jobj.getString("usageType") + "' and " +
+                "usage_date = '" + jobj.getString("usageDate") + "';";
+            context.getLogger().info("Execute SQL statement: " + sql);
+            context.getLogger().info("Execute SQL statement: " + sql);
+            ResultSet rs = statement.executeQuery(sql);
+            rs.next();
             JSONObject json = new JSONObject();
-            json.put("status", "success");
+            json.put("id", rs.getString("id"));
+
             return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
         }
         catch (SQLException e) {

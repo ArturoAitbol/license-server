@@ -17,7 +17,8 @@ import org.json.JSONObject;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSCreateCustomer {
+public class TekvLSCreateCustomer 
+{
     /**
      * This function listens at endpoint "/api/customers". Two ways to invoke it using "curl" command in bash:
      * 1. curl -d "HTTP Body" {your host}/api/customers
@@ -30,44 +31,58 @@ public class TekvLSCreateCustomer {
                 authLevel = AuthorizationLevel.ANONYMOUS,
                 route = "customers")
                 HttpRequestMessage<Optional<String>> request,
-                final ExecutionContext context) {
+                final ExecutionContext context) 
+    {
         context.getLogger().info("Entering TekvLSCreateCustomer Azure function");
-        
+
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
         context.getLogger().info("Request body: " + requestBody);
-        String customerName = "";
-        String customerType = "";
-        if (!requestBody.isEmpty()) {
-            try {
-                JSONObject jobj = new JSONObject(requestBody);
-                customerName = jobj.getString("customerName");
-                customerType = jobj.getString("customerType");
-            } catch (Exception e) {
-                context.getLogger().info("Caught exception: " + e.getMessage());
-                JSONObject json = new JSONObject();
-                json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-            }
-        } else {
+        if (requestBody.isEmpty()) {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
             json.put("error", "error: request body is empty.");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-        if (customerName.isEmpty()) {
-            context.getLogger().info("error: empty customerName parameter");
+
+        JSONObject jobj;
+        try {
+            jobj = new JSONObject(requestBody);
+        } 
+        catch (Exception e) {
+            context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
-            json.put("error", "error: empty customerName parameter");
+            json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-        if (customerType.isEmpty()) {
-            context.getLogger().info("error: empty customerType parameter");
-            JSONObject json = new JSONObject();
-            json.put("error", "error: empty customerType parameter");
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+
+        // The expected parameters (and their coresponding column name in the database) 
+        String[][] mandatoryParams = {
+            {"name","name"}, 
+            {"customerType","customer_type"}
+        };
+        // Build the sql query
+        String sqlPart1 = "";
+        String sqlPart2 = "";
+        for (int i = 0; i < mandatoryParams.length; i++) {
+            try {
+                String paramValue = jobj.getString(mandatoryParams[i][0]);
+                sqlPart1 += mandatoryParams[i][1] + ",";
+                sqlPart2 += "'" + paramValue + "',";
+            } 
+            catch (Exception e) {
+                // Parameter not found
+                context.getLogger().info("Caught exception: " + e.getMessage());
+                JSONObject json = new JSONObject();
+                json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
+                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+            }
         }
-        
+        // Remove the comma after the last parameter and build the SQL statement
+        sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
+        sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
+        String sql = "insert into customer (" + sqlPart1 + ") values (" + sqlPart2 + ");";
+
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
                 + "&user=tekvdbadmin@tekv-db-server"
@@ -78,19 +93,19 @@ public class TekvLSCreateCustomer {
             
             context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
             
-            // Insert customer. TODO: check if customer name exists?
-            String sql = "insert into customer (name,customer_type) values ('" + customerName + "','" + customerType + "');";
+            // Insert
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);
-            context.getLogger().info("Customer inserted successfully."); 
+            context.getLogger().info("License usage inserted successfully."); 
 
             // Return the customer id in the response
-            sql = "select id from customer where name = '" + customerName + "' and customer_type = '" + customerType + "';";
+            sql = "select id from customer where name = '" + jobj.getString("name") + "' and customer_type = '" + jobj.getString("customerType") + "';";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             rs.next();
             JSONObject json = new JSONObject();
-            json.put("customerId", rs.getString("id"));
+            json.put("id", rs.getString("id"));
+
             return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
         }
         catch (SQLException e) {

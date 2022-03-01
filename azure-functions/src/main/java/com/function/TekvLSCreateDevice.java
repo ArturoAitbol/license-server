@@ -17,23 +17,23 @@ import org.json.JSONObject;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSCreateProject
+public class TekvLSCreateDevice
 {
     /**
-     * This function listens at endpoint "/api/projects". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/projects
+     * This function listens at endpoint "/api/devices". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/api/devices
      */
-    @FunctionName("TekvLSCreateProject")
+    @FunctionName("TekvLSCreateDevice")
     public HttpResponseMessage run(
             @HttpTrigger(
                 name = "req",
                 methods = {HttpMethod.POST},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "projects")
+                route = "devices")
                 HttpRequestMessage<Optional<String>> request,
                 final ExecutionContext context) 
     {
-        context.getLogger().info("Entering TekvLSCreateProject Azure function");
+        context.getLogger().info("Entering TekvLSCreateDevice Azure function");
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -58,11 +58,12 @@ public class TekvLSCreateProject
 
         // The expected parameters (and their coresponding column name in the database) 
         String[][] mandatoryParams = {
-            {"subaccountId","subaccount_id"}, 
-            {"name","name"}, 
-            {"number","number"}, 
-            {"openDate","open_date"}, 
-            {"status","status"} 
+            {"vendor","vendor"}, 
+            {"product","product"}, 
+            {"version","version"}, 
+            {"deviceType","device_type"},
+            {"granularity","granularity"}, 
+            {"tokensToConsume","tokens_to_consume"} 
         };
         // Build the sql query
         String sqlPart1 = "";
@@ -84,7 +85,7 @@ public class TekvLSCreateProject
         // Remove the comma after the last parameter and build the SQL statement
         sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
         sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
-        String sql = "insert into project (" + sqlPart1 + ") values (" + sqlPart2 + ");";
+        String sql = "insert into device (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
@@ -99,16 +100,14 @@ public class TekvLSCreateProject
             // Insert
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);
-            context.getLogger().info("Project inserted successfully."); 
+            context.getLogger().info("License usage inserted successfully."); 
 
             // Return the id in the response
-            sql = "select id from project where " + 
-                "subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
-                "name = '" + jobj.getString("name") + "' and " +
-                "number = '" + jobj.getString("number") + "' and " +
-                "status = '" + jobj.getString("status") + "' and " +
-                "open_date = '" + jobj.getString("openDate") + "';";
-            context.getLogger().info("Execute SQL statement: " + sql);
+            sql = "select id from device where " + 
+                "vendor = '" + jobj.getString("vendor") + "' and " +
+                "product = '" + jobj.getString("product") + "' and " +
+                "version = '" + jobj.getString("version") + "' and " +
+                "device_type = '" + jobj.getString("deviceType") + "';";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             rs.next();

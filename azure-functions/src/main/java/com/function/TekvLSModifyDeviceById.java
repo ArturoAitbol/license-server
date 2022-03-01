@@ -8,33 +8,38 @@ import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
+import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
 import java.util.Optional;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import org.json.JSONObject;
 
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSCreateProject
+public class TekvLSModifyDeviceById 
 {
     /**
-     * This function listens at endpoint "/api/projects". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/projects
+     * This function listens at endpoint "/api/devices/{id}". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/api/devices/{id}
      */
-    @FunctionName("TekvLSCreateProject")
+    @FunctionName("TekvLSModifyDeviceById")
     public HttpResponseMessage run(
             @HttpTrigger(
                 name = "req",
-                methods = {HttpMethod.POST},
+                methods = {HttpMethod.PUT},
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "projects")
+                route = "device/{id}")
                 HttpRequestMessage<Optional<String>> request,
+                @BindingName("id") String id,
                 final ExecutionContext context) 
     {
-        context.getLogger().info("Entering TekvLSCreateProject Azure function");
-
+        context.getLogger().info("Entering TekvLSModifyDeviceById Azure function");
+        
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
         context.getLogger().info("Request body: " + requestBody);
@@ -44,7 +49,6 @@ public class TekvLSCreateProject
             json.put("error", "error: request body is empty.");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-
         JSONObject jobj;
         try {
             jobj = new JSONObject(requestBody);
@@ -57,34 +61,35 @@ public class TekvLSCreateProject
         }
 
         // The expected parameters (and their coresponding column name in the database) 
-        String[][] mandatoryParams = {
-            {"subaccountId","subaccount_id"}, 
-            {"name","name"}, 
-            {"number","number"}, 
-            {"openDate","open_date"}, 
-            {"status","status"} 
+        String[][] optionalParams = {
+            {"vendor","vendor"}, 
+            {"product","product"}, 
+            {"version","version"}, 
+            {"deviceType","device_type"}, 
+            {"granularity","granularity"}, 
+            {"tokensToConsume","tokens_to_consume"}
         };
         // Build the sql query
-        String sqlPart1 = "";
-        String sqlPart2 = "";
-        for (int i = 0; i < mandatoryParams.length; i++) {
+        String sql = "update device set ";
+        int optionalParamsFound = 0;
+        for (int i = 0; i < optionalParams.length; i++) {
             try {
-                String paramValue = jobj.getString(mandatoryParams[i][0]);
-                sqlPart1 += mandatoryParams[i][1] + ",";
-                sqlPart2 += "'" + paramValue + "',";
+                String paramName = jobj.getString(optionalParams[i][0]);
+                sql += optionalParams[i][1] + "='" + paramName + "',";
+                optionalParamsFound++;
             } 
             catch (Exception e) {
-                // Parameter not found
-                context.getLogger().info("Caught exception: " + e.getMessage());
-                JSONObject json = new JSONObject();
-                json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
-                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+                // Parameter doesn't exist. (continue since it's optional)
+                context.getLogger().info("Ignoring exception: " + e);
+                continue;
             }
         }
-        // Remove the comma after the last parameter and build the SQL statement
-        sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-        sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
-        String sql = "insert into project (" + sqlPart1 + ") values (" + sqlPart2 + ");";
+        if (optionalParamsFound == 0) {
+            return request.createResponseBuilder(HttpStatus.OK).build();
+        }
+        // Remove the comma after the last parameter and add the where clause
+        sql = sql.substring(0, sql.length() - 1);
+        sql += " where id='" + id + "';";
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
@@ -95,27 +100,11 @@ public class TekvLSCreateProject
             Statement statement = connection.createStatement();) {
             
             context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
-            
-            // Insert
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);
-            context.getLogger().info("Project inserted successfully."); 
+            context.getLogger().info("Device updated successfully."); 
 
-            // Return the id in the response
-            sql = "select id from project where " + 
-                "subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
-                "name = '" + jobj.getString("name") + "' and " +
-                "number = '" + jobj.getString("number") + "' and " +
-                "status = '" + jobj.getString("status") + "' and " +
-                "open_date = '" + jobj.getString("openDate") + "';";
-            context.getLogger().info("Execute SQL statement: " + sql);
-            context.getLogger().info("Execute SQL statement: " + sql);
-            ResultSet rs = statement.executeQuery(sql);
-            rs.next();
-            JSONObject json = new JSONObject();
-            json.put("id", rs.getString("id"));
-
-            return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+            return request.createResponseBuilder(HttpStatus.OK).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
