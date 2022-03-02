@@ -368,3 +368,6 @@ th {
 .mat-row:hover {
   background: whitesmoke;
 }
+.mat-dialog-actions {
+  float: right !important;
+}

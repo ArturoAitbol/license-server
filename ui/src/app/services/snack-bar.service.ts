@@ -19,7 +19,7 @@ export class SnackBarService {
     this._snackBar.open(message, action, {
       horizontalPosition: this.horizontalPosition,
       verticalPosition: this.verticalPosition,
-      duration: duration
+      duration: (duration) ? duration : 2000
     });
   }
 }

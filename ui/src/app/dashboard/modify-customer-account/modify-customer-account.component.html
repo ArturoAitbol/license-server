@@ -1,48 +1,50 @@
 <div class="container" style="text-align: center;">
-    <h2>Modify Customer Account</h2>
+    <h1 mat-dialig-title>Modify Customer Account</h1>
     <form [formGroup]="updateCustomerForm" (ngSubmit)="submit()">
         <div class="flex-container">
-            <div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Customer Name</mat-label>
-                    <input matInput required formControlName="customerName">
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Sub Account</mat-label>
-                    <input matInput required formControlName="subaccountName">
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Customer Type</mat-label>
-                    <input matInput required formControlName="customerType">
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Purchase Date</mat-label>
-                    <input matInput required formControlName="purchaseDate">
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Package Type</mat-label>
-                    <input matInput required formControlName="packageType">
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Renewal</mat-label>
-                    <input matInput required formControlName="renewalDate">
-                </mat-form-field>
-            </div>
-            <div class="btn-flex-container">
+            <mat-dialog-content>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Customer Name</mat-label>
+                        <input matInput required formControlName="customerName">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Sub Account</mat-label>
+                        <input matInput required formControlName="subaccountName">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Customer Type</mat-label>
+                        <input matInput required formControlName="customerType">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Purchase Date</mat-label>
+                        <input matInput required formControlName="purchaseDate">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Package Type</mat-label>
+                        <input matInput required formControlName="packageType">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Renewal</mat-label>
+                        <input matInput required formControlName="renewalDate">
+                    </mat-form-field>
+                </div>
+            </mat-dialog-content>
+            <mat-dialog-actions>
                 <button mat-stroked-button (click)="onCancel()">Cancel</button>
                 <button mat-raised-button color="primary"
                     [disabled]="!(updateCustomerForm.valid ) || disableSumbitBtn()" type="submit">Submit</button>
-            </div>
+            </mat-dialog-actions>
         </div>
     </form>
 </div>

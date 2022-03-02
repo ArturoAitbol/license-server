@@ -1,49 +1,53 @@
 <div class="container" style="text-align: center;">
-    <h2>Add Project</h2>
+    <h1 mat-dialig-title>Add Project</h1>
     <form [formGroup]="addProjectForm" (ngSubmit)="submit()">
         <div class="flex-container">
-            <div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Open Date</mat-label>
-                    <input required matInput [matDatepicker]="picker" formControlName="openDate">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Project Number</mat-label>
-                    <input required matInput value="" formControlName="number">
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field class="example-full-width" appearance="fill">
-                    <mat-label>Project Name</mat-label>
-                    <input required matInput value="" formControlName="name">
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Close Date</mat-label>
-                    <input required matInput [matDatepicker]="closeDatePicker" formControlName="closeDate">
-                    <mat-datepicker-toggle matSuffix [for]="closeDatePicker"></mat-datepicker-toggle>
-                    <mat-datepicker #closeDatePicker></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-form-field appearance="fill">
-                    <mat-label>Type</mat-label>
-                    <mat-select required formControlName="status">
-                        <mat-option *ngFor="let item of statusTypes" [value]="item">
-                            {{item}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
+            <mat-dialog-content>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Open Date</mat-label>
+                        <input required matInput [matDatepicker]="picker" formControlName="openDate">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label>Project Number</mat-label>
+                        <input required matInput value="" formControlName="number">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label>Project Name</mat-label>
+                        <input required matInput value="" formControlName="name">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Close Date</mat-label>
+                        <input required matInput [matDatepicker]="closeDatePicker" formControlName="closeDate">
+                        <mat-datepicker-toggle matSuffix [for]="closeDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #closeDatePicker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Type</mat-label>
+                        <mat-select required formControlName="status">
+                            <mat-option *ngFor="let item of statusTypes" [value]="item">
+                                {{item}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </mat-dialog-content>
         </div>
-        <div class="btn-flex-container">
+        <!-- <div class="btn-flex-container"> -->
+        <mat-dialog-actions>
             <button mat-stroked-button (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" [disabled]="!addProjectForm.valid" type="submit">Submit</button>
-        </div>
+            <!-- </div> -->
+        </mat-dialog-actions>
     </form>
 </div>
