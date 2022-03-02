@@ -18,104 +18,39 @@
         </div>
     </main>
     <!-- license summary section -->
-    <br>
-    <h2>License Summary</h2>
+      <h2>License Summary</h2>
     <section>
-        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-            <!-- Device Access Limit Column -->
-            <ng-container matColumnDef="deviceAccessLimit">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header
-                    sortActionDescription="Sort by Device Access Limit">
-                    Device Access Limit
-                </th>
-                <td mat-cell *matCellDef="let element;let i=index;">
-                    {{element.deviceAccessLimit}}
-                </td>
-            </ng-container>
-
-            <!-- Devices Connected Column -->
-            <ng-container matColumnDef="devicesConnected">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Devices Connected">
-                    Devices Connected </th>
-                <td mat-cell *matCellDef="let element"> {{element.devicesConnected}} </td>
-            </ng-container>
-
-            <!-- Tokens Purchased Column -->
-            <ng-container matColumnDef="tokensPurchased">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Tokens Purchased">
-                    Tokens Purchased </th>
-                <td mat-cell *matCellDef="let element"> {{element.tokensPurchased}} </td>
-            </ng-container>
-
-            <!-- Automation Token Consumed Column -->
-            <ng-container matColumnDef="automationTokensConsumed">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header
-                    sortActionDescription="Sort by Automation Token Consumed">
-                    Automation Token Consumed </th>
-                <td mat-cell *matCellDef="let element"> {{element.automationTokensConsumed}} </td>
-            </ng-container>
-
-            <!-- Confiugraion Tokens Consumed Column -->
-            <ng-container matColumnDef="configTokensConsumed">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header
-                    sortActionDescription="Sort by  Confiugraion Tokens Consumed"> Confiugraion Tokens Consumed
-                </th>
-                <td mat-cell *matCellDef="let element"> {{element.configTokensConsumed}} </td>
-            </ng-container>
-
-            <!-- Configuration Average Column -->
-            <ng-container matColumnDef="configAvgerage">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header
-                    sortActionDescription="Sort by Configuration Average"> Configuration Average
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element.configAvgerage }}
-                </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+        <div class="example-container mat-elevation-z8">
+            <app-data-table
+                [tableData]="data"
+                [tableColumns]="licenseSummaryColumns" 
+                [isFilterable]="false"
+                [isPageable]="false"
+                [isLoadingResults]="isLicenseSummaryLoadingResults"
+                [isRequestCompleted]="isLicenseSummaryRequestCompleted"
+                [paginationSizes]="[5,10,20]"
+                [defaultPageSize]="5"
+                >
+            </app-data-table>
+        </div>
     </section>
-    <!-- Equiment summary section -->
     <br>
+    <!-- Equiment summary section -->
     <h2>Equiment Summary</h2>
     <section>
-        <table mat-table [dataSource]="equipmentDataSource" matSort class="mat-elevation-z8">
-            <!-- Vendor Column -->
-            <ng-container matColumnDef="vendor">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Vendor">
-                    Vendor
-                </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element.vendor}}
-                </td>
-            </ng-container>
-
-            <!-- Model Column -->
-            <ng-container matColumnDef="model">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Model">
-                    Model </th>
-                <td mat-cell *matCellDef="let element"> {{element.model}} </td>
-            </ng-container>
-
-            <!-- Version Column -->
-            <ng-container matColumnDef="version">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Version">
-                    Version </th>
-                <td mat-cell *matCellDef="let element"> {{element.version}} </td>
-            </ng-container>
-
-            <!-- MAC Address Column -->
-            <ng-container matColumnDef="macAddress">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by MAC Address">
-                    MAC Address </th>
-                <td mat-cell *matCellDef="let element"> {{element.macAddress}} </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="equipmentDisplayColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: equipmentDisplayColumns;"></tr>
-        </table>
+        <div class="example-container mat-elevation-z8">
+            <app-data-table
+                [tableData]="equipmentData"
+                [tableColumns]="equipmentSummaryColumns" 
+                [isFilterable]="false"
+                [isPageable]="false"
+                [isLoadingResults]="isLicenseSummaryLoadingResults"
+                [isRequestCompleted]="isLicenseSummaryRequestCompleted"
+                [paginationSizes]="[5,10,20]"
+                [defaultPageSize]="5"
+                >
+            </app-data-table>
+        </div>
     </section>
     <!-- Detailed Usage for month section -->
     <br>
@@ -145,113 +80,38 @@
         </div>
         <br>
         <div class="row">
-            <div class="col-3">
-                <table mat-table [dataSource]="detailedDataSource" matSort class="mat-elevation-z8">
-                    <!-- Week Column -->
-                    <ng-container matColumnDef="week">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Week">
-                            Week
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.week}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Configuration Tokens Consumed Column -->
-                    <ng-container matColumnDef="configTokensConsumed">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Model">
-                            Model </th>
-                        <td mat-cell *matCellDef="let element"> {{element.configTokensConsumed}} </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="detailedDisplayColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: detailedDisplayColumns;"></tr>
-                </table>
+            <div class="col-4">
+                <div class="example-container mat-elevation-z8">
+                    <app-data-table
+                    [tableData]="detailedData"
+                    [tableColumns]="detailedConsumptionColumns" 
+                    [isFilterable]="false"
+                    [isPageable]="false"
+                    [isLoadingResults]="isLicenseSummaryLoadingResults"
+                    [isRequestCompleted]="isLicenseSummaryRequestCompleted"
+                    [paginationSizes]="[5,10,20]"
+                    [defaultPageSize]="5"
+                    >
+                    </app-data-table>
+                </div>
             </div>
-            <div class="col-9">
-                <table mat-table [dataSource]="detailedConsumptionDataSource" matSort class="mat-elevation-z8">
-                    <!-- Date Of Usage Column -->
-                    <ng-container matColumnDef="dateOfUsage">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header
-                            sortActionDescription="Sort by Date Of Usage">
-                            Date Of Usage
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.dateOfUsage}}
-                        </td>
-                    </ng-container>
-                    <!-- Vendor Column -->
-                    <ng-container matColumnDef="vendor">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Vendor">
-                            Vendor
-                        </th>
-                        <td mat-cell *matCellDef="let element">
-                            {{element.vendor}}
-                        </td>
-                    </ng-container>
-
-                    <!-- Model Column -->
-                    <ng-container matColumnDef="model">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Model">
-                            Model </th>
-                        <td mat-cell *matCellDef="let element"> {{element.model}} </td>
-                    </ng-container>
-
-                    <!-- Version Column -->
-                    <ng-container matColumnDef="version">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Version">
-                            Version </th>
-                        <td mat-cell *matCellDef="let element"> {{element.version}} </td>
-                    </ng-container>
-
-                    <!-- MAC Address Column -->
-                    <ng-container matColumnDef="macAddress">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header
-                            sortActionDescription="Sort by MAC Address">
-                            MAC Address </th>
-                        <td mat-cell *matCellDef="let element"> {{element.macAddress}} </td>
-                    </ng-container>
-                    <!-- Type Column -->
-                    <ng-container matColumnDef="type">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by Type">
-                            Type </th>
-                        <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-                    </ng-container>
-                    <!-- Consumption Column -->
-                    <ng-container matColumnDef="consumption">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header
-                            sortActionDescription="Sort by Consumption">
-                            Consumption </th>
-                        <td mat-cell *matCellDef="let element"> {{element.consumption}} </td>
-                    </ng-container>
-                    <!-- Tokens Used Column -->
-                    <ng-container matColumnDef="tokensUsed">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header
-                            sortActionDescription="Sort by Tokens Used">
-                            Tokens Used </th>
-                        <td mat-cell *matCellDef="let element"> {{element.tokensUsed}} </td>
-                    </ng-container>
-
-                    <!-- Action Column -->
-                    <ng-container matColumnDef="action">
-                        <th mat-header-cell *matHeaderCellDef> Action </th>
-                        <td mat-cell *matCellDef="let element;let i=index;">
-                            <button mat-icon-button [matMenuTriggerFor]="menu"
-                                aria-label="Example icon-button with a menu">
-                                <mat-icon>more_vert</mat-icon>
-                            </button>
-                            <mat-menu #menu="matMenu">
-                                <button mat-menu-item (click)="onEdit(i)">
-                                    <span>Edit</span>
-                                </button>
-                                <button mat-menu-item (click)="onDelete(i)">
-                                    <span>Delete</span>
-                                </button>
-                            </mat-menu>
-                        </td>
-                    </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="detailedConsumptionDisplayColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: detailedConsumptionDisplayColumns;"></tr>
-                </table>
+            <div class="col-8">
+                <div class="example-container mat-elevation-z8">
+                    <app-data-table
+                    [tableData]="detailedConsumption"
+                    [tableColumns]="detailedConsumptionSummaryColumns" 
+                    [isFilterable]="false"
+                    [isPageable]="false"
+                    [isLoadingResults]="isLicenseSummaryLoadingResults"
+                    [isRequestCompleted]="isLicenseSummaryRequestCompleted"
+                    [paginationSizes]="[5,10,20]"
+                    [defaultPageSize]="5"
+                    [rowActionIcon]="'more_vert'"
+                    (rowAction)="rowAction($event)"
+                    [actionMenuList]="actionMenuOptions"    
+                    >
+                    </app-data-table>
+                </div>
             </div>
         </div>
     </section>

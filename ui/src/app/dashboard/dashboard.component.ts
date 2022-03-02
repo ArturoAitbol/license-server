@@ -194,7 +194,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       case this.MODIFY_LICENSE:
         dialogRef = this.dialog.open(ModifyCustomerAccountComponent, {
           width: 'auto',
-          data: selectedItemData
+          data: selectedItemData,
+          disableClose: true
         });
         break;
     }

@@ -24,15 +24,16 @@ export class LicenseUsageService {
    * @param licenseId: string 
    * @returns: Observable 
    */
-  public getLicenseDetails(data: { subaccount: string, month: string, view: string }) {
+  public getLicenseDetails(data: { subaccount: string, view: string, month?: string, year?: string }) {
     const headers = this.getHeaders();
-    const params = new HttpParams();
-    params.append('subaccount', data.subaccount);
-    params.append('view', data.view);
-    if (data.month) {
-      params.append('month', data.month);
+    let url = this.API_URL + '/' + data.subaccount + '/' + data.view + '/';
+    if (data.year) {
+      url += '/' + data.year;
+      if (data.month) {
+        url += '/' + data.month;
+      }
     }
-    return this.httpClient.get(`${this.API_URL}`, { headers, params });
+    return this.httpClient.get(`${url}`, { headers });
   }
   /**
    * update License Usage details

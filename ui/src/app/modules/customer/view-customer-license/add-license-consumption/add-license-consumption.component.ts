@@ -22,12 +22,17 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     }
 
   ];
+  consumptionType: string[] = [
+    'Automation',
+    'Configuration'
+  ];
   models: any = [];
   versions: any = [];
   selectedVendor: string = '';
   addLicenseConsumptionForm = this.formBuilder.group({
     dateOfUsage: ['', Validators.required],
     projectId: ['', Validators.required],
+    type: ['', Validators.required],
     vendor: ['', Validators.required],
     product: ['', Validators.required],
     version: ['', Validators.required],
@@ -137,7 +142,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void { 
+  ngOnDestroy(): void {
     // reset form here
     this.addLicenseConsumptionForm.reset();
   }

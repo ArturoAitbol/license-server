@@ -75,7 +75,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   openDialog(component: any, data?: any): void {
     const dialogRef = this.dialog.open(component, {
       width: 'auto',
-      data: data
+      data: data,
+      disableClose: true
     });
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
