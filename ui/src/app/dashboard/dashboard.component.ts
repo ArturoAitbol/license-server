@@ -101,7 +101,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         name: 'Status',
         dataKey: 'status',
         position: 'left',
-        isSortable: true
+        isSortable: true,
+        canHighlighted: true
       }
     ];
   }

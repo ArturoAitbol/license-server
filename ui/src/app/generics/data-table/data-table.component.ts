@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } 
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Utility } from 'src/app/helpers/Utility';
 import { TableColumn } from 'src/app/model/table-column.model';
 
 @Component({
@@ -97,6 +98,16 @@ export class DataTableComponent implements OnInit, OnDestroy {
     if (isClickableRow) {
       this.clickableRow.emit({ selectedRow, selectedIndex });
     }
+  }
+  /**
+   * get color code based on the value
+   * @param value: string 
+   * @param tableColumn: TableColumn 
+   * @returns: string 
+   */
+  getColor(value: string, tableColumn: TableColumn): string | undefined {
+    if (tableColumn.canHighlighted)
+      return Utility.getColorCode(value[tableColumn.dataKey]);
   }
 
   ngOnDestroy(): void {
