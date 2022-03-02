@@ -1,13 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { CustomerService } from 'src/app/services/customer.service';
+import { DevicesService } from 'src/app/services/devices.service';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'app-add-license-consumption',
   templateUrl: './add-license-consumption.component.html',
   styleUrls: ['./add-license-consumption.component.css']
 })
-export class AddLicenseConsumptionComponent implements OnInit {
+export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
+  devices: any = [];
+  projects: any = [];
   vendorDetailedList: any = [
     {
       id: '1',
@@ -21,36 +26,119 @@ export class AddLicenseConsumptionComponent implements OnInit {
   versions: any = [];
   selectedVendor: string = '';
   addLicenseConsumptionForm = this.formBuilder.group({
-    dateOfUse: ['', Validators.required],
+    dateOfUsage: ['', Validators.required],
+    projectId: ['', Validators.required],
     vendor: ['', Validators.required],
-    model: ['', Validators.required],
+    product: ['', Validators.required],
     version: ['', Validators.required],
-    macAddress: ['', Validators.required]
+    macAddress: ['', Validators.required],
+    serialNumber: ['', Validators.required]
   });
+  currentCustomer: any;
+  object: { vendor: string, product: string, version: string } = {
+    vendor: '',
+    product: '',
+    version: ''
+  };
+  isDataLoading: boolean = false;
   constructor(
+    private customerService: CustomerService,
+    private deviceService: DevicesService,
+    private projectService: ProjectService,
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddLicenseConsumptionComponent>) { }
-
   ngOnInit() {
+    this.currentCustomer = this.customerService.getSelectedCustomer();
+    this.fetchDevices();
+    this.fetchProjects();
   }
+  /**
+   * trigger when user select/change vendor dropdown
+   * @param value: string 
+   */
   onChangeVendor(value: string): void {
-    console.log('onChangeVendor: ', value);
+    this.addLicenseConsumptionForm.patchValue({
+      product: '',
+      version: ''
+    });
+    this.object.product = '';
+    this.object.version = '';
     if (value) {
-      const selectedVendorDetails = this.vendorDetailedList.find(x => x.id == value);
-      if (selectedVendorDetails)
-        this.models = (selectedVendorDetails.models) ? selectedVendorDetails.models : [];
-      this.versions = (selectedVendorDetails.versions) ? selectedVendorDetails.versions : [];
+      if (value) {
+        this.object.vendor = value;
+        this.getModelByVendor();
+      }
     }
-
   }
+  /**
+   * trigger when user select/change model dropdown
+   * @param value: string 
+   */
+  onChangeModel(value: string): void {
+    this.addLicenseConsumptionForm.patchValue({
+      version: ''
+    });
+    this.object.version = '';
+    if (value) {
+      if (value) {
+        this.object.product = value;
+        this.getVersionByModel();
+      }
+    }
+  }
+
   onCancel(): void {
     this.dialogRef.close();
   }
+
   submit(): void {
     this.dialogRef.close();
-
-    // TODO: Use EventEmitter with form value
-    console.info(this.addLicenseConsumptionForm.value);
   }
 
+  /**
+   * fetch devices list
+   */
+  fetchDevices(): void {
+    this.deviceService.getDevicesList().subscribe((res: any) => {
+      this.devices = res['devices'];
+    });
+  }
+  /**
+   * fetch projects list
+   */
+  fetchProjects(): void {
+    const { subaccountId } = this.currentCustomer;
+    this.projectService.getProjectDetailsBySubAccount(subaccountId).subscribe((res: any) => {
+      this.projects = res['projects'];
+    });
+  }
+  /**
+   * fetch model list by vendor
+   */
+  getModelByVendor(): void {
+    this.isDataLoading = true;
+    this.deviceService.getDevicesList(this.object).subscribe((res: any) => {
+      this.models = res['devices'];
+      this.isDataLoading = false;
+    }, (err: any) => {
+      this.isDataLoading = false;
+    });
+  }
+  /**
+   * fetch version list by model & vendor
+   */
+  getVersionByModel(): void {
+    this.isDataLoading = true;
+    this.deviceService.getDevicesList(this.object).subscribe((res: any) => {
+      this.versions = res['devices'];
+      this.isDataLoading = false;
+    }, (err: any) => {
+      this.isDataLoading = false;
+    });
+  }
+
+  ngOnDestroy(): void { 
+    // reset form here
+    this.addLicenseConsumptionForm.reset();
+  }
 }

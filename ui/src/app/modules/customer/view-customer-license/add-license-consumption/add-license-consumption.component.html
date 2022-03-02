@@ -2,6 +2,9 @@
     <h1 mat-dialig-title>Add License Consumption</h1>
     <form [formGroup]="addLicenseConsumptionForm" (ngSubmit)="submit()">
         <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">
@@ -25,7 +28,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Vendor</mat-label>
                         <mat-select required (valueChange)="onChangeVendor($event)" formControlName="vendor">
-                            <mat-option *ngFor="let item of devices" [value]="item.id">
+                            <mat-option *ngFor="let item of devices" [value]="item.vendor">
                                 {{item.vendor}}
                             </mat-option>
                         </mat-select>
@@ -34,9 +37,9 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Model</mat-label>
-                        <mat-select required formControlName="model">
-                            <mat-option *ngFor="let item of models" [value]="item">
-                                {{item}}
+                        <mat-select required (valueChange)="onChangeModel($event)" formControlName="product">
+                            <mat-option *ngFor="let item of models" [value]="item.product">
+                                {{item.product}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -45,8 +48,8 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Version</mat-label>
                         <mat-select required formControlName="version">
-                            <mat-option *ngFor="let item of versions" [value]="item">
-                                {{item}}
+                            <mat-option *ngFor="let item of versions" [value]="item.version">
+                                {{item.version}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -55,7 +58,7 @@
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label>MAC Address</mat-label>
                         <input matInput value="" required placeholder="eg: 00:1b:63:84:45:e6"
-                            formControlName="macaddress">
+                            formControlName="macAddress">
                     </mat-form-field>
                 </div>
                 <div>
