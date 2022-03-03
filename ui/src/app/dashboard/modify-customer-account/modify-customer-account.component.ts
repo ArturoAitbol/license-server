@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { Validators, FormBuilder } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CustomerService } from 'src/app/services/customer.service';
 
 @Component({
   selector: 'app-modify-customer-account',
@@ -8,6 +9,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./modify-customer-account.component.css']
 })
 export class ModifyCustomerAccountComponent implements OnInit {
+  packageTypes: string[] = [
+    'Small',
+    'Medium',
+    'Large',
+    'AddOn '
+  ];
   updateCustomerForm = this.formBuilder.group({
     customerName: ['', Validators.required],
     subaccountName: ['', Validators.required],
@@ -17,14 +24,19 @@ export class ModifyCustomerAccountComponent implements OnInit {
     renewalDate: ['', Validators.required]
   });
   private previousFormValue: any;
+  // flag
+  isDataLoading: boolean = false;
   //  @Inject(MAT_DIALOG_DATA) public data: ModalData
   constructor(
     private formBuilder: FormBuilder,
+    private customerService: CustomerService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
     if (this.data) {
+      console.log('data', this.data);
+
       this.updateCustomerForm.patchValue(this.data);
       this.previousFormValue = { ...this.updateCustomerForm };
     }
@@ -40,7 +52,16 @@ export class ModifyCustomerAccountComponent implements OnInit {
    * to submit the form
    */
   submit() {
-    this.dialogRef.close();
+    this.isDataLoading = true;
+    const mergedCustomerObject = { ...this.data, ...this.updateCustomerForm.value };
+    console.log('customerObject', mergedCustomerObject);
+    this.customerService.updateCustomer(mergedCustomerObject).subscribe((res: any) => {
+      this.isDataLoading = false;
+      this.dialogRef.close(res);
+    }, (err: any) => {
+      this.isDataLoading = false;
+      console.error('error while updating customer', err);
+    });
   }
   /**
    * to check whether sumbit button can be disabled or not

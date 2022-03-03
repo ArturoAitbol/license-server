@@ -169,7 +169,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * @param index: string
    */
   onDeleteAccount(index: string): void {
-    this.openConfirmaCancelDialog();
+
+    this.openConfirmaCancelDialog(index);
   }
   /**
    * on click add account customer
@@ -203,7 +204,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       try {
         console.debug(`${type} customer dialog closed: ${res}`);
         if (res) {
-          this.snackBarService.openSnackBar('Customer created successfully!', 'close');
+          this.snackBarService.openSnackBar('Customer created successfully!', '');
           this.fetchDataToDisplay();
         }
       } catch (error) {
@@ -223,7 +224,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /**
    * open confirm cancel dialog
    */
-  openConfirmaCancelDialog() {
+  openConfirmaCancelDialog(index?: number | string) {
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
@@ -232,7 +233,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
         cancelCaption: 'Cancel',
       })
       .subscribe((confirmed) => {
-        if (confirmed) console.debug('The user confirmed the action');
+        if (confirmed) {
+          console.debug('The user confirmed the action: ', this.data[index]);
+          const { id } = this.data[index];
+          this.customerService.deleteCustomer(id).subscribe((res: any) => {
+            if (res) {
+              console.log('deleted customer', res);
+              this.snackBarService.openSnackBar('Customer deleted successfully!', '');
+            }
+          });
+        }
       });
   }
   /**

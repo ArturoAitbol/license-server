@@ -2,6 +2,9 @@
     <h1 mat-dialig-title>Modify Customer Account</h1>
     <form [formGroup]="updateCustomerForm" (ngSubmit)="submit()">
         <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">
@@ -30,7 +33,11 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Package Type</mat-label>
-                        <input matInput required formControlName="packageType">
+                        <mat-select required formControlName="packageType">
+                            <mat-option *ngFor="let item of packageTypes" [value]="item">
+                                {{item}}
+                            </mat-option>
+                        </mat-select>
                     </mat-form-field>
                 </div>
                 <div>

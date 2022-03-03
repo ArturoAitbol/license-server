@@ -19,7 +19,7 @@ export class AddCustomerAccountModalComponent implements OnInit {
     'MSP',
     'Reseller',
   ];
-
+  isDataLoading: boolean = false;
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddCustomerAccountModalComponent>,
@@ -39,6 +39,7 @@ export class AddCustomerAccountModalComponent implements OnInit {
    * on add customer account
    */
   addCustomer() {
+    this.isDataLoading = true;
     console.info(this.addCustomerForm.value);
     const customerObject: any = {
       customerName: this.addCustomerForm.value.customerName,
@@ -52,8 +53,12 @@ export class AddCustomerAccountModalComponent implements OnInit {
         subaccountName: this.addCustomerForm.value.subAccountName,
       }
       this.subaccountService.createSubAccount(subaccountDetails).toPromise().then((res: any) => {
+        this.isDataLoading = false;
         this.dialogRef.close(res);
       })
+    }).catch((err: any) => {
+      this.isDataLoading = false;
+      console.error('error while creating customer', err);
     });
   }
 
