@@ -21,70 +21,78 @@ import org.json.JSONObject;
  */
 public class TekvLSGetAllSubaccounts 
 {
-    /**
-     * This function listens at endpoint "/api/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/subaccounts/{id}
-     * 2. curl "{your host}/api/subaccounts"
-     */
-    @FunctionName("TekvLSGetAllSubaccounts")
-    public HttpResponseMessage run(
-            @HttpTrigger(
-                name = "req",
-                methods = {HttpMethod.GET},
-                authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "subaccounts/{id=EMPTY}")
-                HttpRequestMessage<Optional<String>> request,
-                @BindingName("id") String id,
-            final ExecutionContext context) 
-{
+	/**
+	 * This function listens at endpoint "/api/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/api/subaccounts/{id}
+	 * 2. curl "{your host}/api/subaccounts"
+	 */
+	@FunctionName("TekvLSGetAllSubaccounts")
+	public HttpResponseMessage run(
+			@HttpTrigger(
+				name = "req",
+				methods = {HttpMethod.GET},
+				authLevel = AuthorizationLevel.ANONYMOUS,
+				route = "subaccounts/{id=EMPTY}")
+				HttpRequestMessage<Optional<String>> request,
+				@BindingName("id") String id,
+			final ExecutionContext context) 
+	{
 
-        context.getLogger().info("Entering TekvLSGetAllSubaccounts Azure function");
+		context.getLogger().info("Entering TekvLSGetAllSubaccounts Azure function");
 
-        // Build SQL statement
-        String sql = "";
-	if (id.equals("EMPTY")) {
-            sql = "select * from subaccount;";
-        } else {
-            sql = "select * from subaccount where id='" + id +"';";
-        }
-        
-        // Connect to the database
-        String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
-                + "&user=tekvdbadmin@tekv-db-server"
-                + "&password=MhZJh94z9D3Db3vW";
-        try (
-            Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            Statement statement = connection.createStatement();) {
-            
-            context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
-            
-            // Retrive subaccounts. TODO: pagination
-            context.getLogger().info("Execute SQL statement: " + sql);
-            ResultSet rs = statement.executeQuery(sql);
-            // Return a JSON array of subaccounts
-            JSONObject json = new JSONObject();
-            JSONArray array = new JSONArray();
-            while (rs.next()) {
-                JSONObject item = new JSONObject();
-                item.put("id", rs.getString("id"));
-                item.put("name", rs.getString("name"));
-                item.put("customerId", rs.getString("customer_id"));
-                array.put(item);
-            }
-            json.put("subaccounts", array);
-            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
-        }
-        catch (SQLException e) {
-            context.getLogger().info("SQL exception: " + e.getMessage());
-            JSONObject json = new JSONObject();
-            json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-        catch (Exception e) {
-            context.getLogger().info("Caught exception: " + e.getMessage());
-            JSONObject json = new JSONObject();
-            json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-    }
+		// Get query parameters
+		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
+		String customerId = request.getQueryParameters().getOrDefault("customer-id", "");
+  
+		// Build SQL statement
+		String sql = "";
+		if (id.equals("EMPTY")) {
+			if (!customerId.isEmpty()) {
+				sql = "select * from subaccount where customer_id = '" + customerId + "';";
+			} else {
+				sql = "select * from subaccount;";
+			}
+		} else {
+			sql = "select * from subaccount where id='" + id +"';";
+		}
+
+		// Connect to the database
+		String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
+				+ "&user=tekvdbadmin@tekv-db-server"
+				+ "&password=MhZJh94z9D3Db3vW";
+		try (
+			Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			Statement statement = connection.createStatement();) {
+			
+			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+			
+			// Retrive subaccounts. TODO: pagination
+			context.getLogger().info("Execute SQL statement: " + sql);
+			ResultSet rs = statement.executeQuery(sql);
+			// Return a JSON array of subaccounts
+			JSONObject json = new JSONObject();
+			JSONArray array = new JSONArray();
+			while (rs.next()) {
+				JSONObject item = new JSONObject();
+				item.put("id", rs.getString("id"));
+				item.put("name", rs.getString("name"));
+				item.put("customerId", rs.getString("customer_id"));
+				array.put(item);
+			}
+			json.put("subaccounts", array);
+			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
+		}
+		catch (SQLException e) {
+			context.getLogger().info("SQL exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+		catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
 }

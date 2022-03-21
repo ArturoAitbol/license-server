@@ -21,75 +21,82 @@ import org.json.JSONObject;
  */
 public class TekvLSGetAllLicenses 
 {
-    /**
-     * This function listens at endpoint "/api/licenses?subaccountId={subaccountId}". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/licenses?subaccountId={subaccountId}
-     * 2. curl "{your host}/api/subaccounts"
-     */
-    @FunctionName("TekvLSGetAllLicenses")
-    public HttpResponseMessage run(
-            @HttpTrigger(
-                name = "req",
-                methods = {HttpMethod.GET},
-                authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "licenses/{id=EMPTY}")
-                HttpRequestMessage<Optional<String>> request,
-                @BindingName("id") String id,
-            final ExecutionContext context) 
-{
+	/**
+	* This function listens at endpoint "/api/licenses?subaccountId={subaccountId}". Two ways to invoke it using "curl" command in bash:
+	* 1. curl -d "HTTP Body" {your host}/api/licenses?subaccountId={subaccountId}
+	* 2. curl "{your host}/api/subaccounts"
+	*/
+	@FunctionName("TekvLSGetAllLicenses")
+		public HttpResponseMessage run(
+		@HttpTrigger(
+		name = "req",
+		methods = {HttpMethod.GET},
+		authLevel = AuthorizationLevel.ANONYMOUS,
+		route = "licenses/{id=EMPTY}")
+		HttpRequestMessage<Optional<String>> request,
+		@BindingName("id") String id,
+		final ExecutionContext context) 
+	{
 
-        context.getLogger().info("Entering TekvLSGetAllLicenses Azure function");
-        
-        // Build SQL statement
-        String sql = "";
-	if (id.equals("EMPTY")) {
-            sql = "select * from license;";
-        } else {
-            sql = "select * from license where id='" + id +"';";
-        }
-        
-        // Connect to the database
-        String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
-                + "&user=tekvdbadmin@tekv-db-server"
-                + "&password=MhZJh94z9D3Db3vW";
-        try (
-            Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            Statement statement = connection.createStatement();) {
-            
-            context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
-            
-            // Retrive licenses. TODO: pagination
-            context.getLogger().info("Execute SQL statement: " + sql);
-            ResultSet rs = statement.executeQuery(sql);
-            // Return a JSON array of licenses
-            JSONObject json = new JSONObject();
-            JSONArray array = new JSONArray();
-            while (rs.next()) {
-                JSONObject item = new JSONObject();
-                item.put("id", rs.getString("id"));
-                item.put("subaccountId", rs.getString("subaccount_id"));
-                item.put("purchaseDate", rs.getString("purchase_date"));
-                item.put("packageType", rs.getString("package_type"));
-                item.put("renewalDate", rs.getString("renewal_date"));
-                item.put("tokensPurchased", rs.getString("tokens"));
-                item.put("deviceLimit", rs.getString("device_access_limit"));
-                item.put("status", rs.getString("status"));
-                array.put(item);
-            }
-            json.put("licenses", array);
-            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
-        }
-        catch (SQLException e) {
-            context.getLogger().info("SQL exception: " + e.getMessage());
-            JSONObject json = new JSONObject();
-            json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-        catch (Exception e) {
-            context.getLogger().info("Caught exception: " + e.getMessage());
-            JSONObject json = new JSONObject();
-            json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-    }
+		context.getLogger().info("Entering TekvLSGetAllLicenses Azure function");
+		// Get query parameters
+		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
+		String subaccountId = request.getQueryParameters().getOrDefault("subaccount-id", "");
+  
+		// Build SQL statement
+		String sql = "";
+		if (id.equals("EMPTY")) {
+			if (!subaccountId.isEmpty()) {
+				sql = "select * from license where subaccount_id = '" + subaccountId + "';";
+			} else {
+				sql = "select * from license;";
+			}
+		} else {
+			sql = "select * from license where id='" + id +"';";
+		}
+		
+		// Connect to the database
+		String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
+				+ "&user=tekvdbadmin@tekv-db-server"
+				+ "&password=MhZJh94z9D3Db3vW";
+		try (
+			Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			Statement statement = connection.createStatement();) {
+			
+			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+			
+			// Retrive licenses. TODO: pagination
+			context.getLogger().info("Execute SQL statement: " + sql);
+			ResultSet rs = statement.executeQuery(sql);
+			// Return a JSON array of licenses
+			JSONObject json = new JSONObject();
+			JSONArray array = new JSONArray();
+			while (rs.next()) {
+				JSONObject item = new JSONObject();
+				item.put("id", rs.getString("id"));
+				item.put("subaccountId", rs.getString("subaccount_id"));
+				item.put("purchaseDate", rs.getString("purchase_date"));
+				item.put("packageType", rs.getString("package_type"));
+				item.put("renewalDate", rs.getString("renewal_date"));
+				item.put("tokensPurchased", rs.getString("tokens"));
+				item.put("deviceLimit", rs.getString("device_access_limit"));
+				item.put("status", rs.getString("status"));
+				array.put(item);
+			}
+			json.put("licenses", array);
+			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
+		}
+		catch (SQLException e) {
+			context.getLogger().info("SQL exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+		catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
 }

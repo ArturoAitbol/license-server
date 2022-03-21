@@ -59,7 +59,7 @@ public class TekvLSCreateCustomer
         // The expected parameters (and their coresponding column name in the database) 
         String[][] mandatoryParams = {
             {"name","name"}, 
-            {"customerType","customer_type"}
+            {"customerType","type"}
         };
         // Build the sql query
         String sqlPart1 = "";
@@ -99,7 +99,7 @@ public class TekvLSCreateCustomer
             context.getLogger().info("License usage inserted successfully."); 
 
             // Return the customer id in the response
-            sql = "select id from customer where name = '" + jobj.getString("name") + "' and customer_type = '" + jobj.getString("customerType") + "';";
+            sql = "select id from customer where name = '" + jobj.getString("name") + "' and type = '" + jobj.getString("customerType") + "';";
             context.getLogger().info("Execute SQL statement: " + sql);
             ResultSet rs = statement.executeQuery(sql);
             rs.next();
