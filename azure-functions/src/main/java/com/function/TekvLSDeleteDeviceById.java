@@ -20,52 +20,52 @@ import org.json.JSONObject;
  */
 public class TekvLSDeleteDeviceById 
 {
-    /**
-     * This function listens at endpoint "/api/devices". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/devices
-     */
-    @FunctionName("TekvLSDeleteDeviceById")
-    public HttpResponseMessage run(
-            @HttpTrigger(
-                name = "req",
-                methods = {HttpMethod.DELETE},
-                authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "devices/{id}")
-                HttpRequestMessage<Optional<String>> request,
-                @BindingName("id") String id,
-                final ExecutionContext context) 
-    {
-        context.getLogger().info("Entering TekvLSDeleteDeviceById Azure function");
-        
-        // Connect to the database
-        String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
-                + "&user=tekvdbadmin@tekv-db-server"
-                + "&password=MhZJh94z9D3Db3vW";
-        try (
-            Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            Statement statement = connection.createStatement();) {
-            
-            context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
-            
-            // Delete device
-            String sql = "delete from device where id='" + id +"';";
-            context.getLogger().info("Execute SQL statement: " + sql);
-            statement.executeUpdate(sql);
-            context.getLogger().info("Device delete successfully."); 
+	/**
+	 * This function listens at endpoint "/api/devices". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/api/devices
+	 */
+	@FunctionName("TekvLSDeleteDeviceById")
+	public HttpResponseMessage run(
+			@HttpTrigger(
+				name = "req",
+				methods = {HttpMethod.DELETE},
+				authLevel = AuthorizationLevel.ANONYMOUS,
+				route = "devices/{id}")
+				HttpRequestMessage<Optional<String>> request,
+				@BindingName("id") String id,
+				final ExecutionContext context) 
+	{
+		context.getLogger().info("Entering TekvLSDeleteDeviceById Azure function");
+		
+		// Connect to the database
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+			+ "&user=" + System.getenv("POSTGRESQL_USER")
+			+ "&password=" + System.getenv("POSTGRESQL_PWD");
+		try (
+			Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			Statement statement = connection.createStatement();) {
+			
+			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			
+			// Delete device
+			String sql = "delete from device where id='" + id +"';";
+			context.getLogger().info("Execute SQL statement: " + sql);
+			statement.executeUpdate(sql);
+			context.getLogger().info("Device delete successfully."); 
 
-            return request.createResponseBuilder(HttpStatus.OK).build();
-        }
-        catch (SQLException e) {
-            context.getLogger().info("SQL exception: " + e.getMessage());
-            JSONObject json = new JSONObject();
-            json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-        catch (Exception e) {
-            context.getLogger().info("Caught exception: " + e.getMessage());
-            JSONObject json = new JSONObject();
-            json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-    }
+			return request.createResponseBuilder(HttpStatus.OK).build();
+		}
+		catch (SQLException e) {
+			context.getLogger().info("SQL exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+		catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
 }

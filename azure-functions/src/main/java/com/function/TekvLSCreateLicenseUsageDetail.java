@@ -91,9 +91,9 @@ public class TekvLSCreateLicenseUsageDetail
 		String sql = "insert into license_usage (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
-				+ "&user=tekvdbadmin@tekv-db-server"
-				+ "&password=MhZJh94z9D3Db3vW";
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+			+ "&user=" + System.getenv("POSTGRESQL_USER")
+			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {

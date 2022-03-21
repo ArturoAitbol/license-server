@@ -20,28 +20,28 @@ import org.json.JSONObject;
  * Azure Functions with HTTP Trigger.
  */
 public class TekvLSGetAllCustomers {
-    /**
-     * This function listens at endpoint "/api/customers". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/customers
-     * 2. curl "{your host}/api/customers"
-     */
-    @FunctionName("TekvLSGetAllCustomers")
-    public HttpResponseMessage run(
+	/**
+	 * This function listens at endpoint "/api/customers". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/api/customers
+	 * 2. curl "{your host}/api/customers"
+	 */
+	@FunctionName("TekvLSGetAllCustomers")
+	public HttpResponseMessage run(
 				@HttpTrigger(
-                name = "req",
-                methods = {HttpMethod.GET},
-                authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "customers/{id=EMPTY}")
-                HttpRequestMessage<Optional<String>> request,
-                @BindingName("id") String id,
-                final ExecutionContext context) 
+				name = "req",
+				methods = {HttpMethod.GET},
+				authLevel = AuthorizationLevel.ANONYMOUS,
+				route = "customers/{id=EMPTY}")
+				HttpRequestMessage<Optional<String>> request,
+				@BindingName("id") String id,
+				final ExecutionContext context) 
 	{
 		context.getLogger().info("Entering TekvLSGetAllCustomers Azure function");   
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String customerType = request.getQueryParameters().getOrDefault("type", "");
 		String customerName = request.getQueryParameters().getOrDefault("name", "");
-        
+		
 		// Build SQL statement
 		String sql = "";
 		if (id.equals("EMPTY")) {
@@ -52,7 +52,7 @@ public class TekvLSGetAllCustomers {
 					sql += " type = '" + customerType + "'";  
 					if (!customerName.isEmpty()) {
 						sql += " and name = '" + customerName + "'";
-               }
+			   }
 				} else {
 					if (!customerName.isEmpty()) {
 						sql += " name = '" + customerName + "'";  
@@ -63,17 +63,17 @@ public class TekvLSGetAllCustomers {
 		} else {
 			sql = "select * from customer where id='" + id +"';";
 		}
-        
+		
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://tekv-db-server.postgres.database.azure.com:5432/licenses?ssl=true&sslmode=require"
-			+ "&user=tekvdbadmin@tekv-db-server"
-			+ "&password=MhZJh94z9D3Db3vW";
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+			+ "&user=" + System.getenv("POSTGRESQL_USER")
+			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
-            
+			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
-            
+			
 			// Retrive all customers. TODO: pagination
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
