@@ -47,9 +47,9 @@ export class AddCustomerAccountModalComponent implements OnInit {
     };
     this.customerService.createCustomer(customerObject).toPromise().then((res: any) => {
       return res;
-    }).then((customerResponse: { customerId: string }) => {
+    }).then((customerResponse: { id: string }) => {
       const subaccountDetails: any = {
-        customerId: customerResponse.customerId,
+        customerId: customerResponse.id,
         name: this.addCustomerForm.value.subAccountName,
       }
       this.subaccountService.createSubAccount(subaccountDetails).toPromise().then((res: any) => {
