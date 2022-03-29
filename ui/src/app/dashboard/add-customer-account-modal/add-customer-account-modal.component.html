@@ -34,7 +34,7 @@
         <mat-dialog-actions>
             <button type="button" id="cancelBtn" mat-stroked-button (click)="onCancel()">Cancel</button>
             <button id="submitBtn" mat-raised-button color="primary" [disabled]="addCustomerForm.invalid"
-                type="button">Submit</button>
+                type="button" (click)="addCustomer()">Submit</button>
             <!-- </div> -->
         </mat-dialog-actions>
     </form>
