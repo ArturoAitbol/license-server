@@ -42,7 +42,7 @@ export class AddCustomerAccountModalComponent implements OnInit {
     this.isDataLoading = true;
     console.info(this.addCustomerForm.value);
     const customerObject: any = {
-      customerName: this.addCustomerForm.value.customerName,
+      name: this.addCustomerForm.value.customerName,
       customerType: this.addCustomerForm.value.customerType
     };
     this.customerService.createCustomer(customerObject).toPromise().then((res: any) => {
@@ -50,7 +50,7 @@ export class AddCustomerAccountModalComponent implements OnInit {
     }).then((customerResponse: { customerId: string }) => {
       const subaccountDetails: any = {
         customerId: customerResponse.customerId,
-        subaccountName: this.addCustomerForm.value.subAccountName,
+        name: this.addCustomerForm.value.subAccountName,
       }
       this.subaccountService.createSubAccount(subaccountDetails).toPromise().then((res: any) => {
         this.isDataLoading = false;
