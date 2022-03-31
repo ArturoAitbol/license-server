@@ -37,14 +37,21 @@ public class TekvLSGetAllProjects {
 		final ExecutionContext context) 
    {
 		context.getLogger().info("Entering TekvLSGetAllProjects Azure function");
+
+		// Get query parameters
+		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
+		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		
 		// Build SQL statement
 		String sql = "";
 		 if (id.equals("EMPTY")) {
-			sql = "select * from project;";
+			sql = "select * from project";
+			if (!subaccountId.isEmpty())
+				sql += " where subaccountId='" + subaccountId + "'";
 		} else {
-			sql = "select * from project where id='" + id +"';";
+			sql = "select * from project where id='" + id +"'";
 		}
+		sql += ";";
 		
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -57,7 +64,7 @@ public class TekvLSGetAllProjects {
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
 			// Retrive all projects. TODO: pagination
-			sql = "select * from project;";
+			// sql = "select * from project;";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of projects
