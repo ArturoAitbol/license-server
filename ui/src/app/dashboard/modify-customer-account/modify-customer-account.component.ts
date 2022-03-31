@@ -1,7 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { Validators, FormBuilder } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
+import { LicenseService } from 'src/app/services/license.service';
 
 @Component({
   selector: 'app-modify-customer-account',
@@ -19,9 +22,9 @@ export class ModifyCustomerAccountComponent implements OnInit {
     customerName: ['', Validators.required],
     subaccountName: ['', Validators.required],
     customerType: ['', Validators.required],
-    purchaseDate: ['', Validators.required],
-    packageType: ['', Validators.required],
-    renewalDate: ['', Validators.required]
+    purchaseDate: [''],
+    packageType: [''],
+    renewalDate: ['']
   });
   private previousFormValue: any;
   // flag
@@ -30,6 +33,8 @@ export class ModifyCustomerAccountComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private customerService: CustomerService,
+    private subAccountService: SubAccountService,
+    private licenseService: LicenseService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
@@ -53,14 +58,30 @@ export class ModifyCustomerAccountComponent implements OnInit {
    */
   submit() {
     this.isDataLoading = true;
-    const mergedCustomerObject = { ...this.data, ...this.updateCustomerForm.value };
-    console.log('customerObject', mergedCustomerObject);
-    this.customerService.updateCustomer(mergedCustomerObject).subscribe((res: any) => {
+    const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value };
+    console.log('mergedLicenseObject', mergedLicenseObject);
+    const customer = {
+      id: mergedLicenseObject.customerId,
+      name: mergedLicenseObject.customerName,
+      customerType: mergedLicenseObject.customerType
+    };
+    const subAccount = {
+      id: mergedLicenseObject.subaccountId,
+      name: mergedLicenseObject.subaccountName
+    };
+    const requestsArray= [
+      this.customerService.updateCustomer(customer),
+      this.subAccountService.updateSubAccount(subAccount)
+    ];
+    if (mergedLicenseObject.id)
+      requestsArray.push(this.licenseService.updateLicenseDetails(mergedLicenseObject));
+    forkJoin(requestsArray).subscribe(res => {
       this.isDataLoading = false;
-      this.dialogRef.close(res);
-    }, (err: any) => {
+      this.dialogRef.close(true);
+    }, err => {
       this.isDataLoading = false;
-      console.error('error while updating customer', err);
+      this.dialogRef.close(false);
+      console.error('error while updating license information row', err);
     });
   }
   /**

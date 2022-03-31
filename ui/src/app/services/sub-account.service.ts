@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { Constants } from '../helpers/constants';
 import { SubAccount } from '../model/subaccount.model';
 
 @Injectable({
@@ -8,8 +9,16 @@ import { SubAccount } from '../model/subaccount.model';
 })
 export class SubAccountService {
   private readonly API_URL: string = environment.apiEndpoint + '/subaccounts';
+  private selectedSubAccount: any;
 
   constructor(private httpClient: HttpClient) { }
+
+  //set the selected subAccount
+  setSelectedSubAccount(subAccount: any) { this.selectedSubAccount = subAccount; }
+  //get the selected subAccount
+  getSelectedSubAccount() {
+    return (this.selectedSubAccount) ? this.selectedSubAccount : JSON.parse(localStorage.getItem(Constants.SELECTED_SUBACCOUNT));
+  }
 
   /**
    * create new SubAccount
@@ -48,7 +57,7 @@ export class SubAccountService {
    * @param subAccount: SubAccount 
    * @returns: Observable 
    */
-  public updateSubAccount(subAccount: SubAccount) {
+  public updateSubAccount(subAccount: any) {
     return this.httpClient.put(`${this.API_URL}/${subAccount.id}`, subAccount);
   }
 

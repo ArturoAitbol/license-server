@@ -60,8 +60,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
    */
   initColumns(): void {
     this.displayedColumns = [
-      { name: 'Customer Account', dataKey: 'customerName', position: 'left', isSortable: true, isClickable: true },
-      { name: 'Customer Sub Account', dataKey: 'subaccountName', position: 'left', isSortable: true },
+      { name: 'Customer Account', dataKey: 'customerName', position: 'left', isSortable: true },
+      { name: 'Customer Sub Account', dataKey: 'subaccountName', position: 'left', isSortable: true, isClickable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
       { name: 'Purchase Date', dataKey: 'purchaseDate', position: 'left', isSortable: true },
       { name: 'Package Type', dataKey: 'packageType', position: 'left', isSortable: true },
@@ -75,12 +75,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private fetchDataToDisplay(): void {
     this.isRequestCompleted = false;
     // here we are fetching all the data from the server
-    forkJoin(
-      [this.customerService.getCustomerList(),
+    forkJoin([
+      this.customerService.getCustomerList(),
       this.subaccountService.getSubAccountList(),
       this.licenseService.getLicenseList()
-      ])
-      .subscribe(res => {
+    ]).subscribe(res => {
         this.isLoadingResults = false;
         this.isRequestCompleted = true;
         const newDataObject: any = res.reduce((current, next) => {
@@ -90,15 +89,39 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.subaccountList = newDataObject['subaccounts'];
         this.customersList = newDataObject['customers'];
         // here we map the customer name and subaccount name to the customer license list
-        this.licenseList.forEach((license: License) => {
+        let subaccountsHash = {};
+        this.licenseList.forEach((license: any) => {
           const subaccountDetails: SubAccount = this.subaccountList.find((e: SubAccount) => e.id == license.subaccountId);
           if (subaccountDetails) {
             license.subaccountName = subaccountDetails.name;
+            license.subaccountId = subaccountDetails.id;
             const customerDetails = this.customersList.find((e: Customer) => e.id === subaccountDetails.customerId);
             if (customerDetails) {
               license.customerName = customerDetails.name;
               license.customerType = customerDetails.customerType;
+              license.customerId = customerDetails.id;
+              if (!subaccountsHash[subaccountDetails.name + "-" + subaccountDetails.customerId])
+                subaccountsHash[subaccountDetails.name + "-" + subaccountDetails.customerId] = customerDetails.name;
             }
+          }
+        });
+        this.subaccountList.forEach((subaccount: SubAccount) => {
+          if (subaccountsHash[subaccount.name + "-" + subaccount.customerId]) return;
+          const customer = this.customersList.find((e: Customer) => e.id === subaccount.customerId);
+          if (customer) {
+            let emptyLicenseElement = {
+              id: null,
+              packageType: "",
+              purchaseDate: "",
+              renewalDate: "",
+              status: "",
+              subaccountId: subaccount.id,
+              subaccountName: subaccount.name,
+              customerId: customer.id,
+              customerName: customer.name,
+              customerType: customer.customerType
+            }
+            this.licenseList.unshift(emptyLicenseElement);
           }
         });
 

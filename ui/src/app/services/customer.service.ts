@@ -53,7 +53,7 @@ export class CustomerService {
    * @param customer: Customer 
    * @returns: Observable 
    */
-  public updateCustomer(customer: Customer) {
+  public updateCustomer(customer: any) {
     return this.httpClient.put(`${this.API_URL}/${customer.id}`, customer);
   }
 

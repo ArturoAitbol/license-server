@@ -24,13 +24,16 @@
                         <input matInput required formControlName="customerType">
                     </mat-form-field>
                 </div>
-                <div>
+                <div *ngIf="data.id">
                     <mat-form-field appearance="outline">
                         <mat-label>Purchase Date</mat-label>
                         <input matInput required formControlName="purchaseDate">
+                        <!-- <input matInput required [matDatepicker]="purchaseDatePicker" formControlName="purchaseDate"> -->
+                        <!-- <mat-datepicker-toggle matSuffix [for]="purchaseDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #purchaseDatePicker></mat-datepicker> -->
                     </mat-form-field>
                 </div>
-                <div>
+                <div *ngIf="data.id">
                     <mat-form-field appearance="outline">
                         <mat-label>Package Type</mat-label>
                         <mat-select required formControlName="packageType">
@@ -40,10 +43,13 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div>
+                <div *ngIf="data.id">
                     <mat-form-field appearance="outline">
                         <mat-label>Renewal</mat-label>
                         <input matInput required formControlName="renewalDate">
+                        <!-- <input matInput required [matDatepicker]="renewalDatePicker" formControlName="renewalDate"> -->
+                        <!-- <mat-datepicker-toggle matSuffix [for]="renewalDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #renewalDatePicker></mat-datepicker> -->
                     </mat-form-field>
                 </div>
             </mat-dialog-content>
@@ -51,7 +57,7 @@
         <mat-dialog-actions>
             <button mat-stroked-button (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" [disabled]="!(updateCustomerForm.valid ) || disableSumbitBtn()"
-                type="submit" (click)="submit()">Submit</button>
+                type="submit">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>

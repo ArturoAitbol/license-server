@@ -1,6 +1,7 @@
 export class Constants {
     public static readonly CURRENT_USER: string = 'currentUser';
     public static readonly SELECTED_CUSTOMER: string = 'selectedCustomer';
+    public static readonly SELECTED_SUBACCOUNT: string = 'selectedSubAccount';
     public static readonly PROJECT: string = 'project';
 
     // Session Storage Keys

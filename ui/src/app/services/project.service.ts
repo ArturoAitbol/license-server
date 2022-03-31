@@ -59,6 +59,7 @@ export class ProjectService {
     const headers = this.getHeaders();
     const params = new HttpParams().set('subaccountId', subaccountId);
     return this.httpClient.get<Project[]>(this.API_URL, { headers, params });
+    // return this.httpClient.get<Project[]>(this.API_URL + "/" + subaccountId, { headers });
   }
 
 

@@ -17,36 +17,11 @@ import { AddProjectComponent } from './add-project/add-project.component';
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
   readonly displayedColumns: TableColumn[] = [
-    {
-      name: 'Project Number',
-      dataKey: 'number',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Project Name',
-      dataKey: 'name',
-      position: 'left',
-      isSortable: true
-    },
-    {
-      name: 'Status',
-      dataKey: 'status',
-      position: 'left',
-      isSortable: true
-    },
-    {
-      name: 'Open Date',
-      dataKey: 'openDate',
-      position: 'left',
-      isSortable: true
-    },
-    {
-      name: 'Close Date',
-      dataKey: 'closeDate',
-      position: 'left',
-      isSortable: true
-    }
+    { name: 'Project Number', dataKey: 'number', position: 'left', isSortable: true },
+    { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
+    { name: 'Status', dataKey: 'status', position: 'left', isSortable: true },
+    { name: 'Open Date', dataKey: 'openDate', position: 'left', isSortable: true },
+    { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
   ];
   currentCustomer: any;
   projects: Project[] = [];
@@ -90,7 +65,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   fetchProjects(): void {
-    this.projectService.getProjectList().subscribe(res => {
+    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
       this.projectsBk = this.projects = res['projects'];
