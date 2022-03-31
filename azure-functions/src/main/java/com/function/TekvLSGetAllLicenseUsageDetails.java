@@ -46,13 +46,13 @@ public class TekvLSGetAllLicenseUsageDetails {
   
 		String sql = "";
 		String sqlPart1 = "";
-      if (year.equals("EMPTY")) {
+      	if (year.isEmpty()) {
 			Calendar cal = Calendar.getInstance();
 			sql = "select * from license_usage where EXTRACT(MONTH FROM usage_date) = " + cal.get(Calendar.MONTH) + ";";
 			sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(MONTH FROM usage_date) = " + cal.get(Calendar.MONTH) + " and " + 
 				"EXTRACT (YEAR FROM usage_date) = " + cal.get(Calendar.YEAR) + ";";
 		} else {
-		if (month.equals("EMPTY")) {
+			if (month.isEmpty()) {
 				sql = "select * from license_usage where EXTRACT(YEAR FROM usage_date) = " + year + ";";
 				sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(YEAR FROM usage_date) = " + year + ";";
 			} else {
