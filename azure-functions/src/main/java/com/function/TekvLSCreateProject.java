@@ -62,6 +62,7 @@ public class TekvLSCreateProject
 			{"name","name"}, 
 			{"number","number"}, 
 			{"openDate","open_date"}, 
+			{"closeDate","close_date"}, 
 			{"status","status"} 
 		};
 		// Build the sql query
