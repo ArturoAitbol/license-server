@@ -47,7 +47,7 @@ public class TekvLSGetAllProjects {
 		 if (id.equals("EMPTY")) {
 			sql = "select * from project";
 			if (!subaccountId.isEmpty())
-				sql += " where subaccountId='" + subaccountId + "'";
+				sql += " where subaccount_id='" + subaccountId + "'";
 		} else {
 			sql = "select * from project where id='" + id +"'";
 		}
