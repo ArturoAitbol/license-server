@@ -54,7 +54,6 @@ public class TekvLSCreateLicenseUsageDetail
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
-
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] mandatoryParams = {
 			{"subaccountId","subaccount_id"}, 
@@ -65,41 +64,41 @@ public class TekvLSCreateLicenseUsageDetail
 			{"serialNumber","serial_number"}, 
 			{"usageType","usage_type"}
 		};
-		// Build the sql query
-		String sqlPart1 = "";
-		String sqlPart2 = "";
-		for (int i = 0; i < mandatoryParams.length; i++) {
-			try {
-				String paramValue = jobj.getString(mandatoryParams[i][0]);
-				sqlPart1 += mandatoryParams[i][1] + ",";
-				sqlPart2 += "'" + paramValue + "',";
-			} 
-			catch (Exception e) {
-				// Parameter not found
-				context.getLogger().info("Caught exception: " + e.getMessage());
-				JSONObject json = new JSONObject();
-				json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-			}
-		}
-		// modifed_date is always usage_date when creating the record
-		sqlPart1 += "modified_date,";
-		sqlPart2 += "'" + jobj.getString("usageDate") + "',";
-		// Remove the comma after the last parameter and build the SQL statement
-		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
-		String sql = "insert into license_usage (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";
-
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
-			
+		// Build the sql query to get tokens consumption
+		String sql = "select tokens_to_consume from device where id='" + jobj.getString("deviceId") + "';";
+
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
-			
+			// get tokens to consume
+			context.getLogger().info("Execute SQL statement: " + sql);
+			ResultSet rs = statement.executeQuery(sql);
+			rs.next();
+			int tokensToConsume = rs.getInt(1);
+			// Build the sql insertion query
+			String sqlPart1 = "";
+			String sqlPart2 = "";
+			for (int i = 0; i < mandatoryParams.length; i++) {
+				try {
+					String paramValue = jobj.getString(mandatoryParams[i][0]);
+					sqlPart1 += mandatoryParams[i][1] + ",";
+					sqlPart2 += "'" + paramValue + "',";
+				} 
+				catch (Exception e) {
+					// Parameter not found
+					context.getLogger().info("Caught exception: " + e.getMessage());
+					JSONObject json = new JSONObject();
+					json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
+					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+				}
+			}
+			// modifed_date is always usage_date when creating the record
+			sqlPart1 += "modified_date,tokensConsumed";
+			sqlPart2 += "'" + jobj.getString("usageDate") + "'," + tokensToConsume;
+			sql = "insert into license_usage (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";	
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + sql);
 			// statement.executeUpdate(sql);
@@ -116,11 +115,11 @@ public class TekvLSCreateLicenseUsageDetail
 			// 	"usage_date = '" + jobj.getString("usageDate") + "';";
 			// context.getLogger().info("Execute SQL statement: " + sql);
 			// context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
-			context.getLogger().info("License usage inserted successfully."); 
+			rs = statement.executeQuery(sql);
 			rs.next();
 			JSONObject json = new JSONObject();
 			json.put("id", rs.getString("id"));
+			context.getLogger().info("License usage inserted successfully.");
 
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
