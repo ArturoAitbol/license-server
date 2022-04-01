@@ -109,13 +109,16 @@ public class TekvLSGetAllLicenseUsageDetails {
 						" and usage_type='Configuration' group by DATE_PART('week',usage_date);";
 					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
+					int confTokensConsumed = 0;
 					while (rs.next()) {
 						JSONObject item = new JSONObject();
 						item.put("weekId", rs.getInt(1));
 						item.put("tokensConsumed", rs.getInt(2));
+						confTokensConsumed += rs.getInt(2);
 						array.put(item);
 					}
 					json.put("configurationTokens", array);
+					json.put("configurationTokensConsumed", confTokensConsumed);
 				} break;
 				case "equipmentsummary": {
 					String sqlEquipmentSummary = 
