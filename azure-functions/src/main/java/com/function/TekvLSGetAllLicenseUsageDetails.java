@@ -89,7 +89,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					}
 
 					// Get weekly consumption for configuration
-					String sqlWeeklyConfigurationTokensConsumed = "select DATE_PART('week',usage_date), sum(tokens_consumed) from license_usage where " + 
+					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',usage_date)), sum(tokens_consumed) from license_usage where " + 
 						sqlPart1 + " and usage_type='Configuration' group by DATE_PART('week',usage_date);";
 					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
@@ -122,7 +122,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 				default: {
 					// This is the default case (all)
 					String sqlAll = 
-						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,l.tokens_consumed,l.id,l.device_id " + 
+						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,l.tokens_consumed,l.id,l.device_id,CONCAT('Week ',DATE_PART('week',usage_date)) as consumption " + 
 						"from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1 + ";";
 					context.getLogger().info("Execute SQL statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
