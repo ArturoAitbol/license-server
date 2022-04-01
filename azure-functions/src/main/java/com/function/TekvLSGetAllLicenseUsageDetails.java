@@ -122,11 +122,12 @@ public class TekvLSGetAllLicenseUsageDetails {
 				} break;
 				case "equipmentsummary": {
 					String sqlEquipmentSummary = 
-						"select distinct d.vendor,d.product,d.version,l.mac_address,l.serial_number from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1;
+						"select distinct d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1;
 					context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
 					rs = statement.executeQuery(sqlEquipmentSummary);
 					while (rs.next()) {
 						JSONObject item = new JSONObject();
+						item.put("id", rs.getString("id"));
 						item.put("vendor", rs.getString("vendor"));
 						item.put("product", rs.getString("product"));
 						item.put("version", rs.getString("version"));
@@ -139,7 +140,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 				default: {
 					// This is the default case (all)
 					String sqlAll = 
-						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,d.tokens_to_consume,l.id " + 
+						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,d.tokens_to_consume,l.id,l.device_id " + 
 						"from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1;
 					context.getLogger().info("Execute SQL statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
@@ -154,6 +155,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("usageType", rs.getString("usage_type"));
 						item.put("tokensConsumed", rs.getString("tokens_to_consume"));
 						item.put("id", rs.getString("id"));
+						item.put("deviceId", rs.getString("device_id"));
 						array.put(item);
 					}
 					json.put("usage", array);
