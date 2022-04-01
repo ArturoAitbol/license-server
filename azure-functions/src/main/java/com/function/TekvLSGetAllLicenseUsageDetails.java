@@ -128,6 +128,8 @@ public class TekvLSGetAllLicenseUsageDetails {
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
 						JSONObject item = new JSONObject();
+						item.put("id", rs.getString("id"));
+						item.put("deviceId", rs.getString("device_id"));
 						item.put("usageDate", rs.getString("usage_date"));
 						item.put("vendor", rs.getString("vendor"));
 						item.put("product", rs.getString("product"));
@@ -136,8 +138,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("serialNumber", rs.getString("serial_number"));
 						item.put("usageType", rs.getString("usage_type"));
 						item.put("tokensConsumed", rs.getString("tokens_consumed"));
-						item.put("id", rs.getString("id"));
-						item.put("deviceId", rs.getString("device_id"));
+						item.put("consumption", rs.getString("consumption"));
 						array.put(item);
 					}
 					json.put("usage", array);
