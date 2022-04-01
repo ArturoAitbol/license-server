@@ -104,7 +104,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 				case "equipmentsummary": {
 					String sqlEquipmentSummary = 
 						"select d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number, sum(l.tokens_consumed) from device d inner join license_usage l on d.id=l.device_id and l." + 
-						sqlPart1 + " group by d.id;";
+						sqlPart1 + " group by d.id,l.mac_address,l.serial_number;";
 					context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
 					rs = statement.executeQuery(sqlEquipmentSummary);
 					while (rs.next()) {
@@ -122,7 +122,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 				default: {
 					// This is the default case (all)
 					String sqlAll = 
-						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,d.l.tokens_consumed,l.id,l.device_id " + 
+						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,l.tokens_consumed,l.id,l.device_id " + 
 						"from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1 + ";";
 					context.getLogger().info("Execute SQL statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
@@ -135,7 +135,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("macAddress", rs.getString("mac_address"));
 						item.put("serialNumber", rs.getString("serial_number"));
 						item.put("usageType", rs.getString("usage_type"));
-						item.put("tokensConsumed", rs.getString("l.tokens_consumed"));
+						item.put("tokensConsumed", rs.getString("tokens_consumed"));
 						item.put("id", rs.getString("id"));
 						item.put("deviceId", rs.getString("device_id"));
 						array.put(item);
