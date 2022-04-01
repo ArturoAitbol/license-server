@@ -102,8 +102,8 @@ public class TekvLSCreateLicenseUsageDetail
 			
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
-			context.getLogger().info("License usage inserted successfully."); 
+			// statement.executeUpdate(sql);
+			// context.getLogger().info("License usage inserted successfully."); 
 
 			// Return the id in the response
 			// sql = "select id from license_usage where " + 
@@ -117,6 +117,7 @@ public class TekvLSCreateLicenseUsageDetail
 			// context.getLogger().info("Execute SQL statement: " + sql);
 			// context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
+			context.getLogger().info("License usage inserted successfully."); 
 			rs.next();
 			JSONObject json = new JSONObject();
 			json.put("id", rs.getString("id"));

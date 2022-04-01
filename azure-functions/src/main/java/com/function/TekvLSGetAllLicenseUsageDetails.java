@@ -43,25 +43,19 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String view = request.getQueryParameters().getOrDefault("view", "");
 		String year = request.getQueryParameters().getOrDefault("year", "");
 		String month = request.getQueryParameters().getOrDefault("month", "");
-  
-		String sql = "";
 		String sqlPart1 = "";
       	if (year.isEmpty()) {
 			Calendar cal = Calendar.getInstance();
-			sql = "select * from license_usage where EXTRACT(MONTH FROM usage_date) = " + cal.get(Calendar.MONTH) + ";";
 			sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(MONTH FROM %s) = " + cal.get(Calendar.MONTH) + " and " + 
-				"EXTRACT (YEAR FROM %s) = " + cal.get(Calendar.YEAR) + ";";
+				"EXTRACT (YEAR FROM %s) = " + cal.get(Calendar.YEAR);
 		} else {
-			if (month.isEmpty()) {
-				sql = "select * from license_usage where EXTRACT(YEAR FROM usage_date) = " + year + ";";
-				sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(YEAR FROM %s) = " + year + ";";
-			} else {
-				sql = "select * from license_usage where EXTRACT(MONTH FROM usage_date) = " + month + " and " + 
-					"EXTRACT (YEAR FROM usage_date) = " + year + ";";
-				sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(MONTH FROM %s) = " + month + " and " + 
-					"EXTRACT (YEAR FROM %s) = " + year + ";";
-			}
+			if (month.isEmpty())
+			sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(YEAR FROM %s) = " + year;
+			else
+			sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(MONTH FROM %s) = " + month + " and " + "EXTRACT (YEAR FROM %s) = " + year;
 		}
+		if (!view.equalsIgnoreCase("weekly"))
+			sqlPart1 = String.format(sqlPart1, "l.usage_date", "l.usage_date");
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -70,61 +64,47 @@ public class TekvLSGetAllLicenseUsageDetails {
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
-			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
-			
-			// Execute sql query. TODO: pagination
-			// First get the devices connected
 			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
-
-			// Get number of connected devices
-			String sqlDevicesConnected = "select count(usage_type) from license_usage where usage_type='AutomationPlatform' and " + String.format(sqlPart1, "usage_date", "usage_date");
-			context.getLogger().info("Execute SQL statement: " + sqlDevicesConnected);
-			ResultSet rs = statement.executeQuery(sqlDevicesConnected);
-			rs.next();
-			json.put("devicesConnected", rs.getInt(1));
-
-			sqlPart1 = String.format(sqlPart1, "l.usage_date", "l.usage_date");
-
-			// Get tokens consumed
-			String sqlTokensConsumed = "select sum(l.tokens_consumed) from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1;
-			context.getLogger().info("Execute SQL statement: " + sqlTokensConsumed);
-			rs = statement.executeQuery(sqlTokensConsumed);
-			rs.next();
-			json.put("tokensConsumed", rs.getInt(1));
-
+			ResultSet rs;
 			switch (view.toLowerCase()) {
 				case "weekly": {
-					String sqlAutomationDeviceModelTokensConsumed=
-						"select sum(l.tokens_consumed) from device d inner join license_usage l on d.id=l.device_id and l." +
-						sqlPart1.substring(0, sqlPart1.length() - 1) +
-						" and l.usage_type = 'AutomationPlatform';";
-					context.getLogger().info("Execute SQL statement: " + sqlAutomationDeviceModelTokensConsumed);
-					rs = statement.executeQuery(sqlAutomationDeviceModelTokensConsumed);
+					sqlPart1 = String.format(sqlPart1, "usage_date", "usage_date");
+					// First get the devices connected
+					// Get number of connected devices
+					String sqlDevicesConnected = "select count(distinct device_id) from license_usage where " + sqlPart1 + ";";
+					context.getLogger().info("Execute SQL statement: " + sqlDevicesConnected);
+					rs = statement.executeQuery(sqlDevicesConnected);
 					rs.next();
-					json.put("automationDeviceModelTokensConsumed", rs.getInt(1));
+					json.put("devicesConnected", rs.getInt(1));
 
-					String sqlWeeklyConfigurationTokensConsumed =
-						"select DATE_PART('week',l.usage_date), sum(l.tokens_consumed) from device d inner join license_usage l on d.id=l.device_id and l." + 
-						sqlPart1.substring(0, sqlPart1.length() - 1) +
-						" and l.usage_type='Configuration' group by DATE_PART('week',l.usage_date);";
+					// Get tokens consumed
+					String sqlTokensConsumed = "select usage_type, sum(tokens_consumed) from license_usage where " + sqlPart1 + 
+						" group by usage_type;";
+					context.getLogger().info("Execute SQL statement: " + sqlTokensConsumed);
+					rs = statement.executeQuery(sqlTokensConsumed);
+					while (rs.next()) {
+						json.put(rs.getString(1) + "TokensConsumed", rs.getInt(2));
+					}
+
+					// Get weekly consumption for configuration
+					String sqlWeeklyConfigurationTokensConsumed = "select DATE_PART('week',usage_date), sum(tokens_consumed) from license_usage where " + 
+						sqlPart1 + " and usage_type='Configuration' group by DATE_PART('week',usage_date);";
 					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
-					int confTokensConsumed = 0;
 					while (rs.next()) {
 						JSONObject item = new JSONObject();
 						item.put("weekId", rs.getInt(1));
 						item.put("tokensConsumed", rs.getInt(2));
-						confTokensConsumed += rs.getInt(2);
 						array.put(item);
 					}
 					json.put("configurationTokens", array);
-					json.put("configurationTokensConsumed", confTokensConsumed);
 				} break;
 				case "equipmentsummary": {
 					String sqlEquipmentSummary = 
-						"select distinct d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1;
+						"select d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number, sum(l.tokens_consumed) from device d inner join license_usage l on d.id=l.device_id and l." + 
+						sqlPart1 + " group by d.id;";
 					context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
 					rs = statement.executeQuery(sqlEquipmentSummary);
 					while (rs.next()) {
@@ -143,7 +123,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// This is the default case (all)
 					String sqlAll = 
 						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,d.l.tokens_consumed,l.id,l.device_id " + 
-						"from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1;
+						"from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1 + ";";
 					context.getLogger().info("Execute SQL statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
