@@ -95,7 +95,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
 					while (rs.next()) {
 						JSONObject item = new JSONObject();
-						item.put("weekId", rs.getInt(1));
+						item.put("weekId", rs.getString(1));
 						item.put("tokensConsumed", rs.getInt(2));
 						array.put(item);
 					}
