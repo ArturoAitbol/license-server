@@ -48,6 +48,10 @@
                 [isRequestCompleted]="isLicenseSummaryRequestCompleted"
                 [paginationSizes]="[5,10,20]"
                 [defaultPageSize]="5"
+                (sort)="sortDataEquipment($event)"
+                [rowActionIcon]="'more_vert'"
+                (rowAction)="equipmentRowAction($event)"
+                [actionMenuList]="equipmentActionMenuOptions"
                 >
             </app-data-table>
         </div>
@@ -83,12 +87,12 @@
             <div class="col-4">
                 <div class="example-container mat-elevation-z8">
                     <app-data-table
-                    [tableData]="detailedData"
+                    [tableData]="weeklyConsumptionData"
                     [tableColumns]="detailedConsumptionColumns" 
                     [isFilterable]="false"
                     [isPageable]="false"
-                    [isLoadingResults]="isLicenseSummaryLoadingResults"
-                    [isRequestCompleted]="isLicenseSummaryRequestCompleted"
+                    [isLoadingResults]="isEquipmentSummaryLoadingResults"
+                    [isRequestCompleted]="isEquipmentSummaryRequestCompleted"
                     [paginationSizes]="[5,10,20]"
                     [defaultPageSize]="5"
                     >
@@ -102,13 +106,14 @@
                     [tableColumns]="detailedConsumptionSummaryColumns" 
                     [isFilterable]="false"
                     [isPageable]="false"
-                    [isLoadingResults]="isLicenseSummaryLoadingResults"
-                    [isRequestCompleted]="isLicenseSummaryRequestCompleted"
+                    [isLoadingResults]="isDetailedConsumptionLoadingResults"
+                    [isRequestCompleted]="isDetailedConsumptionRequestCompleted"
                     [paginationSizes]="[5,10,20]"
                     [defaultPageSize]="5"
+                    (sort)="sortData($event)"
                     [rowActionIcon]="'more_vert'"
-                    (rowAction)="rowAction($event)"
-                    [actionMenuList]="actionMenuOptions"    
+                    (rowAction)="licConsumptionRowAction($event)"
+                    [actionMenuList]="licConsumptionActionMenuOptions"    
                     >
                     </app-data-table>
                 </div>

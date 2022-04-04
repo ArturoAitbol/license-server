@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { Constants } from '../helpers/constants';
 import { LicenseUsage } from '../model/license-usage.model';
 
 @Injectable({
@@ -8,8 +9,15 @@ import { LicenseUsage } from '../model/license-usage.model';
 })
 export class LicenseUsageService {
   private readonly API_URL: string = environment.apiEndpoint + '/licenseUsageDetails';
+  private selectedDevice: any;
 
   constructor(private httpClient: HttpClient) { }
+  //set the selected customer
+  setSelectedDevice(customer: any) { this.selectedDevice = customer; }
+  //get the selected customer
+  getSelectedDevice() {
+    return (this.selectedDevice) ? this.selectedDevice : JSON.parse(localStorage.getItem(Constants.SELECTED_DEVICE));
+  }
 
   /**
    * add License Usage details
@@ -17,7 +25,7 @@ export class LicenseUsageService {
    * @returns: Observable 
    */
   public addLicenseUsageDetails(data: LicenseUsage) {
-    return this.httpClient.post(this.API_URL, { data });
+    return this.httpClient.post(this.API_URL, data);
   }
   /**
    * get particular LicenseUsage details by licenseId
@@ -26,14 +34,14 @@ export class LicenseUsageService {
    */
   public getLicenseDetails(data: { subaccount: string, view: string, month?: string, year?: string }) {
     const headers = this.getHeaders();
-    let url = this.API_URL + '/' + data.subaccount + '/' + data.view + '/';
-    if (data.year) {
-      url += '/' + data.year;
-      if (data.month) {
-        url += '/' + data.month;
-      }
-    }
-    return this.httpClient.get(`${url}`, { headers });
+    let params = new HttpParams()
+        .set('subaccount-id', data.subaccount)
+        .set('view', data.view);
+    if (data.year)
+      params = params.set('year', data.year);
+    if (data.month)
+      params = params.set('month', data.month);
+    return this.httpClient.get(this.API_URL, { headers, params });
   }
   /**
    * update License Usage details

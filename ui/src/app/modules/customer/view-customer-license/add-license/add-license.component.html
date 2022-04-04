@@ -25,13 +25,13 @@
                 <div>
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label>Device Access Tokens</mat-label>
-                        <input required matInput value="" formControlName="tokensPurchased">
+                        <input required matInput formControlName="deviceLimit">
                     </mat-form-field>
                 </div>
                 <div>
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label>Tokens</mat-label>
-                        <input required matInput value="" formControlName="deviceLimit">
+                        <input required matInput formControlName="tokensPurchased">
                     </mat-form-field>
                 </div>
                 <div>
@@ -47,7 +47,7 @@
         <!-- <div class="btn-flex-container"> -->
         <mat-dialog-actions>
             <button mat-stroked-button (click)="onCancel()" type="button">Cancel</button>
-            <button mat-raised-button color="primary" [disabled]="!addLicenseForm.valid" type="button">Submit</button>
+            <button mat-raised-button color="primary" [disabled]="!addLicenseForm.valid" type="submit">Submit</button>
             <!-- </div> -->
         </mat-dialog-actions>
     </form>

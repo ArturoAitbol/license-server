@@ -36,6 +36,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    console.log(this.currentCustomer);
   }
 
   onCancel(): void {
@@ -45,14 +46,14 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
    * add license
    */
   submit() {
-    const { subaccountId } = this.currentCustomer;
     const licenseObject: License | any = {
-      subaccountId,
+      subaccountId: this.currentCustomer.subaccountId,
       purchaseDate: this.addLicenseForm.value.purchaseDate,
       packageType: this.addLicenseForm.value.packageType,
-      tokensPurchased: this.addLicenseForm.value.tokensPurchased,
-      deviceLimit: this.addLicenseForm.value.deviceLimit,
-      renewalDate: this.addLicenseForm.value.renewalDate
+      tokens: this.addLicenseForm.value.tokensPurchased,
+      deviceAccessLimit: this.addLicenseForm.value.deviceLimit,
+      renewalDate: this.addLicenseForm.value.renewalDate,
+      status: "Active"
     };
     this.licenseService.purchaseLicense(licenseObject).subscribe((res: any) => {
       console.debug(res);

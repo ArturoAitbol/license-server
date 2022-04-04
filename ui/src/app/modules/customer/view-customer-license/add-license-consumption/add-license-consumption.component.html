@@ -34,7 +34,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div>
+                <div *ngIf="!data">
                     <mat-form-field appearance="outline">
                         <mat-label>Vendor</mat-label>
                         <mat-select required (valueChange)="onChangeVendor($event)" formControlName="vendor">
@@ -44,7 +44,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div>
+                <div *ngIf="!data">
                     <mat-form-field appearance="outline">
                         <mat-label>Model</mat-label>
                         <mat-select required (valueChange)="onChangeModel($event)" formControlName="product">
@@ -54,11 +54,11 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div>
+                <div *ngIf="!data">
                     <mat-form-field appearance="outline">
                         <mat-label>Version</mat-label>
                         <mat-select required formControlName="version">
-                            <mat-option *ngFor="let item of versions" [value]="item.version">
+                            <mat-option *ngFor="let item of versions" [value]="item.id">
                                 {{item.version}}
                             </mat-option>
                         </mat-select>
@@ -83,7 +83,7 @@
         <mat-dialog-actions>
             <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" [disabled]="!addLicenseConsumptionForm.valid"
-                type="button">Submit</button>
+                type="submit">Submit</button>
             <!-- </div> -->
         </mat-dialog-actions>
     </form>

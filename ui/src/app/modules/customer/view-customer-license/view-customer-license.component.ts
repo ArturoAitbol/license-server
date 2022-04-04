@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ModifyCustomerAccountComponent } from 'src/app/dashboard/modify-customer-account/modify-customer-account.component';
@@ -21,271 +20,71 @@ import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consu
   styleUrls: ['./view-customer-license.component.css']
 })
 export class ViewCustomerLicenseComponent implements OnInit {
+  currentCustomer: any;
+  @ViewChild(MatSort) sort: MatSort;
+  data: any = [];
+  equipmentData = [];
+  weeklyConsumptionData = [];
+  detailedConsumption = [];
   readonly displayedColumns: string[] = [
     'deviceLimit',
     'devicesConnected',
     'tokensPurchased',
-    'automationDeviceModelTokensConsumed',
+    'AutomationPlatformTokensConsumed',
     'configurationTokens',
     'configAvgerage'
   ];
   readonly equipmentDisplayColumns: string[] = [
     'vendor',
-    'model',
+    'product',
     'version',
     'macAddress'
   ];
-  currentCustomer: any;
-  @ViewChild(MatSort) sort: MatSort;
-  dataSource: any = [];
-  // data: any = [
-  //   {
-  //     id: '1',
-  //     deviceAccessLimit: '5000',
-  //     devicesConnected: '40',
-  //     tokensPurchased: '200',
-  //     automationTokensConsumed: '10',
-  //     configTokensConsumed: '100',
-  //     configAvgerage: '50'
-  //   }
-  // ];
-  data: any = [];
-  equipmentDataSource: any = [];
-  equipmentData = [
-    {
-      id: '1',
-      vendor: 'Cisco',
-      model: 'CUCM',
-      version: '13.2.2',
-      macAddress: 'MM:22:20:00:00:00'
-    },
-    {
-      id: '2',
-      vendor: 'Cisco',
-      model: 'CUCM',
-      version: '10.2',
-      macAddress: 'CM:12:22:00:00:00'
-    },
-    {
-      id: '3',
-      vendor: 'Cisco',
-      model: 'CUCM',
-      version: '',
-      macAddress: ''
-    }
-  ]
-
   readonly detailedDisplayColumns: string[] = [
-    'week',
-    'configTokensConsumed'
+    'weekId',
+    'tokensConsumed'
   ];
-
-  detailedDataSource: any = [];
-  detailedData = [
-    {
-      id: '1',
-      week: 'Week 1',
-      configTokensConsumed: '100'
-    },
-    {
-      id: '2',
-      week: 'Week 2',
-      configTokensConsumed: '200'
-    },
-    {
-      id: '3',
-      week: 'Week 3',
-      configTokensConsumed: '300'
-    }
-  ]
-
-  detailedConsumptionDataSource: any = [];
-  detailedConsumptionDisplayColumns: string[] = [
-    'dateOfUsage',
+  readonly detailedConsumptionDisplayColumns: string[] = [
+    'usageDate',
     'vendor',
-    'model',
+    'product',
     'version',
     'macAddress',
     'type',
     'consumption',
-    'tokensUsed',
+    'tokensConsumed',
     'action'
-  ];
-  detailedConsumption = [
-    {
-      id: '1',
-      dateOfUsage: '2020-01-01',
-      vendor: 'Cisco',
-      model: 'CUCM',
-      version: '13.2.2',
-      macAddress: 'MM:22:20:00:00:00',
-      type: 'Automation',
-      consumption: '100',
-      tokensUsed: '10',
-      action: ''
-    },
-    {
-      id: '2',
-      dateOfUsage: '2020-01-01',
-      vendor: 'Cisco',
-      model: 'CUCM',
-      version: '13.2.2',
-      macAddress: 'MM:22:20:00:00:00',
-      type: 'Automation',
-      consumption: '100',
-      tokensUsed: '10',
-      action: ''
-    },
-    {
-      id: '3',
-      dateOfUsage: '2020-01-01',
-      vendor: 'Cisco',
-      model: 'CUCM',
-      version: '13.2.2',
-      macAddress: 'MM:22:20:00:00:00',
-      type: 'Automation',
-      consumption: '100',
-      tokensUsed: '10',
-      action: ''
-    },
-    {
-      id: '4',
-      dateOfUsage: '2020-01-01',
-      vendor: 'Cisco',
-      model: 'CUCM',
-      version: '13.2.2',
-      macAddress: 'MM:22:20:00:00:00',
-      type: 'Automation',
-      consumption: '100',
-      tokensUsed: '10',
-      action: ''
-    }
   ];
 
   readonly licenseSummaryColumns: TableColumn[] = [
-    {
-      name: 'Device Access Limit',
-      dataKey: 'deviceLimit',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Devices Connected',
-      dataKey: 'devicesConnected',
-      position: 'left',
-      isSortable: true
-    },
-    {
-      name: 'Tokens Purchased',
-      dataKey: 'tokensPurchased',
-      position: 'left',
-      isSortable: true
-    },
-    {
-      name: 'Automation Token Consumed',
-      dataKey: 'automationDeviceModelTokensConsumed',
-      position: 'left',
-      isSortable: true
-    },
-    {
-      name: 'Configuration Tokens Consumed',
-      dataKey: 'configurationTokens',
-      position: 'left',
-      isSortable: true
-    },
-    {
-      name: 'Configuration Average',
-      dataKey: 'configAvgerage',
-      position: 'left',
-      isSortable: true
-    }
+    { name: 'Device Access Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true, },
+    { name: 'Devices Connected', dataKey: 'devicesConnected', position: 'left', isSortable: true },
+    { name: 'Tokens Purchased', dataKey: 'tokensPurchased', position: 'left', isSortable: true },
+    { name: 'Automation Token Consumed', dataKey: 'AutomationPlatformTokensConsumed', position: 'left', isSortable: true },
+    { name: 'Configuration Tokens Consumed', dataKey: 'ConfigurationTokensConsumed', position: 'left', isSortable: true },
+    { name: 'Configuration Average', dataKey: 'configAvgerage', position: 'left', isSortable: true }
   ];
 
   readonly equipmentSummaryColumns: TableColumn[] = [
-    {
-      name: 'Vendor',
-      dataKey: 'vendor',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Model',
-      dataKey: 'model',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Version',
-      dataKey: 'version',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'MAC Address',
-      dataKey: 'macAddress',
-      position: 'left',
-      isSortable: true,
-    }
+    { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
+    { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
+    { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
+    { name: 'MAC Address', dataKey: 'macAddress', position: 'left', isSortable: true }
   ];
 
   readonly detailedConsumptionColumns: TableColumn[] = [
-    {
-      name: 'Week',
-      dataKey: 'week',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Configuration Tokens Consumed',
-      dataKey: 'configTokensConsumed',
-      position: 'left',
-      isSortable: true,
-    }
+    { name: 'Week', dataKey: 'weekId', position: 'left', isSortable: true },
+    { name: 'Configuration Tokens Consumed', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
   readonly detailedConsumptionSummaryColumns: TableColumn[] = [
-    {
-      name: 'Date Of Usage',
-      dataKey: 'dateOfUsage',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Vendor',
-      dataKey: 'vendor',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Model',
-      dataKey: 'model',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Version',
-      dataKey: 'version',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'MAC Address',
-      dataKey: 'macAddress',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Consumption',
-      dataKey: 'consumption',
-      position: 'left',
-      isSortable: true,
-    },
-    {
-      name: 'Tokens Used',
-      dataKey: 'tokensUsed',
-      position: 'left',
-      isSortable: true,
-    }
+    { name: 'Date Of Usage', dataKey: 'usageDate', position: 'left', isSortable: true },
+    { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
+    { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
+    { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
+    { name: 'MAC Address', dataKey: 'macAddress', position: 'left', isSortable: true },
+    { name: 'Consumption', dataKey: 'consumption', position: 'left', isSortable: true },
+    { name: 'Tokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
   readonly ADD_LICENSE = 'add-new-license';
@@ -294,12 +93,23 @@ export class ViewCustomerLicenseComponent implements OnInit {
   // flag
   isLicenseSummaryLoadingResults: boolean = true;
   isLicenseSummaryRequestCompleted: boolean = false;
+  isEquipmentSummaryLoadingResults: boolean = true;
+  isEquipmentSummaryRequestCompleted: boolean = false;
+  isDetailedConsumptionLoadingResults: boolean = true;
+  isDetailedConsumptionRequestCompleted: boolean = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
+  readonly ADD_LICENSE_CONSUMPTION_OPTION: string = 'Add License Consumption';
 
-  actionMenuOptions: any = [
+  licConsumptionActionMenuOptions: any = [
     this.EDIT,
     this.DELETE
+  ];
+
+  equipmentActionMenuOptions: any = [
+    this.EDIT,
+    this.DELETE,
+    this.ADD_LICENSE_CONSUMPTION_OPTION
   ];
 
   constructor(
@@ -314,37 +124,37 @@ export class ViewCustomerLicenseComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    this.fetchDataToDisplay();
+  }
+  
+  fetchDataToDisplay() {
+    this.fetchSummaryData();
+    this.fetchEquipment();
+    this.fetchLicenseConsumptionList();
+  }
 
-    this.dataSource = new MatTableDataSource(this.data);
-    this.equipmentDataSource = new MatTableDataSource(this.equipmentData);
-    this.detailedDataSource = new MatTableDataSource(this.detailedData);
-    this.detailedConsumptionDataSource = new MatTableDataSource(this.detailedConsumption);
-    // this.fetchLicenseSummaryData();
-    // this.fetchLicenseConsumptionData();
-    const { subaccountId } = this.currentCustomer;
-    console.log('@subaccountId', subaccountId);
-
+  fetchSummaryData() {
     const requiredObject = {
       tokensPurchased: 0,
       deviceLimit: 0,
       tokensRemaining: 0,
-      automationDeviceModelTokensConsumed: 0,
-      configurationTokens: 0,
+      AutomationPlatformTokensConsumed: 0,
+      configurationTokensConsumed: 0,
       devicesConnected: 0,
       tokensConsumed: 0,
       configAvgerage: 0
     };
     const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
-      subaccount: subaccountId,
+      subaccount: this.currentCustomer.subaccountId,
       view: 'weekly'
     };
-    forkJoin(
-      [this.licenseUsageService.getLicenseDetails(requestObject),
-      this.licenseSerivce.getLicenseList(subaccountId)]
-    ).subscribe((response: any) => {
+    forkJoin([
+      this.licenseUsageService.getLicenseDetails(requestObject),
+      this.licenseSerivce.getLicenseList(this.currentCustomer.subaccountId)
+    ]).subscribe((response: any) => {
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
-      let resultant = {};
+      let resultant: any = {};
       response.reduce((acc, curr) => resultant = { ...acc, ...curr });
       const licensesList = resultant['licenses'];
       licensesList.forEach(element => {
@@ -352,21 +162,45 @@ export class ViewCustomerLicenseComponent implements OnInit {
         requiredObject.deviceLimit += +element.deviceLimit;
       });
       const mergedObj = { ...requiredObject, ...resultant };
-      mergedObj.configurationTokens = 0;
+      this.weeklyConsumptionData = resultant.configurationTokens;
       this.data = [mergedObj];
-      this.dataSource = new MatTableDataSource(this.data);
-
     }, (error) => {
+      console.error("Error fetching summary data: ", error);
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
     });
   }
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-    this.equipmentDataSource.sort = this.sort;
-    this.detailedDataSource.sort = this.sort;
-    this.detailedConsumptionDataSource.sort = this.sort;
 
+  fetchEquipment() {
+    const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
+      subaccount: this.currentCustomer.subaccountId,
+      view: 'equipmentsummary'
+    };
+    this.licenseUsageService.getLicenseDetails(requestObject).subscribe((res: any) => {
+      this.equipmentData = res.equipmentSummary;
+      this.isEquipmentSummaryLoadingResults = false;
+      this.isEquipmentSummaryRequestCompleted = true;
+    }, (err: any) => {
+      console.error("Error fetching equipment data: ", err);
+      this.isEquipmentSummaryLoadingResults = false;
+      this.isEquipmentSummaryRequestCompleted = true;
+    });
+  }
+
+  fetchLicenseConsumptionList() {
+    const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
+      subaccount: this.currentCustomer.subaccountId,
+      view: ''
+    };
+    this.licenseUsageService.getLicenseDetails(requestObject).subscribe((res: any) => {
+      this.detailedConsumption = res.usage;
+      this.isDetailedConsumptionLoadingResults = false;
+      this.isDetailedConsumptionRequestCompleted = true;
+    }, (err: any) => {
+      console.error("Error fetching detailed license consumption data: ", err);
+      this.isDetailedConsumptionLoadingResults = false;
+      this.isDetailedConsumptionRequestCompleted = true;
+    });
   }
 
   onChangeToggle(event: any, selectedItemData?: any): void {
@@ -380,27 +214,20 @@ export class ViewCustomerLicenseComponent implements OnInit {
         break;
     }
   }
-  onEdit(index: number) {
-    const item = this.detailedConsumptionDataSource.filteredData[index];
-    console.log('item', item);
-
-    this.openDialog(ModifyLicenseConsumptionDetailsComponent, item);
-  }
 
   onDelete(index: number) {
-    this.openConfirmaCancelDialog();
-  }
-
-  openConfirmaCancelDialog() {
-    this.dialogService
-      .confirmDialog({
+    this.dialogService.confirmDialog({
         title: 'Confirm Action',
         message: 'Do you want to confirm this action?',
         confirmCaption: 'Confirm',
         cancelCaption: 'Cancel',
-      })
-      .subscribe((confirmed) => {
-        if (confirmed) console.log('The user confirmed the action');
+      }).subscribe((confirmed) => {
+        if (confirmed) {
+          console.log('The user confirmed the action');
+          if (index){
+            console.log('Delete element with index: ' + index);
+          }
+        }        
       });
   }
 
@@ -415,38 +242,30 @@ export class ViewCustomerLicenseComponent implements OnInit {
       disableClose: true
     });
     dialogRef.afterClosed().subscribe(res => {
-      console.log('add customer dialog closed');
+      console.log('add customer dialog closed', res);
       if (res) {
-        this.snackBarService.openSnackBar('License added successfully!', '');
+        this.snackBarService.openSnackBar('License processed successfully!', '');
+        this.fetchDataToDisplay();
       }
     });
   }
 
-  fetchLicenseSummaryData(): void {
-    const { subaccountId } = this.currentCustomer.subaccountId;
-    const requiredObject = { tokensPurchased: 0, deviceLimit: 0, tokensRemaining: 0 };
-    this.licenseSerivce.getLicenseList(subaccountId).subscribe(res => {
-      console.log('license details res by subid', res);
-      const licensesList = res['licenses'];
-      licensesList.forEach(element => {
-        requiredObject.tokensPurchased += +element.tokensPurchased;
-        requiredObject.deviceLimit += +element.deviceLimit;
-      });
-      console.log('requiredObject', requiredObject);
-
-    });
+  /**
+ * sort table
+ * @param sortParameters: Sort 
+ * @returns 
+ */
+   sortDataEquipment(sortParameters: Sort): any[] {
+    const keyName = sortParameters.active;
+    if (sortParameters.direction === 'asc') {
+      this.equipmentData = this.equipmentData.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+    } else if (sortParameters.direction === 'desc') {
+      this.equipmentData = this.equipmentData.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+    } else {
+      return this.equipmentData = this.equipmentData;
+    }
   }
 
-  fetchLicenseConsumptionData(): void {
-    const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
-      subaccount: this.currentCustomer.subaccountId,
-      view: 'weekly'
-    };
-    this.licenseUsageService.getLicenseDetails(requestObject).subscribe((res: any) => {
-      console.log('license consumption res', res);
-
-    });
-  }
   /**
  * sort table
  * @param sortParameters: Sort 
@@ -455,21 +274,38 @@ export class ViewCustomerLicenseComponent implements OnInit {
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      this.data = this.data.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      this.detailedConsumption = this.detailedConsumption.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
     } else if (sortParameters.direction === 'desc') {
-      this.data = this.data.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+      this.detailedConsumption = this.detailedConsumption.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
     } else {
-      return this.data = this.data;
+      return this.detailedConsumption = this.detailedConsumption;
     }
   }
   /**
    * action row click event
    * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
    */
-  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+  equipmentRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+    switch (object.selectedOption) {
+      case this.ADD_LICENSE_CONSUMPTION:
+        this.openDialog(AddLicenseConsumptionComponent, object.selectedRow);
+        break;
+      case this.EDIT:
+        // this.openDialog(ModifyLicenseConsumptionDetailsComponent, object.selectedRow);
+        break;
+      case this.DELETE:
+        this.onDelete(+object.selectedIndex);
+        break;
+    }
+  }
+  /**
+   * action row click event
+   * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
+   */
+   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.EDIT:
-        // this.openProjectDetails(object.selectedIndex);
+        this.openDialog(ModifyLicenseConsumptionDetailsComponent, object.selectedRow);
         break;
       case this.DELETE:
         this.onDelete(+object.selectedIndex);

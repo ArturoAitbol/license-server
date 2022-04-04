@@ -1,8 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { LicenseUsage } from 'src/app/model/license-usage.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DevicesService } from 'src/app/services/devices.service';
+import { LicenseUsageService } from 'src/app/services/license-usage.service';
 import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
@@ -13,45 +15,35 @@ import { ProjectService } from 'src/app/services/project.service';
 export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   devices: any = [];
   projects: any = [];
-  vendorDetailedList: any = [
-    {
-      id: '1',
-      'vendorName': 'Cisco',
-      'models': [{ id: 1, model: 'CUCM' }],
-      'versions': [{ id: 1, version: '13.2.0' }, { id: 2, version: '15.2.0' }, { id: 3, version: '16.2.0' }]
-    }
-
-  ];
-  consumptionType: string[] = [
-    'Automation',
-    'Configuration'
-  ];
   models: any = [];
   versions: any = [];
   selectedVendor: string = '';
+  consumptionType: string[] = [
+    'Configuration',
+    'AutomationPlatform'
+  ];
   addLicenseConsumptionForm = this.formBuilder.group({
     dateOfUsage: ['', Validators.required],
     projectId: ['', Validators.required],
     type: ['', Validators.required],
-    vendor: ['', Validators.required],
-    product: ['', Validators.required],
-    version: ['', Validators.required],
+    vendor: [''],
+    product: [''],
+    version: [''],
     macAddress: ['', Validators.required],
     serialNumber: ['', Validators.required]
   });
   currentCustomer: any;
-  object: { vendor: string, product: string, version: string } = {
-    vendor: '',
-    product: '',
-    version: ''
-  };
   isDataLoading: boolean = false;
+
   constructor(
     private customerService: CustomerService,
     private deviceService: DevicesService,
     private projectService: ProjectService,
+    private licenseUsageService: LicenseUsageService,
     private formBuilder: FormBuilder,
-    public dialogRef: MatDialogRef<AddLicenseConsumptionComponent>) { }
+    public dialogRef: MatDialogRef<AddLicenseConsumptionComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any) { }
+
   ngOnInit() {
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.fetchDevices();
@@ -66,14 +58,10 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       product: '',
       version: ''
     });
-    this.object.product = '';
-    this.object.version = '';
-    if (value) {
-      if (value) {
-        this.object.vendor = value;
-        this.getModelByVendor();
-      }
-    }
+    this.versions = [];
+    if (value) 
+      this.models = this.devices.filter((device: any) => device.vendor == value);
+    else this.models = [];
   }
   /**
    * trigger when user select/change model dropdown
@@ -83,13 +71,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.addLicenseConsumptionForm.patchValue({
       version: ''
     });
-    this.object.version = '';
-    if (value) {
-      if (value) {
-        this.object.product = value;
-        this.getVersionByModel();
-      }
-    }
+    if (value)
+      this.versions = this.devices.filter((device: any) => device.product == value);
+    else this.versions = [];
   }
 
   onCancel(): void {
@@ -97,7 +81,20 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    this.dialogRef.close();
+    const deviceId = this.data? this.data.id : this.addLicenseConsumptionForm.value.version;
+    const licenseConsumptionObject: any = {
+      subaccountId: this.currentCustomer.subaccountId,
+      projectId: this.addLicenseConsumptionForm.value.projectId,
+      deviceId: deviceId,
+      usageDate: this.addLicenseConsumptionForm.value.dateOfUsage,
+      serialNumber: this.addLicenseConsumptionForm.value.serialNumber,
+      macAddress: this.addLicenseConsumptionForm.value.macAddress,
+      usageType: this.addLicenseConsumptionForm.value.type
+    };
+    this.licenseUsageService.addLicenseUsageDetails(licenseConsumptionObject).subscribe((res: any) => {
+      console.debug(res);
+      this.dialogRef.close(res);
+    });
   }
 
   /**
@@ -115,30 +112,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     const { subaccountId } = this.currentCustomer;
     this.projectService.getProjectDetailsBySubAccount(subaccountId).subscribe((res: any) => {
       this.projects = res['projects'];
-    });
-  }
-  /**
-   * fetch model list by vendor
-   */
-  getModelByVendor(): void {
-    this.isDataLoading = true;
-    this.deviceService.getDevicesList(this.object).subscribe((res: any) => {
-      this.models = res['devices'];
-      this.isDataLoading = false;
-    }, (err: any) => {
-      this.isDataLoading = false;
-    });
-  }
-  /**
-   * fetch version list by model & vendor
-   */
-  getVersionByModel(): void {
-    this.isDataLoading = true;
-    this.deviceService.getDevicesList(this.object).subscribe((res: any) => {
-      this.versions = res['devices'];
-      this.isDataLoading = false;
-    }, (err: any) => {
-      this.isDataLoading = false;
     });
   }
 

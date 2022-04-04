@@ -33,12 +33,11 @@ export class LicenseService {
    * @returns: Observable 
    */
   public getLicenseList(subaccountId?: string, subaccountName?: string) {
-    const params = new HttpParams();
-    if (subaccountId) {
-      params.append('subaccountId', subaccountId);
-    } else if (subaccountName) {
-      params.append('subaccountName', subaccountName);
-    }
+    let params = new HttpParams();
+    if (subaccountId)
+      params = params.set('subaccount-id', subaccountId);
+    else if (subaccountName)
+      params = params.set('subaccountName', subaccountName);
     const headers = this.getHeaders();
     return this.httpClient.get<License>(this.API_URL, { headers, params });
   }
