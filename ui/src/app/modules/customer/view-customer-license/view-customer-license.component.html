@@ -44,8 +44,8 @@
                 [tableColumns]="equipmentSummaryColumns" 
                 [isFilterable]="false"
                 [isPageable]="false"
-                [isLoadingResults]="isLicenseSummaryLoadingResults"
-                [isRequestCompleted]="isLicenseSummaryRequestCompleted"
+                [isLoadingResults]="isEquipmentSummaryLoadingResults"
+                [isRequestCompleted]="isEquipmentSummaryRequestCompleted"
                 [paginationSizes]="[5,10,20]"
                 [defaultPageSize]="5"
                 (sort)="sortDataEquipment($event)"
@@ -64,18 +64,9 @@
         <div style="display: flex;">
             <div>
                 <mat-form-field appearance="outline" class="example-form-field">
-                    <mat-label>Enter a date range</mat-label>
-                    <mat-date-range-input [rangePicker]="rangePicker">
-                        <input matStartDate placeholder="Start date">
-                        <input matEndDate placeholder="End date">
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #rangePicker>
-                        <mat-date-range-picker-actions>
-                            <button mat-button matDateRangePickerCancel>Cancel</button>
-                            <button mat-raised-button color="primary" matDateRangePickerApply>Apply</button>
-                        </mat-date-range-picker-actions>
-                    </mat-date-range-picker>
+                    <input required matInput [value]="selectedDate" [matDatepicker]="picker" placeholder="Choose Month and Year">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)"></mat-datepicker>
                 </mat-form-field>
             </div>
             <div>
@@ -91,8 +82,8 @@
                     [tableColumns]="detailedConsumptionColumns" 
                     [isFilterable]="false"
                     [isPageable]="false"
-                    [isLoadingResults]="isEquipmentSummaryLoadingResults"
-                    [isRequestCompleted]="isEquipmentSummaryRequestCompleted"
+                    [isLoadingResults]="isLicenseSummaryLoadingResults"
+                    [isRequestCompleted]="isLicenseSummaryRequestCompleted"
                     [paginationSizes]="[5,10,20]"
                     [defaultPageSize]="5"
                     >
@@ -102,7 +93,7 @@
             <div class="col-8">
                 <div class="example-container mat-elevation-z8">
                     <app-data-table
-                    [tableData]="detailedConsumption"
+                    [tableData]="detailedConsumptionData"
                     [tableColumns]="detailedConsumptionSummaryColumns" 
                     [isFilterable]="false"
                     [isPageable]="false"

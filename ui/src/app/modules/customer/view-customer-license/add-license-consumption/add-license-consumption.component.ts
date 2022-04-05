@@ -29,8 +29,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     vendor: [''],
     product: [''],
     version: [''],
-    macAddress: ['', Validators.required],
-    serialNumber: ['', Validators.required]
+    macAddress: [''],
+    serialNumber: ['']
   });
   currentCustomer: any;
   isDataLoading: boolean = false;

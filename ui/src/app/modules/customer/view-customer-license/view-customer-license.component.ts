@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDatepicker } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { ModifyCustomerAccountComponent } from 'src/app/dashboard/modify-customer-account/modify-customer-account.component';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
@@ -22,10 +22,13 @@ import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consu
 export class ViewCustomerLicenseComponent implements OnInit {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
+  selectedDate: any;
+  month: any;
+  year: any;
   data: any = [];
   equipmentData = [];
   weeklyConsumptionData = [];
-  detailedConsumption = [];
+  detailedConsumptionData = [];
   readonly displayedColumns: string[] = [
     'deviceLimit',
     'devicesConnected',
@@ -88,7 +91,6 @@ export class ViewCustomerLicenseComponent implements OnInit {
   ];
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
   readonly ADD_LICENSE = 'add-new-license';
-  readonly MODIFY = 'modify';
 
   // flag
   isLicenseSummaryLoadingResults: boolean = true;
@@ -107,9 +109,9 @@ export class ViewCustomerLicenseComponent implements OnInit {
   ];
 
   equipmentActionMenuOptions: any = [
-    this.EDIT,
-    this.DELETE,
-    this.ADD_LICENSE_CONSUMPTION_OPTION
+    this.ADD_LICENSE_CONSUMPTION_OPTION,
+    // this.EDIT,
+    // this.DELETE
   ];
 
   constructor(
@@ -126,8 +128,22 @@ export class ViewCustomerLicenseComponent implements OnInit {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
     this.fetchDataToDisplay();
   }
+
+  initFlags() {
+    this.data = [];
+    this.equipmentData = [];
+    this.weeklyConsumptionData = [];
+    this.detailedConsumptionData = [];
+    this.isLicenseSummaryLoadingResults = true;
+    this.isLicenseSummaryRequestCompleted = false;
+    this.isEquipmentSummaryLoadingResults = true;
+    this.isEquipmentSummaryRequestCompleted = false;
+    this.isDetailedConsumptionLoadingResults = true;
+    this.isDetailedConsumptionRequestCompleted = false;
+  }
   
   fetchDataToDisplay() {
+    this.initFlags();
     this.fetchSummaryData();
     this.fetchEquipment();
     this.fetchLicenseConsumptionList();
@@ -146,7 +162,9 @@ export class ViewCustomerLicenseComponent implements OnInit {
     };
     const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
       subaccount: this.currentCustomer.subaccountId,
-      view: 'weekly'
+      view: 'weekly',
+      month: this.month,
+      year: this.year
     };
     forkJoin([
       this.licenseUsageService.getLicenseDetails(requestObject),
@@ -174,7 +192,9 @@ export class ViewCustomerLicenseComponent implements OnInit {
   fetchEquipment() {
     const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
       subaccount: this.currentCustomer.subaccountId,
-      view: 'equipmentsummary'
+      view: 'equipmentsummary',
+      month: this.month,
+      year: this.year
     };
     this.licenseUsageService.getLicenseDetails(requestObject).subscribe((res: any) => {
       this.equipmentData = res.equipmentSummary;
@@ -190,10 +210,12 @@ export class ViewCustomerLicenseComponent implements OnInit {
   fetchLicenseConsumptionList() {
     const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
       subaccount: this.currentCustomer.subaccountId,
-      view: ''
+      view: '',
+      month: this.month,
+      year: this.year
     };
     this.licenseUsageService.getLicenseDetails(requestObject).subscribe((res: any) => {
-      this.detailedConsumption = res.usage;
+      this.detailedConsumptionData = res.usage;
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     }, (err: any) => {
@@ -203,7 +225,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
     });
   }
 
-  onChangeToggle(event: any, selectedItemData?: any): void {
+  onChangeToggle(event: any): void {
     console.log('event', event.value);
     switch (event.value) {
       case this.ADD_LICENSE:
@@ -274,11 +296,11 @@ export class ViewCustomerLicenseComponent implements OnInit {
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      this.detailedConsumption = this.detailedConsumption.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      this.detailedConsumptionData = this.detailedConsumptionData.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
     } else if (sortParameters.direction === 'desc') {
-      this.detailedConsumption = this.detailedConsumption.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+      this.detailedConsumptionData = this.detailedConsumptionData.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
     } else {
-      return this.detailedConsumption = this.detailedConsumption;
+      return this.detailedConsumptionData = this.detailedConsumptionData;
     }
   }
   /**
@@ -286,8 +308,9 @@ export class ViewCustomerLicenseComponent implements OnInit {
    * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
    */
   equipmentRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+    console.log(object.selectedOption)
     switch (object.selectedOption) {
-      case this.ADD_LICENSE_CONSUMPTION:
+      case this.ADD_LICENSE_CONSUMPTION_OPTION:
         this.openDialog(AddLicenseConsumptionComponent, object.selectedRow);
         break;
       case this.EDIT:
@@ -302,7 +325,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
    * action row click event
    * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
    */
-   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+  licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.EDIT:
         this.openDialog(ModifyLicenseConsumptionDetailsComponent, object.selectedRow);
@@ -313,4 +336,11 @@ export class ViewCustomerLicenseComponent implements OnInit {
     }
   }
 
+  setMonthAndYear(newDateSelection: Date, datepicker: MatDatepicker<any>) {
+    this.month = newDateSelection.getMonth() + 1;
+    this.year = newDateSelection.getFullYear();
+    this.selectedDate = newDateSelection;
+    datepicker.close();
+    this.fetchDataToDisplay();
+  }
 }
