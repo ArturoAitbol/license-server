@@ -41,19 +41,10 @@ public class TekvLSGetAllLicenseUsageDetails {
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccount-id", "");
 		String view = request.getQueryParameters().getOrDefault("view", "");
-		String year = request.getQueryParameters().getOrDefault("year", "");
-		String month = request.getQueryParameters().getOrDefault("month", "");
-		String sqlPart1 = "";
-      	if (year.isEmpty()) {
-			Calendar cal = Calendar.getInstance();
-			sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(MONTH FROM %s) = " + cal.get(Calendar.MONTH) + " and " + 
-				"EXTRACT (YEAR FROM %s) = " + cal.get(Calendar.YEAR);
-		} else {
-			if (month.isEmpty())
-			sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(YEAR FROM %s) = " + year;
-			else
-			sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(MONTH FROM %s) = " + month + " and " + "EXTRACT (YEAR FROM %s) = " + year;
-		}
+		Calendar cal = Calendar.getInstance();
+		String year = request.getQueryParameters().getOrDefault("year", Integer.toString(cal.get(Calendar.YEAR)));
+		String month = request.getQueryParameters().getOrDefault("month", Integer.toString(cal.get(Calendar.MONTH) + 1));
+		String sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(MONTH FROM %s) = " + month + " and " + "EXTRACT (YEAR FROM %s) = " + year;
 		if (!view.equalsIgnoreCase("weekly"))
 			sqlPart1 = String.format(sqlPart1, "l.usage_date", "l.usage_date");
 
