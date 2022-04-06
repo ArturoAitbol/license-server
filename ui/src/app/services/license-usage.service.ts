@@ -9,15 +9,8 @@ import { LicenseUsage } from '../model/license-usage.model';
 })
 export class LicenseUsageService {
   private readonly API_URL: string = environment.apiEndpoint + '/licenseUsageDetails';
-  private selectedDevice: any;
 
   constructor(private httpClient: HttpClient) { }
-  //set the selected customer
-  setSelectedDevice(customer: any) { this.selectedDevice = customer; }
-  //get the selected customer
-  getSelectedDevice() {
-    return (this.selectedDevice) ? this.selectedDevice : JSON.parse(localStorage.getItem(Constants.SELECTED_DEVICE));
-  }
 
   /**
    * add License Usage details
