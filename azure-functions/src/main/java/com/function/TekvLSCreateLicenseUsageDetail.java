@@ -101,20 +101,6 @@ public class TekvLSCreateLicenseUsageDetail
 			sql = "insert into license_usage (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";	
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + sql);
-			// statement.executeUpdate(sql);
-			// context.getLogger().info("License usage inserted successfully."); 
-
-			// Return the id in the response
-			// sql = "select id from license_usage where " + 
-			// 	"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
-			// 	"project_id = '" + jobj.getString("projectId") + "' and " +
-			// 	"device_id = '" + jobj.getString("deviceId") + "' and " +
-			// 	"mac_address = '" + jobj.getString("macAddress") + "' and " +
-			// 	"serial_number = '" + jobj.getString("serialNumber") + "' and " +
-			// 	"usage_type = '" + jobj.getString("usageType") + "' and " +
-			// 	"usage_date = '" + jobj.getString("usageDate") + "';";
-			// context.getLogger().info("Execute SQL statement: " + sql);
-			// context.getLogger().info("Execute SQL statement: " + sql);
 			rs = statement.executeQuery(sql);
 			rs.next();
 			JSONObject json = new JSONObject();
@@ -127,13 +113,13 @@ public class TekvLSCreateLicenseUsageDetail
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 	}
 }

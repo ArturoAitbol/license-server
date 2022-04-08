@@ -24,32 +24,22 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div *ngIf="!data">
+                <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Vendor</mat-label>
                         <mat-select required (valueChange)="onChangeVendor($event)" formControlName="vendor">
-                            <mat-option *ngFor="let item of devices" [value]="item.vendor">
+                            <mat-option *ngFor="let item of vendors" [value]="item.vendor">
                                 {{item.vendor}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div *ngIf="!data">
+                <div>
                     <mat-form-field appearance="outline">
-                        <mat-label>Model</mat-label>
-                        <mat-select required (valueChange)="onChangeModel($event)" formControlName="product">
-                            <mat-option *ngFor="let item of models" [value]="item.product">
+                        <mat-label>Device</mat-label>
+                        <mat-select required formControlName="product">
+                            <mat-option *ngFor="let item of models" [value]="item.id">
                                 {{item.product}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div *ngIf="!data">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Version</mat-label>
-                        <mat-select required formControlName="version">
-                            <mat-option *ngFor="let item of versions" [value]="item.id">
-                                {{item.version}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
