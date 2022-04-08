@@ -5,7 +5,7 @@
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label>Purchase date</mat-label>
+                        <mat-label>Start Date</mat-label>
                         <input required matInput [matDatepicker]="picker" formControlName="purchaseDate">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
@@ -13,10 +13,18 @@
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
+                        <mat-label>Renewal Date</mat-label>
+                        <input required matInput [matDatepicker]="renewalDatepicker" formControlName="renewalDate">
+                        <mat-datepicker-toggle matSuffix [for]="renewalDatepicker"></mat-datepicker-toggle>
+                        <mat-datepicker #renewalDatepicker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
                         <mat-label>Type</mat-label>
-                        <mat-select required formControlName="packageType">
-                            <mat-option *ngFor="let item of types" [value]="item">
-                                {{item}}
+                        <mat-select required formControlName="packageType" (valueChange)="onChangeType($event)">
+                            <mat-option *ngFor="let item of types" [value]="item" [selected]="item.name == selectedType">
+                                {{item.name}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -32,14 +40,6 @@
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label>Tokens</mat-label>
                         <input required matInput formControlName="tokensPurchased">
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Renewal Date</mat-label>
-                        <input required matInput [matDatepicker]="renewalDatepicker" formControlName="renewalDate">
-                        <mat-datepicker-toggle matSuffix [for]="renewalDatepicker"></mat-datepicker-toggle>
-                        <mat-datepicker #renewalDatepicker></mat-datepicker>
                     </mat-form-field>
                 </div>
             </mat-dialog-content>

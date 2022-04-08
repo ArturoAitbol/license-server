@@ -4,6 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { License } from 'src/app/model/license.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { LicenseService } from 'src/app/services/license.service';
+import { BundleService } from 'src/app/services/bundle.service';
 
 @Component({
   selector: 'app-add-license',
@@ -11,12 +12,8 @@ import { LicenseService } from 'src/app/services/license.service';
   styleUrls: ['./add-license.component.css']
 })
 export class AddLicenseComponent implements OnInit, OnDestroy {
-  types: string[] = [
-    'Small',
-    'Medium',
-    'Large',
-    'AddOn '
-  ];
+  types: any[] = [];
+  selectedType: string;
   private currentCustomer: any;
   addLicenseForm = this.formBuilder.group({
     purchaseDate: ['', Validators.required],
@@ -29,14 +26,15 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private customerSerivce: CustomerService,
     private licenseService: LicenseService,
+    private bundleService: BundleService,
     public dialogRef: MatDialogRef<AddLicenseComponent>
-  ) {
-
-  }
+  ) {}
 
   ngOnInit() {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
-    console.log(this.currentCustomer);
+    this.bundleService.getBundleList().subscribe((res: any) => {
+      if (res) this.types = res.bundles;
+    });
   }
 
   onCancel(): void {
@@ -49,16 +47,32 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     const licenseObject: License | any = {
       subaccountId: this.currentCustomer.subaccountId,
       purchaseDate: this.addLicenseForm.value.purchaseDate,
-      packageType: this.addLicenseForm.value.packageType,
+      packageType: this.selectedType,
       tokens: this.addLicenseForm.value.tokensPurchased,
       deviceAccessLimit: this.addLicenseForm.value.deviceLimit,
       renewalDate: this.addLicenseForm.value.renewalDate,
       status: "Active"
     };
     this.licenseService.purchaseLicense(licenseObject).subscribe((res: any) => {
-      console.debug(res);
       this.dialogRef.close(res);
     });
+  }
+
+  onChangeType(item: any){
+    if (item) {
+      this.selectedType = item.name;
+      this.addLicenseForm.patchValue({
+        tokensPurchased: item.tokens,
+        deviceLimit: item.deviceAccessTokens,
+      });
+      if (item.name == "Custom" || item.name == "AddOn") {
+        this.addLicenseForm.get('tokensPurchased').enable();
+        this.addLicenseForm.get('deviceLimit').enable();
+      } else {
+        this.addLicenseForm.get('tokensPurchased').disable();
+        this.addLicenseForm.get('deviceLimit').disable();
+      }
+    }
   }
 
   ngOnDestroy(): void {

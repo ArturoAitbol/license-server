@@ -15,22 +15,16 @@ import { ProjectService } from 'src/app/services/project.service';
 export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   devices: any = [];
   projects: any = [];
+  vendors: any = [];
   models: any = [];
   versions: any = [];
   selectedVendor: string = '';
-  consumptionType: string[] = [
-    'Configuration',
-    'AutomationPlatform'
-  ];
   addLicenseConsumptionForm = this.formBuilder.group({
     dateOfUsage: ['', Validators.required],
     projectId: ['', Validators.required],
-    type: ['', Validators.required],
     vendor: [''],
     product: [''],
-    version: [''],
-    macAddress: [''],
-    serialNumber: ['']
+    version: ['']
   });
   currentCustomer: any;
   isDataLoading: boolean = false;
@@ -87,9 +81,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       projectId: this.addLicenseConsumptionForm.value.projectId,
       deviceId: deviceId,
       usageDate: this.addLicenseConsumptionForm.value.dateOfUsage,
-      serialNumber: this.addLicenseConsumptionForm.value.serialNumber,
-      macAddress: this.addLicenseConsumptionForm.value.macAddress,
-      usageType: this.addLicenseConsumptionForm.value.type
+      serialNumber: '',
+      macAddress: '',
+      usageType: "Configuration"
     };
     this.licenseUsageService.addLicenseUsageDetails(licenseConsumptionObject).subscribe((res: any) => {
       console.debug(res);
