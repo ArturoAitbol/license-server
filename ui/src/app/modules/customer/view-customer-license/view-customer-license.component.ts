@@ -62,9 +62,9 @@ export class ViewCustomerLicenseComponent implements OnInit {
   readonly licenseSummaryColumns: TableColumn[] = [
     { name: 'Device Access Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true, },
     { name: 'Devices Connected', dataKey: 'devicesConnected', position: 'left', isSortable: true },
-    { name: 'Tokens Purchased', dataKey: 'tokensPurchased', position: 'left', isSortable: true },
-    { name: 'Automation Token Consumed', dataKey: 'AutomationPlatformTokensConsumed', position: 'left', isSortable: true },
-    { name: 'Configuration Tokens Consumed', dataKey: 'ConfigurationTokensConsumed', position: 'left', isSortable: true },
+    { name: 'tekTokens Purchased', dataKey: 'tokensPurchased', position: 'left', isSortable: true },
+    { name: 'Automation tekTokens Consumed', dataKey: 'AutomationPlatformTokensConsumed', position: 'left', isSortable: true },
+    { name: 'Configuration tekTokens Consumed', dataKey: 'ConfigurationTokensConsumed', position: 'left', isSortable: true },
     { name: 'Configuration Average', dataKey: 'configAvgerage', position: 'left', isSortable: true }
   ];
 
@@ -77,7 +77,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
 
   readonly detailedConsumptionColumns: TableColumn[] = [
     { name: 'Week', dataKey: 'weekId', position: 'left', isSortable: true },
-    { name: 'Configuration Tokens Consumed', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
+    { name: 'Configuration tekTokens Consumed', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
   readonly detailedConsumptionSummaryColumns: TableColumn[] = [
@@ -87,7 +87,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
     { name: 'MAC Address', dataKey: 'macAddress', position: 'left', isSortable: true },
     { name: 'Consumption', dataKey: 'consumption', position: 'left', isSortable: true },
-    { name: 'Tokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
+    { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
   readonly ADD_LICENSE = 'add-new-license';
@@ -101,17 +101,10 @@ export class ViewCustomerLicenseComponent implements OnInit {
   isDetailedConsumptionRequestCompleted: boolean = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
-  readonly ADD_LICENSE_CONSUMPTION_OPTION: string = 'Add License Consumption';
 
   licConsumptionActionMenuOptions: any = [
     this.EDIT,
     this.DELETE
-  ];
-
-  equipmentActionMenuOptions: any = [
-    this.ADD_LICENSE_CONSUMPTION_OPTION,
-    // this.EDIT,
-    // this.DELETE
   ];
 
   constructor(
@@ -301,24 +294,6 @@ export class ViewCustomerLicenseComponent implements OnInit {
       this.detailedConsumptionData = this.detailedConsumptionData.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
     } else {
       return this.detailedConsumptionData = this.detailedConsumptionData;
-    }
-  }
-  /**
-   * action row click event
-   * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
-   */
-  equipmentRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
-    console.log(object.selectedOption)
-    switch (object.selectedOption) {
-      case this.ADD_LICENSE_CONSUMPTION_OPTION:
-        this.openDialog(AddLicenseConsumptionComponent, object.selectedRow);
-        break;
-      case this.EDIT:
-        // this.openDialog(ModifyLicenseConsumptionDetailsComponent, object.selectedRow);
-        break;
-      case this.DELETE:
-        this.onDelete(+object.selectedIndex);
-        break;
     }
   }
   /**

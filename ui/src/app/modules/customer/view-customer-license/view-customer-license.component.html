@@ -9,10 +9,12 @@
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle value="add-new-license" (change)="onChangeToggle($event)">Add New License
+                    <mat-button-toggle value="add-new-license" (change)="onChangeToggle($event)">
+                        Add New License
                     </mat-button-toggle>
-                    <mat-button-toggle value="add-license-consumption" (change)="onChangeToggle($event)">Add License
-                        Consumption</mat-button-toggle>
+                    <mat-button-toggle value="add-license-consumption" (change)="onChangeToggle($event)">
+                        Add License Consumption
+                    </mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
         </div>
@@ -49,9 +51,6 @@
                 [paginationSizes]="[5,10,20]"
                 [defaultPageSize]="5"
                 (sort)="sortDataEquipment($event)"
-                [rowActionIcon]="'more_vert'"
-                (rowAction)="equipmentRowAction($event)"
-                [actionMenuList]="equipmentActionMenuOptions"
                 >
             </app-data-table>
         </div>

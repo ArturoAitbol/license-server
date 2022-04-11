@@ -13,7 +13,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 export class AddCustomerAccountModalComponent implements OnInit {
   addCustomerForm = this.formBuilder.group({
     customerName: ['', Validators.required],
-    subAccountName: ['', Validators.required],
+    subAccountName: ['Default', Validators.required],
     customerType: ['', Validators.required]
   });
   types: string[] = [
