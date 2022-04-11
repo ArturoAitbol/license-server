@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CustomerService } from 'src/app/services/customer.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
@@ -23,6 +24,7 @@ export class AddCustomerAccountModalComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddCustomerAccountModalComponent>,
+    private snackBarService: SnackBarService,
     private customerService: CustomerService,
     private subaccountService: SubAccountService
   ) { }
@@ -40,29 +42,26 @@ export class AddCustomerAccountModalComponent implements OnInit {
    */
   addCustomer() {
     this.isDataLoading = true;
-    console.info(this.addCustomerForm.value);
     const customerObject: any = {
       name: this.addCustomerForm.value.customerName,
       customerType: this.addCustomerForm.value.customerType
     };
-    this.customerService.createCustomer(customerObject).toPromise().then((res: any) => {
-      return res;
-    }).then((resp: any) => {
-      console.log(resp);
-      const subaccountDetails: any = {
-        customerId: resp.id,
-        name: this.addCustomerForm.value.subAccountName,
-      }
-      this.subaccountService.createSubAccount(subaccountDetails).toPromise().then((res: any) => {
-        this.isDataLoading = false;
-        this.dialogRef.close(res);
-      }).catch((err2: any) => {
-        this.isDataLoading = false;
-        console.error('Error while creating SubAccount', err2);
-      });
-    }).catch((err: any) => {
-      this.isDataLoading = false;
-      console.error('Error while creating Customer', err);
+    this.customerService.createCustomer(customerObject).subscribe((resp: any) => {
+      if (!resp.error) {
+        const subaccountDetails: any = {
+          customerId: resp.id,
+          name: this.addCustomerForm.value.subAccountName,
+        }
+        this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
+          if (!resp.error) {
+            this.isDataLoading = false;
+            this.snackBarService.openSnackBar('Customer and subaccount added successfully!', '');
+            this.dialogRef.close(res);
+          } else
+            this.snackBarService.openSnackBar(res.error, 'Error adding customer!');
+        });
+      } else
+        this.snackBarService.openSnackBar(resp.error, 'Error adding subaccount!');
     });
   }
 

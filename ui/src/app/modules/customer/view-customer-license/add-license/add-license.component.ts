@@ -5,6 +5,7 @@ import { License } from 'src/app/model/license.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { LicenseService } from 'src/app/services/license.service';
 import { BundleService } from 'src/app/services/bundle.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 
 @Component({
   selector: 'app-add-license',
@@ -27,6 +28,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     private customerSerivce: CustomerService,
     private licenseService: LicenseService,
     private bundleService: BundleService,
+    private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<AddLicenseComponent>
   ) {}
 
@@ -54,7 +56,11 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
       status: "Active"
     };
     this.licenseService.purchaseLicense(licenseObject).subscribe((res: any) => {
-      this.dialogRef.close(res);
+      if (!res.error) {
+        this.snackBarService.openSnackBar('License added successfully!', '');
+        this.dialogRef.close(res);
+      } else
+        this.snackBarService.openSnackBar(res.error, 'Error adding license!');
     });
   }
 

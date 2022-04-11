@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { LicenseService } from 'src/app/services/license.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 
 @Component({
   selector: 'app-modify-customer-account',
@@ -35,6 +36,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
     private customerService: CustomerService,
     private subAccountService: SubAccountService,
     private licenseService: LicenseService,
+    private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
@@ -75,9 +77,13 @@ export class ModifyCustomerAccountComponent implements OnInit {
     ];
     if (mergedLicenseObject.id)
       requestsArray.push(this.licenseService.updateLicenseDetails(mergedLicenseObject));
-    forkJoin(requestsArray).subscribe(res => {
-      this.isDataLoading = false;
-      this.dialogRef.close(true);
+    forkJoin(requestsArray).subscribe((res: any) => {
+      if (!res.error) {
+        this.isDataLoading = false;
+        this.snackBarService.openSnackBar('Customer and subaccount added successfully!', '');
+        this.dialogRef.close(res);
+      } else
+        this.snackBarService.openSnackBar(res.error, 'Error adding customer!');
     }, err => {
       this.isDataLoading = false;
       this.dialogRef.close(false);

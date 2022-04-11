@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ProjectService } from 'src/app/services/project.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 
 @Component({
   selector: 'app-add-project',
@@ -24,6 +25,7 @@ export class AddProjectComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private projectService: ProjectService,
+    private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<AddProjectComponent>
   ) {
 
@@ -40,7 +42,11 @@ export class AddProjectComponent implements OnInit {
     const newProjectDetails = { ... this.addProjectForm.value };
     newProjectDetails.subaccountId = this.projectService.getSelectedSubAccount();
     this.projectService.createProject(newProjectDetails).subscribe((res: any) => {
-      this.dialogRef.close(res);
+      if (!res.error) {
+        this.snackBarService.openSnackBar('Project added successfully!', '');
+        this.dialogRef.close(res);
+      } else
+        this.snackBarService.openSnackBar(res.error, 'Error adding project!');
     });
   }
 

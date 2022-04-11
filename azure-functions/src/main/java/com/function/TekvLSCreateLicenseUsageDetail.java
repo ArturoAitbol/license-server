@@ -42,7 +42,7 @@ public class TekvLSCreateLicenseUsageDetail
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		JSONObject jobj;
 		try {
@@ -52,7 +52,7 @@ public class TekvLSCreateLicenseUsageDetail
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] mandatoryParams = {
@@ -92,7 +92,7 @@ public class TekvLSCreateLicenseUsageDetail
 					context.getLogger().info("Caught exception: " + e.getMessage());
 					JSONObject json = new JSONObject();
 					json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
-					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+					return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 				}
 			}
 			// modifed_date is always usage_date when creating the record
