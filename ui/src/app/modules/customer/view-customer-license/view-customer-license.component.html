@@ -21,7 +21,7 @@
     </main>
     <!-- license summary section -->
     <div>
-        <mat-form-field *ngIf="selectedLicense" appearance="outline" class="example-form-field">
+        <mat-form-field appearance="outline" class="example-form-field">
             <mat-label>License Period</mat-label>
             <mat-select (valueChange)="onChangeLicense($event)">
                 <mat-option *ngFor="let item of licensesList" [value]="item" [selected]="item.id == selectedLicense.id">
@@ -75,26 +75,14 @@
                 <mat-radio-group>
                     <mat-radio-button value="period" [checked]="aggregation == 'period'" (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
                     <br>
-                    <mat-radio-button value="month" [checked]="aggregation == 'month'" (change)="getMultipleChoiceAnswer($event)">
-                        Monthly
-                        <mat-form-field *ngIf="aggregation == 'month'" appearance="outline" class="example-form-field">
-                            <input required matInput [value]="selectedDate" [matDatepicker]="picker" placeholder="Choose Month and Year">
-                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)"></mat-datepicker>
-                        </mat-form-field>
-                    </mat-radio-button>
+                    <mat-radio-button value="month" [checked]="aggregation == 'month'" (change)="getMultipleChoiceAnswer($event)">Monthly</mat-radio-button>
+                    <mat-form-field appearance="outline" class="month-picker">
+                        <input required matInput [disabled]="aggregation == 'period'" [value]="selectedDate" [matDatepicker]="picker" placeholder="Choose Month and Year">
+                        <mat-datepicker-toggle [disabled]="aggregation == 'period'" matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)"></mat-datepicker>
+                    </mat-form-field>
                   </mat-radio-group>
             </div>
-            <!-- <div>
-                <mat-form-field appearance="outline" class="example-form-field">
-                    <input required matInput [value]="selectedDate" [matDatepicker]="picker" placeholder="Choose Month and Year">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)"></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div>
-                <h5 class="mt-4">Choose Month to View License Consumption Details (default to current Month)</h5>
-            </div> -->
         </div>
         <br>
         <div class="row">

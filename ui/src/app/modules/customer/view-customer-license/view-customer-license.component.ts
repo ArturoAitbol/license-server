@@ -124,8 +124,8 @@ export class ViewCustomerLicenseComponent implements OnInit {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
-        this.selectedLicense = res.licenses[0];
         this.licensesList = res.licenses;
+        this.selectedLicense = res.licenses[0];
         this.fetchDataToDisplay();
       }
     });
