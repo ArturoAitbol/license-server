@@ -59,7 +59,7 @@ public class TekvLSCreateLicense
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] mandatoryParams = {
 			{"subaccountId","subaccount_id"}, 
-			{"purchaseDate","purchase_date"}, 
+			{"startDate","start_date"}, 
 			{"packageType","package_type"}, 
 			{"renewalDate","renewal_date"},
 			{"tokens","tokens"}, 
@@ -106,7 +106,7 @@ public class TekvLSCreateLicense
 			// Return the id in the response
 			sql = "select id from license where " + 
 				"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
-				"purchase_date = '" + jobj.getString("purchaseDate") + "' and " +
+				"start_date = '" + jobj.getString("startDate") + "' and " +
 				"package_type = '" + jobj.getString("packageType") + "' and " +
 				"status = '" + jobj.getString("status") + "' and " +
 				"renewal_date = '" + jobj.getString("renewalDate") + "';";

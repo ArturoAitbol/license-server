@@ -22,9 +22,11 @@ import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consu
 export class ViewCustomerLicenseComponent implements OnInit {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
+  selectedLicense: any;
   selectedDate: any;
   month: any;
   year: any;
+  licensesList: any = [];
   data: any = [];
   equipmentData = [];
   weeklyConsumptionData = [];
@@ -34,8 +36,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
     'devicesConnected',
     'tokensPurchased',
     'AutomationPlatformTokensConsumed',
-    'configurationTokens',
-    'configAvgerage'
+    'configurationTokens'
   ];
   readonly equipmentDisplayColumns: string[] = [
     'vendor',
@@ -64,8 +65,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
     { name: 'Devices Connected', dataKey: 'devicesConnected', position: 'left', isSortable: true },
     { name: 'tekTokens Purchased', dataKey: 'tokensPurchased', position: 'left', isSortable: true },
     { name: 'Automation tekTokens Consumed', dataKey: 'AutomationPlatformTokensConsumed', position: 'left', isSortable: true },
-    { name: 'Configuration tekTokens Consumed', dataKey: 'ConfigurationTokensConsumed', position: 'left', isSortable: true },
-    { name: 'Configuration Average', dataKey: 'configAvgerage', position: 'left', isSortable: true }
+    { name: 'Configuration tekTokens Consumed', dataKey: 'ConfigurationTokensConsumed', position: 'left', isSortable: true }
   ];
 
   readonly equipmentSummaryColumns: TableColumn[] = [
@@ -110,7 +110,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   constructor(
     private customerSerivce: CustomerService,
     private dialogService: DialogService,
-    private licenseSerivce: LicenseService,
+    private licenseService: LicenseService,
     private licenseUsageService: LicenseUsageService,
     private snackBarService: SnackBarService,
     private router: Router,
@@ -119,7 +119,13 @@ export class ViewCustomerLicenseComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
-    this.fetchDataToDisplay();
+    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
+      if (!res.error && res.licenses.length > 0) {
+        this.licensesList = res.licenses;
+        this.selectedLicense = this.licensesList[0];
+        // this.fetchDataToDisplay();
+      }
+    });
   }
 
   initFlags() {
@@ -142,38 +148,33 @@ export class ViewCustomerLicenseComponent implements OnInit {
     this.fetchLicenseConsumptionList();
   }
 
+  private buildRequestObject(view: string) {
+    const requestObject = {
+      subaccount: this.currentCustomer.subaccountId,
+      view: view,
+      month: this.month,
+      year: this.year,
+      startDate: this.selectedLicense.startDate,
+      endDate: this.selectedLicense.renewalDate
+    };
+    return requestObject;
+  }
+
   fetchSummaryData() {
     const requiredObject = {
-      tokensPurchased: 0,
-      deviceLimit: 0,
+      tokensPurchased: this.selectedLicense.tokensPurchased,
+      deviceLimit: this.selectedLicense.deviceLimit,
       tokensRemaining: 0,
       AutomationPlatformTokensConsumed: 0,
       configurationTokensConsumed: 0,
       devicesConnected: 0,
-      tokensConsumed: 0,
-      configAvgerage: 0
+      tokensConsumed: 0
     };
-    const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
-      subaccount: this.currentCustomer.subaccountId,
-      view: 'weekly',
-      month: this.month,
-      year: this.year
-    };
-    forkJoin([
-      this.licenseUsageService.getLicenseDetails(requestObject),
-      this.licenseSerivce.getLicenseList(this.currentCustomer.subaccountId)
-    ]).subscribe((response: any) => {
+    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("weekly")).subscribe((response: any) => {
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
-      let resultant: any = {};
-      response.reduce((acc, curr) => resultant = { ...acc, ...curr });
-      const licensesList = resultant['licenses'];
-      licensesList.forEach(element => {
-        requiredObject.tokensPurchased += +element.tokensPurchased;
-        requiredObject.deviceLimit += +element.deviceLimit;
-      });
-      const mergedObj = { ...requiredObject, ...resultant };
-      this.weeklyConsumptionData = resultant.configurationTokens;
+      const mergedObj = { ...requiredObject, ...response };
+      this.weeklyConsumptionData = response.configurationTokens;
       this.data = [mergedObj];
     }, (error) => {
       console.error("Error fetching summary data: ", error);
@@ -183,13 +184,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   }
 
   fetchEquipment() {
-    const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
-      subaccount: this.currentCustomer.subaccountId,
-      view: 'equipmentsummary',
-      month: this.month,
-      year: this.year
-    };
-    this.licenseUsageService.getLicenseDetails(requestObject).subscribe((res: any) => {
+    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("equipmentsummary")).subscribe((res: any) => {
       this.equipmentData = res.equipmentSummary;
       this.isEquipmentSummaryLoadingResults = false;
       this.isEquipmentSummaryRequestCompleted = true;
@@ -201,13 +196,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   }
 
   fetchLicenseConsumptionList() {
-    const requestObject: { subaccount: string, view: string, month?: string, year?: string } = {
-      subaccount: this.currentCustomer.subaccountId,
-      view: '',
-      month: this.month,
-      year: this.year
-    };
-    this.licenseUsageService.getLicenseDetails(requestObject).subscribe((res: any) => {
+    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
       this.detailedConsumptionData = res.usage;
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
@@ -218,8 +207,14 @@ export class ViewCustomerLicenseComponent implements OnInit {
     });
   }
 
+  onChangeLicense(item: any){
+    if (item) {
+      this.selectedLicense = item;
+      this.fetchDataToDisplay();
+    }
+  }
+
   onChangeToggle(event: any): void {
-    console.log('event', event.value);
     switch (event.value) {
       case this.ADD_LICENSE:
         this.openDialog(AddLicenseComponent);
@@ -257,7 +252,6 @@ export class ViewCustomerLicenseComponent implements OnInit {
       disableClose: true
     });
     dialogRef.afterClosed().subscribe(res => {
-      console.log('add customer dialog closed', res);
       if (res) {
         this.snackBarService.openSnackBar('License processed successfully!', '');
         this.fetchDataToDisplay();

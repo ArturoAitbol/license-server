@@ -12,9 +12,6 @@ import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
 import java.util.Optional;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 import org.json.JSONObject;
 
@@ -63,7 +60,7 @@ public class TekvLSModifyLicenseById
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] optionalParams = {
 			{"subaccountId","subaccount_id"}, 
-			{"purchaseDate","purchase_date"}, 
+			{"startDate","start_date"}, 
 			{"packageType","package_type"}, 
 			{"renewalDate","renewal_date"}, 
 			{"tokens","tokens"}, 

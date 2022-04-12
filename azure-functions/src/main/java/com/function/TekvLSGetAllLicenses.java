@@ -47,13 +47,14 @@ public class TekvLSGetAllLicenses
 		String sql = "";
 		if (id.equals("EMPTY")) {
 			if (!subaccountId.isEmpty()) {
-				sql = "select * from license where subaccount_id = '" + subaccountId + "';";
+				sql = "select * from license where subaccount_id = '" + subaccountId + "'";
 			} else {
-				sql = "select * from license;";
+				sql = "select * from license";
 			}
 		} else {
-			sql = "select * from license where id='" + id +"';";
+			sql = "select * from license where id='" + id +"'";
 		}
+		sql += " order by start_date desc;";
 		
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -75,7 +76,7 @@ public class TekvLSGetAllLicenses
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("id"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
-				item.put("purchaseDate", rs.getString("purchase_date"));
+				item.put("startDate", rs.getString("start_date"));
 				item.put("packageType", rs.getString("package_type"));
 				item.put("renewalDate", rs.getString("renewal_date"));
 				item.put("tokensPurchased", rs.getString("tokens"));

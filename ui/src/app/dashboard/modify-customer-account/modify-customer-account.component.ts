@@ -23,7 +23,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
     customerName: ['', Validators.required],
     subaccountName: ['', Validators.required],
     customerType: ['', Validators.required],
-    purchaseDate: [''],
+    startDate: [''],
     packageType: [''],
     renewalDate: ['']
   });

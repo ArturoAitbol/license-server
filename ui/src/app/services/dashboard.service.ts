@@ -14,7 +14,7 @@ export class DashboardService {
       renewalDate: '1/3/2022',
       status: 'Active',
       packageType: 'Large',
-      purchaseDate: '1/3/2021',
+      startDate: '1/3/2021',
       action: false
     },
     {
@@ -24,7 +24,7 @@ export class DashboardService {
       renewalDate: '10/2/2022',
       status: 'Active',
       packageType: 'Large',
-      purchaseDate: '10/2/2021',
+      startDate: '10/2/2021',
       action: false
     },
     {
@@ -34,7 +34,7 @@ export class DashboardService {
       renewalDate: '10/2/2022',
       status: 'Active',
       packageType: 'AddOn',
-      purchaseDate: '10/2/2021',
+      startDate: '10/2/2021',
       action: false
     },
     {
@@ -44,7 +44,7 @@ export class DashboardService {
       renewalDate: '3/3/2022',
       status: 'Active',
       packageType: 'Large',
-      purchaseDate: '3/3/2021',
+      startDate: '3/3/2021',
       action: false
     },
     {
@@ -54,7 +54,7 @@ export class DashboardService {
       renewalDate: '1/5/2021',
       status: 'Expired',
       packageType: 'Large',
-      purchaseDate: '1/5/2020',
+      startDate: '1/5/2020',
       action: false
     },
   ];

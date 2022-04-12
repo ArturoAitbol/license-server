@@ -20,7 +20,17 @@
         </div>
     </main>
     <!-- license summary section -->
-      <h2>License Summary</h2>
+    <h2>License Summary</h2>
+    <div>
+        <mat-form-field appearance="outline" class="example-form-field">
+            <mat-label>Project</mat-label>
+            <mat-select required (valueChange)="onChangeLicense($event)" formControlName="licenseId">
+                <mat-option *ngFor="let item of licensesList" [value]="item" [selected]="item.id == selectedLicense.id">
+                    {{item.startDate}} - {{item.renewalDate}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
     <section>
         <div class="example-container mat-elevation-z8">
             <app-data-table

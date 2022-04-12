@@ -25,7 +25,7 @@ export class LicenseUsageService {
    * @param licenseId: string 
    * @returns: Observable 
    */
-  public getLicenseDetails(data: { subaccount: string, view: string, month?: string, year?: string }) {
+  public getLicenseDetails(data: any) {
     const headers = this.getHeaders();
     let params = new HttpParams()
         .set('subaccount-id', data.subaccount)
@@ -34,6 +34,10 @@ export class LicenseUsageService {
       params = params.set('year', data.year);
     if (data.month)
       params = params.set('month', data.month);
+    if (data.startDate && data.endDate) {
+      params = params.set('startDate', data.startDate);
+      params = params.set('endDate', data.endDate);
+    }
     return this.httpClient.get(this.API_URL, { headers, params });
   }
   /**

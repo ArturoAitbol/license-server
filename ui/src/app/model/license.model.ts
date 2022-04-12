@@ -3,7 +3,7 @@ export interface License {
     subaccountId: string;
     deviceLimit: string;
     tokensPurchased: string;
-    purchaseDate: string;
+    startDate: string;
     renewalDate: string;
     packageType: string;
     status: string;

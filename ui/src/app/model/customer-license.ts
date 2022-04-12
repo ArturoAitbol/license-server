@@ -4,7 +4,7 @@ export interface CustomerLicense {
     customerAccounts: string;
     customerSubAccounts: string;
     packageType: string;
-    purchaseDate: string;
+    startDate: string;
     renewalDate: string;
     status: string;
     action: boolean;
