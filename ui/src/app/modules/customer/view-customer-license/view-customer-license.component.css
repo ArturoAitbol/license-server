@@ -26,3 +26,9 @@ th.mat-sort-header-sorted {
 h1 {
   font-weight: 500;
 }
+.radio-blue >>> .mat-radio-outer-circle {
+  border-color: #3f51b5 !important;
+}
+.radio-blue >>> .mat-radio-inner-circle {
+  background-color: #3f51b5;
+}

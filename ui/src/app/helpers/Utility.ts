@@ -97,6 +97,8 @@ export class Utility {
                 case 'unavailable':
                 case 'rebooting':
                     return '#7694B7';
+                default:
+                    return 'red';
             }
         }
     }

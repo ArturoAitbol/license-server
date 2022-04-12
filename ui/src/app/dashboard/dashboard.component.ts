@@ -16,6 +16,7 @@ import { LicenseService } from '../services/license.service';
 import { SnackBarService } from '../services/snack-bar.service';
 import { SubAccountService } from '../services/sub-account.service';
 import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
+import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
 
 @Component({
@@ -162,7 +163,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * on click add account customer
    */
   addCustomerAccount(): void {
-    this.openDialog('add');
+    this.openDialog('add-customer');
+  }
+  /**
+   * on click add account customer
+   */
+   addSubaccount(): void {
+    this.openDialog('add-subaccount');
   }
   /**
    * open dialog
@@ -171,8 +178,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   openDialog(type: string, selectedItemData?: any): void {
     let dialogRef;
     switch (type) {
-      case 'add':
+      case 'add-customer':
         dialogRef = this.dialog.open(AddCustomerAccountModalComponent, {
+          width: '400px',
+          disableClose: true
+        });
+        break;
+      case 'add-subaccount':
+        dialogRef = this.dialog.open(AddSubaccountModalComponent, {
           width: '400px',
           disableClose: true
         });
@@ -188,13 +201,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     dialogRef.afterClosed().subscribe(res => {
       try {
-        console.debug(`${type} customer dialog closed: ${res}`);
-        if (res) {
-          this.snackBarService.openSnackBar('Customer created successfully!', '');
+        console.debug(`${type} dialog closed: ${res}`);
+        if (res)
           this.fetchDataToDisplay();
-        }
       } catch (error) {
-        console.log('error while creating customer', error);
+        console.log('error while in action ' + type, error);
       }
     });
   }

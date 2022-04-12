@@ -24,6 +24,8 @@ export class ViewCustomerLicenseComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   selectedLicense: any;
   selectedDate: any;
+  startDate: any;
+  endDate: any;
   aggregation: string = "period";
   month: any;
   year: any;
@@ -65,8 +67,8 @@ export class ViewCustomerLicenseComponent implements OnInit {
     { name: 'Device Access Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true, },
     { name: 'Devices Connected', dataKey: 'devicesConnected', position: 'left', isSortable: true },
     { name: 'tekTokens Purchased', dataKey: 'tokensPurchased', position: 'left', isSortable: true },
-    { name: 'Automation tekTokens Consumed', dataKey: 'AutomationPlatformTokensConsumed', position: 'left', isSortable: true },
-    { name: 'Configuration tekTokens Consumed', dataKey: 'ConfigurationTokensConsumed', position: 'left', isSortable: true }
+    { name: 'Automation tekTokens Consumed', dataKey: 'AutomationPlatformTokensConsumed', position: 'left', isSortable: true, canHighlighted: false },
+    { name: 'Configuration tekTokens Consumed', dataKey: 'ConfigurationTokensConsumed', position: 'left', isSortable: true, canHighlighted: false }
   ];
 
   readonly equipmentSummaryColumns: TableColumn[] = [
@@ -125,7 +127,16 @@ export class ViewCustomerLicenseComponent implements OnInit {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         this.selectedLicense = res.licenses[0];
+        this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
+        this.endDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
         this.fetchDataToDisplay();
+      } else {
+        this.isLicenseSummaryLoadingResults = false;
+        this.isLicenseSummaryRequestCompleted = true;
+        this.isEquipmentSummaryLoadingResults = false;
+        this.isEquipmentSummaryRequestCompleted = true;
+        this.isDetailedConsumptionLoadingResults = false;
+        this.isDetailedConsumptionRequestCompleted = true;
       }
     });
   }
@@ -147,7 +158,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
     this.initFlags();
     this.fetchSummaryData();
     this.fetchEquipment();
-    this.fetchLicenseConsumptionList();
+    this.fetchAggregatedData();
   }
 
   private buildRequestObject(view: string) {
@@ -166,17 +177,23 @@ export class ViewCustomerLicenseComponent implements OnInit {
     const requiredObject = {
       tokensPurchased: this.selectedLicense.tokensPurchased,
       deviceLimit: this.selectedLicense.deviceLimit,
-      tokensRemaining: 0,
       AutomationPlatformTokensConsumed: 0,
-      configurationTokensConsumed: 0,
-      devicesConnected: 0,
-      tokensConsumed: 0
+      ConfigurationTokensConsumed: 0,
+      tokensConsumed: 0,
+      devicesConnected: 0
     };
-    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("weekly")).subscribe((response: any) => {
+    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("summary")).subscribe((response: any) => {
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
       const mergedObj = { ...requiredObject, ...response };
-      this.weeklyConsumptionData = response.configurationTokens;
+      mergedObj.tokensConsumed = mergedObj.AutomationPlatformTokensConsumed + mergedObj.ConfigurationTokensConsumed;
+      if (mergedObj.tokensConsumed >= mergedObj.tokensPurchased) {
+        this.licenseSummaryColumns[3].canHighlighted = true;
+        this.licenseSummaryColumns[4].canHighlighted = true;
+      } else {
+        this.licenseSummaryColumns[3].canHighlighted = false;
+        this.licenseSummaryColumns[4].canHighlighted = false;
+      }
       this.data = [mergedObj];
     }, (error) => {
       console.error("Error fetching summary data: ", error);
@@ -186,7 +203,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   }
 
   fetchEquipment() {
-    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("equipmentsummary")).subscribe((res: any) => {
+    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("equipment")).subscribe((res: any) => {
       this.equipmentData = res.equipmentSummary;
       this.isEquipmentSummaryLoadingResults = false;
       this.isEquipmentSummaryRequestCompleted = true;
@@ -197,9 +214,10 @@ export class ViewCustomerLicenseComponent implements OnInit {
     });
   }
 
-  fetchLicenseConsumptionList() {
+  fetchAggregatedData() {
     this.licenseUsageService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
       this.detailedConsumptionData = res.usage;
+      this.weeklyConsumptionData = res.configurationTokens;
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     }, (err: any) => {
@@ -212,6 +230,8 @@ export class ViewCustomerLicenseComponent implements OnInit {
   onChangeLicense(item: any){
     if (item) {
       this.selectedLicense = item;
+      this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
+      this.endDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
       this.fetchDataToDisplay();
     }
   }
@@ -222,7 +242,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
         this.openDialog(AddLicenseComponent);
         break;
       case this.ADD_LICENSE_CONSUMPTION:
-        this.openDialog(AddLicenseConsumptionComponent);
+        this.openDialog(AddLicenseConsumptionComponent, this.selectedLicense);
         break;
     }
   }
@@ -316,6 +336,6 @@ export class ViewCustomerLicenseComponent implements OnInit {
     this.year = newDateSelection.getFullYear();
     this.selectedDate = newDateSelection;
     datepicker.close();
-    this.fetchDataToDisplay();
+    this.fetchAggregatedData();
   }
 }

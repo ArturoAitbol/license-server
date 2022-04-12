@@ -73,11 +73,12 @@
         <div style="display: flex;">
             <div>
                 <mat-radio-group>
-                    <mat-radio-button value="period" [checked]="aggregation == 'period'" (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
+                    <mat-radio-button class="radio-blue" value="period" [checked]="aggregation == 'period'" (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
                     <br>
-                    <mat-radio-button value="month" [checked]="aggregation == 'month'" (change)="getMultipleChoiceAnswer($event)">Monthly</mat-radio-button>
+                    <mat-radio-button class="radio-blue" value="month" [checked]="aggregation == 'month'" (change)="getMultipleChoiceAnswer($event)">Monthly</mat-radio-button>
                     <mat-form-field appearance="outline" class="month-picker">
-                        <input required matInput [disabled]="aggregation == 'period'" [value]="selectedDate" [matDatepicker]="picker" placeholder="Choose Month and Year">
+                        <input required matInput [disabled]="aggregation == 'period'" [value]="selectedDate" [min]="startDate" [max]="endDate" 
+                            [matDatepicker]="picker" placeholder="Choose Month and Year">
                         <mat-datepicker-toggle [disabled]="aggregation == 'period'" matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)"></mat-datepicker>
                     </mat-form-field>
@@ -93,8 +94,8 @@
                     [tableColumns]="detailedConsumptionColumns" 
                     [isFilterable]="false"
                     [isPageable]="false"
-                    [isLoadingResults]="isLicenseSummaryLoadingResults"
-                    [isRequestCompleted]="isLicenseSummaryRequestCompleted"
+                    [isLoadingResults]="isDetailedConsumptionLoadingResults"
+                    [isRequestCompleted]="isDetailedConsumptionRequestCompleted"
                     [paginationSizes]="[5,10,20]"
                     [defaultPageSize]="5"
                     >

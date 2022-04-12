@@ -20,6 +20,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   models: any = [];
   versions: any = [];
   selectedVendor: string = '';
+  startDate: any;
+  endDate: any;
   addLicenseConsumptionForm = this.formBuilder.group({
     dateOfUsage: ['', Validators.required],
     projectId: ['', Validators.required],
@@ -40,6 +42,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
+    this.startDate = new Date(this.data.startDate + " 00:00:00");
+    this.endDate = new Date(this.data.renewalDate + " 00:00:00");
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.fetchDevices();
     this.fetchProjects();
@@ -68,11 +72,10 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    const deviceId = this.data? this.data.id : this.addLicenseConsumptionForm.value.product;
     const licenseConsumptionObject: any = {
       subaccountId: this.currentCustomer.subaccountId,
       projectId: this.addLicenseConsumptionForm.value.projectId,
-      deviceId: deviceId,
+      deviceId: this.addLicenseConsumptionForm.value.product,
       usageDate: this.addLicenseConsumptionForm.value.dateOfUsage,
       serialNumber: '',
       macAddress: '',
@@ -105,13 +108,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
         }
         return false;
       });
-      // automatically select device data if adding license consumption from devices list
-      if (this.data) {
-        this.addLicenseConsumptionForm.patchValue({ 
-          vendor: this.data.vendor,
-          product: this.data.id
-        });
-      }
     });
   }
   /**

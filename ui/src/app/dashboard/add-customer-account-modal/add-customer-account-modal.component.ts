@@ -53,15 +53,15 @@ export class AddCustomerAccountModalComponent implements OnInit {
           name: this.addCustomerForm.value.subAccountName,
         }
         this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
-          if (!resp.error) {
+          if (!res.error) {
             this.isDataLoading = false;
             this.snackBarService.openSnackBar('Customer and subaccount added successfully!', '');
             this.dialogRef.close(res);
           } else
-            this.snackBarService.openSnackBar(res.error, 'Error adding customer!');
+            this.snackBarService.openSnackBar(res.error, 'Error adding subaccount!');
         });
       } else
-        this.snackBarService.openSnackBar(resp.error, 'Error adding subaccount!');
+        this.snackBarService.openSnackBar(resp.error, 'Error adding customer!');
     });
   }
 
