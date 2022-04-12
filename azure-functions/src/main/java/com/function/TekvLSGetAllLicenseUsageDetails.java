@@ -43,14 +43,15 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String view = request.getQueryParameters().getOrDefault("view", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		Calendar cal = Calendar.getInstance();
-		String year = request.getQueryParameters().getOrDefault("year", Integer.toString(cal.get(Calendar.YEAR)));
-		String month = request.getQueryParameters().getOrDefault("month", Integer.toString(cal.get(Calendar.MONTH) + 1));
+		String year = request.getQueryParameters().getOrDefault("year", "");
+		String month = request.getQueryParameters().getOrDefault("month", "");
 		String usageDateField = view.equalsIgnoreCase("weekly")? "usage_date" : "l.usage_date";
-		String sqlPart1 = "subaccount_id = '" + subaccountId + "' and EXTRACT(MONTH FROM " + usageDateField + ") = " + month + 
-				" and EXTRACT(YEAR FROM " + usageDateField + ") = " + year;
+		String sqlPart1 = "subaccount_id = '" + subaccountId + "'";
 		if (!startDate.isEmpty() && !endDate.isEmpty())
 			sqlPart1 += " and " + usageDateField + ">='" + startDate + "' and "  + usageDateField + "<='" + endDate + "'";
+		String sqlPart2 = "";
+		if (!year.isEmpty() && !month.isEmpty())
+			sqlPart2 += " and EXTRACT(MONTH FROM " + usageDateField + ") = " + month + " and EXTRACT(YEAR FROM " + usageDateField + ") = " + year;
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -65,7 +66,6 @@ public class TekvLSGetAllLicenseUsageDetails {
 			ResultSet rs;
 			switch (view.toLowerCase()) {
 				case "weekly": {
-					sqlPart1 = String.format(sqlPart1, "usage_date", "usage_date");
 					// First get the devices connected
 					// Get number of connected devices
 					String sqlDevicesConnected = "select count(distinct device_id) from license_usage where " + sqlPart1 + ";";
@@ -85,7 +85,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 					// Get weekly consumption for configuration
 					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',usage_date)), DATE_PART('month',usage_date), sum(tokens_consumed) from license_usage where " + 
-						sqlPart1 + " and usage_type='Configuration' group by DATE_PART('week',usage_date), DATE_PART('month',usage_date);";
+						sqlPart1 + sqlPart2 + " and usage_type='Configuration' group by DATE_PART('week',usage_date), DATE_PART('month',usage_date);";
 					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
 					while (rs.next()) {
@@ -100,7 +100,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 				case "equipmentsummary": {
 					String sqlEquipmentSummary = 
 						"select d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number, sum(l.tokens_consumed) from device d inner join license_usage l on d.id=l.device_id and l." + 
-						sqlPart1 + " group by d.id,l.mac_address,l.serial_number;";
+						sqlPart1 + sqlPart2 + " group by d.id,l.mac_address,l.serial_number;";
 					context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
 					rs = statement.executeQuery(sqlEquipmentSummary);
 					while (rs.next()) {
@@ -119,7 +119,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// This is the default case (all)
 					String sqlAll = 
 						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,l.tokens_consumed,l.id,l.device_id,CONCAT('Week ',DATE_PART('week',usage_date)) as consumption " + 
-						"from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1 + " order by start_date desc;";
+						"from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1 + sqlPart2 + " order by start_date desc;";
 					context.getLogger().info("Execute SQL statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {

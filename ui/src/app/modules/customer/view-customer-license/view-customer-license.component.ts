@@ -22,8 +22,9 @@ import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consu
 export class ViewCustomerLicenseComponent implements OnInit {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
-  selectedLicense: any = {id: ""};
+  selectedLicense: any;
   selectedDate: any;
+  aggregation: string = "period";
   month: any;
   year: any;
   licensesList: any = [];
@@ -123,12 +124,9 @@ export class ViewCustomerLicenseComponent implements OnInit {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
+        this.selectedLicense = res.licenses[0];
         this.licensesList = res.licenses;
-        setTimeout(() => {
-          this.selectedLicense = res.licenses[0];
-          console.log(this.selectedLicense);
-          this.fetchDataToDisplay();
-        }, 1000);
+        this.fetchDataToDisplay();
       }
     });
   }
@@ -157,8 +155,8 @@ export class ViewCustomerLicenseComponent implements OnInit {
     const requestObject = {
       subaccount: this.currentCustomer.subaccountId,
       view: view,
-      month: this.month,
-      year: this.year,
+      month: this.aggregation == 'month'? this.month : null,
+      year:  this.aggregation == 'month'? this.year : null,
       startDate: this.selectedLicense.startDate,
       endDate: this.selectedLicense.renewalDate
     };
@@ -308,6 +306,10 @@ export class ViewCustomerLicenseComponent implements OnInit {
         this.onDelete(+object.selectedIndex);
         break;
     }
+  }
+
+  getMultipleChoiceAnswer(newValue: any) {
+    this.aggregation = newValue.value;
   }
 
   setMonthAndYear(newDateSelection: Date, datepicker: MatDatepicker<any>) {
