@@ -45,13 +45,11 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 		String year = request.getQueryParameters().getOrDefault("year", "");
 		String month = request.getQueryParameters().getOrDefault("month", "");
-		String usageDateField = view.equalsIgnoreCase("weekly")? "usage_date" : "l.usage_date";
-		String sqlPart1 = "subaccount_id = '" + subaccountId + "'";
+		String sqlCommonConditions = "l.subaccount_id = '" + subaccountId + "'";
 		if (!startDate.isEmpty() && !endDate.isEmpty())
-			sqlPart1 += " and " + usageDateField + ">='" + startDate + "' and "  + usageDateField + "<='" + endDate + "'";
-		String sqlPart2 = "";
-		if (!year.isEmpty() && !month.isEmpty())
-			sqlPart2 += " and EXTRACT(MONTH FROM " + usageDateField + ") = " + month + " and EXTRACT(YEAR FROM " + usageDateField + ") = " + year;
+			sqlCommonConditions += " and l.usage_date>='" + startDate + "' and l.usage_date<='" + endDate + "'";
+		if (view.isEmpty() && !year.isEmpty() && !month.isEmpty())
+			sqlCommonConditions += " and EXTRACT(MONTH FROM l.usage_date) = " + month + " and EXTRACT(YEAR FROM l.usage_date) = " + year;
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -65,42 +63,28 @@ public class TekvLSGetAllLicenseUsageDetails {
 			JSONArray array = new JSONArray();
 			ResultSet rs;
 			switch (view.toLowerCase()) {
-				case "weekly": {
+				case "summary": {
 					// First get the devices connected
 					// Get number of connected devices
-					String sqlDevicesConnected = "select count(distinct device_id) from license_usage where " + sqlPart1 + ";";
+					String sqlDevicesConnected = "select count(distinct device_id) from license_usage l where " + sqlCommonConditions + ";";
 					context.getLogger().info("Execute SQL statement: " + sqlDevicesConnected);
 					rs = statement.executeQuery(sqlDevicesConnected);
 					rs.next();
 					json.put("devicesConnected", rs.getInt(1));
 
 					// Get tokens consumed
-					String sqlTokensConsumed = "select usage_type, sum(tokens_consumed) from license_usage where " + sqlPart1 + 
-						" group by usage_type;";
+					String sqlTokensConsumed = "select usage_type, sum(tokens_consumed) from license_usage l where " + sqlCommonConditions + 
+						" group by l.usage_type;";
 					context.getLogger().info("Execute SQL statement: " + sqlTokensConsumed);
 					rs = statement.executeQuery(sqlTokensConsumed);
 					while (rs.next()) {
 						json.put(rs.getString(1) + "TokensConsumed", rs.getInt(2));
 					}
-
-					// Get weekly consumption for configuration
-					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',usage_date)), DATE_PART('month',usage_date), sum(tokens_consumed) from license_usage where " + 
-						sqlPart1 + sqlPart2 + " and usage_type='Configuration' group by DATE_PART('week',usage_date), DATE_PART('month',usage_date);";
-					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
-					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
-					while (rs.next()) {
-						JSONObject item = new JSONObject();
-						item.put("weekId", rs.getString(1));
-						item.put("monthId", rs.getString(2));
-						item.put("tokensConsumed", rs.getInt(3));
-						array.put(item);
-					}
-					json.put("configurationTokens", array);
 				} break;
-				case "equipmentsummary": {
+				case "equipment": {
 					String sqlEquipmentSummary = 
-						"select d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number, sum(l.tokens_consumed) as tokens_consumed from device d, license_usage l where d.id=l.device_id and l." + 
-						sqlPart1 + " group by d.id,l.mac_address,l.serial_number;";
+						"select d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number, sum(l.tokens_consumed) as tokens_consumed from device d, license_usage l where d.id=l.device_id and " + 
+						sqlCommonConditions + " group by d.id,l.mac_address,l.serial_number;";
 					context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
 					rs = statement.executeQuery(sqlEquipmentSummary);
 					while (rs.next()) {
@@ -117,10 +101,10 @@ public class TekvLSGetAllLicenseUsageDetails {
 					json.put("equipmentSummary", array);
 				} break;
 				default: {
-					// This is the default case (all)
+					// This is the default case (aggregated data)
 					String sqlAll = 
 						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,l.tokens_consumed,l.id,l.device_id,CONCAT('Week ',DATE_PART('week',usage_date)) as consumption " + 
-						"from device d, license_usage l where d.id=l.device_id and l." + sqlPart1 + sqlPart2 + " order by start_date desc;";
+						"from device d, license_usage l where d.id=l.device_id and " + sqlCommonConditions + " order by start_date desc;";
 					context.getLogger().info("Execute SQL statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
@@ -139,6 +123,20 @@ public class TekvLSGetAllLicenseUsageDetails {
 						array.put(item);
 					}
 					json.put("usage", array);
+
+					// Get aggregated consumption for configuration
+					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',usage_date)), DATE_PART('month',usage_date), sum(tokens_consumed) from license_usage l where " + 
+						sqlCommonConditions + " and usage_type='Configuration' group by DATE_PART('week',usage_date), DATE_PART('month',usage_date);";
+					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
+					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
+					while (rs.next()) {
+						JSONObject item = new JSONObject();
+						item.put("weekId", rs.getString(1));
+						item.put("monthId", rs.getString(2));
+						item.put("tokensConsumed", rs.getInt(3));
+						array.put(item);
+					}
+					json.put("configurationTokens", array);
 				} break;
 			}
 
