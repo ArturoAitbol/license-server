@@ -105,7 +105,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					JSONArray array = new JSONArray();
 					String sqlAll = 
 						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,l.tokens_consumed,l.id,l.device_id,CONCAT('Week ',DATE_PART('week',usage_date)) as consumption " + 
-						"from device d, license_usage l where d.id=l.device_id and " + sqlCommonConditions + " order by start_date desc;";
+						"from device d, license_usage l where d.id=l.device_id and " + sqlCommonConditions + " order by usage_date desc;";
 					context.getLogger().info("Execute SQL statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
@@ -127,8 +127,8 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 					// Get aggregated consumption for configuration
 					JSONArray array2 = new JSONArray();
-					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',usage_date)), DATE_PART('month',usage_date), sum(tokens_consumed) from license_usage l where " + 
-						sqlCommonConditions + " and usage_type='Configuration' group by DATE_PART('week',usage_date), DATE_PART('month',usage_date);";
+					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',usage_date)) as weekId, DATE_PART('month',usage_date) as monthId, sum(tokens_consumed) from license_usage l where " + 
+						sqlCommonConditions + " and usage_type='Configuration' group by DATE_PART('week',usage_date), DATE_PART('month',usage_date); order by monthId, weekId asc;";
 					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
 					while (rs.next()) {
