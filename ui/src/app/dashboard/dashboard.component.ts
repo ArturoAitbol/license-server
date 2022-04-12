@@ -60,11 +60,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
    */
   initColumns(): void {
     this.displayedColumns = [
-      { name: 'Customer Account', dataKey: 'customerName', position: 'left', isSortable: true },
-      { name: 'Customer Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true, isClickable: true },
+      { name: 'Customer', dataKey: 'customerName', position: 'left', isSortable: true },
+      { name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true, isClickable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
-      { name: 'Purchase Date', dataKey: 'startDate', position: 'left', isSortable: true },
       { name: 'Package Type', dataKey: 'packageType', position: 'left', isSortable: true },
+      { name: 'Start Date', dataKey: 'startDate', position: 'left', isSortable: true },
       { name: 'Renewal Date', dataKey: 'renewalDate', position: 'left', isSortable: true },
       { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true }
     ];

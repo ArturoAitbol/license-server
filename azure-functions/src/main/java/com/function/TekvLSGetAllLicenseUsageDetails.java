@@ -85,7 +85,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 					// Get weekly consumption for configuration
 					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',usage_date)), DATE_PART('month',usage_date), sum(tokens_consumed) from license_usage where " + 
-						sqlPart1 + " and usage_type='Configuration' group by DATE_PART('week',usage_date);";
+						sqlPart1 + " and usage_type='Configuration' group by DATE_PART('week',usage_date), DATE_PART('month',usage_date);";
 					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
 					while (rs.next()) {

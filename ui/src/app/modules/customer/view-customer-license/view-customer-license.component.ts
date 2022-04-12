@@ -22,7 +22,7 @@ import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consu
 export class ViewCustomerLicenseComponent implements OnInit {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
-  selectedLicense: any;
+  selectedLicense: any = {id: ""};
   selectedDate: any;
   month: any;
   year: any;
@@ -46,6 +46,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   ];
   readonly detailedDisplayColumns: string[] = [
     'weekId',
+    'monthId',
     'tokensConsumed'
   ];
   readonly detailedConsumptionDisplayColumns: string[] = [
@@ -77,7 +78,8 @@ export class ViewCustomerLicenseComponent implements OnInit {
 
   readonly detailedConsumptionColumns: TableColumn[] = [
     { name: 'Week', dataKey: 'weekId', position: 'left', isSortable: true },
-    { name: 'Configuration tekTokens Consumed', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
+    { name: 'Month', dataKey: 'monthId', position: 'left', isSortable: true },
+    { name: 'tekTokens', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
   readonly detailedConsumptionSummaryColumns: TableColumn[] = [
@@ -122,8 +124,11 @@ export class ViewCustomerLicenseComponent implements OnInit {
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
-        this.selectedLicense = this.licensesList[0];
-        // this.fetchDataToDisplay();
+        setTimeout(() => {
+          this.selectedLicense = res.licenses[0];
+          console.log(this.selectedLicense);
+          this.fetchDataToDisplay();
+        }, 1000);
       }
     });
   }
