@@ -43,7 +43,8 @@ export class ViewCustomerLicenseComponent implements OnInit {
     'vendor',
     'product',
     'version',
-    'macAddress'
+    'macAddress',
+    'tokensConsumed'
   ];
   readonly detailedDisplayColumns: string[] = [
     'weekId',
@@ -52,12 +53,10 @@ export class ViewCustomerLicenseComponent implements OnInit {
   ];
   readonly detailedConsumptionDisplayColumns: string[] = [
     'usageDate',
+    'consumption',
     'vendor',
     'product',
     'version',
-    'macAddress',
-    'type',
-    'consumption',
     'tokensConsumed',
     'action'
   ];
@@ -74,7 +73,8 @@ export class ViewCustomerLicenseComponent implements OnInit {
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
-    { name: 'MAC Address', dataKey: 'macAddress', position: 'left', isSortable: true }
+    { name: 'MAC Address', dataKey: 'macAddress', position: 'left', isSortable: true },
+    { name: 'tekTokens Consumed', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
   readonly detailedConsumptionColumns: TableColumn[] = [
@@ -85,11 +85,10 @@ export class ViewCustomerLicenseComponent implements OnInit {
 
   readonly detailedConsumptionSummaryColumns: TableColumn[] = [
     { name: 'Date Of Usage', dataKey: 'usageDate', position: 'left', isSortable: true },
+    { name: 'Consumption', dataKey: 'consumption', position: 'left', isSortable: true },
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
-    { name: 'MAC Address', dataKey: 'macAddress', position: 'left', isSortable: true },
-    { name: 'Consumption', dataKey: 'consumption', position: 'left', isSortable: true },
     { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';

@@ -99,8 +99,8 @@ public class TekvLSGetAllLicenseUsageDetails {
 				} break;
 				case "equipmentsummary": {
 					String sqlEquipmentSummary = 
-						"select d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number, sum(l.tokens_consumed) from device d inner join license_usage l on d.id=l.device_id and l." + 
-						sqlPart1 + sqlPart2 + " group by d.id,l.mac_address,l.serial_number;";
+						"select d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number, sum(l.tokens_consumed) as tokens_consumed from device d, license_usage l where d.id=l.device_id and l." + 
+						sqlPart1 + " group by d.id,l.mac_address,l.serial_number;";
 					context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
 					rs = statement.executeQuery(sqlEquipmentSummary);
 					while (rs.next()) {
@@ -111,6 +111,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("version", rs.getString("version"));
 						item.put("macAddress", rs.getString("mac_address"));
 						item.put("serialNumber", rs.getString("serial_number"));
+						item.put("tokensConsumed", rs.getString("tokens_consumed"));
 						array.put(item);
 					}
 					json.put("equipmentSummary", array);
@@ -119,7 +120,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// This is the default case (all)
 					String sqlAll = 
 						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,l.tokens_consumed,l.id,l.device_id,CONCAT('Week ',DATE_PART('week',usage_date)) as consumption " + 
-						"from device d inner join license_usage l on d.id=l.device_id and l." + sqlPart1 + sqlPart2 + " order by start_date desc;";
+						"from device d, license_usage l where d.id=l.device_id and l." + sqlPart1 + sqlPart2 + " order by start_date desc;";
 					context.getLogger().info("Execute SQL statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
