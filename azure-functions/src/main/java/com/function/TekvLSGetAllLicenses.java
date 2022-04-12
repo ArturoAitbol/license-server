@@ -76,9 +76,9 @@ public class TekvLSGetAllLicenses
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("id"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
-				item.put("startDate", rs.getString("start_date"));
+				item.put("startDate", rs.getString("start_date").split(" ")[0]);
 				item.put("packageType", rs.getString("package_type"));
-				item.put("renewalDate", rs.getString("renewal_date"));
+				item.put("renewalDate", rs.getString("renewal_date").split(" ")[0]);
 				item.put("tokensPurchased", rs.getString("tokens"));
 				item.put("deviceLimit", rs.getString("device_access_limit"));
 				item.put("status", rs.getString("status"));

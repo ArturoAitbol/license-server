@@ -127,7 +127,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 						JSONObject item = new JSONObject();
 						item.put("id", rs.getString("id"));
 						item.put("deviceId", rs.getString("device_id"));
-						item.put("usageDate", rs.getString("usage_date"));
+						item.put("usageDate", rs.getString("usage_date").split(" ")[0]);
 						item.put("vendor", rs.getString("vendor"));
 						item.put("product", rs.getString("product"));
 						item.put("version", rs.getString("version"));
