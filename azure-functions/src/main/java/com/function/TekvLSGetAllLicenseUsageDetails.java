@@ -60,7 +60,6 @@ public class TekvLSGetAllLicenseUsageDetails {
 			Statement statement = connection.createStatement();) {
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			JSONObject json = new JSONObject();
-			JSONArray array = new JSONArray();
 			ResultSet rs;
 			switch (view.toLowerCase()) {
 				case "summary": {
@@ -82,6 +81,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					}
 				} break;
 				case "equipment": {
+					JSONArray array = new JSONArray();
 					String sqlEquipmentSummary = 
 						"select d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number, sum(l.tokens_consumed) as tokens_consumed from device d, license_usage l where d.id=l.device_id and " + 
 						sqlCommonConditions + " group by d.id,l.mac_address,l.serial_number;";
@@ -102,6 +102,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 				} break;
 				default: {
 					// This is the default case (aggregated data)
+					JSONArray array = new JSONArray();
 					String sqlAll = 
 						"select l.usage_date,d.vendor,d.product,d.version,l.mac_address,l.serial_number,l.usage_type,l.tokens_consumed,l.id,l.device_id,CONCAT('Week ',DATE_PART('week',usage_date)) as consumption " + 
 						"from device d, license_usage l where d.id=l.device_id and " + sqlCommonConditions + " order by start_date desc;";
@@ -125,6 +126,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					json.put("usage", array);
 
 					// Get aggregated consumption for configuration
+					JSONArray array2 = new JSONArray();
 					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',usage_date)), DATE_PART('month',usage_date), sum(tokens_consumed) from license_usage l where " + 
 						sqlCommonConditions + " and usage_type='Configuration' group by DATE_PART('week',usage_date), DATE_PART('month',usage_date);";
 					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
@@ -134,9 +136,9 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("weekId", rs.getString(1));
 						item.put("monthId", rs.getString(2));
 						item.put("tokensConsumed", rs.getInt(3));
-						array.put(item);
+						array2.put(item);
 					}
-					json.put("configurationTokens", array);
+					json.put("configurationTokens", array2);
 				} break;
 			}
 
