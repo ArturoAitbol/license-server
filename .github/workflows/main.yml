@@ -53,13 +53,21 @@ jobs:
         node-version: '12.20'
         
     - name: Build Angular web app
-      run: |
-        cd ./ui
-        npm install
-        npm run build
-        # npm run build -- "--base-href=/license-server/ --configuration production"
-        # ng build --base-href='/license-server/' --configuration production
-        ls ./dist
+    # trying to configure the redirection to index when refreshing
+      with:
+        app_location: "ui"
+        output_location: "ui/dist"
+        app_build_command: |
+          npm install
+          npm run build
+      # run: |
+      #   cd ./ui
+      #   npm install
+      #   npm run build
+      #   # npm run build -- "--base-href=/license-server/ --configuration production"
+      #   # ng build --base-href='/license-server/' --configuration production
+      #   ls ./dist
+
         
     - name: Upload to blob storagerun
       uses: azure/CLI@v1
