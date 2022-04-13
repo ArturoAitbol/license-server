@@ -54,6 +54,7 @@ jobs:
         
     - name: Build Angular web app
     # trying to configure the redirection to index when refreshing
+      uses: Azure/static-web-apps-deploy@v1
       with:
         app_location: "ui"
         output_location: "ui/dist"
