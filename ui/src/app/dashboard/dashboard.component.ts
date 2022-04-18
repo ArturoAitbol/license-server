@@ -35,7 +35,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isRequestCompleted: boolean = false;
   readonly VIEW_LICENSE: string = 'License Details';
   readonly VIEW_PROJECTS: string = 'Projects';
-  readonly MODIFY_LICENSE: string = 'Modify License';
+  readonly MODIFY_LICENSE: string = 'Modify';
   readonly DELETE_ACCOUNT: string = 'Delete Account';
 
   actionMenuOptions: any = [

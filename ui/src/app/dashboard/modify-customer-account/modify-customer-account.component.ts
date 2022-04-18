@@ -6,6 +6,7 @@ import { CustomerService } from 'src/app/services/customer.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { LicenseService } from 'src/app/services/license.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { BundleService } from 'src/app/services/bundle.service';
 
 @Component({
   selector: 'app-modify-customer-account',
@@ -13,19 +14,17 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
   styleUrls: ['./modify-customer-account.component.css']
 })
 export class ModifyCustomerAccountComponent implements OnInit {
-  packageTypes: string[] = [
-    'Small',
-    'Medium',
-    'Large',
-    'AddOn '
-  ];
-  updateCustomerForm = this.formBuilder.group({
+  packageTypes: any[];
+  selectedType: any;
+  updateCustomerForm: any = this.formBuilder.group({
     customerName: ['', Validators.required],
     subaccountName: ['', Validators.required],
     customerType: ['', Validators.required],
-    startDate: [''],
-    packageType: [''],
-    renewalDate: ['']
+    startDate: ['', Validators.required],
+    packageType: ['', Validators.required],
+    tokensPurchased: ['', Validators.required],
+    deviceLimit: ['', Validators.required],
+    renewalDate: ['', Validators.required]
   });
   private previousFormValue: any;
   // flag
@@ -36,16 +35,22 @@ export class ModifyCustomerAccountComponent implements OnInit {
     private customerService: CustomerService,
     private subAccountService: SubAccountService,
     private licenseService: LicenseService,
+    private bundleService: BundleService,
     private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
     if (this.data) {
-      console.log('data', this.data);
-
+      this.isDataLoading = true;
+      this.selectedType = this.data.packageType;
       this.updateCustomerForm.patchValue(this.data);
       this.previousFormValue = { ...this.updateCustomerForm };
+      this.bundleService.getBundleList().subscribe((res: any) => {
+        if (res) this.packageTypes = res.bundles;
+        this.onChangeType(this.data.packageType);
+        this.isDataLoading = false;
+      });
     }
   }
   /**
@@ -53,6 +58,27 @@ export class ModifyCustomerAccountComponent implements OnInit {
    */
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  onChangeType(newType: any){
+    this.selectedType = this.packageTypes.find(item => item.name == newType)
+    if (this.selectedType) {
+      this.updateCustomerForm.patchValue({
+        tokensPurchased: this.selectedType.tokens,
+        deviceLimit: this.selectedType.deviceAccessTokens,
+      });
+      if (newType == "Custom" || newType == "AddOn") {
+        this.updateCustomerForm.get('tokensPurchased').enable();
+        this.updateCustomerForm.get('deviceLimit').enable();
+      } else {
+        this.updateCustomerForm.patchValue({
+          tokensPurchased: this.selectedType.tokens,
+          deviceLimit: this.selectedType.deviceAccessTokens,
+        });
+        this.updateCustomerForm.get('tokensPurchased').disable();
+        this.updateCustomerForm.get('deviceLimit').disable();
+      }
+    }
   }
 
   /**
@@ -75,8 +101,11 @@ export class ModifyCustomerAccountComponent implements OnInit {
       this.customerService.updateCustomer(customer),
       this.subAccountService.updateSubAccount(subAccount)
     ];
-    if (mergedLicenseObject.id)
+    if (mergedLicenseObject.id) {
+      mergedLicenseObject.tokens = mergedLicenseObject.tokensPurchased;
+      mergedLicenseObject.deviceAccessLimit = mergedLicenseObject.deviceLimit;
       requestsArray.push(this.licenseService.updateLicenseDetails(mergedLicenseObject));
+    }
     forkJoin(requestsArray).subscribe((res: any) => {
       if (!res.error) {
         this.isDataLoading = false;

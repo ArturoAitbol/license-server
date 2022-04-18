@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -34,6 +35,9 @@ export class ViewCustomerLicenseComponent implements OnInit {
   equipmentData = [];
   weeklyConsumptionData = [];
   detailedConsumptionData = [];
+  licenseForm: any = this.formBuilder.group({
+    licenseId: ['']
+  });
 
   readonly licenseSummaryColumns: TableColumn[] = [
     { name: 'Device Access Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true, },
@@ -84,6 +88,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   ];
 
   constructor(
+    private formBuilder: FormBuilder,
     private customerSerivce: CustomerService,
     private dialogService: DialogService,
     private licenseService: LicenseService,
@@ -99,6 +104,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         this.selectedLicense = res.licenses[0];
+        this.licenseForm.patchValue({ licenseId: this.selectedLicense.id });
         this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
         this.endDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
         this.fetchDataToDisplay();
@@ -199,9 +205,9 @@ export class ViewCustomerLicenseComponent implements OnInit {
     });
   }
 
-  onChangeLicense(item: any){
-    if (item) {
-      this.selectedLicense = item;
+  onChangeLicense(newLicense: any){
+    if (newLicense) {
+      this.selectedLicense = this.licensesList.find(item => item.id == newLicense);
       this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
       this.endDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
       this.fetchDataToDisplay();
