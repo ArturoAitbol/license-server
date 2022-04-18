@@ -9,7 +9,7 @@
     <section class="table-section">
         <div class="example-container mat-elevation-z8">
             <app-data-table
-                [tableData]="data"
+                [tableData]="licenseList"
                 [tableColumns]="displayedColumns" 
                 [isFilterable]="false"
                 [isPageable]="false"
@@ -21,7 +21,6 @@
                 [rowActionIcon]="'more_vert'"
                 (rowAction)="rowAction($event)"
                 [actionMenuList]="actionMenuOptions"
-                (clickableRow)="onClickAccount($event)"
                 >
             </app-data-table>
         </div>

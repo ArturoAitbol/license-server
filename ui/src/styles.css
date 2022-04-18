@@ -31,6 +31,15 @@ button:focus {
   font-family: "Helvetica Neue Regular";
   font-size: 12px;
 }
+
+.mat-header-row {
+  border-bottom-width: 1px !important;
+}
+
+.mat-header-cell,
+.mat-cell {
+  padding-left: 15px !important;
+} 
 /* 
 .strip-table:nth-child(odd) {
     background: rgba(255, 255, 255, 1) 0% 0% no-repeat padding-box;

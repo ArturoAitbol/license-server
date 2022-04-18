@@ -84,7 +84,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					JSONArray array = new JSONArray();
 					String sqlEquipmentSummary = 
 						"select d.id, d.vendor,d.product,d.version,l.mac_address,l.serial_number, sum(l.tokens_consumed) as tokens_consumed from device d, license_usage l where d.id=l.device_id and " + 
-						sqlCommonConditions + " group by d.id,l.mac_address,l.serial_number;";
+						sqlCommonConditions + " and l.usage_type='AutomationPlatform' group by d.id,l.mac_address,l.serial_number;";
 					context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
 					rs = statement.executeQuery(sqlEquipmentSummary);
 					while (rs.next()) {

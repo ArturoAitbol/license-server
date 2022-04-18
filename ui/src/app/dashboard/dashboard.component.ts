@@ -33,11 +33,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
-  readonly VIEW_PROJECTS: string = 'View Project Detail';
+  readonly VIEW_LICENSE: string = 'License Details';
+  readonly VIEW_PROJECTS: string = 'Projects';
   readonly MODIFY_LICENSE: string = 'Modify License';
   readonly DELETE_ACCOUNT: string = 'Delete Account';
 
   actionMenuOptions: any = [
+    this.VIEW_LICENSE,
     this.VIEW_PROJECTS,
     this.MODIFY_LICENSE,
     this.DELETE_ACCOUNT
@@ -62,7 +64,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   initColumns(): void {
     this.displayedColumns = [
       { name: 'Customer', dataKey: 'customerName', position: 'left', isSortable: true },
-      { name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true, isClickable: true },
+      { name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
       { name: 'Package Type', dataKey: 'packageType', position: 'left', isSortable: true },
       { name: 'Start Date', dataKey: 'startDate', position: 'left', isSortable: true },
@@ -125,8 +127,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.licenseList.unshift(emptyLicenseElement);
           }
         });
-
-        this.data = [...this.licenseList];
       }, err => {
         console.debug('error', err);
         this.isLoadingResults = false;
@@ -156,7 +156,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
    * @param index: string
    */
   onDeleteAccount(index: string): void {
-
     this.openConfirmaCancelDialog(index);
   }
   /**
@@ -210,15 +209,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
   /**
-   * 
-   * @param index: string 
-   */
-  onClickAccount(object: { selectedRow: any, selectedIndex: number }): void {
-    this.customerService.setSelectedCustomer(object.selectedRow);
-    localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(object.selectedRow));
-    this.router.navigate(['/customer']);
-  }
-  /**
    * open confirm cancel dialog
    */
   openConfirmaCancelDialog(index?: number | string) {
@@ -243,12 +233,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
   }
   /**
-   * open project detail
-   * @param index: string 
+   * 
+   * @param row: object 
    */
-  openProjectDetails(index: string): void {
-    this.customerService.setSelectedCustomer(this.data[index]);
-    localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(this.data[index]));
+  openLicenseDetails(row: any): void {
+    this.customerService.setSelectedCustomer(row);
+    localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+    this.router.navigate(['/customer']);
+  }
+  /**
+   * open project detail
+   * @param row: object 
+   */
+  openProjectDetails(row: any): void {
+    this.customerService.setSelectedCustomer(row);
+    localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
     this.router.navigate(['/customer/projects']);
   }
   /**
@@ -272,8 +271,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
    */
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
+      case this.VIEW_LICENSE:
+        this.openLicenseDetails(object.selectedRow);
+        break;
       case this.VIEW_PROJECTS:
-        this.openProjectDetails(object.selectedIndex);
+        this.openProjectDetails(object.selectedRow);
         break;
       case this.MODIFY_LICENSE:
         this.openDialog(object.selectedOption, object.selectedRow);

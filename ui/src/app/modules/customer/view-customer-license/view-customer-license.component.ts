@@ -34,34 +34,6 @@ export class ViewCustomerLicenseComponent implements OnInit {
   equipmentData = [];
   weeklyConsumptionData = [];
   detailedConsumptionData = [];
-  readonly displayedColumns: string[] = [
-    'deviceLimit',
-    'devicesConnected',
-    'tokensPurchased',
-    'AutomationPlatformTokensConsumed',
-    'configurationTokens'
-  ];
-  readonly equipmentDisplayColumns: string[] = [
-    'vendor',
-    'product',
-    'version',
-    'macAddress',
-    'tokensConsumed'
-  ];
-  readonly detailedDisplayColumns: string[] = [
-    'weekId',
-    'monthId',
-    'tokensConsumed'
-  ];
-  readonly detailedConsumptionDisplayColumns: string[] = [
-    'usageDate',
-    'consumption',
-    'vendor',
-    'product',
-    'version',
-    'tokensConsumed',
-    'action'
-  ];
 
   readonly licenseSummaryColumns: TableColumn[] = [
     { name: 'Device Access Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true, },
@@ -275,8 +247,10 @@ export class ViewCustomerLicenseComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        this.snackBarService.openSnackBar('License processed successfully!', '');
-        this.fetchDataToDisplay();
+        if (data) // if it comes from license consumption actions
+          this.fetchDataToDisplay();
+        else
+          this.ngOnInit();
       }
     });
   }

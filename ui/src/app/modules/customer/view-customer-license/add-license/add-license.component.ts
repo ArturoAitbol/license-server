@@ -50,8 +50,8 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
       subaccountId: this.currentCustomer.subaccountId,
       startDate: this.addLicenseForm.value.startDate,
       packageType: this.selectedType,
-      tokens: this.addLicenseForm.value.tokensPurchased,
-      deviceAccessLimit: this.addLicenseForm.value.deviceLimit,
+      tokens: this.addLicenseForm.get("tokensPurchased").value,
+      deviceAccessLimit: this.addLicenseForm.get("tokensPurchased").value,
       renewalDate: this.addLicenseForm.value.renewalDate,
       status: "Active"
     };
