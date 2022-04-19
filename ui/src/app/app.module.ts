@@ -26,6 +26,7 @@ import { MsalInterceptor, MsalModule } from '@azure/msal-angular';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { Constants } from './helpers/constants';
 import { SharedModule } from './modules/shared/shared.module';
+import { environment } from 'src/environments/environment';
 @NgModule({
     declarations: [
         AppComponent,
@@ -52,6 +53,9 @@ import { SharedModule } from './modules/shared/shared.module';
             auth: {
                 clientId: Constants.CLIENT_ID,
                 redirectUri: Constants.REDIRECT_URL_AFTER_LOGIN
+            },
+            cache: {
+                cacheLocation: 'localStorage'
             }
         }), {
             interactionType: InteractionType.Popup,
@@ -61,16 +65,15 @@ import { SharedModule } from './modules/shared/shared.module';
         }, {
             interactionType: InteractionType.Popup,
             protectedResourceMap: new Map([
-                ['https://graph.microsoft.com/v1.0/me', ['user.read']]
+                [environment.apiEndpoint, ['user.read']]
             ])
         }),
         SharedModule
-        // OAuthModule.forRoot()
     ],
     providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true }
+        { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
+        // { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
     ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

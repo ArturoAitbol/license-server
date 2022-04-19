@@ -1,8 +1,11 @@
 import { Component, OnInit, AfterContentInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
-import { MsalService } from '@azure/msal-angular';
+import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { Constants } from './helpers/constants';
+import { Subject } from 'rxjs/internal/Subject';
+import { EventMessage, EventType } from '@azure/msal-browser';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-root',
@@ -10,17 +13,18 @@ import { Constants } from './helpers/constants';
     styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
+	private readonly _destroying$ = new Subject<void>();
     title = 'license-server';
     currentUser: boolean = false;
 
     constructor(
         private router: Router,
         private authenticationService: AuthenticationService,
-        private msalService: MsalService
+        private msalService: MsalService,
+        private broadcastService: MsalBroadcastService
     ) { }
 
     ngOnInit() {
-        console.log('AppComponent.ngOnInit: ', window.location.origin + '/license-server/index.hmtl');
         if (!this.isLoggedIn()) {
             this.router.navigate(['/login']);
         } else {
@@ -30,6 +34,13 @@ export class AppComponent implements OnInit, OnDestroy {
         this.authenticationService.loggedIn.subscribe(() => {
             this.currentUser = this.isLoggedIn();
         });
+        this.broadcastService.msalSubject$.pipe(
+			filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS),
+			takeUntil(this._destroying$)
+		)
+		.subscribe((result: EventMessage) => {
+			// Do something with event payload here
+		});
     }
     /**
      * check whether user logged in
@@ -59,5 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+		this._destroying$.next(undefined);
+		this._destroying$.complete();
     }
 }
