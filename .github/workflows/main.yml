@@ -54,23 +54,23 @@ jobs:
         
     - name: Build Angular web app
       # trying to configure the redirection to index when refreshing
-      # uses: Azure/static-web-apps-deploy@v1
-      # with:
-      #   azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-      #   repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (i.e. PR comments)
-      #   action: "upload"
-      #   app_location: "ui"
-      #   output_location: "ui/dist"
-      #   app_build_command: |
-      #     npm install
-      #     npm run build
-      run: |
-        cd ./ui
-        npm install
-        npm run build
-        # npm run build -- "--base-href=/license-server/ --configuration production"
-        # ng build --base-href='/license-server/' --configuration production
-        ls ./dist
+      uses: Azure/static-web-apps-deploy@v1
+      with:
+        azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (i.e. PR comments)
+        action: "upload"
+        app_location: "ui"
+        output_location: "ui/dist"
+        app_build_command: |
+          npm install
+          npm run build
+      # run: |
+      #   cd ./ui
+      #   npm install
+      #   npm run build
+      #   # npm run build -- "--base-href=/license-server/ --configuration production"
+      #   # ng build --base-href='/license-server/' --configuration production
+      #   ls ./dist
 
         
     - name: Upload to blob storagerun
