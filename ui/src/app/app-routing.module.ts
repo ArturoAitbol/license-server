@@ -8,24 +8,19 @@ import { MsalGuard } from '@azure/msal-angular';
 const config: ExtraOptions = {
   onSameUrlNavigation: 'reload',
   relativeLinkResolution: 'legacy',
-  useHash: false
+  useHash: true
 };
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent },
   // { path: 'redirect', component: RedirectComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard] },
   {
-    path: 'dashboard', component: DashboardComponent,
-    canActivate: [
-      MsalGuard
-    ]
-  },
-  {
-    path: 'customer',
+    path: 'customer', canActivate: [MsalGuard],
     loadChildren: () => import('./modules/customer/customer.module').then(m => m.CustomerModule)
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: 'dashboard' }
 ];
 
 @NgModule({

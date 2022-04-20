@@ -1,6 +1,5 @@
-import { Component, OnInit, AfterContentInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from './services/authentication.service';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { Constants } from './helpers/constants';
 import { Subject } from 'rxjs/internal/Subject';
@@ -19,7 +18,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     constructor(
         private router: Router,
-        private authenticationService: AuthenticationService,
         private msalService: MsalService,
         private broadcastService: MsalBroadcastService
     ) { }
@@ -31,9 +29,6 @@ export class AppComponent implements OnInit, OnDestroy {
             this.currentUser = this.isLoggedIn();
             this.navigateToDashboard();
         }
-        this.authenticationService.loggedIn.subscribe(() => {
-            this.currentUser = this.isLoggedIn();
-        });
         this.broadcastService.msalSubject$.pipe(
 			filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS),
 			takeUntil(this._destroying$)
