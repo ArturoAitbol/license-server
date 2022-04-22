@@ -1,10 +1,10 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { LicenseUsage } from 'src/app/model/license-usage.model';
+import { LicenseConsumption } from 'src/app/model/license-consumption.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DevicesService } from 'src/app/services/devices.service';
-import { LicenseUsageService } from 'src/app/services/license-usage.service';
+import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 
@@ -23,7 +23,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   startDate: any;
   endDate: any;
   addLicenseConsumptionForm = this.formBuilder.group({
-    dateOfUsage: ['', Validators.required],
+    consumptionDate: ['', Validators.required],
     projectId: ['', Validators.required],
     vendor: [''],
     product: ['']
@@ -35,7 +35,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     private customerService: CustomerService,
     private deviceService: DevicesService,
     private projectService: ProjectService,
-    private licenseUsageService: LicenseUsageService,
+    private licenseConsumptionService: LicenseConsumptionService,
     private snackBarService: SnackBarService,
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddLicenseConsumptionComponent>,
@@ -76,12 +76,10 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       subaccountId: this.currentCustomer.subaccountId,
       projectId: this.addLicenseConsumptionForm.value.projectId,
       deviceId: this.addLicenseConsumptionForm.value.product,
-      usageDate: this.addLicenseConsumptionForm.value.dateOfUsage,
-      serialNumber: '',
-      macAddress: '',
+      consumptionDate: this.addLicenseConsumptionForm.value.consumptionDate,
       usageType: "Configuration"
     };
-    this.licenseUsageService.addLicenseUsageDetails(licenseConsumptionObject).toPromise().then((res: any) => {
+    this.licenseConsumptionService.addLicenseConsumptionDetails(licenseConsumptionObject).toPromise().then((res: any) => {
       this.isDataLoading = false;
       if (!res.error) {
         this.snackBarService.openSnackBar('Added license consumption successfully!', '');

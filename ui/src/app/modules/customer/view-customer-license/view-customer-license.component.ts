@@ -8,7 +8,7 @@ import { forkJoin } from 'rxjs';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
-import { LicenseUsageService } from 'src/app/services/license-usage.service';
+import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { LicenseService } from 'src/app/services/license.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddLicenseConsumptionComponent } from './add-license-consumption/add-license-consumption.component';
@@ -51,18 +51,16 @@ export class ViewCustomerLicenseComponent implements OnInit {
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
-    { name: 'MAC Address', dataKey: 'macAddress', position: 'left', isSortable: true },
     { name: 'tekTokens Consumed', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
   readonly detailedConsumptionColumns: TableColumn[] = [
     { name: 'Week', dataKey: 'weekId', position: 'left', isSortable: true },
-    { name: 'Month', dataKey: 'monthId', position: 'left', isSortable: true },
     { name: 'tekTokens', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
   readonly detailedConsumptionSummaryColumns: TableColumn[] = [
-    { name: 'Date Of Usage', dataKey: 'usageDate', position: 'left', isSortable: true },
+    { name: 'Date Of Usage', dataKey: 'consumptionDate', position: 'left', isSortable: true },
     { name: 'Consumption', dataKey: 'consumption', position: 'left', isSortable: true },
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
@@ -92,7 +90,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
     private customerSerivce: CustomerService,
     private dialogService: DialogService,
     private licenseService: LicenseService,
-    private licenseUsageService: LicenseUsageService,
+    private licenseConsumptionService: LicenseConsumptionService,
     private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog
@@ -160,7 +158,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
       tokensConsumed: 0,
       devicesConnected: 0
     };
-    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("summary")).subscribe((response: any) => {
+    this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("summary")).subscribe((response: any) => {
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
       const mergedObj = { ...requiredObject, ...response };
@@ -181,7 +179,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   }
 
   fetchEquipment() {
-    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("equipment")).subscribe((res: any) => {
+    this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("equipment")).subscribe((res: any) => {
       this.equipmentData = res.equipmentSummary;
       this.isEquipmentSummaryLoadingResults = false;
       this.isEquipmentSummaryRequestCompleted = true;
@@ -193,7 +191,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   }
 
   fetchAggregatedData() {
-    this.licenseUsageService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
+    this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
       this.detailedConsumptionData = res.usage;
       this.weeklyConsumptionData = res.configurationTokens;
       this.isDetailedConsumptionLoadingResults = false;

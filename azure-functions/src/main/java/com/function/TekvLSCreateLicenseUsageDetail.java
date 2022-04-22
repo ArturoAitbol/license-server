@@ -59,9 +59,7 @@ public class TekvLSCreateLicenseUsageDetail
 			{"subaccountId","subaccount_id"}, 
 			{"projectId","project_id"}, 
 			{"deviceId","device_id"}, 
-			{"usageDate","usage_date"}, 
-			{"macAddress","mac_address"},
-			{"serialNumber","serial_number"}, 
+			{"consumptionDate","consumption_date"},
 			{"usageType","usage_type"}
 		};
 		// Connect to the database
@@ -95,10 +93,10 @@ public class TekvLSCreateLicenseUsageDetail
 					return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 				}
 			}
-			// modifed_date is always usage_date when creating the record
+			// modifed_date is always consumption_date when creating the record
 			sqlPart1 += "modified_date,tokens_consumed";
-			sqlPart2 += "'" + jobj.getString("usageDate") + "'," + tokensToConsume;
-			sql = "insert into license_usage (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";	
+			sqlPart2 += "'" + jobj.getString("consumptionDate") + "'," + tokensToConsume;
+			sql = "insert into license_consumption (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";	
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + sql);
 			rs = statement.executeQuery(sql);

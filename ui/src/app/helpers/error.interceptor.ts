@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-// import { ToastrService } from 'ngx-toastr';
+import { SnackBarService } from '../services/snack-bar.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-    constructor() { }
+    constructor(private snackBarService: SnackBarService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(catchError(err => {
@@ -21,6 +21,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                 // location.reload(true);
             }
             const error = err.error || err.statusText;
+            this.snackBarService.openSnackBar(error, 'Error performing action!');
             return throwError(error);
         }))
     }

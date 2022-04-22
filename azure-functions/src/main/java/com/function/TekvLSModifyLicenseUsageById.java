@@ -65,13 +65,11 @@ public class TekvLSModifyLicenseUsageById
 			{"subaccountId","subaccount_id"}, 
 			{"projectId","project_id"}, 
 			{"deviceId","device_id"}, 
-			{"usageDate","usage_date"}, 
-			{"macAddress","mac_address"}, 
-			{"serialNumber","serial_number"}, 
+			{"consumptionDate","consumption_date"},
 			{"usageType","usage_type"}
 		};
 		// Build the sql query
-		String sql = "update license_usage set ";
+		String sql = "update license_consumption set ";
 		int optionalParamsFound = 0;
 		for (int i = 0; i < optionalParams.length; i++) {
 			try {

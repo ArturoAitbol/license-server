@@ -9,7 +9,7 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Date of use</mat-label>
-                        <input matInput [matDatepicker]="picker" [min]="startDate" [max]="endDate" required formControlName="dateOfUsage">
+                        <input matInput [matDatepicker]="picker" [min]="startDate" [max]="endDate" required formControlName="consumptionDate">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>

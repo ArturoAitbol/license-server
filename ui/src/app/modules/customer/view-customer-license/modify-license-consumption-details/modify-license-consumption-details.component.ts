@@ -9,11 +9,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   updateForm = this.formBuilder.group({
-    dateOfUsage: ['', Validators.required],
+    consumptionDate: ['', Validators.required],
     vendor: ['', Validators.required],
     model: ['', Validators.required],
     version: ['', Validators.required],
-    macAddress: ['', Validators.required],
     type: ['', Validators.required],
     consumption: ['', Validators.required],
     tokensUsed: ['', Validators.required]
