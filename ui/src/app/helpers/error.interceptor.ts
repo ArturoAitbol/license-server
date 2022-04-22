@@ -21,7 +21,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                 // location.reload(true);
             }
             const error = err.error || err.statusText;
-            this.snackBarService.openSnackBar(error, 'Error performing action!');
+            this.snackBarService.openSnackBar(error.error, 'Error performing action!');
             return throwError(error);
         }))
     }
