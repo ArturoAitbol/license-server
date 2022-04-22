@@ -11,7 +11,6 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
 import java.util.Optional;
-import java.util.Calendar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -100,9 +99,10 @@ public class TekvLSGetAllLicenseUsageDetails {
 				default: {
 					// This is the default case (aggregated data)
 					JSONArray array = new JSONArray();
-					String sqlAll = 
-						"select l.consumption_date,d.vendor,d.product,d.version,l.usage_type,l.tokens_consumed,l.id,l.device_id,CONCAT('Week ',DATE_PART('week',consumption_date)) as consumption " + 
-						"from device d, license_consumption l where d.id=l.device_id and " + sqlCommonConditions + " order by consumption_date desc;";
+					String sqlAll = "select l.id, l.consumption_date, d.vendor, d.product, d.version, l.usage_type, l.tokens_consumed, l.device_id, " +
+						"CONCAT('Week ',DATE_PART('week',consumption_date)) as consumption, sum(u.consumption_id) as usage_days " +
+						"from device d, license_consumption l, usage_detail u where d.id=l.device_id and u.consumption_id=l.id and " + 
+						sqlCommonConditions + " group by u.consumption_id order by consumption_date desc;";
 					context.getLogger().info("Execute SQL statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
@@ -116,6 +116,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("usageType", rs.getString("usage_type"));
 						item.put("tokensConsumed", rs.getString("tokens_consumed"));
 						item.put("consumption", rs.getString("consumption"));
+						item.put("usageDays", rs.getString("usage_days"));
 						array.put(item);
 					}
 					json.put("usage", array);
