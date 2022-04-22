@@ -65,7 +65,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// First get the devices connected
 					// Get number of connected devices
 					String sqlDevicesConnected = "select count(distinct device_id) from license_consumption l where " + sqlCommonConditions + ";";
-					context.getLogger().info("Execute SQL statement: " + sqlDevicesConnected);
+					context.getLogger().info("Execute SQL devices statement: " + sqlDevicesConnected);
 					rs = statement.executeQuery(sqlDevicesConnected);
 					rs.next();
 					json.put("devicesConnected", rs.getInt(1));
@@ -73,7 +73,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// Get tokens consumed
 					String sqlTokensConsumed = "select usage_type, sum(tokens_consumed) from license_consumption l where " + sqlCommonConditions + 
 						" group by l.usage_type;";
-					context.getLogger().info("Execute SQL statement: " + sqlTokensConsumed);
+					context.getLogger().info("Execute SQL tokens statement: " + sqlTokensConsumed);
 					rs = statement.executeQuery(sqlTokensConsumed);
 					while (rs.next()) {
 						json.put(rs.getString(1) + "TokensConsumed", rs.getInt(2));
@@ -84,7 +84,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					String sqlEquipmentSummary = 
 						"select d.id,d.vendor,d.product,d.version from device d, license_consumption l where d.id=l.device_id and " + 
 						sqlCommonConditions + " and l.usage_type='AutomationPlatform' group by d.id;";
-					context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
+					context.getLogger().info("Execute SQL equipment statement: " + sqlEquipmentSummary);
 					rs = statement.executeQuery(sqlEquipmentSummary);
 					while (rs.next()) {
 						JSONObject item = new JSONObject();
@@ -99,9 +99,9 @@ public class TekvLSGetAllLicenseUsageDetails {
 				default: {
 					// This is the default case (aggregated data)
 					JSONArray array = new JSONArray();
-					String sqlAll = "select l.id, l.consumption_date, d.vendor, d.product, d.version, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date)) as consumption " +
-						"from device d, license_consumption l, usage_detail u where d.id=l.device_id and u.consumption_id=l.id and " + sqlCommonConditions + " order by consumption_date desc;";
-					context.getLogger().info("Execute SQL statement: " + sqlAll);
+					String sqlAll = "select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date)) as consumption, " +
+						"d.vendor, d.product, d.version from device d, license_consumption l where d.id=l.device_id and " + sqlCommonConditions + " order by consumption_date desc;";
+					context.getLogger().info("Execute SQL all statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
 						JSONObject item = new JSONObject();
@@ -122,7 +122,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					JSONArray array2 = new JSONArray();
 					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',consumption_date)) as weekId, sum(tokens_consumed) from license_consumption l where " + 
 						sqlCommonConditions + " and usage_type='Configuration' group by DATE_PART('week',consumption_date), DATE_PART('month',consumption_date) order by weekId;";
-					context.getLogger().info("Execute SQL statement: " + sqlWeeklyConfigurationTokensConsumed);
+					context.getLogger().info("Execute SQL weekly statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
 					while (rs.next()) {
 						JSONObject item = new JSONObject();
