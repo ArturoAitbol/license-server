@@ -18,7 +18,7 @@
     <!-- project summary section -->
     <h2>Project Summary</h2>
     <section >
-        <div class="example-container mat-elevation-z8">
+        <div class="example-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
             <app-data-table
                 [tableData]="projects"
                 [tableColumns]="displayedColumns" 

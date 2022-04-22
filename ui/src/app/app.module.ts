@@ -15,7 +15,6 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { MaterialModule } from './modules/material/material.module';
 import { AddCustomerAccountModalComponent } from './dashboard/add-customer-account-modal/add-customer-account-modal.component';
 import { AddSubaccountModalComponent } from './dashboard/add-subaccount-modal/add-subaccount-modal.component';
-import { RedirectComponent } from './views/redirect/redirect.component';
 import { ModifyCustomerAccountComponent } from './dashboard/modify-customer-account/modify-customer-account.component';
 import { ConfirmComponent } from './dialogs/confirm/confirm.component';
 // third party modules
@@ -32,7 +31,6 @@ import { environment } from 'src/environments/environment';
         DashboardComponent,
         AddCustomerAccountModalComponent,
         AddSubaccountModalComponent,
-        RedirectComponent,
         ModifyCustomerAccountComponent,
         ConfirmComponent,
     ],

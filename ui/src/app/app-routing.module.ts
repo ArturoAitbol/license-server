@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule, ExtraOptions } from '@angular/router';
 import { LoginPageComponent } from './views/login-page/login-page.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { RedirectComponent } from './views/redirect/redirect.component';
 import { MsalGuard } from '@azure/msal-angular';
 
 const config: ExtraOptions = {
@@ -14,7 +13,6 @@ const config: ExtraOptions = {
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent },
-  // { path: 'redirect', component: RedirectComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard] },
   {
     path: 'customer', canActivate: [MsalGuard],

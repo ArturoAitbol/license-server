@@ -1,12 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Project } from 'src/app/model/project.model';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
-import { DialogService } from 'src/app/services/dialog.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { AddProjectComponent } from './add-project/add-project.component';
 
@@ -23,6 +21,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     { name: 'Open Date', dataKey: 'openDate', position: 'left', isSortable: true },
     { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
   ];
+  tableMaxHeight: number;
   currentCustomer: any;
   projects: Project[] = [];
   projectsBk: Project[] = [];
@@ -36,8 +35,24 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     private router: Router,
     public dialog: MatDialog
   ) { }
+  
+  @HostListener('window:resize')
+  sizeChange() {
+    this.calculateTableHeight();
+  }
+
+  private calculateTableHeight() {
+    this.tableMaxHeight = window.innerHeight // doc height
+      - (window.outerHeight * 0.01 * 2) // - main-container margin
+      - 60 // - route-content margin
+      - 20 // - dashboard-content padding
+      - 30 // - table padding
+      - 32 // - title height
+      - (window.outerHeight * 0.05 * 2); // - table-section margin
+  }
 
   ngOnInit(): void {
+    this.calculateTableHeight();
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
     this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
     this.fetchProjects();

@@ -7,7 +7,7 @@
         <button mat-raised-button (click)="addSubaccount()">Add Subaccount</button>
     </div>
     <section class="table-section">
-        <div class="example-container mat-elevation-z8">
+        <div class="example-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
             <app-data-table
                 [tableData]="licenseList"
                 [tableColumns]="displayedColumns" 

@@ -1,14 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Constants } from '../helpers/constants';
 import { Utility } from '../helpers/Utility';
 import { CustomerLicense } from '../model/customer-license';
 import { Customer } from '../model/customer.model';
-import { License } from '../model/license.model';
 import { SubAccount } from '../model/subaccount.model';
 import { CustomerService } from '../services/customer.service';
 import { DialogService } from '../services/dialog.service';
@@ -25,6 +23,7 @@ import { ModifyCustomerAccountComponent } from './modify-customer-account/modify
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  tableMaxHeight: number;
   displayedColumns: any[] = [];
   data: CustomerLicense[] = [];
   customersList: any = [];
@@ -53,8 +52,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private snackBarService: SnackBarService,
     private router: Router
   ) { }
+  
+  @HostListener('window:resize')
+  sizeChange() {
+    this.calculateTableHeight();
+  }
+
+  private calculateTableHeight() {
+    this.tableMaxHeight = window.innerHeight // doc height
+      - (window.outerHeight * 0.01 * 2) // - main-container margin
+      - 60 // - route-content margin
+      - 20 // - dashboard-content padding
+      - 30 // - table padding
+      - 32 // - title height
+      - (window.outerHeight * 0.05 * 2); // - table-section margin
+  }
 
   ngOnInit(): void {
+    this.calculateTableHeight();
     this.initColumns();
     this.fetchDataToDisplay();
   }
