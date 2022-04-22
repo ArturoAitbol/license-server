@@ -83,7 +83,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 				case "equipment": {
 					JSONArray array = new JSONArray();
 					String sqlEquipmentSummary = 
-						"select d.id,d.vendor,d.product,d.version, sum(l.tokens_consumed) as tokens_consumed, count(l.id) as times_consumed from device d, license_consumption l where d.id=l.device_id and " + 
+						"select d.id,d.vendor,d.product,d.version from device d, license_consumption l where d.id=l.device_id and " + 
 						sqlCommonConditions + " and l.usage_type='AutomationPlatform' group by d.id;";
 					context.getLogger().info("Execute SQL statement: " + sqlEquipmentSummary);
 					rs = statement.executeQuery(sqlEquipmentSummary);
@@ -93,8 +93,6 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("vendor", rs.getString("vendor"));
 						item.put("product", rs.getString("product"));
 						item.put("version", rs.getString("version"));
-						item.put("tokensConsumed", rs.getString("tokens_consumed"));
-						item.put("timesConsumed", rs.getString("times_consumed"));
 						array.put(item);
 					}
 					json.put("equipmentSummary", array);

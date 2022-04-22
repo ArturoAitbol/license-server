@@ -4,13 +4,11 @@ import { MatDatepicker } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { forkJoin } from 'rxjs';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { LicenseService } from 'src/app/services/license.service';
-import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddLicenseConsumptionComponent } from './add-license-consumption/add-license-consumption.component';
 import { AddLicenseComponent } from './add-license/add-license.component';
 import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consumption-details/modify-license-consumption-details.component';
@@ -50,8 +48,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   readonly equipmentSummaryColumns: TableColumn[] = [
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
-    { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
-    { name: 'tekTokens Consumed', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
+    { name: 'Version', dataKey: 'version', position: 'left', isSortable: true }
   ];
 
   readonly detailedConsumptionColumns: TableColumn[] = [
@@ -91,7 +88,6 @@ export class ViewCustomerLicenseComponent implements OnInit {
     private dialogService: DialogService,
     private licenseService: LicenseService,
     private licenseConsumptionService: LicenseConsumptionService,
-    private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog
   ) { }
