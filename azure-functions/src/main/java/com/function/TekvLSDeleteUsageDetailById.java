@@ -18,24 +18,24 @@ import org.json.JSONObject;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSDeleteLicenseUsageById 
+public class TekvLSDeleteUsageDetailById 
 {
 	/**
-	 * This function listens at endpoint "/api/licenseUsageDetails". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/licenseUsageDetails
+	 * This function listens at endpoint "/api/usageDetails". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/api/usageDetails
 	 */
-	@FunctionName("TekvLSDeleteLicenseUsageById")
+	@FunctionName("TekvLSDeleteUsageDetailById")
 	public HttpResponseMessage run(
 			@HttpTrigger(
 				name = "req",
 				methods = {HttpMethod.DELETE},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "licenseUsageDetails/{id}")
+				route = "usageDetails/{id}")
 				HttpRequestMessage<Optional<String>> request,
 				@BindingName("id") String id,
 				final ExecutionContext context) 
 	{
-		context.getLogger().info("Entering TekvLSDeleteLicenseUsageById Azure function");
+		context.getLogger().info("Entering TekvLSDeleteUsageDetailById Azure function");
 		
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -48,7 +48,7 @@ public class TekvLSDeleteLicenseUsageById
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 			
 			// Delete project
-			String sql = "delete from license_consumption where id='" + id +"';";
+			String sql = "delete from usage_detail where id='" + id +"';";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			statement.executeUpdate(sql);
 			context.getLogger().info("License usage delete successfully."); 
