@@ -10,8 +10,11 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.Optional;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -21,7 +24,7 @@ public class TekvLSCreateLicenseUsageDetail
 {
 	/**
 	 * This function listens at endpoint "/api/licenseUsageDetails". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/licensesUsageDetails
+	 * 1. curl -d "HTTP Body" {your host}/api/licenseUsageDetails
 	 */
 	@FunctionName("TekvLSCreateLicenseUsageDetail")
 	public HttpResponseMessage run(
@@ -31,8 +34,7 @@ public class TekvLSCreateLicenseUsageDetail
 				authLevel = AuthorizationLevel.ANONYMOUS,
 				route = "licenseUsageDetails")
 				HttpRequestMessage<Optional<String>> request,
-				final ExecutionContext context) 
-	{
+				final ExecutionContext context) {
 		context.getLogger().info("Entering TekvLSCreateLicenseUsageDetail Azure function");
 		
 		// Parse request body and extract parameters needed
@@ -101,11 +103,9 @@ public class TekvLSCreateLicenseUsageDetail
 			context.getLogger().info("Execute SQL statement: " + sql);
 			rs = statement.executeQuery(sql);
 			rs.next();
-			JSONObject json = new JSONObject();
-			json.put("id", rs.getString("id"));
-			context.getLogger().info("License usage inserted successfully.");
-
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			jobj.put("id", rs.getString("id"));
+			context.getLogger().info("License consumption inserted successfully.");
+			return this.createUsageDetail(jobj, statement, request, context);
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
@@ -114,6 +114,43 @@ public class TekvLSCreateLicenseUsageDetail
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+		}
+	}
+
+	private HttpResponseMessage createUsageDetail(JSONObject consumptionObj, Statement statement, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) {
+		String sql = "insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number) values ";
+		String consumptionId = consumptionObj.getString("id");
+		LocalDate consumptionDate = LocalDate.parse(consumptionObj.getString("consumptionDate"));
+		try {
+			final JSONArray usageDays = consumptionObj.getJSONArray("usageDays");
+			if (usageDays != null && usageDays.length() > 0) {
+				//Iterating the contents of the array
+				Iterator<Object> iterator = usageDays.iterator();
+				Integer usage;
+				while(iterator.hasNext()) {
+					usage = Integer.parseInt(iterator.next().toString());
+					sql += "\n('" + consumptionId + "','" + consumptionDate.plusDays(usage).toString() + "'," + iterator.next() + ",'',''),";
+				}
+				sql = sql.substring(0, sql.length() - 1) + ";";
+			} else {
+				String macAddress = consumptionObj.getString("macAddress");
+				String serialNumber = consumptionObj.getString("serialNumber");
+				sql += "('" + consumptionId + "','" + consumptionDate.toString() + "',0,'" + macAddress + "','" + serialNumber + "');";
+			}
+			context.getLogger().info("Execute create usages SQL statement: " + sql);
+			statement.executeQuery(sql);
+			context.getLogger().info("License usage details inserted successfully.");
+			return request.createResponseBuilder(HttpStatus.OK).body(consumptionObj.toString()).build();
+		} catch (SQLException e) {
+			context.getLogger().info("SQL exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
