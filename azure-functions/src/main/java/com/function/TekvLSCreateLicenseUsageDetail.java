@@ -133,7 +133,7 @@ public class TekvLSCreateLicenseUsageDetail
 				Integer usage;
 				while(iterator.hasNext()) {
 					usage = Integer.parseInt(iterator.next().toString());
-					sql += "\n('" + consumptionId + "'," + consumptionDate.plusDays(usage).toString() + "," + iterator.next() + ",'',''),";
+					sql += "\n('" + consumptionId + "'," + consumptionDate.plusDays(usage).toString() + "," + usage + ",'',''),";
 				}
 				sql = sql.substring(0, sql.length() - 1) + ";";
 			} else {
