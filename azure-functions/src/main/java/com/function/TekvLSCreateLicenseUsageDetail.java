@@ -142,7 +142,7 @@ public class TekvLSCreateLicenseUsageDetail
 				sql += "('" + consumptionId + "','" + consumptionDate.toString() + "',0,'" + macAddress + "','" + serialNumber + "');";
 			}
 			context.getLogger().info("Execute create usages SQL statement: " + sql);
-			statement.executeQuery(sql);
+			statement.executeUpdate(sql);
 			context.getLogger().info("License usage details inserted successfully.");
 			return request.createResponseBuilder(HttpStatus.OK).body(consumptionObj.toString()).build();
 		} catch (SQLException e) {
