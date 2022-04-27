@@ -133,7 +133,7 @@ public class TekvLSCreateLicenseUsageDetail
 				Integer usage;
 				while(iterator.hasNext()) {
 					usage = Integer.parseInt(iterator.next().toString());
-					sql += "\n('" + consumptionId + "','" + consumptionDate.plusDays(usage).toString() + "'," + iterator.next() + ",'',''),";
+					sql += "\n('" + consumptionId + "'," + consumptionDate.plusDays(usage).toString() + "," + iterator.next() + ",'',''),";
 				}
 				sql = sql.substring(0, sql.length() - 1) + ";";
 			} else {
@@ -151,9 +151,9 @@ public class TekvLSCreateLicenseUsageDetail
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		} catch (Exception e) {
-			context.getLogger().info("Caught exception: " + e.getMessage());
+			context.getLogger().info("Caught exception: " + e.toString());
 			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
+			json.put("error", e);
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 	}
