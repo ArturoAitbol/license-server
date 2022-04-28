@@ -100,13 +100,14 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// This is the default case (aggregated data)
 					JSONArray array = new JSONArray();
 					String sqlAll = "select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date)) as consumption, " +
-						"d.vendor, d.product, d.version from device d, license_consumption l where d.id=l.device_id and " + sqlCommonConditions + " order by consumption_date desc;";
+						"l.project_id, d.vendor, d.product, d.version from device d, license_consumption l where d.id=l.device_id and " + sqlCommonConditions + " order by consumption_date desc;";
 					context.getLogger().info("Execute SQL all statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
 						JSONObject item = new JSONObject();
 						item.put("id", rs.getString("id"));
 						item.put("deviceId", rs.getString("device_id"));
+						item.put("projectId", rs.getString("project_id"));
 						item.put("consumptionDate", rs.getString("consumption_date").split(" ")[0]);
 						item.put("vendor", rs.getString("vendor"));
 						item.put("product", rs.getString("product"));
