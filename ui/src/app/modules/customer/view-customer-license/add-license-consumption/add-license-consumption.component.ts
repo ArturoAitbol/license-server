@@ -18,15 +18,21 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   projects: any = [];
   vendors: any = [];
   models: any = [];
-  versions: any = [];
+  days: any = [
+    {name: "Mon", used: false},
+    {name: "Tue", used: false},
+    {name: "Wed", used: false},
+    {name: "Thu", used: false},
+    {name: "Fri", used: false},
+  ];
   selectedVendor: string = '';
   startDate: any;
   endDate: any;
   addLicenseConsumptionForm = this.formBuilder.group({
     consumptionDate: ['', Validators.required],
     projectId: ['', Validators.required],
-    vendor: [''],
-    product: ['']
+    vendor: ['', Validators.required],
+    product: ['', Validators.required]
   });
   currentCustomer: any;
   isDataLoading: boolean = false;
@@ -54,6 +60,10 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    */
   onChangeVendor(value: string): void {
     this.addLicenseConsumptionForm.patchValue({ product: '' });
+    this.filterVendorDevices(value);
+  }
+
+  private filterVendorDevices(value: string): void {
     this.models = [];
     if (value) {
       this.devices.forEach((device: any) => {
@@ -71,14 +81,33 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 
+  pickConsumptionDate(newDateSelection: Date) {
+    let startOfWeek: Date = new Date(newDateSelection);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    this.addLicenseConsumptionForm.patchValue({consumptionDate: startOfWeek});
+  }
+
+  setChecked(value: boolean, index: number) {
+    this.days[index].used = value;
+  }
+
   submit(): void {
+    let consumptionDate: Date = new Date(this.addLicenseConsumptionForm.value.consumptionDate);
     const licenseConsumptionObject: any = {
       subaccountId: this.currentCustomer.subaccountId,
       projectId: this.addLicenseConsumptionForm.value.projectId,
       deviceId: this.addLicenseConsumptionForm.value.product,
-      consumptionDate: this.addLicenseConsumptionForm.value.consumptionDate,
-      usageType: "Configuration"
+      consumptionDate: consumptionDate.toISOString().split("T")[0],
+      usageType: "Configuration",
+      macAddress: "",
+      serialNumber: "",
+      usageDays: []
     };
+    for (let i = 0; i < this.days.length; i++) {
+      if (this.days[i].used)
+        licenseConsumptionObject.usageDays.push(i + 1);
+    }
+    this.isDataLoading = true;
     this.licenseConsumptionService.addLicenseConsumptionDetails(licenseConsumptionObject).toPromise().then((res: any) => {
       this.isDataLoading = false;
       if (!res.error) {

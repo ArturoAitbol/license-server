@@ -5,16 +5,17 @@
 }
 .flex-container {
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: flex-start;
+  flex-wrap: nowrap;
+  flex-direction: column;
 }
 .flex-container > div {
   margin: 10px;
+  text-align: center;
 }
 mat-form-field {
   width: 100%;
 }
-.p-20 {
-  padding: 20px;
+
+.checkbox-margin {
+  margin: 0 12px 12px;
 }

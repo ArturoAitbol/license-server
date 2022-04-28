@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { Constants } from '../helpers/constants';
 import { LicenseConsumption } from '../model/license-consumption.model';
 
 @Injectable({
@@ -17,7 +16,7 @@ export class LicenseConsumptionService {
    * @param data: LicenseConsumption
    * @returns: Observable 
    */
-  public addLicenseConsumptionDetails(data: LicenseConsumption) {
+  public addLicenseConsumptionDetails(data: any) {
     return this.httpClient.post(this.API_URL, data);
   }
   /**
