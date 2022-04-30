@@ -134,20 +134,20 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     let modifiedDays: any = {
       id: this.data.id,
       consumptionDate: this.data.consumptionDate,
-      added: [],
-      deleted: []
+      addedDays: [],
+      deletedDays: []
     };
     for (let i = 0; i < this.days.length; i++) {
       if (this.days[i].used != this.originalDays[i].used) {
         if (this.days[i].used)
-          modifiedDays.added.push(i);
+          modifiedDays.addedDays.push(i);
         else
-          modifiedDays.deleted.push(this.days[i].id);
+          modifiedDays.deletedDays.push(this.days[i].id);
       }
     }
-    if (modifiedDays.added.length > 0)
+    if (modifiedDays.addedDays.length > 0)
       requestsArray.push(this.usageDetailService.createUsageDetails(modifiedDays));
-    if (modifiedDays.deleted.length > 0)
+    if (modifiedDays.deletedDays.length > 0)
       requestsArray.push(this.usageDetailService.deleteUsageDetails(modifiedDays));
   }
 

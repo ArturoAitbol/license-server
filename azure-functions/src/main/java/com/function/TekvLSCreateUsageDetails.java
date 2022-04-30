@@ -52,10 +52,10 @@ public class TekvLSCreateUsageDetails
 			jobj = new JSONObject(requestBody);
 			// Build the sql insertion query
 			String sqlPart2 = "";
-			final JSONArray usageDays = jobj.getJSONArray("usageDays");
-			if (usageDays != null && usageDays.length() > 0) {
+			final JSONArray addedDays = jobj.getJSONArray("addedDays");
+			if (addedDays != null && addedDays.length() > 0) {
 				//Iterating the contents of the array
-				Iterator<Object> iterator = usageDays.iterator();
+				Iterator<Object> iterator = addedDays.iterator();
 				Integer usage;
 				LocalDate consumptionDate = LocalDate.parse(jobj.getString("consumptionDate"));
 				while(iterator.hasNext()) {
@@ -64,7 +64,7 @@ public class TekvLSCreateUsageDetails
 				}
 				sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
 			} else {
-				json.put("error", "Missing mandatory parameter: usageDays");
+				json.put("error", "Missing mandatory parameter: addedDays");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			// modifed_date is always consumption_date when creating the record

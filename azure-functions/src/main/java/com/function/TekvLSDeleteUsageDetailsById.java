@@ -53,16 +53,16 @@ public class TekvLSDeleteUsageDetailsById
 			jobj = new JSONObject(requestBody);
 			// Delete usage details
 			sql = "delete from usage_detail where consumption_id='" + id +"' and (";
-			final JSONArray usageDays = jobj.getJSONArray("usageDays");
-			if (usageDays != null && usageDays.length() > 0) {
+			final JSONArray deletedDays = jobj.getJSONArray("deletedDays");
+			if (deletedDays != null && deletedDays.length() > 0) {
 				//Iterating the contents of the array
-				Iterator<Object> iterator = usageDays.iterator();
+				Iterator<Object> iterator = deletedDays.iterator();
 				while(iterator.hasNext()) {
 					sql += " id='" + iterator.next().toString() + "' or";
 				}
 				sql = sql.substring(0, sql.length() - 3) + ");";
 			} else {
-				json.put("error", "Missing mandatory parameter: usageDays");
+				json.put("error", "Missing mandatory parameter: deletedDays");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		} catch (Exception e) {
