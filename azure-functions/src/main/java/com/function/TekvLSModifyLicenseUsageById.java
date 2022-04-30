@@ -11,6 +11,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -97,12 +98,10 @@ public class TekvLSModifyLicenseUsageById
 					continue;
 				}
 			}
-			sql += " modified_date='" + jobj.getString("consumptionDate") + "',tokens_consumed=" + tokensToConsume;
+			sql += " modified_date='" + LocalDate.now().toString() + "',tokens_consumed=" + tokensToConsume;
 			if (optionalParamsFound == 0) {
 				return request.createResponseBuilder(HttpStatus.OK).build();
 			}
-			// Remove the comma after the last parameter and add the where clause
-			sql = sql.substring(0, sql.length() - 1);
 			sql += " where id='" + id + "';";
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);

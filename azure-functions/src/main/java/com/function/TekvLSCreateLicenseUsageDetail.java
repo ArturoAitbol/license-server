@@ -97,7 +97,7 @@ public class TekvLSCreateLicenseUsageDetail
 			}
 			// modifed_date is always consumption_date when creating the record
 			sqlPart1 += "modified_date,tokens_consumed";
-			sqlPart2 += "'" + jobj.getString("consumptionDate") + "'," + tokensToConsume;
+			sqlPart2 += "'" + LocalDate.now().toString() + "'," + tokensToConsume;
 			sql = "insert into license_consumption (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";	
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + sql);
