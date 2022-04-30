@@ -11,7 +11,6 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -31,7 +30,7 @@ public class TekvLSDeleteUsageDetailsById
 	public HttpResponseMessage run(
 			@HttpTrigger(
 				name = "req",
-				methods = {HttpMethod.POST},
+				methods = {HttpMethod.PUT},
 				authLevel = AuthorizationLevel.ANONYMOUS,
 				route = "usageDetails/{id}")
 				HttpRequestMessage<Optional<String>> request,

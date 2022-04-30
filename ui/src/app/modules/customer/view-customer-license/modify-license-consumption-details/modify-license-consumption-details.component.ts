@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { Validators, FormBuilder } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DevicesService } from 'src/app/services/devices.service';
 import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
@@ -97,13 +98,25 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   submit(): void {
     this.isDataLoading = true;
+    let requestsArray: any[] = [];
     if (this.edited)
-      this.modifyUsageDays();
+      this.modifyUsageDays(requestsArray);
     if (!this.editedForm())
-      this.modifyConsumption();
+      this.modifyConsumption(requestsArray);
+    forkJoin(requestsArray).subscribe(res => {
+      this.isDataLoading = false;
+      const resDataObject: any = res.reduce((current: any, next: any) => {
+        return { ...current, ...next };
+      }, {});
+      if (!resDataObject.error) {
+        this.snackBarService.openSnackBar('License consumption successfully edited!', '');
+        this.dialogRef.close(res);
+      } else
+        this.snackBarService.openSnackBar(resDataObject.error, 'Error editing license consumption!');
+    });
   }
 
-  private modifyConsumption(): void {
+  private modifyConsumption(requestsArray: any[]): void {
     const licenseConsumptionObject: any = {
       subaccountId: this.currentCustomer.subaccountId,
       projectId: this.updateForm.value.projectId,
@@ -113,20 +126,10 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       macAddress: this.data.macAddress,
       serialNumber: this.data.serialNumber
     };
-    this.licenseConsumptionService.updateLicenseConsumptionDetails(licenseConsumptionObject).toPromise().then((res: any) => {
-      this.isDataLoading = false;
-      if (!res.error) {
-        this.snackBarService.openSnackBar('License consumption successfully edited!', '');
-        this.dialogRef.close(res);
-      } else
-        this.snackBarService.openSnackBar(res.error, 'Error editing license consumption!');
-    }).catch((err: any) => {
-      this.isDataLoading = false;
-      this.snackBarService.openSnackBar(err, 'Error editing license consumption!');
-    });
+    requestsArray.push(this.licenseConsumptionService.updateLicenseConsumptionDetails(licenseConsumptionObject));
   }
 
-  private modifyUsageDays(): void {
+  private modifyUsageDays(requestsArray: any[]): void {
     let modifiedDays: any = {
       added: [],
       deleted: []
@@ -136,35 +139,13 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         if (this.days[i].used)
           modifiedDays.added.push(i);
         else
-          modifiedDays.deleted.push(i);
+          modifiedDays.deleted.push(this.days[i].id);
       }
     }
-    if (modifiedDays.added.length > 0) {
-      this.usageDetailService.createUsageDetails(this.data.id, modifiedDays.added).toPromise().then((res: any) => {
-        this.isDataLoading = false;
-        if (!res.error) {
-          this.snackBarService.openSnackBar('License consumption successfully edited!', '');
-          this.dialogRef.close(res);
-        } else
-          this.snackBarService.openSnackBar(res.error, 'Error adding usage days!');
-      }).catch((err: any) => {
-        this.isDataLoading = false;
-        this.snackBarService.openSnackBar(err, 'Error adding usage days!');
-      });
-    }
-    if (modifiedDays.deleted.length > 0) {
-      this.usageDetailService.deleteUsageDetails(this.data.id, modifiedDays.deleted).toPromise().then((res: any) => {
-        this.isDataLoading = false;
-        if (!res.error) {
-          this.snackBarService.openSnackBar('License consumption successfully edited!', '');
-          this.dialogRef.close(res);
-        } else
-          this.snackBarService.openSnackBar(res.error, 'Error adding usage days!');
-      }).catch((err: any) => {
-        this.isDataLoading = false;
-        this.snackBarService.openSnackBar(err, 'Error adding usage days!');
-      });
-    }
+    if (modifiedDays.added.length > 0)
+      requestsArray.push(this.usageDetailService.createUsageDetails(this.data.id, modifiedDays.added));
+    if (modifiedDays.deleted.length > 0)
+      requestsArray.push(this.usageDetailService.deleteUsageDetails(this.data.id, modifiedDays.deleted));
   }
 
   /**
@@ -202,6 +183,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     this.usageDetailService.getUsageDetailDetailsByConsumptionId(id).subscribe((res: any) => {
       res['usageDays'].forEach((day) => {
         this.days[day.dayOfWeek - 1].used = true;
+        this.days[day.dayOfWeek - 1].id = day.id;
       });
       this.originalDays = JSON.parse(JSON.stringify(this.days));
     });

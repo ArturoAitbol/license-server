@@ -24,7 +24,7 @@ export class UsageDetailService {
    * @returns: Observable 
    */
   public deleteUsageDetails(consumptionId: string, data: any): Observable<any> {
-    return this.httpClient.post(`${this.API_URL}/${consumptionId}`, data);
+    return this.httpClient.put(`${this.API_URL}/${consumptionId}`, data);
   }
 
   public getUsageDetailDetailsByConsumptionId(consumptionId: string): Observable<any[]> {
