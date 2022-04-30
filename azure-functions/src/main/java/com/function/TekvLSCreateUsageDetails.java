@@ -47,8 +47,29 @@ public class TekvLSCreateUsageDetails
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		JSONObject jobj;
+		String sql;
 		try {
 			jobj = new JSONObject(requestBody);
+			// Build the sql insertion query
+			String sqlPart2 = "";
+			final JSONArray usageDays = jobj.getJSONArray("usageDays");
+			if (usageDays != null && usageDays.length() > 0) {
+				//Iterating the contents of the array
+				Iterator<Object> iterator = usageDays.iterator();
+				Integer usage;
+				LocalDate consumptionDate = LocalDate.parse(jobj.getString("consumptionDate"));
+				while(iterator.hasNext()) {
+					usage = Integer.parseInt(iterator.next().toString());
+					sqlPart2 += "\n('" + id + "','" + consumptionDate.plusDays(usage).toString() + "'," + usage + ",'',''),";
+				}
+				sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
+			} else {
+				json.put("error", "Missing mandatory parameter: usageDays");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+			// modifed_date is always consumption_date when creating the record
+			sqlPart2 += "'" + jobj.getString("consumptionDate") + "'";
+			sql = "insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number) values " + sqlPart2 + ";";	
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			json.put("error", e.getMessage());
@@ -58,26 +79,6 @@ public class TekvLSCreateUsageDetails
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		// Build the sql insertion query
-		String sqlPart2 = "";
-		final JSONArray usageDays = jobj.getJSONArray("usageDays");
-		if (usageDays != null && usageDays.length() > 0) {
-			//Iterating the contents of the array
-			Iterator<Object> iterator = usageDays.iterator();
-			Integer usage;
-			LocalDate consumptionDate = LocalDate.parse(jobj.getString("consumptionDate"));
-			while(iterator.hasNext()) {
-				usage = Integer.parseInt(iterator.next().toString());
-				sqlPart2 += "\n('" + id + "','" + consumptionDate.plusDays(usage).toString() + "'," + usage + ",'',''),";
-			}
-			sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
-		} else {
-			json.put("error", "Missing mandatory parameter: usageDays");
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-		}
-		// modifed_date is always consumption_date when creating the record
-		sqlPart2 += "'" + jobj.getString("usageDate") + "'";
-		String sql = "insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number) values " + sqlPart2 + ";";	
 
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);

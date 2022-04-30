@@ -101,7 +101,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     let requestsArray: any[] = [];
     if (this.edited)
       this.modifyUsageDays(requestsArray);
-    if (!this.editedForm())
+    if (this.editedForm())
       this.modifyConsumption(requestsArray);
     forkJoin(requestsArray).subscribe(res => {
       this.isDataLoading = false;
@@ -118,6 +118,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   private modifyConsumption(requestsArray: any[]): void {
     const licenseConsumptionObject: any = {
+      consumptionId: this.data.id,
       subaccountId: this.currentCustomer.subaccountId,
       projectId: this.updateForm.value.projectId,
       deviceId: this.updateForm.value.deviceId,
@@ -131,6 +132,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   private modifyUsageDays(requestsArray: any[]): void {
     let modifiedDays: any = {
+      id: this.data.id,
+      consumptionDate: this.data.consumptionDate,
       added: [],
       deleted: []
     };
@@ -143,9 +146,9 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       }
     }
     if (modifiedDays.added.length > 0)
-      requestsArray.push(this.usageDetailService.createUsageDetails(this.data.id, modifiedDays.added));
+      requestsArray.push(this.usageDetailService.createUsageDetails(modifiedDays));
     if (modifiedDays.deleted.length > 0)
-      requestsArray.push(this.usageDetailService.deleteUsageDetails(this.data.id, modifiedDays.deleted));
+      requestsArray.push(this.usageDetailService.deleteUsageDetails(modifiedDays));
   }
 
   /**

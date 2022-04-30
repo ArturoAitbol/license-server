@@ -14,8 +14,9 @@ export class UsageDetailService {
    * @param data: UsageDetails
    * @returns: Observable 
    */
-  public createUsageDetails(consumptionId: string, data: any): Observable<any> {
-    return this.httpClient.post(`${this.API_URL}/${consumptionId}`, data);
+  public createUsageDetails(data: any): Observable<any> {
+    data.usageDays = data.added;
+    return this.httpClient.post(`${this.API_URL}/${data.id}`, data);
   }
 
   /**
@@ -23,8 +24,9 @@ export class UsageDetailService {
    * @param data: UsageDetails
    * @returns: Observable 
    */
-  public deleteUsageDetails(consumptionId: string, data: any): Observable<any> {
-    return this.httpClient.put(`${this.API_URL}/${consumptionId}`, data);
+  public deleteUsageDetails(data: any): Observable<any> {
+    data.usageDays = data.deleted;
+    return this.httpClient.put(`${this.API_URL}/${data.id}`, data);
   }
 
   public getUsageDetailDetailsByConsumptionId(consumptionId: string): Observable<any[]> {
