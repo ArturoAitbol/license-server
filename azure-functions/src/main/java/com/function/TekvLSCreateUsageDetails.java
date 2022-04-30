@@ -67,8 +67,6 @@ public class TekvLSCreateUsageDetails
 				json.put("error", "Missing mandatory parameter: addedDays");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
-			// modifed_date is always consumption_date when creating the record
-			sqlPart2 += "'" + jobj.getString("consumptionDate") + "'";
 			sql = "insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number) values " + sqlPart2 + ";";	
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());

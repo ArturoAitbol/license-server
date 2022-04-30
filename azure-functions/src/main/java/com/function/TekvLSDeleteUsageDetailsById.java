@@ -58,9 +58,9 @@ public class TekvLSDeleteUsageDetailsById
 				//Iterating the contents of the array
 				Iterator<Object> iterator = deletedDays.iterator();
 				while(iterator.hasNext()) {
-					sql += " id='" + iterator.next().toString() + "' or";
+					sql += "id='" + iterator.next().toString() + "' or ";
 				}
-				sql = sql.substring(0, sql.length() - 3) + ");";
+				sql = sql.substring(0, sql.length() - 4) + ");";
 			} else {
 				json.put("error", "Missing mandatory parameter: deletedDays");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
