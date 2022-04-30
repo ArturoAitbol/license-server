@@ -54,7 +54,7 @@ public class TekvLSGetConsumptionUsageDetails {
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("id"));
 				item.put("consumptionId", rs.getString("consumption_id"));
-				item.put("dayOfWeek", rs.getString("day_of_week"));
+				item.put("dayOfWeek", rs.getInt("day_of_week"));
 				item.put("usageDate", rs.getString("usage_date"));
 				item.put("macAddress", rs.getString("mac_address"));
 				item.put("serialNumber", rs.getString("serial_number"));

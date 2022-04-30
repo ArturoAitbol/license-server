@@ -27,7 +27,7 @@ export class UsageDetailService {
     return this.httpClient.put(`${this.API_URL}/${data.id}`, data);
   }
 
-  public getUsageDetailDetailsByConsumptionId(consumptionId: string): Observable<any[]> {
+  public getUsageDetailsByConsumptionId(consumptionId: string): Observable<any[]> {
     const headers = this.getHeaders();
     return this.httpClient.get<any[]>(`${this.API_URL}/${consumptionId}`, { headers });
   }

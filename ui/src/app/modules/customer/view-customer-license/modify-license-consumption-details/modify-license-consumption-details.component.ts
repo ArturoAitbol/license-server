@@ -54,14 +54,9 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   ngOnInit() {
     if (this.data) {
-      this.isDataLoading = true;
       this.data.consDate = new Date(this.data.consumptionDate + " 00:00:00");
       this.currentCustomer = this.customerService.getSelectedCustomer();
-      this.fetchDevices();
-      this.fetchProjects();
-      this.fetchUsageDays();
-      this.updateForm.patchValue(this.data);
-      this.previousFormValue = { ...this.updateForm };
+      this.fetchData();
     }
   }
   /**
@@ -152,11 +147,21 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   }
 
   /**
-   * fetch devices list
+   * fetch data
    */
-  fetchDevices(): void {
-    this.deviceService.getDevicesList().subscribe((res: any) => {
-      this.devices = res['devices'];
+  fetchData(): void {
+    this.isDataLoading = true;
+    const { subaccountId } = this.currentCustomer;
+    const { id } = this.data;
+    forkJoin([
+      this.deviceService.getDevicesList(),
+      this.projectService.getProjectDetailsBySubAccount(subaccountId),
+      this.usageDetailService.getUsageDetailsByConsumptionId(id)
+    ]).subscribe(res => {
+      const resDataObject: any = res.reduce((current: any, next: any) => {
+        return { ...current, ...next };
+      }, {});
+      this.devices = resDataObject['devices'];
       let vendorsHash: any = {};
       this.vendors = this.devices.filter(device => {
         if (device.type != "Phone" && !vendorsHash[device.vendor]) {
@@ -165,30 +170,16 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         }
         return false;
       });
-      this.filterVendorDevices(this.data.vendor);
-      this.isDataLoading = false;
-    });
-  }
-  /**
-   * fetch projects list
-   */
-  fetchProjects(): void {
-    const { subaccountId } = this.currentCustomer;
-    this.projectService.getProjectDetailsBySubAccount(subaccountId).subscribe((res: any) => {
-      this.projects = res['projects'];
-    });
-  }
-  /**
-   * fetch usageDays list
-   */
-  fetchUsageDays(): void {
-    const { id } = this.data;
-    this.usageDetailService.getUsageDetailDetailsByConsumptionId(id).subscribe((res: any) => {
-      res['usageDays'].forEach((day) => {
+      this.projects = resDataObject['projects'];
+      resDataObject['usageDays'].forEach((day) => {
         this.days[day.dayOfWeek - 1].used = true;
         this.days[day.dayOfWeek - 1].id = day.id;
       });
       this.originalDays = JSON.parse(JSON.stringify(this.days));
+      this.updateForm.patchValue(this.data);
+      this.previousFormValue = { ...this.updateForm };
+      this.filterVendorDevices(this.data.vendor);
+      this.isDataLoading = false;
     });
   }
   /**
