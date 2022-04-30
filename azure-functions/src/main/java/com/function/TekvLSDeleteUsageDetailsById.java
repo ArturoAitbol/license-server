@@ -11,32 +11,65 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.Optional;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSDeleteUsageDetailById 
+public class TekvLSDeleteUsageDetailsById 
 {
 	/**
 	 * This function listens at endpoint "/api/usageDetails". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/api/usageDetails
 	 */
-	@FunctionName("TekvLSDeleteUsageDetailById")
+	@FunctionName("TekvLSDeleteUsageDetailsById")
 	public HttpResponseMessage run(
 			@HttpTrigger(
 				name = "req",
-				methods = {HttpMethod.DELETE},
+				methods = {HttpMethod.POST},
 				authLevel = AuthorizationLevel.ANONYMOUS,
 				route = "usageDetails/{id}")
 				HttpRequestMessage<Optional<String>> request,
 				@BindingName("id") String id,
 				final ExecutionContext context) 
 	{
-		context.getLogger().info("Entering TekvLSDeleteUsageDetailById Azure function");
-		
+		context.getLogger().info("Entering TekvLSDeleteUsageDetailsById Azure function");
+		JSONObject json = new JSONObject();
+		// Parse request body and extract parameters needed
+		String requestBody = request.getBody().orElse("");
+		context.getLogger().info("Request body: " + requestBody);
+		if (requestBody.isEmpty()) {
+			context.getLogger().info("error: request body is empty.");
+			json.put("error", "error: request body is empty.");
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+		JSONObject jobj;
+		try {
+			jobj = new JSONObject(requestBody);
+		} catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+		}
+		// Delete usage details
+		String sql = "delete from usage_detail where consumption_id='" + id +"' and (";
+		final JSONArray usageDays = jobj.getJSONArray("usageDays");
+		if (usageDays != null && usageDays.length() > 0) {
+			//Iterating the contents of the array
+			Iterator<Object> iterator = usageDays.iterator();
+			while(iterator.hasNext()) {
+				sql += " id='" + iterator.next().toString() + "' or";
+			}
+			sql = sql.substring(0, sql.length() - 3) + ");";
+		} else {
+			json.put("error", "Missing mandatory parameter: usageDays");
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -46,9 +79,6 @@ public class TekvLSDeleteUsageDetailById
 			Statement statement = connection.createStatement();) {
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
-			
-			// Delete project
-			String sql = "delete from usage_detail where id='" + id +"';";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			statement.executeUpdate(sql);
 			context.getLogger().info("License usage delete successfully."); 
@@ -57,13 +87,11 @@ public class TekvLSDeleteUsageDetailById
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}

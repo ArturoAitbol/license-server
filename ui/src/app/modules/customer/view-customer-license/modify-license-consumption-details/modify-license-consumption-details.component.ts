@@ -15,7 +15,7 @@ import { UsageDetailService } from 'src/app/services/usage-detail.service';
 })
 export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   updateForm = this.formBuilder.group({
-    consumptionDate: { disabled: true, value: ['', Validators.required] },
+    consDate: { disabled: true, value: ['', Validators.required] },
     projectId: ['', Validators.required],
     vendor: ['', Validators.required],
     deviceId: ['', Validators.required]
@@ -24,17 +24,19 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   projects: any = [];
   vendors: any = [];
   models: any = [];
+  originalDays: any = [];
   days: any = [
-    {name: "Mon", used: false},
-    {name: "Tue", used: false},
-    {name: "Wed", used: false},
-    {name: "Thu", used: false},
-    {name: "Fri", used: false},
+    { name: "Mon", used: false },
+    { name: "Tue", used: false },
+    { name: "Wed", used: false },
+    { name: "Thu", used: false },
+    { name: "Fri", used: false },
   ];
   selectedVendor: string = '';
   startDate: any;
   endDate: any;
   isDataLoading: boolean = false;
+  edited: boolean = false;
   currentCustomer: any;
   private previousFormValue: any;
 
@@ -52,8 +54,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   ngOnInit() {
     if (this.data) {
       this.isDataLoading = true;
-      this.startDate = new Date(this.data.startDate + " 00:00:00");
-      this.endDate = new Date(this.data.renewalDate + " 00:00:00");
+      this.data.consDate = new Date(this.data.consumptionDate + " 00:00:00");
       this.currentCustomer = this.customerService.getSelectedCustomer();
       this.fetchDevices();
       this.fetchProjects();
@@ -77,8 +78,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.devices.forEach((device: any) => {
         if (device.type != "Phone" && device.vendor == value) {
           this.models.push({
-            id: device.id, 
-            product: device.version? device.product + " - v." + device.version : device.product
+            id: device.id,
+            product: device.version ? device.product + " - v." + device.version : device.product
           });
         }
       });
@@ -90,10 +91,19 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   }
 
   setChecked(value: boolean, index: number) {
+    this.edited = true;
     this.days[index].used = value;
   }
 
   submit(): void {
+    this.isDataLoading = true;
+    if (this.edited)
+      this.modifyUsageDays();
+    if (!this.editedForm())
+      this.modifyConsumption();
+  }
+
+  private modifyConsumption(): void {
     const licenseConsumptionObject: any = {
       subaccountId: this.currentCustomer.subaccountId,
       projectId: this.updateForm.value.projectId,
@@ -103,18 +113,58 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       macAddress: this.data.macAddress,
       serialNumber: this.data.serialNumber
     };
-    this.isDataLoading = true;
     this.licenseConsumptionService.updateLicenseConsumptionDetails(licenseConsumptionObject).toPromise().then((res: any) => {
       this.isDataLoading = false;
       if (!res.error) {
-        this.snackBarService.openSnackBar('Added license consumption successfully!', '');
+        this.snackBarService.openSnackBar('License consumption successfully edited!', '');
         this.dialogRef.close(res);
-      } else 
-        this.snackBarService.openSnackBar(res.error, 'Error adding license consumption!');
+      } else
+        this.snackBarService.openSnackBar(res.error, 'Error editing license consumption!');
     }).catch((err: any) => {
       this.isDataLoading = false;
-      this.snackBarService.openSnackBar(err, 'Error adding license consumption!');
+      this.snackBarService.openSnackBar(err, 'Error editing license consumption!');
     });
+  }
+
+  private modifyUsageDays(): void {
+    let modifiedDays: any = {
+      added: [],
+      deleted: []
+    };
+    for (let i = 0; i < this.days.length; i++) {
+      if (this.days[i].used != this.originalDays[i].used) {
+        if (this.days[i].used)
+          modifiedDays.added.push(i);
+        else
+          modifiedDays.deleted.push(i);
+      }
+    }
+    if (modifiedDays.added.length > 0) {
+      this.usageDetailService.createUsageDetails(this.data.id, modifiedDays.added).toPromise().then((res: any) => {
+        this.isDataLoading = false;
+        if (!res.error) {
+          this.snackBarService.openSnackBar('License consumption successfully edited!', '');
+          this.dialogRef.close(res);
+        } else
+          this.snackBarService.openSnackBar(res.error, 'Error adding usage days!');
+      }).catch((err: any) => {
+        this.isDataLoading = false;
+        this.snackBarService.openSnackBar(err, 'Error adding usage days!');
+      });
+    }
+    if (modifiedDays.deleted.length > 0) {
+      this.usageDetailService.deleteUsageDetails(this.data.id, modifiedDays.deleted).toPromise().then((res: any) => {
+        this.isDataLoading = false;
+        if (!res.error) {
+          this.snackBarService.openSnackBar('License consumption successfully edited!', '');
+          this.dialogRef.close(res);
+        } else
+          this.snackBarService.openSnackBar(res.error, 'Error adding usage days!');
+      }).catch((err: any) => {
+        this.isDataLoading = false;
+        this.snackBarService.openSnackBar(err, 'Error adding usage days!');
+      });
+    }
   }
 
   /**
@@ -153,6 +203,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       res['usageDays'].forEach((day) => {
         this.days[day.dayOfWeek - 1].used = true;
       });
+      this.originalDays = JSON.parse(JSON.stringify(this.days));
     });
   }
   /**
@@ -160,7 +211,10 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    * @returns: true if the not updated and false otherwise 
    */
   disableSumbitBtn(): boolean {
-    return JSON.stringify(this.updateForm.value) === JSON.stringify(this.previousFormValue.value);
+    return !this.editedForm() && !this.edited;
   }
 
+  private editedForm(): boolean {
+    return JSON.stringify(this.updateForm.value) !== JSON.stringify(this.previousFormValue.value);
+  }
 }

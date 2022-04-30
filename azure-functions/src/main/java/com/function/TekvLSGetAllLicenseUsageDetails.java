@@ -114,7 +114,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("version", rs.getString("version"));
 						item.put("usageType", rs.getString("usage_type"));
 						item.put("tokensConsumed", rs.getString("tokens_consumed"));
-						item.put("consumption", rs.getString("consumption"));
+						item.put("consumption", item.getString("consumptionDate") + " - " + rs.getString("consumption"));
 						array.put(item);
 					}
 					json.put("usage", array);

@@ -57,8 +57,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
   ];
 
   readonly detailedConsumptionSummaryColumns: TableColumn[] = [
-    { name: 'Date Of Usage', dataKey: 'consumptionDate', position: 'left', isSortable: true },
-    { name: 'Consumption', dataKey: 'consumption', position: 'left', isSortable: true },
+    { name: 'Consumption Date', dataKey: 'consumption', position: 'left', isSortable: true },
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
@@ -293,7 +292,10 @@ export class ViewCustomerLicenseComponent implements OnInit {
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.EDIT:
-        this.openDialog(ModifyLicenseConsumptionDetailsComponent, object.selectedRow);
+        let dataObject: any = {... object.selectedRow};
+        this.startDate = new Date(this.data.startDate + " 00:00:00");
+        this.endDate = new Date(this.data.renewalDate + " 00:00:00");
+        this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
         break;
       case this.DELETE:
         this.onDelete(+object.selectedIndex);
