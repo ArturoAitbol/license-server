@@ -48,25 +48,26 @@ public class TekvLSDeleteUsageDetailsById
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
+		String sql;
 		try {
 			jobj = new JSONObject(requestBody);
+			// Delete usage details
+			sql = "delete from usage_detail where consumption_id='" + id +"' and (";
+			final JSONArray usageDays = jobj.getJSONArray("usageDays");
+			if (usageDays != null && usageDays.length() > 0) {
+				//Iterating the contents of the array
+				Iterator<Object> iterator = usageDays.iterator();
+				while(iterator.hasNext()) {
+					sql += " id='" + iterator.next().toString() + "' or";
+				}
+				sql = sql.substring(0, sql.length() - 3) + ");";
+			} else {
+				json.put("error", "Missing mandatory parameter: usageDays");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
-		}
-		// Delete usage details
-		String sql = "delete from usage_detail where consumption_id='" + id +"' and (";
-		final JSONArray usageDays = jobj.getJSONArray("usageDays");
-		if (usageDays != null && usageDays.length() > 0) {
-			//Iterating the contents of the array
-			Iterator<Object> iterator = usageDays.iterator();
-			while(iterator.hasNext()) {
-				sql += " id='" + iterator.next().toString() + "' or";
-			}
-			sql = sql.substring(0, sql.length() - 3) + ");";
-		} else {
-			json.put("error", "Missing mandatory parameter: usageDays");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		// Connect to the database
