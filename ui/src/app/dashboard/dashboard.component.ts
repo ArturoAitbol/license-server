@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
@@ -7,7 +7,7 @@ import { Constants } from '../helpers/constants';
 import { Utility } from '../helpers/Utility';
 import { CustomerLicense } from '../model/customer-license';
 import { Customer } from '../model/customer.model';
-import { SubAccount } from '../model/subaccount.model';
+import { License } from '../model/license.model';
 import { CustomerService } from '../services/customer.service';
 import { DialogService } from '../services/dialog.service';
 import { LicenseService } from '../services/license.service';
@@ -22,13 +22,11 @@ import { ModifyCustomerAccountComponent } from './modify-customer-account/modify
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
   tableMaxHeight: number;
   displayedColumns: any[] = [];
   data: CustomerLicense[] = [];
-  customersList: any = [];
   subaccountList: any = [];
-  licenseList: any = [];
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
@@ -79,11 +77,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   initColumns(): void {
     this.displayedColumns = [
       { name: 'Customer', dataKey: 'customerName', position: 'left', isSortable: true },
-      { name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true },
+      { name: 'Subaccount', dataKey: 'name', position: 'left', isSortable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
-      { name: 'Package Type', dataKey: 'packageType', position: 'left', isSortable: true },
-      { name: 'Start Date', dataKey: 'startDate', position: 'left', isSortable: true },
-      { name: 'Renewal Date', dataKey: 'renewalDate', position: 'left', isSortable: true },
       { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true }
     ];
   }
@@ -103,45 +98,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
         const newDataObject: any = res.reduce((current, next) => {
           return { ...current, ...next };
         }, {});
-        this.licenseList = newDataObject['licenses'];
         this.subaccountList = newDataObject['subaccounts'];
-        this.customersList = newDataObject['customers'];
-        // here we map the customer name and subaccount name to the customer license list
-        let subaccountsHash = {};
-        this.licenseList.forEach((license: any) => {
-          const subaccountDetails: SubAccount = this.subaccountList.find((e: SubAccount) => e.id == license.subaccountId);
-          if (subaccountDetails) {
-            license.subaccountName = subaccountDetails.name;
-            license.subaccountId = subaccountDetails.id;
-            const customerDetails = this.customersList.find((e: Customer) => e.id === subaccountDetails.customerId);
-            if (customerDetails) {
-              license.customerName = customerDetails.name;
-              license.customerType = customerDetails.customerType;
-              license.customerId = customerDetails.id;
-              if (!subaccountsHash[subaccountDetails.name + "-" + subaccountDetails.customerId])
-                subaccountsHash[subaccountDetails.name + "-" + subaccountDetails.customerId] = customerDetails.name;
-            }
-          }
+        this.subaccountList.forEach((subaccount: any) => {
+          const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
+          const licenseDetails = newDataObject['licenses'].find((l: License) => (l.subaccountId === subaccount.id && l.status === "Active"));
+          subaccount.customerName = customerDetails.name;
+          subaccount.customerType = customerDetails.customerType;
+          if (licenseDetails)
+            subaccount.status = licenseDetails.status;
+          else
+            subaccount.status = "Inactive";
         });
-        this.subaccountList.forEach((subaccount: SubAccount) => {
-          if (subaccountsHash[subaccount.name + "-" + subaccount.customerId]) return;
-          const customer = this.customersList.find((e: Customer) => e.id === subaccount.customerId);
-          if (customer) {
-            let emptyLicenseElement = {
-              id: null,
-              packageType: "",
-              startDate: "",
-              renewalDate: "",
-              status: "",
-              subaccountId: subaccount.id,
-              subaccountName: subaccount.name,
-              customerId: customer.id,
-              customerName: customer.name,
-              customerType: customer.customerType
-            }
-            this.licenseList.unshift(emptyLicenseElement);
-          }
-        });
+        this.subaccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
       }, err => {
         console.debug('error', err);
         this.isLoadingResults = false;
@@ -152,19 +120,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getColor(value: string) {
     return Utility.getColorCode(value);
-  }
-
-  onHoverTable(index: number) {
-    // this.data[index].action = !this.data[index].action;
-    // this.dataSource = new MatTableDataSource([this.data]); 
-  }
-  /**
-   * on click modify license
-   * @param index: string
-   */
-  onModifyLicense(index: string): void {
-    // const item = this.dataSource.filteredData[index];
-    // this.openDialog('modify', item);
   }
   /**
    * on click delete account
@@ -299,9 +254,5 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.onDeleteAccount(object.selectedIndex);
         break;
     }
-  }
-
-  ngOnDestroy(): void {
-
   }
 }

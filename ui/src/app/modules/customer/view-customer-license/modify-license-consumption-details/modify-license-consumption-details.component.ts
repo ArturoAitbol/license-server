@@ -135,7 +135,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     for (let i = 0; i < this.days.length; i++) {
       if (this.days[i].used != this.originalDays[i].used) {
         if (this.days[i].used)
-          modifiedDays.addedDays.push(i);
+          modifiedDays.addedDays.push(i + 1);
         else
           modifiedDays.deletedDays.push(this.days[i].id);
       }
