@@ -4,9 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { LicenseService } from 'src/app/services/license.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { BundleService } from 'src/app/services/bundle.service';
 
 @Component({
   selector: 'app-modify-customer-account',
@@ -14,18 +12,12 @@ import { BundleService } from 'src/app/services/bundle.service';
   styleUrls: ['./modify-customer-account.component.css']
 })
 export class ModifyCustomerAccountComponent implements OnInit {
-  packageTypes: any[];
-  selectedType: any;
   updateCustomerForm: any = this.formBuilder.group({
     customerName: ['', Validators.required],
-    subaccountName: ['', Validators.required],
     customerType: ['', Validators.required],
-    startDate: ['', Validators.required],
-    packageType: ['', Validators.required],
-    tokensPurchased: ['', Validators.required],
-    deviceLimit: ['', Validators.required],
-    renewalDate: ['', Validators.required]
+    name: ['', Validators.required]
   });
+  types: string[] = ['MSP', 'Reseller'];
   private previousFormValue: any;
   // flag
   isDataLoading: boolean = false;
@@ -34,23 +26,14 @@ export class ModifyCustomerAccountComponent implements OnInit {
     private formBuilder: FormBuilder,
     private customerService: CustomerService,
     private subAccountService: SubAccountService,
-    private licenseService: LicenseService,
-    private bundleService: BundleService,
     private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
     if (this.data) {
-      this.isDataLoading = true;
-      this.selectedType = this.data.packageType;
       this.updateCustomerForm.patchValue(this.data);
       this.previousFormValue = { ...this.updateCustomerForm };
-      this.bundleService.getBundleList().subscribe((res: any) => {
-        if (res) this.packageTypes = res.bundles;
-        this.onChangeType(this.data.packageType);
-        this.isDataLoading = false;
-      });
     }
   }
   /**
@@ -58,27 +41,6 @@ export class ModifyCustomerAccountComponent implements OnInit {
    */
   onCancel(): void {
     this.dialogRef.close();
-  }
-
-  onChangeType(newType: any){
-    this.selectedType = this.packageTypes.find(item => item.name == newType)
-    if (this.selectedType) {
-      this.updateCustomerForm.patchValue({
-        tokensPurchased: this.selectedType.tokens,
-        deviceLimit: this.selectedType.deviceAccessTokens,
-      });
-      if (newType == "Custom" || newType == "AddOn") {
-        this.updateCustomerForm.get('tokensPurchased').enable();
-        this.updateCustomerForm.get('deviceLimit').enable();
-      } else {
-        this.updateCustomerForm.patchValue({
-          tokensPurchased: this.selectedType.tokens,
-          deviceLimit: this.selectedType.deviceAccessTokens,
-        });
-        this.updateCustomerForm.get('tokensPurchased').disable();
-        this.updateCustomerForm.get('deviceLimit').disable();
-      }
-    }
   }
 
   /**
@@ -94,22 +56,17 @@ export class ModifyCustomerAccountComponent implements OnInit {
       customerType: mergedLicenseObject.customerType
     };
     const subAccount = {
-      id: mergedLicenseObject.subaccountId,
-      name: mergedLicenseObject.subaccountName
+      id: mergedLicenseObject.id,
+      name: mergedLicenseObject.name
     };
     const requestsArray= [
       this.customerService.updateCustomer(customer),
       this.subAccountService.updateSubAccount(subAccount)
     ];
-    if (mergedLicenseObject.id) {
-      mergedLicenseObject.tokens = mergedLicenseObject.tokensPurchased;
-      mergedLicenseObject.deviceAccessLimit = mergedLicenseObject.deviceLimit;
-      requestsArray.push(this.licenseService.updateLicenseDetails(mergedLicenseObject));
-    }
     forkJoin(requestsArray).subscribe((res: any) => {
       if (!res.error) {
         this.isDataLoading = false;
-        this.snackBarService.openSnackBar('Customer and subaccount added successfully!', '');
+        this.snackBarService.openSnackBar('Customer and subaccount edited successfully!', '');
         this.dialogRef.close(res);
       } else
         this.snackBarService.openSnackBar(res.error, 'Error adding customer!');
