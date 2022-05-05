@@ -10,15 +10,15 @@ import { DialogService } from 'src/app/services/dialog.service';
 import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { LicenseService } from 'src/app/services/license.service';
 import { AddLicenseConsumptionComponent } from './add-license-consumption/add-license-consumption.component';
-import { AddLicenseComponent } from './add-license/add-license.component';
+import { AddLicenseComponent } from '../licenses/add-license/add-license.component';
 import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consumption-details/modify-license-consumption-details.component';
 
 @Component({
-  selector: 'app-view-customer-license',
-  templateUrl: './view-customer-license.component.html',
-  styleUrls: ['./view-customer-license.component.css']
+  selector: 'app-license-consumption',
+  templateUrl: './license-consumption.component.html',
+  styleUrls: ['./license-consumption.component.css']
 })
-export class ViewCustomerLicenseComponent implements OnInit {
+export class LicenseConsumption implements OnInit {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
   selectedLicense: any;
@@ -93,7 +93,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
-    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
+    this.licenseService.getLicenseList(this.currentCustomer.id).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         this.selectedLicense = res.licenses[0];
@@ -134,7 +134,7 @@ export class ViewCustomerLicenseComponent implements OnInit {
 
   private buildRequestObject(view: string) {
     const requestObject = {
-      subaccount: this.currentCustomer.subaccountId,
+      subaccount: this.currentCustomer.id,
       view: view,
       month: this.aggregation == 'month'? this.month : null,
       year:  this.aggregation == 'month'? this.year : null,

@@ -1,0 +1,35 @@
+.content {
+  padding: 20px;
+}
+table {
+  width: 100%;
+}
+.table-section {
+  margin-top: 5%;
+}
+th.mat-sort-header-sorted {
+  color: black;
+}
+.btn-section {
+  float: right;
+}
+
+.example-form-field {
+  margin-right: 20px;
+}
+.mt-4 {
+  margin-top: auto;
+}
+h1 {
+  font-weight: 500;
+}
+.example-container {
+  position: relative;
+  min-height: 200px;
+  overflow: auto;
+}
+.no-data-found {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 50px;
+}

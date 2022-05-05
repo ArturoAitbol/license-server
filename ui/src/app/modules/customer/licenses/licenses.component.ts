@@ -1,37 +1,38 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { Project } from 'src/app/model/project.model';
+import { License } from 'src/app/model/license.model';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
-import { ProjectService } from 'src/app/services/project.service';
-import { AddProjectComponent } from './add-project/add-project.component';
+import { LicenseService } from 'src/app/services/license.service';
+import { AddLicenseComponent } from './add-license/add-license.component';
 
 @Component({
-  selector: 'app-projects',
-  templateUrl: './projects.component.html',
-  styleUrls: ['./projects.component.css']
+  selector: 'app-licenses',
+  templateUrl: './licenses.component.html',
+  styleUrls: ['./licenses.component.css']
 })
-export class ProjectsComponent implements OnInit, OnDestroy {
+export class LicensesComponent implements OnInit {
   readonly displayedColumns: TableColumn[] = [
-    { name: 'Project Number', dataKey: 'number', position: 'left', isSortable: true },
-    { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
-    { name: 'Status', dataKey: 'status', position: 'left', isSortable: true },
-    { name: 'Open Date', dataKey: 'openDate', position: 'left', isSortable: true },
-    { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
+    { name: 'Start Date', dataKey: 'startDate', position: 'left', isSortable: true },
+    { name: 'Renewal Date', dataKey: 'renewalDate', position: 'left', isSortable: true },
+    { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
+    { name: 'Package Type', dataKey: 'packageType', position: 'left', isSortable: true },
+    { name: 'Device Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true },
+    { name: 'tekTokens', dataKey: 'tokensPurchased', position: 'left', isSortable: true }
   ];
   tableMaxHeight: number;
   currentCustomer: any;
-  projects: Project[] = [];
-  projectsBk: Project[] = [];
+  licenses: License[] = [];
+  licensesBk: License[] = [];
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
 
   constructor(
     private customerSerivce: CustomerService,
-    private projectService: ProjectService,
+    private licenseService: LicenseService,
     private router: Router,
     public dialog: MatDialog
   ) { }
@@ -54,8 +55,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.calculateTableHeight();
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
-    this.projectService.setSelectedSubAccount(this.currentCustomer.id);
-    this.fetchProjects();
+    this.fetchLicenses();
   }
 
   goToDashboard(): void {
@@ -70,20 +70,20 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     });
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        this.fetchProjects();
+        this.fetchLicenses();
       }
     });
   }
 
-  onNewProject(): void {
-    this.openDialog(AddProjectComponent);
+  onNewLicense(): void {
+    this.openDialog(AddLicenseComponent);
   }
 
-  fetchProjects(): void {
-    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.id).subscribe(res => {
+  fetchLicenses(): void {
+    this.licenseService.getLicenseList(this.currentCustomer.id).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
-      this.projectsBk = this.projects = res['projects'];
+      this.licensesBk = this.licenses = res['licenses'];
     }, () => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
@@ -97,14 +97,14 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      this.projects = this.projects.sort((a: any, b: any) => {
+      this.licenses = this.licenses.sort((a: any, b: any) => {
         if (keyName === 'number') {
           return +a[keyName] > +b[keyName] ? 1 : (+a[keyName] < +b[keyName] ? -1 : 0);
         }
         return a[keyName].localeCompare(b[keyName]);
       });
     } else if (sortParameters.direction === 'desc') {
-      this.projects = this.projects.sort((a: any, b: any) => {
+      this.licenses = this.licenses.sort((a: any, b: any) => {
         if (keyName === 'number') {
           return +a[keyName] < +b[keyName] ? 1 : (+a[keyName] > +b[keyName] ? -1 : 0);
 
@@ -112,10 +112,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         return b[keyName].localeCompare(a[keyName])
       });
     } else {
-      return this.projects = this.projectsBk;
+      return this.licenses = this.licensesBk;
     }
-  }
-
-  ngOnDestroy(): void {
   }
 }

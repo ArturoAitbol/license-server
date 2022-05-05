@@ -114,7 +114,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   private modifyConsumption(requestsArray: any[]): void {
     const licenseConsumptionObject: any = {
       consumptionId: this.data.id,
-      subaccountId: this.currentCustomer.subaccountId,
+      subaccountId: this.currentCustomer.id,
       projectId: this.updateForm.value.projectId,
       deviceId: this.updateForm.value.deviceId,
       consumptionDate: this.data.consumptionDate,
@@ -151,7 +151,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    */
   fetchData(): void {
     this.isDataLoading = true;
-    const { subaccountId } = this.currentCustomer;
+    const subaccountId = this.currentCustomer.id;
     const { id } = this.data;
     forkJoin([
       this.deviceService.getDevicesList(),

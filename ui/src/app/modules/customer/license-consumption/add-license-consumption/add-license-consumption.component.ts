@@ -94,7 +94,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   submit(): void {
     let consumptionDate: Date = new Date(this.addLicenseConsumptionForm.value.consumptionDate);
     const licenseConsumptionObject: any = {
-      subaccountId: this.currentCustomer.subaccountId,
+      subaccountId: this.currentCustomer.id,
       projectId: this.addLicenseConsumptionForm.value.projectId,
       deviceId: this.addLicenseConsumptionForm.value.product,
       consumptionDate: consumptionDate.toISOString().split("T")[0],
@@ -141,7 +141,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    * fetch projects list
    */
   fetchProjects(): void {
-    const { subaccountId } = this.currentCustomer;
+    const subaccountId = this.currentCustomer.id;
     this.projectService.getProjectDetailsBySubAccount(subaccountId).subscribe((res: any) => {
       this.projects = res['projects'];
     });

@@ -30,13 +30,15 @@ export class DashboardComponent implements OnInit {
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
-  readonly VIEW_LICENSE: string = 'License Details';
-  readonly VIEW_PROJECTS: string = 'Projects';
-  readonly MODIFY_LICENSE: string = 'Modify';
+  readonly VIEW_LICENSES: string = 'View License Details';
+  readonly VIEW_CONSUMPTION: string = 'View License Consumption';
+  readonly VIEW_PROJECTS: string = 'View Projects';
+  readonly MODIFY_LICENSE: string = 'Edit Account';
   readonly DELETE_ACCOUNT: string = 'Delete Account';
 
   actionMenuOptions: any = [
-    this.VIEW_LICENSE,
+    this.VIEW_LICENSES,
+    this.VIEW_CONSUMPTION,
     this.VIEW_PROJECTS,
     this.MODIFY_LICENSE,
     this.DELETE_ACCOUNT
@@ -209,7 +211,16 @@ export class DashboardComponent implements OnInit {
   openLicenseDetails(row: any): void {
     this.customerService.setSelectedCustomer(row);
     localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-    this.router.navigate(['/customer']);
+    this.router.navigate(['/customer/licenses']);
+  }
+  /**
+   * 
+   * @param row: object 
+   */
+  openLicenseConsumption(row: any): void {
+    this.customerService.setSelectedCustomer(row);
+    localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+    this.router.navigate(['/customer/consumption']);
   }
   /**
    * open project detail
@@ -241,8 +252,11 @@ export class DashboardComponent implements OnInit {
    */
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
-      case this.VIEW_LICENSE:
+      case this.VIEW_LICENSES:
         this.openLicenseDetails(object.selectedRow);
+        break;
+      case this.VIEW_CONSUMPTION:
+        this.openLicenseConsumption(object.selectedRow);
         break;
       case this.VIEW_PROJECTS:
         this.openProjectDetails(object.selectedRow);
