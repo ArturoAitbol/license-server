@@ -43,13 +43,12 @@ public class TekvLSGetAllProjects {
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		
 		// Build SQL statement
-		String sql = "";
-		 if (id.equals("EMPTY")) {
-			sql = "select * from project";
+		String sql = "select * from project";
+		if (id.equals("EMPTY")) {
 			if (!subaccountId.isEmpty())
 				sql += " where subaccount_id='" + subaccountId + "'";
 		} else {
-			sql = "select * from project where id='" + id +"'";
+			sql += " where id='" + id +"'";
 		}
 		sql += ";";
 		
