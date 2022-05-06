@@ -7,6 +7,7 @@ import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { LicenseService } from 'src/app/services/license.service';
 import { AddLicenseComponent } from './add-license/add-license.component';
+import { ModifyLicenseComponent } from './modify-license/modify-license.component';
 
 @Component({
   selector: 'app-licenses',
@@ -29,6 +30,13 @@ export class LicensesComponent implements OnInit {
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
+
+  readonly MODIFY_LICENSE: string = 'Edit';
+  readonly DELETE_LICENSE: string = 'Delete';
+  actionMenuOptions: any = [
+    this.MODIFY_LICENSE,
+    this.DELETE_LICENSE
+  ];
 
   constructor(
     private customerSerivce: CustomerService,
@@ -113,6 +121,27 @@ export class LicensesComponent implements OnInit {
       });
     } else {
       return this.licenses = this.licensesBk;
+    }
+  }
+  /**
+   * on click delete account
+   * @param index: string
+   */
+  onDelete(index: string): void {
+    //this.openConfirmaCancelDialog(index);
+  }
+  /**
+   * action row click event
+   * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
+   */
+  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+    switch (object.selectedOption) {
+      case this.MODIFY_LICENSE:
+        this.openDialog(ModifyLicenseComponent, object.selectedRow);
+        break;
+      case this.DELETE_LICENSE:
+        this.onDelete(object.selectedIndex);
+        break;
     }
   }
 }
