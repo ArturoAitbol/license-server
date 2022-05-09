@@ -51,6 +51,15 @@ export class LicenseService {
   }
 
   /**
+   * delete selected license by licenseId
+   * @param licenseId: string 
+   * @returns: Observable
+   */
+  public deleteLicense(licenseId: string) {
+    return this.httpClient.delete(`${this.API_URL}/${licenseId}`);
+  }
+
+  /**
    * set the header for the request
    * @returns: HttpHeaders 
    */
