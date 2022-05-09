@@ -6,8 +6,10 @@ import { License } from 'src/app/model/license.model';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { LicenseService } from 'src/app/services/license.service';
+import { DialogService } from 'src/app/services/dialog.service';
 import { AddLicenseComponent } from './add-license/add-license.component';
 import { ModifyLicenseComponent } from './modify-license/modify-license.component';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 
 @Component({
   selector: 'app-licenses',
@@ -41,10 +43,12 @@ export class LicensesComponent implements OnInit {
   constructor(
     private customerSerivce: CustomerService,
     private licenseService: LicenseService,
+    private dialogService: DialogService,
+    private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog
   ) { }
-  
+
   @HostListener('window:resize')
   sizeChange() {
     this.calculateTableHeight();
@@ -88,6 +92,8 @@ export class LicensesComponent implements OnInit {
   }
 
   fetchLicenses(): void {
+    this.isLoadingResults = true;
+    this.isRequestCompleted = false;
     this.licenseService.getLicenseList(this.currentCustomer.id).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
@@ -125,10 +131,23 @@ export class LicensesComponent implements OnInit {
   }
   /**
    * on click delete account
-   * @param index: string
+   * @param license: License
    */
-  onDelete(index: string): void {
-    //this.openConfirmaCancelDialog(index);
+  onDelete(license: License): void {
+    this.dialogService
+      .confirmDialog({
+        title: 'Confirm Action',
+        message: 'Do you want to confirm this action?',
+        confirmCaption: 'Confirm',
+        cancelCaption: 'Cancel',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.licenseService.deleteLicense(license.id).subscribe((res: any) => {
+            this.fetchLicenses();
+          });
+        }
+      });
   }
   /**
    * action row click event
@@ -140,7 +159,7 @@ export class LicensesComponent implements OnInit {
         this.openDialog(ModifyLicenseComponent, object.selectedRow);
         break;
       case this.DELETE_LICENSE:
-        this.onDelete(object.selectedIndex);
+        this.onDelete(object.selectedRow);
         break;
     }
   }
