@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LicenseConsumption } from './license-consumption/license-consumption.component';
 import { AddLicenseConsumptionComponent } from './license-consumption/add-license-consumption/add-license-consumption.component';
 import { AddLicenseComponent } from './licenses/add-license/add-license.component';
+import { ModifyLicenseComponent } from './licenses/modify-license/modify-license.component';
 // modules
 import { CustomerRoutingModule } from './customer-routing.module';
 import { MaterialModule } from '../material/material.module';
@@ -18,9 +19,10 @@ import { SharedModule } from '../shared/shared.module';
   declarations: [
     LicenseConsumption,
     AddLicenseConsumptionComponent,
-    AddLicenseComponent,
     ModifyLicenseConsumptionDetailsComponent,
     LicensesComponent,
+    AddLicenseComponent,
+    ModifyLicenseComponent,
     ProjectsComponent,
     AddProjectComponent,
   ],

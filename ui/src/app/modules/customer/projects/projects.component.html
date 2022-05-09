@@ -5,7 +5,7 @@
                 <button mat-stroked-button (click)="goToDashboard()">Back</button>
             </div>
             <div class="col">
-                <h1>{{currentCustomer.customerName}} - {{currentCustomer.subaccountName}}</h1>
+                <h1>{{currentCustomer.customerName}} - {{currentCustomer.name}}</h1>
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
@@ -17,19 +17,11 @@
     </main>
     <!-- project summary section -->
     <h2>Project Summary</h2>
-    <section >
+    <section>
         <div class="example-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
-            <app-data-table
-                [tableData]="projects"
-                [tableColumns]="displayedColumns" 
-                [isFilterable]="false"
-                [isPageable]="false"
-                [isLoadingResults]="isLoadingResults"
-                [isRequestCompleted]="isRequestCompleted"
-                [paginationSizes]="[5,10,20]"
-                [defaultPageSize]="5"
-                (sort)="sortData($event)" 
-                >
+            <app-data-table [tableData]="projects" [tableColumns]="displayedColumns" [isFilterable]="false"
+                [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
+                [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)">
             </app-data-table>
         </div>
     </section>

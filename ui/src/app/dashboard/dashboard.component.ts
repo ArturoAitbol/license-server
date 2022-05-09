@@ -30,11 +30,11 @@ export class DashboardComponent implements OnInit {
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
-  readonly VIEW_LICENSES: string = 'View License Details';
+  readonly VIEW_LICENSES: string = 'View Licenses';
   readonly VIEW_CONSUMPTION: string = 'View License Consumption';
   readonly VIEW_PROJECTS: string = 'View Projects';
-  readonly MODIFY_LICENSE: string = 'Edit Account';
-  readonly DELETE_ACCOUNT: string = 'Delete Account';
+  readonly MODIFY_LICENSE: string = 'Edit';
+  readonly DELETE_ACCOUNT: string = 'Delete';
 
   actionMenuOptions: any = [
     this.VIEW_LICENSES,
