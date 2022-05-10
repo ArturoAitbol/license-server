@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Add License Consumption</h1>
+    <h1 mat-dialig-title>Add Package Consumption</h1>
     <form [formGroup]="addLicenseConsumptionForm" (ngSubmit)="submit()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
@@ -9,14 +9,18 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Date</mat-label>
-                        <input matInput #consDate (dateChange)="pickConsumptionDate(consDate.value)" [matDatepicker]="picker" [min]="startDate" [max]="endDate" required formControlName="consumptionDate">
+                        <input matInput #consDate (dateChange)="pickConsumptionDate(consDate.value)"
+                            [matDatepicker]="picker" [min]="startDate" [max]="endDate" required
+                            formControlName="consumptionDate">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
                 </div>
                 <div>
                     <section>
-                        <mat-checkbox class="checkbox-margin" *ngFor="let day of days; let i = index" [color]="'primary'" [checked]="day.used" (change)="setChecked($event.checked, i)"> {{day.name}} </mat-checkbox>
+                        <mat-checkbox class="checkbox-margin" *ngFor="let day of days; let i = index"
+                            [color]="'primary'" [checked]="day.used" (change)="setChecked($event.checked, i)">
+                            {{day.name}} </mat-checkbox>
                     </section>
                 </div>
                 <div>

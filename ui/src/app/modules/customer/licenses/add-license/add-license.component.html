@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Add License</h1>
+    <h1 mat-dialig-title>Add tekVizion 360 Package</h1>
     <form [formGroup]="addLicenseForm" (ngSubmit)="submit()">
         <div class="flex-container">
             <mat-dialog-content>
@@ -23,7 +23,8 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Type</mat-label>
                         <mat-select required formControlName="packageType" (valueChange)="onChangeType($event)">
-                            <mat-option *ngFor="let item of types" [value]="item" [selected]="item.name == selectedType">
+                            <mat-option *ngFor="let item of types" [value]="item"
+                                [selected]="item.name == selectedType">
                                 {{item.name}}
                             </mat-option>
                         </mat-select>

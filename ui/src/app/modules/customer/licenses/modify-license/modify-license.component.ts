@@ -83,16 +83,16 @@ export class ModifyLicenseComponent implements OnInit {
         mergedLicenseObject.deviceAccessLimit = this.updateCustomerForm.get("deviceAccessLimit").value;
         this.licenseService.updateLicenseDetails(mergedLicenseObject).subscribe((res: any) => {
             if (res && res.error)
-                this.snackBarService.openSnackBar(res.error, 'Error updating license!');
+                this.snackBarService.openSnackBar(res.error, 'Error updating package!');
             else {
                 this.dialogRef.close(true);
-                this.snackBarService.openSnackBar('License edited successfully!', '');
+                this.snackBarService.openSnackBar('Package edited successfully!', '');
             }
             this.isDataLoading = false;
         }, err => {
             this.isDataLoading = false;
             this.dialogRef.close(false);
-            console.error('error while updating license information row', err);
+            console.error('error while updating package information row', err);
         });
     }
     /**

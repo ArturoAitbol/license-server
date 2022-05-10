@@ -10,10 +10,10 @@
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
                     <mat-button-toggle value="add-new-license" (change)="onChangeToggle($event)">
-                        Add New License
+                        Add tekVizion 360 Package
                     </mat-button-toggle>
                     <mat-button-toggle value="add-license-consumption" (change)="onChangeToggle($event)">
-                        Add License Consumption
+                        Add Package Consumption
                     </mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
@@ -32,19 +32,13 @@
             </mat-form-field>
         </div>
     </form>
-    <h2>License Summary</h2>
+    <h2>tekVizion 360 Package Summary</h2>
     <section>
         <div class="example-container mat-elevation-z8">
-            <app-data-table
-                [tableData]="data"
-                [tableColumns]="licenseSummaryColumns" 
-                [isFilterable]="false"
-                [isPageable]="false"
-                [isLoadingResults]="isLicenseSummaryLoadingResults"
-                [isRequestCompleted]="isLicenseSummaryRequestCompleted"
-                [paginationSizes]="[5,10,20]"
-                [defaultPageSize]="5"
-                >
+            <app-data-table [tableData]="data" [tableColumns]="licenseSummaryColumns" [isFilterable]="false"
+                [isPageable]="false" [isLoadingResults]="isLicenseSummaryLoadingResults"
+                [isRequestCompleted]="isLicenseSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
+                [defaultPageSize]="5">
             </app-data-table>
         </div>
     </section>
@@ -53,17 +47,10 @@
     <h2>Equipment Summary</h2>
     <section>
         <div class="example-container mat-elevation-z8">
-            <app-data-table
-                [tableData]="equipmentData"
-                [tableColumns]="equipmentSummaryColumns" 
-                [isFilterable]="false"
-                [isPageable]="false"
-                [isLoadingResults]="isEquipmentSummaryLoadingResults"
-                [isRequestCompleted]="isEquipmentSummaryRequestCompleted"
-                [paginationSizes]="[5,10,20]"
-                [defaultPageSize]="5"
-                (sort)="sortDataEquipment($event)"
-                >
+            <app-data-table [tableData]="equipmentData" [tableColumns]="equipmentSummaryColumns" [isFilterable]="false"
+                [isPageable]="false" [isLoadingResults]="isEquipmentSummaryLoadingResults"
+                [isRequestCompleted]="isEquipmentSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
+                [defaultPageSize]="5" (sort)="sortDataEquipment($event)">
             </app-data-table>
         </div>
     </section>
@@ -75,51 +62,44 @@
         <div style="display: flex;">
             <div>
                 <mat-radio-group>
-                    <mat-radio-button class="radio-blue" value="period" [checked]="aggregation == 'period'" (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
+                    <mat-radio-button class="radio-blue" value="period" [checked]="aggregation == 'period'"
+                        (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
                     <br>
-                    <mat-radio-button class="radio-blue" value="month" [checked]="aggregation == 'month'" (change)="getMultipleChoiceAnswer($event)">Monthly</mat-radio-button>
+                    <mat-radio-button class="radio-blue" value="month" [checked]="aggregation == 'month'"
+                        (change)="getMultipleChoiceAnswer($event)">Monthly</mat-radio-button>
                     <mat-form-field appearance="outline" class="month-picker">
-                        <input required matInput [disabled]="aggregation == 'period'" [value]="selectedDate" [min]="startDate" [max]="endDate" 
-                            [matDatepicker]="picker" placeholder="Choose Month and Year">
-                        <mat-datepicker-toggle [disabled]="aggregation == 'period'" matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)"></mat-datepicker>
+                        <input required matInput [disabled]="aggregation == 'period'" [value]="selectedDate"
+                            [min]="startDate" [max]="endDate" [matDatepicker]="picker"
+                            placeholder="Choose Month and Year">
+                        <mat-datepicker-toggle [disabled]="aggregation == 'period'" matSuffix [for]="picker">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)">
+                        </mat-datepicker>
                     </mat-form-field>
-                  </mat-radio-group>
+                </mat-radio-group>
             </div>
         </div>
         <br>
         <div class="row">
             <div class="col-4">
                 <div class="example-container mat-elevation-z8">
-                    <app-data-table
-                    [tableData]="weeklyConsumptionData"
-                    [tableColumns]="detailedConsumptionColumns" 
-                    [isFilterable]="false"
-                    [isPageable]="false"
-                    [isLoadingResults]="isDetailedConsumptionLoadingResults"
-                    [isRequestCompleted]="isDetailedConsumptionRequestCompleted"
-                    [paginationSizes]="[5,10,20]"
-                    [defaultPageSize]="5"
-                    >
+                    <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="detailedConsumptionColumns"
+                        [isFilterable]="false" [isPageable]="false"
+                        [isLoadingResults]="isDetailedConsumptionLoadingResults"
+                        [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[5,10,20]"
+                        [defaultPageSize]="5">
                     </app-data-table>
                 </div>
             </div>
             <div class="col-8">
                 <div class="example-container mat-elevation-z8">
-                    <app-data-table
-                    [tableData]="detailedConsumptionData"
-                    [tableColumns]="detailedConsumptionSummaryColumns" 
-                    [isFilterable]="false"
-                    [isPageable]="false"
-                    [isLoadingResults]="isDetailedConsumptionLoadingResults"
-                    [isRequestCompleted]="isDetailedConsumptionRequestCompleted"
-                    [paginationSizes]="[5,10,20]"
-                    [defaultPageSize]="5"
-                    (sort)="sortData($event)"
-                    [rowActionIcon]="'more_vert'"
-                    (rowAction)="licConsumptionRowAction($event)"
-                    [actionMenuList]="licConsumptionActionMenuOptions"    
-                    >
+                    <app-data-table [tableData]="detailedConsumptionData"
+                        [tableColumns]="detailedConsumptionSummaryColumns" [isFilterable]="false" [isPageable]="false"
+                        [isLoadingResults]="isDetailedConsumptionLoadingResults"
+                        [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[5,10,20]"
+                        [defaultPageSize]="5" (sort)="sortData($event)" [rowActionIcon]="'more_vert'"
+                        (rowAction)="licConsumptionRowAction($event)"
+                        [actionMenuList]="licConsumptionActionMenuOptions">
                     </app-data-table>
                 </div>
             </div>

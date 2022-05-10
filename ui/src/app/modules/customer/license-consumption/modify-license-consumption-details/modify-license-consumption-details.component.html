@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Add License Consumption</h1>
+    <h1 mat-dialig-title>Edit Package Consumption</h1>
     <form [formGroup]="updateForm" (ngSubmit)="submit()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
@@ -9,14 +9,17 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Date</mat-label>
-                        <input matInput #consDate [matDatepicker]="picker" [min]="startDate" [max]="endDate" required formControlName="consDate">
+                        <input matInput #consDate [matDatepicker]="picker" [min]="startDate" [max]="endDate" required
+                            formControlName="consDate">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
                 </div>
                 <div>
                     <section>
-                        <mat-checkbox class="checkbox-margin" *ngFor="let day of days; let i = index" [color]="'primary'" [checked]="day.used" (change)="setChecked($event.checked, i)"> {{day.name}} </mat-checkbox>
+                        <mat-checkbox class="checkbox-margin" *ngFor="let day of days; let i = index"
+                            [color]="'primary'" [checked]="day.used" (change)="setChecked($event.checked, i)">
+                            {{day.name}} </mat-checkbox>
                     </section>
                 </div>
                 <div>
@@ -54,7 +57,8 @@
         <!-- <div class="btn-flex-container"> -->
         <mat-dialog-actions>
             <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
-            <button mat-raised-button color="primary" [disabled]="!updateForm.valid || disableSumbitBtn()" type="submit">Submit</button>
+            <button mat-raised-button color="primary" [disabled]="!updateForm.valid || disableSumbitBtn()"
+                type="submit">Submit</button>
             <!-- </div> -->
         </mat-dialog-actions>
     </form>
