@@ -30,8 +30,8 @@ export class DashboardComponent implements OnInit {
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
-  readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages List';
-  readonly VIEW_CONSUMPTION: string = 'View tekVizion 360 Package Consumption';
+  readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages';
+  readonly VIEW_CONSUMPTION: string = 'View Package Consumption';
   readonly VIEW_PROJECTS: string = 'View Projects List';
   readonly MODIFY_LICENSE: string = 'Edit';
   readonly DELETE_ACCOUNT: string = 'Delete';

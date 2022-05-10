@@ -32,21 +32,34 @@
             </mat-form-field>
         </div>
     </form>
-    <h2>tekVizion 360 Package Summary</h2>
+    <h2>tekVizion 360 Package Consumption Summary</h2>
     <section>
-        <div class="example-container mat-elevation-z8">
-            <app-data-table [tableData]="data" [tableColumns]="licenseSummaryColumns" [isFilterable]="false"
-                [isPageable]="false" [isLoadingResults]="isLicenseSummaryLoadingResults"
-                [isRequestCompleted]="isLicenseSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
-                [defaultPageSize]="5">
-            </app-data-table>
+        <div class="row">
+            <div class="col-6">
+                <div class="mat-elevation-z8">
+                    <app-data-table [tableData]="data" [tableColumns]="tekTokensSummaryColumns" [isFilterable]="false"
+                        [isPageable]="false" [isLoadingResults]="isLicenseSummaryLoadingResults"
+                        [isRequestCompleted]="isLicenseSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
+                        [defaultPageSize]="5">
+                    </app-data-table>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="mat-elevation-z8">
+                    <app-data-table [tableData]="data" [tableColumns]="automationSummaryColumns" [isFilterable]="false"
+                        [isPageable]="false" [isLoadingResults]="isLicenseSummaryLoadingResults"
+                        [isRequestCompleted]="isLicenseSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
+                        [defaultPageSize]="5">
+                    </app-data-table>
+                </div>
+            </div>
         </div>
     </section>
     <br>
     <!-- Equipment summary section -->
     <h2>Equipment Summary</h2>
     <section>
-        <div class="example-container mat-elevation-z8">
+        <div class="mat-elevation-z8">
             <app-data-table [tableData]="equipmentData" [tableColumns]="equipmentSummaryColumns" [isFilterable]="false"
                 [isPageable]="false" [isLoadingResults]="isEquipmentSummaryLoadingResults"
                 [isRequestCompleted]="isEquipmentSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
@@ -82,7 +95,7 @@
         <br>
         <div class="row">
             <div class="col-4">
-                <div class="example-container mat-elevation-z8">
+                <div class="mat-elevation-z8">
                     <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="detailedConsumptionColumns"
                         [isFilterable]="false" [isPageable]="false"
                         [isLoadingResults]="isDetailedConsumptionLoadingResults"
@@ -92,7 +105,7 @@
                 </div>
             </div>
             <div class="col-8">
-                <div class="example-container mat-elevation-z8">
+                <div class="mat-elevation-z8">
                     <app-data-table [tableData]="detailedConsumptionData"
                         [tableColumns]="detailedConsumptionSummaryColumns" [isFilterable]="false" [isPageable]="false"
                         [isLoadingResults]="isDetailedConsumptionLoadingResults"
