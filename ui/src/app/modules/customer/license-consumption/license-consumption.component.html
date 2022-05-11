@@ -56,24 +56,12 @@
         </div>
     </section>
     <br>
-    <!-- Equipment summary section -->
-    <h2>Equipment Summary</h2>
+    <!-- Detailed Consumption for selection -->
+    <h2> tekTokens Consumption</h2>
     <section>
-        <div class="mat-elevation-z8">
-            <app-data-table [tableData]="equipmentData" [tableColumns]="equipmentSummaryColumns" [isFilterable]="false"
-                [isPageable]="false" [isLoadingResults]="isEquipmentSummaryLoadingResults"
-                [isRequestCompleted]="isEquipmentSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
-                [defaultPageSize]="5" (sort)="sortDataEquipment($event)">
-            </app-data-table>
-        </div>
-    </section>
-    <!-- Detailed Consumption for month section -->
-    <br>
-    <h2> Detailed Consumption</h2>
-    <section>
-        <!-- date range -->
+        <!-- filters -->
         <div style="display: flex;">
-            <div>
+            <div class="col-4">
                 <mat-radio-group>
                     <mat-radio-button class="radio-blue" value="period" [checked]="aggregation == 'period'"
                         (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
@@ -91,11 +79,32 @@
                     </mat-form-field>
                 </mat-radio-group>
             </div>
+            <div class="col-4">
+                <mat-form-field appearance="outline">
+                    <mat-label>Consumption Type</mat-label>
+                    <mat-select (valueChange)="getType($event)">
+                        <mat-option value="">None</mat-option>
+                        <mat-option value="Configuration">Configuration</mat-option>
+                        <mat-option value="AutomationPlatform">Automation Platform</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-4">
+                <mat-form-field appearance="outline">
+                    <mat-label>Project</mat-label>
+                    <mat-select (valueChange)="getProject($event)">
+                        <mat-option value="">None</mat-option>
+                        <mat-option *ngFor="let item of projects" [value]="item.id">
+                            {{item.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
         </div>
         <br>
         <div class="row">
             <div class="col-4">
-                <div class="mat-elevation-z8">
+                <div class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="detailedConsumptionColumns"
                         [isFilterable]="false" [isPageable]="false"
                         [isLoadingResults]="isDetailedConsumptionLoadingResults"
@@ -105,7 +114,7 @@
                 </div>
             </div>
             <div class="col-8">
-                <div class="mat-elevation-z8">
+                <div class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="detailedConsumptionData"
                         [tableColumns]="detailedConsumptionSummaryColumns" [isFilterable]="false" [isPageable]="false"
                         [isLoadingResults]="isDetailedConsumptionLoadingResults"
@@ -116,6 +125,18 @@
                     </app-data-table>
                 </div>
             </div>
+        </div>
+    </section>
+    <br>
+    <!-- Equipment summary section -->
+    <h2>Equipment Summary</h2>
+    <section>
+        <div class="table-container mat-elevation-z8">
+            <app-data-table [tableData]="equipmentData" [tableColumns]="equipmentSummaryColumns" [isFilterable]="false"
+                [isPageable]="false" [isLoadingResults]="isEquipmentSummaryLoadingResults"
+                [isRequestCompleted]="isEquipmentSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
+                [defaultPageSize]="5" (sort)="sortDataEquipment($event)">
+            </app-data-table>
         </div>
     </section>
 </div>

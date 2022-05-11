@@ -44,12 +44,11 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 		String year = request.getQueryParameters().getOrDefault("year", "");
 		String month = request.getQueryParameters().getOrDefault("month", "");
+		String project = request.getQueryParameters().getOrDefault("project", "");
+		String type = request.getQueryParameters().getOrDefault("type", "");
 		String sqlCommonConditions = "l.subaccount_id = '" + subaccountId + "'";
 		if (!startDate.isEmpty() && !endDate.isEmpty())
 			sqlCommonConditions += " and l.consumption_date>='" + startDate + "' and l.consumption_date<='" + endDate + "'";
-		if (view.isEmpty() && !year.isEmpty() && !month.isEmpty())
-			sqlCommonConditions += " and EXTRACT(MONTH FROM l.consumption_date) = " + month + " and EXTRACT(YEAR FROM l.consumption_date) = " + year;
-
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -97,6 +96,13 @@ public class TekvLSGetAllLicenseUsageDetails {
 					json.put("equipmentSummary", array);
 				} break;
 				default: {
+					// add special filters
+					if (view.isEmpty() && !year.isEmpty() && !month.isEmpty())
+						sqlCommonConditions += " and EXTRACT(MONTH FROM l.consumption_date) = " + month + " and EXTRACT(YEAR FROM l.consumption_date) = " + year;
+					if (!project.isEmpty())
+						sqlCommonConditions += " and l.project_id='" + project + "'";
+					if (!type.isEmpty())
+						sqlCommonConditions += " and l.usage_type='" + type + "'";
 					// This is the default case (aggregated data)
 					JSONArray array = new JSONArray();
 					String sqlAll = "select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date)) as consumption, " +
@@ -122,7 +128,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// Get aggregated consumption for configuration
 					JSONArray array2 = new JSONArray();
 					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',consumption_date)) as weekId, sum(tokens_consumed) from license_consumption l where " + 
-						sqlCommonConditions + " and usage_type='Configuration' group by DATE_PART('week',consumption_date), DATE_PART('month',consumption_date) order by weekId;";
+						sqlCommonConditions + " group by DATE_PART('week',consumption_date), DATE_PART('month',consumption_date) order by weekId;";
 					context.getLogger().info("Execute SQL weekly statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
 					while (rs.next()) {

@@ -23,7 +23,7 @@ th.mat-sort-header-sorted {
 h1 {
   font-weight: 500;
 }
-.example-container {
+.table-container {
   position: relative;
   min-height: 200px;
   overflow: auto;

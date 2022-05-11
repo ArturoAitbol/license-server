@@ -12,6 +12,7 @@ import { LicenseService } from 'src/app/services/license.service';
 import { AddLicenseConsumptionComponent } from './add-license-consumption/add-license-consumption.component';
 import { AddLicenseComponent } from '../licenses/add-license/add-license.component';
 import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consumption-details/modify-license-consumption-details.component';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'app-license-consumption',
@@ -21,8 +22,11 @@ import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consu
 export class LicenseConsumption implements OnInit {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
+  projects: any[];
   selectedLicense: any;
   selectedDate: any;
+  selectedType: string;
+  selectedProject: string;
   startDate: any;
   endDate: any;
   aggregation: string = "period";
@@ -89,6 +93,7 @@ export class LicenseConsumption implements OnInit {
     private formBuilder: FormBuilder,
     private customerSerivce: CustomerService,
     private dialogService: DialogService,
+    private projectService: ProjectService,
     private licenseService: LicenseService,
     private licenseConsumptionService: LicenseConsumptionService,
     private router: Router,
@@ -114,6 +119,10 @@ export class LicenseConsumption implements OnInit {
         this.isDetailedConsumptionRequestCompleted = true;
       }
     });
+    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.id).subscribe((res: any) => {
+      if (!res.error && res.projects)
+        this.projects = res.projects;
+    });
   }
 
   initFlags() {
@@ -137,7 +146,7 @@ export class LicenseConsumption implements OnInit {
   }
 
   private buildRequestObject(view: string) {
-    const requestObject = {
+    const requestObject: any = {
       subaccount: this.currentCustomer.id,
       view: view,
       month: this.aggregation == 'month' ? this.month : null,
@@ -145,6 +154,8 @@ export class LicenseConsumption implements OnInit {
       startDate: this.selectedLicense.startDate,
       endDate: this.selectedLicense.renewalDate
     };
+    if (this.selectedProject) requestObject.project = this.selectedProject;
+    if (this.selectedType) requestObject.type = this.selectedType;
     return requestObject;
   }
 
@@ -318,6 +329,16 @@ export class LicenseConsumption implements OnInit {
     this.year = newDateSelection.getFullYear();
     this.selectedDate = newDateSelection;
     datepicker.close();
+    this.fetchAggregatedData();
+  }
+
+  getProject(newValue: any) {
+    this.selectedProject = newValue;
+    this.fetchAggregatedData();
+  }
+
+  getType(newValue: any) {
+    this.selectedType = newValue;
     this.fetchAggregatedData();
   }
 }

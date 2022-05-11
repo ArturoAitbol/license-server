@@ -18,7 +18,7 @@
     <!-- license summary section -->
     <h2>tekVizion 360 Packages</h2>
     <section>
-        <div class="example-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
+        <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
             <app-data-table [tableData]="licenses" [tableColumns]="displayedColumns" [isFilterable]="false"
                 [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                 [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
