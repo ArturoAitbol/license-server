@@ -33,6 +33,10 @@ export class LicenseConsumptionService {
       params = params.set('year', data.year);
     if (data.month)
       params = params.set('month', data.month);
+    if (data.type)
+      params = params.set('type', data.type);
+    if (data.project)
+      params = params.set('project', data.project);
     if (data.startDate && data.endDate) {
       params = params.set('startDate', data.startDate);
       params = params.set('endDate', data.endDate);

@@ -30,9 +30,9 @@ export class DashboardComponent implements OnInit {
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
-  readonly VIEW_LICENSES: string = 'View Licenses';
-  readonly VIEW_CONSUMPTION: string = 'View License Consumption';
-  readonly VIEW_PROJECTS: string = 'View Projects';
+  readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages';
+  readonly VIEW_CONSUMPTION: string = 'View Package Consumption';
+  readonly VIEW_PROJECTS: string = 'View Projects List';
   readonly MODIFY_LICENSE: string = 'Edit';
   readonly DELETE_ACCOUNT: string = 'Delete';
 
@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
     private snackBarService: SnackBarService,
     private router: Router
   ) { }
-  
+
   @HostListener('window:resize')
   sizeChange() {
     this.calculateTableHeight();
@@ -95,28 +95,28 @@ export class DashboardComponent implements OnInit {
       this.subaccountService.getSubAccountList(),
       this.licenseService.getLicenseList()
     ]).subscribe(res => {
-        this.isLoadingResults = false;
-        this.isRequestCompleted = true;
-        const newDataObject: any = res.reduce((current, next) => {
-          return { ...current, ...next };
-        }, {});
-        this.subaccountList = newDataObject['subaccounts'];
-        this.subaccountList.forEach((subaccount: any) => {
-          const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
-          const licenseDetails = newDataObject['licenses'].find((l: License) => (l.subaccountId === subaccount.id && l.status === "Active"));
-          subaccount.customerName = customerDetails.name;
-          subaccount.customerType = customerDetails.customerType;
-          if (licenseDetails)
-            subaccount.status = licenseDetails.status;
-          else
-            subaccount.status = "Inactive";
-        });
-        this.subaccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
-      }, err => {
-        console.debug('error', err);
-        this.isLoadingResults = false;
-        this.isRequestCompleted = true;
+      this.isLoadingResults = false;
+      this.isRequestCompleted = true;
+      const newDataObject: any = res.reduce((current, next) => {
+        return { ...current, ...next };
+      }, {});
+      this.subaccountList = newDataObject['subaccounts'];
+      this.subaccountList.forEach((subaccount: any) => {
+        const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
+        const licenseDetails = newDataObject['licenses'].find((l: License) => (l.subaccountId === subaccount.id && l.status === "Active"));
+        subaccount.customerName = customerDetails.name;
+        subaccount.customerType = customerDetails.customerType;
+        if (licenseDetails)
+          subaccount.status = licenseDetails.status;
+        else
+          subaccount.status = "Inactive";
       });
+      this.subaccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
+    }, err => {
+      console.debug('error', err);
+      this.isLoadingResults = false;
+      this.isRequestCompleted = true;
+    });
   }
 
 
@@ -139,7 +139,7 @@ export class DashboardComponent implements OnInit {
   /**
    * on click add account customer
    */
-   addSubaccount(): void {
+  addSubaccount(): void {
     this.openDialog('add-subaccount');
   }
   /**

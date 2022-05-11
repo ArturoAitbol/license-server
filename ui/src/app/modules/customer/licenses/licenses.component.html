@@ -9,30 +9,20 @@
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle value="add-new-license" (click)="onNewLicense()">Add New License
+                    <mat-button-toggle value="add-new-license" (click)="onNewLicense()">Add tekVizion 360 Package
                     </mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
         </div>
     </main>
     <!-- license summary section -->
-    <h2>License Summary</h2>
-    <section >
-        <div class="example-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
-            <app-data-table
-                [tableData]="licenses"
-                [tableColumns]="displayedColumns" 
-                [isFilterable]="false"
-                [isPageable]="false"
-                [isLoadingResults]="isLoadingResults"
-                [isRequestCompleted]="isRequestCompleted"
-                [paginationSizes]="[5,10,20]"
-                [defaultPageSize]="5"
-                (sort)="sortData($event)" 
-                [rowActionIcon]="'more_vert'"
-                (rowAction)="rowAction($event)"
-                [actionMenuList]="actionMenuOptions"
-                >
+    <h2>tekVizion 360 Packages</h2>
+    <section>
+        <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
+            <app-data-table [tableData]="licenses" [tableColumns]="displayedColumns" [isFilterable]="false"
+                [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
+                [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
+                [rowActionIcon]="'more_vert'" (rowAction)="rowAction($event)" [actionMenuList]="actionMenuOptions">
             </app-data-table>
         </div>
     </section>

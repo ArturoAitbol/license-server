@@ -12,6 +12,7 @@ import { LicenseService } from 'src/app/services/license.service';
 import { AddLicenseConsumptionComponent } from './add-license-consumption/add-license-consumption.component';
 import { AddLicenseComponent } from '../licenses/add-license/add-license.component';
 import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consumption-details/modify-license-consumption-details.component';
+import { ProjectService } from 'src/app/services/project.service';
 
 @Component({
   selector: 'app-license-consumption',
@@ -21,8 +22,11 @@ import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consu
 export class LicenseConsumption implements OnInit {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
+  projects: any[];
   selectedLicense: any;
   selectedDate: any;
+  selectedType: string;
+  selectedProject: string;
   startDate: any;
   endDate: any;
   aggregation: string = "period";
@@ -37,12 +41,16 @@ export class LicenseConsumption implements OnInit {
     licenseId: ['']
   });
 
-  readonly licenseSummaryColumns: TableColumn[] = [
-    { name: 'Device Access Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true, },
-    { name: 'Devices Connected', dataKey: 'devicesConnected', position: 'left', isSortable: true },
-    { name: 'tekTokens Purchased', dataKey: 'tokensPurchased', position: 'left', isSortable: true },
+  tekTokensSummaryColumns: TableColumn[] = [
+    { name: 'tekTokens', dataKey: 'tokensPurchased', position: 'left', isSortable: true },
+    { name: 'Consumed', dataKey: 'tokensConsumed', position: 'left', isSortable: true, canHighlighted: false },
+    { name: 'Available', dataKey: 'tokensAvailable', position: 'left', isSortable: true, canHighlighted: false }
+  ];
+
+  readonly automationSummaryColumns: TableColumn[] = [
     { name: 'Automation tekTokens Consumed', dataKey: 'AutomationPlatformTokensConsumed', position: 'left', isSortable: true, canHighlighted: false },
-    { name: 'Configuration tekTokens Consumed', dataKey: 'ConfigurationTokensConsumed', position: 'left', isSortable: true, canHighlighted: false }
+    { name: 'Device Access Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true, },
+    { name: 'Devices Connected', dataKey: 'devicesConnected', position: 'left', isSortable: true }
   ];
 
   readonly equipmentSummaryColumns: TableColumn[] = [
@@ -85,6 +93,7 @@ export class LicenseConsumption implements OnInit {
     private formBuilder: FormBuilder,
     private customerSerivce: CustomerService,
     private dialogService: DialogService,
+    private projectService: ProjectService,
     private licenseService: LicenseService,
     private licenseConsumptionService: LicenseConsumptionService,
     private router: Router,
@@ -110,6 +119,10 @@ export class LicenseConsumption implements OnInit {
         this.isDetailedConsumptionRequestCompleted = true;
       }
     });
+    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.id).subscribe((res: any) => {
+      if (!res.error && res.projects)
+        this.projects = res.projects;
+    });
   }
 
   initFlags() {
@@ -124,7 +137,7 @@ export class LicenseConsumption implements OnInit {
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
   }
-  
+
   fetchDataToDisplay() {
     this.initFlags();
     this.fetchSummaryData();
@@ -133,14 +146,16 @@ export class LicenseConsumption implements OnInit {
   }
 
   private buildRequestObject(view: string) {
-    const requestObject = {
+    const requestObject: any = {
       subaccount: this.currentCustomer.id,
       view: view,
-      month: this.aggregation == 'month'? this.month : null,
-      year:  this.aggregation == 'month'? this.year : null,
+      month: this.aggregation == 'month' ? this.month : null,
+      year: this.aggregation == 'month' ? this.year : null,
       startDate: this.selectedLicense.startDate,
       endDate: this.selectedLicense.renewalDate
     };
+    if (this.selectedProject) requestObject.project = this.selectedProject;
+    if (this.selectedType) requestObject.type = this.selectedType;
     return requestObject;
   }
 
@@ -159,11 +174,13 @@ export class LicenseConsumption implements OnInit {
       const mergedObj = { ...requiredObject, ...response };
       mergedObj.tokensConsumed = mergedObj.AutomationPlatformTokensConsumed + mergedObj.ConfigurationTokensConsumed;
       if (mergedObj.tokensConsumed >= mergedObj.tokensPurchased) {
-        this.licenseSummaryColumns[3].canHighlighted = true;
-        this.licenseSummaryColumns[4].canHighlighted = true;
+        this.tekTokensSummaryColumns[1].canHighlighted = true;
+        this.tekTokensSummaryColumns[2].canHighlighted = true;
+        mergedObj.tokensAvailable = 0;
       } else {
-        this.licenseSummaryColumns[3].canHighlighted = false;
-        this.licenseSummaryColumns[4].canHighlighted = false;
+        this.tekTokensSummaryColumns[1].canHighlighted = false;
+        this.tekTokensSummaryColumns[2].canHighlighted = false;
+        mergedObj.tokensAvailable = mergedObj.tokensPurchased - mergedObj.tokensConsumed;
       }
       this.data = [mergedObj];
     }, (error) => {
@@ -198,7 +215,7 @@ export class LicenseConsumption implements OnInit {
     });
   }
 
-  onChangeLicense(newLicense: any){
+  onChangeLicense(newLicense: any) {
     if (newLicense) {
       this.selectedLicense = this.licensesList.find(item => item.id == newLicense);
       this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
@@ -220,18 +237,18 @@ export class LicenseConsumption implements OnInit {
 
   onDelete(index: number) {
     this.dialogService.confirmDialog({
-        title: 'Confirm Action',
-        message: 'Do you want to confirm this action?',
-        confirmCaption: 'Confirm',
-        cancelCaption: 'Cancel',
-      }).subscribe((confirmed) => {
-        if (confirmed) {
-          console.log('The user confirmed the action');
-          if (index){
-            console.log('Delete element with index: ' + index);
-          }
-        }        
-      });
+      title: 'Confirm Action',
+      message: 'Do you want to confirm this action?',
+      confirmCaption: 'Confirm',
+      cancelCaption: 'Cancel',
+    }).subscribe((confirmed) => {
+      if (confirmed) {
+        console.log('The user confirmed the action');
+        if (index) {
+          console.log('Delete element with index: ' + index);
+        }
+      }
+    });
   }
 
   goToDashboard(): void {
@@ -259,7 +276,7 @@ export class LicenseConsumption implements OnInit {
  * @param sortParameters: Sort 
  * @returns 
  */
-   sortDataEquipment(sortParameters: Sort): any[] {
+  sortDataEquipment(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
       this.equipmentData = this.equipmentData.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
@@ -292,7 +309,7 @@ export class LicenseConsumption implements OnInit {
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.EDIT:
-        let dataObject: any = {... object.selectedRow};
+        let dataObject: any = { ...object.selectedRow };
         this.startDate = new Date(this.data.startDate + " 00:00:00");
         this.endDate = new Date(this.data.renewalDate + " 00:00:00");
         this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
@@ -312,6 +329,16 @@ export class LicenseConsumption implements OnInit {
     this.year = newDateSelection.getFullYear();
     this.selectedDate = newDateSelection;
     datepicker.close();
+    this.fetchAggregatedData();
+  }
+
+  getProject(newValue: any) {
+    this.selectedProject = newValue;
+    this.fetchAggregatedData();
+  }
+
+  getType(newValue: any) {
+    this.selectedType = newValue;
     this.fetchAggregatedData();
   }
 }

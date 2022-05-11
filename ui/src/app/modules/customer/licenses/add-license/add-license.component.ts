@@ -30,7 +30,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     private bundleService: BundleService,
     private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<AddLicenseComponent>
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
@@ -57,14 +57,14 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     };
     this.licenseService.purchaseLicense(licenseObject).subscribe((res: any) => {
       if (!res.error) {
-        this.snackBarService.openSnackBar('License added successfully!', '');
+        this.snackBarService.openSnackBar('Package added successfully!', '');
         this.dialogRef.close(res);
       } else
-        this.snackBarService.openSnackBar(res.error, 'Error adding license!');
+        this.snackBarService.openSnackBar(res.error, 'Error adding package!');
     });
   }
 
-  onChangeType(item: any){
+  onChangeType(item: any) {
     if (item) {
       this.selectedType = item.name;
       this.addLicenseForm.patchValue({
