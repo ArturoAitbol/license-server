@@ -41,12 +41,16 @@ public class TekvLSGetAllProjects {
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
+		String status = request.getQueryParameters().getOrDefault("status", "");
 		
 		// Build SQL statement
 		String sql = "select * from project";
 		if (id.equals("EMPTY")) {
-			if (!subaccountId.isEmpty())
+			if (!subaccountId.isEmpty()) {
 				sql += " where subaccount_id='" + subaccountId + "'";
+				if (!status.isEmpty())
+					sql += " and status='" + status + "'";
+			}
 		} else {
 			sql += " where id='" + id +"'";
 		}

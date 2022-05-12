@@ -19,11 +19,11 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   vendors: any = [];
   models: any = [];
   days: any = [
-    {name: "Mon", used: false},
-    {name: "Tue", used: false},
-    {name: "Wed", used: false},
-    {name: "Thu", used: false},
-    {name: "Fri", used: false},
+    { name: "Mon", used: false },
+    { name: "Tue", used: false },
+    { name: "Wed", used: false },
+    { name: "Thu", used: false },
+    { name: "Fri", used: false },
   ];
   selectedVendor: string = '';
   startDate: any;
@@ -69,8 +69,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.devices.forEach((device: any) => {
         if (device.type != "Phone" && device.vendor == value) {
           this.models.push({
-            id: device.id, 
-            product: device.version? device.product + " - v." + device.version : device.product
+            id: device.id,
+            product: device.version ? device.product + " - v." + device.version : device.product
           });
         }
       });
@@ -84,7 +84,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   pickConsumptionDate(newDateSelection: Date) {
     let startOfWeek: Date = new Date(newDateSelection);
     startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-    this.addLicenseConsumptionForm.patchValue({consumptionDate: startOfWeek});
+    this.addLicenseConsumptionForm.patchValue({ consumptionDate: startOfWeek });
   }
 
   setChecked(value: boolean, index: number) {
@@ -113,7 +113,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       if (!res.error) {
         this.snackBarService.openSnackBar('Added license consumption successfully!', '');
         this.dialogRef.close(res);
-      } else 
+      } else
         this.snackBarService.openSnackBar(res.error, 'Error adding license consumption!');
     }).catch((err: any) => {
       this.isDataLoading = false;
@@ -142,7 +142,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    */
   fetchProjects(): void {
     const subaccountId = this.currentCustomer.id;
-    this.projectService.getProjectDetailsBySubAccount(subaccountId).subscribe((res: any) => {
+    this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open').subscribe((res: any) => {
       this.projects = res['projects'];
     });
   }
