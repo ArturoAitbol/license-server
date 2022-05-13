@@ -83,7 +83,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   pickConsumptionDate(newDateSelection: Date) {
     let startOfWeek: Date = new Date(newDateSelection);
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
     this.addLicenseConsumptionForm.patchValue({ consumptionDate: startOfWeek });
   }
 
@@ -105,7 +105,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     };
     for (let i = 0; i < this.days.length; i++) {
       if (this.days[i].used)
-        licenseConsumptionObject.usageDays.push(i + 1);
+        licenseConsumptionObject.usageDays.push(i);
     }
     this.isDataLoading = true;
     this.licenseConsumptionService.addLicenseConsumptionDetails(licenseConsumptionObject).toPromise().then((res: any) => {

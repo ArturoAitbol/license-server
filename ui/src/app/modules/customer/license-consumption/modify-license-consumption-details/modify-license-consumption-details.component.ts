@@ -135,7 +135,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     for (let i = 0; i < this.days.length; i++) {
       if (this.days[i].used != this.originalDays[i].used) {
         if (this.days[i].used)
-          modifiedDays.addedDays.push(i + 1);
+          modifiedDays.addedDays.push(i);
         else
           modifiedDays.deletedDays.push(this.days[i].id);
       }
@@ -172,8 +172,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       });
       this.projects = resDataObject['projects'];
       resDataObject['usageDays'].forEach((day) => {
-        this.days[day.dayOfWeek - 1].used = true;
-        this.days[day.dayOfWeek - 1].id = day.id;
+        this.days[day.dayOfWeek].used = true;
+        this.days[day.dayOfWeek].id = day.id;
       });
       this.originalDays = JSON.parse(JSON.stringify(this.days));
       this.updateForm.patchValue(this.data);
