@@ -1,12 +1,13 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LicenseConsumption } from 'src/app/model/license-consumption.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DevicesService } from 'src/app/services/devices.service';
 import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { AddProjectComponent } from '../../projects/add-project/add-project.component';
 
 @Component({
   selector: 'app-add-license-consumption',
@@ -44,6 +45,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     private licenseConsumptionService: LicenseConsumptionService,
     private snackBarService: SnackBarService,
     private formBuilder: FormBuilder,
+    public dialog: MatDialog,
     public dialogRef: MatDialogRef<AddLicenseConsumptionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
@@ -61,6 +63,17 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   onChangeVendor(value: string): void {
     this.addLicenseConsumptionForm.patchValue({ product: '' });
     this.filterVendorDevices(value);
+  }
+
+  onAddProject(): void {
+    const dialogRef = this.dialog.open(AddProjectComponent, {
+      width: 'auto',
+      disableClose: true
+    });
+    dialogRef.afterClosed().subscribe(res => {
+      if (res)
+        this.fetchProjects();
+    });
   }
 
   private filterVendorDevices(value: string): void {
