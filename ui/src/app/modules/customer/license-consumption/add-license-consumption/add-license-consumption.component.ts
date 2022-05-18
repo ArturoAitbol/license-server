@@ -2,7 +2,7 @@ import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { Device } from 'src/app/model/device.model';
 import { LicenseConsumption } from 'src/app/model/license-consumption.model';
@@ -35,17 +35,17 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
 
   filteredProjects: Observable<any[]>;
-  filteredVendors:Observable<any[]>;
-  filteredModels:Observable<any[]>;
-
-  selectedVendor: string = '';
+  filteredVendors: Observable<any[]>;
+  filteredModels: Observable<any[]>;
   startDate: any;
   endDate: any;
   addLicenseConsumptionForm = this.formBuilder.group({
     consumptionDate: ['', Validators.required],
-    project: ['', [Validators.required,this.RequireMatch]],
-    vendor: ['', [Validators.required,this.RequireMatch]],
-    product: ['', [Validators.required,this.RequireMatch]]
+    project: ['', [Validators.required, this.RequireMatch]]
+  });
+  addDeviceForm = this.formBuilder.group({
+    vendor: ['', [this.RequireMatch]],
+    product: ['', [this.RequireMatch]]
   });
   currentCustomer: any;
   isDataLoading: boolean = false;
@@ -62,35 +62,90 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit(): void {
-    
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.projectService.setSelectedSubAccount(this.currentCustomer.id);
 
-    if(this.data){
+    if (this.data) {
       this.startDate = new Date(this.data.startDate + " 00:00:00");
       this.endDate = new Date(this.data.renewalDate + " 00:00:00");
     }
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.fetchData();
-    this.filteredModels = this.addLicenseConsumptionForm.controls['product'].valueChanges.pipe(
+    this.filteredModels = this.addDeviceForm.controls['product'].valueChanges.pipe(
       startWith(''),
-      map(value => (typeof value === 'string' ? value : value.product)),
+      map(value => (typeof value === 'string' ? value : value ? value.product : '')),
       map(product => (product ? this.filterModels(product) : this.models.slice()))
     );
   }
 
   /**
+  * fetch devices and projects list
+  */
+  fetchData(): void {
+    this.isDataLoading = true;
+    const subaccountId = this.currentCustomer.id;
+    forkJoin([
+      this.deviceService.getDevicesList(),
+      this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open')
+    ]).subscribe((res: any) => {
+      const resDataObject: any = res.reduce((current: any, next: any) => {
+        return { ...current, ...next };
+      }, {});
+
+      /*Devices list*/
+      this.devices = resDataObject['devices'];
+      let vendorsHash: any = {};
+      this.vendors = this.devices.filter(device => {
+        if (device.type != "Phone" && !vendorsHash[device.vendor]) {
+          vendorsHash[device.vendor] = true;
+          return true;
+        }
+        return false;
+      });
+      this.filteredVendors = this.addDeviceForm.controls['vendor'].valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value : value ? value.vendor : '')),
+        map(vendor => {
+          if (vendor === '') {
+            this.models = [];
+            this.addDeviceForm.controls['product'].disable();
+            this.addDeviceForm.patchValue({ product: '' });
+          }
+          return vendor ? this.filterVendors(vendor) : this.vendors.slice();
+        })
+      );
+
+      /*Projects List*/
+      this.projects = resDataObject['projects'];
+      this.filteredProjects = this.addLicenseConsumptionForm.controls['project'].valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value : value.name)),
+        map(name => (name ? this.filterProjects(name) : this.projects.slice())),
+      );
+
+      this.isDataLoading = false;
+    });
+  }
+  /**
+   * fetch projects list
+   */
+  fetchProjects(): void {
+    this.isDataLoading = true;
+    const subaccountId = this.currentCustomer.id;
+    this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open').subscribe((res: any) => {
+      this.projects = res['projects'];
+      this.addLicenseConsumptionForm.patchValue({ project: '' });
+      this.isDataLoading = false;
+    });
+  }
+  /**
    * trigger when user select/change vendor dropdown
    * @param value: string 
    */
   onChangeVendor(value: any): void {
-    if(value!==this.selectedVendor){
-      this.selectedVendor = value;
-      this.filterVendorDevices(value.vendor);
-      this.addLicenseConsumptionForm.patchValue({ product: '' });
-      this.addLicenseConsumptionForm.controls['product'].enable()
-    }
-    
+    this.filterVendorDevices(value.vendor);
+    this.addDeviceForm.patchValue({ product: '' });
+    this.addDeviceForm.controls['product'].enable()
   }
 
   onAddProject(): void {
@@ -111,6 +166,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
         if (device.type != "Phone" && device.vendor == value) {
           this.models.push({
             id: device.id,
+            vendor: value,
             product: device.version ? device.product + " - v." + device.version : device.product
           });
         }
@@ -137,104 +193,46 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   submit(): void {
     let consumptionDate: Date = new Date(this.addLicenseConsumptionForm.value.consumptionDate);
-    const licenseConsumptionObject: any = {
+    const licenseConsumptionsObject: any = {
       subaccountId: this.currentCustomer.id,
       projectId: this.addLicenseConsumptionForm.value.project.id,
-      deviceId: this.addLicenseConsumptionForm.value.product.id,
       consumptionDate: consumptionDate.toISOString().split("T")[0],
       usageType: "Configuration",
       macAddress: "",
       serialNumber: "",
-      usageDays: []
+      usedDevices: []
     };
-    for (let i = 0; i < this.days.length; i++) {
-      if (this.days[i].used)
-        licenseConsumptionObject.usageDays.push(i);
-    }
-    this.isDataLoading = true;
-    this.licenseConsumptionService.addLicenseConsumptionDetails(licenseConsumptionObject).toPromise().then((res: any) => {
-      this.isDataLoading = false;
-      if (!res.error) {
-        this.snackBarService.openSnackBar('Added license consumption successfully!', '');
-        this.dialogRef.close(res);
-      } else
-        this.snackBarService.openSnackBar(res.error, 'Error adding license consumption!');
-    }).catch((err: any) => {
-      this.isDataLoading = false;
-      this.snackBarService.openSnackBar(err, 'Error adding license consumption!');
+    this.usedDevices.forEach((device: any) => {
+      let usageDays = [];
+      for (let i = 0; i < device.days.length; i++) {
+        if (device.days[i].used)
+          usageDays.push(i);
+      }
+      licenseConsumptionsObject.usedDevices.push({ id: device.id, usageDays: usageDays });
     });
-  }
-
-   /**
-   * fetch devices and projects list
-   */
-  fetchData(): void{
-    this.isDataLoading = true;
-    const subaccountId = this.currentCustomer.id;
-    forkJoin([
-      this.deviceService.getDevicesList(),
-      this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open')
-    ]).subscribe((res: any) => {
-      const resDataObject: any = res.reduce((current: any, next: any) => {
-        return { ...current, ...next };
-      }, {});
-
-      /*Devices list*/
-      this.devices = resDataObject['devices'];
-      let vendorsHash: any = {};
-      this.vendors = this.devices.filter(device => {
-        if (device.type != "Phone" && !vendorsHash[device.vendor]) {
-          vendorsHash[device.vendor] = true;
-          return true;
-        }
-        return false;
-      });
-      this.filteredVendors = this.addLicenseConsumptionForm.controls['vendor'].valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value : value.vendor)),
-        map(vendor => {
-          if(vendor===''){
-            this.models = [];
-            this.addLicenseConsumptionForm.controls['product'].disable();
-            this.addLicenseConsumptionForm.patchValue({ product: '' });
-          }
-          return vendor ? this.filterVendors(vendor) : this.vendors.slice();
-        })
-      );
-
-      /*Projects List*/
-      this.projects = resDataObject['projects'];
-      this.filteredProjects = this.addLicenseConsumptionForm.controls['project'].valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value : value.name)),
-        map(name => (name ? this.filterProjects(name) : this.projects.slice())),
-      );
-
-      this.isDataLoading = false;
-    });
-  }
-  /**
-   * fetch projects list
-   */
-  fetchProjects(): void {
-    this.isDataLoading = true;
-    const subaccountId = this.currentCustomer.id;
-    this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open').subscribe((res: any) => {
-      this.projects = res['projects'];
-      this.addLicenseConsumptionForm.patchValue({project:''});
-      this.isDataLoading = false;
-    });
+    console.log(licenseConsumptionsObject);
+    // this.isDataLoading = true;
+    // this.licenseConsumptionService.addLicenseConsumptionDetails(licenseConsumptionsObject).toPromise().then((res: any) => {
+    //   this.isDataLoading = false;
+    //   if (!res.error) {
+    //     this.snackBarService.openSnackBar('Added license consumption successfully!', '');
+    //     this.dialogRef.close(res);
+    //   } else
+    //     this.snackBarService.openSnackBar(res.error, 'Error adding license consumption!');
+    // }).catch((err: any) => {
+    //   this.isDataLoading = false;
+    //   this.snackBarService.openSnackBar(err, 'Error adding license consumption!');
+    // });
   }
   /**
    * add device to the list
    */
   addDevice(): void {
-    let device = this.devices.find((device: any) => device.id === this.addLicenseConsumptionForm.value.product);
-    device.usageDays = this.days;
-    device.parsedLabel = "Vendor: " + device.vendor + " - Model: " + device.product;
-    if (device.version) device.parsedLabel += " - Version: " + device.version;
+    let device: any = this.addDeviceForm.value.product;
+    device.days = this.days;
     this.usedDevices.push(device);
-    this.addLicenseConsumptionForm.patchValue({ vendor: '', product: '' });
+    this.addDeviceForm.reset();
+    // this.addDeviceForm.patchValue({ vendor: '', product: '' });
     this.days = [
       { name: "Mon", used: false },
       { name: "Tue", used: false },
@@ -242,6 +240,13 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       { name: "Thu", used: false },
       { name: "Fri", used: false },
     ];
+  }
+  /**
+   * trigger when user deletes a device
+   * @param index: number 
+   */
+  removeDevice(index: number): void {
+    this.usedDevices.splice(index, 1);
   }
 
   private filterProjects(value: string): Project[] {
@@ -272,21 +277,26 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   private RequireMatch(control: AbstractControl) {
     const selection: any = control.value;
     if (typeof selection === 'string') {
-        return { incorrect: true };
+      return { incorrect: true };
     }
     return null;
   }
 
-getErrorMessage(): string{
-  return 'Please select a correct option';
-}
+  getErrorMessage(): string {
+    return 'Please select a correct option';
+  }
 
-isInvalid(control:string):boolean{
-  return this.addLicenseConsumptionForm.controls[control].invalid;
-}
+  isInvalidProject(): boolean {
+    return this.addLicenseConsumptionForm.controls['project'].invalid;
+  }
+
+  isInvalid(control: string): boolean {
+    return this.addDeviceForm.controls[control].invalid || !this.addDeviceForm.controls[control].value;
+  }
 
   ngOnDestroy(): void {
     // reset form here
     this.addLicenseConsumptionForm.reset();
+    this.addDeviceForm.reset();
   }
 }
