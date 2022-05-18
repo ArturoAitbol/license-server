@@ -32,11 +32,7 @@
                                 {{project.name}}
                             </mat-option>
                         </mat-autocomplete>
-                        <!-- <mat-select required formControlName="projectId">
-                                            <mat-option *ngFor="let item of projects" [value]="item.id">
-                                                {{item.name}}
-                                            </mat-option>
-                                        </mat-select> -->
+                        <mat-error *ngIf="isInvalid('project')">{{getErrorMessage()}}</mat-error>
                     </mat-form-field>
                 </div>
                 <div>
@@ -44,28 +40,26 @@
                         <mat-label>Vendor</mat-label>
                         <input type="text" placeholder="Pick one" aria-label="vendorAutoComplete" matInput formControlName="vendor"
                             [matAutocomplete]="vendors">
-                        <mat-autocomplete autoActiveFirstOption #vendors="matAutocomplete" (optionSelected)="onChangeVendor($event.option.value)">
-                            <mat-option *ngFor="let item of filteredVendors | async" [value]="item.vendor">
+                        <mat-autocomplete autoActiveFirstOption #vendors="matAutocomplete" (optionSelected)="onChangeVendor($event.option.value)" [displayWith]="displayFnVendor">
+                            <mat-option *ngFor="let item of filteredVendors | async" [value]="item">
                                 {{item.vendor}}
                             </mat-option>
                         </mat-autocomplete>
+                        <mat-error *ngIf="isInvalid('vendor')">{{getErrorMessage()}}</mat-error>
                     </mat-form-field>
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Device</mat-label>
                         <input type="text" placeholder="Pick one" aria-label="modelsAutoComplete" matInput formControlName="device"
-                            [matAutocomplete]="models">
-                        <mat-autocomplete autoActiveFirstOption #models="matAutocomplete" [displayWith]="displayFnDevice">
+                            [matAutocomplete]="modelsList">
+                        <mat-autocomplete autoActiveFirstOption #modelsList="matAutocomplete" [displayWith]="displayFnDevice">
                             <mat-option *ngFor="let device of filteredModels | async" [value]="device">
                                 {{device.product}}
                             </mat-option>
                         </mat-autocomplete>
-                        <!-- <mat-select required formControlName="deviceId">
-                            <mat-option *ngFor="let item of models" [value]="item.id">
-                                {{item.product}}
-                            </mat-option>
-                        </mat-select> -->
+                        <mat-error *ngIf="isInvalid('device')">{{getErrorMessage()}}</mat-error>
+                    <mat-hint *ngIf="models.length===0">Please select a Vendor first</mat-hint>
                     </mat-form-field>
                 </div>
             </mat-dialog-content>
