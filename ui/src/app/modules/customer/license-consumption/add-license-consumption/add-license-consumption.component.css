@@ -30,4 +30,7 @@ mat-form-field {
 .plus-button {
   margin-top: 3px;
   line-height: 50px;
+  float: right;
+  display: flex;
+  justify-content: center;
 }

@@ -17,13 +17,6 @@
                     </mat-form-field>
                 </div>
                 <div>
-                    <section>
-                        <mat-checkbox class="checkbox-margin" *ngFor="let day of days; let i = index"
-                            [color]="'primary'" [checked]="day.used" (change)="setChecked($event.checked, i)">
-                            {{day.name}} </mat-checkbox>
-                    </section>
-                </div>
-                <div>
                     <mat-form-field class="col-9 no-padding" appearance="outline">
                         <mat-label>Project</mat-label>
                         <mat-select required formControlName="projectId">
@@ -35,8 +28,23 @@
                     <div class="col-3 no-padding" style="float: right;">
                         <button mat-stroked-button type="button" class="plus-button" title="New Project"
                             (click)="onAddProject()">
-                            +
+                            <mat-icon>add</mat-icon>
                         </button>
+                    </div>
+                </div>
+                <h2>Devices Usage</h2>
+                <div *ngFor="let item of usedDevices; let deviceIndex = index">
+                    <h4>{{item.parsedLabel}}</h4>
+                    <div>
+                        <section>
+                            <mat-checkbox class="checkbox-margin"
+                                *ngFor="let day of item.usageDays; let daysIndex = index" [color]="'primary'"
+                                [checked]="day.used" (change)="setChecked($event.checked, daysIndex, deviceIndex)">
+                                {{day.name}} </mat-checkbox>
+                            <button mat-icon-button title="Delete Device Usage" style="float: right;">
+                                <mat-icon>clear</mat-icon>
+                            </button>
+                        </section>
                     </div>
                 </div>
                 <div>
@@ -58,6 +66,19 @@
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
+                </div>
+                <div>
+                    <section>
+                        <mat-checkbox class="checkbox-margin" *ngFor="let day of days; let i = index"
+                            [color]="'primary'" [checked]="day.used" (change)="setChecked($event.checked, i)">
+                            {{day.name}} </mat-checkbox>
+                    </section>
+                </div>
+                <div>
+                    <button mat-mini-fab color="primary" type="button" class="plus-button" title="New Device"
+                        (click)="addDevice()" [disabled]="!addLicenseConsumptionForm.valid">
+                        <mat-icon>add</mat-icon>
+                    </button>
                 </div>
             </mat-dialog-content>
         </div>

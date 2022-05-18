@@ -19,6 +19,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   projects: any = [];
   vendors: any = [];
   models: any = [];
+  usedDevices: any = [];
   days: any = [
     { name: "Mon", used: false },
     { name: "Tue", used: false },
@@ -100,8 +101,11 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.addLicenseConsumptionForm.patchValue({ consumptionDate: startOfWeek });
   }
 
-  setChecked(value: boolean, index: number) {
-    this.days[index].used = value;
+  setChecked(value: boolean, daysIndex: number, deviceIndex?: number) {
+    if (deviceIndex !== null && deviceIndex !== undefined)
+      this.usedDevices[deviceIndex].usageDays[daysIndex] = value;
+    else
+      this.days[daysIndex].used = value;
   }
 
   submit(): void {
@@ -158,6 +162,24 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open').subscribe((res: any) => {
       this.projects = res['projects'];
     });
+  }
+  /**
+   * add device to the list
+   */
+  addDevice(): void {
+    let device = this.devices.find((device: any) => device.id === this.addLicenseConsumptionForm.value.product);
+    device.usageDays = this.days;
+    device.parsedLabel = "Vendor: " + device.vendor + " - Model: " + device.product;
+    if (device.version) device.parsedLabel += " - Version: " + device.version;
+    this.usedDevices.push(device);
+    this.addLicenseConsumptionForm.patchValue({ vendor: '', product: '' });
+    this.days = [
+      { name: "Mon", used: false },
+      { name: "Tue", used: false },
+      { name: "Wed", used: false },
+      { name: "Thu", used: false },
+      { name: "Fri", used: false },
+    ];
   }
 
   ngOnDestroy(): void {
