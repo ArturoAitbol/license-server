@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Validators, FormBuilder, AbstractControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
@@ -21,9 +21,9 @@ import { UsageDetailService } from 'src/app/services/usage-detail.service';
 export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   updateForm = this.formBuilder.group({
     consDate: { disabled: true, value: ['', Validators.required] },
-    project: ['', Validators.required],
-    vendor: ['', Validators.required],
-    device: ['', Validators.required]
+    project: ['', [Validators.required, this.nonStringValidator]],
+    vendor: ['', [Validators.required, this.nonStringValidator]],
+    device: ['', [Validators.required, this.nonStringValidator]]
   });
   devices: Device[] = [];
   projects: Project[] = [];
@@ -67,16 +67,17 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.filteredProjects = this.updateForm.controls['project'].valueChanges.pipe(
         startWith(''),
         map(value => (typeof value === 'string' ? value : value.name)),
-        map(name => (name ? this._filterProjects(name) : this.projects.slice())),
+        map(name => (name ? this.filterProjects(name) : this.projects.slice())),
       );
       this.filteredVendors = this.updateForm.controls['vendor'].valueChanges.pipe(
         startWith(''),
-        map(value => this._filterVendors(value)),
+        map(value => (typeof value === 'string' ? value : value.vendor)),
+        map(vendor => vendor ? this.filterVendors(vendor) : this.vendors.slice())
       );
       this.filteredModels = this.updateForm.controls['device'].valueChanges.pipe(
         startWith(''),
         map(value => (typeof value === 'string' ? value : value.product)),
-        map(product => (product ? this._filterModels(product) : this.models.slice())),
+        map(product => (product ? this.filterModels(product) : this.models.slice())),
       );
     }
   }
@@ -84,9 +85,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    * trigger when user select/change vendor dropdown
    * @param value: string 
    */
-  onChangeVendor(value: string): void {
-    this.updateForm.patchValue({ deviceId: '' });
-    this.filterVendorDevices(value);
+  onChangeVendor(value: any): void {
+    this.filterVendorDevices(value.vendor);
     this.updateForm.controls.device.setValue("");
   }
 
@@ -199,10 +199,12 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.originalDays = JSON.parse(JSON.stringify(this.days));
       const currentProject = this.projects.filter(project => project.id === this.data.projectId)?.[0];
       const currentDevice = this.devices.filter(device => device.id === this.data.deviceId)?.[0];
+      const currentVendor = this.vendors.filter(vendor => vendor.vendor === currentDevice.vendor)?.[0];
       console.log("this.data: " + JSON.stringify(this.data))
       let patchValue = {...this.data};
       patchValue.project = currentProject;
       patchValue.device = currentDevice;
+      patchValue.vendor = currentVendor;
       console.log("this.data: " + JSON.stringify(patchValue))
       this.updateForm.patchValue(patchValue);
       this.previousFormValue = { ...this.updateForm };
@@ -226,19 +228,30 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     return device?.product;
   }
 
+  displayFnVendor(item: any): string {
+    return item?.vendor;
+  }
+
+  getErrorMessage(): string{
+    return 'Please select a correct option';
+  }
   
-  private _filterProjects(value: string): Project[] {
+  isInvalid(control:string):boolean{
+    return this.updateForm.controls[control].invalid;
+  }
+
+  private filterProjects(value: string): Project[] {
     console.log(value);
     const filterValue = value.toLowerCase();
     return this.projects.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
-  private _filterVendors(value: string): string[] {
+  private filterVendors(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.vendors.filter(option => option.vendor.toLowerCase().includes(filterValue));
   }
 
-  private _filterModels(value: string): Device[] {
+  private filterModels(value: string): Device[] {
     const filterValue = value.toLowerCase();
     return this.models.filter(option => option.product.toLowerCase().includes(filterValue));
   }
@@ -246,5 +259,13 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   private editedForm(): boolean {
     return JSON.stringify(this.updateForm.value) !== JSON.stringify(this.previousFormValue.value);
+  }
+
+  private nonStringValidator(control: AbstractControl) {
+    const selection: any = control.value;
+    if (typeof selection === 'string') {
+        return { incorrect: true };
+    }
+    return null;
   }
 }
