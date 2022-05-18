@@ -91,14 +91,12 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   }
 
   private filterVendorDevices(value: string): void {
-    console.log("vendorChanged: " + JSON.stringify(value))
     this.models = [];
     if (value) {
       this.models = this.devices.filter(device => device.type != "Phone" && device.vendor === value);
       this.models.forEach(device => {
         device.product = device.version ? device.product + " - v." + device.version : device.product;
       });
-      console.log(JSON.stringify(this.models));
     }
   }
 
@@ -191,7 +189,6 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         return false;
       });
       this.projects = resDataObject['projects'];
-      console.log("usageDays "  + JSON.stringify(resDataObject['usageDays']));
       resDataObject['usageDays'].forEach((day) => {
         this.days[day.dayOfWeek - 1].used = true;
         this.days[day.dayOfWeek - 1].id = day.id;
@@ -200,12 +197,10 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       const currentProject = this.projects.filter(project => project.id === this.data.projectId)?.[0];
       const currentDevice = this.devices.filter(device => device.id === this.data.deviceId)?.[0];
       const currentVendor = this.vendors.filter(vendor => vendor.vendor === currentDevice.vendor)?.[0];
-      console.log("this.data: " + JSON.stringify(this.data))
       let patchValue = {...this.data};
       patchValue.project = currentProject;
       patchValue.device = currentDevice;
       patchValue.vendor = currentVendor;
-      console.log("this.data: " + JSON.stringify(patchValue))
       this.updateForm.patchValue(patchValue);
       this.previousFormValue = { ...this.updateForm };
       this.filterVendorDevices(this.data.vendor);
@@ -241,7 +236,6 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   }
 
   private filterProjects(value: string): Project[] {
-    console.log(value);
     const filterValue = value.toLowerCase();
     return this.projects.filter(option => option.name.toLowerCase().includes(filterValue));
   }
