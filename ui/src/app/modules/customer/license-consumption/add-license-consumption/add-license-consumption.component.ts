@@ -193,6 +193,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   submit(): void {
     let consumptionDate: Date = new Date(this.addLicenseConsumptionForm.value.consumptionDate);
+    let consumptionRequests: any[] = [];
     const licenseConsumptionsObject: any = {
       subaccountId: this.currentCustomer.id,
       projectId: this.addLicenseConsumptionForm.value.project.id,
@@ -200,29 +201,32 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       usageType: "Configuration",
       macAddress: "",
       serialNumber: "",
-      usedDevices: []
+      deviceId: "",
+      usageDays: []
     };
     this.usedDevices.forEach((device: any) => {
-      let usageDays = [];
+      let newConsumptionObject = { ...licenseConsumptionsObject };
+      newConsumptionObject.deviceId = device.id;
       for (let i = 0; i < device.days.length; i++) {
         if (device.days[i].used)
-          usageDays.push(i);
+          newConsumptionObject.usageDays.push(i);
       }
-      licenseConsumptionsObject.usedDevices.push({ id: device.id, usageDays: usageDays });
+      consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
     });
-    console.log(licenseConsumptionsObject);
-    // this.isDataLoading = true;
-    // this.licenseConsumptionService.addLicenseConsumptionDetails(licenseConsumptionsObject).toPromise().then((res: any) => {
-    //   this.isDataLoading = false;
-    //   if (!res.error) {
-    //     this.snackBarService.openSnackBar('Added license consumption successfully!', '');
-    //     this.dialogRef.close(res);
-    //   } else
-    //     this.snackBarService.openSnackBar(res.error, 'Error adding license consumption!');
-    // }).catch((err: any) => {
-    //   this.isDataLoading = false;
-    //   this.snackBarService.openSnackBar(err, 'Error adding license consumption!');
-    // });
+    this.isDataLoading = true;
+    forkJoin(consumptionRequests).subscribe((res: any) => {
+      const resDataObject: any = res.reduce((current: any, next: any) => {
+        return { ...current, ...next };
+      }, {});
+      if (resDataObject.error)
+        this.snackBarService.openSnackBar(resDataObject.error, 'Error adding license consumption!');
+      this.isDataLoading = false;
+      this.dialogRef.close(true);
+    }, (err: any) => {
+      this.snackBarService.openSnackBar(err, 'Error adding license consumption!');
+      this.isDataLoading = false;
+      this.dialogRef.close(true);
+    });
   }
   /**
    * add device to the list
