@@ -14,6 +14,7 @@ import { AddProjectComponent } from './add-project/add-project.component';
   styleUrls: ['./projects.component.css']
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
+
   readonly displayedColumns: TableColumn[] = [
     { name: 'Project Number', dataKey: 'number', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
@@ -21,6 +22,18 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     { name: 'Open Date', dataKey: 'openDate', position: 'left', isSortable: true },
     { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
   ];
+
+  readonly MODIFY_PROJECT: string = 'Edit';
+  readonly CLOSE_PROJECT: string = 'Close';
+  readonly DELETE_PROJECT: string = 'Delete';
+
+  actionMenuOptions: any = [
+    this.MODIFY_PROJECT,
+    this.CLOSE_PROJECT,
+    this.DELETE_PROJECT
+  ];
+
+
   tableMaxHeight: number;
   currentCustomer: any;
   projects: Project[] = [];
@@ -113,6 +126,27 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       });
     } else {
       return this.projects = this.projectsBk;
+    }
+  }
+
+    /**
+   * action row click event
+   * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
+   */
+  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }){
+    switch (object.selectedOption) {
+      case this.MODIFY_PROJECT:
+        //this.openDialog(ModifyProjectComponent);
+        console.log("Modify project selected");
+        break;
+      case this.CLOSE_PROJECT:
+        //this.openDialog(CloseProjectComponent);
+        console.log("Close project selected");
+        break;
+      case this.DELETE_PROJECT:
+        //this.deleteProject(object.selectedIndex);
+        console.log("Delete project selected: ",object.selectedIndex);
+        break;
     }
   }
 
