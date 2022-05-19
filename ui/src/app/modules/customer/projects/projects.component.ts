@@ -19,7 +19,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     { name: 'Project Number', dataKey: 'number', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true },
-    { name: 'Open Date', dataKey: 'openDate', position: 'left', isSortable: true },
+    { name: 'Start Date', dataKey: 'openDate', position: 'left', isSortable: true },
     { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
   ];
 
