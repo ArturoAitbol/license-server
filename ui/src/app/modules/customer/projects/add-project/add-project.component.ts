@@ -12,7 +12,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 export class AddProjectComponent implements OnInit {
   statusTypes: string[] = [
     'Open',
-    'Close'
+    'Closed'
   ];
 
   addProjectForm = this.formBuilder.group({
@@ -20,7 +20,7 @@ export class AddProjectComponent implements OnInit {
     number: ['', Validators.required],
     openDate: ['', Validators.required],
     closeDate: ['', Validators.required],
-    status: ['', Validators.required]
+    status: ['Open', Validators.required]
   });
   constructor(
     private formBuilder: FormBuilder,
