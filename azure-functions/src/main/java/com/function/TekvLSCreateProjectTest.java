@@ -18,7 +18,7 @@ import org.json.JSONObject;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSCreateProject
+public class TekvLSCreateProjectTest
 {
 
 	@FunctionName("TekvLSCreateProjectTest")
