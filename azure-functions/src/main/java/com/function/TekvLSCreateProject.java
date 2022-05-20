@@ -10,6 +10,7 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.json.JSONObject;
@@ -61,10 +62,15 @@ public class TekvLSCreateProject
 			{"subaccountId","subaccount_id"}, 
 			{"name","name"}, 
 			{"number","number"}, 
-			{"openDate","open_date"}, 
-			{"closeDate","close_date"}, 
+			{"openDate","open_date"},
 			{"status","status"} 
 		};
+
+		//Optional parameters (and their corresponding column name in the database)
+		String[][] optionalParams = {
+			{"closeDate", "close_date"},
+		};
+
 		// Build the sql query
 		String sqlPart1 = "";
 		String sqlPart2 = "";
@@ -82,6 +88,17 @@ public class TekvLSCreateProject
 				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 			}
 		}
+
+		for (String[] optionalParam : optionalParams) {
+			if (jobj.has(optionalParam[0]) && !jobj.isNull(optionalParam[0])) {
+				String paramValue = jobj.getString(optionalParam[0]);
+				if (!Objects.equals(paramValue, "")) {
+					sqlPart1 += optionalParam[1] + ",";
+					sqlPart2 += "'" + paramValue + "',";
+				}
+			}
+		}
+
 		// Remove the comma after the last parameter and build the SQL statement
 		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
 		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);

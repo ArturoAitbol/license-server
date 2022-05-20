@@ -26,7 +26,7 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Close Date</mat-label>
-                        <input required matInput [matDatepicker]="closeDatePicker" formControlName="closeDate">
+                        <input matInput [matDatepicker]="closeDatePicker" formControlName="closeDate">
                         <mat-datepicker-toggle matSuffix [for]="closeDatePicker"></mat-datepicker-toggle>
                         <mat-datepicker #closeDatePicker></mat-datepicker>
                     </mat-form-field>

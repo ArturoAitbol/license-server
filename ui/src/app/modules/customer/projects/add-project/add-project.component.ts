@@ -19,7 +19,7 @@ export class AddProjectComponent implements OnInit {
     name: ['', Validators.required],
     number: ['', Validators.required],
     openDate: ['', Validators.required],
-    closeDate: ['', Validators.required],
+    closeDate: [null],
     status: ['Open', Validators.required]
   });
   constructor(
