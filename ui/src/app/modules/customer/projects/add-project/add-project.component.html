@@ -23,24 +23,6 @@
                         <input required matInput value="" formControlName="number">
                     </mat-form-field>
                 </div>
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Close Date</mat-label>
-                        <input matInput [matDatepicker]="closeDatePicker" formControlName="closeDate">
-                        <mat-datepicker-toggle matSuffix [for]="closeDatePicker"></mat-datepicker-toggle>
-                        <mat-datepicker #closeDatePicker></mat-datepicker>
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Type</mat-label>
-                        <mat-select required formControlName="status">
-                            <mat-option *ngFor="let item of statusTypes" [value]="item">
-                                {{item}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
             </mat-dialog-content>
         </div>
         <!-- <div class="btn-flex-container"> -->

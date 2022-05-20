@@ -10,7 +10,6 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.json.JSONObject;
@@ -66,11 +65,6 @@ public class TekvLSCreateProject
 			{"status","status"} 
 		};
 
-		//Optional parameters (and their corresponding column name in the database)
-		String[][] optionalParams = {
-			{"closeDate", "close_date"},
-		};
-
 		// Build the sql query
 		String sqlPart1 = "";
 		String sqlPart2 = "";
@@ -86,16 +80,6 @@ public class TekvLSCreateProject
 				JSONObject json = new JSONObject();
 				json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
 				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
-			}
-		}
-
-		for (String[] optionalParam : optionalParams) {
-			if (jobj.has(optionalParam[0]) && !jobj.isNull(optionalParam[0])) {
-				String paramValue = jobj.getString(optionalParam[0]);
-				if (!Objects.equals(paramValue, "")) {
-					sqlPart1 += optionalParam[1] + ",";
-					sqlPart2 += "'" + paramValue + "',";
-				}
 			}
 		}
 
