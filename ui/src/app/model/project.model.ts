@@ -5,4 +5,5 @@ export interface Project {
     subaccountId: string;
     openDate: string;
     closeDate: string;
+    status: string;
 }

@@ -144,13 +144,44 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         console.log("Modify project selected");
         break;
       case this.CLOSE_PROJECT:
-        //this.openDialog(CloseProjectComponent);
-        console.log("Close project selected");
+        this.confirmCloseDialog(object.selectedIndex);
         break;
       case this.DELETE_PROJECT:
         this.confirmDeleteDialog(object.selectedIndex);
         break;
     }
+  }
+
+  confirmCloseDialog(index: string){
+    const currentProjectData = this.projects[index];
+    const projectToClose = currentProjectData.name + ' (' + currentProjectData.number +')';
+    this.dialogService
+    .confirmDialog({
+      title: 'Confirm Action',
+      message: 'Do you want to close this project: ' + projectToClose + '?',
+      confirmCaption: 'Confirm',
+      cancelCaption: 'Cancel',
+    })
+    .subscribe((confirmed) => {
+      let projectToUpdate = {
+        id : currentProjectData.id,
+        closeDate : new Date().toISOString().split("T")[0],
+        status : "Closed"
+      } ;
+
+      if (confirmed) {
+        console.debug('The user confirmed the action: ', this.projects[index]);
+        this.projectService.closeProject(projectToUpdate).subscribe(res => {
+          if (res.body===null) {
+            this.snackBarService.openSnackBar('Project updated successfully!');
+            this.fetchProjects();
+          }else{
+            console.debug(res.body.error);
+            this.snackBarService.openSnackBar(res.body.error, 'Error closing project!');
+          }
+        });
+      }
+    });
   }
 
   confirmDeleteDialog(index: string){

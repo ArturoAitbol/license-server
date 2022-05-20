@@ -46,6 +46,10 @@ export class ProjectService {
     return this.httpClient.put(`${this.API_URL}/${project.id}`, project);
   }
 
+  public closeProject(project: {id:string,status:string,closeDate:string}): Observable<any>{
+    return this.httpClient.put<HttpResponse<any>>(`${this.API_URL}/${project.id}`, project,{observe:'response'});
+  }
+
   /**
    * delete selected Project by projectId
    * @param projectId: string 
