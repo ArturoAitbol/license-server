@@ -5,7 +5,9 @@ import { Router } from '@angular/router';
 import { Project } from 'src/app/model/project.model';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
+import { DialogService } from 'src/app/services/dialog.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from './add-project/add-project.component';
 
 @Component({
@@ -45,6 +47,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   constructor(
     private customerSerivce: CustomerService,
     private projectService: ProjectService,
+    private dialogService: DialogService,
+    private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog
   ) { }
@@ -144,10 +148,33 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         console.log("Close project selected");
         break;
       case this.DELETE_PROJECT:
-        //this.deleteProject(object.selectedIndex);
-        console.log("Delete project selected: ",object.selectedIndex);
+        this.confirmDeleteDialog(object.selectedIndex);
         break;
     }
+  }
+
+  confirmDeleteDialog(index: string){
+    const { id, name, number } = this.projects[index];
+    const projectToDelete = name + ' (' + number +')';
+
+    this.dialogService
+    .confirmDialog({
+      title: 'Confirm Action',
+      message: 'Do you want to delete this project: ' + projectToDelete + '?',
+      confirmCaption: 'Confirm',
+      cancelCaption: 'Cancel',
+    })
+    .subscribe((confirmed) => {
+      if (confirmed) {
+        console.debug('The user confirmed the action: ', this.projects[index]);
+        this.projectService.deleteProject(id).subscribe(res => {
+          if (res && res.status == 200) {
+            this.snackBarService.openSnackBar('Project deleted successfully!');
+            this.fetchProjects();
+          }
+        });
+      }
+    });
   }
 
   ngOnDestroy(): void {

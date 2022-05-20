@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -51,8 +51,8 @@ export class ProjectService {
    * @param projectId: string 
    * @returns: Observable 
    */
-  public deleteSubAccount(projectId: string): Observable<any> {
-    return this.httpClient.delete(`${this.API_URL}/${projectId}`);
+  public deleteProject(projectId: string): Observable<any> {
+    return this.httpClient.delete<HttpResponse<any>>(`${this.API_URL}/${projectId}`,{observe: 'response'});
   }
 
   public getProjectDetailsBySubAccount(subaccountId: string): Observable<Project[]> {
