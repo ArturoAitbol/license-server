@@ -204,6 +204,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       deviceId: "",
       usageDays: []
     };
+    this.addDevice();
     this.usedDevices.forEach((device: any) => {
       let newConsumptionObject = { ...licenseConsumptionsObject };
       newConsumptionObject.deviceId = device.id;
@@ -233,17 +234,19 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    */
   addDevice(): void {
     let device: any = this.addDeviceForm.value.product;
-    device.days = this.days;
-    this.usedDevices.push(device);
-    this.addDeviceForm.reset();
-    // this.addDeviceForm.patchValue({ vendor: '', product: '' });
-    this.days = [
-      { name: "Mon", used: false },
-      { name: "Tue", used: false },
-      { name: "Wed", used: false },
-      { name: "Thu", used: false },
-      { name: "Fri", used: false },
-    ];
+    if (device) {
+      device.days = this.days;
+      this.usedDevices.push(device);
+      this.addDeviceForm.reset();
+      // this.addDeviceForm.patchValue({ vendor: '', product: '' });
+      this.days = [
+        { name: "Mon", used: false },
+        { name: "Tue", used: false },
+        { name: "Wed", used: false },
+        { name: "Thu", used: false },
+        { name: "Fri", used: false },
+      ];
+    }
   }
   /**
    * trigger when user deletes a device
