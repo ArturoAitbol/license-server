@@ -87,7 +87,7 @@ public class TekvLSCreateProjectTest
 		}
 
 		for (String[] optionalParam : optionalParams) {
-			if (jobj.has(optionalParam[0])) {
+			if (jobj.has(optionalParam[0]) && !jobj.isNull(optionalParam[0])) {
 				String paramValue = jobj.getString(optionalParam[0]);
 				if (!Objects.equals(paramValue, "")) {
 					sqlPart1 += optionalParam[1] + ",";
