@@ -235,7 +235,7 @@ export class LicenseConsumption implements OnInit {
     }
   }
 
-  onDelete(index: number) {
+  onDelete(consumption: any) {
     this.dialogService.confirmDialog({
       title: 'Confirm Action',
       message: 'Do you want to confirm this action?',
@@ -243,10 +243,9 @@ export class LicenseConsumption implements OnInit {
       cancelCaption: 'Cancel',
     }).subscribe((confirmed) => {
       if (confirmed) {
-        console.log('The user confirmed the action');
-        if (index) {
-          console.log('Delete element with index: ' + index);
-        }
+        this.licenseConsumptionService.deleteLicenseConsumptionDetails(consumption.id).subscribe((res) => {
+          this.fetchDataToDisplay();
+        });
       }
     });
   }
@@ -315,7 +314,7 @@ export class LicenseConsumption implements OnInit {
         this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
         break;
       case this.DELETE:
-        this.onDelete(+object.selectedIndex);
+        this.onDelete(object.selectedRow);
         break;
     }
   }

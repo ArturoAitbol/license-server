@@ -47,8 +47,13 @@ public class TekvLSDeleteLicenseUsageById
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 			
-			// Delete project
-			String sql = "delete from license_consumption where id='" + id +"';";
+			// Delete usage details
+			String sql = "delete from usage_detail where consumption_id='" + id +"';";
+			context.getLogger().info("Execute SQL statement: " + sql);
+			statement.executeUpdate(sql);
+			
+			// Delete license consumption
+			sql = "delete from license_consumption where id='" + id +"';";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			statement.executeUpdate(sql);
 			context.getLogger().info("License usage delete successfully."); 
