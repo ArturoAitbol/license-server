@@ -37,7 +37,7 @@ export class AddProjectComponent implements OnInit {
     const newProjectDetails = { ... this.addProjectForm.value, status: this.OPEN_STATUS };
     newProjectDetails.subaccountId = this.projectService.getSelectedSubAccount();
     this.projectService.createProject(newProjectDetails).subscribe((res: any) => {
-      if (!res.error) {
+      if (res && !res.error) {
         this.snackBarService.openSnackBar('Project added successfully!', '');
         this.dialogRef.close(res);
       } else

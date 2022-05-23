@@ -55,12 +55,13 @@ export class ProjectService {
     return this.httpClient.delete(`${this.API_URL}/${projectId}`);
   }
 
-  public getProjectDetailsBySubAccount(subaccountId: string): Observable<Project[]> {
+  public getProjectDetailsBySubAccount(subaccountId: string, status?: string): Observable<Project[]> {
     const headers = this.getHeaders();
-    const params = new HttpParams().set('subaccountId', subaccountId);
+    let params = new HttpParams();
+    params = params.set('subaccountId', subaccountId);
+    if (status) params = params.set('status', status);
     return this.httpClient.get<Project[]>(this.API_URL, { headers, params });
   }
-
 
   /**
    * set the header for the request
