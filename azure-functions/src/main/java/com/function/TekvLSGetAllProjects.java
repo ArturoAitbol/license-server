@@ -76,8 +76,8 @@ public class TekvLSGetAllProjects {
 				item.put("name", rs.getString("name"));
 				item.put("number", rs.getString("number"));
 				item.put("status", rs.getString("status"));
-				item.put("openDate", rs.getString("open_date"));
-				item.put("closeDate", rs.getString("close_date"));
+				item.put("openDate", rs.getString("open_date").split(" ")[0]);
+				item.put("closeDate", rs.getString("close_date").split(" ")[0]);
 				array.put(item);
 			}
 			json.put("projects", array);

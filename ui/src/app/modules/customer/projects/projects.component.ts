@@ -154,18 +154,18 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   confirmCloseDialog(index: string){
     const currentProjectData = this.projects[index];
-    const projectToClose = currentProjectData.name + ' (' + currentProjectData.number +')';
+    const projectToClose = currentProjectData.number + '-' + currentProjectData.name;
     this.dialogService
     .confirmDialog({
       title: 'Confirm Action',
-      message: 'Do you want to close this project: ' + projectToClose + '?',
+      message: 'Do you want to close this project? (' + projectToClose + ')',
       confirmCaption: 'Confirm',
       cancelCaption: 'Cancel',
     })
     .subscribe((confirmed) => {
       let projectToUpdate = {
         id : currentProjectData.id,
-        closeDate : new Date().toISOString().split("T")[0],
+        closeDate : new Date().toLocaleString(),
         status : "Closed"
       } ;
 
@@ -186,12 +186,12 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   confirmDeleteDialog(index: string){
     const { id, name, number } = this.projects[index];
-    const projectToDelete = name + ' (' + number +')';
+    const projectToDelete = number + '-' + name ;
 
     this.dialogService
     .confirmDialog({
       title: 'Confirm Action',
-      message: 'Do you want to delete this project: ' + projectToDelete + '?',
+      message: 'Do you want to delete this project? (' + projectToDelete + ')',
       confirmCaption: 'Confirm',
       cancelCaption: 'Cancel',
     })
