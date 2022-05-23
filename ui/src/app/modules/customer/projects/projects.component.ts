@@ -20,7 +20,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   readonly displayedColumns: TableColumn[] = [
     { name: 'Project Number', dataKey: 'number', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
-    { name: 'Status', dataKey: 'status', position: 'left', isSortable: true },
+    { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
     { name: 'Start Date', dataKey: 'openDate', position: 'left', isSortable: true },
     { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
   ];
@@ -52,7 +52,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     private router: Router,
     public dialog: MatDialog
   ) { }
-  
+
   @HostListener('window:resize')
   sizeChange() {
     this.calculateTableHeight();
@@ -133,11 +133,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     }
   }
 
-    /**
-   * action row click event
-   * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
-   */
-  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }){
+  /**
+ * action row click event
+ * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
+ */
+  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.MODIFY_PROJECT:
         //this.openDialog(ModifyProjectComponent);
@@ -152,60 +152,60 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     }
   }
 
-  confirmCloseDialog(index: string){
+  confirmCloseDialog(index: string) {
     const currentProjectData = this.projects[index];
     const projectToClose = currentProjectData.number + '-' + currentProjectData.name;
     this.dialogService
-    .confirmDialog({
-      title: 'Confirm Action',
-      message: 'Do you want to close this project? (' + projectToClose + ')',
-      confirmCaption: 'Confirm',
-      cancelCaption: 'Cancel',
-    })
-    .subscribe((confirmed) => {
-      let projectToUpdate = {
-        id : currentProjectData.id,
-        closeDate : new Date().toLocaleString(),
-        status : "Closed"
-      } ;
+      .confirmDialog({
+        title: 'Confirm Action',
+        message: 'Do you want to close this project? (' + projectToClose + ')',
+        confirmCaption: 'Confirm',
+        cancelCaption: 'Cancel',
+      })
+      .subscribe((confirmed) => {
+        let projectToUpdate = {
+          id: currentProjectData.id,
+          closeDate: new Date().toLocaleString(),
+          status: "Closed"
+        };
 
-      if (confirmed) {
-        console.debug('The user confirmed the action: ', this.projects[index]);
-        this.projectService.closeProject(projectToUpdate).subscribe(res => {
-          if (res.body===null) {
-            this.snackBarService.openSnackBar('Project updated successfully!');
-            this.fetchProjects();
-          }else{
-            console.debug(res.body.error);
-            this.snackBarService.openSnackBar(res.body.error, 'Error closing project!');
-          }
-        });
-      }
-    });
+        if (confirmed) {
+          console.debug('The user confirmed the action: ', this.projects[index]);
+          this.projectService.closeProject(projectToUpdate).subscribe(res => {
+            if (res.body === null) {
+              this.snackBarService.openSnackBar('Project updated successfully!');
+              this.fetchProjects();
+            } else {
+              console.debug(res.body.error);
+              this.snackBarService.openSnackBar(res.body.error, 'Error closing project!');
+            }
+          });
+        }
+      });
   }
 
-  confirmDeleteDialog(index: string){
+  confirmDeleteDialog(index: string) {
     const { id, name, number } = this.projects[index];
-    const projectToDelete = number + '-' + name ;
+    const projectToDelete = number + '-' + name;
 
     this.dialogService
-    .confirmDialog({
-      title: 'Confirm Action',
-      message: 'Do you want to delete this project? (' + projectToDelete + ')',
-      confirmCaption: 'Confirm',
-      cancelCaption: 'Cancel',
-    })
-    .subscribe((confirmed) => {
-      if (confirmed) {
-        console.debug('The user confirmed the action: ', this.projects[index]);
-        this.projectService.deleteProject(id).subscribe(res => {
-          if (res && res.status == 200) {
-            this.snackBarService.openSnackBar('Project deleted successfully!');
-            this.fetchProjects();
-          }
-        });
-      }
-    });
+      .confirmDialog({
+        title: 'Confirm Action',
+        message: 'Do you want to delete this project? (' + projectToDelete + ')',
+        confirmCaption: 'Confirm',
+        cancelCaption: 'Cancel',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          console.debug('The user confirmed the action: ', this.projects[index]);
+          this.projectService.deleteProject(id).subscribe(res => {
+            if (res && res.status == 200) {
+              this.snackBarService.openSnackBar('Project deleted successfully!');
+              this.fetchProjects();
+            }
+          });
+        }
+      });
   }
 
   ngOnDestroy(): void {

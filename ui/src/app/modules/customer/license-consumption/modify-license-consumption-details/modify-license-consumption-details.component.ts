@@ -1,7 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Validators, FormBuilder, AbstractControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { map, startWith } from 'rxjs/operators';
+import { Device } from 'src/app/model/device.model';
+import { Project } from 'src/app/model/project.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DevicesService } from 'src/app/services/devices.service';
 import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
@@ -17,14 +21,17 @@ import { UsageDetailService } from 'src/app/services/usage-detail.service';
 export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   updateForm = this.formBuilder.group({
     consDate: { disabled: true, value: ['', Validators.required] },
-    projectId: ['', Validators.required],
-    vendor: ['', Validators.required],
-    deviceId: ['', Validators.required]
+    project: ['', [Validators.required, this.nonStringValidator]],
+    vendor: ['', [Validators.required, this.nonStringValidator]],
+    device: ['', [Validators.required, this.nonStringValidator]]
   });
-  devices: any = [];
-  projects: any = [];
+  devices: Device[] = [];
+  projects: Project[] = [];
+  filteredProjects: Observable<Project[]>;
   vendors: any = [];
-  models: any = [];
+  filteredVendors: Observable<string[]>;
+  models: Device[] = [];
+  filteredModels: Observable<Device[]>;
   originalDays: any = [];
   days: any = [
     { name: "Mon", used: false },
@@ -57,27 +64,38 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.data.consDate = new Date(this.data.consumptionDate + " 00:00:00");
       this.currentCustomer = this.customerService.getSelectedCustomer();
       this.fetchData();
+      this.filteredProjects = this.updateForm.controls['project'].valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value : value.name)),
+        map(name => (name ? this.filterProjects(name) : this.projects.slice())),
+      );
+      this.filteredVendors = this.updateForm.controls['vendor'].valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value : value.vendor)),
+        map(vendor => vendor ? this.filterVendors(vendor) : this.vendors.slice())
+      );
+      this.filteredModels = this.updateForm.controls['device'].valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value : value.product)),
+        map(product => (product ? this.filterModels(product) : this.models.slice())),
+      );
     }
   }
   /**
    * trigger when user select/change vendor dropdown
    * @param value: string 
    */
-  onChangeVendor(value: string): void {
-    this.updateForm.patchValue({ deviceId: '' });
-    this.filterVendorDevices(value);
+  onChangeVendor(value: any): void {
+    this.filterVendorDevices(value.vendor);
+    this.updateForm.controls.device.setValue("");
   }
 
   private filterVendorDevices(value: string): void {
     this.models = [];
     if (value) {
-      this.devices.forEach((device: any) => {
-        if (device.type != "Phone" && device.vendor == value) {
-          this.models.push({
-            id: device.id,
-            product: device.version ? device.product + " - v." + device.version : device.product
-          });
-        }
+      this.models = this.devices.filter(device => device.type != "Phone" && device.vendor === value);
+      this.models.forEach(device => {
+        device.product = device.version ? device.product + " - v." + device.version : device.product;
       });
     }
   }
@@ -115,8 +133,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     const licenseConsumptionObject: any = {
       consumptionId: this.data.id,
       subaccountId: this.currentCustomer.id,
-      projectId: this.updateForm.value.projectId,
-      deviceId: this.updateForm.value.deviceId,
+      projectId: this.updateForm.value.project.id,
+      deviceId: this.updateForm.value.device.id,
       consumptionDate: this.data.consumptionDate,
       usageType: this.data.usageType,
       macAddress: this.data.macAddress,
@@ -135,7 +153,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     for (let i = 0; i < this.days.length; i++) {
       if (this.days[i].used != this.originalDays[i].used) {
         if (this.days[i].used)
-          modifiedDays.addedDays.push(i + 1);
+          modifiedDays.addedDays.push(i);
         else
           modifiedDays.deletedDays.push(this.days[i].id);
       }
@@ -155,7 +173,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     const { id } = this.data;
     forkJoin([
       this.deviceService.getDevicesList(),
-      this.projectService.getProjectDetailsBySubAccount(subaccountId),
+      this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open'),
       this.usageDetailService.getUsageDetailsByConsumptionId(id)
     ]).subscribe(res => {
       const resDataObject: any = res.reduce((current: any, next: any) => {
@@ -176,7 +194,14 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         this.days[day.dayOfWeek - 1].id = day.id;
       });
       this.originalDays = JSON.parse(JSON.stringify(this.days));
-      this.updateForm.patchValue(this.data);
+      const currentProject = this.projects.filter(project => project.id === this.data.projectId)?.[0];
+      const currentDevice = this.devices.filter(device => device.id === this.data.deviceId)?.[0];
+      const currentVendor = this.vendors.filter(vendor => vendor.vendor === currentDevice.vendor)?.[0];
+      let patchValue = {...this.data};
+      patchValue.project = currentProject;
+      patchValue.device = currentDevice;
+      patchValue.vendor = currentVendor;
+      this.updateForm.patchValue(patchValue);
       this.previousFormValue = { ...this.updateForm };
       this.filterVendorDevices(this.data.vendor);
       this.isDataLoading = false;
@@ -190,7 +215,51 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     return !this.editedForm() && !this.edited;
   }
 
+  displayFnProject(project: Project): string {
+    return project?.name;
+  }
+
+  displayFnDevice(device: Device): string {
+    return device?.product;
+  }
+
+  displayFnVendor(item: any): string {
+    return item?.vendor;
+  }
+
+  getErrorMessage(): string{
+    return 'Please select a correct option';
+  }
+  
+  isInvalid(control:string):boolean{
+    return this.updateForm.controls[control].invalid;
+  }
+
+  private filterProjects(value: string): Project[] {
+    const filterValue = value.toLowerCase();
+    return this.projects.filter(option => option.name.toLowerCase().includes(filterValue));
+  }
+
+  private filterVendors(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.vendors.filter(option => option.vendor.toLowerCase().includes(filterValue));
+  }
+
+  private filterModels(value: string): Device[] {
+    const filterValue = value.toLowerCase();
+    return this.models.filter(option => option.product.toLowerCase().includes(filterValue));
+  }
+
+
   private editedForm(): boolean {
     return JSON.stringify(this.updateForm.value) !== JSON.stringify(this.previousFormValue.value);
+  }
+
+  private nonStringValidator(control: AbstractControl) {
+    const selection: any = control.value;
+    if (typeof selection === 'string') {
+        return { incorrect: true };
+    }
+    return null;
   }
 }

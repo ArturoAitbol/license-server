@@ -3,7 +3,10 @@ export interface Device {
     vendor: string;
     product: string;
     version: string;
-    deviceType: string;
+    type: string;
     granularity: string;
     tokensToConsume: number;
+    deprecatedDate: string;
+    startDate: Date;
+    subaccountId: string;
 }

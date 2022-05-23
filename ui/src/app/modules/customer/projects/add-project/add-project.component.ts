@@ -10,17 +10,12 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
   styleUrls: ['./add-project.component.css']
 })
 export class AddProjectComponent implements OnInit {
-  statusTypes: string[] = [
-    'Open',
-    'Close'
-  ];
+  readonly OPEN_STATUS = 'Open';
 
   addProjectForm = this.formBuilder.group({
     name: ['', Validators.required],
     number: ['', Validators.required],
     openDate: ['', Validators.required],
-    closeDate: ['', Validators.required],
-    status: ['', Validators.required]
   });
   constructor(
     private formBuilder: FormBuilder,
@@ -39,10 +34,10 @@ export class AddProjectComponent implements OnInit {
   }
 
   submit() {
-    const newProjectDetails = { ... this.addProjectForm.value };
+    const newProjectDetails = { ... this.addProjectForm.value, status: this.OPEN_STATUS };
     newProjectDetails.subaccountId = this.projectService.getSelectedSubAccount();
     this.projectService.createProject(newProjectDetails).subscribe((res: any) => {
-      if (!res.error) {
+      if (res && !res.error) {
         this.snackBarService.openSnackBar('Project added successfully!', '');
         this.dialogRef.close(res);
       } else

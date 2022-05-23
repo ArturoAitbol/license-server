@@ -12,7 +12,7 @@ import { filter, takeUntil } from 'rxjs/operators';
     styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
-	private readonly _destroying$ = new Subject<void>();
+    private readonly _destroying$ = new Subject<void>();
     title = 'license-server';
     currentUser: boolean = false;
 
@@ -30,12 +30,11 @@ export class AppComponent implements OnInit, OnDestroy {
             this.navigateToDashboard();
         }
         this.broadcastService.msalSubject$.pipe(
-			filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS),
-			takeUntil(this._destroying$)
-		)
-		.subscribe((result: EventMessage) => {
-			// Do something with event payload here
-		});
+            filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS),
+            takeUntil(this._destroying$)
+        ).subscribe((result: EventMessage) => {
+            // Do something with event payload here
+        });
     }
     /**
      * check whether user logged in
@@ -65,7 +64,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-		this._destroying$.next(undefined);
-		this._destroying$.complete();
+        this._destroying$.next(undefined);
+        this._destroying$.complete();
     }
 }

@@ -61,10 +61,10 @@ public class TekvLSCreateProject
 			{"subaccountId","subaccount_id"}, 
 			{"name","name"}, 
 			{"number","number"}, 
-			{"openDate","open_date"}, 
-			{"closeDate","close_date"}, 
+			{"openDate","open_date"},
 			{"status","status"} 
 		};
+
 		// Build the sql query
 		String sqlPart1 = "";
 		String sqlPart2 = "";
@@ -82,6 +82,7 @@ public class TekvLSCreateProject
 				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 			}
 		}
+
 		// Remove the comma after the last parameter and build the SQL statement
 		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
 		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);

@@ -44,6 +44,6 @@ h1 {
 
 .table-container {
   position: relative;
-  max-height: 500px;
+  height: 400px;
   overflow: auto;
 }
