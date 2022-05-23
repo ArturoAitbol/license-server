@@ -8,12 +8,15 @@
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label>Date</mat-label>
-                        <input matInput #consDate (dateChange)="pickConsumptionDate(consDate.value)"
-                            [matDatepicker]="picker" [min]="startDate" [max]="endDate" required
-                            formControlName="consumptionDate">
+                        <mat-label>Consumption Week</mat-label>
+                        <mat-date-range-input [rangePicker]="picker" [min]="startDate" [max]="endDate" required>
+                            <input #startWeek matStartDate placeholder="Start date" formControlName="startWeek"
+                                (dateChange)="pickStartWeek($event.value, picker)">
+                            <input matEndDate placeholder="End date" formControlName="endWeek">
+                        </mat-date-range-input>
+                        <mat-hint *ngIf="!startWeek.value">Click the calendar button</mat-hint>
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
                     </mat-form-field>
                 </div>
                 <div>

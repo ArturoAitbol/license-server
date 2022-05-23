@@ -13,6 +13,7 @@ import { LicenseConsumptionService } from 'src/app/services/license-consumption.
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from '../../projects/add-project/add-project.component';
+import { MatDatepicker } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-add-license-consumption',
@@ -40,7 +41,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   startDate: any;
   endDate: any;
   addLicenseConsumptionForm = this.formBuilder.group({
-    consumptionDate: ['', Validators.required],
+    startWeek: ['', Validators.required],
+    endWeek: ['', Validators.required],
     project: ['', [Validators.required, this.RequireMatch]]
   });
   addDeviceForm = this.formBuilder.group({
@@ -178,10 +180,14 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 
-  pickConsumptionDate(newDateSelection: Date) {
-    let startOfWeek: Date = new Date(newDateSelection);
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
-    this.addLicenseConsumptionForm.patchValue({ consumptionDate: startOfWeek });
+  pickStartWeek(newDateSelection: Date, datepicker: MatDatepicker<any>) {
+    console.log(newDateSelection);
+    let startWeek = new Date(newDateSelection);
+    let endWeek = new Date(newDateSelection);
+    startWeek.setDate(startWeek.getDate() - startWeek.getDay() + 1);
+    endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 5);
+    this.addLicenseConsumptionForm.patchValue({ startWeek: startWeek, endWeek: endWeek });
+    datepicker.close();
   }
 
   setChecked(value: boolean, daysIndex: number, deviceIndex?: number) {
@@ -192,12 +198,12 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    let consumptionDate: Date = new Date(this.addLicenseConsumptionForm.value.consumptionDate);
+    let startWeek: Date = new Date(this.addLicenseConsumptionForm.value.startWeek);
     let consumptionRequests: any[] = [];
     const licenseConsumptionsObject: any = {
       subaccountId: this.currentCustomer.id,
       projectId: this.addLicenseConsumptionForm.value.project.id,
-      consumptionDate: consumptionDate.toISOString().split("T")[0],
+      consumptionDate: startWeek.toISOString().split("T")[0],
       usageType: "Configuration",
       macAddress: "",
       serialNumber: "",
