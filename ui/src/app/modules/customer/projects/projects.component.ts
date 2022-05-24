@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
+import { Constants } from 'src/app/helpers/constants';
 import { Project } from 'src/app/model/project.model';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
@@ -29,11 +30,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   readonly MODIFY_PROJECT: string = 'Edit';
   readonly CLOSE_PROJECT: string = 'Close';
   readonly DELETE_PROJECT: string = 'Delete';
+  readonly VIEW_CONSUMPTION: string = 'View Package Consumption';
 
   actionMenuOptions: any = [
     this.MODIFY_PROJECT,
     this.CLOSE_PROJECT,
-    this.DELETE_PROJECT
+    this.DELETE_PROJECT,
+    this.VIEW_CONSUMPTION
   ];
 
 
@@ -46,7 +49,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   isRequestCompleted: boolean = false;
 
   constructor(
-    private customerSerivce: CustomerService,
+    private customerService: CustomerService,
     private projectService: ProjectService,
     private dialogService: DialogService,
     private snackBarService: SnackBarService,
@@ -71,7 +74,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.calculateTableHeight();
-    this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    this.currentCustomer = this.customerService.getSelectedCustomer();
     this.projectService.setSelectedSubAccount(this.currentCustomer.id);
     this.fetchProjects();
   }
@@ -149,6 +152,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       case this.DELETE_PROJECT:
         this.confirmDeleteDialog(object.selectedIndex);
         break;
+      case this.VIEW_CONSUMPTION:
+        this.openConsumptionView(object.selectedRow);
     }
   }
 
@@ -206,6 +211,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           });
         }
       });
+  }
+
+  openConsumptionView(row: any): void {
+    localStorage.setItem(Constants.PROJECT, JSON.stringify(row));
+    this.router.navigate(['/customer/consumption']);
   }
 
   ngOnDestroy(): void {
