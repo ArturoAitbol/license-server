@@ -173,7 +173,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     const { id } = this.data;
     forkJoin([
       this.deviceService.getDevicesList(),
-      this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open'),
+      this.projectService.getProjectDetailsBySubAccount(subaccountId),
       this.usageDetailService.getUsageDetailsByConsumptionId(id)
     ]).subscribe(res => {
       const resDataObject: any = res.reduce((current: any, next: any) => {
@@ -190,8 +190,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       });
       this.projects = resDataObject['projects'];
       resDataObject['usageDays'].forEach((day) => {
-        this.days[day.dayOfWeek - 1].used = true;
-        this.days[day.dayOfWeek - 1].id = day.id;
+        this.days[day.dayOfWeek].used = true;
+        this.days[day.dayOfWeek].id = day.id;
       });
       this.originalDays = JSON.parse(JSON.stringify(this.days));
       const currentProject = this.projects.filter(project => project.id === this.data.projectId)?.[0];
