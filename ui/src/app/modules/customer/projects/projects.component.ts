@@ -9,6 +9,7 @@ import { DialogService } from 'src/app/services/dialog.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from './add-project/add-project.component';
+import { ModifyProjectComponent } from "./modify-project/modify-project.component";
 
 @Component({
   selector: 'app-projects',
@@ -140,8 +141,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.MODIFY_PROJECT:
-        //this.openDialog(ModifyProjectComponent);
-        console.log("Modify project selected");
+        this.openDialog(ModifyProjectComponent, object.selectedRow);
         break;
       case this.CLOSE_PROJECT:
         this.confirmCloseDialog(object.selectedIndex);
