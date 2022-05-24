@@ -72,6 +72,7 @@ export class DashboardComponent implements OnInit {
     this.calculateTableHeight();
     this.initColumns();
     this.fetchDataToDisplay();
+    localStorage.removeItem(Constants.PROJECT);
   }
   /**
    * initailize the columns settings
