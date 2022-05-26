@@ -70,7 +70,8 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
-    { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
+    { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true },
+    { name: 'Usage Days', dataKey:'usageDays',position:'left',isSortable: false}
   ];
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
   readonly ADD_LICENSE = 'add-new-license';
@@ -89,6 +90,14 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.EDIT,
     this.DELETE
   ];
+
+  daysOfWeek: Object = {
+    0:'Mon',
+    1:'Tue',
+    2:'Wed',
+    3:'Thu',
+    4:'Fri'
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -207,6 +216,9 @@ export class LicenseConsumption implements OnInit,OnDestroy {
 
   fetchAggregatedData() {
     this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
+      res.usage.forEach(item => {
+        this.getNameOfDays(item.usageDays);
+      });
       this.detailedConsumptionData = res.usage;
       this.weeklyConsumptionData = res.configurationTokens;
       this.isDetailedConsumptionLoadingResults = false;
@@ -216,6 +228,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     });
+  }
+
+  private getNameOfDays(list:any[]):void{
+      list.forEach((dayNumber,index) => list[index] = this.daysOfWeek[dayNumber]);
   }
 
   onChangeLicense(newLicense: any) {
