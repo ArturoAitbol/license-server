@@ -24,8 +24,20 @@
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
+                        <mat-label>Administrator Email</mat-label>
+                        <input matInput type="email" required formControlName="adminEmail">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
                         <mat-label>Subaccount</mat-label>
                         <input matInput required formControlName="subAccountName">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Subaccount Administrator Email</mat-label>
+                        <input matInput type="email" required formControlName="subaccountAdminEmail">
                     </mat-form-field>
                 </div>
             </mat-dialog-content>
