@@ -11,7 +11,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
-import java.util.Optional;
+import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +25,11 @@ public class TekvLSGetAllCustomers {
 	 * 1. curl -d "HTTP Body" {your host}/api/customers
 	 * 2. curl "{your host}/api/customers"
 	 */
+
+	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+			+ "&user=" + System.getenv("POSTGRESQL_USER")
+			+ "&password=" + System.getenv("POSTGRESQL_PWD");
+
 	@FunctionName("TekvLSGetAllCustomers")
 	public HttpResponseMessage run(
 				@HttpTrigger(
@@ -41,7 +46,8 @@ public class TekvLSGetAllCustomers {
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String customerType = request.getQueryParameters().getOrDefault("type", "");
 		String customerName = request.getQueryParameters().getOrDefault("name", "");
-		
+
+		Map<String, List<String>> adminEmailsMap;
 		// Build SQL statement
 		String sql = "";
 		if (id.equals("EMPTY")) {
@@ -60,14 +66,13 @@ public class TekvLSGetAllCustomers {
 				}
 			}
 			sql += ";";
+			adminEmailsMap = loadAdminEmails(context);
 		} else {
 			sql = "select * from customer where id='" + id +"';";
+			adminEmailsMap = loadAdminEmails(id, context);
 		}
 		
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
-			+ "&user=" + System.getenv("POSTGRESQL_USER")
-			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
@@ -93,6 +98,7 @@ public class TekvLSGetAllCustomers {
 				item.put("distributorId", distributorId);
 
 				item.put("tombstone", rs.getBoolean("tombstone"));
+				item.put("adminEmails", adminEmailsMap.get(rs.getString("id")));
 				array.put(item);
 			}
 			json.put("customers", array);
@@ -111,4 +117,34 @@ public class TekvLSGetAllCustomers {
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 	}
+
+	private Map<String, List<String>> loadAdminEmails(ExecutionContext context) {
+		String sql = "SELECT * FROM customer_admin;";
+		return loadAdminEmails(context, sql);
+	}
+
+	private Map<String, List<String>> loadAdminEmails(String customerId, ExecutionContext context) {
+		String sql = "SELECT * FROM customer_admin WHERE customer_id = '" + customerId + "';";
+		return loadAdminEmails(context, sql);
+	}
+
+	private Map<String, List<String>> loadAdminEmails(ExecutionContext context, String sql) {
+		Map<String, List<String>> emailsMap = new HashMap<>();
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			 Statement statement = connection.createStatement();) {
+			context.getLogger().info("Execute SQL statement: " + sql);
+			ResultSet rs = statement.executeQuery(sql);
+			while (rs.next()) {
+				emailsMap.computeIfAbsent(rs.getString("customer_id"), k -> new ArrayList<>()).add(rs.getString("admin_email"));
+			}
+		} catch (SQLException e) {
+			context.getLogger().info("SQL exception: " + e.getMessage());
+		}
+		catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
+		}
+		return emailsMap;
+	}
+
+
 }
