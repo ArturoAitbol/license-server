@@ -78,7 +78,7 @@ export class AdminEmailsComponent implements OnInit {
 
   deleteExistingEmail(index: number) {
     this.customerAdminEmailService.deleteAdminEmail(this.adminEmails[index]).subscribe((res: any) => {
-      if (res && !res?.error) {
+      if (!res?.error) {
         this.snackBarService.openSnackBar('Customer administrator email deleted', '');
         this.adminEmails.splice(index, 1)
       } else
