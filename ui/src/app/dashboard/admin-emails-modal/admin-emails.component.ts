@@ -9,7 +9,7 @@ import { CustomerAdminEmailService } from "../../services/customer-admin-email.s
 import { Observable } from "rxjs";
 
 @Component({
-  selector: 'app-modify-customer-account',
+  selector: 'app-admin-emails-modal',
   templateUrl: './admin-emails.component.html',
   styleUrls: ['./admin-emails.component.css']
 })
