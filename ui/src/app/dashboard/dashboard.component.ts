@@ -16,6 +16,7 @@ import { SubAccountService } from '../services/sub-account.service';
 import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
 import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
+import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -33,6 +34,7 @@ export class DashboardComponent implements OnInit {
   readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages';
   readonly VIEW_CONSUMPTION: string = 'View Package Consumption';
   readonly VIEW_PROJECTS: string = 'View Projects List';
+  readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails'
   readonly MODIFY_LICENSE: string = 'Edit';
   readonly DELETE_ACCOUNT: string = 'Delete';
 
@@ -40,6 +42,7 @@ export class DashboardComponent implements OnInit {
     this.VIEW_LICENSES,
     this.VIEW_CONSUMPTION,
     this.VIEW_PROJECTS,
+    this.VIEW_ADMIN_EMAILS,
     this.MODIFY_LICENSE,
     this.DELETE_ACCOUNT
   ];
@@ -170,6 +173,13 @@ export class DashboardComponent implements OnInit {
           disableClose: true
         });
         break;
+      case this.VIEW_ADMIN_EMAILS:
+        dialogRef = this.dialog.open(AdminEmailsComponent, {
+          width: 'auto',
+          data: selectedItemData,
+          disableClose: true
+        });
+        break;
     }
     dialogRef.afterClosed().subscribe(res => {
       try {
@@ -261,6 +271,9 @@ export class DashboardComponent implements OnInit {
         break;
       case this.VIEW_PROJECTS:
         this.openProjectDetails(object.selectedRow);
+        break;
+      case this.VIEW_ADMIN_EMAILS:
+        this.openDialog(object.selectedOption, object.selectedRow);
         break;
       case this.MODIFY_LICENSE:
         this.openDialog(object.selectedOption, object.selectedRow);

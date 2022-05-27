@@ -37,6 +37,15 @@ export class CustomerService {
   }
 
   /**
+   * fetch customer details by id
+   * @returns: Observable
+   */
+  public getCustomerById(customerId?: string) {
+    const headers = this.getHeaders();
+    return this.httpClient.get<any>(`${this.API_URL}/${customerId}`, { headers });
+  }
+
+  /**
    * fetch customer details list
    * @returns: Observable
    */

@@ -23,6 +23,7 @@ import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { Constants } from './helpers/constants';
 import { SharedModule } from './modules/shared/shared.module';
 import { environment } from 'src/environments/environment';
+import { AdminEmailsComponent } from "./dashboard/admin-emails-modal/admin-emails.component";
 @NgModule({
     declarations: [
         AppComponent,
@@ -33,6 +34,7 @@ import { environment } from 'src/environments/environment';
         AddSubaccountModalComponent,
         ModifyCustomerAccountComponent,
         ConfirmComponent,
+        AdminEmailsComponent,
     ],
     imports: [
         AppRoutingModule,
