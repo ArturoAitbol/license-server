@@ -17,13 +17,14 @@ import { AddCustomerAccountModalComponent } from './dashboard/add-customer-accou
 import { AddSubaccountModalComponent } from './dashboard/add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from './dashboard/modify-customer-account/modify-customer-account.component';
 import { ConfirmComponent } from './dialogs/confirm/confirm.component';
+import { AdminEmailsComponent } from "./dashboard/admin-emails-modal/admin-emails.component";
+import { SubaccountAdminEmailsComponent } from "./dashboard/subaccount-admin-emails-modal/subaccount-admin-emails.component";
 // third party modules
 import { MsalInterceptor, MsalModule } from '@azure/msal-angular';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { Constants } from './helpers/constants';
 import { SharedModule } from './modules/shared/shared.module';
 import { environment } from 'src/environments/environment';
-import { AdminEmailsComponent } from "./dashboard/admin-emails-modal/admin-emails.component";
 @NgModule({
     declarations: [
         AppComponent,
@@ -35,6 +36,7 @@ import { AdminEmailsComponent } from "./dashboard/admin-emails-modal/admin-email
         ModifyCustomerAccountComponent,
         ConfirmComponent,
         AdminEmailsComponent,
+        SubaccountAdminEmailsComponent
     ],
     imports: [
         AppRoutingModule,

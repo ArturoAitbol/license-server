@@ -17,6 +17,7 @@ import { AddCustomerAccountModalComponent } from './add-customer-account-modal/a
 import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
 import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.component";
+import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -34,7 +35,8 @@ export class DashboardComponent implements OnInit {
   readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages';
   readonly VIEW_CONSUMPTION: string = 'View Package Consumption';
   readonly VIEW_PROJECTS: string = 'View Projects List';
-  readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails'
+  readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
+  readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
   readonly MODIFY_LICENSE: string = 'Edit';
   readonly DELETE_ACCOUNT: string = 'Delete';
 
@@ -43,6 +45,7 @@ export class DashboardComponent implements OnInit {
     this.VIEW_CONSUMPTION,
     this.VIEW_PROJECTS,
     this.VIEW_ADMIN_EMAILS,
+    this.VIEW_SUBACC_ADMIN_EMAILS,
     this.MODIFY_LICENSE,
     this.DELETE_ACCOUNT
   ];
@@ -180,6 +183,13 @@ export class DashboardComponent implements OnInit {
           disableClose: true
         });
         break;
+      case this.VIEW_SUBACC_ADMIN_EMAILS:
+        dialogRef = this.dialog.open(SubaccountAdminEmailsComponent, {
+          width: 'auto',
+          data: selectedItemData,
+          disableClose: true
+        });
+        break;
     }
     dialogRef.afterClosed().subscribe(res => {
       try {
@@ -273,6 +283,9 @@ export class DashboardComponent implements OnInit {
         this.openProjectDetails(object.selectedRow);
         break;
       case this.VIEW_ADMIN_EMAILS:
+        this.openDialog(object.selectedOption, object.selectedRow);
+        break;
+      case this.VIEW_SUBACC_ADMIN_EMAILS:
         this.openDialog(object.selectedOption, object.selectedRow);
         break;
       case this.MODIFY_LICENSE:
