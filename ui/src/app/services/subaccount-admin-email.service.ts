@@ -6,7 +6,7 @@ import { environment } from "../../environments/environment";
   providedIn: 'root'
 })
 export class SubaccountAdminEmailService {
-  private readonly API_URL: string = environment.apiEndpoint + '/customerAdminEmails';
+  private readonly API_URL: string = environment.apiEndpoint + '/subaccountAdminEmails';
 
   constructor(private httpClient: HttpClient) { }
 
