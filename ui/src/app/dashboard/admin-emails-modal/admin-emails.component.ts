@@ -77,15 +77,18 @@ export class AdminEmailsComponent implements OnInit {
   }
 
   deleteExistingEmail(index: number) {
+    this.isDataLoading = true;
     this.customerAdminEmailService.deleteAdminEmail(this.adminEmails[index]).subscribe((res: any) => {
       if (!res?.error) {
         this.snackBarService.openSnackBar('Customer administrator email deleted', '');
         this.adminEmails.splice(index, 1)
       } else
         this.snackBarService.openSnackBar(res.error, 'Error while deleting administrator email!');
+      this.isDataLoading = false;
     }, err => {
       this.snackBarService.openSnackBar('Error deleting administrator email!');
       console.error('Error while deleting administrator email', err);
+      this.isDataLoading = false;
     });
   }
 
