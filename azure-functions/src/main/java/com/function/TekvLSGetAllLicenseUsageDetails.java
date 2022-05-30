@@ -10,6 +10,8 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.util.Optional;
 
 import org.json.JSONArray;
@@ -132,14 +134,18 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 					// Get aggregated consumption for configuration
 					JSONArray array2 = new JSONArray();
-					String sqlWeeklyConfigurationTokensConsumed = "select CONCAT('Week ',DATE_PART('week',consumption_date)) as weekId, sum(tokens_consumed) from license_consumption l where " + 
-						sqlCommonConditions + " group by DATE_PART('week',consumption_date), DATE_PART('month',consumption_date) order by weekId;";
+					String sqlWeeklyConfigurationTokensConsumed = "select consumption_date, CONCAT('Week ',DATE_PART('week',consumption_date)), sum(tokens_consumed) from license_consumption l where " + 
+						sqlCommonConditions + " group by DATE_PART('week',consumption_date), consumption_date order by consumption_date desc;";
 					context.getLogger().info("Execute SQL weekly statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
+					LocalDate dt, startWeek, endWeek;
 					while (rs.next()) {
+						dt = LocalDate.parse(rs.getString(1));
+						startWeek = dt.with(ChronoField.DAY_OF_WEEK, 1);
+						endWeek = dt.with(ChronoField.DAY_OF_WEEK, 7);
 						JSONObject item = new JSONObject();
-						item.put("weekId", rs.getString(1));
-						item.put("tokensConsumed", rs.getInt(2));
+						item.put("weekId", rs.getString(2) + " (" + startWeek.toString() + " - " + endWeek.toString() + ")");
+						item.put("tokensConsumed", rs.getInt(3));
 						array2.put(item);
 					}
 					json.put("configurationTokens", array2);
