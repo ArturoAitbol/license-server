@@ -96,6 +96,7 @@ export class Utility {
                 case 'inprogress':
                 case 'unavailable':
                 case 'rebooting':
+                case 'inactive':
                     return '#7694B7';
                 default:
                     return 'red';
