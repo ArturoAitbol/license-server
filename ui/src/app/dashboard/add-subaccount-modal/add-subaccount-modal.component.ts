@@ -13,7 +13,8 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 export class AddSubaccountModalComponent implements OnInit {
   addSubaccountForm = this.formBuilder.group({
     customer: ['', Validators.required],
-    subaccountName: ['', Validators.required]
+    subaccountName: ['', Validators.required],
+    subaccountAdminEmail: ['', [Validators.required, Validators.email]]
   });
   isDataLoading: boolean = false;
   customers: any[];
@@ -43,7 +44,8 @@ export class AddSubaccountModalComponent implements OnInit {
     this.isDataLoading = true;
     const subaccountDetails: any = {
       name: this.addSubaccountForm.value.subaccountName,
-      customerId: this.addSubaccountForm.value.customer
+      customerId: this.addSubaccountForm.value.customer,
+      subaccountAdminEmail: this.addSubaccountForm.value.subaccountAdminEmail,
     };
     this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
       if (!res.error) {

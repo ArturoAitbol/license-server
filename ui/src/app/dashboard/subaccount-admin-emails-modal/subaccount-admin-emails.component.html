@@ -1,0 +1,48 @@
+<div class="container" style="text-align: center;">
+    <h1 mat-dialig-title>Edit Subaccount Administrator Emails</h1>
+    <form [formGroup]="adminEmailsForm" (ngSubmit)="submit()">
+        <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
+            <mat-dialog-content>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Subaccount Name</mat-label>
+                        <input matInput formControlName="name">
+                    </mat-form-field>
+                </div>
+                <div *ngFor="let email of adminEmails; let emailIndex = index">
+                    <div class="form-row">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Email</mat-label>
+                            <input type="email" aria-label="Email" disabled="true" matInput value={{email}}>
+                        </mat-form-field>
+                        <mat-icon class="delete-btn" (click)="deleteExistingEmail(emailIndex)">delete_forever</mat-icon>
+                    </div>
+                </div>
+                <div>
+                    <ng-container formArrayName="emails">
+                        <ng-container *ngFor="let emailForm of emailForms.controls; let i = index">
+                            <div class="form-row" [formGroupName]="i">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Email</mat-label>
+                                    <input type="email" placeholder="Enter a valid email" aria-label="Email" matInput
+                                           formControlName="email">
+                                </mat-form-field>
+                                <mat-icon class="delete-btn" (click)="deleteEmailForm(i)">delete_forever</mat-icon>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                    <button mat-mini-fab type="button" (click)="addEmailForm()">
+                        <mat-icon class="add-course-btn">add</mat-icon>
+                    </button>
+                </div>
+            </mat-dialog-content>
+        </div>
+        <mat-dialog-actions>
+            <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
+        </mat-dialog-actions>
+    </form>
+</div>
