@@ -14,7 +14,9 @@ export class AddCustomerAccountModalComponent implements OnInit {
   addCustomerForm = this.formBuilder.group({
     customerName: ['', Validators.required],
     subAccountName: ['Default', Validators.required],
-    customerType: ['', Validators.required]
+    customerType: ['', Validators.required],
+    adminEmail: ['', [Validators.required, Validators.email]],
+    subaccountAdminEmail: ['', [Validators.required, Validators.email]],
   });
   types: string[] = [
     'MSP',
@@ -44,13 +46,15 @@ export class AddCustomerAccountModalComponent implements OnInit {
     this.isDataLoading = true;
     const customerObject: any = {
       name: this.addCustomerForm.value.customerName,
-      customerType: this.addCustomerForm.value.customerType
+      customerType: this.addCustomerForm.value.customerType,
+      adminEmail: this.addCustomerForm.value.adminEmail
     };
     this.customerService.createCustomer(customerObject).subscribe((resp: any) => {
       if (!resp.error) {
         const subaccountDetails: any = {
           customerId: resp.id,
           name: this.addCustomerForm.value.subAccountName,
+          subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
         }
         this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
           if (!res.error) {

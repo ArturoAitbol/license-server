@@ -16,6 +16,8 @@ import { SubAccountService } from '../services/sub-account.service';
 import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
 import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
+import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.component";
+import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -33,6 +35,8 @@ export class DashboardComponent implements OnInit {
   readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages';
   readonly VIEW_CONSUMPTION: string = 'View Package Consumption';
   readonly VIEW_PROJECTS: string = 'View Projects List';
+  readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
+  readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
   readonly MODIFY_LICENSE: string = 'Edit';
   readonly DELETE_ACCOUNT: string = 'Delete';
 
@@ -40,6 +44,8 @@ export class DashboardComponent implements OnInit {
     this.VIEW_LICENSES,
     this.VIEW_CONSUMPTION,
     this.VIEW_PROJECTS,
+    this.VIEW_ADMIN_EMAILS,
+    this.VIEW_SUBACC_ADMIN_EMAILS,
     this.MODIFY_LICENSE,
     this.DELETE_ACCOUNT
   ];
@@ -104,13 +110,15 @@ export class DashboardComponent implements OnInit {
       this.subaccountList = newDataObject['subaccounts'];
       this.subaccountList.forEach((subaccount: any) => {
         const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
-        const licenseDetails = newDataObject['licenses'].find((l: License) => (l.subaccountId === subaccount.id && l.status === "Active"));
         subaccount.customerName = customerDetails.name;
         subaccount.customerType = customerDetails.customerType;
-        if (licenseDetails)
-          subaccount.status = licenseDetails.status;
-        else
-          subaccount.status = "Inactive";
+        let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccount.id ));
+        if(subaccountLicenses.length>0){
+          const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
+          subaccount.status = licenseDetails ? licenseDetails.status: "Expired";
+        }else{
+          subaccount.status = "Inactive"; 
+        }
       });
       this.subaccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
     }, err => {
@@ -165,6 +173,20 @@ export class DashboardComponent implements OnInit {
       case 'modify':
       case this.MODIFY_LICENSE:
         dialogRef = this.dialog.open(ModifyCustomerAccountComponent, {
+          width: 'auto',
+          data: selectedItemData,
+          disableClose: true
+        });
+        break;
+      case this.VIEW_ADMIN_EMAILS:
+        dialogRef = this.dialog.open(AdminEmailsComponent, {
+          width: 'auto',
+          data: selectedItemData,
+          disableClose: true
+        });
+        break;
+      case this.VIEW_SUBACC_ADMIN_EMAILS:
+        dialogRef = this.dialog.open(SubaccountAdminEmailsComponent, {
           width: 'auto',
           data: selectedItemData,
           disableClose: true
@@ -261,6 +283,12 @@ export class DashboardComponent implements OnInit {
         break;
       case this.VIEW_PROJECTS:
         this.openProjectDetails(object.selectedRow);
+        break;
+      case this.VIEW_ADMIN_EMAILS:
+        this.openDialog(object.selectedOption, object.selectedRow);
+        break;
+      case this.VIEW_SUBACC_ADMIN_EMAILS:
+        this.openDialog(object.selectedOption, object.selectedRow);
         break;
       case this.MODIFY_LICENSE:
         this.openDialog(object.selectedOption, object.selectedRow);

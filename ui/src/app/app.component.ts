@@ -35,6 +35,10 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe((result: EventMessage) => {
             // Do something with event payload here
         });
+        this.broadcastService.msalSubject$.pipe(
+            filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
+            takeUntil(this._destroying$)
+        ).subscribe(event => {this.currentUser = true, console.log("LOGIN_SUCCESS")});
     }
     /**
      * check whether user logged in
