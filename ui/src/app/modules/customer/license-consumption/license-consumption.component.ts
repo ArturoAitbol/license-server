@@ -131,10 +131,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
         this.isDetailedConsumptionRequestCompleted = true;
       }
     });
-    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.id).subscribe((res: any) => {
-      if (!res.error && res.projects)
-        this.projects = res.projects;
-    });
+    this.fetchProjectsList();
   }
 
   initFlags() {
@@ -169,6 +166,13 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     if (this.selectedProject) requestObject.project = this.selectedProject;
     if (this.selectedType) requestObject.type = this.selectedType;
     return requestObject;
+  }
+
+  fetchProjectsList(){
+    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.id).subscribe((res: any) => {
+      if (!res.error && res.projects)
+        this.projects = res.projects;
+    });
   }
 
   fetchSummaryData() {
@@ -274,10 +278,13 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   }
 
   openDialog(component: any, data?: any): void {
-    const dialogRef = this.dialog.open(component, {
+    const dialogRef:any = this.dialog.open(component, {
       width: 'auto',
       data: data,
       disableClose: true
+    });
+    const dialogEvent = dialogRef.componentInstance.updateProjects?.subscribe(()=>{
+      this.fetchProjectsList();
     });
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
@@ -286,6 +293,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
         else
           this.ngOnInit();
       }
+      dialogEvent?.unsubscribe();
     });
   }
 

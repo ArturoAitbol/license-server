@@ -1,6 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 
@@ -10,6 +10,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
   styleUrls: ['./add-project.component.css']
 })
 export class AddProjectComponent implements OnInit {
+  isDataLoading: boolean = false;
   readonly OPEN_STATUS = 'Open';
 
   addProjectForm = this.formBuilder.group({
@@ -36,12 +37,14 @@ export class AddProjectComponent implements OnInit {
   submit() {
     const newProjectDetails = { ... this.addProjectForm.value, status: this.OPEN_STATUS };
     newProjectDetails.subaccountId = this.projectService.getSelectedSubAccount();
+    this.isDataLoading = true;
     this.projectService.createProject(newProjectDetails).subscribe((res: any) => {
       if (res && !res.error) {
         this.snackBarService.openSnackBar('Project added successfully!', '');
         this.dialogRef.close(res);
       } else
         this.snackBarService.openSnackBar(res.error, 'Error adding project!');
+      this.isDataLoading = false;
     });
   }
 
