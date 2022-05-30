@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,13 +13,14 @@ import { AddLicenseConsumptionComponent } from './add-license-consumption/add-li
 import { AddLicenseComponent } from '../licenses/add-license/add-license.component';
 import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consumption-details/modify-license-consumption-details.component';
 import { ProjectService } from 'src/app/services/project.service';
+import { Constants } from 'src/app/helpers/constants';
 
 @Component({
   selector: 'app-license-consumption',
   templateUrl: './license-consumption.component.html',
   styleUrls: ['./license-consumption.component.css']
 })
-export class LicenseConsumption implements OnInit {
+export class LicenseConsumption implements OnInit,OnDestroy {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
@@ -69,7 +70,8 @@ export class LicenseConsumption implements OnInit {
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
-    { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
+    { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true },
+    { name: 'Usage Days', dataKey:'usageDays',position:'left',isSortable: false}
   ];
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
   readonly ADD_LICENSE = 'add-new-license';
@@ -89,6 +91,14 @@ export class LicenseConsumption implements OnInit {
     this.DELETE
   ];
 
+  daysOfWeek: Object = {
+    0:'Mon',
+    1:'Tue',
+    2:'Wed',
+    3:'Thu',
+    4:'Fri'
+  }
+
   constructor(
     private formBuilder: FormBuilder,
     private customerSerivce: CustomerService,
@@ -101,6 +111,8 @@ export class LicenseConsumption implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    let projectItem: string = localStorage.getItem(Constants.PROJECT);
+    if(projectItem) this.selectedProject = JSON.parse(projectItem).id;
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
     this.licenseService.getLicenseList(this.currentCustomer.id).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
@@ -204,6 +216,9 @@ export class LicenseConsumption implements OnInit {
 
   fetchAggregatedData() {
     this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
+      res.usage.forEach(item => {
+        this.getNameOfDays(item.usageDays);
+      });
       this.detailedConsumptionData = res.usage;
       this.weeklyConsumptionData = res.configurationTokens;
       this.isDetailedConsumptionLoadingResults = false;
@@ -213,6 +228,10 @@ export class LicenseConsumption implements OnInit {
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     });
+  }
+
+  private getNameOfDays(list:any[]):void{
+      list.forEach((dayNumber,index) => list[index] = this.daysOfWeek[dayNumber]);
   }
 
   onChangeLicense(newLicense: any) {
@@ -339,5 +358,8 @@ export class LicenseConsumption implements OnInit {
   getType(newValue: any) {
     this.selectedType = newValue;
     this.fetchAggregatedData();
+  }
+  ngOnDestroy(): void {
+    localStorage.removeItem(Constants.PROJECT);
   }
 }

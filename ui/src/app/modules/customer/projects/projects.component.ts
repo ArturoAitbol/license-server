@@ -2,11 +2,15 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
+import { Constants } from 'src/app/helpers/constants';
 import { Project } from 'src/app/model/project.model';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
+import { DialogService } from 'src/app/services/dialog.service';
 import { ProjectService } from 'src/app/services/project.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from './add-project/add-project.component';
+import { ModifyProjectComponent } from "./modify-project/modify-project.component";
 
 @Component({
   selector: 'app-projects',
@@ -14,13 +18,28 @@ import { AddProjectComponent } from './add-project/add-project.component';
   styleUrls: ['./projects.component.css']
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
+
   readonly displayedColumns: TableColumn[] = [
     { name: 'Project Number', dataKey: 'number', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
-    { name: 'Open Date', dataKey: 'openDate', position: 'left', isSortable: true },
+    { name: 'Start Date', dataKey: 'openDate', position: 'left', isSortable: true },
     { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
   ];
+
+  readonly MODIFY_PROJECT: string = 'Edit';
+  readonly CLOSE_PROJECT: string = 'Close';
+  readonly DELETE_PROJECT: string = 'Delete';
+  readonly VIEW_CONSUMPTION: string = 'View Package Consumption';
+
+  actionMenuOptions: any = [
+    this.MODIFY_PROJECT,
+    this.CLOSE_PROJECT,
+    this.DELETE_PROJECT,
+    this.VIEW_CONSUMPTION
+  ];
+
+
   tableMaxHeight: number;
   currentCustomer: any;
   projects: Project[] = [];
@@ -30,8 +49,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   isRequestCompleted: boolean = false;
 
   constructor(
-    private customerSerivce: CustomerService,
+    private customerService: CustomerService,
     private projectService: ProjectService,
+    private dialogService: DialogService,
+    private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog
   ) { }
@@ -53,7 +74,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.calculateTableHeight();
-    this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    this.currentCustomer = this.customerService.getSelectedCustomer();
     this.projectService.setSelectedSubAccount(this.currentCustomer.id);
     this.fetchProjects();
   }
@@ -114,6 +135,87 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     } else {
       return this.projects = this.projectsBk;
     }
+  }
+
+  /**
+ * action row click event
+ * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
+ */
+  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+    switch (object.selectedOption) {
+      case this.MODIFY_PROJECT:
+        this.openDialog(ModifyProjectComponent, object.selectedRow);
+        break;
+      case this.CLOSE_PROJECT:
+        this.confirmCloseDialog(object.selectedIndex);
+        break;
+      case this.DELETE_PROJECT:
+        this.confirmDeleteDialog(object.selectedIndex);
+        break;
+      case this.VIEW_CONSUMPTION:
+        this.openConsumptionView(object.selectedRow);
+    }
+  }
+
+  confirmCloseDialog(index: string) {
+    const currentProjectData = this.projects[index];
+    const projectToClose = currentProjectData.number + '-' + currentProjectData.name;
+    this.dialogService
+      .confirmDialog({
+        title: 'Confirm Action',
+        message: 'Do you want to close this project? (' + projectToClose + ')',
+        confirmCaption: 'Confirm',
+        cancelCaption: 'Cancel',
+      })
+      .subscribe((confirmed) => {
+        let projectToUpdate = {
+          id: currentProjectData.id,
+          closeDate: new Date().toLocaleString(),
+          status: "Closed"
+        };
+
+        if (confirmed) {
+          console.debug('The user confirmed the action: ', this.projects[index]);
+          this.projectService.closeProject(projectToUpdate).subscribe(res => {
+            if (res.body === null) {
+              this.snackBarService.openSnackBar('Project updated successfully!');
+              this.fetchProjects();
+            } else {
+              console.debug(res.body.error);
+              this.snackBarService.openSnackBar(res.body.error, 'Error closing project!');
+            }
+          });
+        }
+      });
+  }
+
+  confirmDeleteDialog(index: string) {
+    const { id, name, number } = this.projects[index];
+    const projectToDelete = number + '-' + name;
+
+    this.dialogService
+      .confirmDialog({
+        title: 'Confirm Action',
+        message: 'Do you want to delete this project? (' + projectToDelete + ')',
+        confirmCaption: 'Confirm',
+        cancelCaption: 'Cancel',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          console.debug('The user confirmed the action: ', this.projects[index]);
+          this.projectService.deleteProject(id).subscribe(res => {
+            if (res && res.status == 200) {
+              this.snackBarService.openSnackBar('Project deleted successfully!');
+              this.fetchProjects();
+            }
+          });
+        }
+      });
+  }
+
+  openConsumptionView(row: any): void {
+    localStorage.setItem(Constants.PROJECT, JSON.stringify(row));
+    this.router.navigate(['/customer/consumption']);
   }
 
   ngOnDestroy(): void {
