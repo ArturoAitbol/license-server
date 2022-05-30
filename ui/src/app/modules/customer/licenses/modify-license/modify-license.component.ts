@@ -36,6 +36,8 @@ export class ModifyLicenseComponent implements OnInit {
         if (this.data) {
             this.isDataLoading = true;
             this.selectedType = this.data.packageType;
+            this.data.startDate = new Date (this.data.startDate + " 00:00:00");
+            this.data.renewalDate = new Date (this.data.renewalDate + " 00:00:00");
             this.updateCustomerForm.patchValue(this.data);
             this.previousFormValue = { ...this.updateCustomerForm };
             this.bundleService.getBundleList().subscribe((res: any) => {
@@ -79,6 +81,10 @@ export class ModifyLicenseComponent implements OnInit {
     submit() {
         this.isDataLoading = true;
         const mergedLicenseObject = { ... this.data, ...this.updateCustomerForm.value };
+        const currentDate = new Date(); 
+        currentDate.setHours(0,0,0,0)
+        const newDate = new Date(mergedLicenseObject.renewalDate);
+        mergedLicenseObject.status =newDate>=currentDate ? 'Active' : 'Expired';
         mergedLicenseObject.tokens = this.updateCustomerForm.get("tokens").value;
         mergedLicenseObject.deviceAccessLimit = this.updateCustomerForm.get("deviceAccessLimit").value;
         this.licenseService.updateLicenseDetails(mergedLicenseObject).subscribe((res: any) => {

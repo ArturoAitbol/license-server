@@ -104,13 +104,15 @@ export class DashboardComponent implements OnInit {
       this.subaccountList = newDataObject['subaccounts'];
       this.subaccountList.forEach((subaccount: any) => {
         const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
-        const licenseDetails = newDataObject['licenses'].find((l: License) => (l.subaccountId === subaccount.id && l.status === "Active"));
         subaccount.customerName = customerDetails.name;
         subaccount.customerType = customerDetails.customerType;
-        if (licenseDetails)
-          subaccount.status = licenseDetails.status;
-        else
-          subaccount.status = "Inactive";
+        let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccount.id ));
+        if(subaccountLicenses.length>0){
+          const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
+          subaccount.status = licenseDetails ? licenseDetails.status: "Expired";
+        }else{
+          subaccount.status = "Inactive"; 
+        }
       });
       this.subaccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
     }, err => {
