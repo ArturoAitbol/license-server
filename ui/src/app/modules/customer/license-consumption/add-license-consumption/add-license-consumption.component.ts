@@ -71,7 +71,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.startDate = new Date(this.data.startDate + " 00:00:00");
       this.endDate = new Date(this.data.renewalDate + " 00:00:00");
     }
-    this.currentCustomer = this.customerService.getSelectedCustomer();
     this.fetchData();
     this.filteredModels = this.addDeviceForm.controls['product'].valueChanges.pipe(
       startWith(''),

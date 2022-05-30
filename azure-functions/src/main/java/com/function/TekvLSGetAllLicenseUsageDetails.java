@@ -106,7 +106,11 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// This is the default case (aggregated data)
 					JSONArray array = new JSONArray();
 					String sqlAll = "select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date)) as consumption, " +
-						"l.project_id, d.vendor, d.product, d.version from device d, license_consumption l where d.id=l.device_id and " + sqlCommonConditions + " order by consumption_date desc;";
+							"l.project_id, d.vendor, d.product, d.version" + ", json_agg(DISTINCT day_of_week) AS usage_days" +
+							" from device d, license_consumption l, usage_detail u " +
+							" where d.id=l.device_id and u.consumption_id = l.id and " + sqlCommonConditions +
+							" group by l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,d.vendor, d.product, d.version" +
+							" order by consumption_date desc;";
 					context.getLogger().info("Execute SQL all statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
@@ -121,6 +125,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("usageType", rs.getString("usage_type"));
 						item.put("tokensConsumed", rs.getString("tokens_consumed"));
 						item.put("consumption", item.getString("consumptionDate") + " - " + rs.getString("consumption"));
+						item.put("usageDays",new JSONArray(rs.getString("usage_days")));
 						array.put(item);
 					}
 					json.put("usage", array);
