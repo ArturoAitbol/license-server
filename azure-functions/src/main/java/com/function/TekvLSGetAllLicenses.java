@@ -66,11 +66,13 @@ public class TekvLSGetAllLicenses
 			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 
-			//Update status by checking renewal date
-			String updateStatus = "update license set status = 'Expired' where DATE(renewal_date) < CURRENT_DATE;";
-			context.getLogger().info("Execute SQL statement: " + updateStatus);
-			statement.executeUpdate(updateStatus);
-			context.getLogger().info("Licenses status updated successfully.");
+			if(id.equals("EMPTY") && subaccountId.isEmpty()){
+				//Update status by checking renewal date
+				String updateStatus = "update license set status = 'Expired' where DATE(renewal_date) < CURRENT_DATE;";
+				context.getLogger().info("Execute SQL statement: " + updateStatus);
+				statement.executeUpdate(updateStatus);
+				context.getLogger().info("Licenses status updated successfully.");
+			}
 
 			
 			// Retrive licenses. TODO: pagination
