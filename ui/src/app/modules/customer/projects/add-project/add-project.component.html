@@ -2,6 +2,9 @@
     <h1 mat-dialig-title>Add Project</h1>
     <form [formGroup]="addProjectForm" (ngSubmit)="submit()">
         <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">
@@ -27,7 +30,7 @@
         </div>
         <!-- <div class="btn-flex-container"> -->
         <mat-dialog-actions>
-            <button mat-stroked-button (click)="onCancel()">Cancel</button>
+            <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" [disabled]="!addProjectForm.valid" type="submit">Submit</button>
             <!-- </div> -->
         </mat-dialog-actions>

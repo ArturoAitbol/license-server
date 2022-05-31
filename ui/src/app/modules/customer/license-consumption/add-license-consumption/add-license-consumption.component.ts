@@ -1,11 +1,10 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { Device } from 'src/app/model/device.model';
-import { LicenseConsumption } from 'src/app/model/license-consumption.model';
 import { Project } from 'src/app/model/project.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DevicesService } from 'src/app/services/devices.service';
@@ -21,6 +20,9 @@ import { MatDatepicker } from '@angular/material/datepicker';
   styleUrls: ['./add-license-consumption.component.css']
 })
 export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
+
+  updateProjects : EventEmitter<any> = new EventEmitter<any>();
+
   devices: Device[] = [];
   projects: Project[] = [];
   vendors: any[] = [];
@@ -157,6 +159,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(res => {
       if (res)
         this.fetchProjects();
+        this.updateProjects.emit();
     });
   }
 
