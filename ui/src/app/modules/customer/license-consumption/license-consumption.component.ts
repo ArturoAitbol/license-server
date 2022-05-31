@@ -31,8 +31,8 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   startDate: any;
   endDate: any;
   aggregation: string = "period";
-  month: any;
-  year: any;
+  month: number;
+  year: number;
   licensesList: any = [];
   data: any = [];
   equipmentData = [];
@@ -137,21 +137,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     });
   }
 
-  initFlags() {
-    this.data = [];
-    this.equipmentData = [];
-    this.weeklyConsumptionData = [];
-    this.detailedConsumptionData = [];
-    this.isLicenseSummaryLoadingResults = true;
-    this.isLicenseSummaryRequestCompleted = false;
-    this.isEquipmentSummaryLoadingResults = true;
-    this.isEquipmentSummaryRequestCompleted = false;
-    this.isDetailedConsumptionLoadingResults = true;
-    this.isDetailedConsumptionRequestCompleted = false;
-  }
-
   fetchDataToDisplay() {
-    this.initFlags();
     this.fetchSummaryData();
     this.fetchEquipment();
     this.fetchAggregatedData();
@@ -163,11 +149,24 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       view: view,
       month: this.aggregation == 'month' ? this.month : null,
       year: this.aggregation == 'month' ? this.year : null,
-      startDate: this.selectedLicense.startDate,
-      endDate: this.selectedLicense.renewalDate
     };
     if (this.selectedProject) requestObject.project = this.selectedProject;
     if (this.selectedType) requestObject.type = this.selectedType;
+    /*
+      if it is the license consumption division and week filter is selected
+      then send the start and end dates as the beginning and end of this week
+    */
+    if (view === "" && this.aggregation === "week") {
+      let startWeek = new Date();
+      let endWeek = new Date();
+      startWeek.setDate(startWeek.getDate() - startWeek.getDay()); // Sunday's date
+      endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 6); // Saturday's date
+      requestObject.startDate = startWeek.toISOString().split("T")[0];
+      requestObject.endDate = endWeek.toISOString().split("T")[0];
+    } else { 
+      requestObject.startDate = this.selectedLicense.startDate;
+      requestObject.endDate = this.selectedLicense.renewalDate;
+    }
     return requestObject;
   }
 
@@ -180,6 +179,9 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       tokensConsumed: 0,
       devicesConnected: 0
     };
+    this.data = [];
+    this.isLicenseSummaryLoadingResults = true;
+    this.isLicenseSummaryRequestCompleted = false;
     this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("summary")).subscribe((response: any) => {
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
@@ -203,6 +205,9 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   }
 
   fetchEquipment() {
+    this.equipmentData = [];
+    this.isEquipmentSummaryLoadingResults = true;
+    this.isEquipmentSummaryRequestCompleted = false;
     this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("equipment")).subscribe((res: any) => {
       this.equipmentData = res.equipmentSummary;
       this.isEquipmentSummaryLoadingResults = false;
@@ -215,6 +220,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   }
 
   fetchAggregatedData() {
+    this.weeklyConsumptionData = [];
+    this.detailedConsumptionData = [];
+    this.isDetailedConsumptionLoadingResults = true;
+    this.isDetailedConsumptionRequestCompleted = false;
     this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
       res.usage.forEach(item => {
         this.getNameOfDays(item.usageDays);
@@ -340,6 +349,8 @@ export class LicenseConsumption implements OnInit,OnDestroy {
 
   getMultipleChoiceAnswer(newValue: any) {
     this.aggregation = newValue.value;
+    if (this.aggregation != "month")
+      this.fetchAggregatedData();
   }
 
   setMonthAndYear(newDateSelection: Date, datepicker: MatDatepicker<any>) {
