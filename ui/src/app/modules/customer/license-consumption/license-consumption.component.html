@@ -66,8 +66,11 @@
                     <mat-radio-button class="radio-blue" value="period" [checked]="aggregation == 'period'"
                         (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
                     <br>
+                    <mat-radio-button class="radio-blue" value="week" [checked]="aggregation == 'week'"
+                        (change)="getMultipleChoiceAnswer($event)">This Week</mat-radio-button>
+                    <br>
                     <mat-radio-button class="radio-blue" value="month" [checked]="aggregation == 'month'"
-                        (change)="getMultipleChoiceAnswer($event)">Monthly</mat-radio-button>
+                        (change)="getMultipleChoiceAnswer($event)">Month</mat-radio-button>
                     <mat-form-field appearance="outline" class="month-picker">
                         <input required matInput [disabled]="aggregation == 'period'" [value]="selectedDate"
                             [min]="startDate" [max]="endDate" [matDatepicker]="picker"
@@ -83,7 +86,7 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Consumption Type</mat-label>
                     <mat-select (valueChange)="getType($event)">
-                        <mat-option value="">None</mat-option>
+                        <mat-option value="">All</mat-option>
                         <mat-option value="Configuration">Configuration</mat-option>
                         <mat-option value="AutomationPlatform">Automation Platform</mat-option>
                     </mat-select>
@@ -93,7 +96,7 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Project</mat-label>
                     <mat-select [(value)]="selectedProject" (valueChange)="getProject($event)">
-                        <mat-option value="">None</mat-option>
+                        <mat-option value="">All</mat-option>
                         <mat-option *ngFor="let item of projects" [value]="item.id">
                             {{item.name}}
                         </mat-option>
