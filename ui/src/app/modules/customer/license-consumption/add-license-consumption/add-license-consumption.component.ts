@@ -214,7 +214,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     };
     this.addDevice();
     this.usedDevices.forEach((device: any) => {
-      let newConsumptionObject = { ...licenseConsumptionsObject };
+      let newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
       newConsumptionObject.deviceId = device.id;
       for (let i = 0; i < device.days.length; i++) {
         if (device.days[i].used)
@@ -243,7 +243,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   addDevice(): void {
     let device: any = this.addDeviceForm.value.product;
     if (device) {
-      device.days = this.days;
+      device.days = JSON.parse(JSON.stringify(this.days));
       this.usedDevices.push(device);
       this.addDeviceForm.reset();
       // this.addDeviceForm.patchValue({ vendor: '', product: '' });
