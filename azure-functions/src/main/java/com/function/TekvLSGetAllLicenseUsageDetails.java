@@ -67,7 +67,8 @@ public class TekvLSGetAllLicenseUsageDetails {
 				case "summary": {
 					// First get the devices connected
 					// Get number of connected devices
-					String sqlDevicesConnected = "select count(distinct device_id) from license_consumption l where " + sqlCommonConditions + ";";
+					String sqlDevicesConnected = "select count(distinct device_id) from license_consumption l where " + sqlCommonConditions + " AND l.usage_type ='"
+							+ USAGE_TYPE_ENUM.AUTOMATION_PLATFORM.getValue() + "';";
 					context.getLogger().info("Execute SQL devices statement: " + sqlDevicesConnected);
 					rs = statement.executeQuery(sqlDevicesConnected);
 					rs.next();
@@ -167,6 +168,19 @@ public class TekvLSGetAllLicenseUsageDetails {
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
+
+	enum USAGE_TYPE_ENUM {
+		CONFIGURATION("Configuration"),
+		AUTOMATION_PLATFORM("AutomationPlatform");
+
+		private final String value;
+		USAGE_TYPE_ENUM(String value) {
+			this.value = value;
+		}
+		public String getValue() {
+			return value;
 		}
 	}
 }
