@@ -11,6 +11,8 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Optional;
 
@@ -140,7 +142,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
 					LocalDate dt, startWeek, endWeek;
 					while (rs.next()) {
-						dt = LocalDate.parse(rs.getString(1));
+						dt = LocalDateTime.parse(rs.getString(1), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toLocalDate();
 						startWeek = dt.with(ChronoField.DAY_OF_WEEK, 1);
 						endWeek = dt.with(ChronoField.DAY_OF_WEEK, 7);
 						JSONObject item = new JSONObject();
