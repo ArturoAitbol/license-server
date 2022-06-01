@@ -33,10 +33,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
 
   actionMenuOptions: any = [
+    this.VIEW_CONSUMPTION,
     this.MODIFY_PROJECT,
     this.CLOSE_PROJECT,
-    this.DELETE_PROJECT,
-    this.VIEW_CONSUMPTION
+    this.DELETE_PROJECT
   ];
 
 
