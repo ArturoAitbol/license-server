@@ -33,7 +33,7 @@ export class DashboardComponent implements OnInit {
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
   readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages';
-  readonly VIEW_CONSUMPTION: string = 'View Package Consumption';
+  readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
   readonly VIEW_PROJECTS: string = 'View Projects List';
   readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
   readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';

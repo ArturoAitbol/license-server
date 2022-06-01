@@ -30,7 +30,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   readonly MODIFY_PROJECT: string = 'Edit';
   readonly CLOSE_PROJECT: string = 'Close';
   readonly DELETE_PROJECT: string = 'Delete';
-  readonly VIEW_CONSUMPTION: string = 'View Package Consumption';
+  readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
 
   actionMenuOptions: any = [
     this.MODIFY_PROJECT,
