@@ -86,11 +86,13 @@ export class Utility {
                 case 'completed':
                 case 'registered':
                 case 'active':
+                case 'open':
                     return '#0E8B18';
                 case 'offline':
                 case 'failed':
                 case 'unregistered':
                 case 'expired':
+                case 'closed':
                     return '#CB3333';
                 case 'initiated':
                 case 'inprogress':
