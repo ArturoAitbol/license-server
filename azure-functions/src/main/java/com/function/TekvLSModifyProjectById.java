@@ -73,7 +73,7 @@ public class TekvLSModifyProjectById
 		for (int i = 0; i < optionalParams.length; i++) {
 			try {
 				String paramName = jobj.getString(optionalParams[i][0]);
-				sql += optionalParams[i][1] + "='" + paramName + "',";
+				sql += optionalParams[i][1] + (paramName.equals("") ? "=null," : "='" + paramName + "',");
 				optionalParamsFound++;
 			} 
 			catch (Exception e) {

@@ -17,7 +17,7 @@ export class ModifyProjectComponent implements OnInit {
   ];
   isDataLoading: boolean = false;
   private previousFormValue: any;
-
+  
   updateProjectForm = this.formBuilder.group({
     name: ['', Validators.required],
     number: ['', Validators.required],
@@ -40,6 +40,8 @@ export class ModifyProjectComponent implements OnInit {
       this.updateProjectForm.patchValue(this.data);
       this.previousFormValue = { ...this.updateProjectForm };
       this.isDataLoading = false;
+      if(this.data.status === 'Open')
+        this.updateProjectForm.get('closeDate').disable();
     }
   }
 
@@ -50,6 +52,7 @@ export class ModifyProjectComponent implements OnInit {
   submit() {
     console.log("Submit called")
     this.isDataLoading = true;
+    this.updateProjectForm.enable();
     const mergedProjectDetails = { ... this.data, ...this.updateProjectForm.value };
     this.projectService.updateProject(mergedProjectDetails).subscribe((res: any) => {
       if (!res?.error) {
@@ -61,6 +64,15 @@ export class ModifyProjectComponent implements OnInit {
       }
       this.isDataLoading = false;
     });
+  }
+
+  onChanginStatus(status: string){
+    if(status === 'Open'){
+      this.updateProjectForm.patchValue({closeDate : ''});
+      this.updateProjectForm.get('closeDate').disable();
+    }else{
+      this.updateProjectForm.get('closeDate').enable();
+    } 
   }
 
 }

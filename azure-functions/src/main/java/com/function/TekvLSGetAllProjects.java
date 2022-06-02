@@ -54,8 +54,8 @@ public class TekvLSGetAllProjects {
 		} else {
 			sql += " where id='" + id +"'";
 		}
-		sql += ";";
-		
+		sql += "order by open_date desc, number, name;";
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
