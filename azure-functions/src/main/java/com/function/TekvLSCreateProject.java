@@ -60,7 +60,7 @@ public class TekvLSCreateProject
 		String[][] mandatoryParams = {
 			{"subaccountId","subaccount_id"}, 
 			{"name","name"}, 
-			{"number","number"}, 
+			{"code","code"},
 			{"openDate","open_date"},
 			{"status","status"} 
 		};
@@ -107,7 +107,7 @@ public class TekvLSCreateProject
 			sql = "select id from project where " + 
 				"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
 				"name = '" + jobj.getString("name") + "' and " +
-				"number = '" + jobj.getString("number") + "' and " +
+				"code = '" + jobj.getString("code") + "' and " +
 				"status = '" + jobj.getString("status") + "' and " +
 				"open_date = '" + jobj.getString("openDate") + "';";
 			context.getLogger().info("Execute SQL statement: " + sql);

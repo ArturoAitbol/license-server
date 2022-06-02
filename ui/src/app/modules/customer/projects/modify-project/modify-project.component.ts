@@ -20,7 +20,7 @@ export class ModifyProjectComponent implements OnInit {
   
   updateProjectForm = this.formBuilder.group({
     name: ['', Validators.required],
-    number: ['', Validators.required],
+    code: ['', Validators.required],
     openDate: ['', Validators.required],
     closeDate: ['', Validators.required],
     status: ['', Validators.required]
