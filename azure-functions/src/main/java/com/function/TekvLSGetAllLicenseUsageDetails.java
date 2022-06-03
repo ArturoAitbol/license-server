@@ -75,13 +75,11 @@ public class TekvLSGetAllLicenseUsageDetails {
 					json.put("devicesConnected", rs.getInt(1));
 
 					// Get tokens consumed
-					String sqlTokensConsumed = "select usage_type, sum(tokens_consumed) from license_consumption l where " + sqlCommonConditions + 
-						" group by l.usage_type;";
+					String sqlTokensConsumed = "select sum(tokens_consumed) from license_consumption l where " + sqlCommonConditions + ";";
 					context.getLogger().info("Execute SQL tokens statement: " + sqlTokensConsumed);
 					rs = statement.executeQuery(sqlTokensConsumed);
-					while (rs.next()) {
-						json.put(rs.getString(1) + "TokensConsumed", rs.getInt(2));
-					}
+					rs.next();
+					json.put("tokensConsumed", rs.getInt(1));
 				} break;
 				case "equipment": {
 					JSONArray array = new JSONArray();
@@ -110,6 +108,9 @@ public class TekvLSGetAllLicenseUsageDetails {
 						sqlCommonConditions += " and l.usage_type='" + type + "'";
 					// This is the default case (aggregated data)
 					JSONArray array = new JSONArray();
+					JSONObject tokenConsumption = new JSONObject();
+					String usageType;
+					int tokensConsumed;
 					String sqlAll = "select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date)) as consumption, " +
 							"l.project_id, d.vendor, d.product, d.version" + ", json_agg(DISTINCT day_of_week) AS usage_days" +
 							" from device d, license_consumption l, usage_detail u " +
@@ -127,13 +128,19 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("vendor", rs.getString("vendor"));
 						item.put("product", rs.getString("product"));
 						item.put("version", rs.getString("version"));
-						item.put("usageType", rs.getString("usage_type"));
-						item.put("tokensConsumed", rs.getString("tokens_consumed"));
+						usageType =  rs.getString("usage_type");
+						tokensConsumed = rs.getInt("tokens_consumed");
+						item.put("usageType",usageType);
+						item.put("tokensConsumed", tokensConsumed);
 						item.put("consumption", item.getString("consumptionDate") + " - " + rs.getString("consumption"));
 						item.put("usageDays",new JSONArray(rs.getString("usage_days")));
 						array.put(item);
+
+						tokenConsumption.put(usageType,tokenConsumption.optInt(usageType,0) + tokensConsumed);
+
 					}
 					json.put("usage", array);
+					json.put("tokenConsumption",tokenConsumption);
 
 					// Get aggregated consumption for configuration
 					JSONArray array2 = new JSONArray();
