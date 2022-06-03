@@ -63,7 +63,7 @@ public class TekvLSModifyProjectById
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] optionalParams = {
 			{"name","name"}, 
-			{"number","number"}, 
+			{"code","code"},
 			{"status","status"}, 
 			{"openDate", "open_date"}, 
 			{"closeDate","close_date"}};

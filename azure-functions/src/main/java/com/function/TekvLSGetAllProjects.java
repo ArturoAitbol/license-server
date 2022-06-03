@@ -54,7 +54,7 @@ public class TekvLSGetAllProjects {
 		} else {
 			sql += " where id='" + id +"'";
 		}
-		sql += "order by open_date desc, number, name;";
+		sql += "order by open_date desc, code, name;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -79,7 +79,7 @@ public class TekvLSGetAllProjects {
 				item.put("id", rs.getString("id"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
 				item.put("name", rs.getString("name"));
-				item.put("number", rs.getString("number"));
+				item.put("code", rs.getString("code"));
 				item.put("status", rs.getString("status"));
 				item.put("openDate", rs.getString("open_date").split(" ")[0]);
 				closeDate = rs.getString("close_date");

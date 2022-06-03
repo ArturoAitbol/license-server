@@ -20,7 +20,7 @@ import { ModifyProjectComponent } from "./modify-project/modify-project.componen
 export class ProjectsComponent implements OnInit, OnDestroy {
 
   readonly displayedColumns: TableColumn[] = [
-    { name: 'Project Number', dataKey: 'number', position: 'left', isSortable: true },
+    { name: 'Project Code', dataKey: 'code', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
     { name: 'Start Date', dataKey: 'openDate', position: 'left', isSortable: true },
@@ -119,17 +119,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
       this.projects = this.projects.sort((a: any, b: any) => {
-        if (keyName === 'number') {
-          return +a[keyName] > +b[keyName] ? 1 : (+a[keyName] < +b[keyName] ? -1 : 0);
-        }
         return a[keyName].localeCompare(b[keyName]);
       });
     } else if (sortParameters.direction === 'desc') {
       this.projects = this.projects.sort((a: any, b: any) => {
-        if (keyName === 'number') {
-          return +a[keyName] < +b[keyName] ? 1 : (+a[keyName] > +b[keyName] ? -1 : 0);
-
-        }
         return b[keyName].localeCompare(a[keyName])
       });
     } else {
@@ -159,7 +152,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   confirmCloseDialog(index: string) {
     const currentProjectData = this.projects[index];
-    const projectToClose = currentProjectData.number + '-' + currentProjectData.name;
+    const projectToClose = currentProjectData.code + '-' + currentProjectData.name;
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
@@ -190,8 +183,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   confirmDeleteDialog(index: string) {
-    const { id, name, number } = this.projects[index];
-    const projectToDelete = number + '-' + name;
+    const { id, name, code } = this.projects[index];
+    const projectToDelete = code + '-' + name;
 
     this.dialogService
       .confirmDialog({
