@@ -65,34 +65,24 @@
                 <mat-radio-group>
                     <mat-radio-button class="radio-blue" value="period" [checked]="aggregation == 'period'"
                         (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
-                    <br>
+                        <br>
                     <mat-radio-button class="radio-blue" value="week" [checked]="aggregation == 'week'"
                         (change)="getMultipleChoiceAnswer($event)">This Week</mat-radio-button>
-                    <br>
-                    <mat-radio-button class="radio-blue" value="month" [checked]="aggregation == 'month'"
+                        <br>
+                        <mat-radio-button class="radio-blue" value="month" [checked]="aggregation == 'month'"
                         (change)="getMultipleChoiceAnswer($event)">Month</mat-radio-button>
-                    <mat-form-field appearance="outline" class="month-picker">
-                        <input required matInput [disabled]="aggregation == 'period'" [value]="selectedDate"
-                            [min]="startDate" [max]="endDate" [matDatepicker]="picker"
-                            placeholder="Choose Month and Year">
-                        <mat-datepicker-toggle [disabled]="aggregation == 'period'" matSuffix [for]="picker">
-                        </mat-datepicker-toggle>
-                        <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)">
-                        </mat-datepicker>
-                    </mat-form-field>
+                        <mat-form-field appearance="outline" class="month-picker">
+                            <input required matInput [disabled]="aggregation == 'period'" [value]="selectedDate"
+                                [min]="startDate" [max]="endDate" [matDatepicker]="picker"
+                                placeholder="Choose Month and Year">
+                            <mat-datepicker-toggle [disabled]="aggregation == 'period'" matSuffix [for]="picker">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)">
+                            </mat-datepicker>
+                        </mat-form-field>
                 </mat-radio-group>
             </div>
-            <div class="col-4">
-                <mat-form-field appearance="outline">
-                    <mat-label>Consumption Type</mat-label>
-                    <mat-select (valueChange)="getType($event)">
-                        <mat-option value="">All</mat-option>
-                        <mat-option value="Configuration">Configuration</mat-option>
-                        <mat-option value="AutomationPlatform">Automation Platform</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="col-4">
+            <div class="col-4 d-flex justify-content-center">
                 <mat-form-field appearance="outline">
                     <mat-label>Project</mat-label>
                     <mat-select [(value)]="selectedProject" (valueChange)="getProject($event)">
@@ -102,6 +92,28 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+            </div>
+            <div class="col-4 d-flex justify-content-center">
+                <mat-form-field appearance="outline">
+                    <mat-label>Consumption Type</mat-label>
+                    <mat-select (valueChange)="getType($event)">
+                        <mat-option value="">All</mat-option>
+                        <mat-option value="Configuration">Configuration</mat-option>
+                        <mat-option value="AutomationPlatform">Automation Platform</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-6">
+                <div class="overflow-auto mat-elevation-z8">
+                    <app-data-table [tableData]="tokenConsumptionData" [tableColumns]="tekTokenConsumptionColumns"
+                        [isFilterable]="false" [isPageable]="false"
+                        [isLoadingResults]="isDetailedConsumptionLoadingResults"
+                        [isRequestCompleted]="isDetailedConsumptionRequestCompleted">
+                    </app-data-table>
+                </div>
             </div>
         </div>
         <br>
@@ -127,7 +139,7 @@
                         [actionMenuList]="licConsumptionActionMenuOptions">
                     </app-data-table>
                 </div>
-            </div>
+            </div>   
         </div>
     </section>
     <br>

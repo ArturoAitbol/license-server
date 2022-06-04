@@ -38,6 +38,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   equipmentData = [];
   weeklyConsumptionData = [];
   detailedConsumptionData = [];
+  tokenConsumptionData = [];
   licenseForm: any = this.formBuilder.group({
     licenseId: ['']
   });
@@ -49,7 +50,6 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   ];
 
   readonly automationSummaryColumns: TableColumn[] = [
-    { name: 'Automation tekTokens Consumed', dataKey: 'AutomationPlatformTokensConsumed', position: 'left', isSortable: true, canHighlighted: false },
     { name: 'Device Access Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true, },
     { name: 'Devices Connected', dataKey: 'devicesConnected', position: 'left', isSortable: true }
   ];
@@ -58,6 +58,12 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true }
+  ];
+
+  readonly tekTokenConsumptionColumns: TableColumn[] = [
+    { name: 'Automation tekTokens Consumed', dataKey: 'AutomationPlatformTokensConsumed', position: 'left', isSortable: true },
+    { name: 'Configuration tekTokens Consumed', dataKey: 'ConfigurationTokensConsumed', position: 'left', isSortable: true, },
+    { name: 'Total Consumption', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
   readonly detailedConsumptionColumns: TableColumn[] = [
@@ -190,7 +196,6 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
       const mergedObj = { ...requiredObject, ...response };
-      mergedObj.tokensConsumed = mergedObj.AutomationPlatformTokensConsumed + mergedObj.ConfigurationTokensConsumed;
       if (mergedObj.tokensConsumed >= mergedObj.tokensPurchased) {
         this.tekTokensSummaryColumns[1].canHighlighted = true;
         this.tekTokensSummaryColumns[2].canHighlighted = true;
@@ -226,6 +231,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   fetchAggregatedData() {
     this.weeklyConsumptionData = [];
     this.detailedConsumptionData = [];
+    this.tokenConsumptionData = [];
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
     this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
@@ -234,6 +240,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       });
       this.detailedConsumptionData = res.usage;
       this.weeklyConsumptionData = res.configurationTokens;
+      this.tokenConsumptionData = this.formatTokenConsumption(res.tokenConsumption);
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     }, (err: any) => {
@@ -245,6 +252,25 @@ export class LicenseConsumption implements OnInit,OnDestroy {
 
   private getNameOfDays(list:any[]):void{
       list.forEach((dayNumber,index) => list[index] = this.daysOfWeek[dayNumber]);
+  }
+
+  private formatTokenConsumption(tokenConsumption: any):any[]{
+    let AutomationTokens = tokenConsumption.AutomationPlatform ?? 0;
+    let  ConfigurationTokens = tokenConsumption.Configuration ?? 0;
+    const totalConsumption =  AutomationTokens + ConfigurationTokens;
+
+    if(this.selectedType==="Configuration")
+      AutomationTokens = null;
+    if(this.selectedType==="AutomationPlatform")
+      ConfigurationTokens = null;
+
+    const consumptionDetail = {
+      AutomationPlatformTokensConsumed: AutomationTokens,
+      ConfigurationTokensConsumed: ConfigurationTokens,
+      tokensConsumed: totalConsumption,
+    };
+
+    return [consumptionDetail];
   }
 
   onChangeLicense(newLicense: any) {
