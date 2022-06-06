@@ -86,7 +86,7 @@ public class TekvLSCreateCustomer
 		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
 		String sql = "insert into customer (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
-		if (!jobj.has("adminEmail"))  {
+		if (!jobj.has("adminEmails"))  {
 			JSONObject json = new JSONObject();
 			json.put("error", "Missing mandatory parameter: adminEmail");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
@@ -147,6 +147,6 @@ public class TekvLSCreateCustomer
 		for (String email : emailsList) {
 			sb.append(String.format("('%s','%s'),", email, customerId));
 		}
-		return sb.deleteCharAt(sb.length()).append(";").toString();
+		return sb.deleteCharAt(sb.length() - 1).append(";").toString();
 	}
 }

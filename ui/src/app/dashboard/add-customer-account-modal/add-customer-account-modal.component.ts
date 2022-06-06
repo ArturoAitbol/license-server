@@ -47,14 +47,14 @@ export class AddCustomerAccountModalComponent implements OnInit {
     const customerObject: any = {
       name: this.addCustomerForm.value.customerName,
       customerType: this.addCustomerForm.value.customerType,
-      adminEmail: this.addCustomerForm.value.adminEmail
+      adminEmails: [this.addCustomerForm.value.adminEmail]
     };
     this.customerService.createCustomer(customerObject).subscribe((resp: any) => {
       if (!resp.error) {
         const subaccountDetails: any = {
           customerId: resp.id,
           name: this.addCustomerForm.value.subAccountName,
-          subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
+          subaccountAdminEmails: [this.addCustomerForm.value.subaccountAdminEmail],
         }
         this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
           if (!res.error) {

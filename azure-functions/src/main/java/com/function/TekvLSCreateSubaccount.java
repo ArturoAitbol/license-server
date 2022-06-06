@@ -86,9 +86,9 @@ public class TekvLSCreateSubaccount
 		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
 		String sql = "insert into subaccount (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
-		if (!jobj.has("subaccountAdminEmail"))  {
+		if (!jobj.has("subaccountAdminEmails"))  {
 			JSONObject json = new JSONObject();
-			json.put("error", "Missing mandatory parameter: subaccountAdminEmail");
+			json.put("error", "Missing mandatory parameter: subaccountAdminEmails");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -147,6 +147,6 @@ public class TekvLSCreateSubaccount
 		for (String email : emailsList) {
 			sb.append(String.format("('%s','%s'),", email, subaccountId));
 		}
-		return sb.deleteCharAt(sb.length()).append(";").toString();
+		return sb.deleteCharAt(sb.length() - 1).append(";").toString();
 	}
 }
