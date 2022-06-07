@@ -72,7 +72,7 @@ public class TekvLSCreateCustomer
 				String paramValue = jobj.getString(mandatoryParams[i][0]);
 				sqlPart1 += mandatoryParams[i][1] + ",";
 				sqlPart2 += "'" + paramValue + "',";
-			} 
+			}
 			catch (Exception e) {
 				// Parameter not found
 				context.getLogger().info("Caught exception: " + e.getMessage());
@@ -81,9 +81,14 @@ public class TekvLSCreateCustomer
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
-		// Remove the comma after the last parameter and build the SQL statement
-		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
+		if (jobj.has("distributorId")){
+			sqlPart1 += "distributor_id";
+			sqlPart2 += "'" + jobj.getString("distributorId") + "'";
+		} else {
+			// Remove the comma after the last parameter and build the SQL statement
+			sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
+			sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
+		}
 		String sql = "insert into customer (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
 		if (!jobj.has("adminEmails"))  {
