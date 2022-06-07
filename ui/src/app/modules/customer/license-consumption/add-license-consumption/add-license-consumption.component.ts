@@ -34,6 +34,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: "Wed", used: false },
     { name: "Thu", used: false },
     { name: "Fri", used: false },
+    { name: "Sat", used: false },
+    { name: "Sun", used: false },
   ];
 
 
@@ -187,7 +189,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     let startWeek = new Date(newDateSelection);
     let endWeek = new Date(newDateSelection);
     startWeek.setDate(startWeek.getDate() - startWeek.getDay() + 1);
-    endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 5);
+    endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 7);
     this.addLicenseConsumptionForm.patchValue({ startWeek: startWeek, endWeek: endWeek });
     datepicker.close();
   }
@@ -253,6 +255,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
         { name: "Wed", used: false },
         { name: "Thu", used: false },
         { name: "Fri", used: false },
+        { name: "Sat", used: false },
+        { name: "Sun", used: false },
       ];
     }
   }

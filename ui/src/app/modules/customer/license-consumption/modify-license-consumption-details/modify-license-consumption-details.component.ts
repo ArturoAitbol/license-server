@@ -39,6 +39,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     { name: "Wed", used: false },
     { name: "Thu", used: false },
     { name: "Fri", used: false },
+    { name: "Sat", used: false },
+    { name: "Sun", used: false },
   ];
   selectedVendor: string = '';
   startDate: any;
