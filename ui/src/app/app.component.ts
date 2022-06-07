@@ -5,6 +5,7 @@ import { Constants } from './helpers/constants';
 import { Subject } from 'rxjs/internal/Subject';
 import { EventMessage, EventType } from '@azure/msal-browser';
 import { filter, takeUntil } from 'rxjs/operators';
+import { AutoLogoutService } from "./services/auto-logout.service";
 
 @Component({
     selector: 'app-root',
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit, OnDestroy {
     constructor(
         private router: Router,
         private msalService: MsalService,
-        private broadcastService: MsalBroadcastService
+        private broadcastService: MsalBroadcastService,
+        private autoLogoutService: AutoLogoutService
     ) { }
 
     ngOnInit() {
@@ -38,7 +40,10 @@ export class AppComponent implements OnInit, OnDestroy {
         this.broadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
             takeUntil(this._destroying$)
-        ).subscribe(event => {this.currentUser = true, console.log("LOGIN_SUCCESS")});
+        ).subscribe(event => {
+            this.currentUser = true;
+            this.autoLogoutService.restartTimer();
+        });
     }
     /**
      * check whether user logged in
