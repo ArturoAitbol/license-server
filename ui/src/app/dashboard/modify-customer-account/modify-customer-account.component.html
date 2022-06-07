@@ -28,10 +28,16 @@
                         <input matInput required formControlName="name">
                     </mat-form-field>
                 </div>
+                <div *ngIf="data.testCustomer===true">
+                    <section class="text-left">
+                        <mat-checkbox color="primary" formControlName="testCustomer">Test Customer</mat-checkbox>
+                        <small class="text-muted d-block">(For development and testing)</small>
+                    </section>
+                </div>
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
-            <button mat-stroked-button (click)="onCancel()">Cancel</button>
+            <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" [disabled]="!(updateCustomerForm.valid ) || disableSumbitBtn()"
                 type="submit">Submit</button>
         </mat-dialog-actions>

@@ -90,7 +90,8 @@ public class TekvLSGetAllCustomers {
 				item.put("id", rs.getString("id"));
 				item.put("name", rs.getString("name"));
 				item.put("customerType", rs.getString("type"));
-
+				item.put("testCustomer", rs.getBoolean("test_customer"));
+				
 				String distributorId = rs.getString("distributor_id");
 				if (rs.wasNull()) {
 					distributorId = "";

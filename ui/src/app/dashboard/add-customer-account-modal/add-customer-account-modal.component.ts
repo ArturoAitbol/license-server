@@ -17,6 +17,7 @@ export class AddCustomerAccountModalComponent implements OnInit {
     customerType: ['', Validators.required],
     adminEmail: ['', [Validators.required, Validators.email]],
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
+    testCustomer: [false,Validators.required]
   });
   types: string[] = [
     'MSP',
@@ -47,7 +48,8 @@ export class AddCustomerAccountModalComponent implements OnInit {
     const customerObject: any = {
       name: this.addCustomerForm.value.customerName,
       customerType: this.addCustomerForm.value.customerType,
-      adminEmails: [this.addCustomerForm.value.adminEmail]
+      adminEmails: [this.addCustomerForm.value.adminEmail],
+      testCustomer: this.addCustomerForm.value.testCustomer.toString()
     };
     this.customerService.createCustomer(customerObject).subscribe((resp: any) => {
       if (!resp.error) {
@@ -57,15 +59,25 @@ export class AddCustomerAccountModalComponent implements OnInit {
           subaccountAdminEmails: [this.addCustomerForm.value.subaccountAdminEmail],
         }
         this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
-          if (!res.error) {
-            this.isDataLoading = false;
+          if (!res.error)
             this.snackBarService.openSnackBar('Customer and subaccount added successfully!', '');
-            this.dialogRef.close(res);
-          } else
+          else
             this.snackBarService.openSnackBar(res.error, 'Error adding subaccount!');
+          this.dialogRef.close(res);
+          this.isDataLoading = false;
+        },err =>{
+          this.isDataLoading = false;
+          this.snackBarService.openSnackBar(err.error, 'Error adding subaccount!');
+          console.error('error while adding subbacount', err);
         });
-      } else
+      } else{
         this.snackBarService.openSnackBar(resp.error, 'Error adding customer!');
+        this.isDataLoading = false;
+      }
+    }, err => {
+      this.isDataLoading = false;
+      this.snackBarService.openSnackBar(err.error, 'Error adding customer!');
+      console.error('error while adding a new customer', err);
     });
   }
 
