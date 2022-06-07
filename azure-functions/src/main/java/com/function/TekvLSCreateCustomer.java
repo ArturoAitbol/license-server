@@ -59,10 +59,11 @@ public class TekvLSCreateCustomer
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// The expected parameters (and their coresponding column name in the database) 
+		// The expected parameters (and their corresponding column name in the database)
 		String[][] mandatoryParams = {
-			{"name","name"}, 
-			{"customerType","type"}
+			{"name","name"},
+			{"customerType","type"},
+		    {"testCustomer","test_customer"}
 		};
 		// Build the sql query
 		String sqlPart1 = "";
@@ -101,6 +102,22 @@ public class TekvLSCreateCustomer
 			Statement statement = connection.createStatement();) {
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+
+			JSONArray adminEmailsJson = jobj.getJSONArray("adminEmails");
+			List<String> adminEmails = new ArrayList<>();
+			for (int i=0; i<adminEmailsJson.length(); i++) {
+				adminEmails.add( adminEmailsJson.getString(i) );
+			}
+
+			String verifyEmails = "select count(*) from customer_admin where admin_email IN ('" +  String.join("','", adminEmails) + "')";
+			context.getLogger().info("Execute SQL statement: " + verifyEmails);
+			ResultSet rsEmails = statement.executeQuery(verifyEmails);
+			rsEmails.next();
+			if(rsEmails.getInt(1)>0){
+				JSONObject json = new JSONObject();
+				json.put("error", "Administrator email already exists");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 			
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + sql);
@@ -115,13 +132,7 @@ public class TekvLSCreateCustomer
 			JSONObject json = new JSONObject();
 			json.put("id", rs.getString("id"));
 
-			JSONArray adminEmailsJson = jobj.getJSONArray("adminEmails");
-			List<String> adminEmails = new ArrayList<>();
-			for (int i=0; i<adminEmailsJson.length(); i++) {
-				adminEmails.add( adminEmailsJson.getString(i) );
-			}
-
-			String adminEmailSql = getAdminEmailInsert(adminEmails, rs.getString("id"));
+			String adminEmailSql = getAdminEmailInsert(adminEmails,rs.getString("id"));
 			context.getLogger().info("Execute SQL statement: " + adminEmailSql);
 			statement.executeUpdate(adminEmailSql);
 			context.getLogger().info("Admin emails inserted successfully.");

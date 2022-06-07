@@ -112,6 +112,7 @@ export class DashboardComponent implements OnInit {
         const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
         subaccount.customerName = customerDetails.name;
         subaccount.customerType = customerDetails.customerType;
+        subaccount.testCustomer = customerDetails.testCustomer;
         let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccount.id ));
         if(subaccountLicenses.length>0){
           const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));

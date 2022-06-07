@@ -15,7 +15,8 @@ export class ModifyCustomerAccountComponent implements OnInit {
   updateCustomerForm: any = this.formBuilder.group({
     customerName: ['', Validators.required],
     customerType: ['', Validators.required],
-    name: ['', Validators.required]
+    name: ['', Validators.required],
+    testCustomer: [{value:false,disabled:true}]
   });
   types: string[] = ['MSP', 'Reseller'];
   private previousFormValue: any;
