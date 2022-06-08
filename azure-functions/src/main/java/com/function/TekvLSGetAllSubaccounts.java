@@ -48,16 +48,14 @@ public class TekvLSGetAllSubaccounts
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String customerId = request.getQueryParameters().getOrDefault("customer-id", "");
 
-		Map<String, List<String>> adminEmailsMap;
+		Map<String, List<String>> adminEmailsMap = new HashMap<>();
 		// Build SQL statement
 		String sql = "";
 		if (id.equals("EMPTY")) {
 			if (!customerId.isEmpty()) {
 				sql = "select * from subaccount where customer_id = '" + customerId + "';";
-				adminEmailsMap = loadCustomerAdminEmails(customerId, context);
 			} else {
 				sql = "select * from subaccount;";
-				adminEmailsMap = loadAllAdminEmails(context);
 			}
 		} else {
 			sql = "select * from subaccount where id='" + id +"';";
@@ -81,7 +79,8 @@ public class TekvLSGetAllSubaccounts
 				item.put("id", rs.getString("id"));
 				item.put("name", rs.getString("name"));
 				item.put("customerId", rs.getString("customer_id"));
-				item.put("subaccountAdminEmails", adminEmailsMap.get(rs.getString("id")));
+				if (!id.equals("EMPTY"))
+					item.put("subaccountAdminEmails", adminEmailsMap.get(rs.getString("id")));
 				array.put(item);
 			}
 			json.put("subaccounts", array);
@@ -99,16 +98,6 @@ public class TekvLSGetAllSubaccounts
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
-	}
-
-	private Map<String, List<String>> loadAllAdminEmails(ExecutionContext context) {
-		String sql = "SELECT * FROM subaccount_admin;";
-		return loadAdminEmails(context, sql);
-	}
-
-	private Map<String, List<String>> loadCustomerAdminEmails(String customerId, ExecutionContext context) {
-		String sql = "SELECT subaccount_id, subaccount_admin_email FROM subaccount_admin sa_a JOIN subaccount sa  ON sa_a.subaccount_id = sa.id WHERE sa.customer_id = '" + customerId + "';";
-		return loadAdminEmails(context, sql);
 	}
 
 	private Map<String, List<String>> loadSubaccountAdminEmails(String subaccountId, ExecutionContext context) {
