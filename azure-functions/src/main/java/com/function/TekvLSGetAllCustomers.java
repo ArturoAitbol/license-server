@@ -47,7 +47,7 @@ public class TekvLSGetAllCustomers {
 		String customerType = request.getQueryParameters().getOrDefault("type", "");
 		String customerName = request.getQueryParameters().getOrDefault("name", "");
 
-		Map<String, List<String>> adminEmailsMap;
+		Map<String, List<String>> adminEmailsMap = new HashMap<>();
 		// Build SQL statement
 		String sql = "";
 		if (id.equals("EMPTY")) {
@@ -66,7 +66,6 @@ public class TekvLSGetAllCustomers {
 				}
 			}
 			sql += ";";
-			adminEmailsMap = loadAdminEmails(context);
 		} else {
 			sql = "select * from customer where id='" + id +"';";
 			adminEmailsMap = loadAdminEmails(id, context);
@@ -99,7 +98,8 @@ public class TekvLSGetAllCustomers {
 				item.put("distributorId", distributorId);
 
 				item.put("tombstone", rs.getBoolean("tombstone"));
-				item.put("adminEmails", adminEmailsMap.get(rs.getString("id")));
+				if (!id.equals("EMPTY"))
+					item.put("adminEmails", adminEmailsMap.get(rs.getString("id")));
 				array.put(item);
 			}
 			json.put("customers", array);
@@ -117,11 +117,6 @@ public class TekvLSGetAllCustomers {
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
-	}
-
-	private Map<String, List<String>> loadAdminEmails(ExecutionContext context) {
-		String sql = "SELECT * FROM customer_admin;";
-		return loadAdminEmails(context, sql);
 	}
 
 	private Map<String, List<String>> loadAdminEmails(String customerId, ExecutionContext context) {
