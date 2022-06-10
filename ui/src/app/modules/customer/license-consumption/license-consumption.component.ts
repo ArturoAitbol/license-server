@@ -14,6 +14,8 @@ import { AddLicenseComponent } from '../licenses/add-license/add-license.compone
 import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consumption-details/modify-license-consumption-details.component';
 import { ProjectService } from 'src/app/services/project.service';
 import { Constants } from 'src/app/helpers/constants';
+import { MsalService } from '@azure/msal-angular';
+import { permissions } from 'src/app/helpers/role-permissions';
 
 @Component({
   selector: 'app-license-consumption',
@@ -92,10 +94,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
-  licConsumptionActionMenuOptions: any = [
-    this.EDIT,
-    this.DELETE
-  ];
+  licConsumptionActionMenuOptions: any = [];
 
   daysOfWeek: Object = {
     0:'Mon',
@@ -115,7 +114,8 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     private licenseService: LicenseService,
     private licenseConsumptionService: LicenseConsumptionService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private msalService:MsalService
   ) { }
 
   ngOnInit(): void {
@@ -146,6 +146,14 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.fetchSummaryData();
     this.fetchEquipment();
     this.fetchAggregatedData();
+    this.getActionMenuOptions();
+  }
+
+  private getActionMenuOptions(){
+    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    accountRoles.forEach(accountRole =>{
+      permissions[accountRole].tables.licConsumptionOptions?.forEach(item=>this.licConsumptionActionMenuOptions.push(this[item]));
+    })
   }
 
   private buildRequestObject(view: string) {

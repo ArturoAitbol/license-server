@@ -9,10 +9,10 @@
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle value="add-new-license" (change)="onChangeToggle($event)">
+                    <mat-button-toggle *checkAccessFor="'addLicense'" value="add-new-license" (change)="onChangeToggle($event)">
                         Add tekVizion 360 Package
                     </mat-button-toggle>
-                    <mat-button-toggle value="add-license-consumption" (change)="onChangeToggle($event)">
+                    <mat-button-toggle *checkAccessFor="'addLicenseConsumption'" value="add-license-consumption" (change)="onChangeToggle($event)">
                         Add tekToken Consumption
                     </mat-button-toggle>
                 </mat-button-toggle-group>
