@@ -9,6 +9,15 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Consumption Week</mat-label>
+                        <input #startWeek required matInput [matDatepicker]="picker" [min]="startDate" [max]="endDate"  
+                        (dateChange)="pickStartWeek($event.value)" formControlName="startWeek">
+                        <mat-hint *ngIf="!startWeek.value">Click the calendar button</mat-hint>
+                        <mat-hint *ngIf="startWeek.value">{{startWeek.value}} - {{endWeek}}</mat-hint>
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <!-- <mat-form-field appearance="outline">
+                        <mat-label>Consumption Week</mat-label>
                         <mat-date-range-input [rangePicker]="picker" [min]="startDate" [max]="endDate" required>
                             <input #startWeek matStartDate placeholder="Start date" formControlName="startWeek"
                                 (dateChange)="pickStartWeek($event.value, picker)">
@@ -17,7 +26,7 @@
                         <mat-hint *ngIf="!startWeek.value">Click the calendar button</mat-hint>
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-date-range-picker #picker></mat-date-range-picker>
-                    </mat-form-field>
+                    </mat-form-field> -->
                 </div>
                 <div>
                     <mat-form-field class="col-9 no-padding" appearance="outline">
