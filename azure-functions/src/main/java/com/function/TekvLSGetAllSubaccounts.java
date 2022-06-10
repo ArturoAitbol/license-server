@@ -76,11 +76,12 @@ public class TekvLSGetAllSubaccounts
 			JSONArray array = new JSONArray();
 			while (rs.next()) {
 				JSONObject item = new JSONObject();
-				item.put("id", rs.getString("id"));
 				item.put("name", rs.getString("name"));
 				item.put("customerId", rs.getString("customer_id"));
 				if (!id.equals("EMPTY"))
 					item.put("subaccountAdminEmails", adminEmailsMap.get(rs.getString("id")));
+				else
+					item.put("id", rs.getString("id"));
 				array.put(item);
 			}
 			json.put("subaccounts", array);
