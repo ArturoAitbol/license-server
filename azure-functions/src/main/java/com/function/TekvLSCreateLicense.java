@@ -63,8 +63,7 @@ public class TekvLSCreateLicense
 			{"packageType","package_type"}, 
 			{"renewalDate","renewal_date"},
 			{"tokens","tokens"}, 
-			{"deviceAccessLimit","device_access_limit"}, 
-			{"status","status"} 
+			{"deviceAccessLimit","device_access_limit"}
 		};
 		// Build the sql query
 		String sqlPart1 = "";
@@ -83,6 +82,8 @@ public class TekvLSCreateLicense
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
+		sqlPart1 += "status" + ",";
+		sqlPart2 += "'" + "Active" + "',"; 
 		// Remove the comma after the last parameter and build the SQL statement
 		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
 		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
@@ -108,7 +109,6 @@ public class TekvLSCreateLicense
 				"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
 				"start_date = '" + jobj.getString("startDate") + "' and " +
 				"package_type = '" + jobj.getString("packageType") + "' and " +
-				"status = '" + jobj.getString("status") + "' and " +
 				"renewal_date = '" + jobj.getString("renewalDate") + "';";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			context.getLogger().info("Execute SQL statement: " + sql);
