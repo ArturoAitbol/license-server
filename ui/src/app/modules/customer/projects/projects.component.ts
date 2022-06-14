@@ -2,7 +2,9 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
+import { MsalService } from '@azure/msal-angular';
 import { Constants } from 'src/app/helpers/constants';
+import { permissions } from 'src/app/helpers/role-permissions';
 import { Project } from 'src/app/model/project.model';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
@@ -32,12 +34,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   readonly DELETE_PROJECT: string = 'Delete';
   readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
 
-  actionMenuOptions: any = [
-    this.VIEW_CONSUMPTION,
-    this.MODIFY_PROJECT,
-    this.CLOSE_PROJECT,
-    this.DELETE_PROJECT
-  ];
+  actionMenuOptions: any = [];
 
 
   tableMaxHeight: number;
@@ -54,12 +51,20 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private snackBarService: SnackBarService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private msalService: MsalService
   ) { }
 
   @HostListener('window:resize')
   sizeChange() {
     this.calculateTableHeight();
+  }
+
+  private getActionMenuOptions(){
+    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    accountRoles.forEach(accountRole =>{
+      permissions[accountRole].tables.projectOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
+    })
   }
 
   private calculateTableHeight() {
@@ -77,6 +82,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.projectService.setSelectedSubAccount(this.currentCustomer.id);
     this.fetchProjects();
+    this.getActionMenuOptions();
   }
 
   goToDashboard(): void {

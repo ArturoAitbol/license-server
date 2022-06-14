@@ -18,6 +18,8 @@ import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccou
 import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
 import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.component";
 import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
+import { MsalService } from '@azure/msal-angular';
+import { permissions } from '../helpers/role-permissions';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,18 +39,10 @@ export class DashboardComponent implements OnInit {
   readonly VIEW_PROJECTS: string = 'View Projects List';
   readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
   readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
-  readonly MODIFY_LICENSE: string = 'Edit';
+  readonly MODIFY_ACCOUNT: string = 'Edit';
   readonly DELETE_ACCOUNT: string = 'Delete';
 
-  actionMenuOptions: any = [
-    this.VIEW_LICENSES,
-    this.VIEW_CONSUMPTION,
-    this.VIEW_PROJECTS,
-    this.VIEW_ADMIN_EMAILS,
-    this.VIEW_SUBACC_ADMIN_EMAILS,
-    this.MODIFY_LICENSE,
-    this.DELETE_ACCOUNT
-  ];
+  actionMenuOptions: any = [];
   constructor(
     private customerService: CustomerService,
     private subaccountService: SubAccountService,
@@ -56,12 +50,20 @@ export class DashboardComponent implements OnInit {
     private dialogService: DialogService,
     public dialog: MatDialog,
     private snackBarService: SnackBarService,
-    private router: Router
+    private router: Router,
+    private msalService: MsalService
   ) { }
 
   @HostListener('window:resize')
   sizeChange() {
     this.calculateTableHeight();
+  }
+
+  private getActionMenuOptions(){
+    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    accountRoles.forEach(accountRole =>{
+      permissions[accountRole].tables.customerOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
+    })
   }
 
   private calculateTableHeight() {
@@ -79,6 +81,7 @@ export class DashboardComponent implements OnInit {
     this.initColumns();
     this.fetchDataToDisplay();
     localStorage.removeItem(Constants.PROJECT);
+    this.getActionMenuOptions();
   }
   /**
    * initailize the columns settings
@@ -172,7 +175,7 @@ export class DashboardComponent implements OnInit {
         });
         break;
       case 'modify':
-      case this.MODIFY_LICENSE:
+      case this.MODIFY_ACCOUNT:
         dialogRef = this.dialog.open(ModifyCustomerAccountComponent, {
           width: 'auto',
           data: selectedItemData,
@@ -291,7 +294,7 @@ export class DashboardComponent implements OnInit {
       case this.VIEW_SUBACC_ADMIN_EMAILS:
         this.openDialog(object.selectedOption, object.selectedRow);
         break;
-      case this.MODIFY_LICENSE:
+      case this.MODIFY_ACCOUNT:
         this.openDialog(object.selectedOption, object.selectedRow);
         break;
       case this.DELETE_ACCOUNT:
