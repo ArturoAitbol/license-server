@@ -134,7 +134,6 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   private modifyConsumption(requestsArray: any[]): void {
     const licenseConsumptionObject: any = {
       consumptionId: this.data.id,
-      subaccountId: this.currentCustomer.id,
       projectId: this.updateForm.value.project.id,
       deviceId: this.updateForm.value.device.id,
       consumptionDate: this.data.consumptionDate,
