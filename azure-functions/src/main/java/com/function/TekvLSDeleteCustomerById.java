@@ -42,7 +42,7 @@ public class TekvLSDeleteCustomerById
 		
 		String sql;
 		if (forceDelete.equalsIgnoreCase("false")) {
-			sql = "update customer where id='" + id +"' set tombstone=true;";
+			sql = "update customer set tombstone=true where id='" + id +"';";
 		} else {
 			sql = "delete from customer where id='" + id +"';";
 		}

@@ -220,14 +220,28 @@ export class DashboardComponent implements OnInit {
       })
       .subscribe((confirmed) => {
         if (confirmed) {
-          console.debug('The user confirmed the action: ', this.data[index]);
-          const { id } = this.data[index];
-          this.customerService.deleteCustomer(id).subscribe((res: any) => {
-            if (res) {
-              console.log('deleted customer', res);
-              this.snackBarService.openSnackBar('Customer deleted successfully!', '');
-            }
-          });
+          console.debug('The user confirmed the action: ', this.subaccountList[index]);
+          const { id , customerId } = this.subaccountList[index];
+          let numberOfSubaccounts = this.subaccountList.filter(subaccount => subaccount.customerId === customerId).length;
+          if (numberOfSubaccounts > 1) {
+            this.subaccountService.deleteSubAccount(id).subscribe((res: any) => {
+              if (!res?.error) {
+                this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
+                this.fetchDataToDisplay();
+              } else {
+                this.snackBarService.openSnackBar('Error Subaccount could not be deleted !', '');
+              }
+            })
+          } else {
+            this.customerService.deleteCustomer(customerId, true).subscribe((res: any) => {
+              if (!res?.error) {
+                this.snackBarService.openSnackBar('Customer deleted successfully!', '');
+                this.fetchDataToDisplay();
+              } else {
+                this.snackBarService.openSnackBar('Error customer could not be deleted !', '');
+              }
+            })
+          }
         }
       });
   }

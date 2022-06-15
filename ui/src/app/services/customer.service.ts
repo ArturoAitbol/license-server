@@ -68,11 +68,14 @@ export class CustomerService {
 
   /**
    * delete selected customer by customerId
-   * @param customerId: string 
+   * @param customerId: string
+   * @param force: boolean
    * @returns: Observable
    */
-  public deleteCustomer(customerId: string) {
-    return this.httpClient.delete(`${this.API_URL}/${customerId}`);
+  public deleteCustomer(customerId: string, force= false) {
+    let params = new HttpParams();
+    params = params.append('force', force);
+    return this.httpClient.delete(`${this.API_URL}/${customerId}`, { params });
   }
 
 
