@@ -85,11 +85,16 @@ public class TekvLSCreateLicenseUsageDetail
 				try {
 					String paramValue = jobj.getString(mandatoryParams[i][0]);
 					sqlPart1 += mandatoryParams[i][1] + ",";
-					sqlPart2 += "'" + paramValue + "',";
+					if(i==1 && paramValue==""){
+						sqlPart2+=null+",";
+					}
+					else
+						sqlPart2 += "'" + paramValue + "',";
 				} 
 				catch (Exception e) {
 					// Parameter not found
 					context.getLogger().info("Caught exception: " + e.getMessage());
+					context.getLogger().info("Missing mandatory parameter: " + mandatoryParams[i][0]);
 					JSONObject json = new JSONObject();
 					json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
 					return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
