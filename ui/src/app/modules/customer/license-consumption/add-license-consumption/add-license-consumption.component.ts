@@ -12,7 +12,6 @@ import { LicenseConsumptionService } from 'src/app/services/license-consumption.
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from '../../projects/add-project/add-project.component';
-import { MatDatepicker } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-add-license-consumption',
@@ -23,12 +22,15 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   updateProjects : EventEmitter<any> = new EventEmitter<any>();
 
-  devices: Device[] = [];
+  allDevices: Device[] = [];
   projects: Project[] = [];
   vendors: any[] = [];
+  supportVendors: any[] = [];
   models: any = [];
-  usedDevices: any = [];
-  days: any = [
+  supportModels: any = [];
+  devicesUsed: any = [];
+  supportUsed: any = [];
+  deviceDays: any = [
     { name: "Mon", used: false },
     { name: "Tue", used: false },
     { name: "Wed", used: false },
@@ -37,11 +39,20 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: "Sat", used: false },
     { name: "Sun", used: false },
   ];
-
-
+  supportDays: any = [
+    { name: "Mon", used: false },
+    { name: "Tue", used: false },
+    { name: "Wed", used: false },
+    { name: "Thu", used: false },
+    { name: "Fri", used: false },
+    { name: "Sat", used: false },
+    { name: "Sun", used: false },
+  ];
   filteredProjects: Observable<any[]>;
   filteredVendors: Observable<any[]>;
   filteredModels: Observable<any[]>;
+  filteredSupportVendors: Observable<any[]>;
+  filteredSupportModels: Observable<any[]>;
   startDate: any;
   endDate: any;
   endWeek: string;
@@ -50,6 +61,10 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     project: ['', [Validators.required, this.RequireMatch]]
   });
   addDeviceForm = this.formBuilder.group({
+    vendor: ['', [this.RequireMatch]],
+    product: ['', [this.RequireMatch]]
+  });
+  addSupportForm = this.formBuilder.group({
     vendor: ['', [this.RequireMatch]],
     product: ['', [this.RequireMatch]]
   });
@@ -76,11 +91,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.endDate = new Date(this.data.renewalDate + " 00:00:00");
     }
     this.fetchData();
-    this.filteredModels = this.addDeviceForm.controls['product'].valueChanges.pipe(
-      startWith(''),
-      map(value => (typeof value === 'string' ? value : value ? value.product : '')),
-      map(product => (product ? this.filterModels(product) : this.models.slice()))
-    );
   }
 
   /**
@@ -98,36 +108,64 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       }, {});
 
       /*Devices list*/
-      this.devices = resDataObject['devices'];
+      this.allDevices = resDataObject['devices'];
       let vendorsHash: any = {};
-      this.vendors = this.devices.filter(device => {
-        if (device.type != "Phone" && !vendorsHash[device.vendor]) {
+      this.vendors = this.allDevices.filter(device => {
+        if (device.type != "Phone" && !vendorsHash[device.vendor] && !device.supportType) {
           vendorsHash[device.vendor] = true;
           return true;
         }
         return false;
       });
-      this.filteredVendors = this.addDeviceForm.controls['vendor'].valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value : value ? value.vendor : '')),
-        map(vendor => {
-          if (vendor === '') {
-            this.models = [];
-            this.addDeviceForm.controls['product'].disable();
-            this.addDeviceForm.patchValue({ product: '' });
-          }
-          return vendor ? this.filterVendors(vendor) : this.vendors.slice();
-        })
-      );
-
+      this.supportVendors = this.allDevices.filter(device => {
+        if (device.type != "Phone" && !vendorsHash[device.vendor] && device.supportType) {
+          vendorsHash[device.vendor] = true;
+          return true;
+        }
+        return false;
+      });
       /*Projects List*/
       this.projects = resDataObject['projects'];
       this.filteredProjects = this.addLicenseConsumptionForm.controls['project'].valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value : value.name)),
-        map(name => (name ? this.filterProjects(name) : this.projects.slice())),
+          startWith(''),
+          map(value => (typeof value === 'string' ? value : value.name)),
+          map(name => (name ? this.filterProjects(name) : this.projects.slice())),
       );
-
+      this.filteredVendors = this.addDeviceForm.controls['vendor'].valueChanges.pipe(
+          startWith(''),
+          map(value => (typeof value === 'string' ? value : value ? value.vendor : '')),
+          map(vendor => {
+            console.log(vendor);
+            if (vendor === '') {
+              this.models = [];
+              this.addDeviceForm.controls['product'].disable();
+              this.addDeviceForm.patchValue({ product: '' });
+            }
+            return vendor ? this.filterVendors(vendor) : this.vendors.slice();
+          })
+      );
+      this.filteredModels = this.addDeviceForm.controls['product'].valueChanges.pipe(
+          startWith(''),
+          map(value => (typeof value === 'string' ? value : value ? value.product : '')),
+          map(product => (product ? this.filterModels(product) : this.models.slice()))
+      );
+      this.filteredSupportVendors = this.addSupportForm.controls['vendor'].valueChanges.pipe(
+          startWith(''),
+          map(value => (typeof value === 'string' ? value : value ? value.vendor : '')),
+          map(vendor => {
+            if (vendor === '') {
+              this.models = [];
+              this.addSupportForm.controls['product'].disable();
+              this.addSupportForm.patchValue({ product: '' });
+            }
+            return vendor ? this.filterVendors(vendor, true) : this.supportVendors.slice();
+          })
+      );
+      this.filteredSupportModels = this.addSupportForm.controls['product'].valueChanges.pipe(
+          startWith(''),
+          map(value => (typeof value === 'string' ? value : value ? value.product : '')),
+          map(product => (product ? this.filterModels(product, true) : this.supportModels.slice()))
+      );
       this.isDataLoading = false;
     });
   }
@@ -153,6 +191,16 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.addDeviceForm.controls['product'].enable()
   }
 
+  /**
+   * trigger when user select/change vendor dropdown
+   * @param value: string
+   */
+  onChangeSupportVendor(value: any): void {
+    this.filterSupportVendorDevices(value.vendor);
+    this.addSupportForm.patchValue({ product: '' });
+    this.addSupportForm.controls['product'].enable()
+  }
+
   onAddProject(): void {
     const dialogRef = this.dialog.open(AddProjectComponent, {
       width: 'auto',
@@ -168,9 +216,24 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   private filterVendorDevices(value: string): void {
     this.models = [];
     if (value) {
-      this.devices.forEach((device: any) => {
+      this.allDevices.forEach((device: any) => {
         if (device.type != "Phone" && device.vendor == value) {
           this.models.push({
+            id: device.id,
+            vendor: value,
+            product: device.version ? device.product + " - v." + device.version : device.product
+          });
+        }
+      });
+    }
+  }
+
+  private filterSupportVendorDevices(value: string): void {
+    this.supportModels = [];
+    if (value) {
+      this.allDevices.forEach((device: any) => {
+        if (device.type != "Phone" && device.vendor == value && device.supportType) {
+          this.supportModels.push({
             id: device.id,
             vendor: value,
             product: device.version ? device.product + " - v." + device.version : device.product
@@ -196,9 +259,16 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   setChecked(value: boolean, daysIndex: number, deviceIndex?: number) {
     if (deviceIndex !== null && deviceIndex !== undefined)
-      this.usedDevices[deviceIndex].usageDays[daysIndex] = value;
+      this.devicesUsed[deviceIndex].usageDays[daysIndex] = value;
     else
-      this.days[daysIndex].used = value;
+      this.deviceDays[daysIndex].used = value;
+  }
+
+  setSupportDay(value: boolean, daysIndex: number, deviceIndex?: number) {
+    if (deviceIndex !== null && deviceIndex !== undefined)
+      this.supportUsed[deviceIndex].usageDays[daysIndex] = value;
+    else
+      this.supportDays[daysIndex].used = value;
   }
 
   submit(): void {
@@ -215,7 +285,17 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       usageDays: []
     };
     this.addDevice();
-    this.usedDevices.forEach((device: any) => {
+    this.addSupport();
+    this.devicesUsed.forEach((device: any) => {
+      let newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
+      newConsumptionObject.deviceId = device.id;
+      for (let i = 0; i < device.days.length; i++) {
+        if (device.days[i].used)
+          newConsumptionObject.usageDays.push(i);
+      }
+      consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
+    });
+    this.supportUsed.forEach((device: any) => {
       let newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
       newConsumptionObject.deviceId = device.id;
       for (let i = 0; i < device.days.length; i++) {
@@ -245,11 +325,11 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   addDevice(): void {
     let device: any = this.addDeviceForm.value.product;
     if (device) {
-      device.days = JSON.parse(JSON.stringify(this.days));
-      this.usedDevices.push(device);
+      device.days = JSON.parse(JSON.stringify(this.deviceDays));
+      this.devicesUsed.push(device);
       this.addDeviceForm.reset();
       // this.addDeviceForm.patchValue({ vendor: '', product: '' });
-      this.days = [
+      this.deviceDays = [
         { name: "Mon", used: false },
         { name: "Tue", used: false },
         { name: "Wed", used: false },
@@ -260,12 +340,35 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       ];
     }
   }
+
+  addSupport(): void {
+    let device: any = this.addSupportForm.value.product;
+    if (device) {
+      device.days = JSON.parse(JSON.stringify(this.supportDays));
+      this.supportUsed.push(device);
+      this.addSupportForm.reset();
+      this.supportDays = [
+        { name: "Mon", used: false },
+        { name: "Tue", used: false },
+        { name: "Wed", used: false },
+        { name: "Thu", used: false },
+        { name: "Fri", used: false },
+        { name: "Sat", used: false },
+        { name: "Sun", used: false },
+      ];
+    }
+  }
+
   /**
    * trigger when user deletes a device
    * @param index: number 
    */
   removeDevice(index: number): void {
-    this.usedDevices.splice(index, 1);
+    this.devicesUsed.splice(index, 1);
+  }
+
+  removeSupport(index: number): void {
+    this.supportUsed.splice(index, 1);
   }
 
   private filterProjects(value: string): Project[] {
@@ -273,14 +376,22 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     return this.projects.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
-  private filterVendors(value: string): any[] {
+  private filterVendors(value: string, support = false): any[] {
     const filterValue = value.toLowerCase();
-    return this.vendors.filter(option => option.vendor.toLowerCase().includes(filterValue));
+    if (!support) {
+      return this.vendors.filter(option => option.vendor.toLowerCase().includes(filterValue));
+    } else {
+      return this.supportVendors.filter(option => option.vendor.toLowerCase().includes(filterValue) && option.supportType);
+    }
   }
 
-  private filterModels(value: string): Device[] {
+  private filterModels(value: string, support = false): Device[] {
     const filterValue = value.toLowerCase();
-    return this.models.filter(option => option.product.toLowerCase().includes(filterValue));
+    if (!support) {
+      return this.models.filter(option => option.product.toLowerCase().includes(filterValue));
+    } else {
+      return this.supportModels.filter(option => option.product.toLowerCase().includes(filterValue) && option.supportType);
+    }
   }
 
   displayFnProject(item: any): string {
@@ -317,5 +428,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     // reset form here
     this.addLicenseConsumptionForm.reset();
     this.addDeviceForm.reset();
+    this.addSupportForm.reset();
   }
 }

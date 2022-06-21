@@ -49,3 +49,25 @@ mat-form-field {
   font-weight: 500;
   margin-right: 5px;
 }
+
+.flex-container-row {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.flex-container-row:before {
+  content: "";
+  border: 1px solid #d3d3d3;
+  align-self: stretch;
+}
+
+.device-container {
+  flex: 1;
+}
+
+.device-container--start {
+  order: -1;
+}
+
