@@ -1,0 +1,19 @@
+<div class="container">
+    <h1 mat-dialig-title>{{data?.title}}</h1>
+    <div class="flex-container">
+        <mat-dialog-content>
+            <h3>{{data?.message}}</h3>
+        </mat-dialog-content>
+    </div>
+    <mat-dialog-actions>
+        <button mat-raised-button [mat-dialog-close]="{confirm: false, deleteAllData: false}">
+            {{data?.cancelCaption}}
+        </button>
+        <button mat-raised-button color="primary" [mat-dialog-close]="{confirm: true, deleteAllData: false}">
+            {{data?.confirmCaption}}
+        </button>
+        <button *ngIf="data.canDeleteAllData" mat-raised-button color="warn" [mat-dialog-close]="{confirm: true, deleteAllData: true}">
+            {{data?.deleteAllDataCaption}}
+        </button>
+    </mat-dialog-actions>
+</div>
