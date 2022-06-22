@@ -63,6 +63,7 @@ public class TekvLSCreateDevice
 			{"version","version"}, 
 			{"type","type"},
 			{"granularity","granularity"}, 
+			{"supportType","support_type"}, 
 			{"tokensToConsume","tokens_to_consume"} 
 		};
 		// Build the sql query
@@ -81,6 +82,11 @@ public class TekvLSCreateDevice
 				json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
+		}
+		// add support type if present
+		if (jobj.has("supportType")) {
+			sqlPart1 += "support_type,";
+			sqlPart2 += jobj.getString("supportType") + ",";
 		}
 		// Remove the comma after the last parameter and build the SQL statement
 		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);

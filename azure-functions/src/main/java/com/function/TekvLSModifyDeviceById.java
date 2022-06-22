@@ -67,6 +67,7 @@ public class TekvLSModifyDeviceById
 			{"version","version"}, 
 			{"type","type"}, 
 			{"granularity","granularity"}, 
+			{"supportType","support_type"}, 
 			{"tokensToConsume","tokens_to_consume"}
 		};
 		// Build the sql query
