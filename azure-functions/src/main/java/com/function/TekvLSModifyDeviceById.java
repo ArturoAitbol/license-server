@@ -47,7 +47,7 @@ public class TekvLSModifyDeviceById
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
 		try {
@@ -57,7 +57,7 @@ public class TekvLSModifyDeviceById
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
 		// The expected parameters (and their coresponding column name in the database) 
@@ -111,13 +111,13 @@ public class TekvLSModifyDeviceById
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 	}
 }

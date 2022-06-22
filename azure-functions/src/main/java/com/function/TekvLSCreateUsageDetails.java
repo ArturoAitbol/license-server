@@ -44,7 +44,7 @@ public class TekvLSCreateUsageDetails
 		if (requestBody.isEmpty()) {
 			context.getLogger().info("error: request body is empty.");
 			json.put("error", "error: request body is empty.");
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
 		String sql;
@@ -71,7 +71,7 @@ public class TekvLSCreateUsageDetails
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -89,7 +89,7 @@ public class TekvLSCreateUsageDetails
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
