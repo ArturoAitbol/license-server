@@ -80,28 +80,32 @@ export class Utility {
      * @return: string
      */
     public static getColorCode(state: string) {
-        if (state) {
-            switch (state.toLowerCase()) {
-                case 'available':
-                case 'completed':
-                case 'registered':
-                case 'active':
-                case 'open':
-                    return '#0E8B18';
-                case 'offline':
-                case 'failed':
-                case 'unregistered':
-                case 'expired':
-                case 'closed':
-                    return '#CB3333';
-                case 'initiated':
-                case 'inprogress':
-                case 'unavailable':
-                case 'rebooting':
-                case 'inactive':
-                    return '#7694B7';
-                default:
-                    return 'red';
+        if (state !== undefined && state !== null) {
+            try {
+                switch (state.toLowerCase()) {
+                    case 'available':
+                    case 'completed':
+                    case 'registered':
+                    case 'active':
+                    case 'open':
+                        return '#0E8B18';
+                    case 'offline':
+                    case 'failed':
+                    case 'unregistered':
+                    case 'expired':
+                    case 'closed':
+                        return '#CB3333';
+                    case 'initiated':
+                    case 'inprogress':
+                    case 'unavailable':
+                    case 'rebooting':
+                    case 'inactive':
+                        return '#7694B7';
+                    default:
+                        return 'red';
+                }
+            } catch (e: any) {
+                return 'red';
             }
         }
     }
