@@ -62,8 +62,7 @@ public class TekvLSCreateDevice
 			{"product","product"}, 
 			{"version","version"}, 
 			{"type","type"},
-			{"granularity","granularity"}, 
-			{"supportType","support_type"}, 
+			{"granularity","granularity"},
 			{"tokensToConsume","tokens_to_consume"} 
 		};
 		// Build the sql query
