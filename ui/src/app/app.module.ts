@@ -25,6 +25,7 @@ import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { Constants } from './helpers/constants';
 import { SharedModule } from './modules/shared/shared.module';
 import { environment } from 'src/environments/environment';
+import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -36,7 +37,8 @@ import { environment } from 'src/environments/environment';
         ModifyCustomerAccountComponent,
         ConfirmComponent,
         AdminEmailsComponent,
-        SubaccountAdminEmailsComponent
+        SubaccountAdminEmailsComponent,
+        NoPermissionsPageComponent
     ],
     imports: [
         AppRoutingModule,

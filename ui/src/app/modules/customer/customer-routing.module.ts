@@ -4,19 +4,23 @@ import { RouterModule, Routes } from '@angular/router';
 import { LicenseConsumption } from './license-consumption/license-consumption.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { LicensesComponent } from './licenses/licenses.component';
+import { RoleGuard } from 'src/app/security/role.guard';
 
 const routes: Routes = [
   {
     path: 'consumption',
-    component: LicenseConsumption
+    component: LicenseConsumption,
+    canActivate:[RoleGuard]
   },
   {
     path: 'projects',
-    component: ProjectsComponent
+    component: ProjectsComponent,
+    canActivate:[RoleGuard]
   },
   {
     path: 'licenses',
-    component: LicensesComponent
+    component: LicensesComponent,
+    canActivate:[RoleGuard]
   }
 ];
 

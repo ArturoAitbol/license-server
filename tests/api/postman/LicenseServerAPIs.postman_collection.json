@@ -1,28 +1,28 @@
 {
 	"info": {
-		"_postman_id": "1e51ad15-0733-4b7f-8501-9c9dc451467b",
+		"_postman_id": "a590b930-5eb3-42ed-8ab9-16a09e1799f0",
 		"name": "LicenseServerAPIs",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8624003"
 	},
 	"item": [
 		{
-			"name": "customers",
+			"name": "devices",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status test\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});"
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"deviceId\", pm.response.json().id);"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"auth": {
 					"type": "oauth2",
@@ -34,11 +34,62 @@
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"type\": \"OTHER\",\r\n    \"granularity\": \"week\",\r\n    \"tokensToConsume\": \"1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/devices",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"customerId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"adminEmails\": [\r\n        \"{{name}}@test.com\"\r\n    ],\r\n    \"testCustomer\": \"true\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -56,6 +107,1345 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "adminEmail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"adminEmail\": \"{{name}}@adminemail.com\",\r\n    \"customerId\": \"{{customerId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/customerAdminEmails",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"customerAdminEmails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subaccounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"subaccountId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmails\": [\"{{name}}@test.com\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/subaccounts",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subaccountAdminEmail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"adminEmail\": \"{{name}}@subadmin.com\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/subaccountAdminEmails",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccountAdminEmails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"projectId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"name\": \"{{name}}\",\r\n    \"code\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/projects",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"projects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"licenseId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokens\": \"55\",\r\n    \"deviceAccessLimit\": \"5000\",\r\n    \"status\": \"Active\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/licenses",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenseUsageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"licenseUsageId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var startWeek = new Date();\r",
+							"var day = startWeek.getDay() || 7;\r",
+							"if( day !== 1 )\r",
+							"    startWeek.setUTCHours(-24 * (day - 1));\r",
+							"startWeek.setUTCHours(0,0,0,0);\r",
+							"\r",
+							"pm.variables.set(\"startWeek\", startWeek.toISOString().slice(0,10));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"projectId\": \"{{projectId}}\",\r\n    \"deviceId\": \"{{deviceId}}\",\r\n    \"consumptionDate\": \"{{startWeek}}\",\r\n    \"usageType\": \"Configuration\",\r\n    \"usageDays\": [0,4]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/licenseUsageDetails",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenseUsageDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}Modified\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/customers/{{customerId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"customers",
+						"{{customerId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/device/{{deviceId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"device",
+						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"packageType\": \"Small\",\r\n    \"tokens\": \"150\",\r\n    \"deviceAccessLimit\": \"5000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/licenses/{{licenseId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenses",
+						"{{licenseId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenseUsageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"deviceId\": {{deviceId}},\r\n    \"usageType\": \"AutomationPlatform\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/licenseUsageDetails/{{licenseUsageId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenseUsageDetails",
+						"{{licenseUsageId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}Modified\",\r\n    \"code\": \"{{name}}Modified\",\r\n    \"status\": \"Closed\",\r\n    \"closeDate\": \"{{$isoTimestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/projects/{{projectId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"projects",
+						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subaccounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}Modified\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/subaccounts/{{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccounts",
+						"{{subaccountId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"bundles\");\r",
+							"    pm.expect(pm.response.json().bundles).to.be.an(\"array\")\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/bundles",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"customers\");\r",
+							"    pm.expect(pm.response.json().customers).to.be.an(\"array\")\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/customers",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"customers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"devices\");\r",
+							"    pm.expect(pm.response.json().devices).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/devices",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"licenses\");\r",
+							"    pm.expect(pm.response.json().licenses).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/licenses",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenseUsageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"tokenConsumption\");\r",
+							"    pm.response.to.have.jsonBody(\"usage\");\r",
+							"    pm.response.to.have.jsonBody(\"configurationTokens\");\r",
+							"    pm.expect(pm.response.json().usage).to.be.an(\"array\")\r",
+							"    pm.expect(pm.response.json().configurationTokens).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/licenseUsageDetails?subaccount-id={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenseUsageDetails"
+					],
+					"query": [
+						{
+							"key": "subaccount-id",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"projects\");\r",
+							"    pm.expect(pm.response.json().projects).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/projects?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"projects"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subaccounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"subaccounts\");\r",
+							"    pm.expect(pm.response.json().subaccounts).to.be.an(\"array\")\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/subaccounts",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "usageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"usageDays\");\r",
+							"    pm.expect(pm.response.json().usageDays).to.be.an(\"array\")\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/usageDetails/{{licenseUsageId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"usageDetails",
+						"{{licenseUsageId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "adminEmail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/customerAdminEmails/{{name}}@adminemail.com",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"customerAdminEmails",
+						"{{name}}@adminemail.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subaccountAdminEmail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/subaccountAdminEmails/{{name}}@subadmin.com",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccountAdminEmails",
+						"{{name}}@subadmin.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenseUsageDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/licenseUsageDetails/{{licenseUsageId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenseUsageDetails",
+						"{{licenseUsageId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/licenses/{{licenseId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenses",
+						"{{licenseId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/devices/{{deviceId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices",
+						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/projects/{{projectId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"projects",
+						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subaccounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/subaccounts/{{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccounts",
+						"{{subaccountId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/customers/{{customerId}}?force=true",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"customers",
+						"{{customerId}}"
+					],
+					"query": [
+						{
+							"key": "force",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Status test\", function () {",
+					"    pm.response.to.have.status(200);",
+					"    pm.response.to.not.have.jsonBody(\"error\");",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "name",
+			"value": "CICDTest{{$timestamp}}",
+			"type": "string"
+		},
+		{
+			"key": "deviceId",
+			"value": ""
+		},
+		{
+			"key": "customerId",
+			"value": ""
+		},
+		{
+			"key": "subaccountId",
+			"value": ""
+		},
+		{
+			"key": "projectId",
+			"value": ""
+		},
+		{
+			"key": "licenseId",
+			"value": ""
+		},
+		{
+			"key": "licenseUsageId",
+			"value": ""
 		}
 	]
 }

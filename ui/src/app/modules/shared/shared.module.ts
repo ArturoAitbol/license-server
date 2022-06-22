@@ -4,6 +4,8 @@ import { NaPipe } from 'src/app/pipes/na.pipe';
 import { DataTableComponent } from 'src/app/generics/data-table/data-table.component';
 import { MaterialModule } from '../material/material.module';
 import { DataPropertyGetterPipe } from 'src/app/pipes/data-property-getter.pipe';
+import { CheckAccessForDirective } from 'src/app/directives/check-access-for.directive';
+import { DeleteCustomerModal } from "../../dialogs/delete-customer/delete-customer-modal.component";
 
 
 
@@ -11,7 +13,9 @@ import { DataPropertyGetterPipe } from 'src/app/pipes/data-property-getter.pipe'
   declarations: [
     NaPipe,
     DataTableComponent,
-    DataPropertyGetterPipe
+    DataPropertyGetterPipe,
+    CheckAccessForDirective,
+    DeleteCustomerModal,
   ],
   imports: [
     CommonModule,
@@ -21,7 +25,8 @@ import { DataPropertyGetterPipe } from 'src/app/pipes/data-property-getter.pipe'
     NaPipe,
     DataTableComponent,
     DataPropertyGetterPipe,
-    MaterialModule
+    MaterialModule,
+    CheckAccessForDirective
   ]
 })
 export class SharedModule { }

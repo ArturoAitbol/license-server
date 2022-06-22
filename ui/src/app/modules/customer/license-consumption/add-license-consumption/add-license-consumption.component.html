@@ -40,7 +40,7 @@
                         </mat-autocomplete>
                         <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>
                     </mat-form-field>
-                    <div class="col-3 no-padding" style="float: right;">
+                    <div *checkAccessFor="'addProject'" class="col-3 no-padding" style="float: right;">
                         <button mat-stroked-button type="button" class="plus-button" title="New Project"
                             (click)="onAddProject()">
                             <mat-icon>add</mat-icon>

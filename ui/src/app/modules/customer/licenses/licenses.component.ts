@@ -10,6 +10,8 @@ import { DialogService } from 'src/app/services/dialog.service';
 import { AddLicenseComponent } from './add-license/add-license.component';
 import { ModifyLicenseComponent } from './modify-license/modify-license.component';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { MsalService } from '@azure/msal-angular';
+import { permissions } from 'src/app/helpers/role-permissions';
 
 @Component({
   selector: 'app-licenses',
@@ -35,10 +37,7 @@ export class LicensesComponent implements OnInit {
 
   readonly MODIFY_LICENSE: string = 'Edit';
   readonly DELETE_LICENSE: string = 'Delete';
-  actionMenuOptions: any = [
-    this.MODIFY_LICENSE,
-    this.DELETE_LICENSE
-  ];
+  actionMenuOptions: any = [];
 
   constructor(
     private customerSerivce: CustomerService,
@@ -46,12 +45,20 @@ export class LicensesComponent implements OnInit {
     private dialogService: DialogService,
     private snackBarService: SnackBarService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private msalService: MsalService
   ) { }
 
   @HostListener('window:resize')
   sizeChange() {
     this.calculateTableHeight();
+  }
+
+  private getActionMenuOptions(){
+    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    accountRoles.forEach(accountRole =>{
+      permissions[accountRole].tables.licenseOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
+    })
   }
 
   private calculateTableHeight() {
@@ -68,6 +75,7 @@ export class LicensesComponent implements OnInit {
     this.calculateTableHeight();
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
     this.fetchLicenses();
+    this.getActionMenuOptions();
   }
 
   goToDashboard(): void {

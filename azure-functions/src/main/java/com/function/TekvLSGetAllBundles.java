@@ -37,11 +37,15 @@ public class TekvLSGetAllBundles {
 		final ExecutionContext context) 
    {
 		context.getLogger().info("Entering TekvLSGetAllBundles Azure function");
-		
-		// Build SQL statement
-		String sql = "select * from bundle";
+	   String name = request.getQueryParameters().getOrDefault("name", "");
+
+	   // Build SQL statement
+		String sql = "select * from bundle ";
 		if (!id.equals("EMPTY"))
 			sql += "where id='" + id +"'";
+		else if(!name.isEmpty()){
+			sql += "where name='" + name + "'";
+		}
 		sql += ";";
 		
 		// Connect to the database

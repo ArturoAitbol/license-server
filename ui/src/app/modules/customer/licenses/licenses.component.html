@@ -9,7 +9,7 @@
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle value="add-new-license" (click)="onNewLicense()">Add tekVizion 360 Package
+                    <mat-button-toggle *checkAccessFor="'addLicense'" value="add-new-license" (click)="onNewLicense()">Add tekVizion 360 Package
                     </mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
@@ -22,7 +22,7 @@
             <app-data-table [tableData]="licenses" [tableColumns]="displayedColumns" [isFilterable]="false"
                 [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                 [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
-                [rowActionIcon]="'more_vert'" (rowAction)="rowAction($event)" [actionMenuList]="actionMenuOptions">
+                [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'" (rowAction)="rowAction($event)" [actionMenuList]="actionMenuOptions">
             </app-data-table>
         </div>
     </section>
