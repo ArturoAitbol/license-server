@@ -74,8 +74,7 @@ public class TekvLSModifyLicenseUsageById
 
 			// The expected parameters (and their coresponding column name in the database) 
 			String[][] optionalParams = {
-				{"subaccountId","subaccount_id"}, 
-				{"projectId","project_id"}, 
+				{"projectId","project_id"},
 				{"deviceId","device_id"}, 
 				{"consumptionDate","consumption_date"},
 				{"usageType","usage_type"}

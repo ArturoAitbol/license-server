@@ -38,8 +38,10 @@ export class SubaccountAdminEmailsComponent implements OnInit {
       this.isDataLoading = true;
       this.adminEmailsForm.patchValue(this.data);
       this.previousFormValue = {...this.adminEmailsForm};
-      this.adminEmails = this.data.subaccountAdminEmails;
-      this.isDataLoading = false;
+      this.subAccountService.getSubAccountDetails(this.data.id).subscribe((res: any) => {
+        this.adminEmails = res.subaccounts[0]?.subaccountAdminEmails;
+        this.isDataLoading = false
+      })
     }
   }
 
