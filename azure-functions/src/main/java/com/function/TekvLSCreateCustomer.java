@@ -82,14 +82,19 @@ public class TekvLSCreateCustomer
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
+
+		//Optional parameters
 		if (jobj.has("distributorId")){
-			sqlPart1 += "distributor_id";
-			sqlPart2 += "'" + jobj.getString("distributorId") + "'";
-		} else {
-			// Remove the comma after the last parameter and build the SQL statement
-			sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-			sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
+			sqlPart1 += "distributor_id,";
+			sqlPart2 += "'" + jobj.getString("distributorId") + "',";
 		}
+		if (jobj.has("customerId")) {
+			sqlPart1 += "id,";
+			sqlPart2 += "'" + jobj.getString("customerId") + "',";
+		}
+		// Remove the comma after the last parameter and build the SQL statement
+		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
+		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
 		String sql = "insert into customer (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
 		if (!jobj.has("adminEmails"))  {
