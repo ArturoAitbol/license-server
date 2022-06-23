@@ -58,7 +58,7 @@ public class TekvLSGetAllProjects {
 		} else {
 			sql += " where id='" + id +"'";
 		}
-		sql += "order by open_date desc, code, name;";
+		sql += " order by open_date desc, code, name;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -67,11 +67,8 @@ public class TekvLSGetAllProjects {
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
-			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
-			// Retrive all projects. TODO: pagination
-			// sql = "select * from project;";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of projects
