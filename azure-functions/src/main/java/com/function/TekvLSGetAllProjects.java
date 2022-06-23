@@ -37,6 +37,7 @@ public class TekvLSGetAllProjects {
 		final ExecutionContext context) 
    {
 		context.getLogger().info("Entering TekvLSGetAllProjects Azure function");
+		JSONObject json = new JSONObject();
 
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
@@ -50,6 +51,9 @@ public class TekvLSGetAllProjects {
 				sql += " where subaccount_id='" + subaccountId + "'";
 				if (!status.isEmpty())
 					sql += " and status='" + status + "'";
+			} else {
+				json.put("error", "Missing mandatory parameter: subaccount ID");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		} else {
 			sql += " where id='" + id +"'";
@@ -71,7 +75,6 @@ public class TekvLSGetAllProjects {
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of projects
-			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
 			String closeDate;
 			while (rs.next()) {
@@ -91,15 +94,15 @@ public class TekvLSGetAllProjects {
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
+			json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
+			json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }
