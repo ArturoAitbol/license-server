@@ -6,7 +6,9 @@
                 <mat-spinner *ngIf="isDataLoading"></mat-spinner>
             </div>
             <mat-dialog-content>
-                    <mat-form-field appearance="outline" class="simple-hidden">
+                <div class="flex-container" style="align-items: center">
+                    <div style="width: 50vw">
+                        <mat-form-field appearance="outline" class="simple-hidden">
                         <mat-label>Consumption Week</mat-label>
                         <input #startWeek required matInput [matDatepicker]="picker" [readonly]="true" 
                         (dateChange)="pickStartWeek($event.value)" formControlName="startWeek">
@@ -23,79 +25,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <mat-form-field appearance="outline">
-                        <mat-label>Consumption Week</mat-label>
-                        <input #startWeek required matInput [matDatepicker]="picker" [min]="startDate" [max]="endDate"  
-                        (dateChange)="pickStartWeek($event.value)" formControlName="startWeek">
-                        <mat-hint *ngIf="!startWeek.value">Click the calendar button</mat-hint>
-                        <mat-hint *ngIf="startWeek.value">{{startWeek.value}} - {{endWeek}}</mat-hint>
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
-                    </mat-form-field> -->
-                    <!-- <mat-form-field appearance="outline">
-                        <mat-label>Consumption Week</mat-label>
-                        <mat-date-range-input [rangePicker]="picker" [min]="startDate" [max]="endDate" required>
-                            <input #startWeek matStartDate placeholder="Start date" formControlName="startWeek"
-                                (dateChange)="pickStartWeek($event.value, picker)">
-                            <input matEndDate placeholder="End date" formControlName="endWeek">
-                        </mat-date-range-input>
-                        <mat-hint *ngIf="!startWeek.value">Click the calendar button</mat-hint>
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-date-range-picker #picker></mat-date-range-picker>
-                    </mat-form-field> -->
-                <div>
-                    <mat-form-field class="col-9 no-padding" appearance="outline">
-                        <mat-label>Project</mat-label>
-                        <input type="text" placeholder="Select a project" aria-label="Project" matInput
-                            formControlName="project" [matAutocomplete]="projectsList">
-                        <mat-autocomplete #projectsList="matAutocomplete" [displayWith]="displayFnProject">
-                            <mat-option *ngFor="let item of filteredProjects | async" [value]="item">
-                                {{item.name}}
-                            </mat-option>
-                        </mat-autocomplete>
-                        <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>
-                    </mat-form-field>
-                    <div *checkAccessFor="'addProject'" class="col-3 no-padding" style="float: right;">
-                        <button mat-stroked-button type="button" class="plus-button" title="New Project"
-                            (click)="onAddProject()">
-                            <mat-icon>add</mat-icon>
-                        </button>
-                    </div>
-                </div>
-                <h2>Devices Used</h2>
-                <div class="device-info" *ngFor="let item of usedDevices; let deviceIndex = index">
-                    <button mat-icon-button color="primary" title="Delete Device Usage" style="float: right;"
-                        (click)="removeDevice(deviceIndex)">
-                        <mat-icon>clear</mat-icon>
-                    </button>
-                    <label class="subtitle">Vendor:</label>
-                    <label>{{item.vendor}}</label>
-                    <br>
-                    <label class="subtitle">Device:</label>
-                    <label>{{item.product}}</label>
-                    <div>
-                        <section>
-                            <mat-checkbox class="checkbox-margin" *ngFor="let day of item.days; let daysIndex = index"
-                                color="primary" [checked]="day.used"
-                                (change)="setChecked($event.checked, daysIndex, deviceIndex)">
-                                {{day.name}} </mat-checkbox>
-                        </section>
-                    </div>
-                </div>
-                <form [formGroup]="addDeviceForm">
-                    <div>
-                <div class="flex-container" style="align-items: center">
-                    <div style="width: 50vw">
-                        <mat-form-field appearance="outline">
-                            <mat-label>Consumption Week</mat-label>
-                            <input #startWeek required matInput [matDatepicker]="picker" [min]="startDate"
-                                   [max]="endDate"
-                                   (dateChange)="pickStartWeek($event.value)" formControlName="startWeek">
-                            <mat-hint *ngIf="!startWeek.value">Click the calendar button</mat-hint>
-                            <mat-hint *ngIf="startWeek.value">{{startWeek.value}} - {{endWeek}}</mat-hint>
-                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
-                        </mat-form-field>
                     </div>
                     <div style="width: 50vw">
                         <mat-form-field class="col-9 no-padding" appearance="outline">
