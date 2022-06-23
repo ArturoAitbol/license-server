@@ -46,10 +46,6 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String view = request.getQueryParameters().getOrDefault("view", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		String year = request.getQueryParameters().getOrDefault("year", "");
-		String month = request.getQueryParameters().getOrDefault("month", "");
-		String project = request.getQueryParameters().getOrDefault("project", "");
-		String type = request.getQueryParameters().getOrDefault("type", "");
 		String sqlCommonConditions = "l.subaccount_id = '" + subaccountId + "'";
 		if (!startDate.isEmpty() && !endDate.isEmpty())
 			sqlCommonConditions += " and l.consumption_date>='" + startDate + "' and l.consumption_date<='" + endDate + "'";
@@ -100,6 +96,12 @@ public class TekvLSGetAllLicenseUsageDetails {
 				} break;
 				default: {
 					// add special filters
+					String year = request.getQueryParameters().getOrDefault("year", "");
+					String month = request.getQueryParameters().getOrDefault("month", "");
+					String project = request.getQueryParameters().getOrDefault("project", "");
+					String type = request.getQueryParameters().getOrDefault("type", "");
+					String limit = request.getQueryParameters().getOrDefault("limit", "100");
+					String offset = request.getQueryParameters().getOrDefault("offset", "0");
 					if (view.isEmpty() && !year.isEmpty() && !month.isEmpty())
 						sqlCommonConditions += " and EXTRACT(MONTH FROM l.consumption_date) = " + month + " and EXTRACT(YEAR FROM l.consumption_date) = " + year;
 					if (!project.isEmpty())
@@ -116,7 +118,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 							" from device d, license_consumption l, usage_detail u " +
 							" where d.id=l.device_id and u.consumption_id = l.id and " + sqlCommonConditions +
 							" group by l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,d.vendor, d.product, d.version" +
-							" order by consumption_date desc;";
+							" order by consumption_date desc limit " + limit + " offset " + offset + ";";
 					context.getLogger().info("Execute SQL all statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
