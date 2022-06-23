@@ -14,4 +14,3 @@ export class Constants {
     // Logout time after inactivity in ms (1Hr x 60 min x 60 seg * 1000 ms
     public static readonly LOGOUT_TIME_MS = 1 * 60 * 60 * 60 * 1000;
 }
-

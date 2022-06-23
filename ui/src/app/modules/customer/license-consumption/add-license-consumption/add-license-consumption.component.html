@@ -6,117 +6,194 @@
                 <mat-spinner *ngIf="isDataLoading"></mat-spinner>
             </div>
             <mat-dialog-content>
-                <div>
-                    <mat-form-field appearance="outline">
+                <div class="flex-container" style="align-items: center">
+                    <div style="width: 50vw">
+                        <mat-form-field appearance="outline" class="simple-hidden">
                         <mat-label>Consumption Week</mat-label>
-                        <input #startWeek required matInput [matDatepicker]="picker" [min]="startDate" [max]="endDate"  
+                        <input #startWeek required matInput [matDatepicker]="picker" [readonly]="true" 
                         (dateChange)="pickStartWeek($event.value)" formControlName="startWeek">
-                        <mat-hint *ngIf="!startWeek.value">Click the calendar button</mat-hint>
-                        <mat-hint *ngIf="startWeek.value">{{startWeek.value}} - {{endWeek}}</mat-hint>
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
-                    <!-- <mat-form-field appearance="outline">
-                        <mat-label>Consumption Week</mat-label>
-                        <mat-date-range-input [rangePicker]="picker" [min]="startDate" [max]="endDate" required>
-                            <input #startWeek matStartDate placeholder="Start date" formControlName="startWeek"
-                                (dateChange)="pickStartWeek($event.value, picker)">
-                            <input matEndDate placeholder="End date" formControlName="endWeek">
-                        </mat-date-range-input>
-                        <mat-hint *ngIf="!startWeek.value">Click the calendar button</mat-hint>
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-date-range-picker #picker></mat-date-range-picker>
-                    </mat-form-field> -->
-                </div>
-                <div>
-                    <mat-form-field class="col-9 no-padding" appearance="outline">
-                        <mat-label>Project</mat-label>
-                        <input type="text" placeholder="Select a project" aria-label="Project" matInput
-                            formControlName="project" [matAutocomplete]="projectsList">
-                        <mat-autocomplete #projectsList="matAutocomplete" [displayWith]="displayFnProject">
-                            <mat-option *ngFor="let item of filteredProjects | async" [value]="item">
-                                {{item.name}}
-                            </mat-option>
-                        </mat-autocomplete>
-                        <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>
-                    </mat-form-field>
-                    <div *checkAccessFor="'addProject'" class="col-3 no-padding" style="float: right;">
-                        <button mat-stroked-button type="button" class="plus-button" title="New Project"
-                            (click)="onAddProject()">
-                            <mat-icon>add</mat-icon>
-                        </button>
+                    <div class="date-field container border border-dark rounded">
+                        <div class="row align-items-center">
+                            <div class="col-10 text-start aligns-items-center">
+                                <mat-hint *ngIf="!startWeek.value">Consumption Week</mat-hint>
+                                <mat-hint *ngIf="startWeek.value" (dateChange)="pickStartWeek($event.value)" style = "color:black;">{{startWeek.value}} - {{endWeek}}</mat-hint>
+                            </div>
+                            <div class="col-2 text-end">
+                                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <h2>Devices Used</h2>
-                <div class="device-info" *ngFor="let item of usedDevices; let deviceIndex = index">
-                    <button mat-icon-button color="primary" title="Delete Device Usage" style="float: right;"
-                        (click)="removeDevice(deviceIndex)">
-                        <mat-icon>clear</mat-icon>
-                    </button>
-                    <label class="subtitle">Vendor:</label>
-                    <label>{{item.vendor}}</label>
-                    <br>
-                    <label class="subtitle">Device:</label>
-                    <label>{{item.product}}</label>
-                    <div>
-                        <section>
-                            <mat-checkbox class="checkbox-margin" *ngFor="let day of item.days; let daysIndex = index"
-                                color="primary" [checked]="day.used"
-                                (change)="setChecked($event.checked, daysIndex, deviceIndex)">
-                                {{day.name}} </mat-checkbox>
-                        </section>
                     </div>
-                </div>
-                <form [formGroup]="addDeviceForm">
-                    <div>
-                        <mat-form-field appearance="outline">
-                            <mat-label>Vendor</mat-label>
-                            <input type="text" placeholder="Select a vendor" aria-label="Vendor" matInput
-                                formControlName="vendor" [matAutocomplete]="vendorsList">
-                            <mat-autocomplete #vendorsList="matAutocomplete" [displayWith]="displayFnVendor"
-                                (optionSelected)="onChangeVendor($event.option.value)">
-                                <mat-option *ngFor="let item of filteredVendors | async" [value]="item">
-                                    {{item.vendor}}
+                    <div style="width: 50vw">
+                        <mat-form-field class="col-9 no-padding" appearance="outline">
+                            <mat-label>Project</mat-label>
+                            <input type="text" placeholder="Select a project" aria-label="Project" matInput
+                                   formControlName="project" [matAutocomplete]="projectsList">
+                            <mat-autocomplete #projectsList="matAutocomplete" [displayWith]="displayFnProject">
+                                <mat-option *ngFor="let item of filteredProjects | async" [value]="item">
+                                    {{item.name}}
                                 </mat-option>
                             </mat-autocomplete>
-                            <mat-error *ngIf="isInvalid('vendor')">{{getErrorMessage()}}</mat-error>
+                            <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>
                         </mat-form-field>
+                        <div *checkAccessFor="'addProject'" class="col-3 no-padding" style="float: right;">
+                            <button mat-stroked-button type="button" class="plus-button" title="New Project"
+                                    (click)="onAddProject()">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <mat-form-field appearance="outline">
-                            <mat-label>Device</mat-label>
-                            <input type="text" placeholder="Select a device" aria-label="Device" matInput
-                                formControlName="product" [matAutocomplete]="devicesList">
-                            <mat-autocomplete #devicesList="matAutocomplete" [displayWith]="displayFnDevice">
-                                <mat-option *ngFor="let item of filteredModels | async" [value]="item">
-                                    {{item.product}}
-                                </mat-option>
-                            </mat-autocomplete>
-                            <mat-error *ngIf="isInvalid('product')">{{getErrorMessage()}}</mat-error>
-                            <mat-hint *ngIf="models.length === 0">Please select a Vendor first</mat-hint>
-                        </mat-form-field>
+                </div>
+                <div class="flex-container-row">
+                    <div class="device-container device-container--start">
+                        <h2>Devices Used</h2>
+                        <div class="device-info" *ngFor="let item of devicesUsed; let deviceIndex = index">
+                            <button mat-icon-button color="primary" title="Delete Device Usage" style="float: right;"
+                                    (click)="removeDevice(deviceIndex)">
+                                <mat-icon>clear</mat-icon>
+                            </button>
+                            <label class="subtitle">Vendor:</label>
+                            <label>{{item.vendor}}</label>
+                            <br>
+                            <label class="subtitle">Device:</label>
+                            <label>{{item.product}}</label>
+                            <div>
+                                <section>
+                                    <mat-checkbox class="checkbox-margin"
+                                                  *ngFor="let day of item.days; let daysIndex = index"
+                                                  color="primary" [checked]="day.used"
+                                                  (change)="setChecked($event.checked, daysIndex, deviceIndex)">
+                                        {{day.name}} </mat-checkbox>
+                                </section>
+                            </div>
+                        </div>
+                        <form [formGroup]="addDeviceForm">
+                            <div>
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Vendor</mat-label>
+                                    <input type="text" placeholder="Select a vendor" aria-label="Vendor" matInput
+                                           formControlName="vendor" [matAutocomplete]="vendorsList">
+                                    <mat-autocomplete #vendorsList="matAutocomplete" [displayWith]="displayFnVendor"
+                                                      (optionSelected)="onChangeVendor($event.option.value)">
+                                        <mat-option *ngFor="let item of filteredVendors | async" [value]="item">
+                                            {{item.vendor}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                    <mat-error *ngIf="isInvalid('vendor')">{{getErrorMessage()}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div>
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Device</mat-label>
+                                    <input type="text" placeholder="Select a device" aria-label="Device" matInput
+                                           formControlName="product" [matAutocomplete]="devicesList">
+                                    <mat-autocomplete #devicesList="matAutocomplete" [displayWith]="displayFnDevice">
+                                        <mat-option *ngFor="let item of filteredModels | async" [value]="item">
+                                            {{item.product}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                    <mat-error *ngIf="isInvalid('product')">{{getErrorMessage()}}</mat-error>
+                                    <mat-hint *ngIf="models.length === 0">Please select a Vendor first</mat-hint>
+                                </mat-form-field>
+                            </div>
+                            <div>
+                                <section>
+                                    <mat-checkbox class="checkbox-margin" *ngFor="let day of deviceDays; let i = index"
+                                                  [color]="'primary'" [checked]="day.used"
+                                                  (change)="setChecked($event.checked, i)">
+                                        {{day.name}} </mat-checkbox>
+                                </section>
+                            </div>
+                            <div>
+                                <button mat-mini-fab color="primary" type="button" class="plus-button"
+                                        title="New Device"
+                                        (click)="addDevice()" [disabled]="!addDeviceForm.valid || isInvalid('product')">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                                <mat-hint *ngIf="devicesUsed.length === 0">Please add at least one device</mat-hint>
+                            </div>
+                        </form>
                     </div>
-                    <div>
-                        <section>
-                            <mat-checkbox class="checkbox-margin" *ngFor="let day of days; let i = index"
-                                [color]="'primary'" [checked]="day.used" (change)="setChecked($event.checked, i)">
-                                {{day.name}} </mat-checkbox>
-                        </section>
+                    <div class="device-container">
+                        <h2>Support Used</h2>
+                        <div class="device-info" *ngFor="let item of supportUsed; let deviceIndex = index">
+                            <button mat-icon-button color="primary" title="Delete Support Usage" style="float: right;"
+                                    (click)="removeSupport(deviceIndex)">
+                                <mat-icon>clear</mat-icon>
+                            </button>
+                            <label class="subtitle">Vendor:</label>
+                            <label>{{item.vendor}}</label>
+                            <br>
+                            <label class="subtitle">Device:</label>
+                            <label>{{item.product}}</label>
+                            <div>
+                                <section>
+                                    <mat-checkbox class="checkbox-margin"
+                                                  *ngFor="let day of item.days; let daysIndex = index"
+                                                  color="primary" [checked]="day.used"
+                                                  (change)="setSupportDay($event.checked, daysIndex, deviceIndex)">
+                                        {{day.name}} </mat-checkbox>
+                                </section>
+                            </div>
+                        </div>
+                        <form [formGroup]="addSupportForm">
+                            <div>
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Vendor</mat-label>
+                                    <input type="text" placeholder="Select a vendor" aria-label="SupportVendor" matInput
+                                           formControlName="vendor" [matAutocomplete]="supportVendorsList">
+                                    <mat-autocomplete #supportVendorsList="matAutocomplete" [displayWith]="displayFnVendor"
+                                                      (optionSelected)="onChangeSupportVendor($event.option.value)">
+                                        <mat-option *ngFor="let item of filteredSupportVendors | async" [value]="item">
+                                            {{item.vendor}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                    <mat-error *ngIf="isInvalid('vendor')">{{getErrorMessage()}}</mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div>
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Device</mat-label>
+                                    <input type="text" placeholder="Select a device" aria-label="SupportDevice" matInput
+                                           formControlName="product" [matAutocomplete]="supportDevicesList">
+                                    <mat-autocomplete #supportDevicesList="matAutocomplete" [displayWith]="displayFnDevice">
+                                        <mat-option *ngFor="let item of filteredSupportModels | async" [value]="item">
+                                            {{item.product}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                    <mat-error *ngIf="isInvalid('product')">{{getErrorMessage()}}</mat-error>
+                                    <mat-hint *ngIf="models.length === 0">Please select a Vendor first</mat-hint>
+                                </mat-form-field>
+                            </div>
+                            <div>
+                                <section>
+                                    <mat-checkbox class="checkbox-margin" *ngFor="let day of supportDays; let i = index"
+                                                  [color]="'primary'" [checked]="day.used"
+                                                  (change)="setSupportDay($event.checked, i)">
+                                        {{day.name}} </mat-checkbox>
+                                </section>
+                            </div>
+                            <div>
+                                <button mat-mini-fab color="primary" type="button" class="plus-button"
+                                        title="New Device"
+                                        (click)="addSupport()" [disabled]="!addSupportForm.valid || isInvalid('product')">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                                <mat-hint *ngIf="supportUsed.length === 0">Please add at least one device</mat-hint>
+                            </div>
+                        </form>
                     </div>
-                    <div>
-                        <button mat-mini-fab color="primary" type="button" class="plus-button" title="New Device"
-                            (click)="addDevice()" [disabled]="!addDeviceForm.valid || isInvalid('product')">
-                            <mat-icon>add</mat-icon>
-                        </button>
-                        <mat-hint *ngIf="usedDevices.length === 0">Please add at least one device</mat-hint>
-                    </div>
-                </form>
+                </div>
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
             <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" type="submit"
-                [disabled]="!addLicenseConsumptionForm.valid || (usedDevices.length === 0 && isInvalid('product'))">Submit</button>
+                    [disabled]="!addLicenseConsumptionForm.valid || (devicesUsed.length === 0 && isInvalid('product'))">
+                Submit
+            </button>
         </mat-dialog-actions>
     </form>
 </div>
