@@ -34,13 +34,13 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   filteredModels: Observable<Device[]>;
   originalDays: any = [];
   days: any = [
+    { name: "Sun", used: false },
     { name: "Mon", used: false },
     { name: "Tue", used: false },
     { name: "Wed", used: false },
     { name: "Thu", used: false },
     { name: "Fri", used: false },
     { name: "Sat", used: false },
-    { name: "Sun", used: false },
   ];
   selectedVendor: string = '';
   startDate: any;

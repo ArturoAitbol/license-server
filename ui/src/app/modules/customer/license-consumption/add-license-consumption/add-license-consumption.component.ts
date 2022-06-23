@@ -31,22 +31,22 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   devicesUsed: any = [];
   supportUsed: any = [];
   deviceDays: any = [
+    { name: "Sun", used: false },
     { name: "Mon", used: false },
     { name: "Tue", used: false },
     { name: "Wed", used: false },
     { name: "Thu", used: false },
     { name: "Fri", used: false },
     { name: "Sat", used: false },
-    { name: "Sun", used: false },
   ];
   supportDays: any = [
+    { name: "Sun", used: false },
     { name: "Mon", used: false },
     { name: "Tue", used: false },
     { name: "Wed", used: false },
     { name: "Thu", used: false },
     { name: "Fri", used: false },
     { name: "Sat", used: false },
-    { name: "Sun", used: false },
   ];
   filteredProjects: Observable<any[]>;
   filteredVendors: Observable<any[]>;
@@ -252,8 +252,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     console.log(newDateSelection);
     let startWeek = new Date(newDateSelection);
     let endWeek = new Date(newDateSelection);
-    startWeek.setDate(startWeek.getDate() - startWeek.getDay() + 1);
-    endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 7);
+    startWeek.setDate(startWeek.getDate() - startWeek.getDay());
+    endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 6);
     this.startWeek = startWeek.toLocaleDateString();
     this.endWeek = endWeek.toLocaleDateString();
     this.addLicenseConsumptionForm.patchValue({ startWeek: startWeek});
@@ -332,13 +332,13 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.addDeviceForm.reset();
       // this.addDeviceForm.patchValue({ vendor: '', product: '' });
       this.deviceDays = [
+        { name: "Sun", used: false },
         { name: "Mon", used: false },
         { name: "Tue", used: false },
         { name: "Wed", used: false },
         { name: "Thu", used: false },
         { name: "Fri", used: false },
         { name: "Sat", used: false },
-        { name: "Sun", used: false },
       ];
     }
   }
@@ -350,13 +350,13 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.supportUsed.push(device);
       this.addSupportForm.reset();
       this.supportDays = [
+        { name: "Sun", used: false },
         { name: "Mon", used: false },
         { name: "Tue", used: false },
         { name: "Wed", used: false },
         { name: "Thu", used: false },
         { name: "Fri", used: false },
         { name: "Sat", used: false },
-        { name: "Sun", used: false },
       ];
     }
   }

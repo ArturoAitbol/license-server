@@ -10,7 +10,7 @@
                     <div class="col-7" >
                         <mat-form-field appearance="outline" class="simple-hidden">
                         <mat-label>Consumption Week</mat-label>
-                        <input required matInput [matDatepicker]="picker" [readonly]="true" 
+                        <input required matInput [matDatepicker]="picker" [min]="startDate" [max]="endDate" [readonly]="true" 
                         (dateChange)="pickStartWeek($event.value)" formControlName="startWeek">
                     </mat-form-field>
                     <div class="date-field container border border-dark rounded">
