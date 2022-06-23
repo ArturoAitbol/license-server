@@ -55,9 +55,10 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   filteredSupportModels: Observable<any[]>;
   startDate: any;
   endDate: any;
+  endWeek: string;
+  startWeek: string;
   addLicenseConsumptionForm = this.formBuilder.group({
     startWeek: ['', Validators.required],
-    endWeek:['', Validators.required],
     project: ['', [Validators.required, this.RequireMatch]]
   });
   addDeviceForm = this.formBuilder.group({
@@ -253,7 +254,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     let endWeek = new Date(newDateSelection);
     startWeek.setDate(startWeek.getDate() - startWeek.getDay() + 1);
     endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 7);
-    this.addLicenseConsumptionForm.patchValue({ startWeek: startWeek, endWeek: endWeek});
+    this.startWeek = startWeek.toLocaleDateString();
+    this.endWeek = endWeek.toLocaleDateString();
+    this.addLicenseConsumptionForm.patchValue({ startWeek: startWeek});
   }
 
   setChecked(value: boolean, daysIndex: number, deviceIndex?: number) {

@@ -7,19 +7,17 @@
             </div>
             <mat-dialog-content>
                 <div class="flex-container" style="align-items: center">
-                    <div style="width: 50vw">
+                    <div class="col-7" >
                         <mat-form-field appearance="outline" class="simple-hidden">
                         <mat-label>Consumption Week</mat-label>
-                        <input #startWeek required matInput [matDatepicker]="picker" [readonly]="true" 
+                        <input required matInput [matDatepicker]="picker" [readonly]="true" 
                         (dateChange)="pickStartWeek($event.value)" formControlName="startWeek">
-                        <input #endWeek required matInput [matDatepicker]="picker" [readonly]="true" 
-                            formControlName="endWeek">
                     </mat-form-field>
                     <div class="date-field container border border-dark rounded">
                         <div class="row align-items-center">
                             <div class="col-10 text-start aligns-items-center">
-                                <mat-hint *ngIf="!startWeek.value">Consumption Week</mat-hint>
-                                <mat-hint *ngIf="startWeek.value" (dateChange)="pickStartWeek($event.value)" style = "color:black;">{{startWeek.value}} - {{endWeek.value}}</mat-hint>
+                                <mat-hint *ngIf="!startWeek">Consumption Week</mat-hint>
+                                <mat-hint *ngIf="startWeek" (dateChange)="pickStartWeek($event.value)" style = "color:black;">{{startWeek}} - {{endWeek}}</mat-hint>
                             </div>
                             <div class="col-2 text-end">
                                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -28,7 +26,7 @@
                         </div>
                     </div>
                     </div>
-                    <div style="width: 50vw">
+                    <div class="col-7">
                         <mat-form-field class="col-9 no-padding" appearance="outline">
                             <mat-label>Project</mat-label>
                             <input type="text" placeholder="Select a project" aria-label="Project" matInput
