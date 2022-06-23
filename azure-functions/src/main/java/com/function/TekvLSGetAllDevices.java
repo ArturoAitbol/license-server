@@ -105,12 +105,6 @@ public class TekvLSGetAllDevices {
 				item.put("vendor", rs.getString("vendor"));
 				item.put("product", rs.getString("product"));
 				item.put("version", rs.getString("version"));
-				item.put("type", rs.getString("type"));
-				item.put("granularity", rs.getString("granularity"));
-				item.put("supportType", rs.getBoolean("support_type"));
-				item.put("tokensToConsume", rs.getInt("tokens_to_consume"));
-				item.put("startDate", rs.getString("start_date"));
-				item.put("deprecatedDate", rs.getString("deprecated_date"));
 				array.put(item);
 			}
 			json.put("devices", array);
