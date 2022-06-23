@@ -12,12 +12,14 @@
                         <mat-label>Consumption Week</mat-label>
                         <input #startWeek required matInput [matDatepicker]="picker" [readonly]="true" 
                         (dateChange)="pickStartWeek($event.value)" formControlName="startWeek">
+                        <input #endWeek required matInput [matDatepicker]="picker" [readonly]="true" 
+                            formControlName="endWeek">
                     </mat-form-field>
                     <div class="date-field container border border-dark rounded">
                         <div class="row align-items-center">
                             <div class="col-10 text-start aligns-items-center">
                                 <mat-hint *ngIf="!startWeek.value">Consumption Week</mat-hint>
-                                <mat-hint *ngIf="startWeek.value" (dateChange)="pickStartWeek($event.value)" style = "color:black;">{{startWeek.value}} - {{endWeek}}</mat-hint>
+                                <mat-hint *ngIf="startWeek.value" (dateChange)="pickStartWeek($event.value)" style = "color:black;">{{startWeek.value}} - {{endWeek.value}}</mat-hint>
                             </div>
                             <div class="col-2 text-end">
                                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
