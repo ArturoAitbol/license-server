@@ -102,16 +102,9 @@ public class TekvLSGetAllDevices {
 					subaccountId = "";
 				}
 				item.put("subaccountId", subaccountId);
-
 				item.put("vendor", rs.getString("vendor"));
 				item.put("product", rs.getString("product"));
 				item.put("version", rs.getString("version"));
-				item.put("type", rs.getString("type"));
-				item.put("granularity", rs.getString("granularity"));
-				item.put("supportType", rs.getBoolean("support_type"));
-				item.put("tokensToConsume", rs.getInt("tokens_to_consume"));
-				item.put("startDate", rs.getString("start_date"));
-				item.put("deprecatedDate", rs.getString("deprecated_date"));
 				array.put(item);
 			}
 			json.put("devices", array);
@@ -121,13 +114,13 @@ public class TekvLSGetAllDevices {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }

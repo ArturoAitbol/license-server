@@ -24,7 +24,7 @@ public class TekvLSGetAllLicenses
 	/**
 	* This function listens at endpoint "/api/licenses?subaccountId={subaccountId}". Two ways to invoke it using "curl" command in bash:
 	* 1. curl -d "HTTP Body" {your host}/api/licenses?subaccountId={subaccountId}
-	* 2. curl "{your host}/api/subaccounts"
+	* 2. curl "{your host}/api/licenses"
 	*/
 	@FunctionName("TekvLSGetAllLicenses")
 		public HttpResponseMessage run(
@@ -101,13 +101,13 @@ public class TekvLSGetAllLicenses
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }
