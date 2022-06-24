@@ -282,11 +282,11 @@ export class DashboardComponent implements OnInit {
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      this.data = this.data.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      this.subaccountList = this.subaccountList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
     } else if (sortParameters.direction === 'desc') {
-      this.data = this.data.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+      this.subaccountList = this.subaccountList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
     } else {
-      return this.data = this.data;
+      return this.subaccountList = this.subaccountList;
     }
   }
   /**
