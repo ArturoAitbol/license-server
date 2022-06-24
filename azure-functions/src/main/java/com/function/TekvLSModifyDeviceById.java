@@ -33,7 +33,7 @@ public class TekvLSModifyDeviceById
 				name = "req",
 				methods = {HttpMethod.PUT},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "device/{id}")
+				route = "devices/{id}")
 				HttpRequestMessage<Optional<String>> request,
 				@BindingName("id") String id,
 				final ExecutionContext context) 
@@ -65,10 +65,12 @@ public class TekvLSModifyDeviceById
 			{"vendor","vendor"}, 
 			{"product","product"}, 
 			{"version","version"}, 
-			{"type","type"}, 
-			{"granularity","granularity"}, 
-			{"supportType","support_type"}, 
-			{"tokensToConsume","tokens_to_consume"}
+			{"type","type"},
+			{"supportType","support_type"},
+			{"granularity","granularity"},
+			{"subaccountId","subaccount_id"},
+			{"tokensToConsume","tokens_to_consume"},
+			{"startDate","start_date"}
 		};
 		// Build the sql query
 		String sql = "update device set ";
