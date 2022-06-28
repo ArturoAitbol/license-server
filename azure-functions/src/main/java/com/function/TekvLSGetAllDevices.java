@@ -105,7 +105,6 @@ public class TekvLSGetAllDevices {
 				item.put("vendor", rs.getString("vendor"));
 				item.put("product", rs.getString("product"));
 				item.put("version", rs.getString("version"));
-				item.put("supportType", rs.getBoolean("support_type"));
 				array.put(item);
 			}
 			json.put("devices", array);
