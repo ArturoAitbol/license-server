@@ -36,7 +36,7 @@ public class TekvLSModifyDeviceById
 				name = "req",
 				methods = {HttpMethod.PUT},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "device/{id}")
+				route = "devices/{id}")
 				HttpRequestMessage<Optional<String>> request,
 				@BindingName("id") String id,
 				final ExecutionContext context) 
@@ -65,7 +65,7 @@ public class TekvLSModifyDeviceById
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
 		try {
@@ -75,7 +75,7 @@ public class TekvLSModifyDeviceById
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
 		// The expected parameters (and their coresponding column name in the database) 
@@ -83,9 +83,12 @@ public class TekvLSModifyDeviceById
 			{"vendor","vendor"}, 
 			{"product","product"}, 
 			{"version","version"}, 
-			{"type","type"}, 
-			{"granularity","granularity"}, 
-			{"tokensToConsume","tokens_to_consume"}
+			{"type","type"},
+			{"supportType","support_type"},
+			{"granularity","granularity"},
+			{"subaccountId","subaccount_id"},
+			{"tokensToConsume","tokens_to_consume"},
+			{"startDate","start_date"}
 		};
 		// Build the sql query
 		String sql = "update device set ";
@@ -128,13 +131,13 @@ public class TekvLSModifyDeviceById
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 	}
 }

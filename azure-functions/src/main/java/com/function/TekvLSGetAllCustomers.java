@@ -124,16 +124,13 @@ public class TekvLSGetAllCustomers {
 				item.put("name", rs.getString("name"));
 				item.put("customerType", rs.getString("type"));
 				item.put("testCustomer", rs.getBoolean("test_customer"));
-				
-				String distributorId = rs.getString("distributor_id");
-				if (rs.wasNull()) {
-					distributorId = "";
-				}
-				item.put("distributorId", distributorId);
-
-				item.put("tombstone", rs.getBoolean("tombstone"));
-				if (!id.equals("EMPTY"))
+				if (!id.equals("EMPTY")) {
+					String distributorId = rs.getString("distributor_id");
+					if (rs.wasNull())
+						distributorId = "";
+					item.put("distributorId", distributorId);
 					item.put("adminEmails", adminEmailsMap.get(rs.getString("id")));
+				}
 				array.put(item);
 			}
 			json.put("customers", array);
@@ -143,13 +140,13 @@ public class TekvLSGetAllCustomers {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 

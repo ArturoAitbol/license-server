@@ -212,18 +212,20 @@ export class DashboardComponent implements OnInit {
    */
   openConfirmaCancelDialog(index?: number | string) {
     this.dialogService
-      .confirmDialog({
+      .deleteCustomerDialog({
         title: 'Confirm Action',
         message: 'Do you want to confirm this action?',
         confirmCaption: 'Confirm',
+        deleteAllDataCaption: 'Delete All Data',
         cancelCaption: 'Cancel',
+        canDeleteAllData: this.subaccountList[index]?.testCustomer,
       })
-      .subscribe((confirmed) => {
-        if (confirmed) {
+      .subscribe((result) => {
+        if (result.confirm) {
           console.debug('The user confirmed the action: ', this.subaccountList[index]);
           const { id , customerId } = this.subaccountList[index];
           let numberOfSubaccounts = this.subaccountList.filter(subaccount => subaccount.customerId === customerId).length;
-          if (numberOfSubaccounts > 1) {
+          if (numberOfSubaccounts > 1 && !result.deleteAllData) {
             this.subaccountService.deleteSubAccount(id).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
@@ -280,11 +282,11 @@ export class DashboardComponent implements OnInit {
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      this.data = this.data.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      this.subaccountList = this.subaccountList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
     } else if (sortParameters.direction === 'desc') {
-      this.data = this.data.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+      this.subaccountList = this.subaccountList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
     } else {
-      return this.data = this.data;
+      return this.subaccountList = this.subaccountList;
     }
   }
   /**

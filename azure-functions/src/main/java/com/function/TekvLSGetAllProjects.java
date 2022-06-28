@@ -57,6 +57,7 @@ public class TekvLSGetAllProjects {
 	   }
 
 		context.getLogger().info("Entering TekvLSGetAllProjects Azure function");
+		JSONObject json = new JSONObject();
 
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
@@ -89,10 +90,15 @@ public class TekvLSGetAllProjects {
 	   	}
 
 	   	if (id.equals("EMPTY")) {
-		   if (!subaccountId.isEmpty())
+		   if (!subaccountId.isEmpty()){
 			   conditionsList.add("subaccount_id='" + subaccountId + "'");
-		   if (!status.isEmpty())
-			   conditionsList.add("status='" + status + "'");
+			   if (!status.isEmpty())
+			   		conditionsList.add("status='" + status + "'");
+		   }else{
+			   json.put("error", "Missing mandatory parameter: subaccount ID");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		   }
+		   
 	   	}else{
 		   conditionsList.add("id='" + id +"'");
 	   	}
@@ -110,15 +116,11 @@ public class TekvLSGetAllProjects {
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
-			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
-			// Retrive all projects. TODO: pagination
-			// sql = "select * from project;";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of projects
-			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
 			String closeDate;
 			while (rs.next()) {
@@ -138,15 +140,15 @@ public class TekvLSGetAllProjects {
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
+			json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
+			json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }

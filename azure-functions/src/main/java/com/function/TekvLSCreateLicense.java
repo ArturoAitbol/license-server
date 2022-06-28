@@ -12,6 +12,8 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
 import java.util.Optional;
+import java.time.LocalDate; 
+import java.time.format.DateTimeFormatter;
 
 import org.json.JSONObject;
 
@@ -100,8 +102,17 @@ public class TekvLSCreateLicense
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
-		sqlPart1 += "status" + ",";
-		sqlPart2 += "'" + "Active" + "',"; 
+		LocalDate currentDate = LocalDate.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd");
+		String actualDate = currentDate.format(formatter);
+		String renewalDate = jobj.getString("renewalDate");
+		if ((renewalDate.compareTo(actualDate)) < 0 ){
+			sqlPart1 += "status" + ",";
+			sqlPart2 += "'" + "Expired" + "',"; 
+		}else{
+			sqlPart1 += "status" + ",";
+			sqlPart2 += "'" + "Active" + "',"; 
+		}
 		// Remove the comma after the last parameter and build the SQL statement
 		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
 		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
@@ -141,7 +152,7 @@ public class TekvLSCreateLicense
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());

@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "a590b930-5eb3-42ed-8ab9-16a09e1799f0",
+		"_postman_id": "35479248-6eea-4c02-a75b-33faeca5bdfc",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8624003"
+		"_exporter_id": "8462708"
 	},
 	"item": [
 		{
@@ -18,6 +18,15 @@
 							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
 							"});\r",
 							"pm.collectionVariables.set(\"deviceId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -38,7 +47,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"type\": \"Other\",\r\n    \"granularity\": \"week\",\r\n    \"tokensToConsume\": \"1\"\r\n}",
+					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"type\": \"OTHER\",\r\n    \"granularity\": \"week\",\r\n    \"tokensToConsume\": \"1\",\r\n    \"supportType\": \"true\",\r\n    \"startDate\": \"{{$isoTimestamp}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -505,12 +514,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOST}}/device/{{deviceId}}",
+					"raw": "{{HOST}}/devices/{{deviceId}}",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
-						"device",
+						"devices",
 						"{{deviceId}}"
 					]
 				}
