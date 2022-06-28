@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -15,7 +15,7 @@ export class DevicesService {
    * get devices list
    * @returns: Observable 
    */
-  public getDevicesList(object?: { vendor: string, product: string, version: string }): Observable<Device> {
+  public getDevicesList(subaccountId?: string, object?: { vendor: string, product: string, version: string }): Observable<Device> {
     let url = this.API_URL;
     if (object) {
       if (object.vendor) {
@@ -28,8 +28,12 @@ export class DevicesService {
         }
       }
     }
+    let params = new HttpParams();
+    if (subaccountId){
+      params = params.set('subaccountId', subaccountId);
+    }
     const headers = this.getHeaders();
-    return this.httpClient.get<Device>(url, { headers });
+    return this.httpClient.get<Device>(url, { headers, params });
   }
   /**
    * create device
