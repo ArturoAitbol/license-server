@@ -112,14 +112,14 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.allDevices = resDataObject['devices'];
       let vendorsHash: any = {};
       this.vendors = this.allDevices.filter(device => {
-        if (device.type != "Phone" && !vendorsHash[device.vendor] && !device.supportType) {
+        if (device.type != "PHONE" && !vendorsHash[device.vendor] && !device.supportType) {
           vendorsHash[device.vendor] = true;
           return true;
         }
         return false;
       });
       this.supportVendors = this.allDevices.filter(device => {
-        if (device.type != "Phone" && !vendorsHash[device.vendor] && device.supportType) {
+        if (device.type != "PHONE" && !vendorsHash[device.vendor] && device.supportType) {
           vendorsHash[device.vendor] = true;
           return true;
         }
@@ -218,7 +218,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.models = [];
     if (value) {
       this.allDevices.forEach((device: any) => {
-        if (device.type != "Phone" && device.vendor == value) {
+        if (device.type != "PHONE" && device.vendor == value) {
           this.models.push({
             id: device.id,
             vendor: value,
@@ -233,7 +233,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.supportModels = [];
     if (value) {
       this.allDevices.forEach((device: any) => {
-        if (device.type != "Phone" && device.vendor == value && device.supportType) {
+        if (device.type != "PHONE" && device.vendor == value && device.supportType) {
           this.supportModels.push({
             id: device.id,
             vendor: value,

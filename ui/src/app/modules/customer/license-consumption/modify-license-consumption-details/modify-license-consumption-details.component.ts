@@ -95,7 +95,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   private filterVendorDevices(value: string): void {
     this.models = [];
     if (value) {
-      this.models = this.devices.filter(device => device.type != "Phone" && device.vendor === value);
+      this.models = this.devices.filter(device => device.type != "PHONE" && device.vendor === value);
       this.models.forEach(device => {
         device.product = device.version ? device.product + " - v." + device.version : device.product;
       });
@@ -183,7 +183,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.devices = resDataObject['devices'];
       let vendorsHash: any = {};
       this.vendors = this.devices.filter(device => {
-        if (device.type != "Phone" && !vendorsHash[device.vendor]) {
+        if (device.type != "PHONE" && !vendorsHash[device.vendor]) {
           vendorsHash[device.vendor] = true;
           return true;
         }
