@@ -140,16 +140,17 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       }
     });
     this.fetchProjectsList();
+    this.getActionMenuOptions();
   }
 
   fetchDataToDisplay() {
     this.fetchSummaryData();
     this.fetchEquipment();
     this.fetchAggregatedData();
-    this.getActionMenuOptions();
   }
 
   private getActionMenuOptions(){
+    this.licConsumptionActionMenuOptions = [];
     let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     accountRoles.forEach(accountRole =>{
       permissions[accountRole].tables.licConsumptionOptions?.forEach(item=>this.licConsumptionActionMenuOptions.push(this[item]));
