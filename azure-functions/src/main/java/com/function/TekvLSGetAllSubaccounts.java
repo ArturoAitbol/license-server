@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -15,6 +16,8 @@ import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -42,6 +45,20 @@ public class TekvLSGetAllSubaccounts
 			final ExecutionContext context) 
 	{
 
+		String currentRole = getRoleFromToken(request,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.GET_ALL_SUBACCOUNTS)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
 		context.getLogger().info("Entering TekvLSGetAllSubaccounts Azure function");
 
 		// Get query parameters
@@ -50,17 +67,40 @@ public class TekvLSGetAllSubaccounts
 
 		Map<String, List<String>> adminEmailsMap = new HashMap<>();
 		// Build SQL statement
-		String sql = "";
+		String sql = "select * from subaccount";
+		String subQuery;
+		String email = getEmailFromToken(request,context);
+		List<String> conditionsList = new ArrayList<>();
+		// adding conditions according to the role
+		switch (currentRole){
+			case DIST_FULL_ADMIN:
+				String distributorId = "select distributor_id from customer c,customer_admin ca " +
+						"where c.id = ca.customer_id and admin_email='"+email+"'";
+				subQuery = "select id from customer where distributor_id =(" + distributorId + ")";
+				conditionsList.add("customer_id IN (" + subQuery + ")");
+				break;
+			case CUSTOMER_FULL_ADMIN:
+				String customer = "select customer_id from customer_admin where admin_email='"+email+"'";
+				conditionsList.add("customer_id = (" + customer + ")");
+				break;
+			case SUBACCOUNT_ADMIN:
+				subQuery = "select subaccount_id from subaccount_admin where subaccount_admin_email ='"+email+"'";
+				conditionsList.add("id=(" + subQuery + ")");
+				break;
+		}
+
 		if (id.equals("EMPTY")) {
 			if (!customerId.isEmpty()) {
-				sql = "select * from subaccount where customer_id = '" + customerId + "';";
-			} else {
-				sql = "select * from subaccount;";
+				conditionsList.add("customer_id='"+customerId+"'");
 			}
-		} else {
-			sql = "select * from subaccount where id='" + id +"';";
+		}else{
+			conditionsList.add("id='" + id +"'");
 			adminEmailsMap = loadSubaccountAdminEmails(id, context);
 		}
+
+		String sqlConditions = String.join(" and ",conditionsList);
+		sql += (sqlConditions.isEmpty() ? ";" : " where "+sqlConditions+";");
+
 		// Connect to the database
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);

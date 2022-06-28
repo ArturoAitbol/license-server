@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -15,6 +16,8 @@ import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -36,8 +39,54 @@ public class TekvLSGetConsumptionUsageDetails {
 			@BindingName("id") String id,
 		final ExecutionContext context) {
 
+		String currentRole = getRoleFromToken(request,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.GET_CONSUMPTION_USAGE_DETAILS)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
+
 		context.getLogger().info("Entering TekvLSGetConsumptionUsageDetails Azure function");
-		String sql = "select * from usage_detail where consumption_id='" + id +"';";
+		String sql = "select * from usage_detail where consumption_id='" + id +"'";
+
+		String subQuery;
+		String email = getEmailFromToken(request,context);
+		String sqlRoleCondition="";
+		// adding conditions according to the role
+		switch (currentRole){
+			case DIST_FULL_ADMIN:
+				String distributorId = "select distributor_id from customer c,customer_admin ca " +
+						"where c.id = ca.customer_id and admin_email='"+email+"'";
+				subQuery = "select l.id from license_consumption l, subaccount s, customer c" +
+						" where l.subaccount_id = s.id and s.customer_id = c.id" +
+						" and distributor_id =("+distributorId+")";
+				sqlRoleCondition="consumption_id IN(" + subQuery + ")";
+				break;
+			case CUSTOMER_FULL_ADMIN:
+				subQuery = "select lc.id from license_consumption lc, subaccount s, customer_admin ca" +
+						" where lc.subaccount_id = s.id and s.customer_id = ca.customer_id" +
+						" and admin_email = '"+email+"'";
+				sqlRoleCondition="consumption_id IN(" + subQuery + ")";
+				break;
+			case SUBACCOUNT_ADMIN:
+				subQuery = "select lc.id from license_consumption lc,subaccount_admin sa " +
+						" where lc.subaccount_id = sa.subaccount_id" +
+						" and subaccount_admin_email ='"+email+"'";
+				sqlRoleCondition="consumption_id IN(" + subQuery + ")";
+				break;
+		}
+
+		if(!sqlRoleCondition.isEmpty())
+			sql += " and "+ sqlRoleCondition;
+		sql +=";";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"

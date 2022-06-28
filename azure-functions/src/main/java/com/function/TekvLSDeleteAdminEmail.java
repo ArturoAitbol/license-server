@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
@@ -13,6 +14,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
+import static com.function.auth.RoleAuthHandler.*;
+
 public class TekvLSDeleteAdminEmail {
 
     @FunctionName("TekvLSDeleteAdminEmail")
@@ -25,6 +28,20 @@ public class TekvLSDeleteAdminEmail {
             HttpRequestMessage<Optional<String>> request,
             @BindingName("email") String email,
             final ExecutionContext context) {
+
+        String currentRole = getRoleFromToken(request,context);
+        if(currentRole.isEmpty()){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+        }
+        if(!hasPermission(currentRole, Permission.DELETE_ADMIN_EMAIL)){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+            json.put("error", MESSAGE_FOR_FORBIDDEN);
+            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+        }
 
         context.getLogger().info("Entering TekvLSCreateCustomer Azure function");
         // Connect to the database

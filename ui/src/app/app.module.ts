@@ -26,6 +26,7 @@ import { Constants } from './helpers/constants';
 import { SharedModule } from './modules/shared/shared.module';
 import { environment } from 'src/environments/environment';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
+import { AuthInterceptor } from './helpers/auth.interceptor';
 @NgModule({
     declarations: [
         AppComponent,
@@ -70,7 +71,8 @@ import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permi
         SharedModule
     ],
     providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
+        // { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
     ],
     bootstrap: [AppComponent],

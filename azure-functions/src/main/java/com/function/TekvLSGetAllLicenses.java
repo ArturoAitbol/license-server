@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -11,10 +12,14 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -38,22 +43,61 @@ public class TekvLSGetAllLicenses
 		final ExecutionContext context) 
 	{
 
+		String currentRole = getRoleFromToken(request,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.GET_ALL_LICENSES)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
 		context.getLogger().info("Entering TekvLSGetAllLicenses Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccount-id", "");
   
 		// Build SQL statement
-		String sql = "";
-		if (id.equals("EMPTY")) {
-			if (!subaccountId.isEmpty()) {
-				sql = "select * from license where subaccount_id = '" + subaccountId + "'";
-			} else {
-				sql = "select * from license";
-			}
-		} else {
-			sql = "select * from license where id='" + id +"'";
+		String sql = "select * from license";
+		String subQuery;
+		String email = getEmailFromToken(request,context);
+		List<String> conditionsList = new ArrayList<>();
+		// adding conditions according to the role
+		switch (currentRole){
+			case DIST_FULL_ADMIN:
+				String distributorId = "select distributor_id from customer c,customer_admin ca " +
+						"where c.id = ca.customer_id and admin_email='"+email+"'";
+				subQuery = "select s.id from subaccount s, customer c " +
+						"where s.customer_id = c.id and distributor_id =("+ distributorId +")";
+				conditionsList.add("subaccount_id IN (" + subQuery + ")");
+				break;
+			case CUSTOMER_FULL_ADMIN:
+				subQuery = "select s.id from subaccount s, customer_admin ca where s.customer_id = ca.customer_id " +
+						"and admin_email = '"+email+"'";
+				conditionsList.add("subaccount_id IN (" + subQuery + ")");
+				break;
+			case SUBACCOUNT_ADMIN:
+				subQuery = "select subaccount_id from subaccount_admin where subaccount_admin_email ='"+email+"'";
+				conditionsList.add("subaccount_id=(" + subQuery + ")");
+				break;
 		}
+
+		if (id.equals("EMPTY")){
+			if (!subaccountId.isEmpty())
+				conditionsList.add("subaccount_id = '" + subaccountId + "'");
+		}else{
+			conditionsList.add("id='" + id +"'");
+		}
+
+		String sqlConditions = String.join(" and ",conditionsList);
+
+		if(!sqlConditions.isEmpty())
+			sql += " where "+ sqlConditions;
 		sql += " order by start_date desc;";
 		
 		// Connect to the database
