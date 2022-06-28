@@ -12,7 +12,12 @@ export const permissions = {
             'addSubaccount',
             'addLicense',
             'addLicenseConsumption',
-            'addProject'],
+            'addProject',
+            'addAdminEmail',
+            'deleteAdminEmail',
+            'addSubAccAdminEmail',
+            'deleteSubAccAdminEmail'
+        ],
         tables:{
             customerOptions:[
                 'VIEW_LICENSES',
@@ -47,7 +52,11 @@ export const permissions = {
         elements: [
             'addCustomer',
             'addSubaccount',
-            'addLicense'],
+            'addLicense',
+            'addAdminEmail',
+            'deleteAdminEmail',
+            'addSubAccAdminEmail',
+            'deleteSubAccAdminEmail'],
         tables:{
             customerOptions:[
                 'VIEW_LICENSES',
@@ -57,11 +66,9 @@ export const permissions = {
                 'VIEW_SUBACC_ADMIN_EMAILS',
                 'MODIFY_ACCOUNT'],
             licenseOptions:[
-                "MODIFY_LICENSE",
-                "DELETE_LICENSE"],
+                "MODIFY_LICENSE"
+            ],
             licConsumptionOptions:[
-                "EDIT",
-                "DELETE"
             ],
             projectOptions:[
                 "VIEW_CONSUMPTION"
@@ -86,9 +93,7 @@ export const permissions = {
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS'],
-            licenseOptions:[
-                "MODIFY_LICENSE",
-                "DELETE_LICENSE"],
+            licenseOptions:[],
             licConsumptionOptions:[
                 "EDIT",
                 "DELETE"
@@ -96,8 +101,7 @@ export const permissions = {
             projectOptions:[
                 "VIEW_CONSUMPTION",
                 "MODIFY_PROJECT",
-                "CLOSE_PROJECT",
-                "DELETE_PROJECT"
+                "CLOSE_PROJECT"
             ]}
         },
     "customer.DistributorFullAdmin":{
