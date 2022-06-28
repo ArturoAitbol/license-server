@@ -164,9 +164,9 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES);
 
-    public static final String DIST_FULL_ADMIN = "customer.DistributorFullAdmin";
+    public static final String DISTRIBUTOR_FULL_ADMIN = "distributor.FullAdmin";
     public static final String CUSTOMER_FULL_ADMIN = "customer.FullAdmin";
-    public static final String SUBACCOUNT_ADMIN = "customer.SubAccountAdmin";
+    public static final String SUBACCOUNT_ADMIN = "customer.SubaccountAdmin";
 
     public static final String LOG_MESSAGE_FOR_UNAUTHORIZED = "Unauthorized error: Access denied as role is missing.";
     public static final String MESSAGE_FOR_UNAUTHORIZED = "NOT AUTHORIZED. Access denied as role is missing.";
@@ -185,7 +185,7 @@ public class RoleAuthHandler {
             case "tekvizion.ConfigTester":
                 rolePermissions = ConfigTesterPermissions;
                 break;
-            case "tekvizion.SupportDevicesAdmin":
+            case "tekvizion.DevicesAdmin":
                 rolePermissions = SupportDevicesAdminPermissions;
                 break;
             case "tekvizion.AutomationPlatformApplication":
@@ -194,13 +194,13 @@ public class RoleAuthHandler {
             case "tekvizion.CRM":
                 rolePermissions = crmPermissions;
                 break;
-            case "customer.DistributorFullAdmin":
+            case DISTRIBUTOR_FULL_ADMIN:
                 rolePermissions = customerDistFullAdminPermissions;
                 break;
-            case "customer.FullAdmin":
+            case CUSTOMER_FULL_ADMIN:
                 rolePermissions = customerFullAdminPermissions;
                 break;
-            case "customer.SubAccountAdmin":
+            case SUBACCOUNT_ADMIN:
                 rolePermissions = customerSubAccountPermissions;
                 break;
             default:

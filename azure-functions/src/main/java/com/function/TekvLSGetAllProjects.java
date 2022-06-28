@@ -71,7 +71,7 @@ public class TekvLSGetAllProjects {
 	   	List<String> conditionsList = new ArrayList<>();
 	   	// adding conditions according to the role
 	   	switch (currentRole){
-		   case DIST_FULL_ADMIN:
+		   case DISTRIBUTOR_FULL_ADMIN:
 			   String distributorId = "select distributor_id from customer c,customer_admin ca " +
 					   "where c.id = ca.customer_id and admin_email='"+email+"'";
 			   subQuery = "select s.id from subaccount s, customer c " +

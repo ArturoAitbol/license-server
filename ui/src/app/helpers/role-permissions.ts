@@ -104,7 +104,7 @@ export const permissions = {
                 "CLOSE_PROJECT"
             ]}
         },
-    "customer.DistributorFullAdmin":{
+    "distributor.FullAdmin":{
         paths:[
             'dashboard',
             'customer',
@@ -148,7 +148,7 @@ export const permissions = {
                 "VIEW_CONSUMPTION"
             ]}
         },
-    "customer.SubAccountAdmin":{
+    "customer.SubaccountAdmin":{
         paths:[
             'dashboard',
             'customer',
