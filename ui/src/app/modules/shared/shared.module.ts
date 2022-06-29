@@ -6,6 +6,7 @@ import { MaterialModule } from '../material/material.module';
 import { DataPropertyGetterPipe } from 'src/app/pipes/data-property-getter.pipe';
 import { CheckAccessForDirective } from 'src/app/directives/check-access-for.directive';
 import { DeleteCustomerModal } from "../../dialogs/delete-customer/delete-customer-modal.component";
+import { FeatureToggleDirective } from "../../directives/feature-toggle.directive";
 
 
 
@@ -16,6 +17,7 @@ import { DeleteCustomerModal } from "../../dialogs/delete-customer/delete-custom
     DataPropertyGetterPipe,
     CheckAccessForDirective,
     DeleteCustomerModal,
+    FeatureToggleDirective,
   ],
   imports: [
     CommonModule,
@@ -26,7 +28,8 @@ import { DeleteCustomerModal } from "../../dialogs/delete-customer/delete-custom
     DataTableComponent,
     DataPropertyGetterPipe,
     MaterialModule,
-    CheckAccessForDirective
+    CheckAccessForDirective,
+    FeatureToggleDirective
   ]
 })
 export class SharedModule { }
