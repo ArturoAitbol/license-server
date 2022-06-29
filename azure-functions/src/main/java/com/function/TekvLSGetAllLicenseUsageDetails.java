@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -18,6 +19,8 @@ import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -38,6 +41,20 @@ public class TekvLSGetAllLicenseUsageDetails {
 		HttpRequestMessage<Optional<String>> request,
 		final ExecutionContext context) {
 
+		String currentRole = getRoleFromToken(request,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.GET_ALL_LICENSE_USAGE_DETAILS)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
 		context.getLogger().info("Entering TekvLSGetAllLicenseUsageDetails Azure function");
 
 		// Get query parameters
@@ -47,6 +64,33 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 		String sqlCommonConditions = "l.subaccount_id = '" + subaccountId + "'";
+
+		String subQuery;
+		String email = getEmailFromToken(request,context);
+		String sqlRoleCondition="";
+		// adding conditions according to the role
+		switch (currentRole){
+			case DISTRIBUTOR_FULL_ADMIN:
+				String distributorId = "select distributor_id from customer c,customer_admin ca " +
+						"where c.id = ca.customer_id and admin_email='"+email+"'";
+				subQuery = "select s.id from subaccount s, customer c " +
+						"where s.customer_id = c.id and distributor_id =("+ distributorId +")";
+				sqlRoleCondition = "l.subaccount_id IN (" + subQuery + ")";
+				break;
+			case CUSTOMER_FULL_ADMIN:
+				subQuery = "select s.id from subaccount s, customer_admin ca where s.customer_id = ca.customer_id " +
+						"and admin_email = '"+email+"'";
+				sqlRoleCondition = "l.subaccount_id IN (" + subQuery + ")";
+				break;
+			case SUBACCOUNT_ADMIN:
+				subQuery = "select subaccount_id from subaccount_admin where subaccount_admin_email ='"+email+"'";
+				sqlRoleCondition = "l.subaccount_id=(" + subQuery + ")";
+				break;
+		}
+
+		if(!sqlRoleCondition.isEmpty())
+			sqlCommonConditions += " and "+ sqlRoleCondition;
+
 		if (!startDate.isEmpty() && !endDate.isEmpty())
 			sqlCommonConditions += " and l.consumption_date>='" + startDate + "' and l.consumption_date<='" + endDate + "'";
 		// Connect to the database

@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
@@ -11,6 +12,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSCreateSubaccountAdminEmail {
     private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses?ssl=true&sslmode=require"
@@ -26,6 +29,20 @@ public class TekvLSCreateSubaccountAdminEmail {
                     route = "subaccountAdminEmails")
             HttpRequestMessage<Optional<CreateSubaccountAdminRequest>> request,
             final ExecutionContext context) {
+
+        String currentRole = getRoleFromToken(request,context);
+        if(currentRole.isEmpty()){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+        }
+        if(!hasPermission(currentRole, Permission.CREATE_SUBACCOUNT_ADMIN_MAIL)){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+            json.put("error", MESSAGE_FOR_FORBIDDEN);
+            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+        }
 
         context.getLogger().info("Entering TekvLSCreateSubaccountAdminEmail Azure function");
         context.getLogger().info("Request body: " + request);

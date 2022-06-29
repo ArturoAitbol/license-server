@@ -2,9 +2,13 @@ package com.function;
 
 import java.sql.*;
 import java.util.*;
+
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -24,6 +28,21 @@ public class TekvLSCreateBundle {
                     route = "bundles")
             HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
+
+        String currentRole = getRoleFromToken(request,context);
+        if(currentRole.isEmpty()){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+        }
+        if(!hasPermission(currentRole, Permission.CREATE_BUNDLE)){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+            json.put("error", MESSAGE_FOR_FORBIDDEN);
+            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+        }
+
         context.getLogger().info("Java HTTP trigger processed a request.");
 
         // Parse request body and extract parameters needed
