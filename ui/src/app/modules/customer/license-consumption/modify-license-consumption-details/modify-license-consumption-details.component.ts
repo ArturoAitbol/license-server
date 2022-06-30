@@ -173,7 +173,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     const subaccountId = this.currentCustomer.id;
     const { id } = this.data;
     forkJoin([
-      this.deviceService.getDevicesList(),
+      this.deviceService.getDevicesList(subaccountId),
       this.projectService.getProjectDetailsBySubAccount(subaccountId),
       this.usageDetailService.getUsageDetailsByConsumptionId(id)
     ]).subscribe(res => {

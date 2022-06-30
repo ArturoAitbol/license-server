@@ -101,7 +101,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.isDataLoading = true;
     const subaccountId = this.currentCustomer.id;
     forkJoin([
-      this.deviceService.getDevicesList(),
+      this.deviceService.getDevicesList(subaccountId),
       this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open')
     ]).subscribe((res: any) => {
       const resDataObject: any = res.reduce((current: any, next: any) => {

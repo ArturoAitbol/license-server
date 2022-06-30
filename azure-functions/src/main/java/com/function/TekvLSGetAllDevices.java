@@ -60,7 +60,7 @@ public class TekvLSGetAllDevices {
 		String vendor = request.getQueryParameters().getOrDefault("vendor", "");
 		String product = request.getQueryParameters().getOrDefault("product", "");
 		String version = request.getQueryParameters().getOrDefault("version", "");
-		String subaccountId = request.getQueryParameters().getOrDefault("subaccount-id", "");
+		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		String licenseStartDate = request.getQueryParameters().getOrDefault("date", "");
   
 		// Build SQL statement
@@ -68,9 +68,8 @@ public class TekvLSGetAllDevices {
 		if (id.equals("EMPTY")) {
 			if (!vendor.isEmpty() || !subaccountId.isEmpty() || !product.isEmpty() || !version.isEmpty() || !licenseStartDate.isEmpty()) {
 				sql = "select * from device where ";
-			if (!vendor.isEmpty() || !subaccountId.isEmpty() || !product.isEmpty() || !version.isEmpty()) {
 			   if (!subaccountId.isEmpty()) {
-				  sql += "subaccount_id = '" + subaccountId + "' and ";
+				  sql += "subaccount_id is NULL or subaccount_id = '" + subaccountId + "' and ";
 			   }
 			   if (!vendor.isEmpty()) {
 				  sql += "vendor = '" + vendor + "' and ";
@@ -86,9 +85,8 @@ public class TekvLSGetAllDevices {
 			   }
 			   // Remove the last " and " from the string
 			   sql = sql.substring(0, sql.length() - 5) + ";";
-			}
 			} else {
-				sql = "select * from device;";
+				sql = "select * from device where subaccount_id is NULL;";
 			}
 		} else {
 			sql = "select * from device where id='" + id +"';";
@@ -122,6 +120,7 @@ public class TekvLSGetAllDevices {
 				item.put("vendor", rs.getString("vendor"));
 				item.put("product", rs.getString("product"));
 				item.put("version", rs.getString("version"));
+				item.put("supportType", rs.getBoolean("support_type"));
 				array.put(item);
 			}
 			json.put("devices", array);
