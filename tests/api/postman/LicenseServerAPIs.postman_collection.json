@@ -47,7 +47,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"type\": \"OTHER\",\r\n    \"granularity\": \"week\",\r\n    \"tokensToConsume\": \"1\",\r\n    \"supportType\": \"true\",\r\n    \"startDate\": \"{{$isoTimestamp}}\"\r\n}",
+					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"supportType\": true,\r\n    \"tokensToConsume\": 1,\r\n    \"subaccountId\": \"\",\r\n    \"type\": \"OTHER\",\r\n    \"granularity\": \"week\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"deprecatedDate\": \"{{$isoTimestamp}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -111,16 +111,21 @@ public class TekvLSGetAllDevices {
 			while (rs.next()) {
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("id"));
-
-				subaccountId = rs.getString("subaccount_id");
-				if (rs.wasNull()) {
-					subaccountId = "";
-				}
-				item.put("subaccountId", subaccountId);
 				item.put("vendor", rs.getString("vendor"));
 				item.put("product", rs.getString("product"));
 				item.put("version", rs.getString("version"));
 				item.put("supportType", rs.getBoolean("support_type"));
+				item.put("tokensToConsume", rs.getInt("tokens_to_consume"));
+				if (!id.isEmpty()) {
+					subaccountId = rs.getString("subaccount_id");
+					if (rs.wasNull())
+						subaccountId = "";
+					item.put("subaccountId", subaccountId);
+					item.put("type", rs.getString("type"));
+					item.put("granularity", rs.getString("granularity"));
+					item.put("startDate", rs.getString("start_date"));
+					item.put("deprecatedDate", rs.getString("deprecated_date"));
+				}
 				array.put(item);
 			}
 			json.put("devices", array);
