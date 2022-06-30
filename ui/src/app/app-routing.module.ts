@@ -5,6 +5,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { MsalGuard } from '@azure/msal-angular';
 import { RoleGuard } from './security/role.guard';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
+import { FeatureToggleGuard } from "./modules/shared/feature-toggle.guard";
 
 const config: ExtraOptions = {
   onSameUrlNavigation: 'reload',
@@ -16,9 +17,9 @@ const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent },
   { path: 'no-permissions', component: NoPermissionsPageComponent,canActivate:[MsalGuard]},
-  { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard,RoleGuard] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   {
-    path: 'customer', canActivate: [MsalGuard,RoleGuard],
+    path: 'customer', canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard], canActivateChild:[FeatureToggleGuard],
     loadChildren: () => import('./modules/customer/customer.module').then(m => m.CustomerModule)
   },
   { path: '**', redirectTo: 'dashboard' }
