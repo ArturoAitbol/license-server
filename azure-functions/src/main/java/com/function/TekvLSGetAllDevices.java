@@ -116,7 +116,7 @@ public class TekvLSGetAllDevices {
 				item.put("version", rs.getString("version"));
 				item.put("supportType", rs.getBoolean("support_type"));
 				item.put("tokensToConsume", rs.getInt("tokens_to_consume"));
-				if (!id.isEmpty()) {
+				if (!id.equals("EMPTY")) {
 					subaccountId = rs.getString("subaccount_id");
 					if (rs.wasNull())
 						subaccountId = "";
