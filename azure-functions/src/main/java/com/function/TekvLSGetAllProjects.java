@@ -42,7 +42,8 @@ public class TekvLSGetAllProjects {
 		final ExecutionContext context) 
    {
 
-	   String currentRole = getRoleFromToken(request,context);
+	   JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+	   String currentRole = getRoleFromToken(tokenClaims,context);
 	   if(currentRole.isEmpty()){
 		   JSONObject json = new JSONObject();
 		   context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -67,7 +68,7 @@ public class TekvLSGetAllProjects {
 		// Build SQL statement
 		String sql = "select * from project";
 	   	String subQuery;
-	   	String email = getEmailFromToken(request,context);
+	   	String email = getEmailFromToken(tokenClaims,context);
 	   	List<String> conditionsList = new ArrayList<>();
 	   	// adding conditions according to the role
 	   	switch (currentRole){
