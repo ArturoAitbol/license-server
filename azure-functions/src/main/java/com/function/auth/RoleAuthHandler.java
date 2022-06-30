@@ -212,19 +212,29 @@ public class RoleAuthHandler {
 
     public static JSONObject getTokenClaimsFromHeader(HttpRequestMessage<?> request,ExecutionContext context) {
         Map<String, String> headers = request.getHeaders();
-        JSONObject idTokenClaims = null;
         String authHeader = headers.get("authorization");
-        String token = authHeader!=null ? authHeader.split(" ")[1]:"";
-        String tokenDecode;
-        if(!token.isEmpty()){
-            String tokenPayload = token.split("\\.")[1];
-            Base64.Decoder decoder = Base64.getUrlDecoder();
-            tokenDecode = new String(decoder.decode(tokenPayload));
-            idTokenClaims = new JSONObject(tokenDecode);
-        }else{
-            context.getLogger().info("error: Unable to get token claims.");
+        if(authHeader==null){
+            context.getLogger().info("error: Authorization Header is missing.");
+            return null;
         }
-        return idTokenClaims;
+        String[] authorization = authHeader.split(" ");
+        if (authorization.length!=2) {
+            context.getLogger().info("error: Invalid Authorization Header format.");
+            return null;
+        }
+        if(!authorization[0].equals("Bearer")){
+            context.getLogger().info("error: Invalid token type: "+ authorization[0] + ". Required: Bearer");
+            return null;
+        }
+        String[] tokenChunks = authorization[1].split("\\.");
+        if (tokenChunks.length != 3) {
+            context.getLogger().info("error: Invalid token format.");
+            return null;
+        }
+        String tokenPayload = tokenChunks[1];
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String tokenDecode = new String(decoder.decode(tokenPayload));
+        return new JSONObject(tokenDecode);
     }
 
     public static String getRoleFromToken(HttpRequestMessage<?> request,ExecutionContext context){
@@ -240,8 +250,31 @@ public class RoleAuthHandler {
         return "";
     }
 
+    public static String getRoleFromToken(JSONObject tokenClaims,ExecutionContext context){
+        if(tokenClaims!=null) {
+            try {
+                JSONArray roles = tokenClaims.getJSONArray("roles");
+                return roles.getString(0);
+            } catch (Exception e) {
+                context.getLogger().info("Caught exception: " + e.getMessage());
+            }
+        }
+        return "";
+    }
+
     public static String getEmailFromToken(HttpRequestMessage<?> request,ExecutionContext context){
         JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+        if(tokenClaims!=null) {
+            try {
+                return tokenClaims.getString("preferred_username");
+            } catch (Exception e) {
+                context.getLogger().info("Caught exception: " + e.getMessage());
+            }
+        }
+        return "";
+    }
+
+    public static String getEmailFromToken(JSONObject tokenClaims,ExecutionContext context){
         if(tokenClaims!=null) {
             try {
                 return tokenClaims.getString("preferred_username");
