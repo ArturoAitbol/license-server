@@ -381,7 +381,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.EDIT:
-        let dataObject: any = { ...object.selectedRow };
+        let dataObject: any = { ...object.selectedRow, ...{endLicensePeriod: this.selectedLicense.renewalDate} };
         this.startDate = new Date(this.data.startDate + " 00:00:00");
         this.endDate = new Date(this.data.renewalDate + " 00:00:00");
         this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
