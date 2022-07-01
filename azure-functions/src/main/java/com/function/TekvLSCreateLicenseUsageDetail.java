@@ -77,7 +77,6 @@ public class TekvLSCreateLicenseUsageDetail
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] mandatoryParams = {
 			{"subaccountId","subaccount_id"}, 
-			{"projectId","project_id"}, 
 			{"deviceId","device_id"}, 
 			{"consumptionDate","consumption_date"},
 			{"usageType","usage_type"}
@@ -103,11 +102,7 @@ public class TekvLSCreateLicenseUsageDetail
 				try {
 					String paramValue = jobj.getString(mandatoryParams[i][0]);
 					sqlPart1 += mandatoryParams[i][1] + ",";
-					if(i==1 && paramValue==""){
-						sqlPart2+=null+",";
-					}
-					else
-						sqlPart2 += "'" + paramValue + "',";
+					sqlPart2 += "'" + paramValue + "',";
 				} 
 				catch (Exception e) {
 					// Parameter not found
@@ -117,6 +112,11 @@ public class TekvLSCreateLicenseUsageDetail
 					json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
 					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 				}
+			}
+			//Optional parameters
+			if (jobj.has("projectId")){
+				sqlPart1 += "project_id,";
+				sqlPart2 += "'" + jobj.getString("projectId") + "',";
 			}
 			// modifed_date is always consumption_date when creating the record
 			sqlPart1 += "modified_date,tokens_consumed";
