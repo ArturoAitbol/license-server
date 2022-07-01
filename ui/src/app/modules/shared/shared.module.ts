@@ -5,6 +5,8 @@ import { DataTableComponent } from 'src/app/generics/data-table/data-table.compo
 import { MaterialModule } from '../material/material.module';
 import { DataPropertyGetterPipe } from 'src/app/pipes/data-property-getter.pipe';
 import { CheckAccessForDirective } from 'src/app/directives/check-access-for.directive';
+import { DeleteCustomerModal } from "../../dialogs/delete-customer/delete-customer-modal.component";
+import { FeatureToggleDirective } from "../../directives/feature-toggle.directive";
 
 
 
@@ -13,7 +15,9 @@ import { CheckAccessForDirective } from 'src/app/directives/check-access-for.dir
     NaPipe,
     DataTableComponent,
     DataPropertyGetterPipe,
-    CheckAccessForDirective
+    CheckAccessForDirective,
+    DeleteCustomerModal,
+    FeatureToggleDirective,
   ],
   imports: [
     CommonModule,
@@ -24,7 +28,8 @@ import { CheckAccessForDirective } from 'src/app/directives/check-access-for.dir
     DataTableComponent,
     DataPropertyGetterPipe,
     MaterialModule,
-    CheckAccessForDirective
+    CheckAccessForDirective,
+    FeatureToggleDirective
   ]
 })
 export class SharedModule { }

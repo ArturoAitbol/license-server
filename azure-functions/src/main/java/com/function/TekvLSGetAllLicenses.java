@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -11,10 +12,14 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -24,7 +29,7 @@ public class TekvLSGetAllLicenses
 	/**
 	* This function listens at endpoint "/api/licenses?subaccountId={subaccountId}". Two ways to invoke it using "curl" command in bash:
 	* 1. curl -d "HTTP Body" {your host}/api/licenses?subaccountId={subaccountId}
-	* 2. curl "{your host}/api/subaccounts"
+	* 2. curl "{your host}/api/licenses"
 	*/
 	@FunctionName("TekvLSGetAllLicenses")
 		public HttpResponseMessage run(
@@ -38,22 +43,62 @@ public class TekvLSGetAllLicenses
 		final ExecutionContext context) 
 	{
 
+		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.GET_ALL_LICENSES)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
 		context.getLogger().info("Entering TekvLSGetAllLicenses Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccount-id", "");
   
 		// Build SQL statement
-		String sql = "";
-		if (id.equals("EMPTY")) {
-			if (!subaccountId.isEmpty()) {
-				sql = "select * from license where subaccount_id = '" + subaccountId + "'";
-			} else {
-				sql = "select * from license";
-			}
-		} else {
-			sql = "select * from license where id='" + id +"'";
+		String sql = "select * from license";
+		String subQuery;
+		String email = getEmailFromToken(tokenClaims,context);
+		List<String> conditionsList = new ArrayList<>();
+		// adding conditions according to the role
+		switch (currentRole){
+			case DISTRIBUTOR_FULL_ADMIN:
+				String distributorId = "select distributor_id from customer c,customer_admin ca " +
+						"where c.id = ca.customer_id and admin_email='"+email+"'";
+				subQuery = "select s.id from subaccount s, customer c " +
+						"where s.customer_id = c.id and distributor_id =("+ distributorId +")";
+				conditionsList.add("subaccount_id IN (" + subQuery + ")");
+				break;
+			case CUSTOMER_FULL_ADMIN:
+				subQuery = "select s.id from subaccount s, customer_admin ca where s.customer_id = ca.customer_id " +
+						"and admin_email = '"+email+"'";
+				conditionsList.add("subaccount_id IN (" + subQuery + ")");
+				break;
+			case SUBACCOUNT_ADMIN:
+				subQuery = "select subaccount_id from subaccount_admin where subaccount_admin_email ='"+email+"'";
+				conditionsList.add("subaccount_id=(" + subQuery + ")");
+				break;
 		}
+
+		if (id.equals("EMPTY")){
+			if (!subaccountId.isEmpty())
+				conditionsList.add("subaccount_id = '" + subaccountId + "'");
+		}else{
+			conditionsList.add("id='" + id +"'");
+		}
+
+		String sqlConditions = String.join(" and ",conditionsList);
+
+		if(!sqlConditions.isEmpty())
+			sql += " where "+ sqlConditions;
 		sql += " order by start_date desc;";
 		
 		// Connect to the database
@@ -89,7 +134,7 @@ public class TekvLSGetAllLicenses
 					item.put("startDate", rs.getString("start_date").split(" ")[0]);
 					item.put("packageType", rs.getString("package_type"));
 					item.put("renewalDate", rs.getString("renewal_date").split(" ")[0]);
-					item.put("tokensPurchased", rs.getString("tokens"));
+					item.put("tokensPurchased", rs.getInt("tokens"));
 					item.put("deviceLimit", rs.getString("device_access_limit"));
 				}
 				array.put(item);
@@ -101,13 +146,13 @@ public class TekvLSGetAllLicenses
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }

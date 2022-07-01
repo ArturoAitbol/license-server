@@ -1,5 +1,7 @@
 package com.function;
 
+import com.function.auth.Permission;
+import com.function.auth.RoleAuthHandler;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -15,6 +17,8 @@ import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -41,6 +45,22 @@ public class TekvLSGetAllCustomers {
 				@BindingName("id") String id,
 				final ExecutionContext context) 
 	{
+
+		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.GET_ALL_CUSTOMERS)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
 		context.getLogger().info("Entering TekvLSGetAllCustomers Azure function");   
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
@@ -49,27 +69,42 @@ public class TekvLSGetAllCustomers {
 
 		Map<String, List<String>> adminEmailsMap = new HashMap<>();
 		// Build SQL statement
-		String sql = "";
+		String sql = "select * from customer";
+		String email = getEmailFromToken(tokenClaims,context);
+		List<String> conditionsList = new ArrayList<>();
+		String customerId;
+		// adding conditions according to the role
+		switch (currentRole){
+			case DISTRIBUTOR_FULL_ADMIN:
+				String distributorId = "select distributor_id from customer c,customer_admin ca " +
+						"where c.id = ca.customer_id and admin_email='"+email+"'";
+				conditionsList.add("distributor_id = (" + distributorId + ")");
+				break;
+			case CUSTOMER_FULL_ADMIN:
+				customerId = "select customer_id from customer_admin where admin_email='"+email+"'";
+				conditionsList.add("id = (" + customerId + ")");
+				break;
+			case SUBACCOUNT_ADMIN:
+				customerId = "select customer_id from subaccount s, subaccount_admin sa where s.id = sa.subaccount_id" +
+						" and subaccount_admin_email = '"+email+"'";
+				conditionsList.add("id=(" + customerId + ")");
+				break;
+		}
+
 		if (id.equals("EMPTY")) {
-			sql = "select * from customer";
-			if (!customerType.isEmpty() || !customerName.isEmpty()) {
-				sql += " where";
-				if (!customerType.isEmpty()) {
-					sql += " type = '" + customerType + "'";  
-					if (!customerName.isEmpty()) {
-						sql += " and name = '" + customerName + "'";
-			   }
-				} else {
-					if (!customerName.isEmpty()) {
-						sql += " name = '" + customerName + "'";  
-					}
-				}
+			if (!customerType.isEmpty()) {
+				conditionsList.add("type = '" + customerType + "'");
 			}
-			sql += ";";
-		} else {
-			sql = "select * from customer where id='" + id +"';";
+			if(!customerName.isEmpty()){
+				conditionsList.add("name = '" + customerName + "'");
+			}
+		}else{
+			conditionsList.add("id='" + id +"'");
 			adminEmailsMap = loadAdminEmails(id, context);
 		}
+
+		String sqlConditions = String.join(" and ",conditionsList);
+		sql += (sqlConditions.isEmpty() ? ";" : " where "+sqlConditions+";");
 		
 		// Connect to the database
 		try (
@@ -90,16 +125,13 @@ public class TekvLSGetAllCustomers {
 				item.put("name", rs.getString("name"));
 				item.put("customerType", rs.getString("type"));
 				item.put("testCustomer", rs.getBoolean("test_customer"));
-				
-				String distributorId = rs.getString("distributor_id");
-				if (rs.wasNull()) {
-					distributorId = "";
-				}
-				item.put("distributorId", distributorId);
-
-				item.put("tombstone", rs.getBoolean("tombstone"));
-				if (!id.equals("EMPTY"))
+				if (!id.equals("EMPTY")) {
+					String distributorId = rs.getString("distributor_id");
+					if (rs.wasNull())
+						distributorId = "";
+					item.put("distributorId", distributorId);
 					item.put("adminEmails", adminEmailsMap.get(rs.getString("id")));
+				}
 				array.put(item);
 			}
 			json.put("customers", array);
@@ -109,13 +141,13 @@ public class TekvLSGetAllCustomers {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 
@@ -141,6 +173,10 @@ public class TekvLSGetAllCustomers {
 		}
 		return emailsMap;
 	}
+
+
+
+
 
 
 }

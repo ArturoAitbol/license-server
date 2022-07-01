@@ -8,8 +8,8 @@
                 <h1>{{currentCustomer.customerName}} - {{currentCustomer.name}}</h1>
             </div>
             <div class="col">
-                <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle *checkAccessFor="'addLicense'" value="add-new-license" (click)="onNewLicense()">Add tekVizion 360 Package
+                <mat-button-toggle-group *checkAccessFor="'addLicense'" name="fontStyle" aria-label="Font Style">
+                    <mat-button-toggle value="add-new-license" (click)="onNewLicense()">Add tekVizion 360 Package
                     </mat-button-toggle>
                 </mat-button-toggle-group>
             </div>

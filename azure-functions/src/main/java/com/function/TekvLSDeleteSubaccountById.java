@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -14,6 +15,8 @@ import java.sql.*;
 import java.util.Optional;
 
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -35,6 +38,21 @@ public class TekvLSDeleteSubaccountById
 				@BindingName("id") String id,
 				final ExecutionContext context) 
 	{
+
+		String currentRole = getRoleFromToken(request,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.DELETE_SUB_ACCOUNT)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
 		context.getLogger().info("Entering TekvLSDeleteSubaccountById Azure function");
 		
 		// Connect to the database
@@ -59,7 +77,7 @@ public class TekvLSDeleteSubaccountById
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());

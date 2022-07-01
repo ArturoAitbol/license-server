@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -18,6 +19,8 @@ import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -38,6 +41,21 @@ public class TekvLSGetAllLicenseUsageDetails {
 		HttpRequestMessage<Optional<String>> request,
 		final ExecutionContext context) {
 
+		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.GET_ALL_LICENSE_USAGE_DETAILS)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
 		context.getLogger().info("Entering TekvLSGetAllLicenseUsageDetails Azure function");
 
 		// Get query parameters
@@ -46,11 +64,34 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String view = request.getQueryParameters().getOrDefault("view", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		String year = request.getQueryParameters().getOrDefault("year", "");
-		String month = request.getQueryParameters().getOrDefault("month", "");
-		String project = request.getQueryParameters().getOrDefault("project", "");
-		String type = request.getQueryParameters().getOrDefault("type", "");
 		String sqlCommonConditions = "l.subaccount_id = '" + subaccountId + "'";
+
+		String subQuery;
+		String email = getEmailFromToken(tokenClaims,context);
+		String sqlRoleCondition="";
+		// adding conditions according to the role
+		switch (currentRole){
+			case DISTRIBUTOR_FULL_ADMIN:
+				String distributorId = "select distributor_id from customer c,customer_admin ca " +
+						"where c.id = ca.customer_id and admin_email='"+email+"'";
+				subQuery = "select s.id from subaccount s, customer c " +
+						"where s.customer_id = c.id and distributor_id =("+ distributorId +")";
+				sqlRoleCondition = "l.subaccount_id IN (" + subQuery + ")";
+				break;
+			case CUSTOMER_FULL_ADMIN:
+				subQuery = "select s.id from subaccount s, customer_admin ca where s.customer_id = ca.customer_id " +
+						"and admin_email = '"+email+"'";
+				sqlRoleCondition = "l.subaccount_id IN (" + subQuery + ")";
+				break;
+			case SUBACCOUNT_ADMIN:
+				subQuery = "select subaccount_id from subaccount_admin where subaccount_admin_email ='"+email+"'";
+				sqlRoleCondition = "l.subaccount_id=(" + subQuery + ")";
+				break;
+		}
+
+		if(!sqlRoleCondition.isEmpty())
+			sqlCommonConditions += " and "+ sqlRoleCondition;
+
 		if (!startDate.isEmpty() && !endDate.isEmpty())
 			sqlCommonConditions += " and l.consumption_date>='" + startDate + "' and l.consumption_date<='" + endDate + "'";
 		// Connect to the database
@@ -100,6 +141,12 @@ public class TekvLSGetAllLicenseUsageDetails {
 				} break;
 				default: {
 					// add special filters
+					String year = request.getQueryParameters().getOrDefault("year", "");
+					String month = request.getQueryParameters().getOrDefault("month", "");
+					String project = request.getQueryParameters().getOrDefault("project", "");
+					String type = request.getQueryParameters().getOrDefault("type", "");
+					String limit = request.getQueryParameters().getOrDefault("limit", "100");
+					String offset = request.getQueryParameters().getOrDefault("offset", "0");
 					if (view.isEmpty() && !year.isEmpty() && !month.isEmpty())
 						sqlCommonConditions += " and EXTRACT(MONTH FROM l.consumption_date) = " + month + " and EXTRACT(YEAR FROM l.consumption_date) = " + year;
 					if (!project.isEmpty())
@@ -116,7 +163,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 							" from device d, license_consumption l, usage_detail u " +
 							" where d.id=l.device_id and u.consumption_id = l.id and " + sqlCommonConditions +
 							" group by l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,d.vendor, d.product, d.version" +
-							" order by consumption_date desc;";
+							" order by consumption_date desc limit " + limit + " offset " + offset + ";";
 					context.getLogger().info("Execute SQL all statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
 					while (rs.next()) {
@@ -168,7 +215,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());

@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -16,6 +17,8 @@ import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -36,6 +39,21 @@ public class TekvLSCreateCustomer
 				HttpRequestMessage<Optional<String>> request,
 				final ExecutionContext context) 
 	{
+
+		String currentRole = getRoleFromToken(request,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.CREATE_CUSTOMER)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
 		context.getLogger().info("Entering TekvLSCreateCustomer Azure function");
 
 		// Parse request body and extract parameters needed
@@ -82,14 +100,19 @@ public class TekvLSCreateCustomer
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
+
+		//Optional parameters
 		if (jobj.has("distributorId")){
-			sqlPart1 += "distributor_id";
-			sqlPart2 += "'" + jobj.getString("distributorId") + "'";
-		} else {
-			// Remove the comma after the last parameter and build the SQL statement
-			sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-			sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
+			sqlPart1 += "distributor_id,";
+			sqlPart2 += "'" + jobj.getString("distributorId") + "',";
 		}
+		if (jobj.has("customerId")) {
+			sqlPart1 += "id,";
+			sqlPart2 += "'" + jobj.getString("customerId") + "',";
+		}
+		// Remove the comma after the last parameter and build the SQL statement
+		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
+		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
 		String sql = "insert into customer (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
 		if (!jobj.has("adminEmails"))  {
@@ -148,7 +171,7 @@ public class TekvLSCreateCustomer
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());

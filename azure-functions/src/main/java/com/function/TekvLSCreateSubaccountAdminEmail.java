@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
@@ -11,6 +12,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSCreateSubaccountAdminEmail {
     private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses?ssl=true&sslmode=require"
@@ -26,6 +29,20 @@ public class TekvLSCreateSubaccountAdminEmail {
                     route = "subaccountAdminEmails")
             HttpRequestMessage<Optional<CreateSubaccountAdminRequest>> request,
             final ExecutionContext context) {
+
+        String currentRole = getRoleFromToken(request,context);
+        if(currentRole.isEmpty()){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+        }
+        if(!hasPermission(currentRole, Permission.CREATE_SUBACCOUNT_ADMIN_MAIL)){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+            json.put("error", MESSAGE_FOR_FORBIDDEN);
+            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+        }
 
         context.getLogger().info("Entering TekvLSCreateSubaccountAdminEmail Azure function");
         context.getLogger().info("Request body: " + request);
@@ -64,12 +81,12 @@ public class TekvLSCreateSubaccountAdminEmail {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
     }

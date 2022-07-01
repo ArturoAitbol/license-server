@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "a590b930-5eb3-42ed-8ab9-16a09e1799f0",
+		"_postman_id": "81d43976-1830-42c0-937c-368e3eece0c3",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8624003"
+		"_exporter_id": "8463466"
 	},
 	"item": [
 		{
@@ -21,15 +21,24 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
 				"auth": {
-					"type": "oauth2",
-					"oauth2": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "addTokenTo",
-							"value": "header",
+							"key": "token",
+							"value": "{{devicesAdminToken}}",
 							"type": "string"
 						}
 					]
@@ -38,7 +47,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"type\": \"Other\",\r\n    \"granularity\": \"week\",\r\n    \"tokensToConsume\": \"1\"\r\n}",
+					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"type\": \"OTHER\",\r\n    \"granularity\": \"week\",\r\n    \"tokensToConsume\": \"1\",\r\n    \"supportType\": \"true\",\r\n    \"startDate\": \"{{$isoTimestamp}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -75,16 +84,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -122,16 +121,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -173,16 +162,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -220,16 +199,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -271,16 +240,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -322,16 +281,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -388,16 +337,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -435,16 +374,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "PUT",
 				"header": [],
 				"body": {
@@ -484,11 +413,11 @@
 			],
 			"request": {
 				"auth": {
-					"type": "oauth2",
-					"oauth2": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "addTokenTo",
-							"value": "header",
+							"key": "token",
+							"value": "{{devicesAdminToken}}",
 							"type": "string"
 						}
 					]
@@ -505,12 +434,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOST}}/device/{{deviceId}}",
+					"raw": "{{HOST}}/devices/{{deviceId}}",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
-						"device",
+						"devices",
 						"{{deviceId}}"
 					]
 				}
@@ -531,16 +460,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "PUT",
 				"header": [],
 				"body": {
@@ -588,16 +507,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "PUT",
 				"header": [],
 				"body": {
@@ -636,16 +545,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "PUT",
 				"header": [],
 				"body": {
@@ -684,16 +583,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "PUT",
 				"header": [],
 				"body": {
@@ -736,16 +625,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -778,16 +657,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -819,16 +688,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -860,16 +719,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -904,16 +753,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -951,16 +790,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -999,16 +828,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -1041,16 +860,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -1080,16 +889,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -1119,16 +918,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "DELETE",
 				"header": [],
 				"body": {
@@ -1167,16 +956,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -1206,16 +985,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -1246,11 +1015,11 @@
 			],
 			"request": {
 				"auth": {
-					"type": "oauth2",
-					"oauth2": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "addTokenTo",
-							"value": "header",
+							"key": "token",
+							"value": "{{devicesAdminToken}}",
 							"type": "string"
 						}
 					]
@@ -1284,16 +1053,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -1323,16 +1082,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -1362,16 +1111,6 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "oauth2",
-					"oauth2": [
-						{
-							"key": "addTokenTo",
-							"value": "header",
-							"type": "string"
-						}
-					]
-				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -1394,6 +1133,16 @@
 			"response": []
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{fullAdminToken}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -1446,6 +1195,16 @@
 		{
 			"key": "licenseUsageId",
 			"value": ""
+		},
+		{
+			"key": "fullAdminToken",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSJ9.eyJhdWQiOiJlNjQzZmM5ZC1iMTI3LTQ4ODMtOGI4MC0yOTI3ZGY5MGUyNzUiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vZTNhNDYwMDctMzFjYi00NTI5LWI4Y2MtMWU1OWI5N2ViZGJkL3YyLjAiLCJpYXQiOjE2NTY0Mzg3MTIsIm5iZiI6MTY1NjQzODcxMiwiZXhwIjoxNjU2NDQyNjEyLCJuYW1lIjoiQXJpZWwgUmFzZ3VpZG8iLCJub25jZSI6IjFjYjQwMTkzLWVmMmMtNDg5YS1iYTdlLTNiNzg5ODY3MGVmOSIsIm9pZCI6IjBlMDY2Y2U2LTZiMzktNDEzMi1hYzlhLTg1MTZjNTc3MzIzNCIsInByZWZlcnJlZF91c2VybmFtZSI6ImFyYXNndWlkb0B0ZWt2aXppb25sYWJzLmNvbSIsInJoIjoiMC5BUk1BQjJDazQ4c3hLVVc0ekI1WnVYNjl2WjM4US1ZbnNZTklpNEFwSjktUTRuVVRBRTQuIiwicm9sZXMiOlsidGVrdml6aW9uLkZ1bGxBZG1pbiJdLCJzdWIiOiJFNUJIM0gzdlVCQzBmRWZNbU4yR1ZzbXl5eUR2LVgxZ2NuU0wyZXdyS2lvIiwidGlkIjoiZTNhNDYwMDctMzFjYi00NTI5LWI4Y2MtMWU1OWI5N2ViZGJkIiwidXRpIjoiY3FkYXhKbHFYa205SXhvUWRCdWNBQSIsInZlciI6IjIuMCJ9.J1x2Q-qwgkoRkh1MHq0gsVM21rg6FB8DjMEgBTjaKj3E8MAfUG-j8QeQxrUNprGs1K7p7Ma0JE0Zivia3U-84b1ur7TjkTJmdgx7DfNfix_FOje2VtdlFAxwO2yRMIS8wC7q5lt12TQfGtTDCNV7G-nV2NuW4CvzIAfglE9wOzYL7z8fTRjy7HeCZvGIa0C9YHsDR_drQ3hsc521Jjqn-hOBPrC07KwQLDqtTudUvDJXvUFiNgj5-QGHq3Le7RBVsRJDfSX5eAxXWP3xFL9hOrcPVy3lAZMuNRIFShnKDtTYKXxPyVErY9L4wTPJIHiBjDkPnrTQYzBcdpDB8IACZQ",
+			"type": "string"
+		},
+		{
+			"key": "devicesAdminToken",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSJ9.eyJhdWQiOiJlNjQzZmM5ZC1iMTI3LTQ4ODMtOGI4MC0yOTI3ZGY5MGUyNzUiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vZTNhNDYwMDctMzFjYi00NTI5LWI4Y2MtMWU1OWI5N2ViZGJkL3YyLjAiLCJpYXQiOjE2NTY0NDE4MTgsIm5iZiI6MTY1NjQ0MTgxOCwiZXhwIjoxNjU2NDQ1NzE4LCJuYW1lIjoidGVzdCBkZXZpY2VzIGFkbWluIHJvbGUiLCJub25jZSI6Ijc4OGNkYWVlLTA4YTAtNDVjYy04NmE1LTllYzkxODI5YjkxOCIsIm9pZCI6IjU0ZDlmNDRhLTdmODEtNGY5NS05ZWM2LWEyZGU2NjBiYzFmZCIsInByZWZlcnJlZF91c2VybmFtZSI6InRlc3QtZGV2aWNlcy1hZG1pbkB0ZWt2aXppb25sYWJzLmNvbSIsInJoIjoiMC5BUk1BQjJDazQ4c3hLVVc0ekI1WnVYNjl2WjM4US1ZbnNZTklpNEFwSjktUTRuVVRBTTAuIiwicm9sZXMiOlsidGVrdml6aW9uLkRldmljZXNBZG1pbiJdLCJzdWIiOiJ2TnBWOW0wcWdwT1FRc2VhTnplVXM3dFczSmNncnQ0dWh1VVNSQ0x0SWVZIiwidGlkIjoiZTNhNDYwMDctMzFjYi00NTI5LWI4Y2MtMWU1OWI5N2ViZGJkIiwidXRpIjoiX0o1S0FESFVFRS1TNHdJamYwZHVBQSIsInZlciI6IjIuMCJ9.ZEuYwkVdrwmE1Xd7AyByU2H0YUxDLQR0revtx4VVEts2tQOG_GfifxwGzGGG57fvVXIeZv3NBqNvTKFX2UMYsJXjPuEveJI85HrdA7Yh8gH6PfP7IRE4tuFItJZNhi-UdkDCpvvncIN3TRUzql4vb8-mwDM42FSedh5CkXwdHxAV86M5cigztErtkTsqPTFAUE5gJev39kGshs5YFmkfNFGVFe1P4zoAJii0duawKF1ncFPU9FGLLddfzDSDVD1I_YGTad5OY5doaP71qJC43huZeV7OhY1iSvgx1N-nDxwMR3zzIsXkWoOVmE5erLh7OFrQIFIuQanTETTLVkZ_1Q",
+			"type": "string"
 		}
 	]
 }

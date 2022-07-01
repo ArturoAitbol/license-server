@@ -14,11 +14,11 @@ export class ModifyLicenseComponent implements OnInit {
     packageTypes: any[];
     selectedType: any;
     updateCustomerForm: any = this.formBuilder.group({
-        startDate: ['', Validators.required],
+        licenseStartDate: ['', Validators.required],
         packageType: ['', Validators.required],
         tokens: ['', Validators.required],
         deviceAccessLimit: ['', Validators.required],
-        renewalDate: ['', Validators.required]
+        licenseRenewalDate: ['', Validators.required]
     });
     private previousFormValue: any;
     // flag
@@ -36,8 +36,8 @@ export class ModifyLicenseComponent implements OnInit {
         if (this.data) {
             this.isDataLoading = true;
             this.selectedType = this.data.packageType;
-            this.data.startDate = new Date (this.data.startDate + " 00:00:00");
-            this.data.renewalDate = new Date (this.data.renewalDate + " 00:00:00");
+            this.data.licenseStartDate = new Date (this.data.startDate + " 00:00:00");
+            this.data.licenseRenewalDate = new Date (this.data.renewalDate + " 00:00:00");
             this.updateCustomerForm.patchValue(this.data);
             this.previousFormValue = { ...this.updateCustomerForm };
             this.bundleService.getBundleList().subscribe((res: any) => {
@@ -62,8 +62,10 @@ export class ModifyLicenseComponent implements OnInit {
                 deviceAccessLimit: this.selectedType.deviceAccessTokens,
             });
             if (newType == "Custom" || newType == "AddOn") {
-                this.updateCustomerForm.get('tokens').enable();
-                this.updateCustomerForm.get('deviceAccessLimit').enable();
+                this.updateCustomerForm.patchValue({
+                    tokens: this.data.tokensPurchased,
+                    deviceAccessLimit: this.data.deviceLimit,
+                });
             } else {
                 this.updateCustomerForm.patchValue({
                     tokens: this.selectedType.tokens,
@@ -82,7 +84,7 @@ export class ModifyLicenseComponent implements OnInit {
         this.isDataLoading = true;
         const mergedLicenseObject = { ... this.data, ...this.updateCustomerForm.value };
         const currentDate = new Date(); 
-        currentDate.setHours(0,0,0,0)
+        currentDate.setHours(0,0,0,0);
         const newDate = new Date(mergedLicenseObject.renewalDate);
         mergedLicenseObject.status =newDate>=currentDate ? 'Active' : 'Expired';
         mergedLicenseObject.tokens = this.updateCustomerForm.get("tokens").value;

@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
@@ -13,6 +14,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
+import static com.function.auth.RoleAuthHandler.*;
+
 public class TekvLSDeleteSubaccountAdminEmail {
     @FunctionName("TekvLSDeleteSubaccountAdminEmail")
     public HttpResponseMessage run(
@@ -24,6 +27,20 @@ public class TekvLSDeleteSubaccountAdminEmail {
             HttpRequestMessage<Optional<String>> request,
             @BindingName("email") String email,
             final ExecutionContext context) {
+
+        String currentRole = getRoleFromToken(request,context);
+        if(currentRole.isEmpty()){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+        }
+        if(!hasPermission(currentRole, Permission.DELETE_SUBACCOUNT_ADMIN_EMAIL)){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+            json.put("error", MESSAGE_FOR_FORBIDDEN);
+            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+        }
 
         context.getLogger().info("Entering TekvLSCreateCustomer Azure function");
         // Connect to the database
@@ -47,7 +64,7 @@ public class TekvLSDeleteSubaccountAdminEmail {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();

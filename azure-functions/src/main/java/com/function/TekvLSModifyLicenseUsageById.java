@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Permission;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -15,6 +16,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -36,6 +39,21 @@ public class TekvLSModifyLicenseUsageById
 				@BindingName("id") String id,
 				final ExecutionContext context) 
 	{
+
+		String currentRole = getRoleFromToken(request,context);
+		if(currentRole.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+		if(!hasPermission(currentRole, Permission.MODIFY_LICENSE_USAGE)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
+
 		context.getLogger().info("Entering TekvLSModifyLicenseUsageById Azure function");
 		
 		// Parse request body and extract parameters needed
@@ -45,7 +63,7 @@ public class TekvLSModifyLicenseUsageById
 			context.getLogger().info("error: request body is empty.");
 			JSONObject json = new JSONObject();
 			json.put("error", "error: request body is empty.");
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
 		try {
@@ -55,7 +73,7 @@ public class TekvLSModifyLicenseUsageById
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
 		String sql = "select tokens_to_consume from device where id='" + jobj.getString("deviceId") + "';";
@@ -74,8 +92,7 @@ public class TekvLSModifyLicenseUsageById
 
 			// The expected parameters (and their coresponding column name in the database) 
 			String[][] optionalParams = {
-				{"subaccountId","subaccount_id"}, 
-				{"projectId","project_id"}, 
+				{"projectId","project_id"},
 				{"deviceId","device_id"}, 
 				{"consumptionDate","consumption_date"},
 				{"usageType","usage_type"}
@@ -112,13 +129,13 @@ public class TekvLSModifyLicenseUsageById
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 	}
 }

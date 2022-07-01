@@ -1,0 +1,16 @@
+{
+  "rvasquez@tekvizionlabs.com":
+  {
+    "routes": {
+      "dashboard": true,
+      "customer": true,
+      "consumption": true,
+      "projects": true,
+      "licenses": true
+    },
+    "features": {
+      "testFeature1": true,
+      "testFeature2": true
+    }
+  }
+}
