@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { Validators, FormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { License } from 'src/app/model/license.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { LicenseService } from 'src/app/services/license.service';
 import { BundleService } from 'src/app/services/bundle.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { renewalDateValidator } from "src/app/helpers/renewal-date.validator";
 
 @Component({
   selector: 'app-add-license',
@@ -22,7 +23,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     tokensPurchased: ['', Validators.required],
     deviceLimit: ['', Validators.required],
     renewalDate: ['', Validators.required]
-  });
+  }, { validators: renewalDateValidator });
   constructor(
     private formBuilder: FormBuilder,
     private customerSerivce: CustomerService,

@@ -164,7 +164,7 @@ export class LicensesComponent implements OnInit {
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.MODIFY_LICENSE:
-        this.openDialog(ModifyLicenseComponent, object.selectedRow);
+        this.openDialog(ModifyLicenseComponent, {...object.selectedRow});
         break;
       case this.DELETE_LICENSE:
         this.onDelete(object.selectedRow);

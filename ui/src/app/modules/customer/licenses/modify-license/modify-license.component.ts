@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { LicenseService } from 'src/app/services/license.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { BundleService } from 'src/app/services/bundle.service';
+import { renewalDateValidator } from "src/app/helpers/renewal-date.validator";
 
 @Component({
     selector: 'app-modify-license',
@@ -14,12 +15,12 @@ export class ModifyLicenseComponent implements OnInit {
     packageTypes: any[];
     selectedType: any;
     updateCustomerForm: any = this.formBuilder.group({
-        licenseStartDate: ['', Validators.required],
+        startDate: ['', Validators.required],
         packageType: ['', Validators.required],
         tokens: ['', Validators.required],
         deviceAccessLimit: ['', Validators.required],
-        licenseRenewalDate: ['', Validators.required]
-    });
+        renewalDate: ['', Validators.required]
+    }, { validators: renewalDateValidator });
     private previousFormValue: any;
     // flag
     isDataLoading: boolean = false;
@@ -36,8 +37,8 @@ export class ModifyLicenseComponent implements OnInit {
         if (this.data) {
             this.isDataLoading = true;
             this.selectedType = this.data.packageType;
-            this.data.licenseStartDate = new Date (this.data.startDate + " 00:00:00");
-            this.data.licenseRenewalDate = new Date (this.data.renewalDate + " 00:00:00");
+            this.data.startDate = new Date (this.data.startDate + " 00:00:00");
+            this.data.renewalDate = new Date (this.data.renewalDate + " 00:00:00");
             this.updateCustomerForm.patchValue(this.data);
             this.previousFormValue = { ...this.updateCustomerForm };
             this.bundleService.getBundleList().subscribe((res: any) => {

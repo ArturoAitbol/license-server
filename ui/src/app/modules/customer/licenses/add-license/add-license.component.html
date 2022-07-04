@@ -17,6 +17,7 @@
                         <input required matInput [matDatepicker]="renewalDatepicker" formControlName="renewalDate">
                         <mat-datepicker-toggle matSuffix [for]="renewalDatepicker"></mat-datepicker-toggle>
                         <mat-datepicker #renewalDatepicker></mat-datepicker>
+                        <mat-error *ngIf="addLicenseForm.errors?.['renewalIsBeforeStart'] && (addLicenseForm.get('renewalDate').touched || addLicenseForm.get('renewalDate').dirty)">Renewal Date should be after the Start Date</mat-error>
                     </mat-form-field>
                 </div>
                 <div>
