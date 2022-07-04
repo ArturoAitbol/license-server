@@ -136,7 +136,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
           startWith(''),
           map(value => (typeof value === 'string' ? value : value ? value.vendor : '')),
           map(vendor => {
-            console.log(vendor);
             if (vendor === '') {
               this.models = [];
               this.addDeviceForm.controls['product'].disable();
@@ -155,7 +154,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
           map(value => (typeof value === 'string' ? value : value ? value.vendor : '')),
           map(vendor => {
             if (vendor === '') {
-              this.models = [];
+              this.supportModels = [];
               this.addSupportForm.controls['product'].disable();
               this.addSupportForm.patchValue({ product: '' });
             }
@@ -429,6 +428,15 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   isInvalid(control: string): boolean {
     return this.addDeviceForm.controls[control].invalid || !this.addDeviceForm.controls[control].value;
+  }
+  isInvalidSupport(control: string): boolean {
+    return this.addSupportForm.controls[control].invalid || !this.addSupportForm.controls[control].value;
+  }
+
+  devicesAndSupportInvalid(): boolean{
+    let isInvalidDevice = this.devicesUsed.length === 0 && this.isInvalid('product');
+    let isInvalidSupport = this.supportUsed.length === 0 && this.isInvalidSupport('product');
+    return isInvalidDevice && isInvalidSupport;
   }
 
   ngOnDestroy(): void {

@@ -108,7 +108,7 @@
                                 </section>
                             </div>
                             <div class="mt-3">
-                                <button mat-mini-fab color="primary" type="button" class="plus-button"
+                                <button mat-mini-fab color="primary" type="button" class="plus-button mb-3"
                                         title="New Device"
                                         (click)="addDevice()" [disabled]="!addDeviceForm.valid || isInvalid('product')">
                                     <mat-icon>add</mat-icon>
@@ -151,7 +151,7 @@
                                             {{item.vendor}}
                                         </mat-option>
                                     </mat-autocomplete>
-                                    <mat-error *ngIf="isInvalid('vendor')">{{getErrorMessage()}}</mat-error>
+                                    <mat-error *ngIf="isInvalidSupport('vendor')">{{getErrorMessage()}}</mat-error>
                                 </mat-form-field>
                             </div>
                             <div>
@@ -164,8 +164,8 @@
                                             {{item.product}}
                                         </mat-option>
                                     </mat-autocomplete>
-                                    <mat-error *ngIf="isInvalid('product')">{{getErrorMessage()}}</mat-error>
-                                    <mat-hint *ngIf="models.length === 0">Please select a Vendor first</mat-hint>
+                                    <mat-error *ngIf="isInvalidSupport('product')">{{getErrorMessage()}}</mat-error>
+                                    <mat-hint *ngIf="supportModels.length === 0">Please select a Vendor first</mat-hint>
                                 </mat-form-field>
                             </div>
                             <div>
@@ -178,9 +178,9 @@
                                 <mat-hint class="d-flex justify-content-start hint mb-1" *ngIf="startWeek===undefined">Please select a Consumption Week first</mat-hint> 
                             </div>
                             <div class="mt-3">
-                                <button mat-mini-fab color="primary" type="button" class="plus-button"
-                                        title="New Device"
-                                        (click)="addSupport()" [disabled]="!addSupportForm.valid || isInvalid('product')">
+                                <button mat-mini-fab color="primary" type="button" class="plus-button mb-3"
+                                        title="New Support"
+                                        (click)="addSupport()" [disabled]="!addSupportForm.valid || isInvalidSupport('product')">
                                     <mat-icon>add</mat-icon>
                                 </button>
                                 <mat-hint *ngIf="supportUsed.length === 0">Please add at least one device</mat-hint>
@@ -193,7 +193,7 @@
         <mat-dialog-actions>
             <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" type="submit"
-                    [disabled]="!addLicenseConsumptionForm.valid || (devicesUsed.length === 0 && isInvalid('product'))">
+                    [disabled]="!addLicenseConsumptionForm.valid || devicesAndSupportInvalid()">
                 Submit
             </button>
         </mat-dialog-actions>
