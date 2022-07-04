@@ -63,7 +63,7 @@
                                 <section>
                                     <mat-checkbox class="checkbox-margin"
                                                   *ngFor="let day of item.days; let daysIndex = index"
-                                                  color="primary" [checked]="day.used"
+                                                  color="primary" [checked]="day.used" [disabled]="day.disabled"
                                                   (change)="setChecked($event.checked, daysIndex, deviceIndex)">
                                         {{day.name}} </mat-checkbox>
                                 </section>
@@ -99,14 +99,15 @@
                                 </mat-form-field>
                             </div>
                             <div>
-                                <section>
+                                <section class="mt-3">
                                     <mat-checkbox class="checkbox-margin" *ngFor="let day of deviceDays; let i = index"
-                                                  [color]="'primary'" [checked]="day.used"
+                                                  [color]="'primary'" [checked]="day.used" [disabled]="day.disabled"
                                                   (change)="setChecked($event.checked, i)">
                                         {{day.name}} </mat-checkbox>
+                                    <mat-hint class="d-flex justify-content-start hint mb-1" *ngIf="startWeek===undefined">Please select a Consumption Week first</mat-hint>  
                                 </section>
                             </div>
-                            <div>
+                            <div class="mt-3">
                                 <button mat-mini-fab color="primary" type="button" class="plus-button"
                                         title="New Device"
                                         (click)="addDevice()" [disabled]="!addDeviceForm.valid || isInvalid('product')">
@@ -132,7 +133,7 @@
                                 <section>
                                     <mat-checkbox class="checkbox-margin"
                                                   *ngFor="let day of item.days; let daysIndex = index"
-                                                  color="primary" [checked]="day.used"
+                                                  color="primary" [checked]="day.used" [disabled]="day.disabled"
                                                   (change)="setSupportDay($event.checked, daysIndex, deviceIndex)">
                                         {{day.name}} </mat-checkbox>
                                 </section>
@@ -168,14 +169,15 @@
                                 </mat-form-field>
                             </div>
                             <div>
-                                <section>
+                                <section class="mt-3">
                                     <mat-checkbox class="checkbox-margin" *ngFor="let day of supportDays; let i = index"
-                                                  [color]="'primary'" [checked]="day.used"
+                                                  [color]="'primary'" [checked]="day.used" [disabled]="day.disabled"
                                                   (change)="setSupportDay($event.checked, i)">
                                         {{day.name}} </mat-checkbox>
                                 </section>
+                                <mat-hint class="d-flex justify-content-start hint mb-1" *ngIf="startWeek===undefined">Please select a Consumption Week first</mat-hint> 
                             </div>
-                            <div>
+                            <div class="mt-3">
                                 <button mat-mini-fab color="primary" type="button" class="plus-button"
                                         title="New Device"
                                         (click)="addSupport()" [disabled]="!addSupportForm.valid || isInvalid('product')">

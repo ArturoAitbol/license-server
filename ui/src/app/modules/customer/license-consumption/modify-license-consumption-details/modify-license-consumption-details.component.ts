@@ -34,13 +34,13 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   filteredModels: Observable<Device[]>;
   originalDays: any = [];
   days: any = [
-    { name: "Sun", used: false },
-    { name: "Mon", used: false },
-    { name: "Tue", used: false },
-    { name: "Wed", used: false },
-    { name: "Thu", used: false },
-    { name: "Fri", used: false },
-    { name: "Sat", used: false },
+    { name: "Sun", used: false, disabled:true },
+    { name: "Mon", used: false, disabled:true },
+    { name: "Tue", used: false, disabled:true },
+    { name: "Wed", used: false, disabled:true },
+    { name: "Thu", used: false, disabled:true },
+    { name: "Fri", used: false, disabled:true },
+    { name: "Sat", used: false, disabled:true },
   ];
   selectedVendor: string = '';
   startDate: any;
@@ -64,6 +64,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   ngOnInit() {
     if (this.data) {
       this.data.consDate = new Date(this.data.consumptionDate + " 00:00:00");
+      this.enableUsageDays();
       this.currentCustomer = this.customerService.getSelectedCustomer();
       this.fetchData();
       this.filteredProjects = this.updateForm.controls['project'].valueChanges.pipe(
@@ -90,6 +91,21 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   onChangeVendor(value: any): void {
     this.filterVendorDevices(value.vendor);
     this.updateForm.controls.device.setValue("");
+  }
+
+  enableUsageDays(){
+    let endLicense = new Date(this.data.endLicensePeriod+" 00:00:00");
+    let startWeek: Date = this.data.consDate;
+    let endWeek = new Date(startWeek.getTime());
+    endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 6);
+    if(endWeek>endLicense){
+      endWeek=endLicense;
+    }
+    this.days.forEach((day,index)=> {
+      if(index>=startWeek.getDay() && index<=endWeek.getDay()){
+        day.disabled = false;
+      }
+    }) 
   }
 
   private filterVendorDevices(value: string): void {

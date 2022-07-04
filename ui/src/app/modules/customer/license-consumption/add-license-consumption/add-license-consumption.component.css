@@ -20,7 +20,7 @@ mat-form-field {
 }
 
 .checkbox-margin {
-  margin: 0 12px 12px;
+  margin: 0 12px 0px;
 }
 
 .no-padding {
@@ -82,5 +82,10 @@ mat-form-field {
 
 .device-container--start {
   order: -1;
+}
+
+.hint{
+  font-size: 75%;
+  margin-left: 12px;
 }
 
