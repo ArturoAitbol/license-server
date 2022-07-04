@@ -91,6 +91,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   isEquipmentSummaryRequestCompleted: boolean = false;
   isDetailedConsumptionLoadingResults: boolean = true;
   isDetailedConsumptionRequestCompleted: boolean = false;
+  isLicenseListLoaded: boolean = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
@@ -129,6 +130,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
         this.licenseForm.patchValue({ licenseId: this.selectedLicense.id });
         this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
         this.endDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
+        this.isLicenseListLoaded = true;
         this.fetchDataToDisplay();
       } else {
         this.isLicenseSummaryLoadingResults = false;
