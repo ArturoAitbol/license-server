@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Validators, FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { License } from 'src/app/model/license.model';
 import { CustomerService } from 'src/app/services/customer.service';
@@ -24,6 +24,8 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     deviceLimit: ['', Validators.required],
     renewalDate: ['', Validators.required]
   }, { validators: renewalDateValidator });
+  startDateMax: Date = null;
+  renewalDateMin: Date = null;
   constructor(
     private formBuilder: FormBuilder,
     private customerSerivce: CustomerService,
@@ -79,6 +81,18 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
         this.addLicenseForm.get('deviceLimit').disable();
       }
     }
+  }
+
+  onStartDateChange(value) {
+    let minDate = new Date(value);
+    minDate.setDate(minDate.getDate() + 1);
+    this.renewalDateMin = minDate;
+  }
+
+  onRenewalDateChange(value) {
+    let maxDate = new Date(value);
+    maxDate.setDate(maxDate.getDate() - 1);
+    this.startDateMax = maxDate;
   }
 
   ngOnDestroy(): void {
