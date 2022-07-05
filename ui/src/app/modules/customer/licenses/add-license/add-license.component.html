@@ -6,7 +6,7 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Start Date</mat-label>
-                        <input required matInput [matDatepicker]="picker" formControlName="startDate">
+                        <input required matInput [matDatepicker]="picker" formControlName="startDate" [max]="startDateMax" (dateChange)="onStartDateChange($event.value)">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
@@ -14,9 +14,10 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Renewal Date</mat-label>
-                        <input required matInput [matDatepicker]="renewalDatepicker" formControlName="renewalDate">
+                        <input required matInput [matDatepicker]="renewalDatepicker" formControlName="renewalDate" [min]="renewalDateMin" (dateChange)="onRenewalDateChange($event.value)">
                         <mat-datepicker-toggle matSuffix [for]="renewalDatepicker"></mat-datepicker-toggle>
                         <mat-datepicker #renewalDatepicker></mat-datepicker>
+                        <mat-error *ngIf="addLicenseForm.errors?.['renewalIsBeforeStart'] && (addLicenseForm.get('renewalDate').touched || addLicenseForm.get('renewalDate').dirty)">Renewal Date should be after the Start Date</mat-error>
                     </mat-form-field>
                 </div>
                 <div>
