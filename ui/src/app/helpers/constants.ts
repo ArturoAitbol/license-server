@@ -11,6 +11,6 @@ export class Constants {
     public static readonly TENANT_ID: string = 'e3a46007-31cb-4529-b8cc-1e59b97ebdbd';
     public static readonly REDIRECT_URL_AFTER_LOGIN: string = window.location.origin + '/license-server/index.html';
     
-    // Logout time after inactivity in ms (1Hr x 60 min x 60 seg * 1000 ms
-    public static readonly LOGOUT_TIME_MS = 1 * 60 * 60 * 60 * 1000;
+    // Logout time after inactivity in ms (1Hr x 60 min x 60 seg x 1000 ms
+    public static readonly LOGOUT_TIME_MS = 1 * 60 * 60  * 1000;
 }

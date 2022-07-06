@@ -6,10 +6,30 @@ import { MsalService } from "@azure/msal-angular";
     providedIn: 'root'
 })
 export class AutoLogoutService {
+    timeoutId: number = null;
+
+    private readonly  LAST_ACTIVITY_TIMESTAMP_KEY = 'lastActivityTime';
     constructor(private msalService: MsalService) {
     }
 
-    timeoutId: number;
+    public validateLastActivityTime(): void {
+        const lastActivityTimestamp = new Date(localStorage.getItem(this.LAST_ACTIVITY_TIMESTAMP_KEY));
+        if (lastActivityTimestamp.getTime() + Constants.LOGOUT_TIME_MS < new Date().getTime()) {
+            this.logout();
+            this.clearLoginTimeValidator();
+        }
+    }
+
+    public restartTimer(): void {
+        clearTimeout(this.timeoutId);
+        localStorage.setItem(this.LAST_ACTIVITY_TIMESTAMP_KEY, new Date().toISOString());
+        this.timeoutId = setTimeout(() => this.validateLastActivityTime(), Constants.LOGOUT_TIME_MS);
+    }
+
+    public clearLoginTimeValidator(): void {
+        clearTimeout(this.timeoutId);
+        this.timeoutId = null;
+    }
 
     private logout() {
         if (this.msalService.instance.getActiveAccount() != null) {
@@ -22,12 +42,5 @@ export class AutoLogoutService {
                 console.error('error while logout: ', error);
             }
         }
-    }
-
-    public restartTimer(): void {
-        clearTimeout(this.timeoutId);
-        this.timeoutId = setTimeout(() => {
-            this.logout();
-        }, Constants.LOGOUT_TIME_MS);
     }
 }
