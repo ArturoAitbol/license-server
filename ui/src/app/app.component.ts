@@ -30,6 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
         } else {
             this.currentUser = this.isLoggedIn();
             this.navigateToDashboard();
+            this.autoLogoutService.validateLastActivityTime();
         }
         this.broadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS),
