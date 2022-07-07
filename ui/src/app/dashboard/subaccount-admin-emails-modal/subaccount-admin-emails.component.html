@@ -10,13 +10,13 @@
                     <label style="font-weight: bold;">{{data.name}}</label>
                 </div>
                 <div *ngFor="let email of adminEmails; let emailIndex = index">
-                    <div class="form-row" style="justify-content: left;">
-                        <div style="justify-content: left;">
-                            <label class="subtitle">Email:</label>
-                            <label>{{email}}</label>
+                    <div class="row" >
+                        <div class="col-8" style="text-align: left;">
+                            <label class = "col-sm-2 col-form-label">Email: </label>
+                            <label class = "col-sm-2 col-form-label">{{email}}</label>
                         </div>
-                        <div style="justify-content: right;">
-                            <button mat-icon-button color="primary" title="Delete email"
+                        <div class="col-4 align-top">
+                            <button mat-icon-button color="primary" title="Delete email" 
                                     (click)="deleteExistingEmail(emailIndex)">
                                 <mat-icon>clear</mat-icon>
                             </button>
