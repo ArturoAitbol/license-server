@@ -9,7 +9,7 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Start Date</mat-label>
-                        <input required matInput [matDatepicker]="picker" formControlName="licenseStartDate">
+                        <input required matInput [matDatepicker]="picker" formControlName="startDate">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
@@ -17,7 +17,7 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Renewal Date</mat-label>
-                        <input required matInput [matDatepicker]="renewalDatepicker" formControlName="licenseRenewalDate">
+                        <input required matInput [matDatepicker]="renewalDatepicker" formControlName="renewalDate">
                         <mat-datepicker-toggle matSuffix [for]="renewalDatepicker"></mat-datepicker-toggle>
                         <mat-datepicker #renewalDatepicker></mat-datepicker>
                     </mat-form-field>
@@ -35,13 +35,13 @@
                 <div>
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label>Device Access tekTokens</mat-label>
-                        <input required matInput formControlName="deviceAccessLimit">
+                        <input required matInput formControlName="deviceLimit">
                     </mat-form-field>
                 </div>
                 <div>
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label>tekTokens</mat-label>
-                        <input required matInput formControlName="tokens">
+                        <input required matInput formControlName="tokensPurchased">
                     </mat-form-field>
                 </div>
             </mat-dialog-content>

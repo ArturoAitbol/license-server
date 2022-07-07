@@ -60,7 +60,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-		String subaccountId = request.getQueryParameters().getOrDefault("subaccount-id", "");
+		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		String view = request.getQueryParameters().getOrDefault("view", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
@@ -143,7 +143,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// add special filters
 					String year = request.getQueryParameters().getOrDefault("year", "");
 					String month = request.getQueryParameters().getOrDefault("month", "");
-					String project = request.getQueryParameters().getOrDefault("project", "");
+					String project = request.getQueryParameters().getOrDefault("projectId", "");
 					String type = request.getQueryParameters().getOrDefault("type", "");
 					String limit = request.getQueryParameters().getOrDefault("limit", "100");
 					String offset = request.getQueryParameters().getOrDefault("offset", "0");

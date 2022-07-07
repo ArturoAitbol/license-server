@@ -80,7 +80,7 @@ public class TekvLSModifySubaccountById
 
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] optionalParams = {
-			{"name","name"}, 
+			{"subaccountName","name"}, 
 			{"customerId","customer_id"}};
 		// Build the sql query
 		String sql = "update subaccount set ";
