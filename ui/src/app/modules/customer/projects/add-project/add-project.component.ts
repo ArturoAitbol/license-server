@@ -14,8 +14,8 @@ export class AddProjectComponent implements OnInit {
   readonly OPEN_STATUS = 'Open';
 
   addProjectForm = this.formBuilder.group({
-    name: ['', Validators.required],
-    code: ['', Validators.required],
+    projectName: ['', Validators.required],
+    projectNumber: ['', Validators.required],
     openDate: ['', Validators.required],
   });
   constructor(

@@ -79,9 +79,9 @@ public class TekvLSCreateCustomer
 
 		// The expected parameters (and their corresponding column name in the database)
 		String[][] mandatoryParams = {
-			{"name","name"},
+			{"customerName","name"},
 			{"customerType","type"},
-		    {"testCustomer","test_customer"}
+		    {"test","test_customer"}
 		};
 		// Build the sql query
 		String sqlPart1 = "";
@@ -115,9 +115,9 @@ public class TekvLSCreateCustomer
 		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
 		String sql = "insert into customer (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
-		if (!jobj.has("adminEmails"))  {
+		if (!jobj.has("customerAdminEmails"))  {
 			JSONObject json = new JSONObject();
-			json.put("error", "Missing mandatory parameter: adminEmail");
+			json.put("error", "Missing mandatory parameter: customerAdminEmail");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -131,7 +131,7 @@ public class TekvLSCreateCustomer
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 
-			JSONArray adminEmailsJson = jobj.getJSONArray("adminEmails");
+			JSONArray adminEmailsJson = jobj.getJSONArray("customerAdminEmails");
 			List<String> adminEmails = new ArrayList<>();
 			for (int i=0; i<adminEmailsJson.length(); i++) {
 				adminEmails.add( adminEmailsJson.getString(i) );
@@ -153,7 +153,7 @@ public class TekvLSCreateCustomer
 			context.getLogger().info("License usage inserted successfully."); 
 
 			// Return the customer id in the response
-			sql = "select id from customer where name = '" + jobj.getString("name") + "' and type = '" + jobj.getString("customerType") + "';";
+			sql = "select id from customer where name = '" + jobj.getString("customerName") + "' and type = '" + jobj.getString("customerType") + "';";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
