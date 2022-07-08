@@ -65,21 +65,24 @@
                 <mat-radio-group>
                     <mat-radio-button class="radio-blue" value="period" [checked]="aggregation == 'period'"
                         (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
-                        <br>
-                    <mat-radio-button class="radio-blue" value="week" [checked]="aggregation == 'week'"
-                        (change)="getMultipleChoiceAnswer($event)">This Week</mat-radio-button>
-                        <br>
-                        <mat-radio-button class="radio-blue" value="month" [checked]="aggregation == 'month'"
+                    <br>
+                    <mat-radio-button class="radio-blue" value="week" [checked]="aggregation == 'week'" [disabled]="!isLicenseListLoaded"
+                        (change)="getMultipleChoiceAnswer($event)">Week</mat-radio-button>
+                    <br>
+                    <mat-radio-button class="radio-blue" value="month" [checked]="aggregation == 'month'" [disabled]="!isLicenseListLoaded"
                         (change)="getMultipleChoiceAnswer($event)">Month</mat-radio-button>
-                        <mat-form-field appearance="outline" class="month-picker">
-                            <input required matInput [disabled]="aggregation == 'period'" [value]="selectedDate"
-                                [min]="startDate" [max]="endDate" [matDatepicker]="picker"
-                                placeholder="Choose Month and Year">
-                            <mat-datepicker-toggle [disabled]="aggregation == 'period'" matSuffix [for]="picker">
-                            </mat-datepicker-toggle>
-                            <mat-datepicker #picker startView="year" (monthSelected)="setMonthAndYear($event, picker)">
-                            </mat-datepicker>
-                        </mat-form-field>
+                    <br>
+                    <mat-form-field appearance="outline">
+                        <mat-label>{{getDatePickerPlaceHolder()}}</mat-label>
+                        <mat-date-range-input [formGroup]="range" [rangePicker]="picker" [min]="startDate" [max]="endDate">
+                          <input formControlName="start" matStartDate placeholder="Start date" [readonly]="true"> 
+                          <input formControlName="end" matEndDate placeholder="End date" [readonly]="true" (dateChange)="setWeek()">
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle [disabled]="aggregation == 'period'" matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker dateRange [minDate]="startDate" [maxDate]="endDate" [month]="aggregation == 'month'" 
+                            #picker [startView]="aggregation == 'month'?'year':'month'" (monthSelected)="setMonthAndYear($event, picker)">
+                        </mat-date-range-picker>
+                    </mat-form-field>
                 </mat-radio-group>
             </div>
             <div class="col-4 d-flex justify-content-center">
