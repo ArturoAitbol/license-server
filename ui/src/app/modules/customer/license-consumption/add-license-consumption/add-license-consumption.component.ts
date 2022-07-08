@@ -55,10 +55,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   filteredSupportModels: Observable<any[]>;
   startDate: any;
   endDate: any;
-  endWeek: string;
-  startWeek: string;
   addLicenseConsumptionForm = this.formBuilder.group({
     startWeek: ['', Validators.required],
+    endWeek: ['', Validators.required],
     project: ['', [Validators.required, this.RequireMatch]]
   });
   addDeviceForm = this.formBuilder.group({
@@ -247,25 +246,13 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.dialogRef.close();
   }
 
-  pickStartWeek(newDateSelection: Date) {
-    console.log(newDateSelection);
-    let startWeek = new Date(newDateSelection);
-    let endWeek = new Date(newDateSelection);
-    startWeek.setDate(startWeek.getDate() - startWeek.getDay());
-    if(startWeek<this.startDate)
-      startWeek = this.startDate;
-
-    endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 6);
-    if(endWeek>this.endDate)
-      endWeek = this.endDate;
-
+  pickStartWeek() {
+    let startWeek = this.addLicenseConsumptionForm.get('startWeek').value;
+    let endWeek = this.addLicenseConsumptionForm.get('endWeek').value;
     this.toggleUsageDays(this.deviceDays,startWeek,endWeek);
     this.toggleUsageDays(this.supportDays,startWeek,endWeek);
     this.devicesUsed.forEach(deviceUsed => this.toggleUsageDays(deviceUsed.days,startWeek,endWeek));
     this.supportUsed.forEach(supportUsed => this.toggleUsageDays(supportUsed.days,startWeek,endWeek));
-    this.startWeek = startWeek.toLocaleDateString();
-    this.endWeek = endWeek.toLocaleDateString();
-    this.addLicenseConsumptionForm.patchValue({ startWeek: startWeek});
   }
 
   toggleUsageDays(days:any[],startWeek: Date,endWeek: Date){
@@ -294,12 +281,11 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    let startWeek: Date = new Date(this.addLicenseConsumptionForm.value.startWeek);
     let consumptionRequests: any[] = [];
     const licenseConsumptionsObject: any = {
       subaccountId: this.currentCustomer.id,
       projectId: this.addLicenseConsumptionForm.value.project.id,
-      consumptionDate: startWeek.toISOString().split("T")[0],
+      consumptionDate: this.addLicenseConsumptionForm.value.startWeek.toISOString().split("T")[0],
       type: "Configuration",
       macAddress: "",
       serialNumber: "",
@@ -431,6 +417,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
   isInvalidSupport(control: string): boolean {
     return this.addSupportForm.controls[control].invalid || !this.addSupportForm.controls[control].value;
+  }
+  isWeekDefined(): boolean{
+    return this.addLicenseConsumptionForm.controls['startWeek'].valid && this.addLicenseConsumptionForm.controls['endWeek'].valid;
   }
 
   devicesAndSupportInvalid(): boolean{
