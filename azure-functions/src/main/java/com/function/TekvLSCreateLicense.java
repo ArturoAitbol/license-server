@@ -102,6 +102,10 @@ public class TekvLSCreateLicense
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
+		if (jobj.has("licenseId")) {
+			sqlPart1 += "id,";
+			sqlPart2 += "'" + jobj.getString("licenseId") + "',";
+		}
 		LocalDate currentDate = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd");
 		String actualDate = currentDate.format(formatter);
