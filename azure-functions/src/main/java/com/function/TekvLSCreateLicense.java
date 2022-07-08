@@ -82,8 +82,8 @@ public class TekvLSCreateLicense
 			{"startDate","start_date"}, 
 			{"packageType","package_type"}, 
 			{"renewalDate","renewal_date"},
-			{"tokens","tokens"}, 
-			{"deviceAccessLimit","device_access_limit"}
+			{"tokensPurchased","tokens"}, 
+			{"deviceLimit","device_access_limit"}
 		};
 		// Build the sql query
 		String sqlPart1 = "";

@@ -55,8 +55,8 @@ export class AdminEmailsComponent implements OnInit {
     this.isDataLoading = true;
     if (this.emailForms.length > 0) {
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.customerAdminEmailService.createAdminEmail({
-        adminEmail: value.email,
-        customerId: this.data.customerId
+        customerAdminEmail: value.email,
+        customerID: this.data.customerId
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
         if (!res.error) {

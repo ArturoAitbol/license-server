@@ -79,7 +79,7 @@ public class TekvLSCreateSubaccount
 
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] mandatoryParams = {
-			{"name","name"}, 
+			{"subaccountName","name"}, 
 			{"customerId","customer_id"}
 		};
 		// Build the sql query
@@ -104,9 +104,9 @@ public class TekvLSCreateSubaccount
 		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
 		String sql = "insert into subaccount (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
-		if (!jobj.has("subaccountAdminEmails"))  {
+		if (!jobj.has("subaccountAdminEmail"))  {
 			JSONObject json = new JSONObject();
-			json.put("error", "Missing mandatory parameter: subaccountAdminEmails");
+			json.put("error", "Missing mandatory parameter: subaccountAdminEmail");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
@@ -120,7 +120,7 @@ public class TekvLSCreateSubaccount
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 			
-			JSONArray adminEmailsJson = jobj.getJSONArray("subaccountAdminEmails");
+			JSONArray adminEmailsJson = jobj.getJSONArray("subaccountAdminEmail");
 			List<String> adminEmails = new ArrayList<>();
 			for (int i=0; i<adminEmailsJson.length(); i++) {
 				adminEmails.add( adminEmailsJson.getString(i) );
@@ -150,7 +150,7 @@ public class TekvLSCreateSubaccount
 			}
 
 			// Return the id in the response
-			sql = "select id from subaccount where name = '" + jobj.getString("name") + "' and customer_id = '" + jobj.getString("customerId") + "';";
+			sql = "select id from subaccount where name = '" + jobj.getString("subaccountName") + "' and customer_id = '" + jobj.getString("customerId") + "';";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			rs.next();

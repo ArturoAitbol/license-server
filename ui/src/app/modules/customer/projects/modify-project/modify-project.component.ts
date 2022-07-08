@@ -19,8 +19,8 @@ export class ModifyProjectComponent implements OnInit {
   private previousFormValue: any;
   
   updateProjectForm = this.formBuilder.group({
-    name: ['', Validators.required],
-    code: ['', Validators.required],
+    projectName: ['', Validators.required],
+    projectNumber: ['', Validators.required],
     openDate: ['', Validators.required],
     closeDate: ['', Validators.required],
     status: ['', Validators.required]
