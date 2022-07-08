@@ -95,7 +95,7 @@ public class TekvLSModifyLicenseUsageById
 				{"projectId","project_id"},
 				{"deviceId","device_id"}, 
 				{"consumptionDate","consumption_date"},
-				{"usageType","usage_type"}
+				{"type","usage_type"}
 			};
 			// Build the sql query
 			sql = "update license_consumption set ";

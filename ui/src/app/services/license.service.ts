@@ -35,7 +35,7 @@ export class LicenseService {
   public getLicenseList(subaccountId?: string, subaccountName?: string) {
     let params = new HttpParams();
     if (subaccountId)
-      params = params.set('subaccount-id', subaccountId);
+      params = params.set('subaccountId', subaccountId);
     else if (subaccountName)
       params = params.set('subaccountName', subaccountName);
     const headers = this.getHeaders();

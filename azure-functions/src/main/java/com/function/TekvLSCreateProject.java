@@ -77,8 +77,8 @@ public class TekvLSCreateProject
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] mandatoryParams = {
 			{"subaccountId","subaccount_id"}, 
-			{"name","name"}, 
-			{"code","code"},
+			{"projectName","name"}, 
+			{"projectNumber","code"},
 			{"openDate","open_date"},
 			{"status","status"} 
 		};
@@ -124,8 +124,8 @@ public class TekvLSCreateProject
 			// Return the id in the response
 			sql = "select id from project where " + 
 				"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
-				"name = '" + jobj.getString("name") + "' and " +
-				"code = '" + jobj.getString("code") + "' and " +
+				"name = '" + jobj.getString("projectName") + "' and " +
+				"code = '" + jobj.getString("projectNumber") + "' and " +
 				"status = '" + jobj.getString("status") + "' and " +
 				"open_date = '" + jobj.getString("openDate") + "';";
 			context.getLogger().info("Execute SQL statement: " + sql);
