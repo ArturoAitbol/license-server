@@ -14,7 +14,9 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.json.JSONArray;
@@ -26,6 +28,9 @@ import static com.function.auth.RoleAuthHandler.*;
  * Azure Functions with HTTP Trigger.
  */
 public class TekvLSGetAllLicenseUsageDetails {
+	/* default values for pagination */
+	String LIMIT = "100";
+	String OFFSET = "0";
 	/**
 	 * This function listens at endpoint "/api/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/api/devices/{vendor}/{product}/{version}
@@ -145,8 +150,8 @@ public class TekvLSGetAllLicenseUsageDetails {
 					String month = request.getQueryParameters().getOrDefault("month", "");
 					String project = request.getQueryParameters().getOrDefault("projectId", "");
 					String type = request.getQueryParameters().getOrDefault("type", "");
-					String limit = request.getQueryParameters().getOrDefault("limit", "100");
-					String offset = request.getQueryParameters().getOrDefault("offset", "0");
+					String limit = request.getQueryParameters().getOrDefault("limit", LIMIT);
+					String offset = request.getQueryParameters().getOrDefault("offset", OFFSET);
 					if (view.isEmpty() && !year.isEmpty() && !month.isEmpty())
 						sqlCommonConditions += " and EXTRACT(MONTH FROM l.consumption_date) = " + month + " and EXTRACT(YEAR FROM l.consumption_date) = " + year;
 					if (!project.isEmpty())
@@ -158,7 +163,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					JSONObject tokenConsumption = new JSONObject();
 					String usageType;
 					int tokensConsumed;
-					String sqlAll = "select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date)) as consumption, " +
+					String sqlAll = "select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date+'1 day'::interval)) as consumption, " +
 							"l.project_id, d.vendor, d.product, d.version" + ", json_agg(DISTINCT day_of_week) AS usage_days" +
 							" from device d, license_consumption l, usage_detail u " +
 							" where d.id=l.device_id and u.consumption_id = l.id and " + sqlCommonConditions +
@@ -191,15 +196,16 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 					// Get aggregated consumption for configuration
 					JSONArray array2 = new JSONArray();
-					String sqlWeeklyConfigurationTokensConsumed = "select consumption_date, CONCAT('Week ',DATE_PART('week',consumption_date)), sum(tokens_consumed) from license_consumption l where " + 
-						sqlCommonConditions + " group by DATE_PART('week',consumption_date), consumption_date order by consumption_date desc;";
+					String sqlWeeklyConfigurationTokensConsumed = "select consumption_date, CONCAT('Week ',DATE_PART('week',consumption_date+'1 day'::interval)) as consumption_week, sum(tokens_consumed) from license_consumption l where " +
+						sqlCommonConditions + " group by consumption_date, consumption_week order by consumption_date desc;";
 					context.getLogger().info("Execute SQL weekly statement: " + sqlWeeklyConfigurationTokensConsumed);
 					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);
 					LocalDate dt, startWeek, endWeek;
 					while (rs.next()) {
 						dt = LocalDateTime.parse(rs.getString(1), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toLocalDate();
-						startWeek = dt.with(ChronoField.DAY_OF_WEEK, 1);
-						endWeek = dt.with(ChronoField.DAY_OF_WEEK, 7);
+						TemporalField DAY_OF_WEEK  = WeekFields.of(Locale.US).dayOfWeek();
+						startWeek = dt.with(DAY_OF_WEEK, 1);
+						endWeek = dt.with(DAY_OF_WEEK, 7);
 						JSONObject item = new JSONObject();
 						item.put("weekId", rs.getString(2) + " (" + startWeek.toString() + " - " + endWeek.toString() + ")");
 						item.put("tokensConsumed", rs.getInt(3));

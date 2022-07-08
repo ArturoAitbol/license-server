@@ -15,7 +15,6 @@ export class FeatureToggleGuard implements CanActivate, CanActivateChild {
     }
 
     canActivate(route: ActivatedRouteSnapshot): boolean {
-        console.log(!UserFeatureToggles[this.msalService.instance.getActiveAccount()?.username]?.routes?.[route.url[0].path])
         if (FeatureToggles.routes[route.url[0].path] || UserFeatureToggles[this.msalService.instance.getActiveAccount()?.username]?.routes?.[route.url[0].path]) {
             return true;
         } else {
