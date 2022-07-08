@@ -56,7 +56,7 @@ public class TekvLSCreateBundle {
         }
         JSONObject jobj;
         try {
-            jobj = new JSONObject(requestBody);;
+            jobj = new JSONObject(requestBody);
         }
         catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());

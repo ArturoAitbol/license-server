@@ -214,7 +214,7 @@ public class RoleAuthHandler {
         Map<String, String> headers = request.getHeaders();
         JSONObject idTokenClaims = null;
         String authHeader = headers.get("authorization");
-        String token = authHeader!=null ? authHeader.split(" ")[1]:"";
+        String token = authHeader!=null ? authHeader.split(" ")[1] : "";
         String tokenDecode;
         if(!token.isEmpty()){
             String tokenPayload = token.split("\\.")[1];
