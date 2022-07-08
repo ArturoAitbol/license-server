@@ -77,8 +77,8 @@ public class TekvLSModifyCustomerById
 
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] optionalParams = {
-			{"name","name"}, 
-			{"distributorId","distributor_id"}, 
+			{"customerName","name"}, 
+			{"distributorID","distributor_id"}, 
 			{"customerType","type"}};
 		// Build the sql query
 		String sql = "update customer set ";

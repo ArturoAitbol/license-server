@@ -53,12 +53,12 @@ export class ModifyCustomerAccountComponent implements OnInit {
     console.log('mergedLicenseObject', mergedLicenseObject);
     const customer = {
       id: mergedLicenseObject.customerId,
-      name: mergedLicenseObject.customerName,
+      customerName: mergedLicenseObject.customerName,
       customerType: mergedLicenseObject.customerType
     };
     const subAccount = {
       id: mergedLicenseObject.id,
-      name: mergedLicenseObject.name
+      subaccountName: mergedLicenseObject.name
     };
     const requestsArray= [
       this.customerService.updateCustomer(customer),

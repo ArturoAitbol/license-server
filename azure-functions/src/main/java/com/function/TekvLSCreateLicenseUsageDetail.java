@@ -79,7 +79,7 @@ public class TekvLSCreateLicenseUsageDetail
 			{"subaccountId","subaccount_id"}, 
 			{"deviceId","device_id"}, 
 			{"consumptionDate","consumption_date"},
-			{"usageType","usage_type"}
+			{"type","usage_type"}
 		};
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"

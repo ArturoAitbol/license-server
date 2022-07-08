@@ -27,7 +27,7 @@ export class LicenseConsumptionService {
   public getLicenseDetails(data: any) {
     const headers = this.getHeaders();
     let params = new HttpParams()
-        .set('subaccount-id', data.subaccount)
+        .set('subaccountId', data.subaccount)
         .set('view', data.view);
     if (data.year)
       params = params.set('year', data.year);
