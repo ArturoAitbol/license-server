@@ -59,7 +59,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
       forkJoin(requestsArray).subscribe((res: any) => {
         if (!res.error) {
           this.isDataLoading = false;
-          this.snackBarService.openSnackBar('Customer admin emails edited successfully!', '');
+          this.snackBarService.openSnackBar('Customer admin emails edited successfully! ', '');
           this.dialogRef.close(true);
         } else
           this.snackBarService.openSnackBar(res.error, 'Error while editing administrator emails!');
