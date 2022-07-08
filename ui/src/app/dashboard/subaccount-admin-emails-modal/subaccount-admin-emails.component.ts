@@ -54,7 +54,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
     if (this.emailForms.length > 0) {
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.subaccountAdminEmailService.createAdminEmail({
         subaccountAdminEmail: value.email,
-        subaccountID: this.data.id,
+        subaccountId: this.data.id,
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
         if (!res.error) {
