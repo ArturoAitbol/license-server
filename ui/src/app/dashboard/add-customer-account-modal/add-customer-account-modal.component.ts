@@ -48,7 +48,7 @@ export class AddCustomerAccountModalComponent implements OnInit {
     const customerObject: any = {
       customerName: this.addCustomerForm.value.customerName,
       customerType: this.addCustomerForm.value.customerType,
-      customerAdminEmails: [this.addCustomerForm.value.adminEmail],
+      customerAdminEmail: this.addCustomerForm.value.adminEmail,
       test: this.addCustomerForm.value.testCustomer.toString()
     };
     this.customerService.createCustomer(customerObject).subscribe((resp: any) => {
