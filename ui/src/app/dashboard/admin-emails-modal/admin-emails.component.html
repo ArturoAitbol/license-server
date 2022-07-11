@@ -9,14 +9,13 @@
                 <div>
                     <label style="font-weight: bold;">{{data.name}}</label>
                 </div>
-                <div *ngFor="let email of adminEmails; let emailIndex = index">
+                <div class="email-info" *ngFor="let email of adminEmails; let emailIndex = index">
                     <div class="row">
-                        <div class="col-8" style="text-align: left;">
-                            <label class = "col-sm-2 col-form-label">Email: </label>
-                            <label class = "col-sm-2 col-form-label">{{email}}</label>
+                        <div class="col-10">
+                            <label class = "col-form-label"><b>Email: </b>{{email}}</label>
                         </div>
-                        <div class="col-4">
-                            <button  *checkAccessFor="'deleteAdminEmail'" mat-icon-button color="primary" title="Delete email"
+                        <div class="col-2" id="clearButton">
+                            <button *checkAccessFor="'deleteAdminEmail'" mat-icon-button color="primary" title="Delete email"
                                         (click)="deleteExistingEmail(emailIndex)">
                                     <mat-icon>clear</mat-icon>
                             </button>
@@ -39,7 +38,7 @@
                             </div>
                         </ng-container>
                     </ng-container>
-                    <button *checkAccessFor="'addAdminEmail'" mat-mini-fab color="primary" type="button" class="mb-3" title="Add email"
+                    <button *checkAccessFor="'addAdminEmail'" mat-mini-fab color="primary" type="button" class="mb-3" id="addButton" title="Add email"
                             (click)="addEmailForm()">
                         <mat-icon>add</mat-icon>
                     </button>
