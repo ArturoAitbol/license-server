@@ -88,7 +88,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmails\": [\r\n        \"{{name}}@test.com\"\r\n    ],\r\n    \"test\": \"true\",\r\n    \"customerId\":\"aa85388d-1ce9-425d-9df7-d6e8a8baaec2\"\r\n}",
+					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\",\r\n    \"customerId\":\"aa85388d-1ce9-425d-9df7-d6e8a8baaec2\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -166,7 +166,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountName\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmail\": [\"{{name}}@test.com\"]\r\n}",
+					"raw": "{\r\n    \"subaccountName\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmail\": \"{{name}}@test.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

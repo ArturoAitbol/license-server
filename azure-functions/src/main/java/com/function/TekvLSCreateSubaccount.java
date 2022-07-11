@@ -11,11 +11,7 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -120,28 +116,23 @@ public class TekvLSCreateSubaccount
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 			
-			JSONArray adminEmailsJson = jobj.getJSONArray("subaccountAdminEmail");
-			List<String> adminEmails = new ArrayList<>();
-			for (int i=0; i<adminEmailsJson.length(); i++) {
-				adminEmails.add( adminEmailsJson.getString(i) );
-			}
-
-			String verifyEmails = "select count(*) from subaccount_admin where subaccount_admin_email IN ('" +  String.join("','", adminEmails) + "')";
+			String adminEmail = jobj.getString("subaccountAdminEmail");
+			String verifyEmails = "select count(*) from subaccount_admin where subaccount_admin_email='" +  adminEmail + "';";
 			context.getLogger().info("Execute SQL statement: " + verifyEmails);
 			ResultSet rsEmails = statement.executeQuery(verifyEmails);
 			rsEmails.next();
-			if(rsEmails.getInt(1)>0){
+			if (rsEmails.getInt(1) > 0){
 				JSONObject json = new JSONObject();
 				json.put("error", "Subaccount email already exists");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 
 			// Insert
-			try{
+			try {
 				context.getLogger().info("Execute SQL statement: " + sql);
 				statement.executeUpdate(sql);
 				context.getLogger().info("License usage inserted successfully."); 
-			}catch(Exception e){
+			} catch(Exception e) {
 				context.getLogger().info("Caught exception: " + e.getMessage());
 				JSONObject json = new JSONObject();
 				String modifiedResponse= subaccountUnique(e.getMessage());
@@ -154,11 +145,12 @@ public class TekvLSCreateSubaccount
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
+			String subaccountId = rs.getString("id");
 			JSONObject json = new JSONObject();
-			json.put("id", rs.getString("id"));
+			json.put("id", subaccountId);
 
 			try{
-				String adminEmailSql = getAdminEmailInsert(adminEmails, rs.getString("id"));
+				String adminEmailSql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES ('" + adminEmail + "', '" + subaccountId + "');";
 				context.getLogger().info("Execute SQL statement: " + adminEmailSql);
 				statement.executeUpdate(adminEmailSql);
 				context.getLogger().info("Subaccount admin emails inserted successfully.");
@@ -193,12 +185,5 @@ public class TekvLSCreateSubaccount
 		if(errorMessage.contains("subaccount_unique") && errorMessage.contains("already exists"))
 			response = "Subaccount already exists";
 		return response;
-	}
-	private String getAdminEmailInsert(List<String> emailsList, String subaccountId) {
-		StringBuilder sb = new StringBuilder("INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES ");
-		for (String email : emailsList) {
-			sb.append(String.format("('%s','%s'),", email, subaccountId));
-		}
-		return sb.deleteCharAt(sb.length() - 1).append(";").toString();
 	}
 }
