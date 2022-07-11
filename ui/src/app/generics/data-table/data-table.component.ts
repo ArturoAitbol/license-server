@@ -54,7 +54,7 @@ export class DataTableComponent implements OnInit, OnDestroy {
 
   /**
    * set table data source
-   * @param data: any 
+   * @param data: any
    */
   setTableDataSource(data: any) {
     this.data = data;
@@ -64,7 +64,7 @@ export class DataTableComponent implements OnInit, OnDestroy {
   }
   /**
    * apply filter to the table
-   * @param event: Event 
+   * @param event: Event
    */
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -72,7 +72,7 @@ export class DataTableComponent implements OnInit, OnDestroy {
   }
   /**
    * sort table data
-   * @param sortParameters: Sort 
+   * @param sortParameters: Sort
    */
   sortTable(sortParameters: Sort) {
     // defining name of data property, to sort by, instead of column name
@@ -81,18 +81,18 @@ export class DataTableComponent implements OnInit, OnDestroy {
   }
   /**
    * emit row action event
-   * @param selectedRow: any 
-   * @param selectedOption: string 
-   * @param selectedIndex: string 
+   * @param selectedRow: any
+   * @param selectedOption: string
+   * @param selectedIndex: string
    */
   emitRowAction(selectedRow: any, selectedOption: string, selectedIndex: string) {
     this.rowAction.emit({ selectedRow, selectedOption, selectedIndex });
   }
   /**
    * emit clickable row event
-   * @param selectedRow: any 
-   * @param selectedIndex: string 
-   * @param isClickableRow: boolean 
+   * @param selectedRow: any
+   * @param selectedIndex: string
+   * @param isClickableRow: boolean
    */
   onClickableRow(selectedRow: any, selectedIndex: string, isClickableRow: boolean) {
     if (isClickableRow) {
@@ -101,9 +101,9 @@ export class DataTableComponent implements OnInit, OnDestroy {
   }
   /**
    * get color code based on the value
-   * @param value: string 
-   * @param tableColumn: TableColumn 
-   * @returns: string 
+   * @param value: string
+   * @param tableColumn: TableColumn
+   * @returns: string
    */
   getColor(value: string, tableColumn: TableColumn): string | undefined {
     if (tableColumn.canHighlighted)
