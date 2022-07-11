@@ -15,7 +15,7 @@ export class CustomerAdminEmailService {
    * @returns: Observable
    * @param newAdminEmail
    */
-  public createAdminEmail(newAdminEmail: {customerAdminEmail: string, customerID: string}) {
+  public createAdminEmail(newAdminEmail: {customerAdminEmail: string, customerId: string }) {
     return this.httpClient.post(this.API_URL, newAdminEmail);
   }
 

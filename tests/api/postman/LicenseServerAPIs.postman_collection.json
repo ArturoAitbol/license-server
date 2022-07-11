@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "81d43976-1830-42c0-937c-368e3eece0c3",
+		"_postman_id": "eb89f75c-a0ca-44b6-b433-e70017103836",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8463466"
+		"_exporter_id": "8463491"
 	},
 	"item": [
 		{
@@ -88,7 +88,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmails\": [\r\n        \"{{name}}@test.com\"\r\n    ],\r\n    \"test\": \"true\"\r\n}",
+					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmails\": [\r\n        \"{{name}}@test.com\"\r\n    ],\r\n    \"test\": \"true\",\r\n    \"customerId\":\"aa85388d-1ce9-425d-9df7-d6e8a8baaec2\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -285,7 +285,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"status\": \"Active\"\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"licenseId\":\"31d82e5c-b911-460d-edbe-6860f8464233\",\r\n    \"status\": \"Active\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -756,7 +756,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/licenseUsageDetails?subaccount-id={{subaccountId}}",
+					"raw": "{{HOST}}/licenseUsageDetails?subaccountId={{subaccountId}}",
 					"host": [
 						"{{HOST}}"
 					],

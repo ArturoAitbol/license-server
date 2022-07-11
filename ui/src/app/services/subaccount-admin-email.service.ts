@@ -15,7 +15,7 @@ export class SubaccountAdminEmailService {
    * @returns: Observable
    * @param newAdminEmail
    */
-  public createAdminEmail(newAdminEmail: {subaccountAdminEmail: string, subaccountID: string}) {
+  public createAdminEmail(newAdminEmail: {subaccountAdminEmail: string, subaccountId: string }) {
     return this.httpClient.post(this.API_URL, newAdminEmail);
   }
 

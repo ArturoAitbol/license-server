@@ -286,7 +286,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       subaccountId: this.currentCustomer.id,
       projectId: this.addLicenseConsumptionForm.value.project.id,
       consumptionDate: this.addLicenseConsumptionForm.value.startWeek.toISOString().split("T")[0],
-      usageType: "Configuration",
+      type: "Configuration",
       macAddress: "",
       serialNumber: "",
       deviceId: "",
