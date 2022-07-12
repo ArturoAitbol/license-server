@@ -20,6 +20,7 @@ import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.componen
 import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from '../helpers/role-permissions';
+import { SubAccount } from '../model/subaccount.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -88,8 +89,8 @@ export class DashboardComponent implements OnInit {
    */
   initColumns(): void {
     this.displayedColumns = [
-      { name: 'Customer', dataKey: 'customerName', position: 'left', isSortable: true },
-      { name: 'Subaccount', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Customer', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Subaccount', dataKey: 'subAccountName', position: 'left', isSortable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
       { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true }
     ];
@@ -110,21 +111,24 @@ export class DashboardComponent implements OnInit {
       const newDataObject: any = res.reduce((current, next) => {
         return { ...current, ...next };
       }, {});
-      this.subaccountList = newDataObject['subaccounts'];
-      this.subaccountList.forEach((subaccount: any) => {
-        const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
-        subaccount.customerName = customerDetails.name;
-        subaccount.customerType = customerDetails.customerType;
-        subaccount.testCustomer = customerDetails.testCustomer;
-        let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccount.id ));
-        if(subaccountLicenses.length>0){
-          const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
-          subaccount.status = licenseDetails ? licenseDetails.status: "Expired";
-        }else{
-          subaccount.status = "Inactive"; 
+      this.subaccountList = newDataObject['customers'];
+      this.subaccountList.forEach((account: any) => {
+        const subAccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
+        if( subAccountDetails !== undefined){
+          account.subAccountName = subAccountDetails.name;
+          account.customerId = subAccountDetails.customerId;
+          account.id = subAccountDetails.id;
+          let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subAccountDetails.id));
+          if(subaccountLicenses.length>0){
+            const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
+            account.status = licenseDetails ? licenseDetails.status: "Expired";
+          }else{
+            account.status = "Inactive"; 
+          }
         }
       });
-      this.subaccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
+      this.subaccountList = this.subaccountList.filter((s: any) => (s.tombstone === false))
+      this.subaccountList.sort((a: any, b: any) => a.name.localeCompare(b.name));
     }, err => {
       console.debug('error', err);
       this.isLoadingResults = false;

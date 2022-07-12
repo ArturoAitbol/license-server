@@ -125,6 +125,7 @@ public class TekvLSGetAllCustomers {
 				item.put("name", rs.getString("name"));
 				item.put("customerType", rs.getString("type"));
 				item.put("testCustomer", rs.getBoolean("test_customer"));
+				item.put("tombstone", rs.getBoolean("tombstone"));
 				if (!id.equals("EMPTY")) {
 					String distributorId = rs.getString("distributor_id");
 					if (rs.wasNull())

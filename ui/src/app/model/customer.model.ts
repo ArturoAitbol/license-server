@@ -4,4 +4,5 @@ export interface Customer {
     customerType: string;
     adminEmails: string[];
     testCustomer: boolean;
+    tombstone: boolean;
 }
