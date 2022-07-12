@@ -117,7 +117,7 @@ export class DashboardComponent implements OnInit {
         if( subAccountDetails !== undefined){
           account.subAccountName = subAccountDetails.name;
           account.customerId = subAccountDetails.customerId;
-          account.id = subAccountDetails.id;
+          account.subAccountId = subAccountDetails.id;
           let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subAccountDetails.id));
           if(subaccountLicenses.length>0){
             const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
@@ -227,10 +227,10 @@ export class DashboardComponent implements OnInit {
       .subscribe((result) => {
         if (result.confirm) {
           console.debug('The user confirmed the action: ', this.subaccountList[index]);
-          const { id , customerId } = this.subaccountList[index];
-          let numberOfSubaccounts = this.subaccountList.filter(subaccount => subaccount.customerId === customerId).length;
+          const { subAccountId , id } = this.subaccountList[index];
+          let numberOfSubaccounts = this.subaccountList.filter(subaccount => subaccount.customerId === id).length;
           if (numberOfSubaccounts > 1 && !result.deleteAllData) {
-            this.subaccountService.deleteSubAccount(id).subscribe((res: any) => {
+            this.subaccountService.deleteSubAccount(subAccountId).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
                 this.fetchDataToDisplay();
@@ -239,7 +239,7 @@ export class DashboardComponent implements OnInit {
               }
             })
           } else {
-            this.customerService.deleteCustomer(customerId, true).subscribe((res: any) => {
+            this.customerService.deleteCustomer(id, true).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Customer deleted successfully!', '');
                 this.fetchDataToDisplay();
