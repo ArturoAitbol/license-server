@@ -45,6 +45,10 @@ export class AddProjectComponent implements OnInit {
       } else
         this.snackBarService.openSnackBar(res.error, 'Error adding project!');
       this.isDataLoading = false;
+    }, err => {
+      this.snackBarService.openSnackBar(err.error, 'Error adding project!');
+      console.error('error adding a new project', err);
+      this.isDataLoading = false;
     });
   }
 
