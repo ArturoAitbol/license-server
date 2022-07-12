@@ -117,9 +117,17 @@ public class TekvLSCreateProject
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 			
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
-			context.getLogger().info("Project inserted successfully."); 
+			try{
+				context.getLogger().info("Execute SQL statement: " + sql);
+				statement.executeUpdate(sql);
+				context.getLogger().info("Project inserted successfully."); 
+			}catch(Exception e){
+				context.getLogger().info("Caught exception: " + e.getMessage());
+				JSONObject json = new JSONObject();
+				String modifiedResponse= projectUnique(e.getMessage());
+				json.put("error", modifiedResponse);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 
 			// Return the id in the response
 			sql = "select id from project where " + 
@@ -149,5 +157,13 @@ public class TekvLSCreateProject
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
+	}
+
+	private String projectUnique(String errorMessage){
+		String response = errorMessage;
+		
+		if(errorMessage.contains("project_unique") && errorMessage.contains("already exists"))
+			response = "Project already exists";
+		return response;
 	}
 }
