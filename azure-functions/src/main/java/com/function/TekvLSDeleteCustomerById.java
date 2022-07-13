@@ -56,14 +56,9 @@ public class TekvLSDeleteCustomerById
 		context.getLogger().info("Entering TekvLSDeleteCustomerById Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-		String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
-		
+
 		String sql;
-		if (forceDelete.equalsIgnoreCase("false")) {
-			sql = "update customer set tombstone=true where id='" + id +"';";
-		} else {
-			sql = "delete from customer where id='" + id +"';";
-		}
+		String subQuery = "select test_customer from customer where id = '"+id+"';";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -74,8 +69,19 @@ public class TekvLSDeleteCustomerById
 			Statement statement = connection.createStatement();) {
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			// Get test_customer by id
+			context.getLogger().info("Execute SQL statement: " + subQuery);
+			ResultSet rs = statement.executeQuery(subQuery);
+			rs.next();
+			String test_customer = rs.getString("test_customer");
+			context.getLogger().info("test_customer is: " + test_customer);
 			
 			// Delete customer
+			if (test_customer.contains("f")) {
+				sql = "update customer set tombstone=true where id='" + id +"';";
+			} else {
+				sql = "delete from customer where id='" + id +"';";
+			}
 			context.getLogger().info("Execute SQL statement: " + sql);
 			statement.executeUpdate(sql);
 			context.getLogger().info("Customer delete successfully."); 
