@@ -114,7 +114,7 @@ export class DashboardComponent implements OnInit {
       this.customerList = newDataObject['customers'];
       this.customerList.forEach((account: any) => {
         const subAccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
-        if( subAccountDetails !== undefined){
+        if( subAccountDetails !== undefined ){
           account.subAccountName = subAccountDetails.name;
           account.customerId = subAccountDetails.customerId;
           account.subAccountId = subAccountDetails.id;
@@ -128,7 +128,6 @@ export class DashboardComponent implements OnInit {
           }
         }
       });
-      this.customerList = this.customerList.filter((s: any) => (s.tombstone === false))
       this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
     }, err => {
       console.debug('error', err);
