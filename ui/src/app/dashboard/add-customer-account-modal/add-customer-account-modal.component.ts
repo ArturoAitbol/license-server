@@ -56,11 +56,12 @@ export class AddCustomerAccountModalComponent implements OnInit {
         const subaccountDetails: any = {
           customerId: resp.id,
           subaccountName: this.addCustomerForm.value.subAccountName,
-          subaccountAdminEmail: [this.addCustomerForm.value.subaccountAdminEmail],
+          subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
         }
+        this.snackBarService.openSnackBar('Customer added successfully!', '');
         this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
           if (!res.error)
-            this.snackBarService.openSnackBar('Customer and subaccount added successfully!', '');
+            this.snackBarService.openSnackBar('Subaccount added successfully!', '');
           else
             this.snackBarService.openSnackBar(res.error, 'Error adding subaccount!');
           this.dialogRef.close(res);
@@ -69,6 +70,7 @@ export class AddCustomerAccountModalComponent implements OnInit {
           this.isDataLoading = false;
           this.snackBarService.openSnackBar(err.error, 'Error adding subaccount!');
           console.error('error while adding subbacount', err);
+          this.dialogRef.close();
         });
       } else{
         this.snackBarService.openSnackBar(resp.error, 'Error adding customer!');
