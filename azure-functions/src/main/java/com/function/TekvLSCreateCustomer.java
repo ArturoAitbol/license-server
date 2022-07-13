@@ -139,9 +139,17 @@ public class TekvLSCreateCustomer
 			}
 			
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
-			context.getLogger().info("License usage inserted successfully."); 
+			try{
+				context.getLogger().info("Execute SQL statement: " + sql);
+				statement.executeUpdate(sql);
+				context.getLogger().info("Customer inserted successfully."); 
+			}catch(Exception e){
+				context.getLogger().info("Caught exception: " + e.getMessage());
+				JSONObject json = new JSONObject();
+				String modifiedResponse= customerUnique(e.getMessage());
+				json.put("error", modifiedResponse);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 
 			// Return the customer id in the response
 			sql = "select id from customer where name = '" + jobj.getString("customerName") + "' and type = '" + jobj.getString("customerType") + "';";
@@ -171,5 +179,12 @@ public class TekvLSCreateCustomer
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
+	}
+	private String customerUnique(String errorMessage){
+		String response = errorMessage;
+
+		if(errorMessage.contains("customer_unique") && errorMessage.contains("already exists"))
+			response = "Customer already exists";
+		return response;
 	}
 }
