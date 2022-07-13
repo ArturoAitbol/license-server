@@ -22,7 +22,6 @@ import { SubaccountAdminEmailsComponent } from "./dashboard/subaccount-admin-ema
 // third party modules
 import { MsalInterceptor, MsalModule } from '@azure/msal-angular';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
-import { Constants } from './helpers/constants';
 import { SharedModule } from './modules/shared/shared.module';
 import { environment } from 'src/environments/environment';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
@@ -51,8 +50,8 @@ import { AuthInterceptor } from './helpers/auth.interceptor';
         MaterialModule,
         MsalModule.forRoot(new PublicClientApplication({
             auth: {
-                clientId: Constants.CLIENT_ID,
-                redirectUri: Constants.REDIRECT_URL_AFTER_LOGIN
+                clientId: environment.CLIENT_ID,
+                redirectUri: environment.REDIRECT_URL_AFTER_LOGIN
             },
             cache: {
                 cacheLocation: 'localStorage'
