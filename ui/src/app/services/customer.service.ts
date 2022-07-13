@@ -48,13 +48,11 @@ export class CustomerService {
   /**
    * fetch customer details list
    * @returns: Observable
-   * @param tombstone: boolean
    */
-  public getCustomerList(customerName?: string, tombstone=false) {
+  public getCustomerList(customerName?: string) {
     const params = new HttpParams();
     if (customerName) {
       params.append('customerName', customerName);
-      params.append('tombstone', tombstone);
     }
     const headers = this.getHeaders();
     return this.httpClient.get<Customer>(this.API_URL, { headers, params });
