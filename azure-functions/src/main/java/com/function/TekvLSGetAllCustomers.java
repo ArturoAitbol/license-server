@@ -66,10 +66,11 @@ public class TekvLSGetAllCustomers {
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String customerType = request.getQueryParameters().getOrDefault("type", "");
 		String customerName = request.getQueryParameters().getOrDefault("name", "");
+		String tombstone = request.getQueryParameters().getOrDefault("tombstone", "false");
 
 		Map<String, List<String>> adminEmailsMap = new HashMap<>();
 		// Build SQL statement
-		String sql = "select * from customer";
+		String sql = "select * from customer where tombstone= "+ tombstone +" ";
 		String email = getEmailFromToken(tokenClaims,context);
 		List<String> conditionsList = new ArrayList<>();
 		String customerId;
@@ -102,9 +103,8 @@ public class TekvLSGetAllCustomers {
 			conditionsList.add("id='" + id +"'");
 			adminEmailsMap = loadAdminEmails(id, context);
 		}
-
 		String sqlConditions = String.join(" and ",conditionsList);
-		sql += (sqlConditions.isEmpty() ? ";" : " where "+sqlConditions+";");
+		sql += (sqlConditions.isEmpty() ? ";" : " and "+sqlConditions+";");
 		
 		// Connect to the database
 		try (

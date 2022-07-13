@@ -20,6 +20,7 @@ import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.componen
 import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from '../helpers/role-permissions';
+import { SubAccount } from '../model/subaccount.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,7 +31,7 @@ export class DashboardComponent implements OnInit {
   tableMaxHeight: number;
   displayedColumns: any[] = [];
   data: CustomerLicense[] = [];
-  subaccountList: any = [];
+  customerList: any = [];
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
@@ -88,8 +89,8 @@ export class DashboardComponent implements OnInit {
    */
   initColumns(): void {
     this.displayedColumns = [
-      { name: 'Customer', dataKey: 'customerName', position: 'left', isSortable: true },
-      { name: 'Subaccount', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Customer', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Subaccount', dataKey: 'subAccountName', position: 'left', isSortable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
       { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true }
     ];
@@ -110,21 +111,24 @@ export class DashboardComponent implements OnInit {
       const newDataObject: any = res.reduce((current, next) => {
         return { ...current, ...next };
       }, {});
-      this.subaccountList = newDataObject['subaccounts'];
-      this.subaccountList.forEach((subaccount: any) => {
-        const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
-        subaccount.customerName = customerDetails.name;
-        subaccount.customerType = customerDetails.customerType;
-        subaccount.testCustomer = customerDetails.testCustomer;
-        let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccount.id ));
-        if(subaccountLicenses.length>0){
-          const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
-          subaccount.status = licenseDetails ? licenseDetails.status: "Expired";
-        }else{
-          subaccount.status = "Inactive"; 
+      this.customerList = newDataObject['customers'];
+      this.customerList.forEach((account: any) => {
+        const subAccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
+        if( subAccountDetails !== undefined ){
+          account.subAccountName = subAccountDetails.name;
+          account.customerId = subAccountDetails.customerId;
+          account.subAccountId = subAccountDetails.id;
+          account.id = subAccountDetails.id;
+          let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subAccountDetails.id));
+          if(subaccountLicenses.length>0){
+            const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
+            account.status = licenseDetails ? licenseDetails.status: "Expired";
+          }else{
+            account.status = "Inactive"; 
+          }
         }
       });
-      this.subaccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
+      this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
     }, err => {
       console.debug('error', err);
       this.isLoadingResults = false;
@@ -218,15 +222,15 @@ export class DashboardComponent implements OnInit {
         confirmCaption: 'Confirm',
         deleteAllDataCaption: 'Delete All Data',
         cancelCaption: 'Cancel',
-        canDeleteAllData: this.subaccountList[index]?.testCustomer,
+        canDeleteAllData: this.customerList[index]?.testCustomer,
       })
       .subscribe((result) => {
         if (result.confirm) {
-          console.debug('The user confirmed the action: ', this.subaccountList[index]);
-          const { id , customerId } = this.subaccountList[index];
-          let numberOfSubaccounts = this.subaccountList.filter(subaccount => subaccount.customerId === customerId).length;
+          console.debug('The user confirmed the action: ', this.customerList[index]);
+          const { subAccountId , id } = this.customerList[index];
+          let numberOfSubaccounts = this.customerList.filter(subaccount => subaccount.customerId === id).length;
           if (numberOfSubaccounts > 1 && !result.deleteAllData) {
-            this.subaccountService.deleteSubAccount(id).subscribe((res: any) => {
+            this.subaccountService.deleteSubAccount(subAccountId).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
                 this.fetchDataToDisplay();
@@ -235,7 +239,7 @@ export class DashboardComponent implements OnInit {
               }
             })
           } else {
-            this.customerService.deleteCustomer(customerId, true).subscribe((res: any) => {
+            this.customerService.deleteCustomer(id, true).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Customer deleted successfully!', '');
                 this.fetchDataToDisplay();
@@ -282,11 +286,11 @@ export class DashboardComponent implements OnInit {
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      this.subaccountList = this.subaccountList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      this.customerList = this.customerList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
     } else if (sortParameters.direction === 'desc') {
-      this.subaccountList = this.subaccountList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+      this.customerList = this.customerList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
     } else {
-      return this.subaccountList = this.subaccountList;
+      return this.customerList = this.customerList;
     }
   }
   /**
