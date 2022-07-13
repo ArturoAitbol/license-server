@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
   tableMaxHeight: number;
   displayedColumns: any[] = [];
   data: CustomerLicense[] = [];
-  subaccountList: any = [];
+  customerList: any = [];
   // flag
   isLoadingResults: boolean = true;
   isRequestCompleted: boolean = false;
@@ -111,8 +111,8 @@ export class DashboardComponent implements OnInit {
       const newDataObject: any = res.reduce((current, next) => {
         return { ...current, ...next };
       }, {});
-      this.subaccountList = newDataObject['customers'];
-      this.subaccountList.forEach((account: any) => {
+      this.customerList = newDataObject['customers'];
+      this.customerList.forEach((account: any) => {
         const subAccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
         if( subAccountDetails !== undefined){
           account.subAccountName = subAccountDetails.name;
@@ -128,8 +128,8 @@ export class DashboardComponent implements OnInit {
           }
         }
       });
-      this.subaccountList = this.subaccountList.filter((s: any) => (s.tombstone === false))
-      this.subaccountList.sort((a: any, b: any) => a.name.localeCompare(b.name));
+      this.customerList = this.customerList.filter((s: any) => (s.tombstone === false))
+      this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
     }, err => {
       console.debug('error', err);
       this.isLoadingResults = false;
@@ -223,13 +223,13 @@ export class DashboardComponent implements OnInit {
         confirmCaption: 'Confirm',
         deleteAllDataCaption: 'Delete All Data',
         cancelCaption: 'Cancel',
-        canDeleteAllData: this.subaccountList[index]?.testCustomer,
+        canDeleteAllData: this.customerList[index]?.testCustomer,
       })
       .subscribe((result) => {
         if (result.confirm) {
-          console.debug('The user confirmed the action: ', this.subaccountList[index]);
-          const { subAccountId , id } = this.subaccountList[index];
-          let numberOfSubaccounts = this.subaccountList.filter(subaccount => subaccount.customerId === id).length;
+          console.debug('The user confirmed the action: ', this.customerList[index]);
+          const { subAccountId , id } = this.customerList[index];
+          let numberOfSubaccounts = this.customerList.filter(subaccount => subaccount.customerId === id).length;
           if (numberOfSubaccounts > 1 && !result.deleteAllData) {
             this.subaccountService.deleteSubAccount(subAccountId).subscribe((res: any) => {
               if (!res?.error) {
@@ -287,11 +287,11 @@ export class DashboardComponent implements OnInit {
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      this.subaccountList = this.subaccountList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      this.customerList = this.customerList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
     } else if (sortParameters.direction === 'desc') {
-      this.subaccountList = this.subaccountList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+      this.customerList = this.customerList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
     } else {
-      return this.subaccountList = this.subaccountList;
+      return this.customerList = this.customerList;
     }
   }
   /**
