@@ -1114,7 +1114,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/customers/{{customerId}}?force=true",
+					"raw": "{{HOST}}/customers/{{customerId}}",
 					"host": [
 						"{{HOST}}"
 					],
