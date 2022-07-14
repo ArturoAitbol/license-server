@@ -96,7 +96,7 @@ public class TekvLSGetAllProjects {
 			   if (!status.isEmpty())
 			   		conditionsList.add("status='" + status + "'");
 		   }else{
-			   json.put("error", "Missing mandatory parameter: subaccount ID");
+			   json.put("error", "Missing mandatory parameter: subaccountId");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		   }
 		   

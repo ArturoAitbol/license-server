@@ -14,7 +14,6 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.Locale;
@@ -29,6 +28,9 @@ import static com.function.auth.RoleAuthHandler.*;
  * Azure Functions with HTTP Trigger.
  */
 public class TekvLSGetAllLicenseUsageDetails {
+	/* default values for pagination */
+	String LIMIT = "100";
+	String OFFSET = "0";
 	/**
 	 * This function listens at endpoint "/api/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/api/devices/{vendor}/{product}/{version}
@@ -63,7 +65,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-		String subaccountId = request.getQueryParameters().getOrDefault("subaccount-id", "");
+		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		String view = request.getQueryParameters().getOrDefault("view", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
@@ -146,10 +148,10 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// add special filters
 					String year = request.getQueryParameters().getOrDefault("year", "");
 					String month = request.getQueryParameters().getOrDefault("month", "");
-					String project = request.getQueryParameters().getOrDefault("project", "");
+					String project = request.getQueryParameters().getOrDefault("projectId", "");
 					String type = request.getQueryParameters().getOrDefault("type", "");
-					String limit = request.getQueryParameters().getOrDefault("limit", "100");
-					String offset = request.getQueryParameters().getOrDefault("offset", "0");
+					String limit = request.getQueryParameters().getOrDefault("limit", LIMIT);
+					String offset = request.getQueryParameters().getOrDefault("offset", OFFSET);
 					if (view.isEmpty() && !year.isEmpty() && !month.isEmpty())
 						sqlCommonConditions += " and EXTRACT(MONTH FROM l.consumption_date) = " + month + " and EXTRACT(YEAR FROM l.consumption_date) = " + year;
 					if (!project.isEmpty())

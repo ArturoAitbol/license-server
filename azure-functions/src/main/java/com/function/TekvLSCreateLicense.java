@@ -82,8 +82,8 @@ public class TekvLSCreateLicense
 			{"startDate","start_date"}, 
 			{"packageType","package_type"}, 
 			{"renewalDate","renewal_date"},
-			{"tokens","tokens"}, 
-			{"deviceAccessLimit","device_access_limit"}
+			{"tokensPurchased","tokens"}, 
+			{"deviceLimit","device_access_limit"}
 		};
 		// Build the sql query
 		String sqlPart1 = "";
@@ -101,6 +101,10 @@ public class TekvLSCreateLicense
 				json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
+		}
+		if (jobj.has("licenseId")) {
+			sqlPart1 += "id,";
+			sqlPart2 += "'" + jobj.getString("licenseId") + "',";
 		}
 		LocalDate currentDate = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd");

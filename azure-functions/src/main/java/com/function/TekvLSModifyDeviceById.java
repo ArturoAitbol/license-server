@@ -88,7 +88,8 @@ public class TekvLSModifyDeviceById
 			{"granularity","granularity"},
 			{"subaccountId","subaccount_id"},
 			{"tokensToConsume","tokens_to_consume"},
-			{"startDate","start_date"}
+			{"startDate","start_date"},
+			{"deprecatedDate", "deprecated_date"}
 		};
 		// Build the sql query
 		String sql = "update device set ";

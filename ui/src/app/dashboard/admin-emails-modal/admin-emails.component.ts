@@ -55,13 +55,13 @@ export class AdminEmailsComponent implements OnInit {
     this.isDataLoading = true;
     if (this.emailForms.length > 0) {
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.customerAdminEmailService.createAdminEmail({
-        adminEmail: value.email,
+        customerAdminEmail: value.email,
         customerId: this.data.customerId
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
         if (!res.error) {
           this.isDataLoading = false;
-          this.snackBarService.openSnackBar('Customer admin emails edited successfully!', '');
+          this.snackBarService.openSnackBar('Customer admin emails edited successfully! ', '');
           this.dialogRef.close(false);
         } else
           this.snackBarService.openSnackBar(res.error, 'Error while editing administrator emails!');

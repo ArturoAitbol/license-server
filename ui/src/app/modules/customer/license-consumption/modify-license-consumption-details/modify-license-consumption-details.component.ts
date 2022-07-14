@@ -153,7 +153,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       projectId: this.updateForm.value.project.id,
       deviceId: this.updateForm.value.device.id,
       consumptionDate: this.data.consumptionDate,
-      usageType: this.data.usageType,
+      type: this.data.usageType,
       macAddress: this.data.macAddress,
       serialNumber: this.data.serialNumber
     };

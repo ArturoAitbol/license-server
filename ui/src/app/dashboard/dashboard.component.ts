@@ -20,17 +20,19 @@ import { AdminEmailsComponent } from './admin-emails-modal/admin-emails.componen
 import { SubaccountAdminEmailsComponent } from './subaccount-admin-emails-modal/subaccount-admin-emails.component';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from '../helpers/role-permissions';
+import { SubAccount } from '../model/subaccount.model';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
+
 export class DashboardComponent implements OnInit {
   tableMaxHeight: number;
   displayedColumns: any[] = [];
   data: CustomerLicense[] = [];
-  subAccountList: any = [];
+  customerList: any = [];
   // flag
   isLoadingResults = true;
   isRequestCompleted = false;
@@ -44,14 +46,14 @@ export class DashboardComponent implements OnInit {
 
   actionMenuOptions: any = [];
   constructor(
-    private customerService: CustomerService,
-    private subaccountService: SubAccountService,
-    private licenseService: LicenseService,
-    private dialogService: DialogService,
-    public dialog: MatDialog,
-    private snackBarService: SnackBarService,
-    private router: Router,
-    private msalService: MsalService
+      private customerService: CustomerService,
+      private subaccountService: SubAccountService,
+      private licenseService: LicenseService,
+      private dialogService: DialogService,
+      public dialog: MatDialog,
+      private snackBarService: SnackBarService,
+      private router: Router,
+      private msalService: MsalService
   ) { }
 
   @HostListener('window:resize')
@@ -68,12 +70,12 @@ export class DashboardComponent implements OnInit {
 
   private calculateTableHeight() {
     this.tableMaxHeight = window.innerHeight // doc height
-      - (window.outerHeight * 0.01 * 2) // - main-container margin
-      - 60 // - route-content margin
-      - 20 // - dashboard-content padding
-      - 30 // - table padding
-      - 32 // - title height
-      - (window.outerHeight * 0.05 * 2); // - table-section margin
+        - (window.outerHeight * 0.01 * 2) // - main-container margin
+        - 60 // - route-content margin
+        - 20 // - dashboard-content padding
+        - 30 // - table padding
+        - 32 // - title height
+        - (window.outerHeight * 0.05 * 2); // - table-section margin
   }
 
   ngOnInit(): void {
@@ -84,12 +86,12 @@ export class DashboardComponent implements OnInit {
     this.getActionMenuOptions();
   }
   /**
-   * initialize the columns settings
+   * initailize the columns settings
    */
   initColumns(): void {
     this.displayedColumns = [
-      { name: 'Customer', dataKey: 'customerName', position: 'left', isSortable: true },
-      { name: 'Subaccount', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Customer', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Subaccount', dataKey: 'subAccountName', position: 'left', isSortable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
       { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true }
     ];
@@ -110,20 +112,24 @@ export class DashboardComponent implements OnInit {
       const newDataObject: any = res.reduce((current, next) => {
         return { ...current, ...next };
       }, {});
-      this.subAccountList = newDataObject['subaccounts'];
-      this.subAccountList.forEach((subaccount: any) => {
-        const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
-        subaccount.customerName = customerDetails.name;
-        subaccount.customerType = customerDetails.customerType;
-        subaccount.testCustomer = customerDetails.testCustomer;
-        const subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccount.id ));
-        if (subaccountLicenses.length > 0) {
-          const licenseDetails = subaccountLicenses.find((l: License) => (l.status === 'Active'));
-          subaccount.status = licenseDetails ? licenseDetails.status : 'Expired';
-        } else
-          subaccount.status = 'Inactive';
+      this.customerList = newDataObject['customers'];
+      this.customerList.forEach((account: any) => {
+        const subAccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
+        if ( subAccountDetails !== undefined ) {
+          account.subAccountName = subAccountDetails.name;
+          account.customerId = subAccountDetails.customerId;
+          account.subAccountId = subAccountDetails.id;
+          account.id = subAccountDetails.id;
+          const subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subAccountDetails.id));
+          if (subaccountLicenses.length > 0) {
+            const licenseDetails = subaccountLicenses.find((l: License) => (l.status === 'Active'));
+            account.status = licenseDetails ? licenseDetails.status : 'Expired';
+          } else {
+            account.status = 'Inactive';
+          }
+        }
       });
-      this.subAccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
+      this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
     }, err => {
       console.debug('error', err);
       this.isLoadingResults = false;
@@ -199,8 +205,9 @@ export class DashboardComponent implements OnInit {
     dialogRef.afterClosed().subscribe(res => {
       try {
         console.debug(`${type} dialog closed: ${res}`);
-        if (res)
+        if (res) {
           this.fetchDataToDisplay();
+        }
       } catch (error) {
         console.log('error while in action ' + type, error);
       }
@@ -211,37 +218,40 @@ export class DashboardComponent implements OnInit {
    */
   openConfirmaCancelDialog(index?: number | string) {
     this.dialogService
-      .deleteCustomerDialog({
-        title: 'Confirm Action',
-        message: 'Do you want to confirm this action?',
-        confirmCaption: 'Confirm',
-        deleteAllDataCaption: 'Delete All Data',
-        cancelCaption: 'Cancel',
-        canDeleteAllData: this.subAccountList[index]?.testCustomer,
-      })
-      .subscribe((result) => {
-        if (result.confirm) {
-          console.debug('The user confirmed the action: ', this.subAccountList[index]);
-          const { id , customerId } = this.subAccountList[index];
-          const numberOfSubaccounts = this.subAccountList.filter(subaccount => subaccount.customerId === customerId).length;
-          if (numberOfSubaccounts > 1 && !result.deleteAllData)
-            this.subaccountService.deleteSubAccount(id).subscribe((res: any) => {
-              if (!res?.error) {
-                this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
-                this.fetchDataToDisplay();
-              } else
-                this.snackBarService.openSnackBar('Error Subaccount could not be deleted !', '');
-            });
-           else
-            this.customerService.deleteCustomer(customerId, true).subscribe((res: any) => {
-              if (!res?.error) {
-                this.snackBarService.openSnackBar('Customer deleted successfully!', '');
-                this.fetchDataToDisplay();
-              } else
-                this.snackBarService.openSnackBar('Error customer could not be deleted !', '');
-            });
-        }
-      });
+        .deleteCustomerDialog({
+          title: 'Confirm Action',
+          message: 'Do you want to confirm this action?',
+          confirmCaption: 'Confirm',
+          deleteAllDataCaption: 'Delete All Data',
+          cancelCaption: 'Cancel',
+          canDeleteAllData: this.customerList[index]?.testCustomer,
+        })
+        .subscribe((result) => {
+          if (result.confirm) {
+            console.debug('The user confirmed the action: ', this.customerList[index]);
+            const { subAccountId , id } = this.customerList[index];
+            const numberOfSubaccounts = this.customerList.filter(subaccount => subaccount.customerId === id).length;
+            if (numberOfSubaccounts > 1 && !result.deleteAllData) {
+              this.subaccountService.deleteSubAccount(subAccountId).subscribe((res: any) => {
+                if (!res?.error) {
+                  this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
+                  this.fetchDataToDisplay();
+                } else {
+                  this.snackBarService.openSnackBar('Error Subaccount could not be deleted !', '');
+                }
+              });
+            } else {
+              this.customerService.deleteCustomer(id, true).subscribe((res: any) => {
+                if (!res?.error) {
+                  this.snackBarService.openSnackBar('Customer deleted successfully!', '');
+                  this.fetchDataToDisplay();
+                } else {
+                  this.snackBarService.openSnackBar('Error customer could not be deleted !', '');
+                }
+              });
+            }
+          }
+        });
   }
   /**
    *
@@ -273,15 +283,17 @@ export class DashboardComponent implements OnInit {
   /**
    * sort table
    * @param sortParameters: Sort
+   * @returns customerList
    */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
-    if (sortParameters.direction === 'asc')
-      this.subAccountList = this.subAccountList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
-     else if (sortParameters.direction === 'desc')
-      this.subAccountList = this.subAccountList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
-     else
-      return this.subAccountList = this.subAccountList;
+    if (sortParameters.direction === 'asc') {
+      this.customerList = this.customerList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+    } else if (sortParameters.direction === 'desc') {
+      this.customerList = this.customerList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+    } else {
+      return this.customerList = this.customerList;
+    }
   }
   /**
    * action row click event

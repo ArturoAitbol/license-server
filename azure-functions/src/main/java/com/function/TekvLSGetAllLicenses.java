@@ -61,7 +61,7 @@ public class TekvLSGetAllLicenses
 		context.getLogger().info("Entering TekvLSGetAllLicenses Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-		String subaccountId = request.getQueryParameters().getOrDefault("subaccount-id", "");
+		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
   
 		// Build SQL statement
 		String sql = "select * from license";

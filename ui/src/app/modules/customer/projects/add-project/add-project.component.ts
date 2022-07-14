@@ -14,8 +14,8 @@ export class AddProjectComponent implements OnInit {
   readonly OPEN_STATUS = 'Open';
 
   addProjectForm = this.formBuilder.group({
-    name: ['', Validators.required],
-    code: ['', Validators.required],
+    projectName: ['', Validators.required],
+    projectNumber: ['', Validators.required],
     openDate: ['', Validators.required],
   });
   constructor(
@@ -44,6 +44,10 @@ export class AddProjectComponent implements OnInit {
         this.dialogRef.close(res);
       } else
         this.snackBarService.openSnackBar(res.error, 'Error adding project!');
+      this.isDataLoading = false;
+    }, err => {
+      this.snackBarService.openSnackBar(err.error, 'Error adding project!');
+      console.error('error adding a new project', err);
       this.isDataLoading = false;
     });
   }

@@ -7,19 +7,18 @@
             </div>
             <mat-dialog-content>
                 <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Subaccount Name</mat-label>
-                        <input matInput formControlName="name">
-                    </mat-form-field>
+                    <label style="font-weight: bold;">{{data.name}}</label>
                 </div>
-                <div *ngFor="let email of adminEmails; let emailIndex = index">
-                    <div class="form-row">
-                        <mat-form-field appearance="outline">
-                            <mat-label>Email</mat-label>
-                            <input type="email" aria-label="Email" disabled="true" matInput value={{email}}>
-                        </mat-form-field>
-                        <div style="width: 24px;">
-                            <mat-icon *checkAccessFor="'deleteSubAccAdminEmail'" type="button" title="Delete email" (click)="deleteExistingEmail(emailIndex)">delete_forever</mat-icon>
+                <div class="email-info" *ngFor="let email of adminEmails; let emailIndex = index">
+                    <div class="row" >
+                        <div class="col-10">
+                            <label class = "col-form-label"><b> Email: </b>{{email}}</label>
+                        </div>
+                        <div class="col-2" id="clearButton">
+                            <button mat-icon-button color="primary" title="Delete email" 
+                                    (click)="deleteExistingEmail(emailIndex)">
+                                <mat-icon>clear</mat-icon>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -32,12 +31,16 @@
                                     <input type="email" placeholder="Enter a valid email" aria-label="Email" matInput
                                            formControlName="email">
                                 </mat-form-field>
-                                <mat-icon type="button" title="Delete email" (click)="deleteEmailForm(i)">delete_forever</mat-icon>
+                                <button mat-icon-button color="primary" title="Delete email" style="float: right;"
+                                    (click)="deleteEmailForm(i)">
+                                    <mat-icon>clear</mat-icon>
+                                </button>
                             </div>
                         </ng-container>
                     </ng-container>
-                    <button *checkAccessFor="'addSubAccAdminEmail'" mat-mini-fab type="button" title="Add email" class="mb-3" (click)="addEmailForm()">
-                        <mat-icon class="add-course-btn">add</mat-icon>
+                    <button *checkAccessFor="'addSubAccAdminEmail'" mat-mini-fab color="primary" type="button" class="mb-3" id="addButton" title="Add email"
+                            (click)="addEmailForm()">
+                        <mat-icon>add</mat-icon>
                     </button>
                 </div>
             </mat-dialog-content>
