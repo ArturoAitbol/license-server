@@ -16,7 +16,7 @@ import java.util.Optional;
 import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSCreateAdminEmail {
-    private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses?ssl=true&sslmode=require"
+    private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
             + "&user=" + System.getenv("POSTGRESQL_USER")
             + "&password=" + System.getenv("POSTGRESQL_PWD");
 

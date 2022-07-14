@@ -29,7 +29,7 @@ public class TekvLSGetAllSubaccounts
 	 * 1. curl -d "HTTP Body" {your host}/api/subaccounts/{id}
 	 * 2. curl "{your host}/api/subaccounts"
 	 */
-	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 
