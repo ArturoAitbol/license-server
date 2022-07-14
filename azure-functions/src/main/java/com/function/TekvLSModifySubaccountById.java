@@ -80,7 +80,7 @@ public class TekvLSModifySubaccountById
 
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] optionalParams = {
-			{"name","name"}, 
+			{"subaccountName","name"}, 
 			{"customerId","customer_id"}};
 		// Build the sql query
 		String sql = "update subaccount set ";
@@ -105,7 +105,7 @@ public class TekvLSModifySubaccountById
 		sql += " where id='" + id + "';";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (

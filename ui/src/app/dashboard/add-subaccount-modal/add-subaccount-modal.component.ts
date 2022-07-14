@@ -43,18 +43,24 @@ export class AddSubaccountModalComponent implements OnInit {
   addSubaccount() {
     this.isDataLoading = true;
     const subaccountDetails: any = {
-      name: this.addSubaccountForm.value.subaccountName,
+      subaccountName: this.addSubaccountForm.value.subaccountName,
       customerId: this.addSubaccountForm.value.customer,
-      subaccountAdminEmails: [this.addSubaccountForm.value.subaccountAdminEmail],
+      subaccountAdminEmail: this.addSubaccountForm.value.subaccountAdminEmail,
     };
     this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
       if (!res.error) {
-        this.isDataLoading = false;
         this.snackBarService.openSnackBar('Subaccount added successfully!', '');
+        console.log("Subaccount added successfully!");
         this.dialogRef.close(res);
-      } else
-        this.snackBarService.openSnackBar(res.error, 'Error adding subaccount!');
+      }else{
+        this.dialogRef.close(res);
+        console.log('error adding subaccount: ');
+        this.isDataLoading = false;
+      } 
+    }, err => {
+      this.snackBarService.openSnackBar(err.error, 'Error adding subaccount!');
+      console.error('error while adding a new subaccount', err);
+      this.isDataLoading = false;
     });
   }
-
 }

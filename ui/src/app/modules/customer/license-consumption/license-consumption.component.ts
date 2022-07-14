@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { MatDatepicker } from '@angular/material/datepicker';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatDateRangePicker } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
@@ -43,6 +43,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   tokenConsumptionData = [];
   licenseForm: any = this.formBuilder.group({
     licenseId: ['']
+  });
+  range: FormGroup = this.formBuilder.group({
+    start: [{value:'',disabled:true}],
+    end:[{value:'',disabled:true}],
   });
 
   tekTokensSummaryColumns: TableColumn[] = [
@@ -91,6 +95,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   isEquipmentSummaryRequestCompleted: boolean = false;
   isDetailedConsumptionLoadingResults: boolean = true;
   isDetailedConsumptionRequestCompleted: boolean = false;
+  isLicenseListLoaded: boolean = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
@@ -129,6 +134,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
         this.licenseForm.patchValue({ licenseId: this.selectedLicense.id });
         this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
         this.endDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
+        this.isLicenseListLoaded = true;
         this.fetchDataToDisplay();
       } else {
         this.isLicenseSummaryLoadingResults = false;
@@ -171,12 +177,8 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       then send the start and end dates as the beginning and end of this week
     */
     if (view === "" && this.aggregation === "week") {
-      let startWeek = new Date();
-      let endWeek = new Date();
-      startWeek.setDate(startWeek.getDate() - startWeek.getDay()); // Sunday's date
-      endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 6); // Saturday's date
-      requestObject.startDate = startWeek.toISOString().split("T")[0];
-      requestObject.endDate = endWeek.toISOString().split("T")[0];
+      requestObject.startDate = this.range.get('start').value.toISOString().split("T")[0];
+      requestObject.endDate = this.range.get('end').value.toISOString().split("T")[0];
     } else { 
       requestObject.startDate = this.selectedLicense.startDate;
       requestObject.endDate = this.selectedLicense.renewalDate;
@@ -289,6 +291,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       this.selectedLicense = this.licensesList.find(item => item.id == newLicense);
       this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
       this.endDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
+      this.resetPeriodFilter();
       this.fetchDataToDisplay();
     }
   }
@@ -336,8 +339,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       if (res) {
         if (data) // if it comes from license consumption actions
           this.fetchDataToDisplay();
-        else
+        else{
+          this.resetPeriodFilter();
           this.ngOnInit();
+        }
       }
       dialogEvent?.unsubscribe();
     });
@@ -381,9 +386,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.EDIT:
-        let dataObject: any = { ...object.selectedRow };
-        this.startDate = new Date(this.data.startDate + " 00:00:00");
-        this.endDate = new Date(this.data.renewalDate + " 00:00:00");
+        let dataObject: any = { ...object.selectedRow, ...{endLicensePeriod: this.selectedLicense.renewalDate} };
         this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
         break;
       case this.DELETE:
@@ -394,16 +397,34 @@ export class LicenseConsumption implements OnInit,OnDestroy {
 
   getMultipleChoiceAnswer(newValue: any) {
     this.aggregation = newValue.value;
-    if (this.aggregation != "month")
+    this.resetCalendar();
+    if (this.aggregation === "period"){
+      this.range.disable();
       this.fetchAggregatedData();
+    }else{
+      this.range.enable();
+    }
   }
 
-  setMonthAndYear(newDateSelection: Date, datepicker: MatDatepicker<any>) {
+  setMonthAndYear(newDateSelection: Date, datepicker: MatDateRangePicker<any>) {
     this.month = newDateSelection.getMonth() + 1;
     this.year = newDateSelection.getFullYear();
-    this.selectedDate = newDateSelection;
+    this.setMonthRange(newDateSelection);
     datepicker.close();
     this.fetchAggregatedData();
+  }
+
+  setMonthRange(date: Date){
+    let startMonth = date;
+    let endMonth = new Date(date.getFullYear(),date.getMonth()+1,0);
+    this.range.patchValue({
+      start:startMonth,
+      end: endMonth
+    });
+    this.range.patchValue({
+      start:startMonth<this.startDate? this.startDate: startMonth,
+      end: endMonth>this.endDate? this.endDate : endMonth
+    });
   }
 
   getProject(newValue: any) {
@@ -415,6 +436,38 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.selectedType = newValue;
     this.fetchAggregatedData();
   }
+
+  getDatePickerPlaceHolder(): string {
+    switch (this.aggregation) {
+      case 'month':
+        return 'Choose Month and Year';
+      case 'week':
+        return 'Choose a week';
+      default:
+        return 'Choose a date';
+    }
+  }
+
+  setWeek(){
+    if(this.aggregation=="week")
+      this.fetchAggregatedData();
+    else
+      this.resetCalendar();
+  }
+
+  resetCalendar(){
+    this.range.patchValue({start:null,end:null});
+    this.month = null;
+    this.year = null;
+  }
+
+  resetPeriodFilter(){
+    this.aggregation='period';
+    this.resetCalendar();
+    this.range.disable();
+  }
+  
+
   ngOnDestroy(): void {
     localStorage.removeItem(Constants.PROJECT);
   }

@@ -13,6 +13,7 @@ public class Config {
     private static final String postgresqlServer = "postgresql_server";
     private static final String postgresqlUser = "postgresql_user";
     private static final String postgresqlPwd = "postgresql_pwd";
+    private static final String postgresqlSecurityMode = "postgresql_security_mode";
     private static final String token = "fullAdminToken";
 //    private static final Logger LOGGER = LogManager.getLogger();
     public static Logger logger = Logger.getLogger(Config.class.getName());
@@ -53,6 +54,10 @@ public class Config {
 
     public String getPassword() {
         return getConfig(postgresqlPwd);
+    }
+    
+    public String getSecurityMode() {
+        return getConfig(postgresqlSecurityMode);
     }
 
     public String getToken(String role) {

@@ -30,7 +30,7 @@ public class TekvLSGetAllCustomers {
 	 * 2. curl "{your host}/api/customers"
 	 */
 
-	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 
@@ -46,7 +46,8 @@ public class TekvLSGetAllCustomers {
 				final ExecutionContext context) 
 	{
 
-		String currentRole = getRoleFromToken(request,context);
+		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -65,11 +66,12 @@ public class TekvLSGetAllCustomers {
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String customerType = request.getQueryParameters().getOrDefault("type", "");
 		String customerName = request.getQueryParameters().getOrDefault("name", "");
+		String tombstone = request.getQueryParameters().getOrDefault("tombstone", "false");
 
 		Map<String, List<String>> adminEmailsMap = new HashMap<>();
 		// Build SQL statement
-		String sql = "select * from customer";
-		String email = getEmailFromToken(request,context);
+		String sql = "select * from customer where tombstone= "+ tombstone +" ";
+		String email = getEmailFromToken(tokenClaims,context);
 		List<String> conditionsList = new ArrayList<>();
 		String customerId;
 		// adding conditions according to the role
@@ -101,9 +103,8 @@ public class TekvLSGetAllCustomers {
 			conditionsList.add("id='" + id +"'");
 			adminEmailsMap = loadAdminEmails(id, context);
 		}
-
 		String sqlConditions = String.join(" and ",conditionsList);
-		sql += (sqlConditions.isEmpty() ? ";" : " where "+sqlConditions+";");
+		sql += (sqlConditions.isEmpty() ? ";" : " and "+sqlConditions+";");
 		
 		// Connect to the database
 		try (

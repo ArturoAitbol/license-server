@@ -42,7 +42,8 @@ public class TekvLSGetAllProjects {
 		final ExecutionContext context) 
    {
 
-	   String currentRole = getRoleFromToken(request,context);
+	   JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+	   String currentRole = getRoleFromToken(tokenClaims,context);
 	   if(currentRole.isEmpty()){
 		   JSONObject json = new JSONObject();
 		   context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -67,7 +68,7 @@ public class TekvLSGetAllProjects {
 		// Build SQL statement
 		String sql = "select * from project";
 	   	String subQuery;
-	   	String email = getEmailFromToken(request,context);
+	   	String email = getEmailFromToken(tokenClaims,context);
 	   	List<String> conditionsList = new ArrayList<>();
 	   	// adding conditions according to the role
 	   	switch (currentRole){
@@ -95,7 +96,7 @@ public class TekvLSGetAllProjects {
 			   if (!status.isEmpty())
 			   		conditionsList.add("status='" + status + "'");
 		   }else{
-			   json.put("error", "Missing mandatory parameter: subaccount ID");
+			   json.put("error", "Missing mandatory parameter: subaccountId");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		   }
 		   
@@ -110,7 +111,7 @@ public class TekvLSGetAllProjects {
 	   	sql += " order by open_date desc, code, name;";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (

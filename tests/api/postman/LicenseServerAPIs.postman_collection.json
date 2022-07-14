@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "81d43976-1830-42c0-937c-368e3eece0c3",
+		"_postman_id": "eb89f75c-a0ca-44b6-b433-e70017103836",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8463466"
+		"_exporter_id": "8463491"
 	},
 	"item": [
 		{
@@ -88,7 +88,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"adminEmails\": [\r\n        \"{{name}}@test.com\"\r\n    ],\r\n    \"testCustomer\": \"true\"\r\n}",
+					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\",\r\n    \"customerId\":\"aa85388d-1ce9-425d-9df7-d6e8a8baaec2\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -125,7 +125,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"adminEmail\": \"{{name}}@adminemail.com\",\r\n    \"customerId\": \"{{customerId}}\"\r\n}",
+					"raw": "{\r\n    \"customerAdminEmail\": \"{{name}}@adminemail.com\",\r\n    \"customerId\": \"{{customerId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -166,7 +166,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmails\": [\"{{name}}@test.com\"]\r\n}",
+					"raw": "{\r\n    \"subaccountName\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmail\": \"{{name}}@test.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -203,7 +203,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"adminEmail\": \"{{name}}@subadmin.com\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"raw": "{\r\n    \"subaccountAdminEmail\": \"{{name}}@subadmin.com\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -244,7 +244,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"name\": \"{{name}}\",\r\n    \"code\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"projectName\": \"{{name}}\",\r\n    \"projectNumber\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -285,7 +285,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokens\": \"55\",\r\n    \"deviceAccessLimit\": \"5000\",\r\n    \"status\": \"Active\"\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"licenseId\":\"31d82e5c-b911-460d-edbe-6860f8464233\",\r\n    \"status\": \"Active\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -341,7 +341,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"projectId\": \"{{projectId}}\",\r\n    \"deviceId\": \"{{deviceId}}\",\r\n    \"consumptionDate\": \"{{startWeek}}\",\r\n    \"usageType\": \"Configuration\",\r\n    \"usageDays\": [0,4]\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"projectId\": \"{{projectId}}\",\r\n    \"deviceId\": \"{{deviceId}}\",\r\n    \"consumptionDate\": \"{{startWeek}}\",\r\n    \"type\": \"Configuration\",\r\n    \"usageDays\": [0,4]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -378,7 +378,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}Modified\"\r\n}",
+					"raw": "{\r\n    \"customerName\": \"{{name}}Modified\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -464,7 +464,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"packageType\": \"Small\",\r\n    \"tokens\": \"150\",\r\n    \"deviceAccessLimit\": \"5000\"\r\n}",
+					"raw": "{\r\n    \"packageType\": \"Small\",\r\n    \"tokensPurchased\": \"150\",\r\n    \"deviceLimit\": \"5000\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -511,7 +511,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"deviceId\": {{deviceId}},\r\n    \"usageType\": \"AutomationPlatform\"\r\n}",
+					"raw": "{\r\n    \"deviceId\": {{deviceId}},\r\n    \"Type\": \"AutomationPlatform\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -549,7 +549,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}Modified\",\r\n    \"code\": \"{{name}}Modified\",\r\n    \"status\": \"Closed\",\r\n    \"closeDate\": \"{{$isoTimestamp}}\"\r\n}",
+					"raw": "{\r\n    \"projectName\": \"{{name}}Modified\",\r\n    \"projectNumber\": \"{{name}}Modified\",\r\n    \"status\": \"Closed\",\r\n    \"closeDate\": \"{{$isoTimestamp}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -587,7 +587,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}Modified\"\r\n}",
+					"raw": "{\r\n    \"subaccountName\": \"{{name}}Modified\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -756,7 +756,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/licenseUsageDetails?subaccount-id={{subaccountId}}",
+					"raw": "{{HOST}}/licenseUsageDetails?subaccountId={{subaccountId}}",
 					"host": [
 						"{{HOST}}"
 					],
@@ -765,7 +765,7 @@
 					],
 					"query": [
 						{
-							"key": "subaccount-id",
+							"key": "subaccountId",
 							"value": "{{subaccountId}}"
 						}
 					]

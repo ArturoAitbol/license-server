@@ -81,8 +81,8 @@ public class TekvLSModifyLicenseById
 			{"startDate","start_date"}, 
 			{"packageType","package_type"}, 
 			{"renewalDate","renewal_date"}, 
-			{"tokens","tokens"}, 
-			{"deviceAccessLimit","device_access_limit"}, 
+			{"tokensPurchased","tokens"}, 
+			{"deviceLimit","device_access_limit"}, 
 			{"status","status"}};
 		// Build the sql query
 		String sql = "update license set ";
@@ -107,7 +107,7 @@ public class TekvLSModifyLicenseById
 		sql += " where id='" + id + "';";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (

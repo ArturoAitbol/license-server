@@ -77,8 +77,8 @@ public class TekvLSCreateProject
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] mandatoryParams = {
 			{"subaccountId","subaccount_id"}, 
-			{"name","name"}, 
-			{"code","code"},
+			{"projectName","name"}, 
+			{"projectNumber","code"},
 			{"openDate","open_date"},
 			{"status","status"} 
 		};
@@ -107,7 +107,7 @@ public class TekvLSCreateProject
 		String sql = "insert into project (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
@@ -117,15 +117,23 @@ public class TekvLSCreateProject
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 			
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
-			context.getLogger().info("Project inserted successfully."); 
+			try{
+				context.getLogger().info("Execute SQL statement: " + sql);
+				statement.executeUpdate(sql);
+				context.getLogger().info("Project inserted successfully."); 
+			}catch(Exception e){
+				context.getLogger().info("Caught exception: " + e.getMessage());
+				JSONObject json = new JSONObject();
+				String modifiedResponse= projectUnique(e.getMessage());
+				json.put("error", modifiedResponse);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 
 			// Return the id in the response
 			sql = "select id from project where " + 
 				"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
-				"name = '" + jobj.getString("name") + "' and " +
-				"code = '" + jobj.getString("code") + "' and " +
+				"name = '" + jobj.getString("projectName") + "' and " +
+				"code = '" + jobj.getString("projectNumber") + "' and " +
 				"status = '" + jobj.getString("status") + "' and " +
 				"open_date = '" + jobj.getString("openDate") + "';";
 			context.getLogger().info("Execute SQL statement: " + sql);
@@ -149,5 +157,13 @@ public class TekvLSCreateProject
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
+	}
+
+	private String projectUnique(String errorMessage){
+		String response = errorMessage;
+		
+		if(errorMessage.contains("project_unique") && errorMessage.contains("already exists"))
+			response = "Project already exists";
+		return response;
 	}
 }

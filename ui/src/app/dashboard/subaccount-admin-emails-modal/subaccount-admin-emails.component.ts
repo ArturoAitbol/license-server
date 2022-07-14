@@ -53,13 +53,13 @@ export class SubaccountAdminEmailsComponent implements OnInit {
     this.isDataLoading = true;
     if (this.emailForms.length > 0) {
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.subaccountAdminEmailService.createAdminEmail({
-        adminEmail: value.email,
+        subaccountAdminEmail: value.email,
         subaccountId: this.data.id,
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
         if (!res.error) {
           this.isDataLoading = false;
-          this.snackBarService.openSnackBar('Customer admin emails edited successfully!', '');
+          this.snackBarService.openSnackBar('Customer admin emails edited successfully! ', '');
           this.dialogRef.close(true);
         } else
           this.snackBarService.openSnackBar(res.error, 'Error while editing administrator emails!');

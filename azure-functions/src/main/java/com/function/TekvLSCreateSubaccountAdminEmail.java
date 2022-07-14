@@ -16,7 +16,7 @@ import java.util.Optional;
 import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSCreateSubaccountAdminEmail {
-    private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses?ssl=true&sslmode=require"
+    private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
             + "&user=" + System.getenv("POSTGRESQL_USER")
             + "&password=" + System.getenv("POSTGRESQL_PWD");
 
@@ -56,7 +56,7 @@ public class TekvLSCreateSubaccountAdminEmail {
 
         if (createSubaccountAdminRequest.getAdminEmail() == null) {
             context.getLogger().info("error: Missing adminEmail parameter.");
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter adminEmail.\"}")).build();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter subaccountAdminEmail.\"}")).build();
         }
         if (createSubaccountAdminRequest.getSubaccountId() == null) {
             context.getLogger().info("error: Missing subaccountId parameter.");
@@ -92,16 +92,16 @@ public class TekvLSCreateSubaccountAdminEmail {
     }
 
     public static class CreateSubaccountAdminRequest {
-        private final String adminEmail;
+        private final String subaccountAdminEmail;
         private final String subaccountId;
 
-        public CreateSubaccountAdminRequest(String adminEmail, String subaccountId) {
-            this.adminEmail = adminEmail;
+        public CreateSubaccountAdminRequest(String subaccountAdminEmail, String subaccountId) {
+            this.subaccountAdminEmail = subaccountAdminEmail;
             this.subaccountId = subaccountId;
         }
 
         public String getAdminEmail() {
-            return adminEmail;
+            return subaccountAdminEmail;
         }
 
         public String getSubaccountId() {
@@ -111,8 +111,8 @@ public class TekvLSCreateSubaccountAdminEmail {
         @Override
         public String toString() {
             return "CreateSubaccountAdminRequest{" +
-                    "adminEmail='" + adminEmail + '\'' +
-                    ", customerId='" + subaccountId + '\'' +
+                    "subaccountAdminEmail='" + subaccountAdminEmail + '\'' +
+                    ", subaccountId='" + subaccountId + '\'' +
                     '}';
         }
     }

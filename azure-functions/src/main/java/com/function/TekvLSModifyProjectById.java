@@ -80,8 +80,8 @@ public class TekvLSModifyProjectById
 
 		// The expected parameters (and their coresponding column name in the database) 
 		String[][] optionalParams = {
-			{"name","name"}, 
-			{"code","code"},
+			{"projectName","name"}, 
+			{"projectNumber","code"},
 			{"status","status"}, 
 			{"openDate", "open_date"}, 
 			{"closeDate","close_date"}};
@@ -108,7 +108,7 @@ public class TekvLSModifyProjectById
 		sql += " where id='" + id + "';";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (

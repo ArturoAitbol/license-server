@@ -39,7 +39,8 @@ public class TekvLSGetConsumptionUsageDetails {
 			@BindingName("id") String id,
 		final ExecutionContext context) {
 
-		String currentRole = getRoleFromToken(request,context);
+		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -58,7 +59,7 @@ public class TekvLSGetConsumptionUsageDetails {
 		String sql = "select * from usage_detail where consumption_id='" + id +"'";
 
 		String subQuery;
-		String email = getEmailFromToken(request,context);
+		String email = getEmailFromToken(tokenClaims,context);
 		String sqlRoleCondition="";
 		// adding conditions according to the role
 		switch (currentRole){
@@ -89,7 +90,7 @@ public class TekvLSGetConsumptionUsageDetails {
 		sql +=";";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {

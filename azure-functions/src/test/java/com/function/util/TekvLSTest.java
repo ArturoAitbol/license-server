@@ -35,7 +35,7 @@ public class TekvLSTest {
 
     @SystemStub
     private final EnvironmentVariables environmentVariables = new EnvironmentVariables("POSTGRESQL_SERVER", Config.getInstance().getServer(),
-            "POSTGRESQL_USER", Config.getInstance().getUser(), "POSTGRESQL_PWD", Config.getInstance().getPassword());
+            "POSTGRESQL_USER", Config.getInstance().getUser(), "POSTGRESQL_PWD", Config.getInstance().getPassword(), "POSTGRESQL_SECURITY_MODE", Config.getInstance().getSecurityMode());
 
     public void initTestParameters(){
         doReturn(this.headers).when(request).getHeaders();

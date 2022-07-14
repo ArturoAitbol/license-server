@@ -11,11 +11,7 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -79,9 +75,9 @@ public class TekvLSCreateCustomer
 
 		// The expected parameters (and their corresponding column name in the database)
 		String[][] mandatoryParams = {
-			{"name","name"},
+			{"customerName","name"},
 			{"customerType","type"},
-		    {"testCustomer","test_customer"}
+		    {"test","test_customer"}
 		};
 		// Build the sql query
 		String sqlPart1 = "";
@@ -115,14 +111,14 @@ public class TekvLSCreateCustomer
 		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
 		String sql = "insert into customer (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
-		if (!jobj.has("adminEmails"))  {
+		if (!jobj.has("customerAdminEmail"))  {
 			JSONObject json = new JSONObject();
-			json.put("error", "Missing mandatory parameter: adminEmail");
+			json.put("error", "Missing mandatory parameter: customerAdminEmail");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
@@ -131,36 +127,40 @@ public class TekvLSCreateCustomer
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 
-			JSONArray adminEmailsJson = jobj.getJSONArray("adminEmails");
-			List<String> adminEmails = new ArrayList<>();
-			for (int i=0; i<adminEmailsJson.length(); i++) {
-				adminEmails.add( adminEmailsJson.getString(i) );
-			}
-
-			String verifyEmails = "select count(*) from customer_admin where admin_email IN ('" +  String.join("','", adminEmails) + "')";
+			String adminEmail = jobj.getString("customerAdminEmail");
+			String verifyEmails = "select count(*) from customer_admin where admin_email='" + adminEmail + "';";
 			context.getLogger().info("Execute SQL statement: " + verifyEmails);
 			ResultSet rsEmails = statement.executeQuery(verifyEmails);
 			rsEmails.next();
-			if(rsEmails.getInt(1)>0){
+			if (rsEmails.getInt(1) > 0){
 				JSONObject json = new JSONObject();
 				json.put("error", "Administrator email already exists");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
-			context.getLogger().info("License usage inserted successfully."); 
+			try{
+				context.getLogger().info("Execute SQL statement: " + sql);
+				statement.executeUpdate(sql);
+				context.getLogger().info("Customer inserted successfully."); 
+			}catch(Exception e){
+				context.getLogger().info("Caught exception: " + e.getMessage());
+				JSONObject json = new JSONObject();
+				String modifiedResponse= customerUnique(e.getMessage());
+				json.put("error", modifiedResponse);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 
 			// Return the customer id in the response
-			sql = "select id from customer where name = '" + jobj.getString("name") + "' and type = '" + jobj.getString("customerType") + "';";
+			sql = "select id from customer where name = '" + jobj.getString("customerName") + "' and type = '" + jobj.getString("customerType") + "';";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
+			String customerId = rs.getString("id");
 			JSONObject json = new JSONObject();
-			json.put("id", rs.getString("id"));
+			json.put("id", customerId);
 
-			String adminEmailSql = getAdminEmailInsert(adminEmails,rs.getString("id"));
+			String adminEmailSql = "INSERT INTO customer_admin (admin_email, customer_id) VALUES ('" + adminEmail + "', '" + customerId + "');";
 			context.getLogger().info("Execute SQL statement: " + adminEmailSql);
 			statement.executeUpdate(adminEmailSql);
 			context.getLogger().info("Admin emails inserted successfully.");
@@ -180,12 +180,11 @@ public class TekvLSCreateCustomer
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 	}
+	private String customerUnique(String errorMessage){
+		String response = errorMessage;
 
-	private String getAdminEmailInsert(List<String> emailsList, String customerId) {
-		StringBuilder sb = new StringBuilder("INSERT INTO customer_admin (admin_email, customer_id) VALUES ");
-		for (String email : emailsList) {
-			sb.append(String.format("('%s','%s'),", email, customerId));
-		}
-		return sb.deleteCharAt(sb.length() - 1).append(";").toString();
+		if(errorMessage.contains("customer_unique") && errorMessage.contains("already exists"))
+			response = "Customer already exists";
+		return response;
 	}
 }
