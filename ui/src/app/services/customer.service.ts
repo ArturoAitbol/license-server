@@ -71,8 +71,7 @@ export class CustomerService {
    * @param customerId: string
    * @returns: Observable
    */
-  public deleteCustomer(customerId: string, force= false) {
-    let params = new HttpParams();
+  public deleteCustomer(customerId: string) {
     return this.httpClient.delete(`${this.API_URL}/${customerId}`);
   }
 
