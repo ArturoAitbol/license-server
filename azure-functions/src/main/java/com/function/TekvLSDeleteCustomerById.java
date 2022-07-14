@@ -56,8 +56,16 @@ public class TekvLSDeleteCustomerById
 		context.getLogger().info("Entering TekvLSDeleteCustomerById Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-
 		String sql;
+		Boolean force = false;
+		if (request.getQueryParameters().containsKey("force")) {
+			String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
+			if (forceDelete.equalsIgnoreCase("false") ) {
+				force = false;
+			} else {
+				force = true;
+			}
+		}
 		String subQuery = "select test_customer from customer where id = '"+id+"';";
 
 		// Connect to the database
@@ -77,10 +85,15 @@ public class TekvLSDeleteCustomerById
 			context.getLogger().info("test_customer is: " + test_customer);
 			
 			// Delete customer
-			if (test_customer.contains("f")) {
-				sql = "update customer set tombstone=true where id='" + id +"';";
-			} else {
+
+			if (force) {
 				sql = "delete from customer where id='" + id +"';";
+			} else {
+				if(test_customer.contains("f")){
+					sql = "update customer set tombstone=true where id='" + id +"';";
+				}else{
+					sql = "delete from customer where id='" + id +"';";
+				}
 			}
 			context.getLogger().info("Execute SQL statement: " + sql);
 			statement.executeUpdate(sql);
