@@ -72,14 +72,14 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
 
         JSONObject bundle = (JSONObject) bundles.get(0);
         String actualId = bundle.getString("id");
-        System.out.println(actualId);
         assertEquals(expectedId, actualId, "Actual Id is not: ".concat(expectedId));
     }
 
+    @Tag("acceptance")
     @Test
     public void getBundleByNameTest(){
         String id = "EMPTY";
-        String expectedName = "MEDIUM";
+        String expectedName = "Medium";
         this.queryParams.put("name", expectedName);
 
         HttpResponseMessage response = new TekvLSGetAllBundles().run(this.request, id, this.context);
@@ -97,7 +97,6 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
 
         JSONObject bundle = (JSONObject) bundles.get(0);
         String actualName = bundle.getString("name");
-        System.out.println("actualName: " + actualName);
         assertEquals(expectedName, actualName, "Actual name is not: ".concat(expectedName));
     }
 
