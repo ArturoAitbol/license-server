@@ -1,12 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Constants } from "../helpers/constants";
 import { MsalService } from "@azure/msal-angular";
+import { environment } from "src/environments/environment";
 
 @Injectable({
     providedIn: 'root'
 })
 export class AutoLogoutService {
-    timeoutId: number = null;
+    timeoutId: any = null;
 
     private readonly  LAST_ACTIVITY_TIMESTAMP_KEY = 'lastActivityTime';
     constructor(private msalService: MsalService) {
@@ -34,7 +35,7 @@ export class AutoLogoutService {
     private logout() {
         if (this.msalService.instance.getActiveAccount() != null) {
             try {
-                const baseUrl: string = Constants.REDIRECT_URL_AFTER_LOGIN;
+                const baseUrl: string = environment.REDIRECT_URL_AFTER_LOGIN;
                 this.msalService.logoutPopup({
                     mainWindowRedirectUri: baseUrl
                 });

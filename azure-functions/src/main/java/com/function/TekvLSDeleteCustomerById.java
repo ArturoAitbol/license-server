@@ -56,17 +56,12 @@ public class TekvLSDeleteCustomerById
 		context.getLogger().info("Entering TekvLSDeleteCustomerById Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-		String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
-		
 		String sql;
-		if (forceDelete.equalsIgnoreCase("false")) {
-			sql = "update customer set tombstone=true where id='" + id +"';";
-		} else {
-			sql = "delete from customer where id='" + id +"';";
-		}
+		String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
+		Boolean deleteFlag = Boolean.parseBoolean(forceDelete);
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
@@ -74,8 +69,21 @@ public class TekvLSDeleteCustomerById
 			Statement statement = connection.createStatement();) {
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
-			
+			// Get test_customer by id if not force delete
+			if (!deleteFlag) {
+				String subQuery = "select test_customer from customer where id = '"+id+"';";
+				context.getLogger().info("Execute SQL statement: " + subQuery);
+				ResultSet rs = statement.executeQuery(subQuery);
+				rs.next();
+				// override delete flag with the test customer value when delete force is not true
+				deleteFlag = rs.getBoolean("test_customer");
+				context.getLogger().info("test_customer is: " + deleteFlag);
+			}
 			// Delete customer
+			if (deleteFlag)
+				sql = "delete from customer where id='" + id +"';";
+			else 
+				sql = "update customer set tombstone=true where id='" + id +"';";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			statement.executeUpdate(sql);
 			context.getLogger().info("Customer delete successfully."); 

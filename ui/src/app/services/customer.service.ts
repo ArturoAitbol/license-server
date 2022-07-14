@@ -48,13 +48,11 @@ export class CustomerService {
   /**
    * fetch customer details list
    * @returns: Observable
-   * @param tombstone: boolean
    */
-  public getCustomerList(customerName?: string, tombstone=false) {
+  public getCustomerList(customerName?: string) {
     const params = new HttpParams();
     if (customerName) {
       params.append('customerName', customerName);
-      params.append('tombstone', tombstone);
     }
     const headers = this.getHeaders();
     return this.httpClient.get<Customer>(this.API_URL, { headers, params });
@@ -71,13 +69,11 @@ export class CustomerService {
   /**
    * delete selected customer by customerId
    * @param customerId: string
-   * @param force: boolean
    * @returns: Observable
    */
   public deleteCustomer(customerId: string, force= false) {
     let params = new HttpParams();
-    params = params.append('force', force);
-    return this.httpClient.delete(`${this.API_URL}/${customerId}`, { params });
+    return this.httpClient.delete(`${this.API_URL}/${customerId}`);
   }
 
 
