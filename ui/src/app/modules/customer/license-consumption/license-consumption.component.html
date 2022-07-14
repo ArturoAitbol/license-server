@@ -113,8 +113,8 @@
                 <div class="overflow-auto mat-elevation-z8">
                     <app-data-table [tableData]="tokenConsumptionData" [tableColumns]="tekTokenConsumptionColumns"
                         [isFilterable]="false" [isPageable]="false"
-                        [isLoadingResults]="isDetailedConsumptionLoadingResults"
-                        [isRequestCompleted]="isDetailedConsumptionRequestCompleted">
+                        [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
+                        [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted">
                     </app-data-table>
                 </div>
             </div>
@@ -124,22 +124,23 @@
             <div class="col-4">
                 <div class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="detailedConsumptionColumns"
-                        [isFilterable]="false" [isPageable]="false"
-                        [isLoadingResults]="isDetailedConsumptionLoadingResults"
-                        [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[5,10,20]"
-                        [defaultPageSize]="5">
+                                    [isFilterable]="false" [isPageable]="false"
+                                    [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
+                                    [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted" [paginationSizes]="[5,10,20]"
+                                    [defaultPageSize]="5">
                     </app-data-table>
                 </div>
             </div>
             <div class="col-8">
                 <div class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="detailedConsumptionData"
-                        [tableColumns]="detailedConsumptionSummaryColumns" [isFilterable]="false" [isPageable]="false"
-                        [isLoadingResults]="isDetailedConsumptionLoadingResults"
-                        [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[5,10,20]"
-                        [defaultPageSize]="5" (sort)="sortData($event)" [rowActionIcon]="'more_vert'"
-                        (rowAction)="licConsumptionRowAction($event)"
-                        [actionMenuList]="licConsumptionActionMenuOptions">
+                                    [tableColumns]="detailedConsumptionSummaryColumns" [isFilterable]="false" [isPageable]="true"
+                                    [isLoadingResults]="isDetailedConsumptionLoadingResults"
+                                    [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[6]"
+                                    [defaultPageSize]="6" (sort)="sortData($event)" [rowActionIcon]="'more_vert'"
+                                    (rowAction)="licConsumptionRowAction($event)"
+                                    [actionMenuList]="licConsumptionActionMenuOptions" [serverSidePagination]="true"
+                                    (pageChanged)="onPageChange($event)" [length]="detailedConsumptionDataLength" #detailsConsumptionTable>
                     </app-data-table>
                 </div>
             </div>   
