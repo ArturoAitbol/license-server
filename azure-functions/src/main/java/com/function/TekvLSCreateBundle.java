@@ -49,9 +49,9 @@ public class TekvLSCreateBundle {
         String requestBody = request.getBody().orElse("");
         context.getLogger().info("Request body: " + requestBody);
         if (requestBody.isEmpty()) {
-            context.getLogger().info("error: request body is empty.");
+            context.getLogger().info("Error: Request body is empty.");
             JSONObject json = new JSONObject();
-            json.put("error", "error: request body is empty.");
+            json.put("error", "Request body is empty.");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;

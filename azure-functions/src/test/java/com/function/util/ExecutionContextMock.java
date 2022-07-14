@@ -1,4 +1,4 @@
-package com.function;
+package com.function.util;
 
 import com.microsoft.azure.functions.ExecutionContext;
 import java.util.logging.Logger;

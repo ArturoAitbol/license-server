@@ -36,11 +36,11 @@ public class Config {
     }
 
     private String getConfig(String property) {
-        String baseUrl = System.getProperty(property);
-        if (baseUrl == null) {
+        String systemProperty = System.getProperty(property);
+        if (systemProperty == null) {
             return properties.getProperty(property);
         }
-        return baseUrl;
+        return systemProperty;
     }
 
     public String getServer() {

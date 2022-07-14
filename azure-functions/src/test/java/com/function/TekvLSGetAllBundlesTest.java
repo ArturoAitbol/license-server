@@ -1,62 +1,21 @@
 package com.function;
 
 import com.function.util.Config;
+import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
-import uk.org.webcompere.systemstubs.jupiter.SystemStub;
-import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(SystemStubsExtension.class)
-public class TekvLSGetAllBundlesTest {
-    static Logger logger = Logger.getLogger(TekvLSGetAllBundlesTest.class.getName());
-
-    public ExecutionContext context = mock(ExecutionContext.class);
-    final HttpRequestMessage<Optional<String>> request = mock(HttpRequestMessage.class);
-    final Map<String, String> queryParams = new HashMap<>();
-    final Map<String, String> headers = new HashMap<>();
-
-    @SystemStub
-    private final EnvironmentVariables environmentVariables = new EnvironmentVariables("POSTGRESQL_SERVER", Config.getInstance().getServer(),
-            "POSTGRESQL_USER", Config.getInstance().getUser(), "POSTGRESQL_PWD", Config.getInstance().getPassword());
+public class TekvLSGetAllBundlesTest extends TekvLSTest {
 
     @BeforeEach
     public void setup(){
+        this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        doReturn(this.headers).when(request).getHeaders();
-        doReturn(this.queryParams).when(request).getQueryParameters();
-        doAnswer(new Answer<HttpResponseMessage.Builder>() {
-            @Override
-            public HttpResponseMessage.Builder answer(InvocationOnMock invocation) {
-                HttpStatus status = (HttpStatus) invocation.getArguments()[0];
-                return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
-            }
-        }).when(this.request).createResponseBuilder(any(HttpStatus.class));
-        try {
-            LogManager.getLogManager().readConfiguration(new FileInputStream("src/test/resources/logging.properties"));
-        } catch (SecurityException | IOException e1) {
-            e1.printStackTrace();
-        }
-        doReturn(logger).when(this.context).getLogger();
     }
 
     @Tag("acceptance")
