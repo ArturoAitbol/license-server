@@ -116,9 +116,8 @@ export class DashboardComponent implements OnInit {
         const subAccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
         if( subAccountDetails !== undefined ){
           account.subAccountName = subAccountDetails.name;
-          account.customerId = subAccountDetails.customerId;
           account.subAccountId = subAccountDetails.id;
-          account.id = subAccountDetails.id;
+          account.customerIdSub = subAccountDetails.customerId
           let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subAccountDetails.id));
           if(subaccountLicenses.length>0){
             const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
@@ -228,8 +227,8 @@ export class DashboardComponent implements OnInit {
         if (result.confirm) {
           console.debug('The user confirmed the action: ', this.customerList[index]);
           const { subAccountId , id } = this.customerList[index];
-          let numberOfSubaccounts = this.customerList.filter(subaccount => subaccount.customerId === id).length;
-          if (numberOfSubaccounts > 1 && !result.deleteAllData) {
+          let numberOfSubaccounts = this.customerList.filter(account => account.customerIdSub === id).length;
+          if (numberOfSubaccounts >= 1 && !result.deleteAllData) {
             this.subaccountService.deleteSubAccount(subAccountId).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
@@ -238,7 +237,17 @@ export class DashboardComponent implements OnInit {
                 this.snackBarService.openSnackBar('Error Subaccount could not be deleted !', '');
               }
             })
-          } else {
+          }
+          if(numberOfSubaccounts == 0 && result.deleteAllData === false){
+            this.customerService.deleteCustomer(id, true).subscribe((res: any) => {
+              if (!res?.error) {
+                this.snackBarService.openSnackBar('Customer deleted successfully!', '');
+                this.fetchDataToDisplay();
+              } else {
+                this.snackBarService.openSnackBar('Error customer could not be deleted !', '');
+              }
+            })
+          } else if(result.deleteAllData){
             this.customerService.deleteCustomer(id, true).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Customer deleted successfully!', '');

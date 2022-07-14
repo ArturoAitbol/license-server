@@ -127,7 +127,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     let projectItem: string = localStorage.getItem(Constants.PROJECT);
     if(projectItem) this.selectedProject = JSON.parse(projectItem).id;
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
-    this.licenseService.getLicenseList(this.currentCustomer.id).subscribe((res: any) => {
+    this.licenseService.getLicenseList(this.currentCustomer.subAccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         this.selectedLicense = res.licenses[0];
@@ -165,7 +165,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
 
   private buildRequestObject(view: string) {
     const requestObject: any = {
-      subaccount: this.currentCustomer.id,
+      subaccount: this.currentCustomer.subAccountId,
       view: view,
       month: this.aggregation == 'month' ? this.month : null,
       year: this.aggregation == 'month' ? this.year : null,
@@ -187,7 +187,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   }
 
   fetchProjectsList(){
-    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.id).subscribe((res: any) => {
+    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subAccountId).subscribe((res: any) => {
       if (!res.error && res.projects)
         this.projects = res.projects;
     });
