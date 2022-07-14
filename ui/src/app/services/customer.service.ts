@@ -14,9 +14,9 @@ export class CustomerService {
   private selectedType: string;
 
   constructor(private httpClient: HttpClient) { }
-  //set the selected customer
+  // set the selected customer
   setSelectedCustomer(customer: any) { this.selectedCustomer = customer; }
-  //get the selected customer
+  // get the selected customer
   getSelectedCustomer() {
     return (this.selectedCustomer) ? this.selectedCustomer : JSON.parse(localStorage.getItem(Constants.SELECTED_CUSTOMER));
   }
@@ -29,8 +29,8 @@ export class CustomerService {
 
   /**
    * create new customer
-   * @param customerName: string 
-   * @returns: Observable 
+   * @param customerName: string
+   * @returns: Observable
    */
   public createCustomer(newCustomerDetails: Customer) {
     return this.httpClient.post(this.API_URL, newCustomerDetails);
@@ -51,16 +51,15 @@ export class CustomerService {
    */
   public getCustomerList(customerName?: string) {
     const params = new HttpParams();
-    if (customerName) {
+    if (customerName)
       params.append('customerName', customerName);
-    }
     const headers = this.getHeaders();
     return this.httpClient.get<Customer>(this.API_URL, { headers, params });
   }
   /**
    * update customer details
-   * @param customer: Customer 
-   * @returns: Observable 
+   * @param customer: Customer
+   * @returns: Observable
    */
   public updateCustomer(customer: any) {
     return this.httpClient.put(`${this.API_URL}/${customer.id}`, customer);
@@ -82,7 +81,7 @@ export class CustomerService {
 
   /**
    * set the header for the request
-   * @returns: HttpHeaders 
+   * @returns: HttpHeaders
    */
   public getHeaders() {
     const headers = new HttpHeaders();

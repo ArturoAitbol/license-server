@@ -16,8 +16,8 @@ import { SubAccountService } from '../services/sub-account.service';
 import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
 import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
 import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
-import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.component";
-import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
+import { AdminEmailsComponent } from './admin-emails-modal/admin-emails.component';
+import { SubaccountAdminEmailsComponent } from './subaccount-admin-emails-modal/subaccount-admin-emails.component';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from '../helpers/role-permissions';
 
@@ -30,10 +30,10 @@ export class DashboardComponent implements OnInit {
   tableMaxHeight: number;
   displayedColumns: any[] = [];
   data: CustomerLicense[] = [];
-  subaccountList: any = [];
+  subAccountList: any = [];
   // flag
-  isLoadingResults: boolean = true;
-  isRequestCompleted: boolean = false;
+  isLoadingResults = true;
+  isRequestCompleted = false;
   readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages';
   readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
   readonly VIEW_PROJECTS: string = 'View Projects List';
@@ -59,11 +59,11 @@ export class DashboardComponent implements OnInit {
     this.calculateTableHeight();
   }
 
-  private getActionMenuOptions(){
-    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    accountRoles.forEach(accountRole =>{
-      permissions[accountRole].tables.customerOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
-    })
+  private getActionMenuOptions() {
+    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
+    accountRoles.forEach(accountRole => {
+      permissions[accountRole].tables.customerOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
+    });
   }
 
   private calculateTableHeight() {
@@ -84,7 +84,7 @@ export class DashboardComponent implements OnInit {
     this.getActionMenuOptions();
   }
   /**
-   * initailize the columns settings
+   * initialize the columns settings
    */
   initColumns(): void {
     this.displayedColumns = [
@@ -110,21 +110,20 @@ export class DashboardComponent implements OnInit {
       const newDataObject: any = res.reduce((current, next) => {
         return { ...current, ...next };
       }, {});
-      this.subaccountList = newDataObject['subaccounts'];
-      this.subaccountList.forEach((subaccount: any) => {
+      this.subAccountList = newDataObject['subaccounts'];
+      this.subAccountList.forEach((subaccount: any) => {
         const customerDetails = newDataObject['customers'].find((e: Customer) => e.id === subaccount.customerId);
         subaccount.customerName = customerDetails.name;
         subaccount.customerType = customerDetails.customerType;
         subaccount.testCustomer = customerDetails.testCustomer;
-        let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccount.id ));
-        if(subaccountLicenses.length>0){
-          const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
-          subaccount.status = licenseDetails ? licenseDetails.status: "Expired";
-        }else{
-          subaccount.status = "Inactive"; 
-        }
+        const subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccount.id ));
+        if (subaccountLicenses.length > 0) {
+          const licenseDetails = subaccountLicenses.find((l: License) => (l.status === 'Active'));
+          subaccount.status = licenseDetails ? licenseDetails.status : 'Expired';
+        } else
+          subaccount.status = 'Inactive';
       });
-      this.subaccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
+      this.subAccountList.sort((a: any, b: any) => a.customerName.localeCompare(b.customerName));
     }, err => {
       console.debug('error', err);
       this.isLoadingResults = false;
@@ -157,7 +156,7 @@ export class DashboardComponent implements OnInit {
   }
   /**
    * open dialog
-   * @param type: string 
+   * @param type: string
    */
   openDialog(type: string, selectedItemData?: any): void {
     let dialogRef;
@@ -218,38 +217,35 @@ export class DashboardComponent implements OnInit {
         confirmCaption: 'Confirm',
         deleteAllDataCaption: 'Delete All Data',
         cancelCaption: 'Cancel',
-        canDeleteAllData: this.subaccountList[index]?.testCustomer,
+        canDeleteAllData: this.subAccountList[index]?.testCustomer,
       })
       .subscribe((result) => {
         if (result.confirm) {
-          console.debug('The user confirmed the action: ', this.subaccountList[index]);
-          const { id , customerId } = this.subaccountList[index];
-          let numberOfSubaccounts = this.subaccountList.filter(subaccount => subaccount.customerId === customerId).length;
-          if (numberOfSubaccounts > 1 && !result.deleteAllData) {
+          console.debug('The user confirmed the action: ', this.subAccountList[index]);
+          const { id , customerId } = this.subAccountList[index];
+          const numberOfSubaccounts = this.subAccountList.filter(subaccount => subaccount.customerId === customerId).length;
+          if (numberOfSubaccounts > 1 && !result.deleteAllData)
             this.subaccountService.deleteSubAccount(id).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
                 this.fetchDataToDisplay();
-              } else {
+              } else
                 this.snackBarService.openSnackBar('Error Subaccount could not be deleted !', '');
-              }
-            })
-          } else {
+            });
+           else
             this.customerService.deleteCustomer(customerId, true).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Customer deleted successfully!', '');
                 this.fetchDataToDisplay();
-              } else {
+              } else
                 this.snackBarService.openSnackBar('Error customer could not be deleted !', '');
-              }
-            })
-          }
+            });
         }
       });
   }
   /**
-   * 
-   * @param row: object 
+   *
+   * @param row: object
    */
   openLicenseDetails(row: any): void {
     this.customerService.setSelectedCustomer(row);
@@ -257,8 +253,8 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/customer/licenses']);
   }
   /**
-   * 
-   * @param row: object 
+   *
+   * @param row: object
    */
   openLicenseConsumption(row: any): void {
     this.customerService.setSelectedCustomer(row);
@@ -267,7 +263,7 @@ export class DashboardComponent implements OnInit {
   }
   /**
    * open project detail
-   * @param row: object 
+   * @param row: object
    */
   openProjectDetails(row: any): void {
     this.customerService.setSelectedCustomer(row);
@@ -276,18 +272,16 @@ export class DashboardComponent implements OnInit {
   }
   /**
    * sort table
-   * @param sortParameters: Sort 
-   * @returns 
+   * @param sortParameters: Sort
    */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
-    if (sortParameters.direction === 'asc') {
-      this.subaccountList = this.subaccountList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
-    } else if (sortParameters.direction === 'desc') {
-      this.subaccountList = this.subaccountList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
-    } else {
-      return this.subaccountList = this.subaccountList;
-    }
+    if (sortParameters.direction === 'asc')
+      this.subAccountList = this.subAccountList.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+     else if (sortParameters.direction === 'desc')
+      this.subAccountList = this.subAccountList.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+     else
+      return this.subAccountList = this.subAccountList;
   }
   /**
    * action row click event
