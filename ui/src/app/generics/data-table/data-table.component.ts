@@ -117,15 +117,26 @@ export class DataTableComponent implements OnInit, OnDestroy {
       return Utility.getColorCode(value[tableColumn.dataKey]);
   }
 
+  /**
+   * emit pageChanged event
+   * @param event: PageEvent
+   */
   onPageChange(event: PageEvent) {
     if (this.isPageable && this.serverSidePagination)
       this.pageChanged.emit({pageIndex: event.pageIndex, pageSize: event.pageSize })
   }
 
+  /**
+   * Return the current page index of the paginator
+   */
   getPageIndex() {
     return this.matPaginator.pageIndex;
   }
 
+  /**
+   * Set the page index of the paginator
+   * @param pageIndex
+   */
   setPageIndex(pageIndex: number) {
     this.matPaginator.pageIndex = pageIndex;
   }
