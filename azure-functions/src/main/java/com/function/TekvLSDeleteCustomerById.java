@@ -57,16 +57,8 @@ public class TekvLSDeleteCustomerById
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String sql;
-		Boolean force = false;
-		if (request.getQueryParameters().containsKey("force")) {
-			String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
-			if (forceDelete.equalsIgnoreCase("false") ) {
-				force = false;
-			} else {
-				force = true;
-			}
-		}
-		String subQuery = "select test_customer from customer where id = '"+id+"';";
+		String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
+		Boolean deleteFlag = Boolean.parseBoolean(forceDelete);
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
@@ -77,24 +69,21 @@ public class TekvLSDeleteCustomerById
 			Statement statement = connection.createStatement();) {
 			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
-			// Get test_customer by id
-			context.getLogger().info("Execute SQL statement: " + subQuery);
-			ResultSet rs = statement.executeQuery(subQuery);
-			rs.next();
-			String test_customer = rs.getString("test_customer");
-			context.getLogger().info("test_customer is: " + test_customer);
-			
-			// Delete customer
-
-			if (force) {
-				sql = "delete from customer where id='" + id +"';";
-			} else {
-				if(test_customer.contains("f")){
-					sql = "update customer set tombstone=true where id='" + id +"';";
-				}else{
-					sql = "delete from customer where id='" + id +"';";
-				}
+			// Get test_customer by id if not force delete
+			if (!deleteFlag) {
+				String subQuery = "select test_customer from customer where id = '"+id+"';";
+				context.getLogger().info("Execute SQL statement: " + subQuery);
+				ResultSet rs = statement.executeQuery(subQuery);
+				rs.next();
+				// override delete flag with the test customer value when delete force is not true
+				deleteFlag = rs.getBoolean("test_customer");
+				context.getLogger().info("test_customer is: " + deleteFlag);
 			}
+			// Delete customer
+			if (deleteFlag)
+				sql = "delete from customer where id='" + id +"';";
+			else 
+				sql = "update customer set tombstone=true where id='" + id +"';";
 			context.getLogger().info("Execute SQL statement: " + sql);
 			statement.executeUpdate(sql);
 			context.getLogger().info("Customer delete successfully."); 
