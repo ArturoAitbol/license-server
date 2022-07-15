@@ -221,8 +221,7 @@ export class DashboardComponent implements OnInit {
         message: 'Do you want to confirm this action?',
         confirmCaption: 'Confirm',
         deleteAllDataCaption: 'Delete All Data',
-        cancelCaption: 'Cancel',
-        canDeleteAllData: this.customerList[index]?.testCustomer,
+        cancelCaption: 'Cancel'
       })
       .subscribe((result) => {
         if (result.confirm) {
