@@ -86,7 +86,7 @@ export class DashboardComponent implements OnInit {
     this.getActionMenuOptions();
   }
   /**
-   * initailize the columns settings
+   * initialize the columns settings
    */
   initColumns(): void {
     this.displayedColumns = [

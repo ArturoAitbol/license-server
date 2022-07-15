@@ -54,7 +54,10 @@ export class CustomerService {
     if (customerName)
       params.append('customerName', customerName);
     const headers = this.getHeaders();
-    return this.httpClient.get<Customer>(this.API_URL, { headers, params });
+    let response = this.httpClient.get<Customer>(this.API_URL, { headers, params });
+    console.log(response);
+    console.log(JSON.stringify(response));
+    return response;
   }
   /**
    * update customer details

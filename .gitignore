@@ -13,3 +13,4 @@ ui/package-lock.json
 *.prefs
 .vscode
 coverage/*
+ui/coverage/*

@@ -41,6 +41,7 @@ export class DataTableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const columnNames = this.tableColumns.map((tableColumn: TableColumn) => tableColumn.name);
     if (this.rowActionIcon) {
+      // @ts-ignore
       this.displayedColumns = [...columnNames, this.rowActionIcon];
     } else {
       this.displayedColumns = columnNames;

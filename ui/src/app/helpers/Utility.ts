@@ -22,6 +22,7 @@ export class Utility {
      */
     public static sortListInAscendingOrderWithoutKey(list: any[]): any[] {
         list.sort((e1, e2) => e1 > e2 ? 1 : (e1 < e2 ? -1 : 0));
+        // @ts-ignore
         return [...list];
     }
 
