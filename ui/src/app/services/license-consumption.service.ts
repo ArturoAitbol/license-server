@@ -24,7 +24,7 @@ export class LicenseConsumptionService {
    * @param licenseId: string 
    * @returns: Observable 
    */
-  public getLicenseDetails(data: any) {
+  public getLicenseConsumptionDetails(data: any) {
     const headers = this.getHeaders();
     let params = new HttpParams()
         .set('subaccountId', data.subaccount)
