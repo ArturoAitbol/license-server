@@ -41,6 +41,10 @@ export class LicenseConsumptionService {
       params = params.set('startDate', data.startDate);
       params = params.set('endDate', data.endDate);
     }
+    if (data.limit)
+      params = params.set('limit', data.limit);
+    if (data.offset)
+      params = params.set('offset', data.offset);
     return this.httpClient.get(this.API_URL, { headers, params });
   }
   /**

@@ -16,6 +16,7 @@ import { ProjectService } from 'src/app/services/project.service';
 import { Constants } from 'src/app/helpers/constants';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
+import { DataTableComponent } from "../../../generics/data-table/data-table.component";
 
 @Component({
   selector: 'app-license-consumption',
@@ -48,6 +49,9 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     start: [{value:'',disabled:true}],
     end:[{value:'',disabled:true}],
   });
+  detailedConsumptionDataLength = 0;
+
+  @ViewChild('detailsConsumptionTable') detailsConsumptionTable: DataTableComponent;
 
   tekTokensSummaryColumns: TableColumn[] = [
     { name: 'tekTokens', dataKey: 'tokensPurchased', position: 'left', isSortable: true },
@@ -93,6 +97,8 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   isLicenseSummaryRequestCompleted: boolean = false;
   isEquipmentSummaryLoadingResults: boolean = true;
   isEquipmentSummaryRequestCompleted: boolean = false;
+  isDetailedConsumptionSupplementalLoadingResults: boolean = true;
+  isDetailedConsumptionSupplementalRequestCompleted: boolean = false;
   isDetailedConsumptionLoadingResults: boolean = true;
   isDetailedConsumptionRequestCompleted: boolean = false;
   isLicenseListLoaded: boolean = false;
@@ -141,6 +147,8 @@ export class LicenseConsumption implements OnInit,OnDestroy {
         this.isLicenseSummaryRequestCompleted = true;
         this.isEquipmentSummaryLoadingResults = false;
         this.isEquipmentSummaryRequestCompleted = true;
+        this.isDetailedConsumptionSupplementalLoadingResults = false;
+        this.isDetailedConsumptionSupplementalRequestCompleted = true;
         this.isDetailedConsumptionLoadingResults = false;
         this.isDetailedConsumptionRequestCompleted = true;
       }
@@ -163,7 +171,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     })
   }
 
-  private buildRequestObject(view: string) {
+  private buildRequestObject(view: string, pageNumber?: number, pageSize?:number) {
     const requestObject: any = {
       subaccount: this.currentCustomer.subAccountId,
       view: view,
@@ -172,6 +180,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     };
     if (this.selectedProject) requestObject.project = this.selectedProject;
     if (this.selectedType) requestObject.type = this.selectedType;
+    if (pageNumber != null && pageSize != null) {
+      requestObject.limit = pageSize;
+      requestObject.offset = pageSize * pageNumber;
+    }
     /*
       if it is the license consumption division and week filter is selected
       then send the start and end dates as the beginning and end of this week
@@ -241,19 +253,46 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     });
   }
 
-  fetchAggregatedData() {
+  fetchAggregatedData(pageNumber = 0, pageSize = 6) {
     this.weeklyConsumptionData = [];
     this.detailedConsumptionData = [];
     this.tokenConsumptionData = [];
+    this.isDetailedConsumptionSupplementalLoadingResults = true;
+    this.isDetailedConsumptionSupplementalRequestCompleted = false;
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
-    this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
+    this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("", pageNumber, pageSize)).subscribe((res: any) => {
       res.usage.forEach(item => {
         this.getNameOfDays(item.usageDays);
       });
       this.detailedConsumptionData = res.usage;
+      this.detailedConsumptionDataLength = res.usageTotalCount;
       this.weeklyConsumptionData = res.configurationTokens;
       this.tokenConsumptionData = this.formatTokenConsumption(res.tokenConsumption);
+      this.detailsConsumptionTable.setPageIndex(0);
+      this.isDetailedConsumptionSupplementalLoadingResults = false;
+      this.isDetailedConsumptionSupplementalRequestCompleted = true;
+      this.isDetailedConsumptionLoadingResults = false;
+      this.isDetailedConsumptionRequestCompleted = true;
+    }, (err: any) => {
+      console.error("Error fetching detailed license consumption data: ", err);
+      this.isDetailedConsumptionSupplementalLoadingResults = false;
+      this.isDetailedConsumptionSupplementalRequestCompleted = true;
+      this.isDetailedConsumptionLoadingResults = false;
+      this.isDetailedConsumptionRequestCompleted = true;
+    });
+  }
+
+  fetchDetailedConsumptionData(pageNumber = 0, pageSize = 6) {
+    this.detailedConsumptionData = [];
+    this.isDetailedConsumptionLoadingResults = true;
+    this.isDetailedConsumptionRequestCompleted = false;
+    this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("", pageNumber, pageSize)).subscribe((res: any) => {
+      res.usage.forEach(item => {
+        this.getNameOfDays(item.usageDays);
+      });
+      this.detailedConsumptionData = res.usage;
+      this.detailedConsumptionDataLength = res.usageTotalCount;
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     }, (err: any) => {
@@ -466,7 +505,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.resetCalendar();
     this.range.disable();
   }
-  
+
+  onPageChange(event: {pageIndex, pageSize}) {
+    this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize)
+  }
 
   ngOnDestroy(): void {
     localStorage.removeItem(Constants.PROJECT);
