@@ -142,7 +142,7 @@
                     <app-data-table [tableData]="detailedConsumptionData"
                                     [tableColumns]="detailedConsumptionSummaryColumns" [isFilterable]="false" [isPageable]="true"
                                     [isLoadingResults]="isDetailedConsumptionLoadingResults"
-                                    [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[6]"
+                                    [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[6, 10, 20, 50]"
                                     [defaultPageSize]="6" (sort)="sortData($event)" [rowActionIcon]="'more_vert'"
                                     (rowAction)="licConsumptionRowAction($event)"
                                     [actionMenuList]="licConsumptionActionMenuOptions" [serverSidePagination]="true"
