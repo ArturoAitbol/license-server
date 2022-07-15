@@ -50,7 +50,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
    */
   submit() {
     const licenseObject: License | any = {
-      subaccountId: this.currentCustomer.id,
+      subaccountId: this.currentCustomer.subaccountId,
       startDate: this.addLicenseForm.value.startDate,
       packageType: this.selectedType,
       tokensPurchased: this.addLicenseForm.get("tokensPurchased").value,

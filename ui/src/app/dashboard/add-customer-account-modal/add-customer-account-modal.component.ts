@@ -13,7 +13,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 export class AddCustomerAccountModalComponent implements OnInit {
   addCustomerForm = this.formBuilder.group({
     customerName: ['', Validators.required],
-    subAccountName: ['Default', Validators.required],
+    subaccountName: ['Default', Validators.required],
     customerType: ['', Validators.required],
     adminEmail: ['', [Validators.required, Validators.email]],
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
@@ -55,7 +55,7 @@ export class AddCustomerAccountModalComponent implements OnInit {
       if (!resp.error) {
         const subaccountDetails: any = {
           customerId: resp.id,
-          subaccountName: this.addCustomerForm.value.subAccountName,
+          subaccountName: this.addCustomerForm.value.subaccountName,
           subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
         }
         this.snackBarService.openSnackBar('Customer added successfully!', '');

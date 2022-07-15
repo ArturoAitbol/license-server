@@ -127,7 +127,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     let projectItem: string = localStorage.getItem(Constants.PROJECT);
     if(projectItem) this.selectedProject = JSON.parse(projectItem).id;
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
-    this.licenseService.getLicenseList(this.currentCustomer.subAccountId).subscribe((res: any) => {
+    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         this.selectedLicense = res.licenses[0];
@@ -165,7 +165,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
 
   private buildRequestObject(view: string) {
     const requestObject: any = {
-      subaccount: this.currentCustomer.subAccountId,
+      subaccount: this.currentCustomer.subaccountId,
       view: view,
       month: this.aggregation == 'month' ? this.month : null,
       year: this.aggregation == 'month' ? this.year : null,
@@ -187,7 +187,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   }
 
   fetchProjectsList(){
-    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subAccountId).subscribe((res: any) => {
+    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.projects)
         this.projects = res.projects;
     });
@@ -205,7 +205,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.data = [];
     this.isLicenseSummaryLoadingResults = true;
     this.isLicenseSummaryRequestCompleted = false;
-    this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("summary")).subscribe((response: any) => {
+    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("summary")).subscribe((response: any) => {
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
       const mergedObj = { ...requiredObject, ...response };
@@ -230,7 +230,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.equipmentData = [];
     this.isEquipmentSummaryLoadingResults = true;
     this.isEquipmentSummaryRequestCompleted = false;
-    this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("equipment")).subscribe((res: any) => {
+    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("equipment")).subscribe((res: any) => {
       this.equipmentData = res.equipmentSummary;
       this.isEquipmentSummaryLoadingResults = false;
       this.isEquipmentSummaryRequestCompleted = true;
@@ -247,7 +247,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.tokenConsumptionData = [];
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
-    this.licenseConsumptionService.getLicenseDetails(this.buildRequestObject("")).subscribe((res: any) => {
+    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("")).subscribe((res: any) => {
       res.usage.forEach(item => {
         this.getNameOfDays(item.usageDays);
       });

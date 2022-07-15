@@ -15,7 +15,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
   updateCustomerForm: any = this.formBuilder.group({
     name: ['', Validators.required],
     customerType: ['', Validators.required],
-    subAccountName: [''],
+    subaccountName: [''],
     testCustomer: [{value:false,disabled:true}]
   });
   types: string[] = ['MSP', 'Reseller'];
@@ -26,7 +26,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private customerService: CustomerService,
-    private subAccountService: SubAccountService,
+    private subaccountService: SubAccountService,
     private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
@@ -59,12 +59,12 @@ export class ModifyCustomerAccountComponent implements OnInit {
     const requestsArray= [
       this.customerService.updateCustomer(customer)
     ];
-    if(this.data.subAccountId){
-      const subAccount = {
-        id: mergedLicenseObject.subAccountId,
-        subaccountName: mergedLicenseObject.subAccountName
+    if (this.data.subaccountId){
+      const subaccount = {
+        id: mergedLicenseObject.subaccountId,
+        subaccountName: mergedLicenseObject.subaccountName
       };
-      requestsArray.push(this.subAccountService.updateSubAccount(subAccount)); 
+      requestsArray.push(this.subaccountService.updateSubAccount(subaccount)); 
     }
     forkJoin(requestsArray).subscribe((res: any) => {
       if (!res.error) {
