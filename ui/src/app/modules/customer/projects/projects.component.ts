@@ -80,7 +80,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.calculateTableHeight();
     this.currentCustomer = this.customerService.getSelectedCustomer();
-    this.projectService.setSelectedSubAccount(this.currentCustomer.id);
+    this.projectService.setSelectedSubAccount(this.currentCustomer.subAccountId);
     this.fetchProjects();
     this.getActionMenuOptions();
   }
@@ -107,7 +107,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   fetchProjects(): void {
-    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.id).subscribe(res => {
+    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subAccountId).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
       this.projectsBk = this.projects = res['projects'];
