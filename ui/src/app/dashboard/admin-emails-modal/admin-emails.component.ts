@@ -40,7 +40,7 @@ export class AdminEmailsComponent implements OnInit {
       this.isDataLoading = true;
       this.adminEmailsForm.patchValue(this.data);
       this.previousFormValue = {...this.adminEmailsForm};
-      this.customerService.getCustomerById(this.data.customerId).subscribe(res => {
+      this.customerService.getCustomerById(this.data.id).subscribe(res => {
         this.adminEmails = res.customers[0]?.adminEmails;
         this.isDataLoading = false
       })
@@ -56,7 +56,7 @@ export class AdminEmailsComponent implements OnInit {
     if (this.emailForms.length > 0) {
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.customerAdminEmailService.createAdminEmail({
         customerAdminEmail: value.email,
-        customerId: this.data.customerId
+        customerId: this.data.id
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
         if (!res.error) {

@@ -12,7 +12,7 @@
         <button mat-raised-button color="primary" [mat-dialog-close]="{confirm: true, deleteAllData: false}">
             {{data?.confirmCaption}}
         </button>
-        <button *ngIf="data.canDeleteAllData" mat-raised-button color="warn" [mat-dialog-close]="{confirm: true, deleteAllData: true}">
+        <button mat-raised-button color="warn" [mat-dialog-close]="{confirm: true, deleteAllData: true}">
             {{data?.deleteAllDataCaption}}
         </button>
     </mat-dialog-actions>

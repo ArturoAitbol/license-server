@@ -38,7 +38,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
       this.isDataLoading = true;
       this.adminEmailsForm.patchValue(this.data);
       this.previousFormValue = {...this.adminEmailsForm};
-      this.subAccountService.getSubAccountDetails(this.data.id).subscribe((res: any) => {
+      this.subAccountService.getSubAccountDetails(this.data.subAccountId).subscribe((res: any) => {
         this.adminEmails = res.subaccounts[0]?.subaccountAdminEmails;
         this.isDataLoading = false
       })
@@ -54,7 +54,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
     if (this.emailForms.length > 0) {
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.subaccountAdminEmailService.createAdminEmail({
         subaccountAdminEmail: value.email,
-        subaccountId: this.data.id,
+        subaccountId: this.data.subAccountId,
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
         if (!res.error) {
