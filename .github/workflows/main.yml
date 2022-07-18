@@ -4,6 +4,7 @@ name: License Server CI/CD
 
 # Controls when the workflow will run
 on:
+  # workflow_dispatch:
   # Triggers the workflow on push to main branch
   push:
     branches: [ main ]
@@ -52,16 +53,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.20'
-        
-    - name: Build Angular web app
+          
+    - name: Build Angular Integration web app
       run: |
         cd ./ui
         npm install
         npm run build
-        # npm run build -- "--base-href=/license-server/ --configuration production"
-        # ng build --base-href='/license-server/' --configuration production
-        ls ./dist
-
         
     - name: Upload to blob storagerun
       uses: azure/CLI@v1
@@ -74,7 +71,7 @@ jobs:
       with:
         inlineScript: |
           # az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
-
+        
     - name: 'Run API tests'
       run: |
         ls
