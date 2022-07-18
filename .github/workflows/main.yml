@@ -39,6 +39,13 @@ jobs:
         mvn clean package
         mvn azure-functions:package
         popd
+    
+    - name: Archive Azure Functions Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/'
+        recursive: true
+        dest: 'af-release-${{steps.date.outputs.date}}.zip'
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
@@ -52,16 +59,36 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.20'
+
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%dT%H_%M_%S')"
+    
+    - name: Build Angular Production web app
+      run: |
+        cd ./ui
+        npm install
+        npm run build:prod
+    
+    - name: Archive UI Production Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: './ui/dist/'
+        recursive: true
+        dest: 'ui-prod-release-${{steps.date.outputs.date}}.zip'
         
-    - name: Build Angular web app
+    - name: Build Angular Integration web app
       run: |
         cd ./ui
         npm install
         npm run build
-        # npm run build -- "--base-href=/license-server/ --configuration production"
-        # ng build --base-href='/license-server/' --configuration production
-        ls ./dist
 
+    - name: Archive UI Integration Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: './ui/dist/'
+        recursive: true        
+        dest: 'ui-integration-release-${{steps.date.outputs.date}}.zip'
         
     - name: Upload to blob storagerun
       uses: azure/CLI@v1
@@ -75,6 +102,23 @@ jobs:
         inlineScript: |
           # az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
 
+    - name: Archive Full Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: 'af-release-${{steps.date.outputs.date}}.zip ui-integration-release-${{steps.date.outputs.date}}.zip ui-prod-release-${{steps.date.outputs.date}}.zip'
+        recursive: true        
+        dest: 'LS-release-${{steps.date.outputs.date}}.zip'
+
+    - name: Upload Build
+      uses: su-dont/share-point-uploader@v2.1
+      with:
+        sp_url: ${{ secrets.SP_URL }}
+        sp_username: ${{ secrets.USERNAME }}
+        sp_password: ${{ secrets.PASSWORD }}
+        sp_folder: ${{ secrets.SP_FOLDER }}
+        sp_file_name: 'LS-release-${{steps.date.outputs.date}}.zip'
+        file: 'LS-release-${{steps.date.outputs.date}}.zip'
+        
     - name: 'Run API tests'
       run: |
         ls
