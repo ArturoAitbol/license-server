@@ -13,3 +13,4 @@ ui/package-lock.json
 *.prefs
 .vscode
 azure-functions/logs/*
+.DS_Store

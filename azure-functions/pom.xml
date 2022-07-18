@@ -112,7 +112,7 @@
                 <executions>
                     <execution>
                         <id>db-populate</id>
-                        <phase>test</phase>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
