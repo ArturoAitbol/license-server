@@ -19,6 +19,7 @@ import java.time.temporal.WeekFields;
 import java.util.Locale;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -46,7 +47,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 		HttpRequestMessage<Optional<String>> request,
 		final ExecutionContext context) {
 
-		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();

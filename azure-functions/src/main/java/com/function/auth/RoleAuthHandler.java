@@ -2,10 +2,9 @@ package com.function.auth;
 
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpRequestMessage;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SecurityException;
 import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -168,8 +167,8 @@ public class RoleAuthHandler {
     public static final String CUSTOMER_FULL_ADMIN = "customer.FullAdmin";
     public static final String SUBACCOUNT_ADMIN = "customer.SubaccountAdmin";
 
-    public static final String LOG_MESSAGE_FOR_UNAUTHORIZED = "Unauthorized error: Access denied as role is missing.";
-    public static final String MESSAGE_FOR_UNAUTHORIZED = "NOT AUTHORIZED. Access denied as role is missing.";
+    public static final String LOG_MESSAGE_FOR_UNAUTHORIZED = "Unauthorized error: Access denied due to missing or invalid credentials.";
+    public static final String MESSAGE_FOR_UNAUTHORIZED = "NOT AUTHORIZED: Access denied due to missing or invalid credentials";
     public static final String LOG_MESSAGE_FOR_FORBIDDEN = "Forbidden error: Expected role is missing. Role provided: ";
     public static final String MESSAGE_FOR_FORBIDDEN = "UNAUTHORIZED ACCESS. You do not have access as expected role is missing";
 
@@ -210,7 +209,7 @@ public class RoleAuthHandler {
     }
 
 
-    public static JSONObject getTokenClaimsFromHeader(HttpRequestMessage<?> request,ExecutionContext context) {
+    public static Claims getTokenClaimsFromHeader(HttpRequestMessage<?> request,ExecutionContext context) {
         Map<String, String> headers = request.getHeaders();
         String authHeader = headers.get("authorization");
         if(authHeader==null){
@@ -231,55 +230,59 @@ public class RoleAuthHandler {
             context.getLogger().info("error: Invalid token format.");
             return null;
         }
-        String tokenPayload = tokenChunks[1];
-        Base64.Decoder decoder = Base64.getUrlDecoder();
-        String tokenDecode = new String(decoder.decode(tokenPayload));
-        return new JSONObject(tokenDecode);
+        try{
+            Jws<Claims> token = verifyToken(authorization[1],context);
+            return token.getBody();
+        }catch (Exception e){
+            context.getLogger().info(e.getMessage());
+            return null;
+        }
+
+    }
+
+    public static Jws<Claims> verifyToken(String jwt,ExecutionContext context) throws Exception {
+
+        try{
+            SigningKeyResolver signingKeyResolver = SigningKeyResolver.getInstance();
+            return Jwts.parserBuilder()
+                    .setSigningKeyResolver(signingKeyResolver)
+                    .requireIssuer(System.getenv("ISSUER"))
+                    .build()
+                    .parseClaimsJws(jwt);
+        }catch (SecurityException exception){
+            throw new Exception("Invalid Signature Exception: " + exception.getMessage());
+        }catch (ExpiredJwtException exception){
+            throw new Exception("Expired Token Exception: " + exception.getMessage());
+        }catch (JwtException exception){
+            throw new Exception("JWT Exception: " + exception.getMessage());
+        } catch (Exception exception){
+            throw new Exception("Caught Exception: " + exception.getMessage());
+        }
     }
 
     public static String getRoleFromToken(HttpRequestMessage<?> request,ExecutionContext context){
-        JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+        Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+        return getRoleFromToken(tokenClaims,context);
+    }
+
+    public static String getRoleFromToken(Claims tokenClaims,ExecutionContext context){
         if(tokenClaims!=null) {
             try {
-                JSONArray roles = tokenClaims.getJSONArray("roles");
+                JSONArray roles = new JSONArray(tokenClaims.get("roles").toString());
                 return roles.getString(0);
             } catch (Exception e) {
-                context.getLogger().info("Caught exception: " + e.getMessage());
+                context.getLogger().info("Caught exception: Getting roles claim failed.");
             }
         }
         return "";
     }
 
-    public static String getRoleFromToken(JSONObject tokenClaims,ExecutionContext context){
+    public static String getEmailFromToken(Claims tokenClaims,ExecutionContext context){
         if(tokenClaims!=null) {
             try {
-                JSONArray roles = tokenClaims.getJSONArray("roles");
-                return roles.getString(0);
+                return tokenClaims.get("preferred_username").toString();
             } catch (Exception e) {
-                context.getLogger().info("Caught exception: " + e.getMessage());
-            }
-        }
-        return "";
-    }
-
-    public static String getEmailFromToken(HttpRequestMessage<?> request,ExecutionContext context){
-        JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
-        if(tokenClaims!=null) {
-            try {
-                return tokenClaims.getString("preferred_username");
-            } catch (Exception e) {
-                context.getLogger().info("Caught exception: " + e.getMessage());
-            }
-        }
-        return "";
-    }
-
-    public static String getEmailFromToken(JSONObject tokenClaims,ExecutionContext context){
-        if(tokenClaims!=null) {
-            try {
-                return tokenClaims.getString("preferred_username");
-            } catch (Exception e) {
-                context.getLogger().info("Caught exception: " + e.getMessage());
+                context.getLogger().info("Caught exception: Getting preferred_username claim failed.");
             }
         }
         return "";

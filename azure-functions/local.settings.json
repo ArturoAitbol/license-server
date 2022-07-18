@@ -6,6 +6,8 @@
     "POSTGRESQL_SERVER": "tekv-db-server.postgres.database.azure.com:5432",
     "POSTGRESQL_USER": "tekvdbadmin@tekv-db-server",
     "POSTGRESQL_PWD": "MhZJh94z9D3Db3vW",
-    "POSTGRESQL_SECURITY_MODE": "?ssl=true&sslmode=require"
+    "POSTGRESQL_SECURITY_MODE": "?ssl=true&sslmode=require",
+    "ISSUER": "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/v2.0",
+    "OPENID_CONFIG": "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration"
   }
 }
