@@ -90,7 +90,7 @@ export class DashboardComponent implements OnInit {
   initColumns(): void {
     this.displayedColumns = [
       { name: 'Customer', dataKey: 'name', position: 'left', isSortable: true },
-      { name: 'Subaccount', dataKey: 'subAccountName', position: 'left', isSortable: true },
+      { name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
       { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true }
     ];
@@ -113,11 +113,11 @@ export class DashboardComponent implements OnInit {
       }, {});
       this.customerList = newDataObject['customers'];
       this.customerList.forEach((account: any) => {
-        const subAccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
-        if( subAccountDetails !== undefined ){
-          account.subAccountName = subAccountDetails.name;
-          account.subAccountId = subAccountDetails.id;
-          let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subAccountDetails.id));
+        const subaccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
+        if( subaccountDetails !== undefined ){
+          account.subaccountName = subaccountDetails.name;
+          account.subaccountId = subaccountDetails.id;
+          let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccountDetails.id));
           if(subaccountLicenses.length>0){
             const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
             account.status = licenseDetails ? licenseDetails.status: "Expired";
@@ -224,9 +224,9 @@ export class DashboardComponent implements OnInit {
       .subscribe((result) => {
         if (result.confirm) {
           console.debug('The user confirmed the action: ', this.customerList[index]);
-          const { subAccountId , id } = this.customerList[index];
-          if ( subAccountId && !result.deleteAllData) {
-            this.subaccountService.deleteSubAccount(subAccountId).subscribe((res: any) => {
+          const { subaccountId , id } = this.customerList[index];
+          if ( subaccountId && !result.deleteAllData) {
+            this.subaccountService.deleteSubAccount(subaccountId).subscribe((res: any) => {
               if (!res?.error) {
                 this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
                 this.fetchDataToDisplay();

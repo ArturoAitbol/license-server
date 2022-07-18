@@ -3,7 +3,6 @@ import { FormArray, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { CustomerAdminEmailService } from "../../services/customer-admin-email.service";
 import { Observable } from "rxjs";
@@ -28,7 +27,6 @@ export class AdminEmailsComponent implements OnInit {
       private formBuilder: FormBuilder,
       private customerService: CustomerService,
       private customerAdminEmailService: CustomerAdminEmailService,
-      private subAccountService: SubAccountService,
       private snackBarService: SnackBarService,
       public dialogRef: MatDialogRef<AdminEmailsComponent>,
       @Inject(MAT_DIALOG_DATA) public data: any) {
