@@ -4,19 +4,17 @@ package com.function.util;
 //import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.logging.LogManager;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -78,7 +76,7 @@ public class Config {
     }
 
     public String getToken(String role) {
-        String roleId="", roleSecret="";
+        String roleId, roleSecret, accessToken="";
         switch (role){
             case "fullAdmin":
                 roleId = "fullAdminId";
@@ -94,10 +92,21 @@ public class Config {
                 logger.severe("Error retrieving token using the role: " + role);
                 throw new RuntimeException();
         }
-        return getAccessToken(getConfig(roleId), getConfig(roleSecret));
+        try {
+            accessToken = getAccessToken(getConfig(roleId), getConfig(roleSecret));
+            if (accessToken.isEmpty()){
+                logger.info("Access token is empty");
+                throw new RuntimeException();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            throw new RuntimeException();
+        }
+        return accessToken;
     }
 
-    public String getAccessToken(String roleId, String roleSecret){
+    public String getAccessToken(String roleId, String roleSecret) throws IOException {
         String token="";
         Map<String, String> parameters = new HashMap<>();
         parameters.put("scope", "api://e643fc9d-b127-4883-8b80-2927df90e275/.default");
@@ -105,39 +114,55 @@ public class Config {
         parameters.put("client_id", roleId);
         parameters.put("client_secret", roleSecret);
 
-        String form = parameters.entrySet()
-                .stream()
-                .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
-                .collect(Collectors.joining("&"));
+        String urlParameters = getDataString(parameters);
+        byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8 );
+        URL url = new URL( "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/oauth2/v2.0/token" );
+        HttpURLConnection conn= (HttpURLConnection) url.openConnection();
+        conn.setDoOutput(true);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty("Content-Length", Integer.toString(postData.length));
 
-        HttpClient client = HttpClient.newHttpClient();
+        DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+        wr.write( postData);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/oauth2/v2.0/token"))
-                .headers("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(form))
-                .build();
-
-        HttpResponse<?> response = null;
-        try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            logger.severe(e.getMessage());
-        }
-        if (response != null && response.statusCode() == 200){
-            String body = (String) response.body();
-            JSONObject jsonBody = new JSONObject(body);
+        int responseCode = conn.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK){
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            in.close();
+            JSONObject jsonBody = new JSONObject(content.toString());
             token = jsonBody.get("access_token").toString();
-//            logger.info(token);
         }
-        else
-        {
+        else {
             logger.severe("Error retrieving token from Microsoft identity platform");
-            logger.info("Request params: "+ form);
+            logger.info("Request params: "+ urlParameters);
             throw new RuntimeException();
         }
         return token;
+    }
+
+    public String getDataString(Map<String, String> params){
+        StringBuilder result = new StringBuilder();
+        try {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                result.append("=");
+                result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                result.append("&");
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+        }
+        String resultString = result.toString();
+        return resultString.length() > 0
+                ? resultString.substring(0, resultString.length() - 1)
+                : resultString;
     }
 
 }
