@@ -26,6 +26,7 @@
             </activation>
             <properties>
                 <script.extension>.bat</script.extension>
+                <script.execution/>
             </properties>
         </profile>
         <profile>
@@ -37,6 +38,7 @@
             </activation>
             <properties>
                 <script.extension>.sh</script.extension>
+                <script.execution>./</script.execution>
             </properties>
         </profile>
     </profiles>
@@ -105,20 +107,27 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <groupId>org.codehaus.mojo</groupId>
                 <configuration>
-                    <executable>./Script${script.extension}</executable>
+                    <executable>${script.execution}Script${script.extension}</executable>
+<!--                    <executable>cmd.exe</executable>-->
                     <workingDirectory>./src/test/resources/</workingDirectory>
+<!--                    <arguments>
+                        <argument>/c</argument>
+                        <argument>Script.bat</argument>
+                    </arguments>-->
                 </configuration>
                 <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>db-populate</id>
-                        <phase>test</phase>
+                        <phase>generate-sources</phase>
+<!--                        <phase>test</phase>-->
                         <goals>
                             <goal>exec</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
