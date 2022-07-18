@@ -84,7 +84,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentCustomer = this.customerService.getSelectedCustomer();
-    this.projectService.setSelectedSubAccount(this.currentCustomer.id);
+    this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
 
     if (this.data) {
       this.startDate = new Date(this.data.startDate + " 00:00:00");
@@ -98,7 +98,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   */
   fetchData(): void {
     this.isDataLoading = true;
-    const subaccountId = this.currentCustomer.id;
+    const subaccountId = this.currentCustomer.subaccountId;
     forkJoin([
       this.deviceService.getDevicesList(subaccountId),
       this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open')
@@ -173,7 +173,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    */
   fetchProjects(): void {
     this.isDataLoading = true;
-    const subaccountId = this.currentCustomer.id;
+    const subaccountId = this.currentCustomer.subaccountId;
     this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open').subscribe((res: any) => {
       this.projects = res['projects'];
       this.addLicenseConsumptionForm.patchValue({ project: '' });
@@ -283,7 +283,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   submit(): void {
     let consumptionRequests: any[] = [];
     const licenseConsumptionsObject: any = {
-      subaccountId: this.currentCustomer.id,
+      subaccountId: this.currentCustomer.subaccountId,
       projectId: this.addLicenseConsumptionForm.value.project.id,
       consumptionDate: this.addLicenseConsumptionForm.value.startWeek.toISOString().split("T")[0],
       type: "Configuration",

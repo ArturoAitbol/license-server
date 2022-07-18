@@ -39,7 +39,7 @@ export class ProjectService {
 
   /**
    * update Project details
-   * @param subAccount: Project 
+   * @param project: Project 
    * @returns: Observable 
    */
   public updateProject(project: Project): Observable<any> {
