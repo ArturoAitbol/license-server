@@ -172,6 +172,8 @@ public class RoleAuthHandler {
     public static final String LOG_MESSAGE_FOR_FORBIDDEN = "Forbidden error: Expected role is missing. Role provided: ";
     public static final String MESSAGE_FOR_FORBIDDEN = "UNAUTHORIZED ACCESS. You do not have access as expected role is missing";
 
+    private static final String ISSUER = "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/v2.0";
+
     public static boolean hasPermission(String role,Permission permission){
         EnumSet<Permission> rolePermissions;
         switch (role){
@@ -246,7 +248,7 @@ public class RoleAuthHandler {
             SigningKeyResolver signingKeyResolver = SigningKeyResolver.getInstance();
             return Jwts.parserBuilder()
                     .setSigningKeyResolver(signingKeyResolver)
-                    .requireIssuer(System.getenv("ISSUER"))
+                    .requireIssuer(ISSUER)
                     .build()
                     .parseClaimsJws(jwt);
         }catch (SecurityException exception){

@@ -86,7 +86,8 @@ public class SigningKeyResolver extends SigningKeyResolverAdapter {
     }
 
      private JSONArray getKeysFromAzure() throws Exception {
-        JSONObject openIdConfiguration = httpGet(System.getenv("OPENID_CONFIG"));
+        String openIdConfigURL = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration";
+        JSONObject openIdConfiguration = httpGet(openIdConfigURL);
         String jwksUri = openIdConfiguration.getString("jwks_uri");
         JSONObject keysSet = httpGet(jwksUri);
         return keysSet.getJSONArray("keys");
