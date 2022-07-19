@@ -47,7 +47,7 @@ public class SigningKeyResolver extends SigningKeyResolverAdapter {
             JSONObject key = searchKey(keyId);
             if(key==null){
                 synchronized (this) {
-                    if(keysSet == null) keysSet = getKeysFromAzure();
+                    keysSet = getKeysFromAzure();
                 }
                 key = searchKey(keyId);
             }
