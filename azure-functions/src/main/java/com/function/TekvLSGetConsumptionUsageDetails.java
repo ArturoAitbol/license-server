@@ -14,6 +14,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import java.sql.*;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,7 +40,7 @@ public class TekvLSGetConsumptionUsageDetails {
 			@BindingName("id") String id,
 		final ExecutionContext context) {
 
-		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
