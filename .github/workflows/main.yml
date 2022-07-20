@@ -52,7 +52,7 @@ jobs:
     - name: Archive Azure Functions Build
       uses: vimtor/action-zip@v1
       with:
-        files: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/'
+        files: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}'
         recursive: true
         dest: 'af-release-${{steps.date.outputs.date}}.zip'
 
