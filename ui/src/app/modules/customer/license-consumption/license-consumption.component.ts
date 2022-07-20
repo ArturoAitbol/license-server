@@ -264,7 +264,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.isDetailedConsumptionRequestCompleted = false;
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("", pageNumber, pageSize)).subscribe((res: any) => {
       res.usage.forEach(item => {
-        this.getNameOfDays(item.usageDays);
+        if (item.granularity.toLowerCase() === "static" || item.usageType === "AutomationPlatform")
+          item.usageDays = "...";
+        else
+          this.getNameOfDays(item.usageDays);
       });
       this.detailedConsumptionData = res.usage;
       this.detailedConsumptionDataLength = res.usageTotalCount;
@@ -312,9 +315,9 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     let  ConfigurationTokens = tokenConsumption.Configuration ?? 0;
     const totalConsumption =  AutomationTokens + ConfigurationTokens;
 
-    if(this.selectedType==="Configuration")
+    if (this.selectedType === "Configuration")
       AutomationTokens = null;
-    if(this.selectedType==="AutomationPlatform")
+    if (this.selectedType === "AutomationPlatform")
       ConfigurationTokens = null;
 
     const consumptionDetail = {

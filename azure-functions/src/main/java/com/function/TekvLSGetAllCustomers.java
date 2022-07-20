@@ -1,7 +1,6 @@
 package com.function;
 
 import com.function.auth.Permission;
-import com.function.auth.RoleAuthHandler;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -113,7 +112,7 @@ public class TekvLSGetAllCustomers {
 			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
-			// Retrive all customers. TODO: pagination
+			// Retrive all customers.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of customers (id and names)
