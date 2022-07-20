@@ -11,7 +11,7 @@ on:
         required: true
         default: 'latest'
 env:
-  AZURE_FUNCTIONAPP_NAME: tekvLicenseServerPOCFunction
+  AZURE_FUNCTIONAPP_NAME: tekvizion-portal
   POM_FUNCTIONAPP_NAME: myFunction-12345
 
 jobs:
@@ -20,8 +20,7 @@ jobs:
       steps:
         - uses: azure/login@v1
           with:
-            # creds: ${{ secrets.AZURE_PRODUCTION_LICENSE_SERVER_CREDENTIALS }}
-            creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
+            creds: ${{ secrets.AZURE_PRODUCTION_LICENSE_SERVER_CREDENTIALS }}
         - name: Install Zip
           uses: montudor/action-zip@v1
         
@@ -56,8 +55,7 @@ jobs:
           with:
             app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
             package: './Release/Azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}'
-            # publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_PRODUCTION }}
-            publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+            publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_PRODUCTION }}
         
         - name: logout
           run: az logout
