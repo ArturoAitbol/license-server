@@ -15,7 +15,7 @@ import { SubaccountAdminEmailService } from "../../services/subaccount-admin-ema
 export class SubaccountAdminEmailsComponent implements OnInit {
 
   adminEmailsForm: any = this.formBuilder.group({
-    name: ['', Validators.required],
+    subaccountName: ['', Validators.required],
     emails: this.formBuilder.array([])
   });
 
@@ -33,7 +33,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.adminEmailsForm.controls.name.disable();
+    this.adminEmailsForm.controls.subaccountName.disable();
     if (this.data) {
       this.isDataLoading = true;
       this.adminEmailsForm.patchValue(this.data);
