@@ -165,7 +165,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 							"l.project_id, d.vendor, d.product, d.version, d.granularity, json_agg(DISTINCT day_of_week) AS usage_days" +
 							" from device d, license_consumption l, usage_detail u " +
 							" where d.id=l.device_id and u.consumption_id = l.id and " + sqlCommonConditions +
-							" group by l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,d.vendor, d.product, d.version" +
+							" group by l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,d.vendor, d.product, d.version, d.granularity" +
 							" order by consumption_date desc limit " + limit + " offset " + offset + ";";
 					context.getLogger().info("Execute SQL all statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
