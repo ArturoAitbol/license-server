@@ -52,7 +52,7 @@ jobs:
     - name: Archive Azure Functions Build
       uses: vimtor/action-zip@v1
       with:
-        files: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/'
+        files: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}'
         recursive: true
         dest: 'af-release-${{steps.date.outputs.date}}.zip'
 
@@ -94,7 +94,25 @@ jobs:
         files: './ui/dist/'
         recursive: true        
         dest: 'ui-integration-release-${{steps.date.outputs.date}}.zip'
-      
+
+    - name: Upload to blob storagerun
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+           az storage blob upload-batch --overwrite --account-name lswebappstorage --auth-mode key -d '$web' -s ./ui/dist
+           
+    - name: Purge CDN endpoint
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          # az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
+        
+    - name: 'Run API tests'
+      run: |
+        ls
+        npm install -g newman
+        newman run ./tests/api/postman/LicenseServerAPIs.postman_collection.json -e ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
+    
     - name: Archive Full Build
       uses: vimtor/action-zip@v1
       with:
@@ -116,24 +134,6 @@ jobs:
         body: ${{ steps.tag_version.outputs.changelog }}
         artifacts: 'LS-release-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload to blob storagerun
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-           az storage blob upload-batch --overwrite --account-name lswebappstorage --auth-mode key -d '$web' -s ./ui/dist
-           
-    - name: Purge CDN endpoint
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          # az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
-        
-    - name: 'Run API tests'
-      run: |
-        ls
-        npm install -g newman
-        newman run ./tests/api/postman/LicenseServerAPIs.postman_collection.json -e ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
     
   # Azure logout
     - name: logout
