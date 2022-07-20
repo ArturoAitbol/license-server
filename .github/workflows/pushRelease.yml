@@ -43,7 +43,7 @@ jobs:
           uses: azure/CLI@v1
           with:
             inlineScript: |
-              az storage blob upload-batch --overwrite --account-name lswebappstorage --auth-mode key -d '$web' -s ./Release/UI-prod-build
+              az storage blob upload-batch --overwrite --account-name tekvizionportal --auth-mode key -d '$web' -s ./Release/UI-prod-build
         
         - name: Unzip Azure Functions UI
           run: unzip -qq af-release*.zip -d Azure-functions
