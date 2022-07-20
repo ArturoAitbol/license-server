@@ -120,7 +120,7 @@ public class TekvLSGetAllLicenses
 				context.getLogger().info("Licenses status updated successfully.");
 			}
 
-			// Retrive licenses. TODO: pagination
+			// Retrive licenses.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of licenses

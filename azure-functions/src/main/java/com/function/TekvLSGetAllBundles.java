@@ -76,7 +76,7 @@ public class TekvLSGetAllBundles {
 			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
-			// Retrive all bundles. TODO: pagination
+			// Retrive all bundles.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of bundles

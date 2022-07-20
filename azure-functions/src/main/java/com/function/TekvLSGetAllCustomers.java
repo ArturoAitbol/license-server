@@ -113,7 +113,7 @@ public class TekvLSGetAllCustomers {
 			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
-			// Retrive all customers. TODO: pagination
+			// Retrive all customers.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of customers (id and names)

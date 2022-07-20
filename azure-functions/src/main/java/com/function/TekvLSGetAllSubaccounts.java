@@ -110,7 +110,7 @@ public class TekvLSGetAllSubaccounts
 			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
-			// Retrive subaccounts. TODO: pagination
+			// Retrive subaccounts.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of subaccounts
