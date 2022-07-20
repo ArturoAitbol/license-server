@@ -29,7 +29,7 @@ export class CustomerService {
 
   /**
    * create new customer
-   * @param customerName: string 
+   * @param newCustomerDetails: Customer 
    * @returns: Observable 
    */
   public createCustomer(newCustomerDetails: Customer) {
@@ -47,6 +47,7 @@ export class CustomerService {
 
   /**
    * fetch customer details list
+   * @param customerName: string 
    * @returns: Observable
    */
   public getCustomerList(customerName?: string) {
