@@ -108,12 +108,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <configuration>
                     <executable>${script.execution}Script${script.extension}</executable>
-<!--                    <executable>cmd.exe</executable>-->
                     <workingDirectory>./src/test/resources/</workingDirectory>
-<!--                    <arguments>
-                        <argument>/c</argument>
-                        <argument>Script.bat</argument>
-                    </arguments>-->
                 </configuration>
                 <version>3.0.0</version>
                 <executions>
