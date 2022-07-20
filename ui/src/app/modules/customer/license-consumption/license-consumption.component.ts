@@ -17,6 +17,7 @@ import { Constants } from 'src/app/helpers/constants';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { DataTableComponent } from "../../../generics/data-table/data-table.component";
+import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
 
 @Component({
   selector: 'app-license-consumption',
@@ -426,7 +427,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     switch (object.selectedOption) {
       case this.EDIT:
         let dataObject: any = { ...object.selectedRow, ...{endLicensePeriod: this.selectedLicense.renewalDate} };
-        this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
+        if (object.selectedRow.granularity.toLowerCase() === "static" || object.selectedRow.usageType === "AutomationPlatform")
+          this.openDialog(StaticConsumptionDetailsComponent, dataObject);
+        else
+          this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
         break;
       case this.DELETE:
         this.onDelete(object.selectedRow);

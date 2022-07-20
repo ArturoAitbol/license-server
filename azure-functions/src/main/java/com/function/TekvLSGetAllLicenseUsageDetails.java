@@ -160,10 +160,8 @@ public class TekvLSGetAllLicenseUsageDetails {
 						sqlCommonConditions += " and l.usage_type='" + type + "'";
 					// This is the default case (aggregated data)
 					JSONArray array = new JSONArray();
-					String usageType;
-					int tokensConsumed;
 					String sqlAll = "select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date+'1 day'::interval)) as consumption, " +
-							"l.project_id, d.vendor, d.product, d.version" + ", json_agg(DISTINCT day_of_week) AS usage_days" +
+							"l.project_id, d.vendor, d.product, d.version, d.granularity, json_agg(DISTINCT day_of_week) AS usage_days" +
 							" from device d, license_consumption l, usage_detail u " +
 							" where d.id=l.device_id and u.consumption_id = l.id and " + sqlCommonConditions +
 							" group by l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,d.vendor, d.product, d.version" +
@@ -179,10 +177,9 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("vendor", rs.getString("vendor"));
 						item.put("product", rs.getString("product"));
 						item.put("version", rs.getString("version"));
-						usageType =  rs.getString("usage_type");
-						tokensConsumed = rs.getInt("tokens_consumed");
-						item.put("usageType",usageType);
-						item.put("tokensConsumed", tokensConsumed);
+						item.put("granularity", rs.getString("granularity"));
+						item.put("usageType", rs.getString("usage_type"));
+						item.put("tokensConsumed", rs.getInt("tokens_consumed"));
 						item.put("consumption", item.getString("consumptionDate") + " - " + rs.getString("consumption"));
 						item.put("usageDays",new JSONArray(rs.getString("usage_days")));
 						array.put(item);

@@ -216,11 +216,12 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.models = [];
     if (value) {
       this.allDevices.forEach((device: any) => {
-        if (device.type != "PHONE" && device.vendor == value) {
+        if (device.type != "PHONE" && device.vendor == value && !device.supportType) {
+          let productLabel = device.version ? device.product + " - v." + device.version : device.product;
           this.models.push({
             id: device.id,
             vendor: value,
-            product: device.version ? device.product + " - v." + device.version : device.product
+            product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
           });
         }
       });
@@ -232,10 +233,11 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     if (value) {
       this.allDevices.forEach((device: any) => {
         if (device.type != "PHONE" && device.vendor == value && device.supportType) {
-          this.supportModels.push({
+          let productLabel = device.version ? device.product + " - v." + device.version : device.product;
+          this.models.push({
             id: device.id,
             vendor: value,
-            product: device.version ? device.product + " - v." + device.version : device.product
+            product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
           });
         }
       });
