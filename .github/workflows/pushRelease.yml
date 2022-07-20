@@ -13,11 +13,15 @@ on:
 env:
   AZURE_FUNCTIONAPP_NAME: tekvLicenseServerPOCFunction
   POM_FUNCTIONAPP_NAME: myFunction-12345
-  
+
 jobs:
   build:
       runs-on: ubuntu-latest
       steps:
+        - uses: azure/login@v1
+          with:
+            # creds: ${{ secrets.AZURE_PRODUCTION_LICENSE_SERVER_CREDENTIALS }}
+            creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
         - name: Install Zip
           uses: montudor/action-zip@v1
         
@@ -36,23 +40,24 @@ jobs:
           run: unzip -qq ui-prod-release*.zip -d UI-prod-build
           working-directory: Release
         
-        # - name: Upload to blob storagerun
-        #   uses: azure/CLI@v1
-        #   with:
-        #     inlineScript: |
-        #       az storage blob upload-batch --overwrite --account-name lswebappstorage --auth-mode key -d '$web' -s ./Releases/UI-prod-build
+        - name: Upload to blob storagerun
+          uses: azure/CLI@v1
+          with:
+            inlineScript: |
+              az storage blob upload-batch --overwrite --account-name lswebappstorage --auth-mode key -d '$web' -s ./Releases/UI-prod-build
         
         - name: Unzip Azure Functions UI
           run: unzip -qq af-release*.zip -d Azure-functions
           working-directory: Release
         
-        # - name: 'Run Azure Functions Action'
-        #   uses: Azure/functions-action@v1
-        #   id: fa
-        #   with:
-        #     app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        #     package: './Release/Azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}'
-        #     publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+        - name: 'Run Azure Functions Action'
+          uses: Azure/functions-action@v1
+          id: fa
+          with:
+            app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+            package: './Release/Azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}'
+            # publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_PRODUCTION }}
+            publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
         
         - name: Check Existing files
           run: |
