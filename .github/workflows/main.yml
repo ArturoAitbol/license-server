@@ -118,7 +118,7 @@ jobs:
       with:
         files: 'af-release-${{steps.date.outputs.date}}.zip ui-integration-release-${{steps.date.outputs.date}}.zip ui-prod-release-${{steps.date.outputs.date}}.zip'
         recursive: true        
-        dest: 'LS-release-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
+        dest: 'LS-release-${{github.run_number}}-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
     
     - name: Bump version and push tag
       id: tag_version
@@ -131,9 +131,12 @@ jobs:
       with:
         tag: ${{ steps.tag_version.outputs.new_tag }}
         name: Release ${{ steps.tag_version.outputs.new_tag }}
-        body: ${{ steps.tag_version.outputs.changelog }}
-        artifacts: 'LS-release-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
+        body: ${{ github.event.head_commit.message }}
+        artifacts: 'LS-release-${{github.run_number}}-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
         token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Print Release Version
+      run: echo 'Released ${{ steps.tag_version.outputs.new_tag }} Build'
     
   # Azure logout
     - name: logout

@@ -25,6 +25,7 @@ jobs:
           uses: montudor/action-zip@v1
         
         - name: Retrieve release assets
+          id: release_download
           uses: dsaltares/fetch-gh-release-asset@master
           with:
             version: '${{ github.event.inputs.release_version }}'
@@ -57,6 +58,9 @@ jobs:
             package: './Release/Azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}'
             publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_PRODUCTION }}
         
+        - name: Print deployed Release Version
+          run: echo 'Released ${{ steps.release_download.outputs.version }} Build'
+          
         - name: logout
           run: az logout
           if: always()
