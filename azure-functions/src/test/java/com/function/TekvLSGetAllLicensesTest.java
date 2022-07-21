@@ -203,7 +203,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
     public void getLicensesInvalidRoleTest(){
         //Given
         String id="EMPTY";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("test"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
         HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request, id, this.context);

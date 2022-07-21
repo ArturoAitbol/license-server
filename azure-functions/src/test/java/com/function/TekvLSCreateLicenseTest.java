@@ -252,7 +252,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     @Test
     public void createLicenseInvalidRoleTest(){
         //Given
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("test"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
         HttpResponseMessage response = tekvLSCreateLicense.run(this.request, this.context);

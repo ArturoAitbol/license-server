@@ -72,7 +72,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
     @Test
     public void deleteLicenseInvalidRoleTest(){
         //Given
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("test"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
         HttpResponseMessage response = tekvLSDeleteLicenseById.run(this.request,this.licenseId, this.context);

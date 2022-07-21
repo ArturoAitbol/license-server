@@ -168,7 +168,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     @Test
     public void modifyLicenseInvalidRoleTest(){
         //Given
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("test"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
         HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,this.licenseId, this.context);
