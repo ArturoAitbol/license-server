@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -74,7 +75,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
         this.context.getLogger().info(response.getBody().toString());
 
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected , actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
@@ -183,7 +184,10 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectExceptionTest() {
-        this.bodyRequest = "{'subaccountId':'5f1fa1f7-92e3-4c92-b18b-d30f26ef4f73', 'projectNumber':'2test', 'projectName':'ProjectTest2','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        String testName = String.valueOf(new Date());
+        String testNumber = String.valueOf(new Date());
+        this.bodyRequest = "{'subaccountId':'0cde8c0e-9eab-4fa9-9dda-a38c0c514b3a','status':'Open', 'openDate':'2022-06-27 05:00:00', " +
+                "'projectNumber'" + ":" + testNumber + ", " + "'projectName'" + ":" + testName + "}'";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
@@ -192,7 +196,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
         this.context.getLogger().info(response.getBody().toString());
 
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected , actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
@@ -201,21 +205,33 @@ class TekvLSCreateProjectTest extends TekvLSTest {
     public void createProjectDuplicatedTest() {
         this.bodyRequest = "{'subaccountId':'0cde8c0e-9eab-4fa9-9dda-a38c0c514b3a', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
-        doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();
         HttpResponseMessage response = createProject.run(this.request, this.context);
+        createProject.run(this.request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("id"));
+        this.projectId = jsonBody.getString("id");
+
+        response = createProject.run(this.request, this.context);
+        createProject.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        actualStatus = response.getStatus();
+        expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String actualResponse = (String) response.getBody();
 
-
-        String expectedResponse = "Project already exists";
+        String expectedResponse = response.getBody().toString();
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
-
 }
