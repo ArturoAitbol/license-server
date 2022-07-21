@@ -14,18 +14,10 @@ export class ErrorInterceptor implements HttpInterceptor {
         return next.handle(request).pipe(
             tap(event => this.autoLogoutService.restartTimer()),
             catchError(err => {
-                if (err.status === 401) {
-                    location.reload();
-                }
-                if (err.status === 400) {
-                    // location.reload(true);
-                }
-                if (err.status === 500) {
-                    // this.toastr.error("Internal Server Error: " + err.error.exception, "Error");
-                    // location.reload(true);
-                }
                 const error = err.error || err.statusText;
                 this.snackBarService.openSnackBar(error.error, 'Error performing action!');
+                if (err.status === 401)
+                    this.autoLogoutService.logout();
                 return throwError(error);
             }))
     }
