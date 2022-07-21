@@ -32,12 +32,12 @@ export class AutoLogoutService {
         this.timeoutId = null;
     }
 
-    private logout() {
+    public logout() {
         if (this.msalService.instance.getActiveAccount() != null) {
             try {
-                const baseUrl: string = environment.REDIRECT_URL_AFTER_LOGIN;
+                // this.msalService.logout();
                 this.msalService.logoutPopup({
-                    mainWindowRedirectUri: baseUrl
+                    mainWindowRedirectUri: environment.REDIRECT_URL_AFTER_LOGIN
                 });
             } catch (error) {
                 console.error('error while logout: ', error);
