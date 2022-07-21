@@ -17,7 +17,6 @@ env:
   POM_XML_DIRECTORY: 'azure-functions/'
   POM_FUNCTIONAPP_NAME: myFunction-12345
   JAVA_VERSION: '1.8.x'
-  DB_USERNAME: 'postgres'
 
 jobs:
   build:
@@ -37,22 +36,10 @@ jobs:
       shell: bash
       run: |
         pushd './${{ env.POM_XML_DIRECTORY }}'
-        ls
-        sudo sed -i -e 's/local   all             postgres                                peer/local   all             postgres                                trust/g' /etc/postgresql/14/main/pg_hba.conf
-        sudo systemctl start postgresql.service
-        psql "dbname=postgres user=postgres password=postgres" -c "ALTER USER postgres WITH PASSWORD 'postgres';"
-        chmod 777 src/test/resources/Script.sh
-        mvn clean package
+        mvn clean package -Dmaven.test.skip -Dexec.skip -q
         mvn azure-functions:package
         popd
 
-    - name: Publish JUnit Report
-      uses: mikepenz/action-junit-report@v3
-      if: always() # always run even if the previous step fails
-      with:
-        report_paths: '**/target/surefire-reports/TEST-*.xml'
-        summary: 'true'
-    
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"

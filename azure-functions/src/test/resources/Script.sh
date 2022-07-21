@@ -2,7 +2,7 @@
 echo "DB Restore"
 echo "============================="
 echo "*******Remove Locale String*******"
-sed -i "" "s/LOCALE = 'English_United States.1252';/\;/g" db_scripts/latest_license_server.sql
+sed -i "s/LOCALE = 'English_United States.1252';/\;/g" db_scripts/latest_license_server.sql
 postgres -V
 if [ $? -ne 0 ];
     then
@@ -26,3 +26,4 @@ else
         exit 0
     fi
 fi
+

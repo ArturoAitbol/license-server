@@ -30,12 +30,11 @@ jobs:
         shell: bash
         run: |
           pushd './${{ env.POM_XML_DIRECTORY }}'
-          ls
           sudo sed -i -e 's/local   all             postgres                                peer/local   all             postgres                                trust/g' /etc/postgresql/14/main/pg_hba.conf
           sudo systemctl start postgresql.service
           psql "dbname=postgres user=postgres password=postgres" -c "ALTER USER postgres WITH PASSWORD 'postgres';"
           chmod 777 src/test/resources/Script.sh
-          mvn clean package
+          mvn clean package -q
           mvn azure-functions:package
           popd
 
