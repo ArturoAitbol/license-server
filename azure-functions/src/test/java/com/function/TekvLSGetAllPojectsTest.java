@@ -135,7 +135,7 @@ public class TekvLSGetAllPojectsTest extends TekvLSTest {
         this.context.getLogger().info(response.getBody().toString());
 
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
     }
 
@@ -150,6 +150,51 @@ public class TekvLSGetAllPojectsTest extends TekvLSTest {
 
         TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
         HttpResponseMessage response = getAllProjects.run(this.request, projectId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getAllProjectCustomerAdminTest() {
+        String subaccountId = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
+        HttpResponseMessage response = getAllProjects.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getAllProjectDistributorFullAdminTest() {
+        String subaccountId = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorFullAdmin"));
+
+        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
+        HttpResponseMessage response = getAllProjects.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getAllProjectSubaccountAdminTest() {
+        String subaccountId = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+
+        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
+        HttpResponseMessage response = getAllProjects.run(this.request, subaccountId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         HttpStatusType actualStatus = response.getStatus();

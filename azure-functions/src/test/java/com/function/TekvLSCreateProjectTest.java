@@ -83,7 +83,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "ERROR: la sintaxis de entrada no es válida para tipo uuid: «1»\n" + "  Position: 72";
+        String expectedResponse = "ERROR: invalid input syntax for type uuid: \"1\"\n  Position: 72";
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
@@ -184,8 +184,8 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectExceptionTest() {
-        String testName = String.valueOf(new Date());
-        String testNumber = String.valueOf(new Date());
+        String testName = "'" + new Date() + "'";
+        String testNumber = "'" + new Date() + "'";
         this.bodyRequest = "{'subaccountId':'0cde8c0e-9eab-4fa9-9dda-a38c0c514b3a','status':'Open', 'openDate':'2022-06-27 05:00:00', " +
                 "'projectNumber'" + ":" + testNumber + ", " + "'projectName'" + ":" + testName + "}'";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
@@ -229,9 +229,13 @@ class TekvLSCreateProjectTest extends TekvLSTest {
         expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
-        String actualResponse = (String) response.getBody();
+         body = (String) response.getBody();
+         jsonBody = new JSONObject(body);
 
-        String expectedResponse = response.getBody().toString();
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Project already exists";
+        String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 }
