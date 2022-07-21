@@ -265,7 +265,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("", pageNumber, pageSize)).subscribe((res: any) => {
       res.usage.forEach(item => {
         if (item.granularity.toLowerCase() === "static" || item.usageType === "AutomationPlatform")
-          item.usageDays = "...";
+          item.usageDays = item.usageDays.length;
         else
           this.getNameOfDays(item.usageDays);
       });
