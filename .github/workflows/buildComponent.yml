@@ -1,0 +1,47 @@
+
+name: Unit Test Execution
+
+on:
+  workflow_dispatch:
+  # or pull request events but only for the main branch
+  pull_request:
+     branches: [ main ]
+
+env:
+  POM_XML_DIRECTORY: 'azure-functions/'
+  JAVA_VERSION: '1.8.x'
+  DB_USERNAME: 'postgres'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
+
+      - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 'Restore Project Dependencies Using Mvn'
+        shell: bash
+        run: |
+          pushd './${{ env.POM_XML_DIRECTORY }}'
+          ls
+          sudo sed -i -e 's/local   all             postgres                                peer/local   all             postgres                                trust/g' /etc/postgresql/14/main/pg_hba.conf
+          sudo systemctl start postgresql.service
+          psql "dbname=postgres user=postgres password=postgres" -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+          chmod 777 src/test/resources/Script.sh
+          mvn clean package
+          mvn azure-functions:package
+          popd
+
+      - name: Publish JUnit Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: '**/target/surefire-reports/TEST-*.xml'
+          summary: 'true'
