@@ -86,6 +86,18 @@ public class Config {
                 roleId = "devicesAdminId";
                 roleSecret = "devicesAdminSecret";
                 break;
+            case "distributorAdmin":
+                roleId = "distributorAdminId";
+                roleSecret = "distributorAdminSecret";
+                break;
+            case "customerAdmin":
+                roleId = "customerAdminId";
+                roleSecret = "customerAdminSecret";
+                break;
+            case "subaccountAdmin":
+                roleId = "subaccountAdminId";
+                roleSecret = "subaccountAdminSecret";
+                break;
             case "test":
                 return getConfig("testRoleToken");
             default:
