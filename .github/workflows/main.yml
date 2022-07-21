@@ -40,6 +40,21 @@ jobs:
         mvn clean package
         mvn azure-functions:package
         popd
+    
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+    
+    - name: Get Commit Short Hash
+      id: hash
+      run: echo "::set-output name=hash::$(git rev-parse --short "$GITHUB_SHA")"
+    
+    - name: Archive Azure Functions Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/'
+        recursive: true
+        dest: 'af-release-${{steps.date.outputs.date}}.zip'
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
@@ -53,13 +68,33 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.20'
-          
+    
+    - name: Build Angular Production web app
+      run: |
+        cd ./ui
+        npm install
+        npm run build:prod
+        
+    - name: Archive UI Production Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: './ui/dist/'
+        recursive: true
+        dest: 'ui-prod-release-${{steps.date.outputs.date}}.zip'
+
     - name: Build Angular Integration web app
       run: |
         cd ./ui
         npm install
         npm run build
-        
+    
+    - name: Archive UI Integration Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: './ui/dist/'
+        recursive: true        
+        dest: 'ui-integration-release-${{steps.date.outputs.date}}.zip'
+
     - name: Upload to blob storagerun
       uses: azure/CLI@v1
       with:
@@ -77,6 +112,28 @@ jobs:
         ls
         npm install -g newman
         newman run ./tests/api/postman/LicenseServerAPIs.postman_collection.json -e ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
+    
+    - name: Archive Full Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: 'af-release-${{steps.date.outputs.date}}.zip ui-integration-release-${{steps.date.outputs.date}}.zip ui-prod-release-${{steps.date.outputs.date}}.zip'
+        recursive: true        
+        dest: 'LS-release-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
+    
+    - name: Bump version and push tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create a GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ steps.tag_version.outputs.new_tag }}
+        name: Release ${{ steps.tag_version.outputs.new_tag }}
+        body: ${{ steps.tag_version.outputs.changelog }}
+        artifacts: 'LS-release-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
+        token: ${{ secrets.GITHUB_TOKEN }}
     
   # Azure logout
     - name: logout

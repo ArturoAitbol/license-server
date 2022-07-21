@@ -63,15 +63,15 @@
         <div style="display: flex;">
             <div class="col-4">
                 <mat-radio-group>
-                    <mat-radio-button class="radio-blue" value="period" [checked]="aggregation == 'period'"
+                    <mat-radio-button color="primary" value="period" [checked]="aggregation == 'period'"
                         (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
                     <br>
                     <div class="row">
                         <div class="col-4">
-                            <mat-radio-button class="radio-blue" value="week" [checked]="aggregation == 'week'" [disabled]="!isLicenseListLoaded"
+                            <mat-radio-button color="primary" value="week" [checked]="aggregation == 'week'" [disabled]="!isLicenseListLoaded"
                                 (change)="getMultipleChoiceAnswer($event)">Week</mat-radio-button>
                             <br>
-                            <mat-radio-button class="radio-blue" value="month" [checked]="aggregation == 'month'" [disabled]="!isLicenseListLoaded"
+                            <mat-radio-button color="primary" value="month" [checked]="aggregation == 'month'" [disabled]="!isLicenseListLoaded"
                                 (change)="getMultipleChoiceAnswer($event)">Month</mat-radio-button>
                             <br>
                         </div>

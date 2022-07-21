@@ -85,8 +85,9 @@ public class TekvLSCreateLicenseUsageDetail
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		// Build the sql query to get tokens consumption
-		String sql = "select tokens_to_consume from device where id='" + jobj.getString("deviceId") + "';";
+		// Build the sql query to get tokens consumption and granularity from device table
+		String deviceId = jobj.getString("deviceId");
+		String sql = "select tokens_to_consume, granularity from device where id='" + deviceId + "';";
 
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
@@ -94,8 +95,20 @@ public class TekvLSCreateLicenseUsageDetail
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
-			int tokensToConsume = rs.getInt(1);
-			// Build the sql insertion query
+			int tokensToConsume = rs.getInt("tokens_to_consume");
+			String granularity = rs.getString("granularity");
+			// check if there was a consumption for this device in the same project previously.
+			if (granularity.equalsIgnoreCase("static")) {
+				String projectIdCondition = jobj.has("projectId")? "='" + jobj.getString("projectId") + "'" : " IS NULL";
+				String devicePerProjectConsumptionSql = "select id from license_consumption where device_id='" + deviceId + "' and project_id" + projectIdCondition + " LIMIT 1;";
+				rs = statement.executeQuery(devicePerProjectConsumptionSql);
+				// if there was a condition only create usage details and not a consumption, otherwise continue the normal flow
+				if (rs.next()) {
+					jobj.put("id", rs.getString("id"));
+					return this.createUsageDetail(jobj, statement, request, context);
+				}
+			}
+			// Build the sql insertion query if there was no match in the previous if statements
 			String sqlPart1 = "";
 			String sqlPart2 = "";
 			for (int i = 0; i < mandatoryParams.length; i++) {
@@ -122,7 +135,7 @@ public class TekvLSCreateLicenseUsageDetail
 			sqlPart1 += "modified_date,tokens_consumed";
 			sqlPart2 += "'" + LocalDate.now().toString() + "'," + tokensToConsume;
 			sql = "insert into license_consumption (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";	
-			// Insert
+			// Insert consumption
 			context.getLogger().info("Execute SQL statement: " + sql);
 			rs = statement.executeQuery(sql);
 			rs.next();

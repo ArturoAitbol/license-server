@@ -14,6 +14,7 @@ import com.microsoft.azure.functions.annotation.BindingName;
 import java.sql.*;
 import java.util.*;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -45,7 +46,7 @@ public class TekvLSGetAllSubaccounts
 			final ExecutionContext context) 
 	{
 
-		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -109,7 +110,7 @@ public class TekvLSGetAllSubaccounts
 			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
-			// Retrive subaccounts. TODO: pagination
+			// Retrive subaccounts.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of subaccounts

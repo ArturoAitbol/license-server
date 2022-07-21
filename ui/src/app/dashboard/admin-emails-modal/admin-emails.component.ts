@@ -15,7 +15,7 @@ import { Observable } from "rxjs";
 export class AdminEmailsComponent implements OnInit {
 
   adminEmailsForm: any = this.formBuilder.group({
-    customerName: ['', Validators.required],
+    name: ['', Validators.required],
     emails: this.formBuilder.array([])
   });
 
@@ -33,7 +33,7 @@ export class AdminEmailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.adminEmailsForm.controls.customerName.disable();
+    this.adminEmailsForm.controls.name.disable();
     if (this.data) {
       this.isDataLoading = true;
       this.adminEmailsForm.patchValue(this.data);

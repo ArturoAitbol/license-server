@@ -75,8 +75,6 @@ public class TekvLSModifyBundleById {
                 {"tokens","tokens"},
                 {"deviceAccessToken","device_access_tokens"}
         };
-        String columns ="";
-        String values ="";
         String sql = "update bundle set ";
         for (int i = 0; i < params.length; i++) {
             try {
