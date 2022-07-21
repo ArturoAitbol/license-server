@@ -10,9 +10,13 @@ if [ $? -ne 0 ];
         exit -1
 else
     echo "*******Local Restore*******"
-    # echo "Type your Postgres username"
-    # read username
-    psql -U root -d postgres < db_scripts/latest_license_server.sql -q
+    if [[ -z "${DB_USERNAME}" ]]; then
+		  echo "Type your Postgres username"
+		  read DB_USERNAME
+	  else
+		  echo $DB_USERNAME
+	  fi
+    psql "dbname=postgres user=$DB_USERNAME password=postgres" < db_scripts/latest_license_server.sql -q
     if [ $? -ne 0 ];
         then
             echo "Error executing DB restore"
