@@ -1,0 +1,37 @@
+<div class="container" style="text-align: center;">
+    <h1 mat-dialig-title>Subaccount Administrator Emails</h1>
+    <div class="flex-container">
+        <div class="loading-shade" *ngIf="isDataLoading">
+            <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+        </div>
+        <mat-dialog-content>
+            <div>
+                <label style="font-weight: bold;">{{data.name}}</label>
+            </div>
+            <div class="usage-info" *ngFor="let usage of usageDetailsList; let i = index">
+                <div class="row">
+                    <div class="col-10 usage-data">
+                        <label class="subtitle">Date:</label>
+                        <label>{{ usage.usageDate | date:'fullDate' }}</label>
+                        <br>
+                        <div *ngIf="isAutomationPlatform">
+                            <label class="subtitle">Mac Address:</label>
+                            <label>{{ usage.macAddress }}</label>
+                            <br>
+                            <label class="subtitle">Serial Number:</label>
+                            <label>{{ usage.serialNumber }}</label>
+                        </div>
+                    </div>
+                    <div class="col-2 clear-button">
+                        <button mat-icon-button color="primary" title="Delete Usage" (click)="deleteUsageDetail(i)">
+                            <mat-icon>clear</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </mat-dialog-content>
+    </div>
+    <mat-dialog-actions>
+        <button mat-stroked-button type="button" (click)="close()">Close</button>
+    </mat-dialog-actions>
+</div>

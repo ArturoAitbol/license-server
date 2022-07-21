@@ -12,3 +12,5 @@ ui/package-lock.json
 .project
 *.prefs
 .vscode
+.DS_Store
+azure-functions/logs/*

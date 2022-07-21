@@ -17,6 +17,7 @@ import { Constants } from 'src/app/helpers/constants';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { DataTableComponent } from "../../../generics/data-table/data-table.component";
+import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
 
 @Component({
   selector: 'app-license-consumption',
@@ -263,7 +264,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.isDetailedConsumptionRequestCompleted = false;
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("", pageNumber, pageSize)).subscribe((res: any) => {
       res.usage.forEach(item => {
-        this.getNameOfDays(item.usageDays);
+        if (item.granularity.toLowerCase() === "static" || item.usageType === "AutomationPlatform")
+          item.usageDays = "...";
+        else
+          this.getNameOfDays(item.usageDays);
       });
       this.detailedConsumptionData = res.usage;
       this.detailedConsumptionDataLength = res.usageTotalCount;
@@ -311,9 +315,9 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     let  ConfigurationTokens = tokenConsumption.Configuration ?? 0;
     const totalConsumption =  AutomationTokens + ConfigurationTokens;
 
-    if(this.selectedType==="Configuration")
+    if (this.selectedType === "Configuration")
       AutomationTokens = null;
-    if(this.selectedType==="AutomationPlatform")
+    if (this.selectedType === "AutomationPlatform")
       ConfigurationTokens = null;
 
     const consumptionDetail = {
@@ -426,7 +430,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     switch (object.selectedOption) {
       case this.EDIT:
         let dataObject: any = { ...object.selectedRow, ...{endLicensePeriod: this.selectedLicense.renewalDate} };
-        this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
+        if (object.selectedRow.granularity.toLowerCase() === "static" || object.selectedRow.usageType === "AutomationPlatform")
+          this.openDialog(StaticConsumptionDetailsComponent, dataObject);
+        else
+          this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
         break;
       case this.DELETE:
         this.onDelete(object.selectedRow);
