@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
@@ -134,7 +135,7 @@ class TekvLSDeleteDeviceByIdTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "NOT AUTHORIZED. Access denied as role is missing.";
+        String expectedResponse = RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
@@ -157,7 +158,7 @@ class TekvLSDeleteDeviceByIdTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "UNAUTHORIZED ACCESS. You do not have access as expected role is missing";
+        String expectedResponse = RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }

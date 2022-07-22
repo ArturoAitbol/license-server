@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
@@ -155,7 +156,7 @@ class TekvLSGetAllDevicesTest extends TekvLSTest {
     }
 
     @Test
-    public void getAllDevicesNoToken() {
+    public void unauthorizedTest() {
         String id = "EMPTY";
         this.headers.remove("authorization");
         HttpResponseMessage response = getAllDevicesApi.run(this.request, id, this.context);
@@ -165,16 +166,20 @@ class TekvLSGetAllDevicesTest extends TekvLSTest {
         HttpStatus expected = HttpStatus.UNAUTHORIZED;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
-        String actualResponse = (String) response.getBody();
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
 
-        String expectedResponse = "{\"error\":\"NOT AUTHORIZED. Access denied as role is missing.\"}";
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
+        String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test
-    public void getAllDevicesInvalidRole() {
+    public void forbiddenTest() {
         String id = "EMPTY";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("test"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("crm"));
         HttpResponseMessage response = getAllDevicesApi.run(this.request, id, this.context);
         this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
 
@@ -182,9 +187,13 @@ class TekvLSGetAllDevicesTest extends TekvLSTest {
         HttpStatus expected = HttpStatus.FORBIDDEN;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
-        String actualResponse = (String) response.getBody();
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
 
-        String expectedResponse = "{\"error\":\"UNAUTHORIZED ACCESS. You do not have access as expected role is missing\"}";
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
+        String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
