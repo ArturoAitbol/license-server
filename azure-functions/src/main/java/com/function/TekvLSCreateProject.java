@@ -117,18 +117,9 @@ public class TekvLSCreateProject
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 			
 			// Insert
-			try{
-				context.getLogger().info("Execute SQL statement: " + sql);
-				statement.executeUpdate(sql);
-				context.getLogger().info("Project inserted successfully."); 
-			}catch(Exception e){
-				context.getLogger().info("Caught exception: " + e.getMessage());
-				JSONObject json = new JSONObject();
-				String modifiedResponse= projectUnique(e.getMessage());
-				json.put("error", modifiedResponse);
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-			}
-
+			context.getLogger().info("Execute SQL statement: " + sql);
+			statement.executeUpdate(sql);
+			context.getLogger().info("Project inserted successfully."); 
 			// Return the id in the response
 			sql = "select id from project where " + 
 				"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
@@ -137,31 +128,26 @@ public class TekvLSCreateProject
 				"status = '" + jobj.getString("status") + "' and " +
 				"open_date = '" + jobj.getString("openDate") + "';";
 			context.getLogger().info("Execute SQL statement: " + sql);
-			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
 			JSONObject json = new JSONObject();
 			json.put("id", rs.getString("id"));
-
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			String modifiedResponse= projectUnique(e.getMessage());
+			json.put("error", modifiedResponse);
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+		} catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
-		catch (Exception e) {
-			context.getLogger().info("Caught exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-		}
 	}
-
 	private String projectUnique(String errorMessage){
 		String response = errorMessage;
-		
 		if(errorMessage.contains("project_unique") && errorMessage.contains("already exists"))
 			response = "Project already exists";
 		return response;
