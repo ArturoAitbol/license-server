@@ -93,7 +93,7 @@ public class TekvLSGetAllDevices {
 		}
 		
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
@@ -102,7 +102,7 @@ public class TekvLSGetAllDevices {
 			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
-			// Execute sql query. TODO: pagination
+			// Execute sql query. TO DO: pagination
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array
@@ -116,13 +116,13 @@ public class TekvLSGetAllDevices {
 				item.put("version", rs.getString("version"));
 				item.put("supportType", rs.getBoolean("support_type"));
 				item.put("tokensToConsume", rs.getInt("tokens_to_consume"));
+				item.put("granularity", rs.getString("granularity"));
 				if (!id.equals("EMPTY")) {
 					subaccountId = rs.getString("subaccount_id");
 					if (rs.wasNull())
 						subaccountId = "";
 					item.put("subaccountId", subaccountId);
 					item.put("type", rs.getString("type"));
-					item.put("granularity", rs.getString("granularity"));
 					item.put("startDate", rs.getString("start_date"));
 					item.put("deprecatedDate", rs.getString("deprecated_date"));
 				}

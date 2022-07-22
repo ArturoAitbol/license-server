@@ -92,7 +92,7 @@ export class DashboardComponent implements OnInit {
   initColumns(): void {
     this.displayedColumns = [
       { name: 'Customer', dataKey: 'name', position: 'left', isSortable: true },
-      { name: 'Subaccount', dataKey: 'subAccountName', position: 'left', isSortable: true },
+      { name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
       { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true }
     ];
@@ -126,13 +126,17 @@ export class DashboardComponent implements OnInit {
 
   assignSubAccountData(subAccounts: SubAccount[], licences: License[]): void{
     this.customerList.forEach((customer: any) => {
-      const subAccountDetails = subAccounts.find((s: SubAccount) => s.customerId === customer.id);
-      if ( subAccountDetails !== undefined ) {
-        customer.subAccountName = subAccountDetails.name;
-        customer.customerId = subAccountDetails.customerId;
-        customer.subAccountId = subAccountDetails.id;
-        customer.id = subAccountDetails.id;
-        customer.status = this.getCustomerLicenseStatus(licences.filter((l: License) => (l.subaccountId === subAccountDetails.id)));
+      const subaccountDetails = subAccounts.find((s: SubAccount) => s.customerId === customer.id);
+      if( subaccountDetails !== undefined ){
+        customer.subaccountName = subaccountDetails.name;
+        customer.subaccountId = subaccountDetails.id;
+        let subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccountDetails.id));
+        if(subaccountLicenses.length>0){
+          const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
+          customer.status = licenseDetails ? licenseDetails.status: "Expired";
+        }else{
+          customer.status = "Inactive";
+        }
       }
     });
   }
@@ -237,32 +241,30 @@ export class DashboardComponent implements OnInit {
           message: 'Do you want to confirm this action?',
           confirmCaption: 'Confirm',
           deleteAllDataCaption: 'Delete All Data',
-          cancelCaption: 'Cancel',
-          canDeleteAllData: this.customerList[index]?.testCustomer,
+          cancelCaption: 'Cancel'
         })
         .subscribe((result) => {
           if (result.confirm) {
             console.debug('The user confirmed the action: ', this.customerList[index]);
-            const { subAccountId , id } = this.customerList[index];
-            const numberOfSubaccounts = this.customerList.filter(subaccount => subaccount.customerId === id).length;
-            if (numberOfSubaccounts > 1 && !result.deleteAllData) {
-              this.subaccountService.deleteSubAccount(subAccountId).subscribe((res: any) => {
+            const { subaccountId , id } = this.customerList[index];
+            if ( subaccountId && !result.deleteAllData) {
+              this.subaccountService.deleteSubAccount(subaccountId).subscribe((res: any) => {
                 if (!res?.error) {
                   this.snackBarService.openSnackBar('Subaccount deleted successfully!', '');
                   this.fetchDataToDisplay();
                 } else {
                   this.snackBarService.openSnackBar('Error Subaccount could not be deleted !', '');
                 }
-              });
+              })
             } else {
-              this.customerService.deleteCustomer(id, true).subscribe((res: any) => {
+              this.customerService.deleteCustomer(id).subscribe((res: any) => {
                 if (!res?.error) {
                   this.snackBarService.openSnackBar('Customer deleted successfully!', '');
                   this.fetchDataToDisplay();
                 } else {
                   this.snackBarService.openSnackBar('Error customer could not be deleted !', '');
                 }
-              });
+              })
             }
           }
         });

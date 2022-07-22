@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -42,7 +43,7 @@ public class TekvLSGetAllProjects {
 		final ExecutionContext context) 
    {
 
-	   JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+	   Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 	   String currentRole = getRoleFromToken(tokenClaims,context);
 	   if(currentRole.isEmpty()){
 		   JSONObject json = new JSONObject();
@@ -111,7 +112,7 @@ public class TekvLSGetAllProjects {
 	   	sql += " order by open_date desc, code, name;";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (

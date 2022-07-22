@@ -14,3 +14,5 @@ ui/package-lock.json
 .vscode
 coverage/*
 ui/coverage/*
+.DS_Store
+azure-functions/logs/*

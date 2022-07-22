@@ -30,7 +30,8 @@ export class CustomerService {
 
   /**
    * create new customer
-   * @param customerName: string
+
+   * @param newCustomerDetails: Customer 
    * @returns: Observable
    */
   public createCustomer(newCustomerDetails: Customer) {
@@ -48,6 +49,7 @@ export class CustomerService {
 
   /**
    * fetch customer details list
+   * @param customerName: string 
    * @returns: Observable
    */
   public getCustomerList(customerName?: string) {
@@ -70,13 +72,10 @@ export class CustomerService {
   /**
    * delete selected customer by customerId
    * @param customerId: string
-   * @param force: boolean
    * @returns: Observable
    */
-  public deleteCustomer(customerId: string, force= false) {
-    let params = new HttpParams();
-    params = params.append('force', force);
-    return this.httpClient.delete(`${this.API_URL}/${customerId}`, { params });
+  public deleteCustomer(customerId: string) {
+    return this.httpClient.delete(`${this.API_URL}/${customerId}`);
   }
 
   /**

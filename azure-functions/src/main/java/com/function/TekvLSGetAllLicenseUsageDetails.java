@@ -19,6 +19,7 @@ import java.time.temporal.WeekFields;
 import java.util.Locale;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -46,7 +47,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 		HttpRequestMessage<Optional<String>> request,
 		final ExecutionContext context) {
 
-		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -100,7 +101,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 		if (!startDate.isEmpty() && !endDate.isEmpty())
 			sqlCommonConditions += " and l.consumption_date>='" + startDate + "' and l.consumption_date<='" + endDate + "'";
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
@@ -160,14 +161,11 @@ public class TekvLSGetAllLicenseUsageDetails {
 						sqlCommonConditions += " and l.usage_type='" + type + "'";
 					// This is the default case (aggregated data)
 					JSONArray array = new JSONArray();
-					JSONObject tokenConsumption = new JSONObject();
-					String usageType;
-					int tokensConsumed;
 					String sqlAll = "select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date+'1 day'::interval)) as consumption, " +
-							"l.project_id, d.vendor, d.product, d.version" + ", json_agg(DISTINCT day_of_week) AS usage_days" +
+							"l.project_id, d.vendor, d.product, d.version, d.granularity, json_agg(DISTINCT day_of_week) AS usage_days" +
 							" from device d, license_consumption l, usage_detail u " +
 							" where d.id=l.device_id and u.consumption_id = l.id and " + sqlCommonConditions +
-							" group by l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,d.vendor, d.product, d.version" +
+							" group by l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,d.vendor, d.product, d.version, d.granularity" +
 							" order by consumption_date desc limit " + limit + " offset " + offset + ";";
 					context.getLogger().info("Execute SQL all statement: " + sqlAll);
 					rs = statement.executeQuery(sqlAll);
@@ -180,19 +178,15 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("vendor", rs.getString("vendor"));
 						item.put("product", rs.getString("product"));
 						item.put("version", rs.getString("version"));
-						usageType =  rs.getString("usage_type");
-						tokensConsumed = rs.getInt("tokens_consumed");
-						item.put("usageType",usageType);
-						item.put("tokensConsumed", tokensConsumed);
+						item.put("granularity", rs.getString("granularity"));
+						item.put("usageType", rs.getString("usage_type"));
+						item.put("tokensConsumed", rs.getInt("tokens_consumed"));
 						item.put("consumption", item.getString("consumptionDate") + " - " + rs.getString("consumption"));
 						item.put("usageDays",new JSONArray(rs.getString("usage_days")));
 						array.put(item);
 
-						tokenConsumption.put(usageType,tokenConsumption.optInt(usageType,0) + tokensConsumed);
-
 					}
 					json.put("usage", array);
-					json.put("tokenConsumption",tokenConsumption);
 
 					// Get aggregated consumption for configuration
 					JSONArray array2 = new JSONArray();
@@ -212,6 +206,19 @@ public class TekvLSGetAllLicenseUsageDetails {
 						array2.put(item);
 					}
 					json.put("configurationTokens", array2);
+
+					String tokensConsumedSql = "SELECT usage_type, sum(tokens_consumed) as consumed_tokens, count(*) from license_consumption l where " +
+							sqlCommonConditions + " GROUP BY usage_type;";
+					context.getLogger().info("Execute SQL weekly statement: " + tokensConsumedSql);
+					rs = statement.executeQuery(tokensConsumedSql);
+					int count = 0;
+					JSONObject tokenConsumption = new JSONObject();
+					while (rs.next()) {
+						tokenConsumption.put(rs.getString("usage_type"), rs.getInt("consumed_tokens"));
+						count += rs.getInt("count");
+					}
+					json.put("tokenConsumption", tokenConsumption);
+					json.put("usageTotalCount", count);
 				} break;
 			}
 

@@ -12,23 +12,35 @@ beforeEach(() => {
     customerService = new CustomerService(httpClientSpy);
 });
 
-it('should return expected heroes (HttpClient called once)', (done: DoneFn) => {
-    const expectedHeroes: Customer[] = [{ id: 1, name: 'A' }, { id: 2, name: 'B' }];
+it('should return expected customer (HttpClient called once)', (done: DoneFn) => {
+    const expectedCustomers: any = {
+        customers: [
+            {
+                customerType: 'MSP',
+                testCustomer: true,
+                name: 'Test Customer v1',
+                id: '1111-1111-1111-1111-1111'
+            },
+            {
+                customerType: 'MSP',
+                testCustomer: true,
+                name: 'Test Customer v1',
+                id: '2222-2222-2222-2222-2222'
+            }
+        ]
+    };
 
-    httpClientSpy.get.and.returnValue(of(expectedHeroes));
+    httpClientSpy.get.and.returnValue(of(expectedCustomers));
 
     customerService.getCustomerList().subscribe({
-        next: heroes => {
-            expect(heroes)
-                .withContext('expected heroes')
-                .toEqual(expectedHeroes);
+        next: customer => {
+            expect(customer)
+                .withContext('expected customer')
+                .toEqual(expectedCustomers);
             done();
         },
         error: done.fail
     });
-    expect(httpClientSpy.get.calls.count())
-        .withContext('one call')
-        .toBe(1);
 });
 
 it('should return an error when the server returns a 404', (done: DoneFn) => {
@@ -40,7 +52,7 @@ it('should return an error when the server returns a 404', (done: DoneFn) => {
     httpClientSpy.get.and.returnValue(of(errorResponse));
 
     customerService.getCustomerList().subscribe({
-        next: heroes => done.fail('expected an error, not heroes'),
+        next: customer => done.fail('expected an error, not customer'),
         error: error  => {
             expect(error.message).toContain('test 404 error');
             done();

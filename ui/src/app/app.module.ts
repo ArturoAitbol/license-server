@@ -25,7 +25,6 @@ import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { SharedModule } from './modules/shared/shared.module';
 import { environment } from 'src/environments/environment';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
-import { AuthInterceptor } from './helpers/auth.interceptor';
 @NgModule({
     declarations: [
         AppComponent,
@@ -50,7 +49,7 @@ import { AuthInterceptor } from './helpers/auth.interceptor';
         MaterialModule,
         MsalModule.forRoot(new PublicClientApplication({
             auth: {
-                clientId: environment.CLIENT_ID,
+                clientId: environment.UI_CLIENT_ID,
                 redirectUri: environment.REDIRECT_URL_AFTER_LOGIN
             },
             cache: {
@@ -64,14 +63,13 @@ import { AuthInterceptor } from './helpers/auth.interceptor';
         }, {
             interactionType: InteractionType.Popup,
             protectedResourceMap: new Map([
-                [environment.apiEndpoint, ['user.read']]
+                [environment.apiEndpoint, ['api://' + environment.API_CLIENT_ID + '/' + environment.API_SCOPE]]
             ])
         }),
         SharedModule
     ],
     providers: [
-        // { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+        { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
     ],
     bootstrap: [AppComponent],

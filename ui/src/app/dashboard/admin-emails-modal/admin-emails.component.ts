@@ -3,7 +3,6 @@ import { FormArray, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { CustomerAdminEmailService } from "../../services/customer-admin-email.service";
 import { Observable } from "rxjs";
@@ -16,7 +15,7 @@ import { Observable } from "rxjs";
 export class AdminEmailsComponent implements OnInit {
 
   adminEmailsForm: any = this.formBuilder.group({
-    customerName: ['', Validators.required],
+    name: ['', Validators.required],
     emails: this.formBuilder.array([])
   });
 
@@ -28,19 +27,18 @@ export class AdminEmailsComponent implements OnInit {
       private formBuilder: FormBuilder,
       private customerService: CustomerService,
       private customerAdminEmailService: CustomerAdminEmailService,
-      private subAccountService: SubAccountService,
       private snackBarService: SnackBarService,
       public dialogRef: MatDialogRef<AdminEmailsComponent>,
       @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   ngOnInit() {
-    this.adminEmailsForm.controls.customerName.disable();
+    this.adminEmailsForm.controls.name.disable();
     if (this.data) {
       this.isDataLoading = true;
       this.adminEmailsForm.patchValue(this.data);
       this.previousFormValue = {...this.adminEmailsForm};
-      this.customerService.getCustomerById(this.data.customerId).subscribe(res => {
+      this.customerService.getCustomerById(this.data.id).subscribe(res => {
         this.adminEmails = res.customers[0]?.adminEmails;
         this.isDataLoading = false
       })
@@ -56,7 +54,7 @@ export class AdminEmailsComponent implements OnInit {
     if (this.emailForms.length > 0) {
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.customerAdminEmailService.createAdminEmail({
         customerAdminEmail: value.email,
-        customerId: this.data.customerId
+        customerId: this.data.id
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
         if (!res.error) {

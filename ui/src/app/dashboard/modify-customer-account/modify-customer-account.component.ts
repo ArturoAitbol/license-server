@@ -13,9 +13,9 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 })
 export class ModifyCustomerAccountComponent implements OnInit {
   updateCustomerForm: any = this.formBuilder.group({
-    customerName: ['', Validators.required],
-    customerType: ['', Validators.required],
     name: ['', Validators.required],
+    customerType: ['', Validators.required],
+    subaccountName: [''],
     testCustomer: [{value:false,disabled:true}]
   });
   types: string[] = ['MSP', 'Reseller'];
@@ -26,7 +26,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private customerService: CustomerService,
-    private subAccountService: SubAccountService,
+    private subaccountService: SubAccountService,
     private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
@@ -52,18 +52,20 @@ export class ModifyCustomerAccountComponent implements OnInit {
     const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value };
     console.log('mergedLicenseObject', mergedLicenseObject);
     const customer = {
-      id: mergedLicenseObject.customerId,
-      customerName: mergedLicenseObject.customerName,
+      id: mergedLicenseObject.id,
+      customerName: mergedLicenseObject.name,
       customerType: mergedLicenseObject.customerType
     };
-    const subAccount = {
-      id: mergedLicenseObject.id,
-      subaccountName: mergedLicenseObject.name
-    };
     const requestsArray= [
-      this.customerService.updateCustomer(customer),
-      this.subAccountService.updateSubAccount(subAccount)
+      this.customerService.updateCustomer(customer)
     ];
+    if (this.data.subaccountId){
+      const subaccount = {
+        id: mergedLicenseObject.subaccountId,
+        subaccountName: mergedLicenseObject.subaccountName
+      };
+      requestsArray.push(this.subaccountService.updateSubAccount(subaccount)); 
+    }
     forkJoin(requestsArray).subscribe((res: any) => {
       if (!res.error) {
         this.isDataLoading = false;

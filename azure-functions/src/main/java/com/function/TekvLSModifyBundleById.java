@@ -75,8 +75,6 @@ public class TekvLSModifyBundleById {
                 {"tokens","tokens"},
                 {"deviceAccessToken","device_access_tokens"}
         };
-        String columns ="";
-        String values ="";
         String sql = "update bundle set ";
         for (int i = 0; i < params.length; i++) {
             try {
@@ -91,7 +89,7 @@ public class TekvLSModifyBundleById {
         sql = sql.substring(0, sql.length() - 1);
         sql += " where id='" + id + "'";
 
-        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try{

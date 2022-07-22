@@ -102,7 +102,7 @@ export class LicensesComponent implements OnInit {
   fetchLicenses(): void {
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
-    this.licenseService.getLicenseList(this.currentCustomer.id).subscribe(res => {
+    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
       this.licensesBk = this.licenses = res['licenses'];

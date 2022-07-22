@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Utility } from 'src/app/helpers/Utility';
@@ -27,9 +27,12 @@ export class DataTableComponent implements OnInit, OnDestroy {
   @Input() paginationSizes: number[] = [5, 10, 15];
   @Input() defaultPageSize = this.paginationSizes[1];
   @Input() actionMenuList: string[];
+  @Input() serverSidePagination = false;
+  @Input() length = 0;
   @Output() sort: EventEmitter<Sort> = new EventEmitter();
   @Output() rowAction: EventEmitter<any> = new EventEmitter<any>();
   @Output() clickableRow: EventEmitter<any> = new EventEmitter<any>();
+  @Output() pageChanged: EventEmitter<{ pageIndex: number, pageSize: number }> = new EventEmitter<any>();
 
   // this property needs to have a setter, to dynamically get changes from parent component
   @Input() set tableData(data: any[]) {
@@ -50,7 +53,9 @@ export class DataTableComponent implements OnInit, OnDestroy {
 
   // we need this, in order to make pagination work with *ngIf
   ngAfterViewInit(): void {
-    this.tableDataSource.paginator = this.matPaginator;
+    if (!this.serverSidePagination) {
+      this.tableDataSource.paginator = this.matPaginator;
+    }
   }
 
   /**
@@ -60,8 +65,10 @@ export class DataTableComponent implements OnInit, OnDestroy {
   setTableDataSource(data: any) {
     this.data = data;
     this.tableDataSource = new MatTableDataSource<any>(data);
-    this.tableDataSource.paginator = this.matPaginator;
     this.tableDataSource.sort = this.matSort;
+    if (!this.serverSidePagination) {
+      this.tableDataSource.paginator = this.matPaginator;
+    }
   }
   /**
    * apply filter to the table
@@ -109,6 +116,30 @@ export class DataTableComponent implements OnInit, OnDestroy {
   getColor(value: string, tableColumn: TableColumn): string | undefined {
     if (tableColumn.canHighlighted)
       return Utility.getColorCode(value[tableColumn.dataKey]);
+  }
+
+  /**
+   * emit pageChanged event
+   * @param event: PageEvent
+   */
+  onPageChange(event: PageEvent) {
+    if (this.isPageable && this.serverSidePagination)
+      this.pageChanged.emit({pageIndex: event.pageIndex, pageSize: event.pageSize })
+  }
+
+  /**
+   * Return the current page index of the paginator
+   */
+  getPageIndex() {
+    return this.matPaginator.pageIndex;
+  }
+
+  /**
+   * Set the page index of the paginator
+   * @param pageIndex
+   */
+  setPageIndex(pageIndex: number) {
+    this.matPaginator.pageIndex = pageIndex;
   }
 
   ngOnDestroy(): void {

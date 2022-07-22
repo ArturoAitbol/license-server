@@ -5,7 +5,7 @@
                 <button mat-stroked-button (click)="goToDashboard()">Back</button>
             </div>
             <div class="col">
-                <h1>{{currentCustomer.customerName}} - {{currentCustomer.name}}</h1>
+                <h1>{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
             </div>
             <div class="col">
                 <mat-button-toggle-group *checkAccessFor="'addLicense'" name="fontStyle" aria-label="Font Style">

@@ -186,7 +186,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    */
   fetchData(): void {
     this.isDataLoading = true;
-    const subaccountId = this.currentCustomer.id;
+    const subaccountId = this.currentCustomer.subaccountId;
     const { id } = this.data;
     forkJoin([
       this.deviceService.getDevicesList(subaccountId),

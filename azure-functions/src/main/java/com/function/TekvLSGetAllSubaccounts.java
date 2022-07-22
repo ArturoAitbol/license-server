@@ -14,6 +14,7 @@ import com.microsoft.azure.functions.annotation.BindingName;
 import java.sql.*;
 import java.util.*;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,7 +30,7 @@ public class TekvLSGetAllSubaccounts
 	 * 1. curl -d "HTTP Body" {your host}/api/subaccounts/{id}
 	 * 2. curl "{your host}/api/subaccounts"
 	 */
-	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 
@@ -45,7 +46,7 @@ public class TekvLSGetAllSubaccounts
 			final ExecutionContext context) 
 	{
 
-		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -109,7 +110,7 @@ public class TekvLSGetAllSubaccounts
 			
 			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
 			
-			// Retrive subaccounts. TODO: pagination
+			// Retrive subaccounts.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of subaccounts
