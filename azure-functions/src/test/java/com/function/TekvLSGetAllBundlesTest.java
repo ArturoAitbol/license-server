@@ -114,7 +114,7 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"NOT AUTHORIZED. Access denied as role is missing.\"}";
+        String expectedResponse = "{\"error\":\"NOT AUTHORIZED: Access denied due to missing or invalid credentials\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
@@ -122,7 +122,7 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
     @Test
     public void getBundlesInvalidRoleTest(){
         String id = "EMPTY";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("test"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("crm"));
         HttpResponseMessage response = new TekvLSGetAllBundles().run(this.request, id, this.context);
         this.context.getLogger().info("HttpResponse: "+response.getBody().toString());
 
@@ -136,7 +136,6 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
-    @Tag("acceptance")
     @Test
     public void getBundleInvalidIdTest(){
         String expectedId = "BASIC";
