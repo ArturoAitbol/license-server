@@ -98,6 +98,10 @@ public class Config {
                 roleId = "subaccountAdminId";
                 roleSecret = "subaccountAdminSecret";
                 break;
+            case "crm":
+                roleId = "crmId";
+                roleSecret = "crmSecret";
+                break;
             case "test":
                 return getConfig("testRoleToken");
             default:
