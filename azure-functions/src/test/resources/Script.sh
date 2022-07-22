@@ -3,7 +3,7 @@ echo "DB Restore"
 echo "============================="
 echo "*******Remove Locale String*******"
 sed -i "s/LOCALE = 'English_United States.1252';/\;/g" db_scripts/latest_license_server.sql
-postgres -V
+psql -V
 if [ $? -ne 0 ];
     then
         echo "Postgres not installed, please install it manually and then run this script again."
