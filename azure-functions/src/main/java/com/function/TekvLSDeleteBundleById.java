@@ -49,7 +49,10 @@ public class TekvLSDeleteBundleById {
 
         context.getLogger().info("Java HTTP trigger processed a request.");
         if (id.equals("EMPTY")) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass an id on the query string").build();
+            context.getLogger().info("Error: There is no bundle id in the request.");
+            JSONObject json = new JSONObject();
+            json.put("error", "Please pass an id on the query string.");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         String sql = "delete from bundle where id='" + id + "'";
 
