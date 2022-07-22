@@ -176,7 +176,7 @@ public class TekvLSGetAllPojectsTest extends TekvLSTest {
     @Test
     public void getAllProjectDistributorFullAdminTest() {
         String subaccountId = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorFullAdmin"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
 
         TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
         HttpResponseMessage response = getAllProjects.run(this.request, subaccountId, this.context);
