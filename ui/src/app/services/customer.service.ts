@@ -1,12 +1,13 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { Constants } from '../helpers/constants';
-import { Customer } from '../model/customer.model';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {environment} from 'src/environments/environment';
+import {Constants} from '../helpers/constants';
+import {Customer} from '../model/customer.model';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class CustomerService {
   private readonly API_URL: string = environment.apiEndpoint + '/customers';
 
@@ -54,11 +55,9 @@ export class CustomerService {
     if (customerName)
       params.append('customerName', customerName);
     const headers = this.getHeaders();
-    let response = this.httpClient.get<Customer>(this.API_URL, { headers, params });
-    console.log(response);
-    console.log(JSON.stringify(response));
-    return response;
+    return this.httpClient.get<Customer>(this.API_URL, {headers, params});
   }
+
   /**
    * update customer details
    * @param customer: Customer
@@ -79,8 +78,6 @@ export class CustomerService {
     params = params.append('force', force);
     return this.httpClient.delete(`${this.API_URL}/${customerId}`, { params });
   }
-
-
 
   /**
    * set the header for the request

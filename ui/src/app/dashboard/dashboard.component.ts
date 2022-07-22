@@ -85,6 +85,7 @@ export class DashboardComponent implements OnInit {
     localStorage.removeItem(Constants.PROJECT);
     this.getActionMenuOptions();
   }
+
   /**
    * initialize the columns settings
    */
@@ -96,6 +97,7 @@ export class DashboardComponent implements OnInit {
       { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true }
     ];
   }
+
   /**
    * fetch data to display
    */
@@ -113,22 +115,7 @@ export class DashboardComponent implements OnInit {
         return { ...current, ...next };
       }, {});
       this.customerList = newDataObject['customers'];
-      this.customerList.forEach((account: any) => {
-        const subAccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
-        if ( subAccountDetails !== undefined ) {
-          account.subAccountName = subAccountDetails.name;
-          account.customerId = subAccountDetails.customerId;
-          account.subAccountId = subAccountDetails.id;
-          account.id = subAccountDetails.id;
-          const subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subAccountDetails.id));
-          if (subaccountLicenses.length > 0) {
-            const licenseDetails = subaccountLicenses.find((l: License) => (l.status === 'Active'));
-            account.status = licenseDetails ? licenseDetails.status : 'Expired';
-          } else {
-            account.status = 'Inactive';
-          }
-        }
-      });
+      this.assignSubAccountData(newDataObject['subaccounts'], newDataObject['licenses']);
       this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
     }, err => {
       console.debug('error', err);
@@ -137,32 +124,58 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  assignSubAccountData(subAccounts: SubAccount[], licences: License[]): void{
+    this.customerList.forEach((customer: any) => {
+      const subAccountDetails = subAccounts.find((s: SubAccount) => s.customerId === customer.id);
+      if ( subAccountDetails !== undefined ) {
+        customer.subAccountName = subAccountDetails.name;
+        customer.customerId = subAccountDetails.customerId;
+        customer.subAccountId = subAccountDetails.id;
+        customer.id = subAccountDetails.id;
+        customer.status = this.getCustomerLicenseStatus(licences.filter((l: License) => (l.subaccountId === subAccountDetails.id)));
+      }
+    });
+  }
+
+  getCustomerLicenseStatus(subaccountLicenses: License[]): string {
+    if (subaccountLicenses.length > 0) {
+      const licenseDetails = subaccountLicenses.find((l: License) => (l.status === 'Active'));
+      return  licenseDetails ? licenseDetails.status : 'Expired';
+    } else {
+      return  'Inactive';
+    }
+  }
 
   getColor(value: string) {
     return Utility.getColorCode(value);
   }
+
   /**
    * on click delete account
    * @param index: string
    */
   onDeleteAccount(index: string): void {
-    this.openConfirmaCancelDialog(index);
+    this.openConfirmCancelDialog(index);
   }
+
   /**
    * on click add account customer
    */
   addCustomerAccount(): void {
     this.openDialog('add-customer');
   }
+
   /**
    * on click add account customer
    */
   addSubaccount(): void {
     this.openDialog('add-subaccount');
   }
+
   /**
    * open dialog
    * @param type: string
+   * @param selectedItemData
    */
   openDialog(type: string, selectedItemData?: any): void {
     let dialogRef;
@@ -213,10 +226,11 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
+
   /**
    * open confirm cancel dialog
    */
-  openConfirmaCancelDialog(index?: number | string) {
+  openConfirmCancelDialog(index?: number | string) {
     this.dialogService
         .deleteCustomerDialog({
           title: 'Confirm Action',
@@ -253,6 +267,7 @@ export class DashboardComponent implements OnInit {
           }
         });
   }
+
   /**
    *
    * @param row: object
@@ -262,6 +277,7 @@ export class DashboardComponent implements OnInit {
     localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
     this.router.navigate(['/customer/licenses']);
   }
+
   /**
    *
    * @param row: object
@@ -271,6 +287,7 @@ export class DashboardComponent implements OnInit {
     localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
     this.router.navigate(['/customer/consumption']);
   }
+
   /**
    * open project detail
    * @param row: object
@@ -280,6 +297,7 @@ export class DashboardComponent implements OnInit {
     localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
     this.router.navigate(['/customer/projects']);
   }
+
   /**
    * sort table
    * @param sortParameters: Sort
@@ -295,6 +313,7 @@ export class DashboardComponent implements OnInit {
       return this.customerList = this.customerList;
     }
   }
+
   /**
    * action row click event
    * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }

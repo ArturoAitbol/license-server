@@ -20,6 +20,7 @@ import { Observable } from 'rxjs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 let dashboardComponentTestInstance: DashboardComponent;
+
 let fixture: ComponentFixture<DashboardComponent>;
 
 let licenseServiceMock = {
@@ -214,31 +215,45 @@ beforeEach(() => {
     spyOn(subAccountServiceMock, 'getSubAccountList').and.callThrough();
 });
 
-it('should display essential UI and components', () => {
-    fixture.detectChanges();
-    let h1 = fixture.nativeElement.querySelector('#page-title');
-    let addCustomerButton = fixture.nativeElement.querySelector('#add-customer-button');
-    let addSubaccountButton = fixture.nativeElement.querySelector('#add-subaccount-button');
-    expect(h1.textContent).toBe('Customers');
-    expect(addCustomerButton.textContent).toBe('Add Customer');
-    expect(addSubaccountButton.textContent).toBe('Add Subaccount');
+describe('UI verification tests', () => {
+    it('should display essential UI and components', () => {
+        fixture.detectChanges();
+        let h1 = fixture.nativeElement.querySelector('#page-title');
+        let addCustomerButton = fixture.nativeElement.querySelector('#add-customer-button');
+        let addSubaccountButton = fixture.nativeElement.querySelector('#add-subaccount-button');
+        expect(h1.textContent).toBe('Customers');
+        expect(addCustomerButton.textContent).toBe('Add Customer');
+        expect(addSubaccountButton.textContent).toBe('Add Subaccount');
+    });
+
+    it('should load correct data columns for the table', () => {
+        fixture.detectChanges();
+        let customerColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[0];
+        let subAccountColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[1];
+        let typeColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[2];
+        let statusColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[3];
+        expect(customerColumn.innerText).toBe('Customer');
+        expect(subAccountColumn.innerText).toBe('Subaccount');
+        expect(typeColumn.innerText).toBe('Type');
+        expect(statusColumn.innerText).toBe('Status');
+    });
 });
 
-it('should make a call to get customer list after initializing', () => {
-    fixture.detectChanges();
-    expect(customerServiceMock.getCustomerList).toHaveBeenCalled();
-    expect(licenseServiceMock.getLicenseList).toHaveBeenCalled();
-    expect(subAccountServiceMock.getSubAccountList).toHaveBeenCalled();
+describe('Data collection and parsing tests', () => {
+    it('should make a call to get customer list after initializing', () => {
+        fixture.detectChanges();
+        expect(customerServiceMock.getCustomerList).toHaveBeenCalled();
+        expect(licenseServiceMock.getLicenseList).toHaveBeenCalled();
+        expect(subAccountServiceMock.getSubAccountList).toHaveBeenCalled();
+    });
 });
 
-it('should load correct data columns for the table', () => {
-    fixture.detectChanges();
-    let customerColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[0];
-    let subAccountColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[1];
-    let typeColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[2];
-    let statusColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[3];
-    expect(customerColumn.innerText).toBe('Customer');
-    expect(subAccountColumn.innerText).toBe('Subaccount');
-    expect(typeColumn.innerText).toBe('Type');
-    expect(statusColumn.innerText).toBe('Status');
+
+describe('Navigation', () => {
+    it('should make a call to get customer list after initializing', () => {
+        fixture.detectChanges();
+        expect(customerServiceMock.getCustomerList).toHaveBeenCalled();
+        expect(licenseServiceMock.getLicenseList).toHaveBeenCalled();
+        expect(subAccountServiceMock.getSubAccountList).toHaveBeenCalled();
+    });
 });
