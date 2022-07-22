@@ -96,7 +96,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"NOT AUTHORIZED. Access denied as role is missing.\"}";
+        String expectedResponse = "{\"error\":\"NOT AUTHORIZED: Access denied due to missing or invalid credentials\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
@@ -132,7 +132,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
     @Test
     public void modifyProjectInvalidRoleTest() {
         String id = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("test"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("crm"));
         HttpResponseMessage response = new TekvLSModifyProjectById().run(this.request, id, this.context);
         this.context.getLogger().info("HttpResponse: "+response.getBody().toString());
 
