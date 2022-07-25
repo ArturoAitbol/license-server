@@ -178,15 +178,15 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
 
     @Test
     public void createLicenseNoBodyTest(){
-        //Given - Arrange
+        //Given
         String bodyRequest = "";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        //When
         HttpResponseMessage response = tekvLSCreateLicense.run(this.request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
@@ -202,15 +202,15 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
 
     @Test
     public void createLicenseInvalidBodyTest(){
-        //Given - Arrange
+        //Given
         String bodyRequest = "invalid-body";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        //When
         HttpResponseMessage response = tekvLSCreateLicense.run(this.request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
