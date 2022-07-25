@@ -217,9 +217,10 @@ export class DashboardComponent implements OnInit {
       .deleteCustomerDialog({
         title: 'Confirm Action',
         message: 'Do you want to confirm this action?',
-        confirmCaption: 'Confirm',
-        deleteAllDataCaption: 'Delete All Data',
-        cancelCaption: 'Cancel'
+        confirmCaption: 'Delete Subaccount',
+        deleteAllDataCaption: 'Delete Customer',
+        cancelCaption: 'Cancel',
+        canDeleteSubaccount: this.customerList[index]?.testCustomer
       })
       .subscribe((result) => {
         if (result.confirm) {
