@@ -26,7 +26,7 @@ export class DialogService {
   deleteCustomerDialog(data: DeleteCustomerDialogData): Observable<{confirm, deleteAllData}> {
       return  this.dialog.open(DeleteCustomerModal, {
           data,
-          width: '400px',
+          width: '450px',
           disableClose: true,
       }).afterClosed();
   }
