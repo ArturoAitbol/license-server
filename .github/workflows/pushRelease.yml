@@ -38,7 +38,10 @@ jobs:
 
         - name: Unzip Production UI
           run: unzip -qq ui-prod-release*.zip -d UI-prod-build
-          working-directory: Release          
+          working-directory: Release
+        
+        - name: Add Release version file
+          run: echo "Released ${{ steps.release_download.outputs.version }} Build" > ./Release/UI-prod-build/license-server/ReleaseVersion.txt
 
         - name: Upload to blob storagerun
           uses: azure/CLI@v1
