@@ -7,58 +7,85 @@ import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
 import org.json.JSONObject;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
-class TekvLSModifyLicenseByIdTest extends TekvLSTest {
+class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
 
-    private final TekvLSModifyLicenseById tekvLSModifyLicenseById = new TekvLSModifyLicenseById();
-    private final TekvLSCreateLicense tekvLSCreateLicense = new TekvLSCreateLicense();
-    private final TekvLSDeleteLicenseById tekvLSDeleteLicenseById = new TekvLSDeleteLicenseById();
-    private final String licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
+    private final TekvLSModifyLicenseUsageById tekvLSModifyLicenseUsageById = new TekvLSModifyLicenseUsageById();
+    private final TekvLSCreateLicenseUsageDetail tekvLSCreateLicenseUsageDetail = new TekvLSCreateLicenseUsageDetail();
+    private final TekvLSDeleteLicenseUsageById tekvLSDeleteLicenseUsageById = new TekvLSDeleteLicenseUsageById();
+    private String licenseUsageId;
 
     @BeforeEach
     void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
-                "'startDate': '2023-06-01T00:00:00.000Z'," +
-                "'packageType': 'Basic'," +
-                "'renewalDate': '2023-06-10T04:00:00.000Z'," +
-                "'tokensPurchased': '55'," +
-                "'deviceLimit': '5000'," +
-                "'licenseId':'"+licenseId+"'," +
-                "'status': 'Active'}";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        HttpResponseMessage response = tekvLSCreateLicense.run(this.request,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-        assertEquals(HttpStatus.OK, response.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
+            String bodyRequest = "{ " +
+                    "    'subaccountId': '31c142a6-b735-4bce-bfb4-9fba6b539116'," +
+                    "    'projectId': 'f8e757f4-a7d2-416d-80df-beefba44f88f'," +
+                    "    'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
+                    "    'consumptionDate': '2022-06-19'," +
+                    "    'type': 'Configuration'," +
+                    "    'usageDays': [0,4] }";
+            doReturn(Optional.of(bodyRequest)).when(request).getBody();
+            HttpResponseMessage response = tekvLSCreateLicenseUsageDetail.run(this.request,this.context);
+            this.context.getLogger().info(response.getBody().toString());
+            HttpStatusType actualStatus = response.getStatus();
+            HttpStatus expected = HttpStatus.OK;
+            assertEquals(expected,actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+            JSONObject jsonBody = new JSONObject(response.getBody().toString());
+            this.licenseUsageId = jsonBody.getString("id");
     }
 
     @AfterEach
     void tearDown(){
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        HttpResponseMessage response = tekvLSDeleteLicenseById.run(this.request,this.licenseId, this.context);
+        HttpResponseMessage response = tekvLSDeleteLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getStatus().toString());
-        assertEquals(HttpStatus.OK, response.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
     @Tag("acceptance")
     @Test
-    public void modifyLicenseTest(){
+    public void modifyLicenseUsageTest(){
         //Given
-        String bodyRequest = "{'packageType': 'Small'," +
-                "'tokensPurchased': '150'," +
-                "'deviceLimit': '5000'}";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        String body = "{'projectId': 'f8e757f4-a7d2-416d-80df-beefba44f88f',"+
+                        "'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b',"+
+                        "'consumptionDate': '2022-06-20',"+
+                        "'type': 'AutomationPlatform'}";
+        doReturn(Optional.of(body)).when(this.request).getBody();
+        //When
+        HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void deviceParamTest(){
+        //Given
+        String body = "{ 'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
+                        "'type': 'AutomationPlatform'}";
+        doReturn(Optional.of(body)).when(this.request).getBody();
 
         //When
-        HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,this.licenseId,this.context);
+        HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getStatus().toString());
 
         //Then
@@ -71,11 +98,10 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     @Test
     public void emptyBodyTest(){
         //Given
-        String bodyRequest = "{}";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
+        String body = "{}";
+        doReturn(Optional.of(body)).when(this.request).getBody();
         //When
-        HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,this.licenseId,this.context);
+        HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getStatus().toString());
 
         //Then
@@ -91,7 +117,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
-        HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,this.licenseId,this.context);
+        HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -105,21 +131,21 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
 
         String actualResponse = jsonBody.getString("error");
         String expectedResponse = "error: request body is empty.";
-        assertEquals(expectedResponse,actualResponse,"Response doesn't match with: ".concat(expectedResponse));
-
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test
     public void invalidBodyTest(){
-        //Given - Arrange
-        String bodyRequest = "invalid-body";
+        //Given
+        String newConsumptionDate = LocalDateTime.now().toString();
+        String bodyRequest = "{'consumptionDate': '"+newConsumptionDate+"'";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
-        HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,this.licenseId,this.context);
+        //When
+        HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
@@ -127,10 +153,6 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
         assertTrue(jsonBody.has("error"));
-
-        String expectedResponse = "A JSONObject text must begin with '{' at 1 [character 2 line 1]";
-        String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Tag("Security")
@@ -140,7 +162,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
         this.headers.remove("authorization");
 
         //When
-        HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,this.licenseId, this.context);
+        HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -160,11 +182,11 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     @Tag("Security")
     @Test
     public void invalidRoleTest(){
-        //Given
+        //Given;
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
-        HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,this.licenseId, this.context);
+        HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -182,35 +204,38 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void invalidSQLTest(){
+    public void invalidIdTest(){
         //Given
-        String invalidId = "invalid-id";
-        String bodyRequest = "{'packageType': 'Small'," +
-                "'tokensPurchased': '150'," +
-                "'deviceLimit': '5000'}";
+        String id = "invalid-id";
+        String newConsumptionDate = LocalDateTime.now().toString();
+        String bodyRequest = "{'consumptionDate': '"+newConsumptionDate+"'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
         //When
-        HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,invalidId,this.context);
+        HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,id,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualError = jsonBody.getString("error");
+        assertTrue(actualError.contains("ERROR: invalid input syntax for type uuid"));
     }
 
     @Test
     public void genericExceptionTest(){
         //Given
-        String bodyRequest = "{'packageType': 'Small'," +
-                "'tokensPurchased': '150'," +
-                "'deviceLimit': '5000'}";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        String body = "{'type': 'AutomationPlatform' }";
+        doReturn(Optional.of(body)).when(this.request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 
         //When
-        HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,this.licenseId, this.context);
+        HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -218,8 +243,8 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
 
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
+        String responseBody = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(responseBody);
         assertTrue(jsonBody.has("error"));
 
         String actualResponse = jsonBody.getString("error");
@@ -228,4 +253,5 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
 
         this.initTestParameters();
     }
+
 }

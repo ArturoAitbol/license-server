@@ -11,19 +11,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
-class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
+class TekvLSDeleteLicenseUsageByIdTest extends TekvLSTest {
 
-    private final TekvLSDeleteLicenseById tekvLSDeleteLicenseById = new TekvLSDeleteLicenseById();
-    private final TekvLSCreateLicense tekvLSCreateLicense = new TekvLSCreateLicense();
+    private final TekvLSDeleteLicenseUsageById tekvLSDeleteLicenseUsageById = new TekvLSDeleteLicenseUsageById();
+    private final TekvLSCreateLicenseUsageDetail tekvLSCreateLicenseUsageDetail = new TekvLSCreateLicenseUsageDetail();
 
-    private String licenseId ="31d82e5c-b911-460d-edbe-6860f8464233";
+    private String licenseUsageId = "07249fe4-92e2-4fda-8e34-1b42d58ad6f2";
 
     @BeforeEach
     void setup() {
@@ -31,29 +30,30 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
     }
 
+    @Tag("acceptance")
     @Test
-    public void deleteLicenseTest(){
+    public void deleteLicenseUsageTest(){
         //Given
-        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
-                "'startDate': '2023-06-01T00:00:00.000Z'," +
-                "'packageType': 'Basic'," +
-                "'renewalDate': '2023-06-10T04:00:00.000Z'," +
-                "'tokensPurchased': '55'," +
-                "'deviceLimit': '5000'," +
-                "'licenseId':'"+licenseId+"'," +
-                "'status': 'Active'}";
+        String bodyRequest = "{ " +
+                "    'subaccountId': '31c142a6-b735-4bce-bfb4-9fba6b539116'," +
+                "    'projectId': 'f8e757f4-a7d2-416d-80df-beefba44f88f'," +
+                "    'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
+                "    'consumptionDate': '2022-06-19'," +
+                "    'type': 'Configuration'," +
+                "    'usageDays': [0,4] }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        HttpResponseMessage createResponse = tekvLSCreateLicense.run(this.request,this.context);
-        this.context.getLogger().info(createResponse.getBody().toString());
-        assertEquals(HttpStatus.OK, createResponse.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
-        JSONObject jsonBody = new JSONObject(createResponse.getBody().toString());
+        HttpResponseMessage responseCreate = tekvLSCreateLicenseUsageDetail.run(this.request,this.context);
+        this.context.getLogger().info(responseCreate.getBody().toString());
+        assertEquals(HttpStatus.OK, responseCreate.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
+        JSONObject jsonBody = new JSONObject(responseCreate.getBody().toString());
         assertTrue(jsonBody.has("id"));
-        this.licenseId = jsonBody.getString("id");
+        this.licenseUsageId = jsonBody.getString("id");
 
         //When
-        HttpResponseMessage response = tekvLSDeleteLicenseById.run(this.request,this.licenseId, this.context);
+        HttpResponseMessage response = tekvLSDeleteLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getStatus().toString());
 
+        //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
@@ -66,7 +66,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
         this.headers.remove("authorization");
 
         //When
-        HttpResponseMessage response = tekvLSDeleteLicenseById.run(this.request,this.licenseId, this.context);
+        HttpResponseMessage response = tekvLSDeleteLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -90,13 +90,13 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
-        HttpResponseMessage response = tekvLSDeleteLicenseById.run(this.request,this.licenseId, this.context);
+        HttpResponseMessage response = tekvLSDeleteLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.FORBIDDEN;
-        assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+        HttpStatus expected = HttpStatus.FORBIDDEN;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
@@ -107,31 +107,35 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
-    @Tag("acceptance")
     @Test
-    public void invalidSQLTest(){
+    public void invalidIdTest(){
         //Given
-        this.licenseId = "invalid-id";
+        String id = "invalid-id";
 
         //When
-        HttpResponseMessage response = tekvLSDeleteLicenseById.run(this.request,this.licenseId,this.context);
+        HttpResponseMessage response = tekvLSDeleteLicenseUsageById.run(this.request,id,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualError = jsonBody.getString("error");
+        assertTrue(actualError.contains("ERROR: invalid input syntax for type uuid"));
     }
 
-    @Tag("acceptance")
     @Test
     public void genericExceptionTest(){
         //Given
-        this.licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 
         //When
-        HttpResponseMessage response = tekvLSDeleteLicenseById.run(this.request,this.licenseId, this.context);
+        HttpResponseMessage response = tekvLSDeleteLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
