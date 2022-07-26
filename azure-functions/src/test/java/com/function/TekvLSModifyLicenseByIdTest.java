@@ -35,13 +35,9 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
                 "'licenseId':'"+licenseId+"'," +
                 "'status': 'Active'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
         HttpResponseMessage response = tekvLSCreateLicense.run(this.request,this.context);
         this.context.getLogger().info(response.getBody().toString());
-
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(HttpStatus.OK, response.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
     }
 
     @AfterEach
@@ -49,10 +45,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
         HttpResponseMessage response = tekvLSDeleteLicenseById.run(this.request,this.licenseId, this.context);
         this.context.getLogger().info(response.getStatus().toString());
-
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(HttpStatus.OK, response.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
     }
 
     @Tag("acceptance")
@@ -76,7 +69,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void modifyLicenseEmptyBodyTest(){
+    public void emptyBodyTest(){
         //Given
         String bodyRequest = "{}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -92,7 +85,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyLicenseNoBodyTest(){
+    public void noBodyTest(){
         //Given
         String bodyRequest = "";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -117,7 +110,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyLicenseInvalidBodyTest(){
+    public void invalidBodyTest(){
         //Given - Arrange
         String bodyRequest = "invalid-body";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -142,7 +135,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void modifyLicenseNoTokenTest(){
+    public void noTokenTest(){
         //Given
         this.headers.remove("authorization");
 
@@ -166,7 +159,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void modifyLicenseInvalidRoleTest(){
+    public void invalidRoleTest(){
         //Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
@@ -189,7 +182,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyLicenseInvalidSQLTest(){
+    public void invalidSQLTest(){
         //Given
         String invalidId = "invalid-id";
         String bodyRequest = "{'packageType': 'Small'," +
@@ -208,7 +201,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyLicenseGenericExceptionTest(){
+    public void genericExceptionTest(){
         //Given
         String bodyRequest = "{'packageType': 'Small'," +
                 "'tokensPurchased': '150'," +

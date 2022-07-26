@@ -11,13 +11,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 class TekvLSDeleteLicenseUsageByIdTest extends TekvLSTest {
 
     private final TekvLSDeleteLicenseUsageById tekvLSDeleteLicenseUsageById = new TekvLSDeleteLicenseUsageById();
-    private final String licenseUsageId = "07249fe4-92e2-4fda-8e34-1b42d58ad6f2";
+    private final TekvLSCreateLicenseUsageDetail tekvLSCreateLicenseUsageDetail = new TekvLSCreateLicenseUsageDetail();
+
+    private String licenseUsageId = "07249fe4-92e2-4fda-8e34-1b42d58ad6f2";
 
     @BeforeEach
     void setup() {
@@ -28,6 +33,21 @@ class TekvLSDeleteLicenseUsageByIdTest extends TekvLSTest {
     @Tag("acceptance")
     @Test
     public void deleteLicenseUsageTest(){
+        //Given
+        String bodyRequest = "{ " +
+                "    'subaccountId': '31c142a6-b735-4bce-bfb4-9fba6b539116'," +
+                "    'projectId': 'f8e757f4-a7d2-416d-80df-beefba44f88f'," +
+                "    'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
+                "    'consumptionDate': '2022-06-19'," +
+                "    'type': 'Configuration'," +
+                "    'usageDays': [0,4] }";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        HttpResponseMessage responseCreate = tekvLSCreateLicenseUsageDetail.run(this.request,this.context);
+        this.context.getLogger().info(responseCreate.getBody().toString());
+        assertEquals(HttpStatus.OK, responseCreate.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
+        JSONObject jsonBody = new JSONObject(responseCreate.getBody().toString());
+        assertTrue(jsonBody.has("id"));
+        this.licenseUsageId = jsonBody.getString("id");
 
         //When
         HttpResponseMessage response = tekvLSDeleteLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
@@ -41,7 +61,7 @@ class TekvLSDeleteLicenseUsageByIdTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void deleteLicenseUsageNoTokenTest(){
+    public void noTokenTest(){
         //Given
         this.headers.remove("authorization");
 
@@ -65,7 +85,7 @@ class TekvLSDeleteLicenseUsageByIdTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void deleteLicenseUsageInvalidRoleTest(){
+    public void invalidRoleTest(){
         //Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
@@ -88,7 +108,7 @@ class TekvLSDeleteLicenseUsageByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void deleteLicenseUsageInvalidIdTest(){
+    public void invalidIdTest(){
         //Given
         String id = "invalid-id";
 
@@ -110,7 +130,7 @@ class TekvLSDeleteLicenseUsageByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void deleteLicenseUsageGenericExceptionTest(){
+    public void genericExceptionTest(){
         //Given
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 

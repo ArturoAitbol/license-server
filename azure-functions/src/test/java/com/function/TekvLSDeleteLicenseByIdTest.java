@@ -21,8 +21,9 @@ import static org.mockito.Mockito.doThrow;
 class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
 
     private final TekvLSDeleteLicenseById tekvLSDeleteLicenseById = new TekvLSDeleteLicenseById();
+    private final TekvLSCreateLicense tekvLSCreateLicense = new TekvLSCreateLicense();
 
-    private String licenseId ="";
+    private String licenseId ="31d82e5c-b911-460d-edbe-6860f8464233";
 
     @BeforeEach
     void setup() {
@@ -33,7 +34,21 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
     @Test
     public void deleteLicenseTest(){
         //Given
-        this.licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
+        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
+                "'startDate': '2023-06-01T00:00:00.000Z'," +
+                "'packageType': 'Basic'," +
+                "'renewalDate': '2023-06-10T04:00:00.000Z'," +
+                "'tokensPurchased': '55'," +
+                "'deviceLimit': '5000'," +
+                "'licenseId':'"+licenseId+"'," +
+                "'status': 'Active'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        HttpResponseMessage createResponse = tekvLSCreateLicense.run(this.request,this.context);
+        this.context.getLogger().info(createResponse.getBody().toString());
+        assertEquals(HttpStatus.OK, createResponse.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
+        JSONObject jsonBody = new JSONObject(createResponse.getBody().toString());
+        assertTrue(jsonBody.has("id"));
+        this.licenseId = jsonBody.getString("id");
 
         //When
         HttpResponseMessage response = tekvLSDeleteLicenseById.run(this.request,this.licenseId, this.context);
@@ -46,7 +61,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void deleteLicenseNoTokenTest(){
+    public void noTokenTest(){
         //Given
         this.headers.remove("authorization");
 
@@ -70,7 +85,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void deleteLicenseInvalidRoleTest(){
+    public void invalidRoleTest(){
         //Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
@@ -94,7 +109,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void deleteLicenseInvalidSQLTest(){
+    public void invalidSQLTest(){
         //Given
         this.licenseId = "invalid-id";
 
@@ -110,7 +125,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void deleteLicenseGenericExceptionTest(){
+    public void genericExceptionTest(){
         //Given
         this.licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);

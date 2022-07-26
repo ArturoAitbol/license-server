@@ -24,30 +24,27 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
     private final TekvLSModifyLicenseUsageById tekvLSModifyLicenseUsageById = new TekvLSModifyLicenseUsageById();
     private final TekvLSCreateLicenseUsageDetail tekvLSCreateLicenseUsageDetail = new TekvLSCreateLicenseUsageDetail();
     private final TekvLSDeleteLicenseUsageById tekvLSDeleteLicenseUsageById = new TekvLSDeleteLicenseUsageById();
-    private final String licenseUsageId = "00ff2ae7-eeae-4740-b950-bb0518c66d8f";
-    private final String deviceId = "ef7a4bcd-fc3f-4f87-bf87-ae934799690b";
+    private String licenseUsageId;
 
     @BeforeEach
     void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-
-        String bodyRequest = "{ " +
-                "    'subaccountId': '31c142a6-b735-4bce-bfb4-9fba6b539116'," +
-                "    'projectId': 'f8e757f4-a7d2-416d-80df-beefba44f88f'," +
-                "    'deviceId': '"+ deviceId +"'," +
-                "    'consumptionDate': '2022-06-19'," +
-                "    'type': 'Configuration'," +
-                "    'usageDays': [0,4]" +
-                "}";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
-        HttpResponseMessage response = tekvLSCreateLicenseUsageDetail.run(this.request,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+            String bodyRequest = "{ " +
+                    "    'subaccountId': '31c142a6-b735-4bce-bfb4-9fba6b539116'," +
+                    "    'projectId': 'f8e757f4-a7d2-416d-80df-beefba44f88f'," +
+                    "    'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
+                    "    'consumptionDate': '2022-06-19'," +
+                    "    'type': 'Configuration'," +
+                    "    'usageDays': [0,4] }";
+            doReturn(Optional.of(bodyRequest)).when(request).getBody();
+            HttpResponseMessage response = tekvLSCreateLicenseUsageDetail.run(this.request,this.context);
+            this.context.getLogger().info(response.getBody().toString());
+            HttpStatusType actualStatus = response.getStatus();
+            HttpStatus expected = HttpStatus.OK;
+            assertEquals(expected,actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+            JSONObject jsonBody = new JSONObject(response.getBody().toString());
+            this.licenseUsageId = jsonBody.getString("id");
     }
 
     @AfterEach
@@ -64,7 +61,10 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
     @Test
     public void modifyLicenseUsageTest(){
         //Given
-        String body = "{'type': 'AutomationPlatform'}"; //original type: Configuration
+        String body = "{'projectId': 'f8e757f4-a7d2-416d-80df-beefba44f88f',"+
+                        "'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b',"+
+                        "'consumptionDate': '2022-06-20',"+
+                        "'type': 'AutomationPlatform'}";
         doReturn(Optional.of(body)).when(this.request).getBody();
         //When
         HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
@@ -78,9 +78,9 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void modifyLicenseUsageDeviceParamTest(){
+    public void deviceParamTest(){
         //Given
-        String body = "{ 'deviceId': '"+this.deviceId+"'," +
+        String body = "{ 'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
                         "'type': 'AutomationPlatform'}";
         doReturn(Optional.of(body)).when(this.request).getBody();
 
@@ -96,9 +96,9 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void modifyLicenseUsageEmptyBodyTest(){
+    public void emptyBodyTest(){
         //Given
-        String body = "{}"; //original type: Configuration
+        String body = "{}";
         doReturn(Optional.of(body)).when(this.request).getBody();
         //When
         HttpResponseMessage response = tekvLSModifyLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
@@ -111,7 +111,7 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyLicenseUsageNoBodyTest(){
+    public void noBodyTest(){
         //Given
         String bodyRequest = "";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -135,7 +135,7 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyLicenseUsageInvalidBodyTest(){
+    public void invalidBodyTest(){
         //Given
         String newConsumptionDate = LocalDateTime.now().toString();
         String bodyRequest = "{'consumptionDate': '"+newConsumptionDate+"'";
@@ -157,7 +157,7 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void modifyLicenseUsageNoTokenTest(){
+    public void noTokenTest(){
         //Given
         this.headers.remove("authorization");
 
@@ -181,7 +181,7 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void modifyLicenseUsageInvalidRoleTest(){
+    public void invalidRoleTest(){
         //Given;
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
@@ -204,7 +204,7 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyLicenseUsageInvalidIdTest(){
+    public void invalidIdTest(){
         //Given
         String id = "invalid-id";
         String newConsumptionDate = LocalDateTime.now().toString();
@@ -228,9 +228,9 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyLicenseUsageGenericExceptionTest(){
+    public void genericExceptionTest(){
         //Given
-        String body = "{'type': 'AutomationPlatform' }"; //original type: Configuration
+        String body = "{'type': 'AutomationPlatform' }";
         doReturn(Optional.of(body)).when(this.request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 
