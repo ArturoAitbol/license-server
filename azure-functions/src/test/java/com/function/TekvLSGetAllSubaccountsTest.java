@@ -223,7 +223,7 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
     }
 
     @Test
-    public void getAllDevicesInvalidTest() {
+    public void getAllSubaccountsInvalidTest() {
         //Given - Arrange
         String expectedId = "BASIC";
 
@@ -250,6 +250,23 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Test
+    public void genericException2Test() {
+        //Given - Arrange
+        Mockito.when(this.context.getLogger()).thenReturn(TekvLSTest.logger).thenReturn(TekvLSTest.logger)
+                .thenReturn(TekvLSTest.logger).thenThrow(new RuntimeException("Generic error")).thenReturn(TekvLSTest.logger);
+        String expectedId = "00000000-0000-0000-0000-000000000000";
+
+        //When - Action
+        HttpResponseMessage response = getAllSubaccountsApi.run(this.request, expectedId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 }

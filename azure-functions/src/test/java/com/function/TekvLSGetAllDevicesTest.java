@@ -155,6 +155,49 @@ class TekvLSGetAllDevicesTest extends TekvLSTest {
         assertEquals(expectedVersion, actualVersion, "Actual version is not: ".concat(expectedVersion));
     }
 
+    // If test is failing make sure there is a device in the DB with id=eb2e8d89-b5a0-4e6c-8b11-83aad2674d7f, and the device has a startDate before 2022-07-18
+    @Tag("acceptance")
+    @Test
+    public void getDevicesByDate() {
+        String id = "EMPTY";
+        String date = "2022-07-18";
+        this.queryParams.put("date", date);
+
+        HttpResponseMessage response = getAllDevicesApi.run(this.request, id, this.context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("devices"));
+        JSONArray devices = jsonBody.getJSONArray("devices");
+        assertTrue(devices.length() > 0);
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getDevicesBySubaccountId() {
+        String id = "EMPTY";
+        String expectedSubaccountId = "5f1fa1f7-92e3-4c92-b18b-d30f26ef4f73";
+        this.queryParams.put("subaccountId", expectedSubaccountId);
+
+        HttpResponseMessage response = getAllDevicesApi.run(this.request, id, this.context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("devices"));
+        JSONArray devices = jsonBody.getJSONArray("devices");
+        assertTrue(devices.length() > 0);
+    }
+
     @Test
     public void unauthorizedTest() {
         String id = "EMPTY";
