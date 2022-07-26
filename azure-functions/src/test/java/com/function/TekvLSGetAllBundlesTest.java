@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TekvLSGetAllBundlesTest extends TekvLSTest {
@@ -146,5 +148,31 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Test
+    public void genericException(){
+        //Given - Arrange
+        String id = "EMPTY";
+        Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+
+        //When - Action
+        TekvLSGetAllBundles getAllBundles = new TekvLSGetAllBundles();
+        HttpResponseMessage response = getAllBundles.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Generic error";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 }

@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Optional;
 
@@ -124,5 +125,34 @@ class TekvLSDeleteBundleByIdTest extends TekvLSTest {
 
         String expectedResponse = "{\"error\":\"UNAUTHORIZED ACCESS. You do not have access as expected role is missing\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+
+    @Test
+    public void genericException(){
+        //Given - Arrange
+        this.bundleId="a7798683-2cde-4318-ae9c-c0c77828939f";
+        Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+
+        //When - Action
+        TekvLSDeleteBundleById deleteBundleById = new TekvLSDeleteBundleById();
+        HttpResponseMessage response = deleteBundleById.run(this.request, this.bundleId, this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Generic error";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+
+        this.bundleId="EMPTY";
     }
 }
