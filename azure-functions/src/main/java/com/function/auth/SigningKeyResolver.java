@@ -31,6 +31,7 @@ public class SigningKeyResolver extends SigningKeyResolverAdapter {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Key resolveSigningKey(JwsHeader jwsHeader, Claims claims) {
         String keyId = jwsHeader.getKeyId();
         return lookupVerificationKey(keyId);

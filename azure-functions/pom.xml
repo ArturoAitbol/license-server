@@ -131,6 +131,7 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
+                      <?m2e ignore?>
                         <id>db-populate</id>
                         <phase>generate-sources</phase>
                         <goals>

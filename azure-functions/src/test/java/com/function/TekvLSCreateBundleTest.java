@@ -3,7 +3,6 @@ package com.function;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -168,7 +167,6 @@ class TekvLSCreateBundleTest extends TekvLSTest {
     @Tag("security")
     @Test
     public void noToken(){
-        String id = "EMPTY";
         this.headers.remove("authorization");
         HttpResponseMessage response = new TekvLSCreateBundle().run(this.request, this.context);
         this.context.getLogger().info("HttpResponse: "+response.getBody().toString());
@@ -186,7 +184,6 @@ class TekvLSCreateBundleTest extends TekvLSTest {
     @Tag("security")
     @Test
     public void invalidRole(){
-        String id = "EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("crm"));
         HttpResponseMessage response = new TekvLSCreateBundle().run(this.request, this.context);
         this.context.getLogger().info("HttpResponse: "+response.getBody().toString());
