@@ -81,7 +81,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    void createLicenseNoIdTest() {
+    void createLicenseWithNoIdParamTest() {
         //Given
         String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
@@ -145,7 +145,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     }
 
     @Test
-    void createLicenseIncompleteBodyTest() {
+    void incompleteBodyTest() {
         //Given
         String licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
         String bodyRequest = "{ "+
@@ -177,16 +177,16 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     }
 
     @Test
-    public void createLicenseNoBodyTest(){
-        //Given - Arrange
+    public void noBodyTest(){
+        //Given
         String bodyRequest = "";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        //When
         HttpResponseMessage response = tekvLSCreateLicense.run(this.request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
@@ -201,16 +201,16 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     }
 
     @Test
-    public void createLicenseInvalidBodyTest(){
-        //Given - Arrange
+    public void invalidBodyTest(){
+        //Given
         String bodyRequest = "invalid-body";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        //When
         HttpResponseMessage response = tekvLSCreateLicense.run(this.request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
@@ -226,7 +226,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void createLicenseNoTokenTest(){
+    public void noTokenTest(){
         //Given
         this.headers.remove("authorization");
 
@@ -250,7 +250,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void createLicenseInvalidRoleTest(){
+    public void invalidRoleTest(){
         //Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
@@ -273,7 +273,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     }
 
     @Test
-    public void createLicenseInvalidSQLTest(){
+    public void invalidSQLTest(){
         //Given
         String licenseId = "invalid-id";
         String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
@@ -297,7 +297,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     }
 
     @Test
-    public void createLicenseGenericExceptionTest(){
+    public void genericExceptionTest(){
         //Given
         String licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
         String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +

@@ -12,5 +12,8 @@ ui/package-lock.json
 .project
 *.prefs
 .vscode
-azure-functions/logs/*.log
+coverage/*
+ui/coverage/*
+ui/test-results
 .DS_Store
+azure-functions/logs/*
