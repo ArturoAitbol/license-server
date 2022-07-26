@@ -135,6 +135,8 @@ public class TekvLSGetAllProjects {
 				item.put("openDate", rs.getString("open_date").split(" ")[0]);
 				closeDate = rs.getString("close_date");
 				item.put("closeDate", closeDate != null ? closeDate.split(" ")[0] : JSONObject.NULL);
+				if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO))
+					item.put("projectOwner", rs.getString("project_owner"));
 				array.put(item);
 			}
 			json.put("projects", array);

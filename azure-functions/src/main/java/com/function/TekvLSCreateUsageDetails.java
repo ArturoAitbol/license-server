@@ -10,6 +10,7 @@ import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
+import io.jsonwebtoken.Claims;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Iterator;
@@ -40,7 +41,8 @@ public class TekvLSCreateUsageDetails
 				@BindingName("id") String id,
 				final ExecutionContext context) {
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -55,6 +57,7 @@ public class TekvLSCreateUsageDetails
 		}
 
 		context.getLogger().info("Entering TekvLSCreateUsageDetails Azure function");
+		String userId = getEmailFromToken(tokenClaims, context);
 		JSONObject json = new JSONObject();
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -76,16 +79,19 @@ public class TekvLSCreateUsageDetails
 				Iterator<Object> iterator = addedDays.iterator();
 				Integer usage;
 				LocalDate consumptionDate = LocalDate.parse(jobj.getString("consumptionDate"));
+				// modifed_date is always local date when creating the record
+				// also adding the user that performed the opperation
+				String userAndDateSentence = "'" + LocalDate.now().toString() + "','" + userId + "'";
 				while(iterator.hasNext()) {
 					usage = Integer.parseInt(iterator.next().toString());
-					sqlPart2 += "\n('" + id + "','" + consumptionDate.plusDays(usage).toString() + "'," + usage + ",'',''),";
+					sqlPart2 += "\n('" + id + "','" + consumptionDate.plusDays(usage).toString() + "'," + usage + ",'','', " + userAndDateSentence + "),";
 				}
 				sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
 			} else {
 				json.put("error", "Missing mandatory parameter: addedDays");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
-			sql = "insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number) values " + sqlPart2 + ";";	
+			sql = "insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number,modified_date,modified_by) values " + sqlPart2 + ";";	
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			json.put("error", e.getMessage());

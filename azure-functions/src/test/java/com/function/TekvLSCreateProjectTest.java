@@ -46,7 +46,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectTest() {
-        this.bodyRequest = "{'subaccountId':'0cde8c0e-9eab-4fa9-9dda-a38c0c514b3a', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        this.bodyRequest = "{'subaccountId':'0cde8c0e-9eab-4fa9-9dda-a38c0c514b3a', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00', 'projectOwner':'98bbfc7e-d477-4534-a4b7-aafee90cddd3'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();
@@ -66,7 +66,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
     }
 
     @Test
-    public void createProjectIncorrectIdTypeTest() {
+    public void createProjectIncorrectSubaccountIdTypeTest() {
         this.bodyRequest = "{'subaccountId':'1', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 

@@ -40,6 +40,7 @@ public class RoleAuthHandler {
            GET_ALL_BUNDLES,
            GET_ALL_LICENSE_USAGE_DETAILS,
            GET_CONSUMPTION_USAGE_DETAILS,
+           GET_USER_EMAIL_INFO,
            //UPDATE
            MODIFY_CUSTOMER,
            MODIFY_SUBACCOUNT,
@@ -285,6 +286,17 @@ public class RoleAuthHandler {
                 return tokenClaims.get("preferred_username").toString();
             } catch (Exception e) {
                 context.getLogger().info("Caught exception: Getting preferred_username claim failed.");
+            }
+        }
+        return "";
+    }
+
+    public static String getUserIdFromToken(Claims tokenClaims,ExecutionContext context){
+        if(tokenClaims!=null) {
+            try {
+                return tokenClaims.get("oid").toString();
+            } catch (Exception e) {
+                context.getLogger().info("Caught exception: Getting user oid claim failed.");
             }
         }
         return "";

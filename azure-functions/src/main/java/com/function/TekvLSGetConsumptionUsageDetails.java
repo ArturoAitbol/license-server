@@ -109,7 +109,16 @@ public class TekvLSGetConsumptionUsageDetails {
 				item.put("usageDate", rs.getString("usage_date"));
 				item.put("macAddress", rs.getString("mac_address"));
 				item.put("serialNumber", rs.getString("serial_number"));
+				if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO))
+					item.put("modifiedBy", rs.getString("modified_by"));
 				array.put(item);
+			}
+			if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO)) {
+				sql = "SELECT modified_by FROM license_consumption WHERE id='" + id + "';";// get tokens to consume
+				context.getLogger().info("Execute SQL statement: " + sql);
+				rs = statement.executeQuery(sql);
+				rs.next();
+				json.put("modifiedBy", rs.getString("modified_by"));	
 			}
 			json.put("usageDays", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();

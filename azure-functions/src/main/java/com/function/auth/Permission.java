@@ -34,6 +34,7 @@ public enum Permission {
         GET_ALL_PROJECTS("TekvLSGetAllProjects"),
         GET_ALL_SUBACCOUNTS("TekvLSGetAllSubaccounts"),
         GET_CONSUMPTION_USAGE_DETAILS("TekvLSGetConsumptionUsageDetails"),
+        GET_USER_EMAIL_INFO("TekvLSGetUserEmailsInfo"),
 
         //UPDATE
         MODIFY_CUSTOMER("TekvLSModifyCustomerById"),

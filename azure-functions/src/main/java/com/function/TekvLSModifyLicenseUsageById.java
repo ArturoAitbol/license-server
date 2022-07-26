@@ -11,10 +11,10 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
+import io.jsonwebtoken.Claims;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Optional;
-
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -40,7 +40,8 @@ public class TekvLSModifyLicenseUsageById
 				final ExecutionContext context) 
 	{
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -55,6 +56,7 @@ public class TekvLSModifyLicenseUsageById
 		}
 
 		context.getLogger().info("Entering TekvLSModifyLicenseUsageById Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -112,7 +114,7 @@ public class TekvLSModifyLicenseUsageById
 					continue;
 				}
 			}
-			sql += " modified_date='" + LocalDate.now().toString() + "',tokens_consumed=" + tokensToConsume;
+			sql += " modified_date='" + LocalDate.now().toString() + "',modified_by='" + userId + "',tokens_consumed=" + tokensToConsume;
 			if (optionalParamsFound == 0) {
 				return request.createResponseBuilder(HttpStatus.OK).build();
 			}

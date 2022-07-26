@@ -80,14 +80,15 @@ public class TekvLSModifyProjectById
 			{"projectNumber","code"},
 			{"status","status"}, 
 			{"openDate", "open_date"}, 
-			{"closeDate","close_date"}};
+			{"closeDate","close_date"},
+			{"projectOwner","project_owner"}};
 		// Build the sql query
 		String sql = "update project set ";
 		int optionalParamsFound = 0;
 		for (int i = 0; i < optionalParams.length; i++) {
 			try {
-				String paramName = jobj.getString(optionalParams[i][0]);
-				sql += optionalParams[i][1] + (paramName.equals("") ? "=null," : "='" + paramName + "',");
+				String paramValue = jobj.getString(optionalParams[i][0]);
+				sql += optionalParams[i][1] + (paramValue.equals("") ? "=null," : "='" + paramValue + "',");
 				optionalParamsFound++;
 			} 
 			catch (Exception e) {

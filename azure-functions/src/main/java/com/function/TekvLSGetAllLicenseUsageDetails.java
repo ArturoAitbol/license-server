@@ -184,7 +184,6 @@ public class TekvLSGetAllLicenseUsageDetails {
 						item.put("consumption", item.getString("consumptionDate") + " - " + rs.getString("consumption"));
 						item.put("usageDays",new JSONArray(rs.getString("usage_days")));
 						array.put(item);
-
 					}
 					json.put("usage", array);
 

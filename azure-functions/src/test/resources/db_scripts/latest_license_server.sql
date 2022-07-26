@@ -1543,6 +1543,32 @@ ALTER TABLE ONLY public.device
 
 
 --
--- PostgreSQL database dump complete
+-- Adding project_owner to project
 --
 
+ALTER TABLE IF EXISTS public.project
+    ADD COLUMN IF NOT EXISTS project_owner character varying;
+
+
+--
+-- Adding modified_by to license_consumption
+--
+
+ALTER TABLE IF EXISTS public.license_consumption
+    ADD COLUMN IF NOT EXISTS modified_by character varying;
+
+
+--
+-- Adding modified_date and modified_by to usage_detail
+--
+
+ALTER TABLE IF EXISTS public.usage_detail
+    ADD COLUMN IF NOT EXISTS modified_date timestamp without time zone;
+
+ALTER TABLE IF EXISTS public.usage_detail
+    ADD COLUMN IF NOT EXISTS modified_by character varying;
+
+
+--
+-- PostgreSQL database dump complete
+--
