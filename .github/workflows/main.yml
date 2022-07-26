@@ -47,11 +47,15 @@ jobs:
       id: hash
       run: echo "::set-output name=hash::$(git rev-parse --short "$GITHUB_SHA")"
     
-    - name: Bump version and push tag
-      id: tag_version
-      uses: mathieudutour/github-tag-action@v6.0
+    - name: Get Latest tag
+      id: current_tag
+      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+    
+    - name: 'Get next minor version'
+      id: next_tag
+      uses: "WyriHaximus/github-action-next-semvers@v1"
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        version: ${{ steps.current_tag.outputs.tag }}
     
     - name: Archive Azure Functions Build
       uses: vimtor/action-zip@v1
@@ -100,7 +104,7 @@ jobs:
         dest: 'ui-integration-release-${{steps.date.outputs.date}}.zip'
 
     - name: Add Release version file
-      run: echo "Released ${{ steps.tag_version.outputs.new_tag }} Build" > ./ui/dist/license-server/ReleaseVersion.txt
+      run: echo "Released ${{ steps.next_tag.outputs.patch }} Build" > ./ui/dist/license-server/ReleaseVersion.txt
 
     - name: Upload to blob storagerun
       uses: azure/CLI@v1
@@ -120,6 +124,12 @@ jobs:
         npm install -g newman
         newman run ./tests/api/postman/LicenseServerAPIs.postman_collection.json -e ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
     
+    - name: Bump version and push tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Archive Full Build
       uses: vimtor/action-zip@v1
       with:
