@@ -188,15 +188,10 @@ public class TekvLSCreateLicenseUsageDetail
 			statement.executeUpdate(sql);
 			context.getLogger().info("License usage details inserted successfully.");
 			return request.createResponseBuilder(HttpStatus.OK).body(consumptionObj.toString()).build();
-		} catch (SQLException e) {
-			context.getLogger().info("SQL exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.toString());
 			JSONObject json = new JSONObject();
-			json.put("error", e);
+			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
