@@ -301,7 +301,7 @@ export class DashboardComponent implements OnInit {
           this.openLicenseDetails(object.selectedRow);
           break;
         }else {
-          this.snackBarService.openSnackBar('Subaccount is missing to access licenses', '');
+          this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Packages view', '');
           break;
         } 
       case this.VIEW_CONSUMPTION:
@@ -309,7 +309,7 @@ export class DashboardComponent implements OnInit {
           this.openLicenseConsumption(object.selectedRow);
           break;
         }else {
-          this.snackBarService.openSnackBar('Subaccount is missing to access license consumption', '');
+          this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
           break;
         }
       case this.VIEW_PROJECTS:
@@ -317,7 +317,7 @@ export class DashboardComponent implements OnInit {
           this.openProjectDetails(object.selectedRow);
           break;
         }else {
-          this.snackBarService.openSnackBar('Subaccount is missing to access projects', '');
+          this.snackBarService.openSnackBar('Subaccount is missing, create one to access Projects view', '');
           break;
         } 
       case this.VIEW_ADMIN_EMAILS:
@@ -348,7 +348,7 @@ export class DashboardComponent implements OnInit {
             this.router.navigate(['/customer/consumption']);
             break;
           }else {
-            this.snackBarService.openSnackBar('Subaccount is missing to access license consumption', '');
+            this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
             break;
           }
         case 'Subscription Status':
@@ -358,7 +358,7 @@ export class DashboardComponent implements OnInit {
             this.router.navigate(['/customer/licenses']);
             break;
           }else {
-            this.snackBarService.openSnackBar('Subaccount is missing to access licenses', '');
+            this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Packages view', '');
             break;
           }
       }
