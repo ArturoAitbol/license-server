@@ -9,7 +9,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
   templateUrl: './add-project.component.html',
   styleUrls: ['./add-project.component.css']
 })
-export class AddProjectComponent implements OnInit {
+export class AddProjectComponent {
   isDataLoading: boolean = false;
   readonly OPEN_STATUS = 'Open';
 
@@ -25,9 +25,6 @@ export class AddProjectComponent implements OnInit {
     public dialogRef: MatDialogRef<AddProjectComponent>
   ) {
 
-  }
-
-  ngOnInit() {
   }
 
   onCancel(): void {

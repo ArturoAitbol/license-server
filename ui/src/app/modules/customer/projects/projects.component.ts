@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
@@ -19,7 +19,7 @@ import { ModifyProjectComponent } from "./modify-project/modify-project.componen
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.css']
 })
-export class ProjectsComponent implements OnInit, OnDestroy {
+export class ProjectsComponent implements OnInit {
 
   readonly displayedColumns: TableColumn[] = [
     { name: 'Project Code', dataKey: 'code', position: 'left', isSortable: true },
@@ -60,14 +60,14 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.calculateTableHeight();
   }
 
-  private getActionMenuOptions(){
+  private getActionMenuOptions() {
     let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    accountRoles.forEach(accountRole =>{
-      permissions[accountRole].tables.projectOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
-      if(this.currentCustomer.testCustomer === false){
+    accountRoles.forEach(accountRole => {
+      permissions[accountRole].tables.projectOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
+      if (this.currentCustomer.testCustomer === false) {
         let action = (action) => action === 'Delete';
         let index = this.actionMenuOptions.findIndex(action);
-        this.actionMenuOptions.splice(index, );
+        this.actionMenuOptions.splice(index,);
       }
     })
   }
@@ -220,8 +220,5 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   openConsumptionView(row: any): void {
     localStorage.setItem(Constants.PROJECT, JSON.stringify(row));
     this.router.navigate(['/customer/consumption']);
-  }
-
-  ngOnDestroy(): void {
   }
 }

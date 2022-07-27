@@ -3,11 +3,11 @@ import { MsalService } from '@azure/msal-angular';
 import { permissions } from '../helpers/role-permissions';
 
 @Directive({
-  selector: '[checkAccessFor]'
+  selector: '[lcCheckAccessFor]'
 })
 export class CheckAccessForDirective implements OnInit {
 
-  @Input() checkAccessFor: string;
+  @Input() lcCheckAccessFor: string;
 
   constructor(
     private msalService:MsalService,
@@ -23,7 +23,7 @@ export class CheckAccessForDirective implements OnInit {
 
   isAuthorized():boolean{
     let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    const premissionsMatch = accountRoles?.findIndex((role : string) => permissions[role].elements.indexOf(this.checkAccessFor) !==-1);
+    const premissionsMatch = accountRoles?.findIndex((role : string) => permissions[role].elements.indexOf(this.lcCheckAccessFor) !==-1);
     return (premissionsMatch >= 0);
   }
 

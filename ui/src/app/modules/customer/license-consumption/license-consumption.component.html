@@ -9,10 +9,10 @@
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle *checkAccessFor="'addLicense'" value="add-new-license" (change)="onChangeToggle($event)">
+                    <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" (change)="onChangeToggle($event)">
                         Add tekVizion 360 Package
                     </mat-button-toggle>
-                    <mat-button-toggle *checkAccessFor="'addLicenseConsumption'" value="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
+                    <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
                         Add tekToken Consumption
                     </mat-button-toggle>
                 </mat-button-toggle-group>
@@ -63,15 +63,15 @@
         <div style="display: flex;">
             <div class="col-4">
                 <mat-radio-group>
-                    <mat-radio-button color="primary" value="period" [checked]="aggregation == 'period'"
+                    <mat-radio-button color="primary" value="period" [checked]="aggregation === 'period'"
                         (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
                     <br>
                     <div class="row">
                         <div class="col-4">
-                            <mat-radio-button color="primary" value="week" [checked]="aggregation == 'week'" [disabled]="!isLicenseListLoaded"
+                            <mat-radio-button color="primary" value="week" [checked]="aggregation === 'week'" [disabled]="!isLicenseListLoaded"
                                 (change)="getMultipleChoiceAnswer($event)">Week</mat-radio-button>
                             <br>
-                            <mat-radio-button color="primary" value="month" [checked]="aggregation == 'month'" [disabled]="!isLicenseListLoaded"
+                            <mat-radio-button color="primary" value="month" [checked]="aggregation === 'month'" [disabled]="!isLicenseListLoaded"
                                 (change)="getMultipleChoiceAnswer($event)">Month</mat-radio-button>
                             <br>
                         </div>
@@ -82,9 +82,9 @@
                                 <input formControlName="start" matStartDate placeholder="Start date" [readonly]="true"> 
                                 <input formControlName="end" matEndDate placeholder="End date" [readonly]="true" (dateChange)="setWeek()">
                                 </mat-date-range-input>
-                                <mat-datepicker-toggle [disabled]="aggregation == 'period'" matSuffix [for]="picker"></mat-datepicker-toggle>
-                                <mat-date-range-picker dateRange [minDate]="startDate" [maxDate]="endDate" [month]="aggregation == 'month'" 
-                                    #picker [startView]="aggregation == 'month'?'year':'month'" (monthSelected)="setMonthAndYear($event, picker)">
+                                <mat-datepicker-toggle [disabled]="aggregation === 'period'" matSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-date-range-picker lcDateRange [minDate]="startDate" [maxDate]="endDate" [month]="aggregation === 'month'" 
+                                    #picker [startView]="aggregation === 'month'?'year':'month'" (monthSelected)="setMonthAndYear($event, picker)">
                                 </mat-date-range-picker>
                             </mat-form-field>
                         </div>

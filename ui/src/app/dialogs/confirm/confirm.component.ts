@@ -8,14 +8,11 @@ import { DialogService } from 'src/app/services/dialog.service';
   templateUrl: './confirm.component.html',
   styleUrls: ['./confirm.component.css']
 })
-export class ConfirmComponent implements OnInit {
+export class ConfirmComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData
   ) { }
 
-
-  ngOnInit(): void {
-  }
 
 }

@@ -10,7 +10,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
   templateUrl: './add-customer-account-modal.component.html',
   styleUrls: ['./add-customer-account-modal.component.css']
 })
-export class AddCustomerAccountModalComponent implements OnInit {
+export class AddCustomerAccountModalComponent {
   addCustomerForm = this.formBuilder.group({
     customerName: ['', Validators.required],
     subaccountName: ['Default', Validators.required],
@@ -32,8 +32,6 @@ export class AddCustomerAccountModalComponent implements OnInit {
     private subaccountService: SubAccountService
   ) { }
 
-  ngOnInit() {
-  }
   /**
    * on cancel dialog
    */

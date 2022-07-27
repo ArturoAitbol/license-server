@@ -8,7 +8,7 @@
                 <h1>{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
             </div>
             <div class="col">
-                <mat-button-toggle-group *checkAccessFor="'addProject'" name="fontStyle" aria-label="Font Style">
+                <mat-button-toggle-group *lcCheckAccessFor="'addProject'" name="fontStyle" aria-label="Font Style">
                     <mat-button-toggle value="add-new-project" (click)="onNewProject()">Add New Project
                     </mat-button-toggle>
                 </mat-button-toggle-group>

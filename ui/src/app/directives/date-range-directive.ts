@@ -49,7 +49,7 @@ export class RangeSelectionStrategy<D> implements MatDateRangeSelectionStrategy<
 }
 
 @Directive({
-  selector: '[dateRange]',
+  selector: '[lcDateRange]',
   providers: [
     {
       provide: MAT_DATE_RANGE_SELECTION_STRATEGY,

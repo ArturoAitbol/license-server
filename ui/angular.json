@@ -14,15 +14,19 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
-               "rxjs/internal/Subject",
-               "rxjs/internal/observable/forkJoin"
+              "rxjs/internal/Subject",
+              "rxjs/internal/observable/forkJoin"
             ],
             "outputPath": "dist/license-server",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets", "src/privacy.html"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/privacy.html"
+            ],
             "styles": [
               "src/styles.css",
               "src/styles.scss",
@@ -129,7 +133,20 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "assets": ["src/favicon.ico", "src/assets", "src/privacy.html"]
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/privacy.html"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
@@ -157,5 +174,8 @@
       }
     }
   },
-  "defaultProject": "license-server"
+  "defaultProject": "license-server",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }

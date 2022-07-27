@@ -24,7 +24,7 @@ import { StaticConsumptionDetailsComponent } from './static-consumption-details/
   templateUrl: './license-consumption.component.html',
   styleUrls: ['./license-consumption.component.css']
 })
-export class LicenseConsumption implements OnInit,OnDestroy {
+export class LicenseConsumptionComponent implements OnInit,OnDestroy {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
