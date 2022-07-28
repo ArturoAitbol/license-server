@@ -18,6 +18,7 @@ import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { DataTableComponent } from "../../../generics/data-table/data-table.component";
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
+import moment from 'moment';
 
 @Component({
   selector: 'app-license-consumption',
@@ -271,7 +272,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       });
       this.detailedConsumptionData = res.usage;
       this.detailedConsumptionDataLength = res.usageTotalCount;
-      this.weeklyConsumptionData = res.configurationTokens;
+      this.weeklyConsumptionData = this.getWeeksDetail(res.configurationTokens);
       this.tokenConsumptionData = this.formatTokenConsumption(res.tokenConsumption);
       this.detailsConsumptionTable.setPageIndex(0);
       this.isDetailedConsumptionSupplementalLoadingResults = false;
@@ -285,6 +286,49 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     });
+  }
+
+  getWeeksDetail(configurationTokens:any[]):any[]{
+
+    let startDate: string | Date;
+    let endDate: string | Date;
+    if (this.aggregation === "month" || this.aggregation === "week") {
+      startDate = this.range.get('start').value;
+      endDate = this.range.get('end').value;
+    }else{
+      startDate = this.selectedLicense.startDate + " 00:00:00";
+      endDate = this.selectedLicense.renewalDate + " 00:00:00";
+    }
+    let licenseStartWeek = new Date(startDate);
+    licenseStartWeek.setDate(licenseStartWeek.getDate()-licenseStartWeek.getDay());
+    let licenseEndWeek = new Date (endDate);
+    licenseEndWeek.setDate(licenseEndWeek.getDate()-licenseEndWeek.getDay());
+
+    let weekStart = licenseStartWeek;
+    let weeklyConsumptionDetail = [];
+
+    while(weekStart<=licenseEndWeek) {
+      let date = new Date(weekStart);
+      date.setDate(date.getDate()+1);
+      let week = moment(date).isoWeek();
+      
+      let weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate()+6);
+
+      weeklyConsumptionDetail.push({
+        weekId:"Week "+ week + " (" + weekStart.toISOString().split("T")[0] + " - " + weekEnd.toISOString().split("T")[0] + ")",
+        tokensConsumed:0
+      });
+      weekStart.setDate(weekStart.getDate()+7);
+    }
+
+    configurationTokens.forEach(item =>{
+      let i = weeklyConsumptionDetail.findIndex(week => week.weekId === item.weekId);
+      if(i!==-1)
+        weeklyConsumptionDetail[i].tokensConsumed = item.tokensConsumed;
+    })
+
+    return weeklyConsumptionDetail;
   }
 
   fetchDetailedConsumptionData(pageNumber = 0, pageSize = 6) {
