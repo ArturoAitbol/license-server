@@ -9,7 +9,7 @@
       ],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "ecmaVersion": "latest",
+        "ecmaVersion": 6,
         "project": [
           "tsconfig.json",
           "e2e/tsconfig.json"
