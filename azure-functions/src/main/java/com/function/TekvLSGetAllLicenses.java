@@ -110,7 +110,7 @@ public class TekvLSGetAllLicenses
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
 			
-			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			if(id.equals("EMPTY") && subaccountId.isEmpty()){
 				//Update status by checking renewal date

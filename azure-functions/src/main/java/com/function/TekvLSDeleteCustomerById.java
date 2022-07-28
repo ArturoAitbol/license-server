@@ -68,7 +68,7 @@ public class TekvLSDeleteCustomerById
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
 			
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			// Get test_customer by id if not force delete
 			if (!deleteFlag) {
 				String subQuery = "select test_customer from customer where id = '"+id+"';";

@@ -51,7 +51,7 @@ public class TekvLSDeleteSubaccountAdminEmail {
                 Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 Statement statement = connection.createStatement()) {
 
-            context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Delete device
             String sql = "DELETE FROM subaccount_admin WHERE subaccount_admin_email='" + email + "';";

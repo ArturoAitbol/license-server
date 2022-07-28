@@ -93,7 +93,7 @@ public class TekvLSCreateLicenseUsageDetail
 		String sql = "select tokens_to_consume, granularity from device where id='" + deviceId + "';";
 
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			// get tokens to consume
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);

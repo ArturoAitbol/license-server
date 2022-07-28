@@ -97,7 +97,7 @@ public class TekvLSModifyBundleById {
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try{
             Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
             Statement statement = connection.createStatement();
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);
