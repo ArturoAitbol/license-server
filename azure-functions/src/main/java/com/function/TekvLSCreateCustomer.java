@@ -125,7 +125,7 @@ public class TekvLSCreateCustomer
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
 			
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			String adminEmail = jobj.getString("customerAdminEmail");
 			String verifyEmails = "select count(*) from customer_admin where admin_email='" + adminEmail + "';";
