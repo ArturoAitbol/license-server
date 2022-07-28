@@ -51,7 +51,7 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         String name = "unitTest" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2,\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
                 "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -79,7 +79,7 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         String name = "unitTest" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2,\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
                 "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -117,7 +117,7 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         String name = "unitTest" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2,\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
                 "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -134,7 +134,7 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         //Given - Arrange
         bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2,\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
                 "    \"subaccountAdminEmail\": \"" + name + "2@test.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -164,7 +164,7 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         String name = "unitTest" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -291,9 +291,9 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "ERROR: invalid input syntax for type uuid: \"TEST\"\n" + "  Position: 85";
+        String expectedResponse = "ERROR: invalid input syntax for type uuid: \"TEST\"";
         String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test
@@ -302,7 +302,7 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         String name = "unitTest" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2,\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
                 "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();

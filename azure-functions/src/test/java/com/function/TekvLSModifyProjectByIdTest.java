@@ -1,13 +1,12 @@
 package com.function;
 
+import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -28,9 +27,23 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyProjectTest() {
-        String projectId = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
-        this.bodyRequest = "{'projectNumber':'1test', 'projectName':'ProjectTest','status':'Closed', 'openDate':'2022-06-26 05:00:00', 'closeDate':'2022-06-29 05:00:00'}";
+    public void fullModifyProjectTest() {
+        String projectId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        this.bodyRequest = "{'projectNumber':'1test', 'projectName':'ProjectTest','status':'Closed', 'openDate':'2022-06-26 05:00:00', 'closeDate':'2022-06-29 05:00:00', }";
+        doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
+
+        TekvLSModifyProjectById modifyProject = new TekvLSModifyProjectById();
+        HttpResponseMessage response = modifyProject.run(this.request, projectId, this.context);
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Test
+    public void partialModifyProjectTest() {
+        String projectId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        this.bodyRequest = "{'closeDate':null}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSModifyProjectById modifyProject = new TekvLSModifyProjectById();
@@ -43,7 +56,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
 
     @Test
     public void modifyProjectEmptyBodyTest() {
-        String projectId = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
+        String projectId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
         this.bodyRequest = "";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
@@ -57,7 +70,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
 
     @Test
     public void modifyProjectIncorrectBodyTest() {
-        String projectId = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
+        String projectId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
         this.bodyRequest = "test";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
@@ -96,13 +109,13 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"NOT AUTHORIZED: Access denied due to missing or invalid credentials\"}";
+        String expectedResponse = "{\"error\":\"" + RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED + "\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test
     public void modifyProjectEmptyOptionalParamsTest() {
-        String projectId = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
+        String projectId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
         this.bodyRequest = "{}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
@@ -116,7 +129,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
 
     @Test
     public void modifyProjectExceptionTest() {
-        String projectId = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
+        String projectId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
         this.bodyRequest = "{'projectNumber':'1test', 'projectName':'ProjectTest','status':'Closed', 'openDate':'2022-06-26 05:00:00', 'closeDate':'2022-06-29 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
@@ -131,7 +144,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
 
     @Test
     public void modifyProjectInvalidRoleTest() {
-        String id = "0abdff08-bdec-4974-ba8d-d42ff84036dc";
+        String id = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("crm"));
         HttpResponseMessage response = new TekvLSModifyProjectById().run(this.request, id, this.context);
         this.context.getLogger().info("HttpResponse: "+response.getBody().toString());
@@ -142,7 +155,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"UNAUTHORIZED ACCESS. You do not have access as expected role is missing\"}";
+        String expectedResponse = "{\"error\":\"" + RoleAuthHandler.MESSAGE_FOR_FORBIDDEN + "\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 

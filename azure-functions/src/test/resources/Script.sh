@@ -23,7 +23,15 @@ else
             exit -1
     else
         echo "DB Restore finished!"
-        exit 0
+        psql "dbname=licenses user=$DB_USERNAME password=postgres" < db_scripts/test_data.sql -q
+        if [ $? -ne 0 ];
+            then
+                echo "Error executing test data restore"
+                exit -1
+        else
+            echo "Test data restore finished!"
+            exit 0
+        fi
     fi
 fi
 

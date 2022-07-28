@@ -31,8 +31,8 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
             String bodyRequest = "{ " +
-                    "    'subaccountId': '31c142a6-b735-4bce-bfb4-9fba6b539116'," +
-                    "    'projectId': 'f8e757f4-a7d2-416d-80df-beefba44f88f'," +
+                    "    'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+                    "    'projectId': '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d'," +
                     "    'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
                     "    'consumptionDate': '2022-06-19'," +
                     "    'type': 'Configuration'," +
@@ -61,7 +61,7 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
     @Test
     public void modifyLicenseUsageTest(){
         //Given
-        String body = "{'projectId': 'f8e757f4-a7d2-416d-80df-beefba44f88f',"+
+        String body = "{'projectId': '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d',"+
                         "'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b',"+
                         "'consumptionDate': '2022-06-20',"+
                         "'type': 'AutomationPlatform'}";

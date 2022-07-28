@@ -1,6 +1,6 @@
 package com.function;
 
-
+import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
@@ -12,8 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +44,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectTest() {
-        this.bodyRequest = "{'subaccountId':'0cde8c0e-9eab-4fa9-9dda-a38c0c514b3a', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00', 'projectOwner':'98bbfc7e-d477-4534-a4b7-aafee90cddd3'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();
@@ -66,7 +64,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
     }
 
     @Test
-    public void createProjectIncorrectIdTypeTest() {
+    public void createProjectIncorrectSubaccountIdTypeTest() {
         this.bodyRequest = "{'subaccountId':'1', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
@@ -83,14 +81,14 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "ERROR: invalid input syntax for type uuid: \"1\"\n  Position: 72";
+        String expectedResponse = "ERROR: invalid input syntax for type uuid: \"1\"";
         String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test
     public void createProjectIncomplete() {
-        this.bodyRequest = "{'subaccountId':'0cde8c0e-9eab-4fa9-9dda-a38c0c514b3a', 'projectNumber':'1test', 'status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'projectNumber':'1test', 'status':'Open', 'openDate':'2022-06-27 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();
@@ -147,7 +145,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"NOT AUTHORIZED: Access denied due to missing or invalid credentials\"}";
+        String expectedResponse = "{\"error\":\"" + RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED + "\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
@@ -164,7 +162,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"UNAUTHORIZED ACCESS. You do not have access as expected role is missing\"}";
+        String expectedResponse = "{\"error\":\"" + RoleAuthHandler.MESSAGE_FOR_FORBIDDEN + "\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
@@ -184,10 +182,8 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectExceptionTest() {
-        String testName = "'" + new Date() + "'";
-        String testNumber = "'" + new Date() + "'";
-        this.bodyRequest = "{'subaccountId':'0cde8c0e-9eab-4fa9-9dda-a38c0c514b3a','status':'Open', 'openDate':'2022-06-27 05:00:00', " +
-                "'projectNumber'" + ":" + testNumber + ", " + "'projectName'" + ":" + testName + "}'";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c','status':'Open', 'openDate':'2021-06-27 05:00:00', " +
+                "'projectNumber':'xxxxxxx', " + "'projectName':'xxxxxxx'}'";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
@@ -203,7 +199,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectDuplicatedTest() {
-        this.bodyRequest = "{'subaccountId':'0cde8c0e-9eab-4fa9-9dda-a38c0c514b3a', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();

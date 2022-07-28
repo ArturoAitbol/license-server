@@ -101,9 +101,9 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param selectedIndex: string 
    * @param isClickableRow: boolean 
    */
-  onClickableRow(selectedRow: any, selectedIndex: string, isClickableRow: boolean) {
+  onClickableRow(selectedRow: any, selectedIndex: string, isClickableRow: boolean, columnName: string) {
     if (isClickableRow) {
-      this.clickableRow.emit({ selectedRow, selectedIndex });
+      this.clickableRow.emit({ selectedRow, selectedIndex, columnName });
     }
   }
   /**
