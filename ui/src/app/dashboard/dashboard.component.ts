@@ -90,9 +90,9 @@ export class DashboardComponent implements OnInit {
   initColumns(): void {
     this.displayedColumns = [
       { name: 'Customer', dataKey: 'name', position: 'left', isSortable: true },
-      { name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true },
+      { name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true, isClickable: true },
       { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
-      { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true }
+      { name: 'Subscription Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true, isClickable: true }
     ];
   }
   /**
@@ -297,14 +297,29 @@ export class DashboardComponent implements OnInit {
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.VIEW_LICENSES:
-        this.openLicenseDetails(object.selectedRow);
-        break;
+        if(object.selectedRow.subaccountId !== undefined){
+          this.openLicenseDetails(object.selectedRow);
+          break;
+        }else {
+          this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Packages view', '');
+          break;
+        } 
       case this.VIEW_CONSUMPTION:
-        this.openLicenseConsumption(object.selectedRow);
-        break;
+        if(object.selectedRow.subaccountId !== undefined){
+          this.openLicenseConsumption(object.selectedRow);
+          break;
+        }else {
+          this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
+          break;
+        }
       case this.VIEW_PROJECTS:
-        this.openProjectDetails(object.selectedRow);
-        break;
+        if(object.selectedRow.subaccountId !== undefined){
+          this.openProjectDetails(object.selectedRow);
+          break;
+        }else {
+          this.snackBarService.openSnackBar('Subaccount is missing, create one to access Projects view', '');
+          break;
+        } 
       case this.VIEW_ADMIN_EMAILS:
         this.openDialog(object.selectedOption, object.selectedRow);
         break;
@@ -319,4 +334,33 @@ export class DashboardComponent implements OnInit {
         break;
     }
   }
+
+  /**
+  * action row click event
+  * @param object: { selectedRow: any, selectedIndex: string, tableColumn: string }
+  */
+  columnAction(object: { selectedRow: any, selectedIndex: string, columnName: string }){
+      switch(object.columnName){
+        case 'Subaccount':
+          if(object.selectedRow.subaccountId !== undefined){
+            this.customerService.setSelectedCustomer(object.selectedRow);
+            localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(object.selectedRow));
+            this.router.navigate(['/customer/consumption']);
+            break;
+          }else {
+            this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
+            break;
+          }
+        case 'Subscription Status':
+          if(object.selectedRow.status !== undefined){
+            this.customerService.setSelectedCustomer(object.selectedRow);
+            localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(object.selectedRow));
+            this.router.navigate(['/customer/licenses']);
+            break;
+          }else {
+            this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Packages view', '');
+            break;
+          }
+      }
+  } 
 }

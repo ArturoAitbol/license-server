@@ -21,6 +21,7 @@
                 [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"
                 (rowAction)="rowAction($event)"
                 [actionMenuList]="actionMenuOptions"
+                (clickableRow)="columnAction($event)"
                 >
             </app-data-table>
         </div>
