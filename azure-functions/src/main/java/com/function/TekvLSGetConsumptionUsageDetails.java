@@ -109,7 +109,16 @@ public class TekvLSGetConsumptionUsageDetails {
 				item.put("usageDate", rs.getString("usage_date"));
 				item.put("macAddress", rs.getString("mac_address"));
 				item.put("serialNumber", rs.getString("serial_number"));
+				if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO))
+					item.put("modifiedBy", rs.getString("modified_by"));
 				array.put(item);
+			}
+			if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO)) {
+				sql = "SELECT modified_by FROM license_consumption WHERE id='" + id + "';";// get tokens to consume
+				context.getLogger().info("Execute SQL statement: " + sql);
+				rs = statement.executeQuery(sql);
+				rs.next();
+				json.put("modifiedBy", rs.getString("modified_by"));	
 			}
 			json.put("usageDays", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
@@ -117,14 +126,14 @@ public class TekvLSGetConsumptionUsageDetails {
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
+			json.put("error", "SQL exception:" + e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }

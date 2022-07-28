@@ -33,8 +33,8 @@ class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
         String bodyRequest = "{\n" +
-                "    \"subaccountId\": \"ac7a78c2-d0b2-4c81-9538-321562d426c7\",\n" +
-                "    \"projectId\": \"8bfec35d-bce0-4b36-a7b8-3cab3f1f48fa\",\n" +
+                "    \"subaccountId\": \"f5a609c0-8b70-4a10-9dc8-9536bdb5652c\",\n" +
+                "    \"projectId\": \"2bdaf2af-838f-4053-b3fa-ef22aaa11b0d\",\n" +
                 "    \"deviceId\": \"c49a3148-1e74-4090-9876-d062011d9bcb\",\n" +
                 "    \"consumptionDate\": \"2022-07-25\",\n" +
                 "    \"type\": \"Configuration\",\n" +
@@ -187,9 +187,9 @@ class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "ERROR: invalid input syntax for type uuid: \"000\"\n" + "  Position: 47";
+        String expectedResponse = "ERROR: invalid input syntax for type uuid: \"000\"";
         String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test

@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SystemStubsExtension.class)
 public class TekvLSTest {
+    @SuppressWarnings("unchecked")
     public final HttpRequestMessage<Optional<String>> request = mock(HttpRequestMessage.class);
     public ExecutionContext context = mock(ExecutionContext.class);
 

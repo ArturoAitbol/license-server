@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Optional;
 
@@ -204,7 +206,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"NOT AUTHORIZED: Access denied due to missing or invalid credentials\"}";
+        String expectedResponse = "{\"error\":\"" + RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED + "\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
@@ -221,7 +223,37 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"UNAUTHORIZED ACCESS. You do not have access as expected role is missing\"}";
+        String expectedResponse = "{\"error\":\"" + RoleAuthHandler.MESSAGE_FOR_FORBIDDEN + "\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void genericException(){
+        //Given - Arrange
+        this.bundleId="a7798683-2cde-4318-ae9c-c0c77828939f";
+        String bodyRequest = "{'name':'UnitTestModified'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+
+        //When - Action
+        TekvLSModifyBundleById modifyBundleById = new TekvLSModifyBundleById();
+        HttpResponseMessage response = modifyBundleById.run(this.request, this.bundleId, this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Generic error";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+
+        this.bundleId="EMPTY";
     }
 }

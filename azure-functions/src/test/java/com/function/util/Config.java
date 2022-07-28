@@ -6,7 +6,6 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -16,14 +15,12 @@ import java.util.logging.Logger;
 import java.util.logging.LogManager;
 
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class Config {
     private static final String postgresqlServer = "postgresql_server";
     private static final String postgresqlUser = "postgresql_user";
     private static final String postgresqlPwd = "postgresql_pwd";
     private static final String postgresqlSecurityMode = "postgresql_security_mode";
-    private static final String token = "fullAdminToken";
 //    private static final Logger LOGGER = LogManager.getLogger();
     public static Logger logger = Logger.getLogger(Config.class.getName());
 

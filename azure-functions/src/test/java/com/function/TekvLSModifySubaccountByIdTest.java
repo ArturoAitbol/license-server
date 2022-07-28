@@ -34,7 +34,7 @@ class TekvLSModifySubaccountByIdTest extends TekvLSTest {
         String name = "unitTest" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2,\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
                 "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -166,7 +166,7 @@ class TekvLSModifySubaccountByIdTest extends TekvLSTest {
         String name = "unitTestModified" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
@@ -195,7 +195,7 @@ class TekvLSModifySubaccountByIdTest extends TekvLSTest {
         String name = "unitTestModified" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         this.headers.remove("authorization");
@@ -223,7 +223,7 @@ class TekvLSModifySubaccountByIdTest extends TekvLSTest {
         String name = "unitTestModified" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         this.headers.remove("authorization");

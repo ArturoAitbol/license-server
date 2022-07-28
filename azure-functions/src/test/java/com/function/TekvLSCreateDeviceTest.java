@@ -225,9 +225,9 @@ class TekvLSCreateDeviceTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "ERROR: invalid input syntax for type timestamp: \"Test\"\n" + "  Position: 166";
+        String expectedResponse = "ERROR: invalid input syntax for type timestamp: \"Test\"";
         String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test
