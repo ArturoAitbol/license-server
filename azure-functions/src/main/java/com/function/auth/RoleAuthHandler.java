@@ -40,6 +40,7 @@ public class RoleAuthHandler {
            GET_ALL_BUNDLES,
            GET_ALL_LICENSE_USAGE_DETAILS,
            GET_CONSUMPTION_USAGE_DETAILS,
+           GET_USER_EMAIL_INFO,
            //UPDATE
            MODIFY_CUSTOMER,
            MODIFY_SUBACCOUNT,
@@ -168,9 +169,9 @@ public class RoleAuthHandler {
     public static final String SUBACCOUNT_ADMIN = "customer.SubaccountAdmin";
 
     public static final String LOG_MESSAGE_FOR_UNAUTHORIZED = "Unauthorized error: Access denied due to missing or invalid credentials.";
-    public static final String MESSAGE_FOR_UNAUTHORIZED = "NOT AUTHORIZED: Access denied due to missing or invalid credentials";
-    public static final String LOG_MESSAGE_FOR_FORBIDDEN = "Forbidden error: Expected role is missing. Role provided: ";
-    public static final String MESSAGE_FOR_FORBIDDEN = "UNAUTHORIZED ACCESS. You do not have access as expected role is missing";
+    public static final String MESSAGE_FOR_UNAUTHORIZED = "UNAUTHORIZED: Access denied due to missing or invalid credentials";
+    public static final String LOG_MESSAGE_FOR_FORBIDDEN = "Forbidden error: Expected permission is missing. Role provided: ";
+    public static final String MESSAGE_FOR_FORBIDDEN = "FORBIDDEN ACCESS. You do not have permission to perform this action.";
 
     private static final String ISSUER = "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/v2.0";
 
@@ -285,6 +286,17 @@ public class RoleAuthHandler {
                 return tokenClaims.get("preferred_username").toString();
             } catch (Exception e) {
                 context.getLogger().info("Caught exception: Getting preferred_username claim failed.");
+            }
+        }
+        return "";
+    }
+
+    public static String getUserIdFromToken(Claims tokenClaims,ExecutionContext context){
+        if(tokenClaims!=null) {
+            try {
+                return tokenClaims.get("oid").toString();
+            } catch (Exception e) {
+                context.getLogger().info("Caught exception: Getting user oid claim failed.");
             }
         }
         return "";

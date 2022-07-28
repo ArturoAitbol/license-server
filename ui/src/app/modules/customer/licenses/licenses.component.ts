@@ -58,6 +58,11 @@ export class LicensesComponent implements OnInit {
     let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     accountRoles.forEach(accountRole =>{
       permissions[accountRole].tables.licenseOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
+      if(this.currentCustomer.testCustomer === false){
+        let action = (action) => action === 'Delete';
+        let index = this.actionMenuOptions.findIndex(action);
+        this.actionMenuOptions.splice(index, );
+      }
     })
   }
 

@@ -51,7 +51,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void getAllLicensesDistributorRoleTest(){
+    public void getAllLicensesForDistributorRoleTest(){
         //Given
         String id = "EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
@@ -75,7 +75,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void getAllLicensesCustomerRoleTest(){
+    public void getAllLicensesForCustomerRoleTest(){
         //Given
         String id = "EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
@@ -99,7 +99,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void getAllLicensesSubaccountRoleTest(){
+    public void getAllLicensesForSubaccountRoleTest(){
         //Given
         String id = "EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
@@ -125,7 +125,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
     @Test
     public void getLicenseByIdTest() {
         //Given
-        String id = "25e913de-5282-4231-b685-87dc40fa4856";
+        String id = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
 
         //When
         HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request, id, this.context);
@@ -150,10 +150,10 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void getLicenseBySubaccountIdTest() {
+    public void getLicensesBySubaccountIdTest() {
         //Given
         String id = "EMPTY";
-        String subaccountId = "04dfda26-98f4-42e5-889a-3edccf4b799c";
+        String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
         this.queryParams.put("subaccountId",subaccountId);
 
         //When
@@ -175,7 +175,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void getLicensesNoTokenTest(){
+    public void noTokenTest(){
         //Given
         String id = "EMPTY";
         this.headers.remove("authorization");
@@ -200,7 +200,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void getLicensesInvalidRoleTest(){
+    public void invalidRoleTest(){
         //Given
         String id="EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
@@ -224,7 +224,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
     }
 
     @Test
-    public void getLicenseInvalidIdTest(){
+    public void invalidIdTest(){
         //Given
         String id = "invalid-id";
 
@@ -246,7 +246,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
     }
 
     @Test
-    public void getAllLicensesGenericExceptionTest(){
+    public void genericExceptionTest(){
         //Given
         String id = "EMPTY";
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);

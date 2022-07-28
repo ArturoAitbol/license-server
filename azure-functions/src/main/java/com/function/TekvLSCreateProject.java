@@ -100,6 +100,10 @@ public class TekvLSCreateProject
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
+		if (jobj.has("projectOwner")) {
+			sqlPart1 += "project_owner,";
+			sqlPart2 += "'" + jobj.getString("projectOwner") + "',";
+		}
 
 		// Remove the comma after the last parameter and build the SQL statement
 		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);

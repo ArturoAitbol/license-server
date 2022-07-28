@@ -18,9 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
 
       - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v1
@@ -36,7 +33,6 @@ jobs:
           psql "dbname=postgres user=postgres password=postgres" -c "ALTER USER postgres WITH PASSWORD 'postgres';"
           chmod 777 src/test/resources/Script.sh
           mvn clean package -q
-          mvn azure-functions:package
           popd
 
       - name: Publish JUnit Report

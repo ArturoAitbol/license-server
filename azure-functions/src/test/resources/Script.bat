@@ -18,7 +18,13 @@ psql "dbname=postgres user=%DB_USERNAME% password=%DB_PASSWORD%" < db_scripts/la
     echo Error executing DB restore
     goto :error) ELSE (
     echo DB Restore finished!
-    exit /b %errorlevel%
+    psql "dbname=licenses user=%DB_USERNAME% password=%DB_PASSWORD%" < db_scripts/test_data.sql -q
+      IF %ERRORLEVEL% NEQ 0 (
+        echo Error executing test data restore
+        goto :error) ELSE (
+        echo Test data restore finished!
+        exit /b %errorlevel%
+        )
     )
 :error
 echo Failed with error: %errorlevel%.

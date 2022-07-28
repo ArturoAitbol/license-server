@@ -105,7 +105,7 @@ describe('UI verification tests', () => {
         expect(customerColumn.innerText).toBe('Customer');
         expect(subAccountColumn.innerText).toBe('Subaccount');
         expect(typeColumn.innerText).toBe('Type');
-        expect(statusColumn.innerText).toBe('Status');
+        expect(statusColumn.innerText).toBe('Subscription Status');
     });
 });
 

@@ -1,14 +1,16 @@
 package com.function;
 
+import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -168,7 +170,6 @@ class TekvLSCreateBundleTest extends TekvLSTest {
     @Tag("security")
     @Test
     public void noToken(){
-        String id = "EMPTY";
         this.headers.remove("authorization");
         HttpResponseMessage response = new TekvLSCreateBundle().run(this.request, this.context);
         this.context.getLogger().info("HttpResponse: "+response.getBody().toString());
@@ -179,14 +180,13 @@ class TekvLSCreateBundleTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"NOT AUTHORIZED: Access denied due to missing or invalid credentials\"}";
+        String expectedResponse = "{\"error\":\"" + RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED + "\"}";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Tag("security")
     @Test
     public void invalidRole(){
-        String id = "EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("crm"));
         HttpResponseMessage response = new TekvLSCreateBundle().run(this.request, this.context);
         this.context.getLogger().info("HttpResponse: "+response.getBody().toString());
@@ -197,7 +197,34 @@ class TekvLSCreateBundleTest extends TekvLSTest {
 
         String actualResponse = (String) response.getBody();
 
-        String expectedResponse = "{\"error\":\"UNAUTHORIZED ACCESS. You do not have access as expected role is missing\"}";
+        String expectedResponse = "{\"error\":\"" + RoleAuthHandler.MESSAGE_FOR_FORBIDDEN + "\"}";
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void genericException(){
+        //Given - Arrange
+        this.bodyRequest = "{'name':'UnitTest','tokens':'30', 'deviceAccessToken':'5'}";
+        doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
+        Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+
+        //When - Action
+        TekvLSCreateBundle createBundle = new TekvLSCreateBundle();
+        HttpResponseMessage response = createBundle.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Generic error";
+        String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 }

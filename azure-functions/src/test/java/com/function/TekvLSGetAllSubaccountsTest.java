@@ -62,8 +62,8 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
     @Test
     public void getSubaccountByIdTest() {
         //Given - Arrange
-        String id = "d45db408-6ceb-4218-bd36-6355e0e21bfb"; // Test customer - default
-        String expectedName = "Default";
+        String id = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c"; // Test customer - default
+        String expectedName = "Test RealCustomer - 360 Small";
 
         //When - Action
         HttpResponseMessage response = getAllSubaccountsApi.run(this.request, id, this.context);
@@ -89,7 +89,7 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
     public void getDevicesByCustomerIdTest() {
         //Given - Arrange
         String id = "EMPTY";
-        String expectedCustomerId = "740162ed-3abe-4f89-89ef-452e3c0787e2"; // Test customer
+        String expectedCustomerId = "7d133fd2-8228-44ff-9636-1881f58f2dbb"; // Test customer
         this.queryParams.put("customer-id", expectedCustomerId);
 
         //When - Action
@@ -223,7 +223,7 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
     }
 
     @Test
-    public void getAllDevicesInvalidTest() {
+    public void getAllSubaccountsInvalidTest() {
         //Given - Arrange
         String expectedId = "BASIC";
 
@@ -250,6 +250,23 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Test
+    public void genericException2Test() {
+        //Given - Arrange
+        Mockito.when(this.context.getLogger()).thenReturn(TekvLSTest.logger).thenReturn(TekvLSTest.logger)
+                .thenReturn(TekvLSTest.logger).thenThrow(new RuntimeException("Generic error")).thenReturn(TekvLSTest.logger);
+        String expectedId = "00000000-0000-0000-0000-000000000000";
+
+        //When - Action
+        HttpResponseMessage response = getAllSubaccountsApi.run(this.request, expectedId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 }
