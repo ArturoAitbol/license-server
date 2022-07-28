@@ -42,8 +42,8 @@ export class ProjectsComponent implements OnInit {
   projects: Project[] = [];
   projectsBk: Project[] = [];
   // flag
-  isLoadingResults: boolean = true;
-  isRequestCompleted: boolean = false;
+  isLoadingResults = true;
+  isRequestCompleted = false;
 
   constructor(
     private customerService: CustomerService,
@@ -61,12 +61,12 @@ export class ProjectsComponent implements OnInit {
   }
 
   private getActionMenuOptions() {
-    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     accountRoles.forEach(accountRole => {
       permissions[accountRole].tables.projectOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
       if (this.currentCustomer.testCustomer === false) {
-        let action = (action) => action === 'Delete';
-        let index = this.actionMenuOptions.findIndex(action);
+        const action = (action) => action === 'Delete';
+        const index = this.actionMenuOptions.findIndex(action);
         this.actionMenuOptions.splice(index,);
       }
     })
@@ -172,7 +172,7 @@ export class ProjectsComponent implements OnInit {
         cancelCaption: 'Cancel',
       })
       .subscribe((confirmed) => {
-        let projectToUpdate = {
+        const projectToUpdate = {
           id: currentProjectData.id,
           closeDate: new Date().toLocaleString(),
           status: "Closed"

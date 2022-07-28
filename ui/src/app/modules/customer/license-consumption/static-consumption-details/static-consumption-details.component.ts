@@ -9,8 +9,8 @@ import { UsageDetailService } from "../../../../services/usage-detail.service";
   styleUrls: ['./static-consumption-details.component.css']
 })
 export class StaticConsumptionDetailsComponent implements OnInit {
-  isDataLoading: boolean = false;
-  isAutomationPlatform: boolean = false;
+  isDataLoading = false;
+  isAutomationPlatform = false;
   usageDetailsList: string[];
 
   constructor(

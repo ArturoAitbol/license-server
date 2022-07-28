@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ProjectService } from 'src/app/services/project.service';
@@ -10,7 +10,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
   styleUrls: ['./add-project.component.css']
 })
 export class AddProjectComponent {
-  isDataLoading: boolean = false;
+  isDataLoading = false;
   readonly OPEN_STATUS = 'Open';
 
   addProjectForm = this.formBuilder.group({

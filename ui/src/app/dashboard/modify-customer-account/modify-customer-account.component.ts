@@ -21,7 +21,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
   types: string[] = ['MSP', 'Reseller'];
   private previousFormValue: any;
   // flag
-  isDataLoading: boolean = false;
+  isDataLoading = false;
   //  @Inject(MAT_DIALOG_DATA) public data: ModalData
   constructor(
     private formBuilder: FormBuilder,

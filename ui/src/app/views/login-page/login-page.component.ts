@@ -8,9 +8,9 @@ import { AuthenticationResult } from '@azure/msal-browser';
     styleUrls: ['./login-page.component.css']
 })
 export class LoginPageComponent implements OnInit {
-    username: string = '';
-    password: string = '';
-    loading_status: boolean = false;
+    username = '';
+    password = '';
+    loading_status = false;
     returnUrl: string;
 
     constructor(private router: Router, private msalService: MsalService) {

@@ -6,7 +6,6 @@ import { forkJoin } from 'rxjs';
 import { Constants } from '../helpers/constants';
 import { Utility } from '../helpers/Utility';
 import { CustomerLicense } from '../model/customer-license';
-import { Customer } from '../model/customer.model';
 import { License } from '../model/license.model';
 import { CustomerService } from '../services/customer.service';
 import { DialogService } from '../services/dialog.service';
@@ -33,8 +32,8 @@ export class DashboardComponent implements OnInit {
   data: CustomerLicense[] = [];
   customerList: any = [];
   // flag
-  isLoadingResults: boolean = true;
-  isRequestCompleted: boolean = false;
+  isLoadingResults = true;
+  isRequestCompleted = false;
   readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages';
   readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
   readonly VIEW_PROJECTS: string = 'View Projects List';
@@ -61,7 +60,7 @@ export class DashboardComponent implements OnInit {
   }
 
   private getActionMenuOptions(){
-    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     accountRoles.forEach(accountRole =>{
       permissions[accountRole].tables.customerOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
     })
@@ -117,7 +116,7 @@ export class DashboardComponent implements OnInit {
         if( subaccountDetails !== undefined ){
           account.subaccountName = subaccountDetails.name;
           account.subaccountId = subaccountDetails.id;
-          let subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccountDetails.id));
+          const subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccountDetails.id));
           if(subaccountLicenses.length>0){
             const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
             account.status = licenseDetails ? licenseDetails.status: "Expired";

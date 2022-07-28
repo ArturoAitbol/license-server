@@ -38,9 +38,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() set tableData(data: any[]) {
     this.setTableDataSource(data);
   }
-  constructor() {
-  }
-
+  
   ngOnInit(): void {
     const columnNames = this.tableColumns.map((tableColumn: TableColumn) => tableColumn.name);
     if (this.rowActionIcon) {

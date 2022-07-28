@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CustomerService } from 'src/app/services/customer.service';
@@ -23,7 +23,7 @@ export class AddCustomerAccountModalComponent {
     'MSP',
     'Reseller',
   ];
-  isDataLoading: boolean = false;
+  isDataLoading = false;
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddCustomerAccountModalComponent>,

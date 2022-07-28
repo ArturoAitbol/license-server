@@ -16,7 +16,7 @@ export class AddSubaccountModalComponent implements OnInit {
     subaccountName: ['', Validators.required],
     subaccountAdminEmail: ['', [Validators.required, Validators.email]]
   });
-  isDataLoading: boolean = false;
+  isDataLoading = false;
   customers: any[];
   constructor(
     private formBuilder: FormBuilder,

@@ -22,7 +22,7 @@ export class CheckAccessForDirective implements OnInit {
   }
 
   isAuthorized():boolean{
-    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     const premissionsMatch = accountRoles?.findIndex((role : string) => permissions[role].elements.indexOf(this.lcCheckAccessFor) !==-1);
     return (premissionsMatch >= 0);
   }

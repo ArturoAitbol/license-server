@@ -34,7 +34,7 @@ export class LicenseConsumptionComponent implements OnInit,OnDestroy {
   selectedProject: string;
   startDate: any;
   endDate: any;
-  aggregation: string = "period";
+  aggregation = "period";
   month: number;
   year: number;
   licensesList: any = [];
@@ -94,21 +94,21 @@ export class LicenseConsumptionComponent implements OnInit,OnDestroy {
   readonly ADD_LICENSE = 'add-new-license';
 
   // flag
-  isLicenseSummaryLoadingResults: boolean = true;
-  isLicenseSummaryRequestCompleted: boolean = false;
-  isEquipmentSummaryLoadingResults: boolean = true;
-  isEquipmentSummaryRequestCompleted: boolean = false;
-  isDetailedConsumptionSupplementalLoadingResults: boolean = true;
-  isDetailedConsumptionSupplementalRequestCompleted: boolean = false;
-  isDetailedConsumptionLoadingResults: boolean = true;
-  isDetailedConsumptionRequestCompleted: boolean = false;
-  isLicenseListLoaded: boolean = false;
+  isLicenseSummaryLoadingResults = true;
+  isLicenseSummaryRequestCompleted = false;
+  isEquipmentSummaryLoadingResults = true;
+  isEquipmentSummaryRequestCompleted = false;
+  isDetailedConsumptionSupplementalLoadingResults = true;
+  isDetailedConsumptionSupplementalRequestCompleted = false;
+  isDetailedConsumptionLoadingResults = true;
+  isDetailedConsumptionRequestCompleted = false;
+  isLicenseListLoaded = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
   licConsumptionActionMenuOptions: any = [];
 
-  daysOfWeek: Object = {
+  daysOfWeek = {
     0:'Sun',
     1:'Mon',
     2:'Tue',
@@ -131,7 +131,7 @@ export class LicenseConsumptionComponent implements OnInit,OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    let projectItem: string = localStorage.getItem(Constants.PROJECT);
+    const projectItem: string = localStorage.getItem(Constants.PROJECT);
     if(projectItem) this.selectedProject = JSON.parse(projectItem).id;
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
@@ -166,7 +166,7 @@ export class LicenseConsumptionComponent implements OnInit,OnDestroy {
 
   private getActionMenuOptions(){
     this.licConsumptionActionMenuOptions = [];
-    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     accountRoles.forEach(accountRole =>{
       permissions[accountRole].tables.licConsumptionOptions?.forEach(item=>this.licConsumptionActionMenuOptions.push(this[item]));
     })
@@ -429,7 +429,7 @@ export class LicenseConsumptionComponent implements OnInit,OnDestroy {
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.EDIT:
-        let dataObject: any = { ...object.selectedRow, ...{endLicensePeriod: this.selectedLicense.renewalDate} };
+        const dataObject: any = { ...object.selectedRow, ...{endLicensePeriod: this.selectedLicense.renewalDate} };
         if (object.selectedRow.granularity.toLowerCase() === "static" || object.selectedRow.usageType === "AutomationPlatform")
           this.openDialog(StaticConsumptionDetailsComponent, dataObject);
         else
@@ -461,8 +461,8 @@ export class LicenseConsumptionComponent implements OnInit,OnDestroy {
   }
 
   setMonthRange(date: Date){
-    let startMonth = date;
-    let endMonth = new Date(date.getFullYear(),date.getMonth()+1,0);
+    const startMonth = date;
+    const endMonth = new Date(date.getFullYear(),date.getMonth()+1,0);
     this.range.patchValue({
       start:startMonth,
       end: endMonth
