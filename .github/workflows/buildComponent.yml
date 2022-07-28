@@ -1,5 +1,5 @@
 
-name: Unit Test Execution
+name: Pull Request Required Verifications
 
 on:
   workflow_dispatch:
@@ -53,4 +53,3 @@ jobs:
         with:
           eslint: true
           eslint_dir: ./ui
-          eslint_command_prefix: ng
