@@ -114,7 +114,7 @@ public class TekvLSCreateSubaccount
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
 			
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
 			String adminEmail = jobj.getString("subaccountAdminEmail");
 			String verifyEmails = "select count(*) from subaccount_admin where subaccount_admin_email='" +  adminEmail + "';";
