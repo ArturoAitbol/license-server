@@ -66,8 +66,7 @@ public class TekvLSModifyProjectById
 		JSONObject jobj;
 		try {
 			jobj = new JSONObject(requestBody);
-		} 
-		catch (Exception e) {
+		}  catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());

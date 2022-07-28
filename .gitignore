@@ -13,6 +13,7 @@ ui/package-lock.json
 *.prefs
 .vscode
 coverage/*
+azure-functions/coverage/*
 ui/coverage/*
 ui/test-results
 .DS_Store

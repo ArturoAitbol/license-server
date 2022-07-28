@@ -169,9 +169,9 @@ public class RoleAuthHandler {
     public static final String SUBACCOUNT_ADMIN = "customer.SubaccountAdmin";
 
     public static final String LOG_MESSAGE_FOR_UNAUTHORIZED = "Unauthorized error: Access denied due to missing or invalid credentials.";
-    public static final String MESSAGE_FOR_UNAUTHORIZED = "NOT AUTHORIZED: Access denied due to missing or invalid credentials";
-    public static final String LOG_MESSAGE_FOR_FORBIDDEN = "Forbidden error: Expected role is missing. Role provided: ";
-    public static final String MESSAGE_FOR_FORBIDDEN = "UNAUTHORIZED ACCESS. You do not have access as expected role is missing";
+    public static final String MESSAGE_FOR_UNAUTHORIZED = "UNAUTHORIZED: Access denied due to missing or invalid credentials";
+    public static final String LOG_MESSAGE_FOR_FORBIDDEN = "Forbidden error: Expected permission is missing. Role provided: ";
+    public static final String MESSAGE_FOR_FORBIDDEN = "FORBIDDEN ACCESS. You do not have permission to perform this action.";
 
     private static final String ISSUER = "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/v2.0";
 

@@ -31,7 +31,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
     @Test
     public void deleteLicenseTest(){
         //Given
-        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
+        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +

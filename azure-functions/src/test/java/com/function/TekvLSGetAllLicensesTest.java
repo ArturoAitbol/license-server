@@ -125,7 +125,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
     @Test
     public void getLicenseByIdTest() {
         //Given
-        String id = "25e913de-5282-4231-b685-87dc40fa4856";
+        String id = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
 
         //When
         HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request, id, this.context);
@@ -153,7 +153,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
     public void getLicensesBySubaccountIdTest() {
         //Given
         String id = "EMPTY";
-        String subaccountId = "04dfda26-98f4-42e5-889a-3edccf4b799c";
+        String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
         this.queryParams.put("subaccountId",subaccountId);
 
         //When

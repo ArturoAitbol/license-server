@@ -47,7 +47,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     void createLicenseTest() {
         //Given
         String licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
-        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
+        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
@@ -80,7 +80,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     @Test
     void createLicenseWithNoIdParamTest() {
         //Given
-        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
+        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
@@ -113,7 +113,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
         LocalDateTime currentDate = LocalDateTime.now();
         String renewalDate = currentDate.minusDays(1).toString();
         String licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
-        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
+        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2022-06-01T04:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '"+renewalDate+"'," +
@@ -273,7 +273,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     public void invalidSQLTest(){
         //Given
         String licenseId = "invalid-id";
-        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
+        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
@@ -297,7 +297,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     public void genericExceptionTest(){
         //Given
         String licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
-        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
+        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
@@ -315,7 +315,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
 
         //Then
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
