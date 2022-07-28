@@ -16,7 +16,7 @@ import { ProjectService } from 'src/app/services/project.service';
 import { Constants } from 'src/app/helpers/constants';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
-import { DataTableComponent } from "../../../generics/data-table/data-table.component";
+import { DataTableComponent } from '../../../generics/data-table/data-table.component';
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
 
 @Component({
@@ -24,7 +24,7 @@ import { StaticConsumptionDetailsComponent } from './static-consumption-details/
   templateUrl: './license-consumption.component.html',
   styleUrls: ['./license-consumption.component.css']
 })
-export class LicenseConsumption implements OnInit,OnDestroy {
+export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
@@ -34,7 +34,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   selectedProject: string;
   startDate: any;
   endDate: any;
-  aggregation: string = "period";
+  aggregation: string = 'period';
   month: number;
   year: number;
   licensesList: any = [];
@@ -47,8 +47,8 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     licenseId: ['']
   });
   range: FormGroup = this.formBuilder.group({
-    start: [{value:'',disabled:true}],
-    end:[{value:'',disabled:true}],
+    start: [{value: '', disabled: true}],
+    end: [{value: '', disabled: true}],
   });
   detailedConsumptionDataLength = 0;
 
@@ -88,7 +88,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
     { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true },
-    { name: 'Usage Days', dataKey:'usageDays',position:'left',isSortable: false}
+    { name: 'Usage Days', dataKey: 'usageDays', position: 'left', isSortable: false}
   ];
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
   readonly ADD_LICENSE = 'add-new-license';
@@ -109,14 +109,14 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   licConsumptionActionMenuOptions: any = [];
 
   daysOfWeek: Object = {
-    0:'Sun',
-    1:'Mon',
-    2:'Tue',
-    3:'Wed',
-    4:'Thu',
-    5:'Fri',
-    6:'Sat'
-  }
+    0: 'Sun',
+    1: 'Mon',
+    2: 'Tue',
+    3: 'Wed',
+    4: 'Thu',
+    5: 'Fri',
+    6: 'Sat'
+  };
 
   constructor(
     private formBuilder: FormBuilder,
@@ -127,20 +127,20 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     private licenseConsumptionService: LicenseConsumptionService,
     private router: Router,
     public dialog: MatDialog,
-    private msalService:MsalService
+    private msalService: MsalService
   ) { }
 
   ngOnInit(): void {
-    let projectItem: string = localStorage.getItem(Constants.PROJECT);
-    if(projectItem) this.selectedProject = JSON.parse(projectItem).id;
+    const projectItem: string = localStorage.getItem(Constants.PROJECT);
+    if (projectItem) { this.selectedProject = JSON.parse(projectItem).id; }
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         this.selectedLicense = res.licenses[0];
         this.licenseForm.patchValue({ licenseId: this.selectedLicense.id });
-        this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
-        this.endDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
+        this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
+        this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
         this.isLicenseListLoaded = true;
         this.fetchDataToDisplay();
       } else {
@@ -164,23 +164,23 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.fetchAggregatedData();
   }
 
-  private getActionMenuOptions(){
+  private getActionMenuOptions() {
     this.licConsumptionActionMenuOptions = [];
-    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    accountRoles.forEach(accountRole =>{
-      permissions[accountRole].tables.licConsumptionOptions?.forEach(item=>this.licConsumptionActionMenuOptions.push(this[item]));
-    })
+    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
+    accountRoles.forEach(accountRole => {
+      permissions[accountRole].tables.licConsumptionOptions?.forEach(item => this.licConsumptionActionMenuOptions.push(this[item]));
+    });
   }
 
-  private buildRequestObject(view: string, pageNumber?: number, pageSize?:number) {
+  private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
     const requestObject: any = {
       subaccount: this.currentCustomer.subaccountId,
       view: view,
-      month: this.aggregation == 'month' ? this.month : null,
-      year: this.aggregation == 'month' ? this.year : null,
+      month: this.aggregation === 'month' ? this.month : null,
+      year: this.aggregation === 'month' ? this.year : null,
     };
-    if (this.selectedProject) requestObject.project = this.selectedProject;
-    if (this.selectedType) requestObject.type = this.selectedType;
+    if (this.selectedProject) { requestObject.project = this.selectedProject; }
+    if (this.selectedType) { requestObject.type = this.selectedType; }
     if (pageNumber != null && pageSize != null) {
       requestObject.limit = pageSize;
       requestObject.offset = pageSize * pageNumber;
@@ -189,20 +189,21 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       if it is the license consumption division and week filter is selected
       then send the start and end dates as the beginning and end of this week
     */
-    if (view === "" && this.aggregation === "week") {
-      requestObject.startDate = this.range.get('start').value.toISOString().split("T")[0];
-      requestObject.endDate = this.range.get('end').value.toISOString().split("T")[0];
-    } else { 
+    if (view === '' && this.aggregation === 'week') {
+      requestObject.startDate = this.range.get('start').value.toISOString().split('T')[0];
+      requestObject.endDate = this.range.get('end').value.toISOString().split('T')[0];
+    } else {
       requestObject.startDate = this.selectedLicense.startDate;
       requestObject.endDate = this.selectedLicense.renewalDate;
     }
     return requestObject;
   }
 
-  fetchProjectsList(){
+  fetchProjectsList() {
     this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe((res: any) => {
-      if (!res.error && res.projects)
+      if (!res.error && res.projects) {
         this.projects = res.projects;
+      }
     });
   }
 
@@ -218,7 +219,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.data = [];
     this.isLicenseSummaryLoadingResults = true;
     this.isLicenseSummaryRequestCompleted = false;
-    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("summary")).subscribe((response: any) => {
+    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('summary')).subscribe((response: any) => {
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
       const mergedObj = { ...requiredObject, ...response };
@@ -233,7 +234,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       }
       this.data = [mergedObj];
     }, (error) => {
-      console.error("Error fetching summary data: ", error);
+      console.error('Error fetching summary data: ', error);
       this.isLicenseSummaryLoadingResults = false;
       this.isLicenseSummaryRequestCompleted = true;
     });
@@ -243,12 +244,12 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.equipmentData = [];
     this.isEquipmentSummaryLoadingResults = true;
     this.isEquipmentSummaryRequestCompleted = false;
-    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("equipment")).subscribe((res: any) => {
+    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('equipment')).subscribe((res: any) => {
       this.equipmentData = res.equipmentSummary;
       this.isEquipmentSummaryLoadingResults = false;
       this.isEquipmentSummaryRequestCompleted = true;
     }, (err: any) => {
-      console.error("Error fetching equipment data: ", err);
+      console.error('Error fetching equipment data: ', err);
       this.isEquipmentSummaryLoadingResults = false;
       this.isEquipmentSummaryRequestCompleted = true;
     });
@@ -262,12 +263,13 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.isDetailedConsumptionSupplementalRequestCompleted = false;
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
-    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("", pageNumber, pageSize)).subscribe((res: any) => {
+    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
       res.usage.forEach(item => {
-        if (item.granularity.toLowerCase() === "static" || item.usageType === "AutomationPlatform")
+        if (item.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
           item.usageDays = item.usageDays.length;
-        else
+        } else {
           this.getNameOfDays(item.usageDays);
+        }
       });
       this.detailedConsumptionData = res.usage;
       this.detailedConsumptionDataLength = res.usageTotalCount;
@@ -279,7 +281,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     }, (err: any) => {
-      console.error("Error fetching detailed license consumption data: ", err);
+      console.error('Error fetching detailed license consumption data: ', err);
       this.isDetailedConsumptionSupplementalLoadingResults = false;
       this.isDetailedConsumptionSupplementalRequestCompleted = true;
       this.isDetailedConsumptionLoadingResults = false;
@@ -291,7 +293,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.detailedConsumptionData = [];
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
-    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject("", pageNumber, pageSize)).subscribe((res: any) => {
+    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
       res.usage.forEach(item => {
         this.getNameOfDays(item.usageDays);
       });
@@ -300,25 +302,27 @@ export class LicenseConsumption implements OnInit,OnDestroy {
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     }, (err: any) => {
-      console.error("Error fetching detailed license consumption data: ", err);
+      console.error('Error fetching detailed license consumption data: ', err);
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     });
   }
 
-  private getNameOfDays(list:any[]):void{
-      list.forEach((dayNumber,index) => list[index] = this.daysOfWeek[dayNumber]);
+  private getNameOfDays(list: any[]): void {
+      list.forEach((dayNumber, index) => list[index] = this.daysOfWeek[dayNumber]);
   }
 
-  private formatTokenConsumption(tokenConsumption: any):any[]{
+  private formatTokenConsumption(tokenConsumption: any): any[] {
     let AutomationTokens = tokenConsumption.AutomationPlatform ?? 0;
     let  ConfigurationTokens = tokenConsumption.Configuration ?? 0;
     const totalConsumption =  AutomationTokens + ConfigurationTokens;
 
-    if (this.selectedType === "Configuration")
+    if (this.selectedType === 'Configuration') {
       AutomationTokens = null;
-    if (this.selectedType === "AutomationPlatform")
+    }
+    if (this.selectedType === 'AutomationPlatform') {
       ConfigurationTokens = null;
+    }
 
     const consumptionDetail = {
       AutomationPlatformTokensConsumed: AutomationTokens,
@@ -331,9 +335,9 @@ export class LicenseConsumption implements OnInit,OnDestroy {
 
   onChangeLicense(newLicense: any) {
     if (newLicense) {
-      this.selectedLicense = this.licensesList.find(item => item.id == newLicense);
-      this.startDate = new Date(this.selectedLicense.startDate + " 00:00:00");
-      this.endDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
+      this.selectedLicense = this.licensesList.find(item => item.id === newLicense);
+      this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
+      this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
       this.resetPeriodFilter();
       this.fetchDataToDisplay();
     }
@@ -370,19 +374,19 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   }
 
   openDialog(component: any, data?: any): void {
-    const dialogRef:any = this.dialog.open(component, {
+    const dialogRef: any = this.dialog.open(component, {
       width: 'auto',
       data: data,
       disableClose: true
     });
-    const dialogEvent = dialogRef.componentInstance.updateProjects?.subscribe(()=>{
+    const dialogEvent = dialogRef.componentInstance.updateProjects?.subscribe(() => {
       this.fetchProjectsList();
     });
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        if (data) // if it comes from license consumption actions
+        if (data) { // if it comes from license consumption actions
           this.fetchDataToDisplay();
-        else{
+        } else {
           this.resetPeriodFilter();
           this.ngOnInit();
         }
@@ -393,8 +397,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
 
   /**
  * sort table
- * @param sortParameters: Sort 
- * @returns 
+ * @param sortParameters: Sort
  */
   sortDataEquipment(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
@@ -409,8 +412,7 @@ export class LicenseConsumption implements OnInit,OnDestroy {
 
   /**
  * sort table
- * @param sortParameters: Sort 
- * @returns 
+ * @param sortParameters: Sort
  */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
@@ -429,11 +431,12 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.EDIT:
-        let dataObject: any = { ...object.selectedRow, ...{endLicensePeriod: this.selectedLicense.renewalDate} };
-        if (object.selectedRow.granularity.toLowerCase() === "static" || object.selectedRow.usageType === "AutomationPlatform")
+        const dataObject: any = { ...object.selectedRow, ...{endLicensePeriod: this.selectedLicense.renewalDate} };
+        if (object.selectedRow.granularity.toLowerCase() === 'static' || object.selectedRow.usageType === 'AutomationPlatform') {
           this.openDialog(StaticConsumptionDetailsComponent, dataObject);
-        else
+        } else {
           this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
+        }
         break;
       case this.DELETE:
         this.onDelete(object.selectedRow);
@@ -444,10 +447,10 @@ export class LicenseConsumption implements OnInit,OnDestroy {
   getMultipleChoiceAnswer(newValue: any) {
     this.aggregation = newValue.value;
     this.resetCalendar();
-    if (this.aggregation === "period"){
+    if (this.aggregation === 'period') {
       this.range.disable();
       this.fetchAggregatedData();
-    }else{
+    } else {
       this.range.enable();
     }
   }
@@ -460,16 +463,16 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     this.fetchAggregatedData();
   }
 
-  setMonthRange(date: Date){
-    let startMonth = date;
-    let endMonth = new Date(date.getFullYear(),date.getMonth()+1,0);
+  setMonthRange(date: Date) {
+    const startMonth = date;
+    const endMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     this.range.patchValue({
-      start:startMonth,
+      start: startMonth,
       end: endMonth
     });
     this.range.patchValue({
-      start:startMonth<this.startDate? this.startDate: startMonth,
-      end: endMonth>this.endDate? this.endDate : endMonth
+      start: startMonth < this.startDate ? this.startDate : startMonth,
+      end: endMonth > this.endDate ? this.endDate : endMonth
     });
   }
 
@@ -494,27 +497,28 @@ export class LicenseConsumption implements OnInit,OnDestroy {
     }
   }
 
-  setWeek(){
-    if(this.aggregation=="week")
+  setWeek() {
+    if (this.aggregation === 'week') {
       this.fetchAggregatedData();
-    else
+    } else {
       this.resetCalendar();
+    }
   }
 
-  resetCalendar(){
-    this.range.patchValue({start:null,end:null});
+  resetCalendar() {
+    this.range.patchValue({start: null, end: null});
     this.month = null;
     this.year = null;
   }
 
-  resetPeriodFilter(){
-    this.aggregation='period';
+  resetPeriodFilter() {
+    this.aggregation = 'period';
     this.resetCalendar();
     this.range.disable();
   }
 
   onPageChange(event: {pageIndex, pageSize}) {
-    this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize)
+    this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize);
   }
 
   ngOnDestroy(): void {

@@ -30,8 +30,7 @@ export class CustomerService {
 
   /**
    * create new customer
-
-   * @param newCustomerDetails: Customer 
+   * @param newCustomerDetails: Customer
    * @returns: Observable
    */
   public createCustomer(newCustomerDetails: Customer) {
@@ -49,13 +48,14 @@ export class CustomerService {
 
   /**
    * fetch customer details list
-   * @param customerName: string 
+   * @param customerName: string
    * @returns: Observable
    */
   public getCustomerList(customerName?: string) {
     const params = new HttpParams();
-    if (customerName)
+    if (customerName) {
       params.append('customerName', customerName);
+    }
     const headers = this.getHeaders();
     return this.httpClient.get<Customer>(this.API_URL, {headers, params});
   }

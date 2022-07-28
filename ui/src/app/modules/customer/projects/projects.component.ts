@@ -118,8 +118,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
   /**
    * sort table
-   * @param sortParameters: Sort 
-   * @returns 
+   * @param sortParameters: Sort
+   * @returns
    */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
@@ -129,7 +129,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       });
     } else if (sortParameters.direction === 'desc') {
       this.projects = this.projects.sort((a: any, b: any) => {
-        return b[keyName].localeCompare(a[keyName])
+        return b[keyName].localeCompare(a[keyName]);
       });
     } else {
       return this.projects = this.projectsBk;

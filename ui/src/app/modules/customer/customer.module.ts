@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 // components
-import { LicenseConsumption } from './license-consumption/license-consumption.component';
+import { LicenseConsumptionComponent } from './license-consumption/license-consumption.component';
 import { AddLicenseConsumptionComponent } from './license-consumption/add-license-consumption/add-license-consumption.component';
 import { AddLicenseComponent } from './licenses/add-license/add-license.component';
 import { ModifyLicenseComponent } from './licenses/modify-license/modify-license.component';
@@ -19,7 +19,7 @@ import { ModifyProjectComponent } from './projects/modify-project/modify-project
 
 @NgModule({
   declarations: [
-    LicenseConsumption,
+    LicenseConsumptionComponent,
     AddLicenseConsumptionComponent,
     ModifyLicenseConsumptionDetailsComponent,
     StaticConsumptionDetailsComponent,

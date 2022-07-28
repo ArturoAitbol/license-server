@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DeleteCustomerDialogData } from "../../model/delete-customer-dialog.model";
+import { DeleteCustomerDialogData } from '../../model/delete-customer-dialog.model';
 
 @Component({
   selector: 'app-confirm',

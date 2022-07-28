@@ -11,26 +11,26 @@ export class RoleGuard implements CanActivate {
 
   constructor(
     private msalService: MsalService,
-    private route:Router,
-    private snackBarService:SnackBarService){
+    private route: Router,
+    private snackBarService: SnackBarService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
-    let idTokenClaims: any = this.msalService.instance.getActiveAccount().idTokenClaims;
-    if(!idTokenClaims.roles || !permissions[idTokenClaims.roles[0]]){
+    const idTokenClaims: any = this.msalService.instance.getActiveAccount().idTokenClaims;
+    if (!idTokenClaims.roles || !permissions[idTokenClaims.roles[0]]) {
       this.snackBarService.openSnackBar('Role is missing', 'NOT AUTHORIZED');
       this.route.navigate(['/no-permissions']);
       return false;
     }
-    if (!this.isAuthorized(route,idTokenClaims.roles)) {
+    if (!this.isAuthorized(route, idTokenClaims.roles)) {
       this.snackBarService.openSnackBar('You do not have access as expected role is missing', 'NOT AUTHORIZED');
       return false;
     }
     return true;
   }
-  
-  private isAuthorized(route: ActivatedRouteSnapshot, accountRoles: string[]): boolean{
-    let path = route.url[0].path;
+
+  private isAuthorized(route: ActivatedRouteSnapshot, accountRoles: string[]): boolean {
+    const path = route.url[0].path;
     const pathsMatch = accountRoles.findIndex(accountRole => permissions[accountRole].paths.indexOf(path)!==-1);
     return (pathsMatch >= 0);
   }
