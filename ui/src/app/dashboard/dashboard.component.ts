@@ -4,7 +4,7 @@ import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Constants } from '../helpers/constants';
-import { Utility } from '../helpers/Utility';
+import { Utility } from '../helpers/utils';
 import { CustomerLicense } from '../model/customer-license';
 import { License } from '../model/license.model';
 import { CustomerService } from '../services/customer.service';

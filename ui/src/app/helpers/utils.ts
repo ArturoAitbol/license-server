@@ -1,8 +1,3 @@
-
-import { Constants } from './constants';
-import { Role } from './role';
-
-
 export class Utility {
 
     /**
@@ -57,21 +52,6 @@ export class Utility {
             }
         });
         return [...list];
-    }
-
-    /**
-     * verify whether user has respective roles or not
-     * return true when the role is present in the array (or) if the role is "ROLE_ADMIN" (or) "ROLE_TEKV_ADMIN"
-     * @param role: string
-     * @return: boolean
-     */
-    public static userEnabled(role: string): boolean {
-        const currentPermissions: [string] = JSON.parse(localStorage.getItem(Constants.CURRENT_USER)).roles;
-        // eslint-disable-next-line max-len
-        if (currentPermissions.includes(role) || currentPermissions.includes((Role[0])) || currentPermissions.includes(Role[1])) {
-            return true;
-        }
-        return false;
     }
 
     /**
