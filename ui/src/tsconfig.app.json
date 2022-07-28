@@ -5,6 +5,7 @@
     "types": [],
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "test.ts",
