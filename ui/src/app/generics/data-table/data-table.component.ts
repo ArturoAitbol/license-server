@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } 
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Utility } from 'src/app/helpers/utility';
+import { Utility } from 'src/app/helpers/utils';
 import { TableColumn } from 'src/app/model/table-column.model';
 
 @Component({
