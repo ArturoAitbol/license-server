@@ -1,5 +1,4 @@
-
-name: Pull Request Required Verifications
+name: Unit Test Execution
 
 on:
   workflow_dispatch:
@@ -7,15 +6,13 @@ on:
   pull_request:
      branches: [ main ]
 
-permissions: write-all
-
 env:
   POM_XML_DIRECTORY: 'azure-functions/'
   JAVA_VERSION: '1.8.x'
   DB_USERNAME: 'postgres'
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -42,14 +39,3 @@ jobs:
         with:
           report_paths: '**/target/surefire-reports/TEST-*.xml'
           summary: 'true'
-      
-      - name: Install Angular dependencies
-        run: |
-          cd ./ui
-          npm install
-      
-      - name: Run Linters
-        uses: wearerequired/lint-action@v2
-        with:
-          eslint: true
-          eslint_dir: ./ui
