@@ -36,7 +36,7 @@ class TekvLSDeleteSubaccountAdminEmailTest extends TekvLSTest {
         this.email = name + "@test.com";
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 740162ed-3abe-4f89-89ef-452e3c0787e2,\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
                 "    \"subaccountAdminEmail\": \"" + this.email + "\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();

@@ -62,8 +62,8 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
     @Test
     public void getSubaccountByIdTest() {
         //Given - Arrange
-        String id = "d45db408-6ceb-4218-bd36-6355e0e21bfb"; // Test customer - default
-        String expectedName = "Default";
+        String id = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c"; // Test customer - default
+        String expectedName = "Test RealCustomer - 360 Small";
 
         //When - Action
         HttpResponseMessage response = getAllSubaccountsApi.run(this.request, id, this.context);
@@ -89,7 +89,7 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
     public void getDevicesByCustomerIdTest() {
         //Given - Arrange
         String id = "EMPTY";
-        String expectedCustomerId = "740162ed-3abe-4f89-89ef-452e3c0787e2"; // Test customer
+        String expectedCustomerId = "7d133fd2-8228-44ff-9636-1881f58f2dbb"; // Test customer
         this.queryParams.put("customer-id", expectedCustomerId);
 
         //When - Action

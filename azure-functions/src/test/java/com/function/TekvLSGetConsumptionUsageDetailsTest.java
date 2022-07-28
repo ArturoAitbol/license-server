@@ -44,6 +44,7 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
         JSONObject jsonBody = new JSONObject(body);
 
         assertTrue(jsonBody.has("usageDays"));
+        assertTrue(jsonBody.has("modifiedBy"));
 
         Object usageDays = jsonBody.get("usageDays");
         assertTrue(usageDays instanceof JSONArray);
@@ -58,6 +59,7 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
         assertTrue(device.has("serialNumber"));
         assertTrue(device.has("consumptionId"));
         assertTrue(device.has("id"));
+        assertTrue(device.has("modifiedBy"));
     }
 
     @Test
@@ -186,7 +188,7 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
     }
 
     @Test
-    public void genericExceptionTest() {
+    public void sqlExceptionTest() {
         //Given - Arrange
         Mockito.when(this.request.createResponseBuilder(HttpStatus.OK)).thenThrow(new RuntimeException("Generic error"));
         String expectedId = "00000000-0000-0000-0000-000000000000";
@@ -197,7 +199,35 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String expectedResponse = "SQL";
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        String actualResponse = jsonBody.getString("error");
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void genericExceptionTest() {
+        //Given - Arrange
+        Mockito.when(this.request.createResponseBuilder(HttpStatus.OK)).thenThrow(new RuntimeException("Generic error"));
+        String expectedId = "c323f5f8-cd49-4b0b-ac74-fe2113b658b8";
+
+        //When - Action
+        HttpResponseMessage response = getConsumptionUsageDetailsApi.run(this.request, expectedId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String expectedResponse = "SQL";
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        String actualResponse = jsonBody.getString("error");
+        assertFalse(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
     }
 }

@@ -21,8 +21,8 @@ class TekvLSCreateLicenseUsageDetailTest extends TekvLSTest {
     private final TekvLSDeleteLicenseUsageById tekvLSDeleteLicenseUsageById = new TekvLSDeleteLicenseUsageById();
 
     private final String deviceId = "ef7a4bcd-fc3f-4f87-bf87-ae934799690b";
-    private final String subaccountId = "31c142a6-b735-4bce-bfb4-9fba6b539116";
-    private final String projectId = "f8e757f4-a7d2-416d-80df-beefba44f88f";
+    private final String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+    private final String projectId = "2bdaf2af-838f-4053-b3fa-ef22aaa11b0d";
     private final String consumptionDate = "2022-06-19";
     private final String type = "Configuration";
     private final String usageDays = "[0,4]";

@@ -11,10 +11,10 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
+import io.jsonwebtoken.Claims;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Optional;
-
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -40,7 +40,8 @@ public class TekvLSModifyLicenseUsageById
 				final ExecutionContext context) 
 	{
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -55,6 +56,7 @@ public class TekvLSModifyLicenseUsageById
 		}
 
 		context.getLogger().info("Entering TekvLSModifyLicenseUsageById Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -68,14 +70,12 @@ public class TekvLSModifyLicenseUsageById
 		JSONObject jobj;
 		try {
 			jobj = new JSONObject(requestBody);
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
-
 		// The expected parameters (and their corresponding column name in the database)
 		String[][] optionalParams = {
 				{"projectId","project_id"},
@@ -98,11 +98,10 @@ public class TekvLSModifyLicenseUsageById
 				// continue;
 			}
 		}
-		sql += " modified_date='" + LocalDate.now().toString()+ "'";
+		sql += " modified_date='" + LocalDate.now().toString() + "',modified_by='" + userId + "'";
 		if (optionalParamsFound == 0) {
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
-
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -119,14 +118,11 @@ public class TekvLSModifyLicenseUsageById
 				int tokensToConsume = rs.getInt(1);
 				sql +=",tokens_consumed=" + tokensToConsume;
 			}
-
 			sql += " where id='" + id + "';";
-			
 			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
 			context.getLogger().info("Execute SQL statement: " + sql);
 			statement.executeUpdate(sql);
 			context.getLogger().info("License updated successfully."); 
-
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {

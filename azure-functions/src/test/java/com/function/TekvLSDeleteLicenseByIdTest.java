@@ -7,13 +7,10 @@ import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
 import org.json.JSONObject;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -34,7 +31,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
     @Test
     public void deleteLicenseTest(){
         //Given
-        String bodyRequest = "{'subaccountId': '04dfda26-98f4-42e5-889a-3edccf4b799c'," +
+        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
