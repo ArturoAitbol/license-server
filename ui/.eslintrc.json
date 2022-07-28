@@ -3,14 +3,13 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
-  "overrides": [
-    {
+  "overrides": [{
       "files": [
         "*.ts"
       ],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "ecmaVersion": 2020,
+        "ecmaVersion": "latest",
         "project": [
           "tsconfig.json",
           "e2e/tsconfig.json"
@@ -20,6 +19,9 @@
           "@angular-eslint"
         ],
         "createDefaultProgram": true
+      },
+      "env": {
+        "es6": true
       },
       "extends": [
         "plugin:@typescript-eslint/recommended",
