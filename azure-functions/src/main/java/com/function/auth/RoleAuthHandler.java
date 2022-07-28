@@ -233,7 +233,7 @@ public class RoleAuthHandler {
             return null;
         }
         try{
-            Jws<Claims> token = verifyToken(authorization[1],context);
+            Jws<Claims> token = verifyToken(authorization[1]);
             return token.getBody();
         }catch (Exception e){
             context.getLogger().info(e.getMessage());
@@ -242,7 +242,7 @@ public class RoleAuthHandler {
 
     }
 
-    public static Jws<Claims> verifyToken(String jwt,ExecutionContext context) throws Exception {
+    public static Jws<Claims> verifyToken(String jwt) throws Exception {
 
         try{
             SigningKeyResolver signingKeyResolver = SigningKeyResolver.getInstance();

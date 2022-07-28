@@ -60,21 +60,6 @@ export class Utility {
     }
 
     /**
-     * verify whether user has respective roles or not
-     * return true when the role is present in the array (or) if the role is "ROLE_ADMIN" (or) "ROLE_TEKV_ADMIN"
-     * @param role: string
-     * @return: boolean
-     */
-    public static userEnabled(role: string): boolean {
-        const currentPermissions: [string] = JSON.parse(localStorage.getItem(Constants.CURRENT_USER)).roles;
-        // tslint:disable-next-line:max-line-length
-        if (currentPermissions.includes(role) || currentPermissions.includes((Role[0])) || currentPermissions.includes(Role[1])) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * to get color based on the state/status
      * @param state: string
      * @return: string
