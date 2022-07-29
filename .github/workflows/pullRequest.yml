@@ -6,6 +6,8 @@ on:
   pull_request:
      branches: [ main ]
 
+permissions: write-all
+
 env:
   POM_XML_DIRECTORY: 'azure-functions/'
   JAVA_VERSION: '1.8.x'
@@ -39,3 +41,24 @@ jobs:
         with:
           report_paths: '**/target/surefire-reports/TEST-*.xml'
           summary: 'true'
+      
+      - name: Angular Test web app
+        run: |
+          cd ./ui
+          npm install
+          npm run test -- --no-watch --no-progress
+          ls test-results/
+  
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "ui/test-results/*.xml"
+    
+      - name: Comment Test Coverage
+        uses: AthleticNet/comment-test-coverage@1.1
+        if: always()
+        with:
+          token: ${{ github.token }}
+          path: ui/test-results/coverage-summary.json
+          title: Karma Test Coverage

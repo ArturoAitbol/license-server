@@ -123,8 +123,8 @@ export class ProjectsComponent implements OnInit {
   }
   /**
    * sort table
-   * @param sortParameters: Sort 
-   * @returns 
+   * @param sortParameters: Sort
+   * @returns
    */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
@@ -134,7 +134,7 @@ export class ProjectsComponent implements OnInit {
       });
     } else if (sortParameters.direction === 'desc') {
       this.projects = this.projects.sort((a: any, b: any) => {
-        return b[keyName].localeCompare(a[keyName])
+        return b[keyName].localeCompare(a[keyName]);
       });
     } else {
       return this.projects = this.projectsBk;

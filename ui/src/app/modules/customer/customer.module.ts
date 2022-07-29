@@ -15,7 +15,7 @@ import { LicensesComponent } from './licenses/licenses.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { AddProjectComponent } from './projects/add-project/add-project.component';
 import { SharedModule } from '../shared/shared.module';
-import { ModifyProjectComponent } from "./projects/modify-project/modify-project.component";
+import { ModifyProjectComponent } from './projects/modify-project/modify-project.component';
 
 @NgModule({
   declarations: [

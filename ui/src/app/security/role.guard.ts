@@ -11,8 +11,8 @@ export class RoleGuard implements CanActivate {
 
   constructor(
     private msalService: MsalService,
-    private route:Router,
-    private snackBarService:SnackBarService){
+    private route: Router,
+    private snackBarService: SnackBarService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
@@ -22,7 +22,7 @@ export class RoleGuard implements CanActivate {
       this.route.navigate(['/no-permissions']);
       return false;
     }
-    if (!this.isAuthorized(route,idTokenClaims.roles)) {
+    if (!this.isAuthorized(route, idTokenClaims.roles)) {
       this.snackBarService.openSnackBar('You do not have access as expected role is missing', 'NOT AUTHORIZED');
       return false;
     }
