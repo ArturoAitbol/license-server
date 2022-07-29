@@ -89,9 +89,9 @@ class TekvLSDeleteSubaccountAdminEmailTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "Unterminated string literal started at position 60 in SQL DELETE FROM subaccount_admin WHERE subaccount_admin_email=''';. Expected  char";
+        String expectedResponse = "in SQL DELETE FROM subaccount_admin WHERE subaccount_admin_email=''';. Expected  char";
         String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));
     }
 
     @Test
@@ -104,7 +104,7 @@ class TekvLSDeleteSubaccountAdminEmailTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();

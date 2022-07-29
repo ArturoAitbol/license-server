@@ -206,7 +206,7 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
         String actualResponse = jsonBody.getString("error");
-        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));
     }
 
     @Test

@@ -30,15 +30,6 @@ class TekvLSDeleteCustomerByIdTest extends TekvLSTest {
     public void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        String name = "test_customer" + LocalDateTime.now();
-        String bodyRequest = "{'customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
-
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        HttpResponseMessage response = this.createCustomerApi.run(this.request, context);
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-        this.customerId = new JSONObject(response.getBody().toString()).getString("id");
     }
 
     @AfterEach
@@ -56,8 +47,23 @@ class TekvLSDeleteCustomerByIdTest extends TekvLSTest {
         }
     }
 
+    private void createTestCustomer() {
+        String name = "test_customer" + LocalDateTime.now();
+        String bodyRequest = "{'customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        HttpResponseMessage response = this.createCustomerApi.run(this.request, context);
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+        this.customerId = new JSONObject(response.getBody().toString()).getString("id");
+    }
+
+
     @Test
     public void deleteCustomerTest() {
+        createTestCustomer();
+
         //When - Action
         HttpResponseMessage response = this.deleteCustomerApi.run(this.request, this.customerId, this.context);
 
@@ -65,7 +71,35 @@ class TekvLSDeleteCustomerByIdTest extends TekvLSTest {
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+        this.customerId = "EMPTY";
+    }
 
+    @Test
+    public void forceDeleteCustomerTest() {
+        this.queryParams.put("force", "true");
+        String customerId = "0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848";
+
+        //When - Action
+        HttpResponseMessage response = this.deleteCustomerApi.run(this.request, customerId, this.context);
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Test
+    public void deleteRealCustomerTest() {
+        String customerId = "0856df81-8d32-4adb-941a-c0d9187f36a7";
+
+        //When - Action
+        HttpResponseMessage response = this.deleteCustomerApi.run(this.request, customerId, this.context);
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+        this.customerId = "EMPTY";
     }
 
     @Test
@@ -85,7 +119,7 @@ class TekvLSDeleteCustomerByIdTest extends TekvLSTest {
 
         String expectedResponse = "ERROR: invalid input syntax for type uuid: \"0\"";
         String actualResponse = jsonBody.getString("error");
-        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));
     }
 
     @Test
@@ -131,5 +165,32 @@ class TekvLSDeleteCustomerByIdTest extends TekvLSTest {
         String expectedResponse = RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void genericExceptionTest() {
+        createTestCustomer();
+
+        //Given - Arrange
+        Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+
+        //When - Action
+        HttpResponseMessage response = deleteCustomerApi.run(this.request, this.customerId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Generic error";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+        this.customerId = "EMPTY";
     }
 }

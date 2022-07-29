@@ -20,9 +20,7 @@ import static org.mockito.Mockito.doReturn;
 class TekvLSCreateCustomerTest extends TekvLSTest {
 
     private String customerId = "EMPTY";
-    private String secondCustomerId = "EMPTY";
     TekvLSCreateCustomer createCustomer = new TekvLSCreateCustomer();
-    TekvLSDeleteAdminEmail deleteAdminEmail = new TekvLSDeleteAdminEmail();
     private final TekvLSDeleteCustomerById deleteCustomerById = new TekvLSDeleteCustomerById();
     @BeforeEach
     void setUp() {
@@ -32,10 +30,8 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
 
     @AfterEach
     void tearDown() {
-        if (!this.customerId.equals("EMPTY") || !this.secondCustomerId.equals("EMPTY")) {
-            // String customerId ="6d9a055e-0435-4348-84b7-db8db243ac4d";
+        if (!this.customerId.equals("EMPTY")) {
             HttpResponseMessage response = this.deleteCustomerById.run(this.request, this.customerId, this.context);
-            // HttpResponseMessage secondResponse = this.deleteCustomerById.run(this.request, customerId, this.context);
             this.context.getLogger().info(response.getStatus().toString());
             this.customerId = "EMPTY";
 
@@ -71,7 +67,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
     @Test
     public void createCustomerWhitOptionalParamsTest() {
         String name = "customerTest" + LocalDateTime.now();
-        String bodyRequest = "{'distributorId':'6826a94e-c4da-46e9-8001-668df24877ec','customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+        String bodyRequest = "{'distributorId':'f5ac1f7b-d93e-4872-bd5e-133c00d9e2bd','customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action
@@ -95,8 +91,34 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
     public void createCustomerIncomplete() {
         String bodyRequest = "{\n" +
         "    \"customerName\": \"customerTest\",\n" +
+        "    \"customerType\": \"MSP\"\n" +
+        "}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        TekvLSCreateCustomer createCustomer = new TekvLSCreateCustomer();
+        HttpResponseMessage response = createCustomer.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected , actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Missing mandatory parameter: test";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void createCustomerIncompleteWithoutAdminEmail() {
+        String bodyRequest = "{\n" +
+        "    \"customerName\": \"customerTest\",\n" +
         "    \"customerType\": \"MSP\",\n" +
-        "    \"test\": \"true\",\n" +
+        "    \"test\": \"true\"\n" +
         "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -114,6 +136,32 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
         assertTrue(jsonBody.has("error"));
 
         String expectedResponse = "Missing mandatory parameter: customerAdminEmail";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void createCustomerWithDuplicatedAdminEmailTest() {
+        //Given - Arrange
+        String name = "customerTest" + LocalDateTime.now();
+        String bodyRequest = "{'customerName':'" + name + "','customerType':'MSP','customerAdminEmail':'test-customer-full-admin@tekvizionlabs.com','test':'true'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When - Action
+        HttpResponseMessage response = createCustomer.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Administrator email already exists";
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
@@ -186,8 +234,36 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected , actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+        
+        String expectedResponse = "SQL";
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        String actualResponse = jsonBody.getString("error");
+        assertFalse(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
     }
 
+    @Test
+    public void createCustomerSQLExceptionTest() {
+        String name = "customerTest" + LocalDateTime.now();
+        String bodyRequest = "{'customerId':'xxxx','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+
+        TekvLSCreateCustomer createCustomer = new TekvLSCreateCustomer();
+        HttpResponseMessage response = createCustomer.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected , actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+        
+        String expectedResponse = "SQL";
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        String actualResponse = jsonBody.getString("error");
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
+    }
 
     @Test
     public void duplicatedCustomerTest() {
@@ -217,7 +293,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
 
         //Then - Assert
         actualStatus = response.getStatus();
-        expected = HttpStatus.BAD_REQUEST;
+        expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
@@ -226,6 +302,33 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
         assertTrue(jsonBody.has("error"));
 
         String expectedResponse = "Customer already exists";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void forbiddenTest() {
+        //Given - Arrange
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
+        String name = "customerTest" + LocalDateTime.now();
+        String bodyRequest = "{'distributorId':'f5ac1f7b-d93e-4872-bd5e-133c00d9e2bd','customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When - Action
+        HttpResponseMessage response = createCustomer.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.FORBIDDEN;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }

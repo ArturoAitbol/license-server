@@ -71,7 +71,7 @@ public class TekvLSDeleteCustomerById
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			// Get test_customer by id if not force delete
 			if (!deleteFlag) {
-				String subQuery = "select test_customer from customer where id = '"+id+"';";
+				String subQuery = "select test_customer from customer where id = '"+ id +"';";
 				context.getLogger().info("Execute SQL statement: " + subQuery);
 				ResultSet rs = statement.executeQuery(subQuery);
 				rs.next();
@@ -93,14 +93,14 @@ public class TekvLSDeleteCustomerById
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
+			json.put("error", "SQL Exception: " + e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }

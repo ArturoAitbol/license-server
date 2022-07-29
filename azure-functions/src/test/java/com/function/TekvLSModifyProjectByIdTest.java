@@ -43,7 +43,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
     @Test
     public void partialModifyProjectTest() {
         String projectId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
-        this.bodyRequest = "{'closeDate':null}";
+        this.bodyRequest = "{'closeDate':''}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSModifyProjectById modifyProject = new TekvLSModifyProjectById();
