@@ -14,7 +14,7 @@ import { AutoLogoutService } from "./services/auto-logout.service";
 export class AppComponent implements OnInit, OnDestroy {
     private readonly _destroying$ = new Subject<void>();
     title = 'license-server';
-    currentUser: boolean = false;
+    currentUser = false;
 
     constructor(
         private router: Router,

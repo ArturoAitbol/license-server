@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { ConfirmComponent } from '../dialogs/confirm/confirm.component';
 import { ConfirmDialogData } from '../model/confirm-dialog.model';
 import { DeleteCustomerDialogData } from "../model/delete-customer-dialog.model";
-import { DeleteCustomerModal } from "../dialogs/delete-customer/delete-customer-modal.component";
+import { DeleteCustomerModalComponent } from "../dialogs/delete-customer/delete-customer-modal.component";
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +24,7 @@ export class DialogService {
   }
 
   deleteCustomerDialog(data: DeleteCustomerDialogData): Observable<{confirm, deleteAllData}> {
-      return  this.dialog.open(DeleteCustomerModal, {
+      return  this.dialog.open(DeleteCustomerModalComponent, {
           data,
           width: '450px',
           disableClose: true,

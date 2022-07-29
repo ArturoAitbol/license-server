@@ -15,7 +15,7 @@
                               <input formControlName="endWeek" matEndDate placeholder="End date" [readonly]="true" (dateChange)="pickStartWeek()">
                             </mat-date-range-input>
                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-date-range-picker dateRange [minDate]="startDate" [maxDate]="endDate" #picker></mat-date-range-picker>
+                            <mat-date-range-picker lcDateRange [minDate]="startDate" [maxDate]="endDate" #picker></mat-date-range-picker>
                         </mat-form-field>
                     </div>
                     <div class="col-7">
@@ -30,7 +30,7 @@
                             </mat-autocomplete>
                             <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>
                         </mat-form-field>
-                        <div *checkAccessFor="'addProject'" class="col-3 no-padding" style="float: right;">
+                        <div *lcCheckAccessFor="'addProject'" class="col-3 no-padding" style="float: right;">
                             <button mat-stroked-button type="button" class="plus-button" title="New Project"
                                     (click)="onAddProject()">
                                 <mat-icon>add</mat-icon>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -10,7 +10,7 @@ import { TableColumn } from 'src/app/model/table-column.model';
   templateUrl: './data-table.component.html',
   styleUrls: ['./data-table.component.css']
 })
-export class DataTableComponent implements OnInit, OnDestroy {
+export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   data: any = [];
   public tableDataSource = new MatTableDataSource([]);
   public displayedColumns: string[];
@@ -38,9 +38,7 @@ export class DataTableComponent implements OnInit, OnDestroy {
   @Input() set tableData(data: any[]) {
     this.setTableDataSource(data);
   }
-  constructor() {
-  }
-
+  
   ngOnInit(): void {
     const columnNames = this.tableColumns.map((tableColumn: TableColumn) => tableColumn.name);
     if (this.rowActionIcon) {
