@@ -28,8 +28,9 @@ f5ac1f7b-d93e-4872-bd5e-133c00d9e2bd	Test Distributor
 
 COPY public.customer (id, name, type, tombstone, distributor_id, test_customer) FROM stdin;
 0856df81-8d32-4adb-941a-c0d9187f36a7	Test DeleteRealCustomer	MSP	f	\N	f
-7d133fd2-8228-44ff-9636-1881f58f2dbb	Test RealCustomer	MSP	f	f5ac1f7b-d93e-4872-bd5e-133c00d9e2bd	f
+7d133fd2-8228-44ff-9636-1881f58f2dbb	Test RealCustomer	Reseller	f	f5ac1f7b-d93e-4872-bd5e-133c00d9e2bd	f
 0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848	Test Customer	MSP	f	\N	t
+cb1b268a-850a-4459-8033-09854d9ac015	Test NoDistributor	MSP	f	\N	t
 \.
 
 

@@ -91,7 +91,7 @@ class TekvLSDeleteBundleByIdTest extends TekvLSTest {
 
 /*        String expectedResponse = "invalid input syntax";
         String actualResponse = jsonBody.getString("error");
-        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));*/
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));*/
     }
 
     @Tag("security")

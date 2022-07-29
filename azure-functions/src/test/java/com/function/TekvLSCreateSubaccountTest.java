@@ -293,7 +293,7 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
 
         String expectedResponse = "ERROR: invalid input syntax for type uuid: \"TEST\"";
         String actualResponse = jsonBody.getString("error");
-        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));
     }
 
     @Test
