@@ -9,8 +9,8 @@ import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -23,56 +23,41 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
-
-    TekvLSCreateSubaccountAdminEmail createSubaccountAdminEmailApi;
-
-    private final TekvLSDeleteSubaccountById deleteSubaccountApi = new TekvLSDeleteSubaccountById();
-
-    private final TekvLSCreateSubaccount createSubaccountApi = new TekvLSCreateSubaccount();
-    private String subaccountId = "EMPTY";
+class TekvLSCreateAdminEmailTest extends TekvLSTest {
+    TekvLSCreateAdminEmail createAdminEmailApi;
+    private String customerId = "7d133fd2-8228-44ff-9636-1881f58f2dbb";
+    private String adminEmail = "EMPTY";
+    private String name = "EMPTY";
 
     @BeforeEach
     public void setup() {
         this.initTestParameters();
-        this.createSubaccountAdminEmailApi = new TekvLSCreateSubaccountAdminEmail();
+        this.createAdminEmailApi = new TekvLSCreateAdminEmail();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        String name = "unitTest" + LocalDateTime.now();
-        String bodyRequest = "{\n" +
-                "    \"subaccountName\": \"" + name + "\",\n" +
-                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
-                "}";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        HttpResponseMessage response = this.createSubaccountApi.run(this.request, context);
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-        this.subaccountId = new JSONObject(response.getBody().toString()).getString("id");
+        name = "unitTest" + LocalDateTime.now();
     }
 
     @AfterEach
     void tearDown() {
-        if (!this.subaccountId.equals("EMPTY")) {
-            this.initTestParameters();
-            this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-            HttpResponseMessage response = deleteSubaccountApi.run(this.request, this.subaccountId, this.context);
+        if (!this.adminEmail.equals("EMPTY")){
+            TekvLSDeleteAdminEmail deleteBundleById = new TekvLSDeleteAdminEmail();
+            HttpResponseMessage response = deleteBundleById.run(this.request, this.adminEmail, this.context);
             this.context.getLogger().info(response.getStatus().toString());
-            this.subaccountId = "EMPTY";
+            this.adminEmail = "EMPTY";
 
             HttpStatusType actualStatus = response.getStatus();
             HttpStatus expected = HttpStatus.OK;
-            assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+            assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
         }
     }
 
     @Test
-    public void createSubaccountAdminEmailTest() {
+    public void createAdminEmailTest() {
         //Given - Arrange
-        String name = "unitTest" + LocalDateTime.now();
-        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest bodyRequest = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(name + "@test.com", this.subaccountId);
+        this.adminEmail = name + "@test.com";
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(this.adminEmail, this.customerId);
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -81,7 +66,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
         //When - Action
-        HttpResponseMessage response = createSubaccountAdminEmailApi.run(request, this.context);
+        HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
@@ -91,11 +76,9 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
 
     @Test
     public void incompleteBodyTest() {
-        //Given - Arrange
-        String name = "unitTest" + LocalDateTime.now();
-        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest bodyRequest = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(name + "@test.com", null);
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(name + "@test.com", null);
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -104,7 +87,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
         //When - Action
-        HttpResponseMessage response = createSubaccountAdminEmailApi.run(request, this.context);
+        HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then - Assert
@@ -116,7 +99,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "Missing mandatory parameter subaccountId.";
+        String expectedResponse = "Missing mandatory parameter customerId.";
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
@@ -124,9 +107,9 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
     @Test
     public void incompleteBodyTest2() {
         //Given - Arrange
-        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest bodyRequest = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(null, this.subaccountId);
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(null, this.customerId);
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -135,7 +118,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
         //When - Action
-        HttpResponseMessage response = createSubaccountAdminEmailApi.run(request, this.context);
+        HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then - Assert
@@ -147,7 +130,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "Missing mandatory parameter subaccountAdminEmail.";
+        String expectedResponse = "Missing mandatory parameter customerAdminEmail.";
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
@@ -156,7 +139,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
     public void NoBodyTest() {
         //Given - Arrange
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
         doReturn(Optional.empty()).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -164,7 +147,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
             return new HttpResponseMessageMock.HttpResponseMessageBuilderMock().status(status);
         }).when(request).createResponseBuilder(any(HttpStatus.class));
         //When - Action
-        HttpResponseMessage response = createSubaccountAdminEmailApi.run(request, this.context);
+        HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then - Assert
@@ -185,9 +168,9 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
     public void SqlExceptionTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
-        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest bodyRequest = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(name + "@test.com", "0000");
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(name + "@test.com", "0000");
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -196,7 +179,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
         //When - Action
-        HttpResponseMessage response = createSubaccountAdminEmailApi.run(request, this.context);
+        HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then - Assert
@@ -218,9 +201,9 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
     public void GenericExceptionTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
-        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest bodyRequest = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(name + "@test.com", this.subaccountId);
+        TekvLSCreateAdminEmail.CreateAdminRequest bodyRequest = new TekvLSCreateAdminEmail.CreateAdminRequest(name + "@test.com", this.customerId);
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
@@ -230,12 +213,12 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
         //When - Action
-        HttpResponseMessage response = createSubaccountAdminEmailApi.run(request, this.context);
+        HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
@@ -245,7 +228,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
 
         String expectedResponse = "Generic error";
         String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));
     }
 
     @Test
@@ -253,8 +236,8 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         //Given - Arrange
         this.headers.remove("authorization");
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
-        doReturn(Optional.of(new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(null, null))).when(request).getBody();
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        doReturn(Optional.of(new TekvLSCreateAdminEmail.CreateAdminRequest(null, null))).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
             HttpStatus status = (HttpStatus) invocation.getArguments()[0];
@@ -262,7 +245,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
         //When - Action
-        HttpResponseMessage response = createSubaccountAdminEmailApi.run(request, this.context);
+        HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then - Assert
@@ -286,8 +269,8 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         this.headers.remove("authorization");
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
         @SuppressWarnings("unchecked")
-        HttpRequestMessage<Optional<TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest>> request = mock(HttpRequestMessage.class);
-        doReturn(Optional.of(new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest(null, null))).when(request).getBody();
+        HttpRequestMessage<Optional<TekvLSCreateAdminEmail.CreateAdminRequest>> request = mock(HttpRequestMessage.class);
+        doReturn(Optional.of(new TekvLSCreateAdminEmail.CreateAdminRequest(null, null))).when(request).getBody();
         doReturn(this.headers).when(request).getHeaders();
         doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
             HttpStatus status = (HttpStatus) invocation.getArguments()[0];
@@ -295,7 +278,7 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
         }).when(request).createResponseBuilder(any(HttpStatus.class));
 
         //When - Action
-        HttpResponseMessage response = createSubaccountAdminEmailApi.run(request, this.context);
+        HttpResponseMessage response = createAdminEmailApi.run(request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then - Assert
@@ -314,9 +297,9 @@ class TekvLSCreateSubaccountAdminEmailTest extends TekvLSTest {
     }
 
     @Test
-    public void createSubaccountAdminRequestToStringTest() {
-        TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest request = new TekvLSCreateSubaccountAdminEmail.CreateSubaccountAdminRequest("test@test.com", "00000000-0000-0000-0000-000000000000");
-        String expectedResponse = "CreateSubaccountAdminRequest{subaccountAdminEmail='test@test.com', subaccountId='00000000-0000-0000-0000-000000000000'}";
+    public void createAdminRequestToStringTest() {
+        TekvLSCreateAdminEmail.CreateAdminRequest request = new TekvLSCreateAdminEmail.CreateAdminRequest("test@test.com", "00000000-0000-0000-0000-000000000000");
+        String expectedResponse = "CreateAdminRequest{customerAdminEmail='test@test.com', customerId='00000000-0000-0000-0000-000000000000'}";
         assertEquals(expectedResponse, request.toString());
     }
 }
