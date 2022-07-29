@@ -11,9 +11,9 @@ export class SnackBarService {
   constructor(private _snackBar: MatSnackBar) { }
   /**
    * open snack bar with message and action
-   * @param message: string  
-   * @param action: string 
-   * @param duration: number 
+   * @param message: string
+   * @param action: string
+   * @param duration: number
    */
   openSnackBar(message: string, action?: string, duration?: number) {
     this._snackBar.open(message, action, {

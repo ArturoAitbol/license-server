@@ -22,6 +22,8 @@ import { CustomerServiceMock } from '../../test/mock/services/customer-service.m
 import { SubaccountServiceMock } from '../../test/mock/services/subaccount-service.mock';
 import { MatDialogMock } from '../../test/mock/components/mat-dialog.mock';
 import { MsalServiceMock } from '../../test/mock/services/msal-service.mock';
+import { SnackBarServiceMock } from "../../test/mock/services/snack-bar-service.mock";
+import {SnackBarService} from "../services/snack-bar.service";
 
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
@@ -44,8 +46,8 @@ const beforeEachFunction = () => {
                 useValue: MatDialogMock
             },
             {
-                provide: MatSnackBarRef,
-                useValue: {}
+                provide: SnackBarService,
+                useValue: SnackBarServiceMock
             },
             {
                 provide: CustomerService,
@@ -150,12 +152,13 @@ describe('Dialog calls and interactions', () => {
     });
 
     it('should execute rowAction() with expected data given set arguments',  () => {
-        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: 'selectedTestItem' };
+        const selectedTestData = { selectedRow: { testProperty: 'testData', subaccountId: undefined}, selectedOption: 'selectedTestOption', selectedIndex: 'selectedTestItem', subaccountId: 'test-id' };
         spyOn(dashboardComponentTestInstance, 'openDialog');
         spyOn(dashboardComponentTestInstance, 'openLicenseDetails');
         spyOn(dashboardComponentTestInstance, 'openLicenseConsumption');
         spyOn(dashboardComponentTestInstance, 'openProjectDetails');
         spyOn(dashboardComponentTestInstance, 'onDeleteAccount');
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_ADMIN_EMAILS;
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -169,21 +172,40 @@ describe('Dialog calls and interactions', () => {
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedTestData.selectedOption, selectedTestData.selectedRow);
 
+        selectedTestData.selectedOption = dashboardComponentTestInstance.DELETE_ACCOUNT;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(dashboardComponentTestInstance.onDeleteAccount).toHaveBeenCalledWith(selectedTestData.selectedIndex);
+
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_LICENSES;
+        // selectedTestData.selectedRow.subaccountId = undefined;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Packages view', '');
+
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CONSUMPTION;
+        // selectedTestData.selectedRow.subaccountId = undefined;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekToken Consumption view', '');
+
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_PROJECTS;
+        // selectedTestData.selectedRow.subaccountId = undefined;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access Projects view', '');
+
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_LICENSES;
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.openLicenseDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CONSUMPTION;
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow);
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_PROJECTS;
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.openProjectDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
 
-        selectedTestData.selectedOption = dashboardComponentTestInstance.DELETE_ACCOUNT;
-        dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(dashboardComponentTestInstance.onDeleteAccount).toHaveBeenCalledWith(selectedTestData.selectedIndex);
     });
 });
 
