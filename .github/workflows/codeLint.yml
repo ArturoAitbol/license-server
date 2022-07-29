@@ -1,0 +1,26 @@
+
+name: Code linting
+
+on:
+  workflow_dispatch:
+  # or pull request events but only for the main branch
+  pull_request:
+     branches: [ main ]
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Angular dependencies
+        run: |
+          cd ./ui
+          npm install
+      
+      - name: Run Linters
+        uses: wearerequired/lint-action@v2
+        with:
+          eslint: true
+          eslint_dir: ./ui

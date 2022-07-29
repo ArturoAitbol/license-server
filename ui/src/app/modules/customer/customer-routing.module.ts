@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { LicenseConsumption } from './license-consumption/license-consumption.component';
+import { LicenseConsumptionComponent } from './license-consumption/license-consumption.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { LicensesComponent } from './licenses/licenses.component';
 import { RoleGuard } from 'src/app/security/role.guard';
@@ -9,7 +9,7 @@ import { RoleGuard } from 'src/app/security/role.guard';
 const routes: Routes = [
   {
     path: 'consumption',
-    component: LicenseConsumption,
+    component: LicenseConsumptionComponent,
     canActivate:[RoleGuard]
   },
   {

@@ -1,4 +1,3 @@
-
 name: Unit Test Execution
 
 on:
@@ -13,7 +12,7 @@ env:
   DB_USERNAME: 'postgres'
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

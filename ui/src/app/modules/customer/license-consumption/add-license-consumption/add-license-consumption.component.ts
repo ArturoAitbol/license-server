@@ -69,7 +69,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     product: ['', [this.RequireMatch]]
   });
   currentCustomer: any;
-  isDataLoading: boolean = false;
+  isDataLoading = false;
 
   constructor(
     private customerService: CustomerService,
@@ -109,7 +109,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
       /*Devices list*/
       this.allDevices = resDataObject['devices'];
-      let vendorsHash: any = {};
+      const vendorsHash: any = {};
       this.vendors = this.allDevices.filter(device => {
         if (device.type != "PHONE" && !vendorsHash[device.vendor] && !device.supportType) {
           vendorsHash[device.vendor] = true;
@@ -217,7 +217,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     if (value) {
       this.allDevices.forEach((device: any) => {
         if (device.type != "PHONE" && device.vendor == value && !device.supportType) {
-          let productLabel = device.version ? device.product + " - v." + device.version : device.product;
+          const productLabel = device.version ? device.product + " - v." + device.version : device.product;
           this.models.push({
             id: device.id,
             vendor: value,
@@ -233,7 +233,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     if (value) {
       this.allDevices.forEach((device: any) => {
         if (device.type != "PHONE" && device.vendor == value && device.supportType) {
-          let productLabel = device.version ? device.product + " - v." + device.version : device.product;
+          const productLabel = device.version ? device.product + " - v." + device.version : device.product;
           this.models.push({
             id: device.id,
             vendor: value,
@@ -249,8 +249,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   pickStartWeek() {
-    let startWeek = this.addLicenseConsumptionForm.get('startWeek').value;
-    let endWeek = this.addLicenseConsumptionForm.get('endWeek').value;
+    const startWeek = this.addLicenseConsumptionForm.get('startWeek').value;
+    const endWeek = this.addLicenseConsumptionForm.get('endWeek').value;
     this.toggleUsageDays(this.deviceDays,startWeek,endWeek);
     this.toggleUsageDays(this.supportDays,startWeek,endWeek);
     this.devicesUsed.forEach(deviceUsed => this.toggleUsageDays(deviceUsed.days,startWeek,endWeek));
@@ -283,7 +283,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    let consumptionRequests: any[] = [];
+    const consumptionRequests: any[] = [];
     const licenseConsumptionsObject: any = {
       subaccountId: this.currentCustomer.subaccountId,
       projectId: this.addLicenseConsumptionForm.value.project.id,
@@ -297,7 +297,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.addDevice();
     this.addSupport();
     this.devicesUsed.forEach((device: any) => {
-      let newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
+      const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
       newConsumptionObject.deviceId = device.id;
       for (let i = 0; i < device.days.length; i++) {
         if (device.days[i].used)
@@ -306,7 +306,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
     });
     this.supportUsed.forEach((device: any) => {
-      let newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
+      const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
       newConsumptionObject.deviceId = device.id;
       for (let i = 0; i < device.days.length; i++) {
         if (device.days[i].used)
@@ -333,7 +333,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    * add device to the list
    */
   addDevice(): void {
-    let device: any = this.addDeviceForm.value.product;
+    const device: any = this.addDeviceForm.value.product;
     if (device) {
       device.days = JSON.parse(JSON.stringify(this.deviceDays));
       this.devicesUsed.push(device);
@@ -344,7 +344,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   addSupport(): void {
-    let device: any = this.addSupportForm.value.product;
+    const device: any = this.addSupportForm.value.product;
     if (device) {
       device.days = JSON.parse(JSON.stringify(this.supportDays));
       this.supportUsed.push(device);
@@ -425,8 +425,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   devicesAndSupportInvalid(): boolean{
-    let isInvalidDevice = this.devicesUsed.length === 0 && this.isInvalid('product');
-    let isInvalidSupport = this.supportUsed.length === 0 && this.isInvalidSupport('product');
+    const isInvalidDevice = this.devicesUsed.length === 0 && this.isInvalid('product');
+    const isInvalidSupport = this.supportUsed.length === 0 && this.isInvalidSupport('product');
     return isInvalidDevice && isInvalidSupport;
   }
 
