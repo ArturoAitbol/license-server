@@ -22,7 +22,7 @@ export class RangeSelectionStrategy<D> implements MatDateRangeSelectionStrategy<
 
   private _createWeekRange(date: D | null): DateRange<D> {
     if (date) {
-      let dayofWeek = this._dateAdapter.getDayOfWeek(date)
+      const dayofWeek = this._dateAdapter.getDayOfWeek(date)
       let start, end;
       
       if(this.month){
@@ -34,8 +34,8 @@ export class RangeSelectionStrategy<D> implements MatDateRangeSelectionStrategy<
         end= this._dateAdapter.addCalendarDays(start, 6);
       }
      
-      let startLicense =this._dateAdapter.createDate(this.min.getFullYear(),this.min.getMonth(),this.min.getDate());
-      let endLicense =this._dateAdapter.createDate(this.max.getFullYear(),this.max.getMonth(),this.max.getDate());
+      const startLicense = this._dateAdapter.createDate(this.min.getFullYear(),this.min.getMonth(),this.min.getDate());
+      const endLicense = this._dateAdapter.createDate(this.max.getFullYear(),this.max.getMonth(),this.max.getDate());
       
       if(this._dateAdapter.compareDate(start,startLicense)<0)
         start = startLicense;
@@ -49,7 +49,7 @@ export class RangeSelectionStrategy<D> implements MatDateRangeSelectionStrategy<
 }
 
 @Directive({
-  selector: '[dateRange]',
+  selector: '[lcDateRange]',
   providers: [
     {
       provide: MAT_DATE_RANGE_SELECTION_STRATEGY,

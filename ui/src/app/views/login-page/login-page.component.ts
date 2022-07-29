@@ -3,14 +3,14 @@ import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { AuthenticationResult } from '@azure/msal-browser';
 @Component({
-    selector: 'login-page',
+    selector: 'app-login-page',
     templateUrl: './login-page.component.html',
     styleUrls: ['./login-page.component.css']
 })
 export class LoginPageComponent implements OnInit {
-    username: string = '';
-    password: string = '';
-    loading_status: boolean = false;
+    username = '';
+    password = '';
+    loading_status = false;
     returnUrl: string;
 
     constructor(private router: Router, private msalService: MsalService) {

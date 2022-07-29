@@ -42,11 +42,11 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     { name: "Fri", used: false, disabled:true },
     { name: "Sat", used: false, disabled:true },
   ];
-  selectedVendor: string = '';
+  selectedVendor = '';
   startDate: any;
   endDate: any;
-  isDataLoading: boolean = false;
-  edited: boolean = false;
+  isDataLoading = false;
+  edited = false;
   currentCustomer: any;
   private previousFormValue: any;
 
@@ -94,8 +94,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   }
 
   enableUsageDays(){
-    let endLicense = new Date(this.data.endLicensePeriod+" 00:00:00");
-    let startWeek: Date = this.data.consDate;
+    const endLicense = new Date(this.data.endLicensePeriod+" 00:00:00");
+    const startWeek: Date = this.data.consDate;
     let endWeek = new Date(startWeek.getTime());
     endWeek.setDate(endWeek.getDate() - endWeek.getDay() + 6);
     if(endWeek>endLicense){
@@ -129,7 +129,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   submit(): void {
     this.isDataLoading = true;
-    let requestsArray: any[] = [];
+    const requestsArray: any[] = [];
     if (this.edited)
       this.modifyUsageDays(requestsArray);
     if (this.editedForm())
@@ -161,7 +161,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   }
 
   private modifyUsageDays(requestsArray: any[]): void {
-    let modifiedDays: any = {
+    const modifiedDays: any = {
       id: this.data.id,
       consumptionDate: this.data.consumptionDate,
       addedDays: [],
@@ -197,7 +197,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         return { ...current, ...next };
       }, {});
       this.devices = resDataObject['devices'];
-      let vendorsHash: any = {};
+      const vendorsHash: any = {};
       this.vendors = this.devices.filter(device => {
         if (device.type != "PHONE" && !vendorsHash[device.vendor]) {
           vendorsHash[device.vendor] = true;
@@ -214,7 +214,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       const currentProject = this.projects.filter(project => project.id === this.data.projectId)?.[0];
       const currentDevice = this.devices.filter(device => device.id === this.data.deviceId)?.[0];
       const currentVendor = this.vendors.filter(vendor => vendor.vendor === currentDevice.vendor)?.[0];
-      let patchValue = {...this.data};
+      const patchValue = {...this.data};
       patchValue.project = currentProject;
       patchValue.device = currentDevice;
       patchValue.vendor = currentVendor;

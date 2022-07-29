@@ -12,6 +12,7 @@ ui/package-lock.json
 .project
 *.prefs
 .vscode
+ui/coverage
 coverage/*
 azure-functions/coverage/*
 ui/coverage/*

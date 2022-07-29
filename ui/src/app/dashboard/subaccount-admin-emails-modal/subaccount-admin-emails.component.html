@@ -38,7 +38,7 @@
                             </div>
                         </ng-container>
                     </ng-container>
-                    <button *checkAccessFor="'addSubAccAdminEmail'" mat-mini-fab color="primary" type="button" class="mb-3" id="addButton" title="Add email"
+                    <button *lcCheckAccessFor="'addSubAccAdminEmail'" mat-mini-fab color="primary" type="button" class="mb-3" id="addButton" title="Add email"
                             (click)="addEmailForm()">
                         <mat-icon>add</mat-icon>
                     </button>
@@ -47,7 +47,7 @@
         </div>
         <mat-dialog-actions>
             <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
-            <button *checkAccessFor="'addSubAccAdminEmail'" mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
+            <button *lcCheckAccessFor="'addSubAccAdminEmail'" mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>

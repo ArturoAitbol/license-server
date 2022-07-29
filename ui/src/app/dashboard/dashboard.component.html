@@ -3,8 +3,8 @@
         <h1>Customers</h1>
     </main>
     <div style="float: right;">
-        <button *checkAccessFor="'addCustomer'" mat-raised-button (click)="addCustomerAccount()">Add Customer</button>
-        <button *checkAccessFor="'addSubaccount'" mat-raised-button (click)="addSubaccount()">Add Subaccount</button>
+        <button *lcCheckAccessFor="'addCustomer'" mat-raised-button (click)="addCustomerAccount()">Add Customer</button>
+        <button *lcCheckAccessFor="'addSubaccount'" mat-raised-button (click)="addSubaccount()">Add Subaccount</button>
     </div>
     <section class="table-section">
         <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">

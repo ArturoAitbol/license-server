@@ -15,7 +15,7 @@ export class ModifyProjectComponent implements OnInit {
     'Open',
     'Closed'
   ];
-  isDataLoading: boolean = false;
+  isDataLoading = false;
   private previousFormValue: any;
   
   updateProjectForm = this.formBuilder.group({
