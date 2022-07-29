@@ -34,7 +34,7 @@ module.exports = function (config) {
     },
     jsonReporter: {
       stdout: false,
-      outputFile: '../test-results/karma-coverage/json-summary.json'
+      outputFile: '../test-results/coverage-summary.json'
     },
     specReporter: {
       maxLogLines: 5, // limit number of lines logged per test
