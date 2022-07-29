@@ -33,7 +33,7 @@ module.exports = function (config) {
       fixWebpackSourcePaths: true
     },
     jsonReporter: {
-      stdout: true,
+      stdout: false,
       outputFile: '../test-results/karma-coverage/json-summary.json'
     },
     specReporter: {
