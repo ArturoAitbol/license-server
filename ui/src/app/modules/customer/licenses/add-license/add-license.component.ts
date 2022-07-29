@@ -84,13 +84,13 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
   }
 
   onStartDateChange(value) {
-    let minDate = new Date(value);
+    const minDate = new Date(value);
     minDate.setDate(minDate.getDate() + 1);
     this.renewalDateMin = minDate;
   }
 
   onRenewalDateChange(value) {
-    let maxDate = new Date(value);
+    const maxDate = new Date(value);
     maxDate.setDate(maxDate.getDate() - 1);
     this.startDateMax = maxDate;
   }

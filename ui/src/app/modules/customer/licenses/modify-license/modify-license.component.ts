@@ -23,7 +23,7 @@ export class ModifyLicenseComponent implements OnInit {
     }, { validators: renewalDateValidator });
     private previousFormValue: any;
     // flag
-    isDataLoading: boolean = false;
+    isDataLoading = false;
     //  @Inject(MAT_DIALOG_DATA) public data: ModalData
     renewalDateMin: Date = null;
     startDateMax: Date = null;
@@ -117,13 +117,13 @@ export class ModifyLicenseComponent implements OnInit {
     }
 
     onStartDateChange(value) {
-        let minDate = new Date(value);
+        const minDate = new Date(value);
         minDate.setDate(minDate.getDate() + 1);
         this.renewalDateMin = minDate;
     }
 
     onRenewalDateChange(value) {
-        let maxDate = new Date(value);
+        const maxDate = new Date(value);
         maxDate.setDate(maxDate.getDate() - 1);
         this.startDateMax = maxDate;
     }

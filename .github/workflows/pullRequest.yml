@@ -1,4 +1,4 @@
-name: Pull Request Unit Test Execution
+name: Unit Test Execution
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ env:
   DB_USERNAME: 'postgres'
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

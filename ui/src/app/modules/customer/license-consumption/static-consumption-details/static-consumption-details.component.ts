@@ -9,9 +9,10 @@ import { UsageDetailService } from "../../../../services/usage-detail.service";
   styleUrls: ['./static-consumption-details.component.css']
 })
 export class StaticConsumptionDetailsComponent implements OnInit {
-  isDataLoading: boolean = false;
-  isAutomationPlatform: boolean = false;
-  usageDetailsList: string[];
+  isDataLoading = false;
+  isAutomationPlatform = false;
+  usageDetailsList: any[];
+  edited = false;
 
   constructor(
       private usageDetailService: UsageDetailService,
@@ -32,15 +33,20 @@ export class StaticConsumptionDetailsComponent implements OnInit {
   }
 
   close(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(this.edited);
   }
 
   deleteUsageDetail(index: number) {
+    let deleteObject = {
+      id: this.data.id,
+      deletedDays: [this.usageDetailsList[index].id]
+    };
     this.isDataLoading = true;
-    this.usageDetailService.deleteUsageDetails(this.usageDetailsList[index]).subscribe((res: any) => {
+    this.usageDetailService.deleteUsageDetails(deleteObject).subscribe((res: any) => {
       if (!res?.error) {
         this.snackBarService.openSnackBar('Usage deleted', '');
-        this.usageDetailsList.splice(index, 1)
+        this.usageDetailsList.splice(index, 1);
+        this.edited = true;
       } else
         this.snackBarService.openSnackBar(res.error, 'Error while deleting usage detail!');
       this.isDataLoading = false;
