@@ -7,12 +7,12 @@ declare const $: any;
   styleUrls: ['./loading.component.css']
 })
 export class LoadingComponent implements OnInit {
-  loading_status: boolean = false;
+  loading_status = false;
   constructor(private router: Router) { }
 
   ngOnInit() {
 
-    var i = 1;
+    let i = 1;
     function myLoop() {
       if (i < 51) {
         setTimeout(function () {

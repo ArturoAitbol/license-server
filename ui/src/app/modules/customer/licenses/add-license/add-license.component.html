@@ -25,7 +25,7 @@
                         <mat-label>Type</mat-label>
                         <mat-select required formControlName="packageType" (valueChange)="onChangeType($event)">
                             <mat-option *ngFor="let item of types" [value]="item"
-                                [selected]="item.name == selectedType">
+                                [selected]="item.name === selectedType">
                                 {{item.name}}
                             </mat-option>
                         </mat-select>

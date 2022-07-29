@@ -18,6 +18,7 @@ import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { DataTableComponent } from '../../../generics/data-table/data-table.component';
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
+import moment from 'moment';
 
 @Component({
   selector: 'app-license-consumption',
@@ -34,7 +35,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   selectedProject: string;
   startDate: any;
   endDate: any;
-  aggregation: string = 'period';
+  aggregation = "period";
   month: number;
   year: number;
   licensesList: any = [];
@@ -47,8 +48,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     licenseId: ['']
   });
   range: FormGroup = this.formBuilder.group({
-    start: [{value: '', disabled: true}],
-    end: [{value: '', disabled: true}],
+    start: [{ value: '', disabled: true }],
+    end: [{ value: '', disabled: true }],
   });
   detailedConsumptionDataLength = 0;
 
@@ -88,27 +89,27 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
     { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true },
-    { name: 'Usage Days', dataKey: 'usageDays', position: 'left', isSortable: false}
+    { name: 'Usage Days', dataKey: 'usageDays', position: 'left', isSortable: false }
   ];
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
   readonly ADD_LICENSE = 'add-new-license';
 
   // flag
-  isLicenseSummaryLoadingResults: boolean = true;
-  isLicenseSummaryRequestCompleted: boolean = false;
-  isEquipmentSummaryLoadingResults: boolean = true;
-  isEquipmentSummaryRequestCompleted: boolean = false;
-  isDetailedConsumptionSupplementalLoadingResults: boolean = true;
-  isDetailedConsumptionSupplementalRequestCompleted: boolean = false;
-  isDetailedConsumptionLoadingResults: boolean = true;
-  isDetailedConsumptionRequestCompleted: boolean = false;
-  isLicenseListLoaded: boolean = false;
+  isLicenseSummaryLoadingResults = true;
+  isLicenseSummaryRequestCompleted = false;
+  isEquipmentSummaryLoadingResults = true;
+  isEquipmentSummaryRequestCompleted = false;
+  isDetailedConsumptionSupplementalLoadingResults = true;
+  isDetailedConsumptionSupplementalRequestCompleted = false;
+  isDetailedConsumptionLoadingResults = true;
+  isDetailedConsumptionRequestCompleted = false;
+  isLicenseListLoaded = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
   licConsumptionActionMenuOptions: any = [];
 
-  daysOfWeek: Object = {
+  daysOfWeek = {
     0: 'Sun',
     1: 'Mon',
     2: 'Tue',
@@ -116,7 +117,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     4: 'Thu',
     5: 'Fri',
     6: 'Sat'
-  };
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -132,7 +133,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const projectItem: string = localStorage.getItem(Constants.PROJECT);
-    if (projectItem) { this.selectedProject = JSON.parse(projectItem).id; }
+    if (projectItem)
+      this.selectedProject = JSON.parse(projectItem).id;
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
@@ -166,10 +168,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   private getActionMenuOptions() {
     this.licConsumptionActionMenuOptions = [];
-    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
+    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     accountRoles.forEach(accountRole => {
       permissions[accountRole].tables.licConsumptionOptions?.forEach(item => this.licConsumptionActionMenuOptions.push(this[item]));
-    });
+    })
   }
 
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
@@ -273,7 +275,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       });
       this.detailedConsumptionData = res.usage;
       this.detailedConsumptionDataLength = res.usageTotalCount;
-      this.weeklyConsumptionData = res.configurationTokens;
+      this.weeklyConsumptionData = this.getWeeksDetail(res.configurationTokens);
       this.tokenConsumptionData = this.formatTokenConsumption(res.tokenConsumption);
       this.detailsConsumptionTable.setPageIndex(0);
       this.isDetailedConsumptionSupplementalLoadingResults = false;
@@ -287,6 +289,49 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     });
+  }
+
+  getWeeksDetail(configurationTokens: any[]): any[] {
+
+    let startDate: string | Date;
+    let endDate: string | Date;
+    if (this.aggregation === "month" || this.aggregation === "week") {
+      startDate = this.range.get('start').value;
+      endDate = this.range.get('end').value;
+    } else {
+      startDate = this.selectedLicense.startDate + " 00:00:00";
+      endDate = this.selectedLicense.renewalDate + " 00:00:00";
+    }
+    const licenseStartWeek = new Date(startDate);
+    licenseStartWeek.setDate(licenseStartWeek.getDate() - licenseStartWeek.getDay());
+    const licenseEndWeek = new Date(endDate);
+    licenseEndWeek.setDate(licenseEndWeek.getDate() - licenseEndWeek.getDay());
+
+    const weekStart = licenseStartWeek;
+    const weeklyConsumptionDetail = [];
+
+    while (weekStart <= licenseEndWeek) {
+      const date = new Date(weekStart);
+      date.setDate(date.getDate() + 1);
+      const week = moment(date).isoWeek();
+
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+
+      weeklyConsumptionDetail.push({
+        weekId: "Week " + week + " (" + weekStart.toISOString().split("T")[0] + " - " + weekEnd.toISOString().split("T")[0] + ")",
+        tokensConsumed: 0
+      });
+      weekStart.setDate(weekStart.getDate() + 7);
+    }
+
+    configurationTokens.forEach(item => {
+      const i = weeklyConsumptionDetail.findIndex(week => week.weekId === item.weekId);
+      if (i !== -1)
+        weeklyConsumptionDetail[i].tokensConsumed = item.tokensConsumed;
+    })
+
+    return weeklyConsumptionDetail;
   }
 
   fetchDetailedConsumptionData(pageNumber = 0, pageSize = 6) {
@@ -309,13 +354,13 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   private getNameOfDays(list: any[]): void {
-      list.forEach((dayNumber, index) => list[index] = this.daysOfWeek[dayNumber]);
+    list.forEach((dayNumber, index) => list[index] = this.daysOfWeek[dayNumber]);
   }
 
   private formatTokenConsumption(tokenConsumption: any): any[] {
     let AutomationTokens = tokenConsumption.AutomationPlatform ?? 0;
-    let  ConfigurationTokens = tokenConsumption.Configuration ?? 0;
-    const totalConsumption =  AutomationTokens + ConfigurationTokens;
+    let ConfigurationTokens = tokenConsumption.Configuration ?? 0;
+    const totalConsumption = AutomationTokens + ConfigurationTokens;
 
     if (this.selectedType === 'Configuration') {
       AutomationTokens = null;
@@ -431,10 +476,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.EDIT:
-        const dataObject: any = { ...object.selectedRow, ...{endLicensePeriod: this.selectedLicense.renewalDate} };
-        if (object.selectedRow.granularity.toLowerCase() === 'static' || object.selectedRow.usageType === 'AutomationPlatform') {
+        const dataObject: any = { ...object.selectedRow, ...{ endLicensePeriod: this.selectedLicense.renewalDate } };
+        if (object.selectedRow.granularity.toLowerCase() === "static" || object.selectedRow.usageType === "AutomationPlatform")
           this.openDialog(StaticConsumptionDetailsComponent, dataObject);
-        } else {
+        else {
           this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
         }
         break;
@@ -506,7 +551,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   resetCalendar() {
-    this.range.patchValue({start: null, end: null});
+    this.range.patchValue({ start: null, end: null });
     this.month = null;
     this.year = null;
   }
@@ -517,7 +562,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.range.disable();
   }
 
-  onPageChange(event: {pageIndex, pageSize}) {
+  onPageChange(event: { pageIndex, pageSize }) {
     this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize);
   }
 

@@ -4,11 +4,10 @@ import UserFeatureToggles from '../../assets/user-feature-toggles.json';
 import { MsalService } from '@azure/msal-angular';
 
 @Directive({
-    // tslint:disable-next-line:directive-selector
-    selector: '[featureToggle]'
+    selector: '[lcFeatureToggle]'
 })
-export class FeatureToggleDirective implements OnInit {
-    @Input() featureToggle: string;
+export class FeatureToggleDirective implements OnInit{
+    @Input() lcFeatureToggle: string;
 
     constructor(
         private vcr: ViewContainerRef,
@@ -18,7 +17,7 @@ export class FeatureToggleDirective implements OnInit {
     }
 
     ngOnInit() {
-        if (FeatureToggles.features[this.featureToggle] || UserFeatureToggles[this.msalService.instance.getActiveAccount()?.username]?.features?.[this.featureToggle]) {
+        if (FeatureToggles.features[this.lcFeatureToggle] || UserFeatureToggles[this.msalService.instance.getActiveAccount()?.username]?.features?.[this.lcFeatureToggle]) {
             this.vcr.createEmbeddedView(this.tpl);
         }
     }

@@ -1,26 +1,25 @@
-import {Component, HostListener, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {Sort} from '@angular/material/sort';
-import {Router} from '@angular/router';
-import {forkJoin} from 'rxjs';
-import {Constants} from '../helpers/constants';
-import {Utility} from '../helpers/Utility';
-import {CustomerLicense} from '../model/customer-license';
-import {Customer} from '../model/customer.model';
-import {License} from '../model/license.model';
-import {CustomerService} from '../services/customer.service';
-import {DialogService} from '../services/dialog.service';
-import {LicenseService} from '../services/license.service';
-import {SnackBarService} from '../services/snack-bar.service';
-import {SubAccountService} from '../services/sub-account.service';
-import {AddCustomerAccountModalComponent} from './add-customer-account-modal/add-customer-account-modal.component';
-import {AddSubaccountModalComponent} from './add-subaccount-modal/add-subaccount-modal.component';
-import {ModifyCustomerAccountComponent} from './modify-customer-account/modify-customer-account.component';
-import {AdminEmailsComponent} from './admin-emails-modal/admin-emails.component';
-import {SubaccountAdminEmailsComponent} from './subaccount-admin-emails-modal/subaccount-admin-emails.component';
-import {MsalService} from '@azure/msal-angular';
-import {permissions} from '../helpers/role-permissions';
-import {SubAccount} from '../model/subaccount.model';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Sort } from '@angular/material/sort';
+import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
+import { Constants } from '../helpers/constants';
+import { Utility } from '../helpers/utils';
+import { CustomerLicense } from '../model/customer-license';
+import { License } from '../model/license.model';
+import { CustomerService } from '../services/customer.service';
+import { DialogService } from '../services/dialog.service';
+import { LicenseService } from '../services/license.service';
+import { SnackBarService } from '../services/snack-bar.service';
+import { SubAccountService } from '../services/sub-account.service';
+import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
+import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
+import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
+import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.component";
+import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
+import { MsalService } from '@azure/msal-angular';
+import { permissions } from '../helpers/role-permissions';
+import { SubAccount } from '../model/subaccount.model';
 
 @Component({
     selector: 'app-dashboard',
@@ -93,10 +92,10 @@ export class DashboardComponent implements OnInit {
      */
     initColumns(): void {
         this.displayedColumns = [
-            {name: 'Customer', dataKey: 'name', position: 'left', isSortable: true},
-            {name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true, isClickable: true},
-            {name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true},
-            {name: 'Subscription Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true, isClickable: true}
+            { name: 'Customer', dataKey: 'name', position: 'left', isSortable: true },
+            { name: 'Subaccount', dataKey: 'subaccountName', position: 'left', isSortable: true, isClickable: true },
+            { name: 'Type', dataKey: 'customerType', position: 'left', isSortable: true },
+            { name: 'Subscription Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true, isClickable: true }
         ];
     }
 
@@ -114,10 +113,23 @@ export class DashboardComponent implements OnInit {
             this.isLoadingResults = false;
             this.isRequestCompleted = true;
             const newDataObject: any = res.reduce((current, next) => {
-                return {...current, ...next};
+                return { ...current, ...next };
             }, {});
             this.customerList = newDataObject['customers'];
-            this.assignSubAccountData(newDataObject['subaccounts'], newDataObject['licenses']);
+            this.customerList.forEach((account: any) => {
+                const subaccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
+                if (subaccountDetails !== undefined) {
+                    account.subaccountName = subaccountDetails.name;
+                    account.subaccountId = subaccountDetails.id;
+                    const subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccountDetails.id));
+                    if (subaccountLicenses.length > 0) {
+                        const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
+                        account.status = licenseDetails ? licenseDetails.status : "Expired";
+                    } else {
+                        account.status = "Inactive";
+                    }
+                }
+            });
             this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
         }, err => {
             console.debug('error', err);
@@ -249,7 +261,7 @@ export class DashboardComponent implements OnInit {
             .subscribe((result) => {
                 if (result.confirm) {
                     console.debug('The user confirmed the action: ', this.customerList[index]);
-                    const {subaccountId, id} = this.customerList[index];
+                    const { subaccountId, id } = this.customerList[index];
                     if (subaccountId && !result.deleteAllData) {
                         this.subaccountService.deleteSubAccount(subaccountId).subscribe((res: any) => {
                             if (!res?.error) {

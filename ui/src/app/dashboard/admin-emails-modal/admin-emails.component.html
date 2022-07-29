@@ -15,7 +15,7 @@
                             <label class = "col-form-label"><b>Email: </b>{{email}}</label>
                         </div>
                         <div class="col-2" id="clearButton">
-                            <button *checkAccessFor="'deleteAdminEmail'" mat-icon-button color="primary" title="Delete email"
+                            <button *lcCheckAccessFor="'deleteAdminEmail'" mat-icon-button color="primary" title="Delete email"
                                         (click)="deleteExistingEmail(emailIndex)">
                                     <mat-icon>clear</mat-icon>
                             </button>
@@ -38,7 +38,7 @@
                             </div>
                         </ng-container>
                     </ng-container>
-                    <button *checkAccessFor="'addAdminEmail'" mat-mini-fab color="primary" type="button" class="mb-3" id="addButton" title="Add email"
+                    <button *lcCheckAccessFor="'addAdminEmail'" mat-mini-fab color="primary" type="button" class="mb-3" id="addButton" title="Add email"
                             (click)="addEmailForm()">
                         <mat-icon>add</mat-icon>
                     </button>
@@ -47,7 +47,7 @@
         </div>
         <mat-dialog-actions>
             <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
-            <button *checkAccessFor="'addAdminEmail'" mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
+            <button *lcCheckAccessFor="'addAdminEmail'" mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>

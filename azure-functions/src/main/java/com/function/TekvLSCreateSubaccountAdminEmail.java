@@ -69,7 +69,7 @@ public class TekvLSCreateSubaccountAdminEmail {
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
              Statement statement = connection.createStatement()) {
 
-            context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);

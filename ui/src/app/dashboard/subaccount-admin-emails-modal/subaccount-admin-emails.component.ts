@@ -20,7 +20,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
   });
 
   private previousFormValue: any;
-  isDataLoading: boolean = false;
+  isDataLoading = false;
   adminEmails: string[];
 
   constructor(

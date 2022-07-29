@@ -107,7 +107,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
-			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			JSONObject json = new JSONObject();
 			ResultSet rs;
 			switch (view.toLowerCase()) {
