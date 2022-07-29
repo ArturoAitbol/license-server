@@ -53,7 +53,7 @@ jobs:
           uses: azure/CLI@v1
           with:
             inlineScript: |
-              az cdn endpoint purge --content-paths  "/*" --profile-name ${{ secrets.PRODUCTION_CDN_PROFILE_NAME }} --name ${{ secrets.PRODUCTION_CDN_ENDPOINT }} --resource-group ${{ secrets.PRODUCTION_RESOURCE_GROUP }}
+              az cdn endpoint purge --content-paths  "/*" --profile-name ${{ secrets.AZURE_PRODUCTION_CDN_PROFILE_NAME }} --name ${{ secrets.AZURE_PRODUCTION_CDN_ENDPOINT }} --resource-group ${{ secrets.AZURE_PRODUCTION_RESOURCE_GROUP }}
 
         - name: Unzip Azure Functions UI
           run: unzip -qq af-release*.zip -d Azure-functions
