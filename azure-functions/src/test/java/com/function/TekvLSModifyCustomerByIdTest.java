@@ -12,56 +12,43 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
-class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
+class TekvLSModifyCustomerByIdTest extends TekvLSTest {
 
-    TekvLSDeleteUsageDetailsById deleteUsageDetailsByIdApi = new TekvLSDeleteUsageDetailsById();
+    TekvLSModifyCustomerById modifyCustomerApi = new TekvLSModifyCustomerById();
 
-    private final TekvLSCreateLicenseUsageDetail createLicenseUsageDetailApi = new TekvLSCreateLicenseUsageDetail();
-    private final TekvLSDeleteLicenseUsageById deleteLicenseUsageApi = new TekvLSDeleteLicenseUsageById();
-    private final TekvLSGetConsumptionUsageDetails getConsumptionUsageDetailsApi = new TekvLSGetConsumptionUsageDetails();
-    private String consumptionId = "EMPTY";
-    private String usageId = "EMPTY";
-
+    private final TekvLSCreateCustomer createCustomerApi = new TekvLSCreateCustomer();
+    private final TekvLSDeleteCustomerById deleteCustomerApi = new TekvLSDeleteCustomerById();
+    private String customerId = "EMPTY";
 
     @BeforeEach
     public void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        String bodyRequest = "{\n" +
-                "    \"subaccountId\": \"f5a609c0-8b70-4a10-9dc8-9536bdb5652c\",\n" +
-                "    \"projectId\": \"2bdaf2af-838f-4053-b3fa-ef22aaa11b0d\",\n" +
-                "    \"deviceId\": \"c49a3148-1e74-4090-9876-d062011d9bcb\",\n" +
-                "    \"consumptionDate\": \"2022-07-25\",\n" +
-                "    \"type\": \"Configuration\",\n" +
-                "    \"usageDays\":[0]\n" +
-                "}";
+        String name = "customerTest" + LocalDateTime.now();
+        String bodyRequest = "{'customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        HttpResponseMessage response = this.createLicenseUsageDetailApi.run(this.request, this.context);
+        HttpResponseMessage response = this.createCustomerApi.run(this.request, context);
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-        this.consumptionId = new JSONObject(response.getBody().toString()).getString("id");
-
-        response = this.getConsumptionUsageDetailsApi.run(this.request, this.consumptionId, this.context);
-        actualStatus = response.getStatus();
-        expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-        this.usageId = new JSONObject(response.getBody().toString()).getJSONArray("usageDays").getJSONObject(0).getString("id");
+        this.customerId = new JSONObject(response.getBody().toString()).getString("id");
     }
 
     @AfterEach
     void tearDown() {
-        if (!this.consumptionId.equals("EMPTY")) {
+        if (!this.customerId.equals("EMPTY")) {
             this.initTestParameters();
             this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-            HttpResponseMessage response = deleteLicenseUsageApi.run(this.request, this.consumptionId, this.context);
+            HttpResponseMessage response = deleteCustomerApi.run(this.request, this.customerId, this.context);
             this.context.getLogger().info(response.getStatus().toString());
-            this.consumptionId = "EMPTY";
+            this.customerId = "EMPTY";
 
             HttpStatusType actualStatus = response.getStatus();
             HttpStatus expected = HttpStatus.OK;
@@ -70,85 +57,46 @@ class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void deleteUsageDetail() {
+    public void modifyCustomerTest() {
         //Given - Arrange
+        String name = "customerTestModified" + LocalDateTime.now();
         String bodyRequest = "{\n" +
-                "    \"deletedDays\": [\"" + this.usageId + "\"]\n" +
+                "    \"customerName\": \"" + name + "\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action
-        HttpResponseMessage response = deleteUsageDetailsByIdApi.run(this.request, this.consumptionId, this.context);
+        HttpResponseMessage response = modifyCustomerApi.run(this.request, this.customerId, this.context);
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-        assertNotNull(this.consumptionId);
     }
 
-
     @Test
-    public void incompleteBodyTest() {
+    public void noParamsTest() {
         //Given - Arrange
-        String bodyRequest = "{\n" +
-                "    \"deletedDays\": []\n" +
-                "}";
+        String bodyRequest = "{}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action
-        HttpResponseMessage response = deleteUsageDetailsByIdApi.run(this.request, this.consumptionId, this.context);
-        this.context.getLogger().info(response.getBody().toString());
+        HttpResponseMessage response = modifyCustomerApi.run(this.request, this.customerId, this.context);
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-
-        assertTrue(jsonBody.has("error"));
-
-        String expectedResponse = "Missing mandatory parameter: deletedDays";
-        String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test
-    public void invalidBodyTest() {
-        //Given - Arrange
-        String bodyRequest = "Something";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
-        //When - Action
-        HttpResponseMessage response = deleteUsageDetailsByIdApi.run(this.request, this.consumptionId, this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        //Then - Assert
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-
-        assertTrue(jsonBody.has("error"));
-
-        String expectedResponse = "A JSONObject text must begin with '{' at 1 [character 2 line 1]";
-        String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
-    }
-
-    @Test
-    public void noBodyTest() {
+    public void emptyBodyTest() {
         //Given - Arrange
         String bodyRequest = "";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action
-        HttpResponseMessage response = deleteUsageDetailsByIdApi.run(this.request, this.consumptionId, this.context);
-        this.context.getLogger().info(response.getBody().toString());
+        HttpResponseMessage response = modifyCustomerApi.run(this.request, this.customerId, this.context);
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
@@ -166,20 +114,17 @@ class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void sqlExceptionTest() {
+    public void invalidBodyTest() {
         //Given - Arrange
-        String bodyRequest = "{\n" +
-                "    \"deletedDays\": [\"TEST\"]\n" +
-                "}";
+        String bodyRequest = "Something";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action
-        HttpResponseMessage response = deleteUsageDetailsByIdApi.run(this.request, "000", this.context);
-        this.context.getLogger().info(response.getBody().toString());
+        HttpResponseMessage response = modifyCustomerApi.run(this.request, this.customerId, this.context);
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
@@ -187,23 +132,43 @@ class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "ERROR: invalid input syntax for type uuid: \"000\"";
+        String expectedResponse = "A JSONObject text must begin with '{' at 1 [character 2 line 1]";
         String actualResponse = jsonBody.getString("error");
-        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void sqlExceptionTest() {
+        //Given - Arrange
+        String name = "customerTestModified" + LocalDateTime.now();
+        String bodyRequest = "{\n" +
+                "    \"customerName\": \"" + name + "\",\n" +
+                "    \"distributorId\": 00000\n" +
+                "}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When - Action
+        HttpResponseMessage response = modifyCustomerApi.run(this.request, this.customerId, this.context);
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
     @Test
     public void genericExceptionTest() {
         //Given - Arrange
+        String name = "customerTestModified" + LocalDateTime.now();
         String bodyRequest = "{\n" +
-                "    \"deletedDays\": [\"" + this.usageId + "\"]\n" +
+                "    \"customerName\": \"" + name + "\",\n" +
+                "    \"customerId\": 6d9a055e-0435-4348-84b7-db8db243ac4c\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
         //When - Action
-        HttpResponseMessage response = deleteUsageDetailsByIdApi.run(this.request, this.consumptionId, this.context);
-        this.context.getLogger().info(response.getBody().toString());
+        HttpResponseMessage response = modifyCustomerApi.run(this.request, this.customerId, this.context);
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
@@ -222,14 +187,16 @@ class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
 
     @Test
     public void unauthorizedTest() {
-        this.headers.remove("authorization");
         //Given - Arrange
-        String bodyRequest = "";
+        String name = "customerTestModified" + LocalDateTime.now();
+        String bodyRequest = "{\n" +
+                "    \"customerName\": \"" + name + "\",\n" +
+                "    \"customerId\": 6d9a055e-0435-4348-84b7-db8db243ac4c\n" +
+                "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
+        this.headers.remove("authorization");
         //When - Action
-        HttpResponseMessage response = deleteUsageDetailsByIdApi.run(this.request, this.consumptionId, this.context);
-        this.context.getLogger().info(response.getBody().toString());
+        HttpResponseMessage response = modifyCustomerApi.run(this.request, this.customerId, this.context);
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
@@ -248,15 +215,17 @@ class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
 
     @Test
     public void forbiddenTest() {
+        //Given - Arrange
+        String name = "customerTestModified" + LocalDateTime.now();
+        String bodyRequest = "{\n" +
+                "    \"customerName\": \"" + name + "\",\n" +
+                "    \"customerId\":6d9a055e-0435-4348-84b7-db8db243ac4c\n" +
+                "}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
         this.headers.remove("authorization");
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
-        //Given - Arrange
-        String bodyRequest = "";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
         //When - Action
-        HttpResponseMessage response = deleteUsageDetailsByIdApi.run(this.request, this.consumptionId, this.context);
-        this.context.getLogger().info(response.getBody().toString());
+        HttpResponseMessage response = modifyCustomerApi.run(this.request, this.customerId, this.context);
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();

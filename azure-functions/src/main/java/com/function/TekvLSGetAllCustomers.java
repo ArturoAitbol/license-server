@@ -140,7 +140,7 @@ public class TekvLSGetAllCustomers {
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
+			json.put("error", "SQL Exception: " + e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
@@ -173,10 +173,4 @@ public class TekvLSGetAllCustomers {
 		}
 		return emailsMap;
 	}
-
-
-
-
-
-
 }
