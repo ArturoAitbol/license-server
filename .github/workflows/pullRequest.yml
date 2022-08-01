@@ -47,7 +47,6 @@ jobs:
           cd ./ui
           npm install
           npm run test -- --no-watch --no-progress
-          ls test-results/
   
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
