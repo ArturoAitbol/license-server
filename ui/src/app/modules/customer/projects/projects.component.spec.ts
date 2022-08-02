@@ -1,37 +1,37 @@
-import { HttpClient } from "@angular/common/http";
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { MatDialog, MatDialogModule, MatDialogRef } from "@angular/material/dialog";
-import { MatSnackBarModule, MatSnackBarRef } from "@angular/material/snack-bar";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Router } from "@angular/router";
-import { MsalService } from "@azure/msal-angular";
-import { Observable } from "rxjs";
-import { DataTableComponent } from "src/app/generics/data-table/data-table.component";
-import { CustomerService } from "src/app/services/customer.service";
-import { DialogService } from "src/app/services/dialog.service";
-import { ProjectService } from "src/app/services/project.service";
-import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
-import { CurrentCustomerServiceMock } from "src/test/mock/services/current-customer-service.mock";
-import { CustomerServiceMock } from "src/test/mock/services/customer-service.mock";
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
-import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
-import { SharedModule } from "../../shared/shared.module";
-import { AddProjectComponent } from "./add-project/add-project.component";
-import { ModifyProjectComponent } from "./modify-project/modify-project.component";
-import { ProjectsComponent } from "./projects.component";
+import { HttpClient } from '@angular/common/http';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
+import { MsalService } from '@azure/msal-angular';
+import { Observable } from 'rxjs';
+import { DataTableComponent } from 'src/app/generics/data-table/data-table.component';
+import { CustomerService } from 'src/app/services/customer.service';
+import { DialogService } from 'src/app/services/dialog.service';
+import { ProjectService } from 'src/app/services/project.service';
+import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
+import { CurrentCustomerServiceMock } from 'src/test/mock/services/current-customer-service.mock';
+import { CustomerServiceMock } from 'src/test/mock/services/customer-service.mock';
+import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
+import { ProjectServiceMock } from 'src/test/mock/services/project-service.mock';
+import { SharedModule } from '../../shared/shared.module';
+import { AddProjectComponent } from './add-project/add-project.component';
+import { ModifyProjectComponent } from './modify-project/modify-project.component';
+import { ProjectsComponent } from './projects.component';
 
 let projectsComponentTestInstance: ProjectsComponent;
 let fixture: ComponentFixture<ProjectsComponent>;
 
 const RouterMock = {
     navigate: (commands: string[]) => {}
-}
+};
 
-const beforeEachFunction = () => {
+const beforeEachFunction = async () => {
     TestBed.configureTestingModule({
         declarations: [ ProjectsComponent, DataTableComponent, ModifyProjectComponent, AddProjectComponent ],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule],
-        providers:[
+        imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule ],
+        providers: [
             {
                 provide: Router,
                 useValue: RouterMock
@@ -72,13 +72,12 @@ const beforeEachFunction = () => {
     projectsComponentTestInstance = fixture.componentInstance;
     projectsComponentTestInstance.ngOnInit();
     spyOn(console, 'log').and.callThrough;
-    spyOn(CurrentCustomerServiceMock,'getSelectedCustomer' ).and.callThrough;
+    spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer' ).and.callThrough;
     spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough;
     spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough;
-    
 };
 
-describe('UI verrification test', () => {
+describe('UI verification test', () => {
     beforeEach(beforeEachFunction);
     it('should display essential UI and components', () =>{
         fixture.detectChanges();
@@ -103,18 +102,17 @@ describe('UI verrification test', () => {
     });
 });
 
-describe('Data collection and parsin tests', () => {
+describe('Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
     it('should make a call to get project list after initializing', () => {
-        fixture.detectChanges();
+        // fixture.detectChanges();
         expect(CurrentCustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(ProjectServiceMock.setSelectedSubAccount).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
     });
-}); 
+});
 
-
-describe('Dialog calls and ionteractions', () => {
+describe('Dialog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     it('should execute rowAction() with expected data given set arguments', () => {
@@ -123,7 +121,7 @@ describe('Dialog calls and ionteractions', () => {
         spyOn(projectsComponentTestInstance, 'confirmCloseDialog');
         spyOn(projectsComponentTestInstance, 'confirmDeleteDialog');
         spyOn(projectsComponentTestInstance, 'openConsumptionView');
-        
+
         selectedTestData.selectedOption = projectsComponentTestInstance.MODIFY_PROJECT;
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(projectsComponentTestInstance.openDialog).toHaveBeenCalledWith(ModifyProjectComponent, selectedTestData.selectedRow);
@@ -143,7 +141,7 @@ describe('Dialog calls and ionteractions', () => {
         selectedTestData.selectedOption = projectsComponentTestInstance.VIEW_CONSUMPTION;
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(projectsComponentTestInstance.openConsumptionView).toHaveBeenCalledWith(selectedTestData.selectedIndex);
-    })
+    });
 });
 
 describe('navigate', () =>{

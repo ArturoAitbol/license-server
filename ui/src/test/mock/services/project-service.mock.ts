@@ -45,7 +45,7 @@ export const ProjectServiceMock = {
             };
         });
     },
-    setSelectedSubAccount: () => {
-
+    setSelectedSubAccount: (value: string) => {
+        // TODO
     }
 };
