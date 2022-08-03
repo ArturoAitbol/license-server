@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
@@ -85,12 +85,11 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
-
+    this.fetchData();
     if (this.data) {
       this.startDate = new Date(this.data.startDate + " 00:00:00");
       this.endDate = new Date(this.data.renewalDate + " 00:00:00");
     }
-    this.fetchData();
   }
 
   /**
@@ -165,6 +164,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
           map(value => (typeof value === 'string' ? value : value ? value.product : '')),
           map(product => (product ? this.filterModels(product, true) : this.supportModels.slice()))
       );
+      this.loadClonedDevices();
       this.isDataLoading = false;
     });
   }
@@ -428,6 +428,25 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     const isInvalidDevice = this.devicesUsed.length === 0 && this.isInvalid('product');
     const isInvalidSupport = this.supportUsed.length === 0 && this.isInvalidSupport('product');
     return isInvalidDevice && isInvalidSupport;
+  }
+
+  loadClonedDevices() {
+    if (this.data?.selectedConsumptions) {
+      const devices = JSON.parse(JSON.stringify(this.data.selectedConsumptions));
+      devices.forEach(device => {
+        device.id = device.deviceId;
+        device.days = JSON.parse(JSON.stringify(this.deviceDays));
+        if (device.granularity === 'week') {
+          device.days.forEach(day => {
+            if (device.usageDays.includes(day.name)) {
+              day.used = true;
+            }
+          });
+        }
+        if (this.vendors.some(vendor => vendor.vendor === device.vendor)) this.devicesUsed.push(device);
+        else this.supportUsed.push(device);
+      });
+    }
   }
 
   ngOnDestroy(): void {
