@@ -234,7 +234,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.allDevices.forEach((device: any) => {
         if (device.type != "PHONE" && device.vendor == value && device.supportType) {
           const productLabel = device.version ? device.product + " - v." + device.version : device.product;
-          this.models.push({
+          this.supportModels.push({
             id: device.id,
             vendor: value,
             product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
