@@ -16,6 +16,7 @@ env:
 
 jobs:
   build:
+      if: github.actor == 'tekviziondev'
       runs-on: ubuntu-latest
       steps:
         - uses: azure/login@v1
