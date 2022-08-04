@@ -1,8 +1,6 @@
 # Workflow to acquire release and deploy to Azure cloud the License Server components
-
 name: Push Release
 
-# Controls when the workflow will run
 on:
   workflow_dispatch:
     inputs:
