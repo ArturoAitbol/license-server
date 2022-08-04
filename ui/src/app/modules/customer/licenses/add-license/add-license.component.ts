@@ -57,7 +57,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
       deviceLimit: this.addLicenseForm.get("deviceLimit").value,
       renewalDate: this.addLicenseForm.value.renewalDate
     };
-    this.licenseService.purchaseLicense(licenseObject).subscribe((res: any) => {
+    this.licenseService.createLicense(licenseObject).subscribe((res: any) => {
       if (!res.error) {
         this.snackBarService.openSnackBar('Package added successfully!', '');
         this.dialogRef.close(res);
