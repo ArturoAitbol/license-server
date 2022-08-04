@@ -7,8 +7,8 @@ const PROJECT_LIST = {
             name: 'Project-Test1',
             code: 'test-code',
             subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
-            openDate: '2022-07-26 05:00:00',
-            closeDate: '2022-08-29 05:00:00',
+            openDate: '2022-01-26 05:00:00',
+            closeDate: '2022-05-29 05:00:00',
             status: 'Open'
         },
         {
@@ -16,17 +16,26 @@ const PROJECT_LIST = {
             name: 'Project-Test2',
             code: 'test-code2',
             subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
-            openDate: '2022-07-25 05:00:00',
-            closeDate: '2022-08-30 05:00:00',
+            openDate: '2022-01-25 05:00:00',
+            closeDate: '2022-03-30 05:00:00',
             status: 'Open'
         },
         {
-            id: '9fd20dca-33f0-4bd2-b484-d81dd6423626',
+            id: '234d6482-4004-44ca-a846-f9ec9a7ae1dd',
             name: 'Project-Test3',
             code: 'test-code3',
             subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
-            openDate: '2022-07-25 05:00:00',
-            closeDate: '2022-08-30 05:00:00',
+            openDate: '2022-01-25 05:00:00',
+            closeDate: '2022-03-30 05:00:00',
+            status: 'Open'
+        },
+        {
+            id: '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d',
+            name: 'Project-Test4',
+            code: 'test-code4',
+            subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
+            openDate: '2022-01-25 05:00:00',
+            closeDate: '2022-03-30 05:00:00',
             status: 'Open'
         }
     ]

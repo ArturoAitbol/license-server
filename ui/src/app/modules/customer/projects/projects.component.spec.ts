@@ -27,7 +27,7 @@ const RouterMock = {
     navigate: (commands: string[]) => {}
 };
 
-const beforeEachFunction = async () => {
+const beforeEachFunction = () => {
     TestBed.configureTestingModule({
         declarations: [ ProjectsComponent, DataTableComponent, ModifyProjectComponent, AddProjectComponent ],
         imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule ],
@@ -71,10 +71,10 @@ const beforeEachFunction = async () => {
     fixture = TestBed.createComponent(ProjectsComponent);
     projectsComponentTestInstance = fixture.componentInstance;
     projectsComponentTestInstance.ngOnInit();
-    spyOn(console, 'log').and.callThrough;
-    spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer' ).and.callThrough;
-    spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough;
-    spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough;
+    spyOn(console, 'log').and.callThrough();
+    spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer' ).and.callThrough();
+    spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
+    spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
 };
 
 describe('UI verification test', () => {
@@ -84,7 +84,7 @@ describe('UI verification test', () => {
         const h2 = fixture.nativeElement.querySelector('#page-title');
         const addProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
         expect(h2.textContent).toBe('Project Summary');
-        expect(addProjectButton.textContent).toBe('Add New Projects');
+        expect(addProjectButton.textContent).toBe('Add New Project ');
     });
 
     it('should load correct data columns for the table', () => {
@@ -105,7 +105,7 @@ describe('UI verification test', () => {
 describe('Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
     it('should make a call to get project list after initializing', () => {
-        // fixture.detectChanges();
+        fixture.detectChanges();
         expect(CurrentCustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(ProjectServiceMock.setSelectedSubAccount).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
@@ -140,7 +140,7 @@ describe('Dialog calls and interactions', () => {
 
         selectedTestData.selectedOption = projectsComponentTestInstance.VIEW_CONSUMPTION;
         projectsComponentTestInstance.rowAction(selectedTestData);
-        expect(projectsComponentTestInstance.openConsumptionView).toHaveBeenCalledWith(selectedTestData.selectedIndex);
+        expect(projectsComponentTestInstance.openConsumptionView).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 });
 
