@@ -34,7 +34,7 @@ export class AutoLogoutService {
     public logout() {
         if (this.msalService.instance.getActiveAccount() != null) {
             try {
-                this.msalService.logoutRedirect();
+                this.msalService.logout();
             } catch (error) {
                 console.error('error while logout: ', error);
             }
