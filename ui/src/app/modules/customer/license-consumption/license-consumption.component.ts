@@ -44,7 +44,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   weeklyConsumptionData = [];
   detailedConsumptionData = [];
   tokenConsumptionData = [];
-  licenseForm: any = this.formBuilder.group({
+  licenseForm = this.formBuilder.group({
     licenseId: ['']
   });
   range: FormGroup = this.formBuilder.group({
@@ -104,6 +104,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   isDetailedConsumptionLoadingResults = true;
   isDetailedConsumptionRequestCompleted = false;
   isLicenseListLoaded = false;
+  detailedConsumptionTableSelectable = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
@@ -564,6 +565,16 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   onPageChange(event: { pageIndex, pageSize }) {
     this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize);
+  }
+
+  toggleSelectableConsumptions() {
+    this.detailedConsumptionTableSelectable = !this.detailedConsumptionTableSelectable;
+  }
+
+  cloneConsumptions() {
+    this.openDialog(AddLicenseConsumptionComponent, {...this.selectedLicense, selectedConsumptions: this.detailsConsumptionTable.selection.selected});
+    this.toggleSelectableConsumptions();
+    this.detailsConsumptionTable.selection.clear();
   }
 
   ngOnDestroy(): void {

@@ -4,6 +4,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Utility } from 'src/app/helpers/utils';
 import { TableColumn } from 'src/app/model/table-column.model';
+import { SelectionModel } from "@angular/cdk/collections";
 
 @Component({
   selector: 'app-data-table',
@@ -14,6 +15,8 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   data: any = [];
   public tableDataSource = new MatTableDataSource([]);
   public displayedColumns: string[];
+  public selection = new SelectionModel(true,[]);
+  public selectable = false;
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) matSort: MatSort;
 
@@ -29,23 +32,37 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() actionMenuList: string[];
   @Input() serverSidePagination = false;
   @Input() length = 0;
+  @Input() selectionById = false;
   @Output() sort: EventEmitter<Sort> = new EventEmitter();
   @Output() rowAction: EventEmitter<any> = new EventEmitter<any>();
   @Output() clickableRow: EventEmitter<any> = new EventEmitter<any>();
-  @Output() pageChanged: EventEmitter<{ pageIndex: number, pageSize: number }> = new EventEmitter<any>();
+  @Output() pageChanged = new EventEmitter<{ pageIndex: number, pageSize: number }>();
 
   // this property needs to have a setter, to dynamically get changes from parent component
   @Input() set tableData(data: any[]) {
     this.setTableDataSource(data);
   }
-  
+
+  @Input() set isSelectable(isSelectable: boolean) {
+    this.selectable = isSelectable;
+    if (this.displayedColumns) {
+      if (isSelectable) {
+        this.displayedColumns = ['select', ...this.displayedColumns];
+      } else {
+        this.displayedColumns.splice(0, 1);
+      }
+    }
+  }
+
   ngOnInit(): void {
     const columnNames = this.tableColumns.map((tableColumn: TableColumn) => tableColumn.name);
-    if (this.rowActionIcon) {
-      this.displayedColumns = [...columnNames, this.rowActionIcon];
-    } else {
-      this.displayedColumns = columnNames;
-    }
+    this.displayedColumns = columnNames;
+    if (this.selectable) this.displayedColumns = ['select', ...this.displayedColumns];
+    if (this.rowActionIcon) this.displayedColumns = [...this.displayedColumns, this.rowActionIcon];
+
+    //  Override the isSelected function of the SelectionModel
+    if (this.selectionById)
+      this.selection.isSelected = this.isSelected.bind(this);
   }
 
   // we need this, in order to make pagination work with *ngIf
@@ -98,6 +115,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param selectedRow: any
    * @param selectedIndex: string
    * @param isClickableRow: boolean
+   * @param columnName: string
    */
   onClickableRow(selectedRow: any, selectedIndex: string, isClickableRow: boolean, columnName: string) {
     if (isClickableRow) {
@@ -137,6 +155,11 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   setPageIndex(pageIndex: number) {
     this.matPaginator.pageIndex = pageIndex;
+  }
+
+  isSelected(row: any): boolean {
+    const found = this.selection.selected.find(el => el['id'] === row['id']);
+    return !!found
   }
 
   ngOnDestroy(): void {
