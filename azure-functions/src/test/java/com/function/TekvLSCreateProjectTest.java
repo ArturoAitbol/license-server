@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -183,7 +185,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
     @Test
     public void createProjectExceptionTest() {
         this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c','status':'Open', 'openDate':'2021-06-27 05:00:00', " +
-                "'projectNumber':'xxxxxxx', " + "'projectName':'xxxxxxx'}'";
+                "'projectNumber':'xxxxxxx', " + "'projectName':'unitTest"+LocalDateTime.now()+"'}'";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 

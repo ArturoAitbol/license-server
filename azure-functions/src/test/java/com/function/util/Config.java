@@ -21,6 +21,7 @@ public class Config {
     private static final String postgresqlUser = "postgresql_user";
     private static final String postgresqlPwd = "postgresql_pwd";
     private static final String postgresqlSecurityMode = "postgresql_security_mode";
+    private static final String expiredToken = "expiredToken";
 //    private static final Logger LOGGER = LogManager.getLogger();
     public static Logger logger = Logger.getLogger(Config.class.getName());
 
@@ -72,8 +73,10 @@ public class Config {
         return getConfig(postgresqlSecurityMode);
     }
 
+    public String getExpiredToken() { return getConfig(expiredToken); }
+
     public String getToken(String role) {
-        String roleId, roleSecret, accessToken="";
+        String roleId, roleSecret, accessToken="",username="",password="";
         switch (role){
             case "fullAdmin":
                 roleId = "fullAdminId";
@@ -84,16 +87,22 @@ public class Config {
                 roleSecret = "devicesAdminSecret";
                 break;
             case "distributorAdmin":
-                roleId = "distributorAdminId";
-                roleSecret = "distributorAdminSecret";
+                roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
+                username = "distributorAdmin_user";
+                password = "distributorAdmin_password";
                 break;
             case "customerAdmin":
-                roleId = "customerAdminId";
-                roleSecret = "customerAdminSecret";
+                roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
+                username = "customerAdmin_user";
+                password = "customerAdmin_password";
                 break;
             case "subaccountAdmin":
-                roleId = "subaccountAdminId";
-                roleSecret = "subaccountAdminSecret";
+                roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
+                username = "subaccountAdmin_user";
+                password = "subaccountAdmin_password";
                 break;
             case "crm":
                 roleId = "crmId";
@@ -106,7 +115,11 @@ public class Config {
                 throw new RuntimeException();
         }
         try {
-            accessToken = getAccessToken(getConfig(roleId), getConfig(roleSecret));
+            if((username+password).isEmpty()){
+                accessToken = getAccessToken(getConfig(roleId), getConfig(roleSecret),username,password);
+            }else{
+                accessToken = getAccessToken(getConfig(roleId),getConfig(roleSecret),getConfig(username),getConfig(password));
+            }
             if (accessToken.isEmpty()){
                 logger.info("Access token is empty");
                 throw new RuntimeException();
@@ -119,13 +132,20 @@ public class Config {
         return accessToken;
     }
 
-    public String getAccessToken(String roleId, String roleSecret) throws IOException {
+    public String getAccessToken(String roleId, String roleSecret,String username,String password) throws IOException {
         String token="";
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("scope", "api://e643fc9d-b127-4883-8b80-2927df90e275/.default");
-        parameters.put("grant_type", "client_credentials");
         parameters.put("client_id", roleId);
         parameters.put("client_secret", roleSecret);
+        if(!username.isEmpty() && !password.isEmpty()){
+            parameters.put("scope", "api://abb49487-0434-4a82-85fa-b9be4443d158/.default");
+            parameters.put("grant_type", "password");
+            parameters.put("username", username);
+            parameters.put("password", password);
+        }else{
+            parameters.put("scope", "api://e643fc9d-b127-4883-8b80-2927df90e275/.default");
+            parameters.put("grant_type", "client_credentials");
+        }
 
         String urlParameters = getDataString(parameters);
         byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8 );
