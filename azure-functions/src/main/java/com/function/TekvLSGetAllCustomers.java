@@ -109,11 +109,11 @@ public class TekvLSGetAllCustomers {
 		// Connect to the database
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			Statement statement = connection.createStatement()) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
-			// Retrive all customers.
+			// Retrieve all customers.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of customers (id and names)
@@ -134,6 +134,14 @@ public class TekvLSGetAllCustomers {
 				}
 				array.put(item);
 			}
+
+			if(!id.equals("EMPTY") && array.isEmpty()){
+				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
 			json.put("customers", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
@@ -159,7 +167,7 @@ public class TekvLSGetAllCustomers {
 	private Map<String, List<String>> loadAdminEmails(ExecutionContext context, String sql) {
 		Map<String, List<String>> emailsMap = new HashMap<>();
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			 Statement statement = connection.createStatement();) {
+			 Statement statement = connection.createStatement()) {
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			while (rs.next()) {
