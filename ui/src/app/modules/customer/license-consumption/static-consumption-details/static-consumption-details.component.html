@@ -14,6 +14,11 @@
                         <label class="subtitle">Date:</label>
                         <label>{{ usage.usageDate | date:'fullDate' }}</label>
                         <br>
+                        <div *lcCheckAccessFor="'auditInfo'">
+                            <label class="subtitle">Modified By:</label>
+                            <label>{{ usage.modifiedBy }}</label>
+                            <br>
+                        </div>
                         <div *ngIf="isAutomationPlatform">
                             <label class="subtitle">Mac Address:</label>
                             <label>{{ usage.macAddress }}</label>

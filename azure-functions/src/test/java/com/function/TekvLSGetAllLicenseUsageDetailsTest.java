@@ -54,9 +54,13 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
         JSONArray usage = jsonBody.getJSONArray("usage");
         assertTrue(usage.length()>=0);
 
-        assertTrue(jsonBody.has("configurationTokens"));
-        JSONArray configurationTokens = jsonBody.getJSONArray("configurationTokens");
-        assertTrue(configurationTokens.length()>=0);
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertTrue(weeklyConsumption.length()>=0);
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertTrue(projectConsumption.length()>=0);
     }
 
     @Tag("acceptance")
@@ -82,9 +86,9 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("tokenConsumption"));
 
-        assertTrue(jsonBody.has("configurationTokens"));
-        JSONArray configurationTokens = jsonBody.getJSONArray("configurationTokens");
-        assertEquals(1, configurationTokens.length());
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertEquals(1, weeklyConsumption.length());
 
         assertTrue(jsonBody.has("usage"));
         JSONArray usage = jsonBody.getJSONArray("usage");
@@ -92,6 +96,10 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         String expectedProjectId = "a42edf7f-9b38-472f-afa3-10a4632acca1";
         assertEquals(expectedProjectId,usage.getJSONObject(0).getString("projectId"));
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertTrue(projectConsumption.length()>=0);
     }
 
     @Tag("security")
@@ -142,9 +150,9 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("tokenConsumption"));
 
-        assertTrue(jsonBody.has("configurationTokens"));
-        JSONArray configurationTokens = jsonBody.getJSONArray("configurationTokens");
-        assertEquals(1, configurationTokens.length());
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertEquals(1, weeklyConsumption.length());
 
         assertTrue(jsonBody.has("usage"));
         JSONArray usage = jsonBody.getJSONArray("usage");
@@ -152,6 +160,10 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         String expectedProjectId = "2bdaf2af-838f-4053-b3fa-ef22aaa11b0d";
         assertEquals(expectedProjectId,usage.getJSONObject(0).getString("projectId"));
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertTrue(projectConsumption.length()>=0);
     }
 
     @Tag("security")
@@ -202,9 +214,9 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("tokenConsumption"));
 
-        assertTrue(jsonBody.has("configurationTokens"));
-        JSONArray configurationTokens = jsonBody.getJSONArray("configurationTokens");
-        assertEquals(1, configurationTokens.length());
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertEquals(1, weeklyConsumption.length());
 
         assertTrue(jsonBody.has("usage"));
         JSONArray usage = jsonBody.getJSONArray("usage");
@@ -212,6 +224,10 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         String expectedProjectId = "be612704-c26e-48ea-ab9b-19312f03d644";
         assertEquals(expectedProjectId,usage.getJSONObject(0).getString("projectId"));
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertTrue(projectConsumption.length()>=0);
     }
 
     @Tag("security")
@@ -266,9 +282,13 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
         JSONArray usage = jsonBody.getJSONArray("usage");
         assertTrue(usage.length()>=0);
 
-        assertTrue(jsonBody.has("configurationTokens"));
-        JSONArray configurationTokens = jsonBody.getJSONArray("configurationTokens");
-        assertTrue(configurationTokens.length()>=0);
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertTrue(weeklyConsumption.length()>=0);
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertTrue(projectConsumption.length()>=0);
     }
 
     @Tag("acceptance")
@@ -301,9 +321,13 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
         JSONArray usage = jsonBody.getJSONArray("usage");
         assertTrue(usage.length()>=0);
 
-        assertTrue(jsonBody.has("configurationTokens"));
-        JSONArray configurationTokens = jsonBody.getJSONArray("configurationTokens");
-        assertTrue(configurationTokens.length()>=0);
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertTrue(weeklyConsumption.length()>=0);
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertTrue(projectConsumption.length()>=0);
     }
 
     @Tag("acceptance")
@@ -334,9 +358,13 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
         JSONArray usage = jsonBody.getJSONArray("usage");
         assertTrue(usage.length()>=0);
 
-        assertTrue(jsonBody.has("configurationTokens"));
-        JSONArray configurationTokens = jsonBody.getJSONArray("configurationTokens");
-        assertTrue(configurationTokens.length()>=0);
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertTrue(weeklyConsumption.length()>=0);
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertTrue(projectConsumption.length()>=0);
     }
 
     @Tag("acceptance")

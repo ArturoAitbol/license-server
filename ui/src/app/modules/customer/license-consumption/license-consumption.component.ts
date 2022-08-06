@@ -42,6 +42,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   data: any = [];
   equipmentData = [];
   weeklyConsumptionData = [];
+  projectConsumptionData = [];
   detailedConsumptionData = [];
   tokenConsumptionData = [];
   licenseForm = this.formBuilder.group({
@@ -78,13 +79,21 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: 'Total Consumption', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
-  readonly detailedConsumptionColumns: TableColumn[] = [
+  readonly weeklyConsumptionColumns: TableColumn[] = [
     { name: 'Week', dataKey: 'weekId', position: 'left', isSortable: true },
     { name: 'tekTokens', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
+  
+  readonly projectConsumptionColumns: TableColumn[] = [
+    { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
+    { name: 'Status', dataKey: 'status', position: 'left', isSortable: true },
+    { name: 'tekTokens', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
+  ];
 
-  readonly detailedConsumptionSummaryColumns: TableColumn[] = [
+  readonly detailedConsumptionColumns: TableColumn[] = [
     { name: 'Consumption Date', dataKey: 'consumption', position: 'left', isSortable: true },
+    { name: 'Project', dataKey: 'projectName', position: 'left', isSortable: true },
+    { name: 'Type', dataKey: 'usageType', position: 'left', isSortable: true },
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
@@ -260,6 +269,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   fetchAggregatedData(pageNumber = 0, pageSize = 6) {
     this.weeklyConsumptionData = [];
+    this.projectConsumptionData = [];
     this.detailedConsumptionData = [];
     this.tokenConsumptionData = [];
     this.isDetailedConsumptionSupplementalLoadingResults = true;
@@ -276,7 +286,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       });
       this.detailedConsumptionData = res.usage;
       this.detailedConsumptionDataLength = res.usageTotalCount;
-      this.weeklyConsumptionData = this.getWeeksDetail(res.configurationTokens);
+      this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
+      this.projectConsumptionData = res.projectConsumption;
       this.tokenConsumptionData = this.formatTokenConsumption(res.tokenConsumption);
       this.detailsConsumptionTable.setPageIndex(0);
       this.isDetailedConsumptionSupplementalLoadingResults = false;
@@ -292,7 +303,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getWeeksDetail(configurationTokens: any[]): any[] {
+  getWeeksDetail(weeklyConsumption: any[]): any[] {
 
     let startDate: string | Date;
     let endDate: string | Date;
@@ -326,7 +337,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       weekStart.setDate(weekStart.getDate() + 7);
     }
 
-    configurationTokens.forEach(item => {
+    weeklyConsumption.forEach(item => {
       const i = weeklyConsumptionDetail.findIndex(week => week.weekId === item.weekId);
       if (i !== -1)
         weeklyConsumptionDetail[i].tokensConsumed = item.tokensConsumed;
@@ -359,20 +370,20 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   private formatTokenConsumption(tokenConsumption: any): any[] {
-    let AutomationTokens = tokenConsumption.AutomationPlatform ?? 0;
-    let ConfigurationTokens = tokenConsumption.Configuration ?? 0;
-    const totalConsumption = AutomationTokens + ConfigurationTokens;
+    let automationTokens = tokenConsumption.AutomationPlatform ?? 0;
+    let configurationTokens = tokenConsumption.Configuration ?? 0;
+    const totalConsumption = automationTokens + configurationTokens;
 
     if (this.selectedType === 'Configuration') {
-      AutomationTokens = null;
+      automationTokens = null;
     }
     if (this.selectedType === 'AutomationPlatform') {
-      ConfigurationTokens = null;
+      configurationTokens = null;
     }
 
     const consumptionDetail = {
-      AutomationPlatformTokensConsumed: AutomationTokens,
-      ConfigurationTokensConsumed: ConfigurationTokens,
+      AutomationPlatformTokensConsumed: automationTokens,
+      ConfigurationTokensConsumed: configurationTokens,
       tokensConsumed: totalConsumption,
     };
 
