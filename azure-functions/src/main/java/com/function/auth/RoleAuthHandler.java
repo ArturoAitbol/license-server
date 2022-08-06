@@ -91,7 +91,7 @@ public class RoleAuthHandler {
             MODIFY_PROJECT,
             MODIFY_LICENSE_USAGE);
 
-    private static final EnumSet<Permission> SupportDevicesAdminPermissions = EnumSet.of(
+    private static final EnumSet<Permission> devicesAdminPermissions = EnumSet.of(
             //CREATE
             CREATE_DEVICE,
             CREATE_BUNDLE,
@@ -105,7 +105,7 @@ public class RoleAuthHandler {
             MODIFY_DEVICE,
             MODIFY_BUNDLE);
 
-    private static final EnumSet<Permission> AutoPlatformAppPermissions = EnumSet.of(
+    private static final EnumSet<Permission> automationPlatformPermissions = EnumSet.of(
             //CREATE
             CREATE_LICENSE_USAGE_DETAIL,
             CREATE_USAGE_DETAILS,
@@ -131,7 +131,7 @@ public class RoleAuthHandler {
             MODIFY_LICENSE);
 
 
-    private static final EnumSet<Permission> customerDistFullAdminPermissions = EnumSet.of(
+    private static final EnumSet<Permission> distributorAdminPermissions = EnumSet.of(
             //READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -142,7 +142,7 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES);
 
-    private static final EnumSet<Permission> customerFullAdminPermissions = EnumSet.of(
+    private static final EnumSet<Permission> customerAdminPermissions = EnumSet.of(
             //READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -153,7 +153,7 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES);
 
-    private static final EnumSet<Permission> customerSubAccountPermissions = EnumSet.of(
+    private static final EnumSet<Permission> SubAccountAdminPermissions = EnumSet.of(
             //READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -164,6 +164,13 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES);
 
+
+    public static final String FULL_ADMIN = "tekvizion.FullAdmin";
+    public static final String SALES_ADMIN = "tekvizion.SalesAdmin";
+    public static final String CONFIG_TESTER = "tekvizion.ConfigTester";
+    public static final String DEVICES_ADMIN = "tekvizion.DevicesAdmin";
+    public static final String AUTOMATION_PLATFORM = "tekvizion.AutomationPlatform";
+    public static final String CRM = "tekvizion.CRM";
     public static final String DISTRIBUTOR_FULL_ADMIN = "distributor.FullAdmin";
     public static final String CUSTOMER_FULL_ADMIN = "customer.FullAdmin";
     public static final String SUBACCOUNT_ADMIN = "customer.SubaccountAdmin";
@@ -173,37 +180,40 @@ public class RoleAuthHandler {
     public static final String LOG_MESSAGE_FOR_FORBIDDEN = "Forbidden error: Expected permission is missing. Role provided: ";
     public static final String MESSAGE_FOR_FORBIDDEN = "FORBIDDEN ACCESS. You do not have permission to perform this action.";
 
+    public static final String LOG_MESSAGE_FOR_INVALID_ID = "Invalid Request Error: Id provided does not belong to the account of: ";
+    public static final String MESSAGE_FOR_INVALID_ID = "The id provided does not exist in your account.";
+    public static final String MESSAGE_ID_NOT_FOUND = "Id provided does not exist.";
     private static final String ISSUER = "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/v2.0";
 
     public static boolean hasPermission(String role,Permission permission){
         EnumSet<Permission> rolePermissions;
         switch (role){
-            case "tekvizion.FullAdmin":
+            case FULL_ADMIN:
                 rolePermissions = FullAdminPermissions;
                 break;
-            case "tekvizion.SalesAdmin":
+            case SALES_ADMIN:
                 rolePermissions = SaleAdminPermissions;
                 break;
-            case "tekvizion.ConfigTester":
+            case CONFIG_TESTER:
                 rolePermissions = ConfigTesterPermissions;
                 break;
-            case "tekvizion.DevicesAdmin":
-                rolePermissions = SupportDevicesAdminPermissions;
+            case DEVICES_ADMIN:
+                rolePermissions = devicesAdminPermissions;
                 break;
-            case "tekvizion.AutomationPlatformApplication":
-                rolePermissions = AutoPlatformAppPermissions;
+            case AUTOMATION_PLATFORM:
+                rolePermissions = automationPlatformPermissions;
                 break;
-            case "tekvizion.CRM":
+            case CRM:
                 rolePermissions = crmPermissions;
                 break;
             case DISTRIBUTOR_FULL_ADMIN:
-                rolePermissions = customerDistFullAdminPermissions;
+                rolePermissions = distributorAdminPermissions;
                 break;
             case CUSTOMER_FULL_ADMIN:
-                rolePermissions = customerFullAdminPermissions;
+                rolePermissions = customerAdminPermissions;
                 break;
             case SUBACCOUNT_ADMIN:
-                rolePermissions = customerSubAccountPermissions;
+                rolePermissions = SubAccountAdminPermissions;
                 break;
             default:
                 return false;

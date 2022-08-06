@@ -15,6 +15,12 @@
                     <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
                         Add tekToken Consumption
                     </mat-button-toggle>
+                    <ng-container *lcCheckAccessFor="'addLicenseConsumption'">
+                        <mat-button-toggle *ngIf="!detailedConsumptionTableSelectable" (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded">
+                            Clone Consumption</mat-button-toggle>
+                        <mat-button-toggle class="confirm-button" *ngIf="detailedConsumptionTableSelectable" (click)="cloneConsumptions()">
+                            Confirm Cloning</mat-button-toggle>
+                    </ng-container>
                 </mat-button-toggle-group>
             </div>
         </div>
@@ -159,7 +165,8 @@
                                     [defaultPageSize]="6" (sort)="sortData($event)" [rowActionIcon]="'more_vert'"
                                     (rowAction)="licConsumptionRowAction($event)"
                                     [actionMenuList]="licConsumptionActionMenuOptions" [serverSidePagination]="true"
-                                    (pageChanged)="onPageChange($event)" [length]="detailedConsumptionDataLength" #detailsConsumptionTable>
+                                    (pageChanged)="onPageChange($event)" [length]="detailedConsumptionDataLength" [isSelectable]="detailedConsumptionTableSelectable"
+                                    [selectionById]="true" #detailsConsumptionTable>
                     </app-data-table>
                 </div>
             </div>   

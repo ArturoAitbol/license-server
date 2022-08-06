@@ -70,9 +70,16 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String view = request.getQueryParameters().getOrDefault("view", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
+
+		if (subaccountId.isEmpty()){
+			JSONObject json = new JSONObject();
+			json.put("error", "Missing mandatory parameter: subaccountId");
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+
 		String sqlCommonConditions = "l.subaccount_id = '" + subaccountId + "'";
 
-		String subQuery;
+		String subQuery="";
 		String email = getEmailFromToken(tokenClaims,context);
 		String sqlRoleCondition="";
 		// adding conditions according to the role
@@ -106,10 +113,23 @@ public class TekvLSGetAllLicenseUsageDetails {
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			Statement statement = connection.createStatement()) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			JSONObject json = new JSONObject();
 			ResultSet rs;
+
+			if(!subQuery.isEmpty()){
+				String sqlVerifySubaccount = subQuery + "and " +
+						(currentRole.equals(SUBACCOUNT_ADMIN) ? "subaccount_id='" : "s.id='")+subaccountId+"';";
+				context.getLogger().info("Execute SQL devices statement: " + sqlVerifySubaccount);
+				rs = statement.executeQuery(sqlVerifySubaccount);
+				if(!rs.next()){
+					context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + email);
+					json.put("error",MESSAGE_FOR_INVALID_ID);
+					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+				}
+			}
+
 			switch (view.toLowerCase()) {
 				case "summary": {
 					// First get the devices connected

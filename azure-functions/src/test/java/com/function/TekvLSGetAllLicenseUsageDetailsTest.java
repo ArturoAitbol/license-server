@@ -8,53 +8,24 @@ import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
     private final TekvLSGetAllLicenseUsageDetails getAllLicenseUsageDetails = new TekvLSGetAllLicenseUsageDetails();
-    private final TekvLSCreateLicenseUsageDetail tekvLSCreateLicenseUsageDetail = new TekvLSCreateLicenseUsageDetail();
-    private final TekvLSDeleteLicenseUsageById tekvLSDeleteLicenseUsageById = new TekvLSDeleteLicenseUsageById();
 
-    private String licenseUsageId;
     private final String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
 
     @BeforeEach
     void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        String bodyRequest = "{'subaccountId': '"+subaccountId+"'," +
-                "'projectId': '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d'," +
-                "'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
-                "'consumptionDate': '2022-06-19'," +
-                "'type': 'Configuration'," +
-                "'usageDays': [0,4] }";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        HttpResponseMessage responseCreate = tekvLSCreateLicenseUsageDetail.run(this.request,this.context);
-        this.context.getLogger().info(responseCreate.getBody().toString());
-        assertEquals(HttpStatus.OK, responseCreate.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
-        JSONObject jsonBody = new JSONObject(responseCreate.getBody().toString());
-        assertTrue(jsonBody.has("id"));
-        this.licenseUsageId = jsonBody.getString("id");
-    }
-
-    @AfterEach
-    void tearDown(){
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        HttpResponseMessage response = tekvLSDeleteLicenseUsageById.run(this.request,this.licenseUsageId,this.context);
-        this.context.getLogger().info(response.getStatus().toString());
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
     @Tag("acceptance")
@@ -94,9 +65,9 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void getAllLicenseUsageDetailsForDistributorRoleTest(){
+    public void getForDistributorRoleTest(){
         //Given
-        this.queryParams.put("subaccountId",subaccountId);
+        this.queryParams.put("subaccountId","cebe6542-2032-4398-882e-ffb44ade169d");
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
 
         //When
@@ -115,22 +86,50 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("tokenConsumption"));
 
-        assertTrue(jsonBody.has("usage"));
-        JSONArray usage = jsonBody.getJSONArray("usage");
-        assertTrue(usage.length()>=0);
-
         assertTrue(jsonBody.has("weeklyConsumption"));
         JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
-        assertTrue(weeklyConsumption.length()>=0);
+        assertEquals(1, weeklyConsumption.length());
+
+        assertTrue(jsonBody.has("usage"));
+        JSONArray usage = jsonBody.getJSONArray("usage");
+        assertEquals(1, usage.length());
+
+        String expectedProjectId = "a42edf7f-9b38-472f-afa3-10a4632acca1";
+        assertEquals(expectedProjectId,usage.getJSONObject(0).getString("projectId"));
 
         assertTrue(jsonBody.has("projectConsumption"));
         JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
         assertTrue(projectConsumption.length()>=0);
     }
 
+    @Tag("security")
+    @Test
+    public void getForDistributorRoleIncorrectSubaccountIdTest(){
+        //Given
+        this.queryParams.put("subaccountId",subaccountId);
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
+
+        //When
+        HttpResponseMessage response = getAllLicenseUsageDetails.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+
     @Tag("acceptance")
     @Test
-    public void getAllLicenseUsageDetailsForCustomerRoleTest(){
+    public void getForCustomerRoleTest(){
         //Given
         this.queryParams.put("subaccountId",subaccountId);
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
@@ -151,24 +150,52 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("tokenConsumption"));
 
-        assertTrue(jsonBody.has("usage"));
-        JSONArray usage = jsonBody.getJSONArray("usage");
-        assertTrue(usage.length()>=0);
-
         assertTrue(jsonBody.has("weeklyConsumption"));
         JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
-        assertTrue(weeklyConsumption.length()>=0);
+        assertEquals(1, weeklyConsumption.length());
+
+        assertTrue(jsonBody.has("usage"));
+        JSONArray usage = jsonBody.getJSONArray("usage");
+        assertEquals(1, usage.length());
+
+        String expectedProjectId = "2bdaf2af-838f-4053-b3fa-ef22aaa11b0d";
+        assertEquals(expectedProjectId,usage.getJSONObject(0).getString("projectId"));
 
         assertTrue(jsonBody.has("projectConsumption"));
         JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
         assertTrue(projectConsumption.length()>=0);
     }
 
+    @Tag("security")
+    @Test
+    public void getForCustomerRoleIncorrectSubaccountIdTest(){
+        //Given
+        this.queryParams.put("subaccountId","cebe6542-2032-4398-882e-ffb44ade169d");
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        //When
+        HttpResponseMessage response = getAllLicenseUsageDetails.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+
     @Tag("acceptance")
     @Test
-    public void getAllLicenseUsageDetailsForSubaccountRoleTest(){
+    public void getForSubaccountRoleTest(){
         //Given
-        this.queryParams.put("subaccountId",subaccountId);
+        this.queryParams.put("subaccountId","96234b32-32d3-45a4-af26-4c912c0d6a06");
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
 
         //When
@@ -187,17 +214,44 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("tokenConsumption"));
 
-        assertTrue(jsonBody.has("usage"));
-        JSONArray usage = jsonBody.getJSONArray("usage");
-        assertTrue(usage.length()>=0);
-
         assertTrue(jsonBody.has("weeklyConsumption"));
         JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
-        assertTrue(weeklyConsumption.length()>=0);
+        assertEquals(1, weeklyConsumption.length());
+
+        assertTrue(jsonBody.has("usage"));
+        JSONArray usage = jsonBody.getJSONArray("usage");
+        assertEquals(1, usage.length());
+
+        String expectedProjectId = "be612704-c26e-48ea-ab9b-19312f03d644";
+        assertEquals(expectedProjectId,usage.getJSONObject(0).getString("projectId"));
 
         assertTrue(jsonBody.has("projectConsumption"));
         JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
         assertTrue(projectConsumption.length()>=0);
+    }
+
+    @Tag("security")
+    @Test
+    public void getForSubaccountRoleIncorrectSubaccountIdTest(){
+        //Given
+        this.queryParams.put("subaccountId",subaccountId);
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+
+        //When
+        HttpResponseMessage response = getAllLicenseUsageDetails.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
     }
 
     @Tag("acceptance")
@@ -359,6 +413,26 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         JSONArray equipmentSummary = jsonBody.getJSONArray("equipmentSummary");
         assertTrue(equipmentSummary.length()>=0);
+    }
+
+    @Test
+    public void noSubaccountIdTest(){
+        //When
+        HttpResponseMessage response = getAllLicenseUsageDetails.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "Missing mandatory parameter: subaccountId";
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Tag("Security")

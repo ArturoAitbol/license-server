@@ -77,7 +77,7 @@ public class TekvLSCreateLicenseUsageDetail
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
-		// The expected parameters (and their coresponding column name in the database) 
+		// The expected parameters (and their corresponding column name in the database)
 		String[][] mandatoryParams = {
 			{"subaccountId","subaccount_id"}, 
 			{"deviceId","device_id"}, 
@@ -92,7 +92,7 @@ public class TekvLSCreateLicenseUsageDetail
 		String deviceId = jobj.getString("deviceId");
 		String sql = "select tokens_to_consume, granularity from device where id='" + deviceId + "';";
 
-		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement()) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			// get tokens to consume
 			context.getLogger().info("Execute SQL statement: " + sql);
@@ -135,8 +135,8 @@ public class TekvLSCreateLicenseUsageDetail
 				sqlPart1 += "project_id,";
 				sqlPart2 += "'" + jobj.getString("projectId") + "',";
 			}
-			// modifed_date is always local date when creating the record
-			// also adding the user that performed the opperation
+			// modified_date is always local date when creating the record
+			// also adding the user that performed the operation
 			sqlPart1 += "modified_date,tokens_consumed,modified_by";
 			sqlPart2 += "'" + LocalDate.now().toString() + "'," + tokensToConsume + ",'" + userId + "'";
 			sql = "insert into license_consumption (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";	
@@ -163,7 +163,7 @@ public class TekvLSCreateLicenseUsageDetail
 		}
 	}
 
-	private HttpResponseMessage createUsageDetail(JSONObject consumptionObj, Statement statement, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) {
+	private HttpResponseMessage createUsageDetail(JSONObject consumptionObj, Statement statement, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) throws SQLException {
 		String sql = "insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number,modified_date,modified_by) values ";
 		String consumptionId = consumptionObj.getString("id");
 		LocalDate consumptionDate = LocalDate.parse(consumptionObj.getString("consumptionDate"));
@@ -189,6 +189,13 @@ public class TekvLSCreateLicenseUsageDetail
 			context.getLogger().info("License usage details inserted successfully.");
 			return request.createResponseBuilder(HttpStatus.OK).body(consumptionObj.toString()).build();
 		} catch (Exception e) {
+
+			//Delete license consumption
+			sql = "delete from license_consumption where id='"+consumptionObj.getString("id")+"';";
+			context.getLogger().info("Execute create usages SQL statement: " + sql);
+			statement.executeUpdate(sql);
+			context.getLogger().info("License consumption deleted successfully.");
+
 			context.getLogger().info("Caught exception: " + e.toString());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());

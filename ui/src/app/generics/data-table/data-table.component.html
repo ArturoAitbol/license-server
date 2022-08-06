@@ -11,6 +11,19 @@
     <!-- Table -->
     <table mat-table [dataSource]="tableDataSource" matSort (matSortChange)="sortTable($event)">
 
+        <!--Checkbox column-->
+        <ng-container *ngIf="selectable" matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+            </th>
+            <td mat-cell *matCellDef="let row">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                              (change)="$event ? selection.toggle(row) : null"
+                              [checked]="selection.isSelected(row)"
+                              color="primary">
+                </mat-checkbox>
+            </td>
+        </ng-container>
+
         <!-- action column -->
         <ng-container *ngIf="rowActionIcon?.length" [matColumnDef]="rowActionIcon">
             <th mat-header-cell *matHeaderCellDef></th>
