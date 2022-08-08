@@ -60,12 +60,37 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
         assertTrue(device.has("consumptionId"));
         assertTrue(device.has("id"));
         assertTrue(device.has("modifiedBy"));
+
+        assertEquals(id,device.getString("consumptionId"));
     }
 
     @Test
+    public void getConsumptionUsageDetailsByNonexistentId() {
+        //Given - Arrange
+        String id = "00000000-0000-0000-0000-000000000000";
+
+        //When - Action
+        HttpResponseMessage response = getConsumptionUsageDetailsApi.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_ID_NOT_FOUND;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("acceptance")
+    @Test
     public void distributorAdminRoleTest() {
         //Given - Arrange
-        String id = "c323f5f8-cd49-4b0b-ac74-fe2113b658b8";
+        String id = "9285ca9e-04c3-49df-9d59-085322a13319";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
 
         //When - Action
@@ -80,6 +105,47 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
         assertTrue(jsonBody.has("usageDays"));
+
+        Object usageDays = jsonBody.get("usageDays");
+        assertTrue(usageDays instanceof JSONArray);
+
+        JSONArray usageDaysArray = (JSONArray) usageDays;
+        assertTrue(usageDaysArray.length() > 0);
+
+        JSONObject device = usageDaysArray.getJSONObject(0);
+        assertTrue(device.has("usageDate"));
+        assertTrue(device.has("macAddress"));
+        assertTrue(device.has("dayOfWeek"));
+        assertTrue(device.has("serialNumber"));
+        assertTrue(device.has("consumptionId"));
+        assertTrue(device.has("id"));
+        assertFalse(device.has("modifiedBy"));
+
+        assertEquals(id,device.getString("consumptionId"));
+    }
+
+    @Tag("security")
+    @Test
+    public void distributorAdminRoleIncorrectIdTest() {
+        //Given - Arrange
+        String id = "c323f5f8-cd49-4b0b-ac74-fe2113b658b8";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
+
+        //When - Action
+        HttpResponseMessage response = getConsumptionUsageDetailsApi.run(this.request, id, this.context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
     }
 
     @Test
@@ -100,12 +166,53 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
         assertTrue(jsonBody.has("usageDays"));
+
+        Object usageDays = jsonBody.get("usageDays");
+        assertTrue(usageDays instanceof JSONArray);
+
+        JSONArray usageDaysArray = (JSONArray) usageDays;
+        assertTrue(usageDaysArray.length() > 0);
+
+        JSONObject device = usageDaysArray.getJSONObject(0);
+        assertTrue(device.has("usageDate"));
+        assertTrue(device.has("macAddress"));
+        assertTrue(device.has("dayOfWeek"));
+        assertTrue(device.has("serialNumber"));
+        assertTrue(device.has("consumptionId"));
+        assertTrue(device.has("id"));
+        assertFalse(device.has("modifiedBy"));
+
+        assertEquals(id,device.getString("consumptionId"));
+    }
+
+    @Tag("security")
+    @Test
+    public void customerAdminRoleIncorrectIdTest() {
+        //Given - Arrange
+        String id = "9285ca9e-04c3-49df-9d59-085322a13319";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        //When - Action
+        HttpResponseMessage response = getConsumptionUsageDetailsApi.run(this.request, id, this.context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
     }
 
     @Test
     public void subaccountAdminRoleTest() {
         //Given - Arrange
-        String id = "c323f5f8-cd49-4b0b-ac74-fe2113b658b8";
+        String id = "9c0cc4a5-a773-46f3-b73e-a09c55080b1f";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
 
         //When - Action
@@ -120,8 +227,50 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
         assertTrue(jsonBody.has("usageDays"));
+
+        Object usageDays = jsonBody.get("usageDays");
+        assertTrue(usageDays instanceof JSONArray);
+
+        JSONArray usageDaysArray = (JSONArray) usageDays;
+        assertTrue(usageDaysArray.length() > 0);
+
+        JSONObject device = usageDaysArray.getJSONObject(0);
+        assertTrue(device.has("usageDate"));
+        assertTrue(device.has("macAddress"));
+        assertTrue(device.has("dayOfWeek"));
+        assertTrue(device.has("serialNumber"));
+        assertTrue(device.has("consumptionId"));
+        assertTrue(device.has("id"));
+        assertFalse(device.has("modifiedBy"));
+
+        assertEquals(id,device.getString("consumptionId"));
     }
 
+    @Tag("security")
+    @Test
+    public void subaccountAdminRoleIncorrectIdTest() {
+        //Given - Arrange
+        String id = "c323f5f8-cd49-4b0b-ac74-fe2113b658b8";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+
+        //When - Action
+        HttpResponseMessage response = getConsumptionUsageDetailsApi.run(this.request, id, this.context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("security")
     @Test
     public void unauthorizedTest() {
         //Given - Arrange
@@ -147,6 +296,7 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
+    @Tag("security")
     @Test
     public void forbiddenTest() {
         //Given - Arrange
@@ -191,10 +341,10 @@ class TekvLSGetConsumptionUsageDetailsTest extends TekvLSTest {
     public void sqlExceptionTest() {
         //Given - Arrange
         Mockito.when(this.request.createResponseBuilder(HttpStatus.OK)).thenThrow(new RuntimeException("Generic error"));
-        String expectedId = "00000000-0000-0000-0000-000000000000";
+        String id = "00000000";
 
         //When - Action
-        HttpResponseMessage response = getConsumptionUsageDetailsApi.run(this.request, expectedId, this.context);
+        HttpResponseMessage response = getConsumptionUsageDetailsApi.run(this.request, id, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then - Assert

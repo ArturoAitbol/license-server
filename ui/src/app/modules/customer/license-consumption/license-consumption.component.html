@@ -15,6 +15,12 @@
                     <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
                         Add tekToken Consumption
                     </mat-button-toggle>
+                    <ng-container *lcCheckAccessFor="'addLicenseConsumption'">
+                        <mat-button-toggle *ngIf="!detailedConsumptionTableSelectable" (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded">
+                            Clone Consumption</mat-button-toggle>
+                        <mat-button-toggle class="confirm-button" *ngIf="detailedConsumptionTableSelectable" (click)="cloneConsumptions()">
+                            Confirm Cloning</mat-button-toggle>
+                    </ng-container>
                 </mat-button-toggle-group>
             </div>
         </div>
@@ -129,7 +135,7 @@
         <div class="row">
             <div class="col-4">
                 <div class="table-container mat-elevation-z8">
-                    <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="detailedConsumptionColumns"
+                    <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="weeklyConsumptionColumns"
                                     [isFilterable]="false" [isPageable]="false"
                                     [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
                                     [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted" [paginationSizes]="[5,10,20]"
@@ -139,14 +145,28 @@
             </div>
             <div class="col-8">
                 <div class="table-container mat-elevation-z8">
+                    <app-data-table [tableData]="projectConsumptionData" [tableColumns]="projectConsumptionColumns"
+                                    [isFilterable]="false" [isPageable]="false"
+                                    [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
+                                    [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted" [paginationSizes]="[5,10,20]"
+                                    [defaultPageSize]="5">
+                    </app-data-table>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-12">
+                <div class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="detailedConsumptionData"
-                                    [tableColumns]="detailedConsumptionSummaryColumns" [isFilterable]="false" [isPageable]="true"
+                                    [tableColumns]="detailedConsumptionColumns" [isFilterable]="false" [isPageable]="true"
                                     [isLoadingResults]="isDetailedConsumptionLoadingResults"
                                     [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[6, 10, 20, 50]"
                                     [defaultPageSize]="6" (sort)="sortData($event)" [rowActionIcon]="'more_vert'"
                                     (rowAction)="licConsumptionRowAction($event)"
                                     [actionMenuList]="licConsumptionActionMenuOptions" [serverSidePagination]="true"
-                                    (pageChanged)="onPageChange($event)" [length]="detailedConsumptionDataLength" #detailsConsumptionTable>
+                                    (pageChanged)="onPageChange($event)" [length]="detailedConsumptionDataLength" [isSelectable]="detailedConsumptionTableSelectable"
+                                    [selectionById]="true" #detailsConsumptionTable>
                     </app-data-table>
                 </div>
             </div>   

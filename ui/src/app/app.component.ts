@@ -63,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     logout() {
         try {
-            this.msalService.logoutRedirect();
+            this.msalService.logout();
         } catch (error) {
             console.error('error while logout: ', error);
         }

@@ -1,8 +1,6 @@
 name: License Server CI/CD
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push to main branch
   push:
     branches: [ main ]
 
@@ -116,11 +114,22 @@ jobs:
         inlineScript: |
           # az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
         
-    - name: 'Run API tests'
-      run: |
-        ls
-        npm install -g newman
-        newman run ./tests/api/postman/LicenseServerAPIs.postman_collection.json -e ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
+    - name: Run API tests
+      id: run-newman
+      uses: matt-ball/newman-action@master
+      with:
+        collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
+        environment: ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
+        reporters: '["junit"]'
+        reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
+
+    - name: Publish JUnit Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      with:
+        report_paths: './tests/api/postman/newman-report.xml'
+        summary: 'true'
+        check_name: 'API Test Report'
     
     - name: Bump version and push tag
       id: tag_version

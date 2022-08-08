@@ -1,8 +1,6 @@
 name: Unit Test Execution
 
 on:
-  workflow_dispatch:
-  # or pull request events but only for the main branch
   pull_request:
      branches: [ main ]
 
@@ -47,7 +45,6 @@ jobs:
           cd ./ui
           npm install
           npm run test -- --no-watch --no-progress
-          ls test-results/
   
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1

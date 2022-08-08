@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -46,79 +49,12 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(jsonBody.has("licenses"));
 
         JSONArray licenses = jsonBody.getJSONArray("licenses");
-        assertTrue(licenses.length()>=0);
-    }
+        assertTrue(licenses.length()>0);
 
-    @Tag("acceptance")
-    @Test
-    public void getAllLicensesForDistributorRoleTest(){
-        //Given
-        String id = "EMPTY";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
-
-        // When
-        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request,id,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        // Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.OK;
-        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("licenses"));
-
-        JSONArray licenses = jsonBody.getJSONArray("licenses");
-        assertTrue(licenses.length()>=0);
-    }
-
-    @Tag("acceptance")
-    @Test
-    public void getAllLicensesForCustomerRoleTest(){
-        //Given
-        String id = "EMPTY";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
-
-        // When
-        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request,id,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        // Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.OK;
-        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("licenses"));
-
-        JSONArray licenses = jsonBody.getJSONArray("licenses");
-        assertTrue(licenses.length()>=0);
-    }
-
-    @Tag("acceptance")
-    @Test
-    public void getAllLicensesForSubaccountRoleTest(){
-        //Given
-        String id = "EMPTY";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
-
-        // When
-        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request,id,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        // Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.OK;
-        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("licenses"));
-
-        JSONArray licenses = jsonBody.getJSONArray("licenses");
-        assertTrue(licenses.length()>=0);
+        JSONObject license = licenses.getJSONObject(0);
+        assertTrue(license.has("id"));
+        assertTrue(license.has("subaccountId"));
+        assertTrue(license.has("status"));
     }
 
     @Tag("acceptance")
@@ -170,7 +106,260 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(jsonBody.has("licenses"));
 
         JSONArray licenses = jsonBody.getJSONArray("licenses");
-        assertTrue(licenses.length()>=0);
+        assertTrue(licenses.length()>0);
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getForDistributorRoleTest(){
+        //Given
+        String id = "EMPTY";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("licenses"));
+
+        JSONArray licenses = jsonBody.getJSONArray("licenses");
+        assertEquals(2, licenses.length());
+
+        JSONObject license = licenses.getJSONObject(0);
+        assertTrue(license.has("id"));
+        assertTrue(license.has("subaccountId"));
+        assertTrue(license.has("status"));
+
+        String licenseId;
+        List<String> expectedLicenses = Arrays.asList("ebc71e49-4f63-44b2-9c90-7750d3ccca05",
+                "d9cb5f93-c4d0-427e-8133-77905abd8487");
+        for (int i = 0; i < licenses.length();i++){
+            licenseId = licenses.getJSONObject(i).getString("id");
+            assertTrue(expectedLicenses.contains(licenseId),
+                    "License not expected in response (id:" + licenseId + ")");
+        }
+
+    }
+
+    @Tag("security")
+    @Test
+    public void getForDistributorRoleIncorrectIdTest(){
+        //Given
+        String id = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForDistributorRoleIncorrectSubaccountIdTest() {
+        //Given
+        String id = "EMPTY";
+        String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
+        this.queryParams.put("subaccountId",subaccountId);
+
+        //When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus, "HTTP Status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getForCustomerRoleTest(){
+        //Given
+        String id = "EMPTY";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("licenses"));
+
+        JSONArray licenses = jsonBody.getJSONArray("licenses");
+        assertEquals(1, licenses.length());
+
+        JSONObject license = licenses.getJSONObject(0);
+        assertTrue(license.has("id"));
+        assertTrue(license.has("subaccountId"));
+        assertTrue(license.has("status"));
+
+        String expectedLicenseId = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
+        assertEquals(expectedLicenseId,license.getString("id"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForCustomerRoleIncorrectIdTest(){
+        //Given
+        String id = "d9cb5f93-c4d0-427e-8133-77905abd8487";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForCustomerRoleIncorrectSubaccountIdTest() {
+        //Given
+        String id = "EMPTY";
+        String subaccountId = "cebe6542-2032-4398-882e-ffb44ade169d";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+        this.queryParams.put("subaccountId",subaccountId);
+
+        //When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus, "HTTP Status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getForSubaccountRoleTest(){
+        //Given
+        String id = "EMPTY";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("licenses"));
+
+        JSONArray licenses = jsonBody.getJSONArray("licenses");
+        assertEquals(1, licenses.length());
+
+        JSONObject license = licenses.getJSONObject(0);
+        assertTrue(license.has("id"));
+        assertTrue(license.has("subaccountId"));
+        assertTrue(license.has("status"));
+
+        String expectedLicenseId = "d9cb5f93-c4d0-427e-8133-77905abd8487";
+        assertEquals(expectedLicenseId,license.getString("id"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForSubaccountRoleIncorrectIdTest(){
+        //Given
+        String id = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForSubaccountRoleIncorrectSubaccountIdTest() {
+        //Given
+        String id = "EMPTY";
+        String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+        this.queryParams.put("subaccountId",subaccountId);
+
+        //When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus, "HTTP Status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
     }
 
     @Tag("Security")
@@ -220,6 +409,29 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
 
         String actualResponse = jsonBody.getString("error");
         String expectedResponse = RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void getLicenseByNonexistentIdTest() {
+        //Given
+        String id = "00000000-0000-0000-0000-000000000000";
+
+        //When
+        HttpResponseMessage response = tekvLSGetAllLicenses.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus, "HTTP Status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = RoleAuthHandler.MESSAGE_ID_NOT_FOUND;
+        String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 

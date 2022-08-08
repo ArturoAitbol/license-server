@@ -196,6 +196,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       const resDataObject: any = res.reduce((current: any, next: any) => {
         return { ...current, ...next };
       }, {});
+      this.currentCustomer.modifiedBy = resDataObject['modifiedBy'];
       this.devices = resDataObject['devices'];
       const vendorsHash: any = {};
       this.vendors = this.devices.filter(device => {

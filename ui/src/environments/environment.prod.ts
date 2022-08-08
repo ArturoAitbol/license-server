@@ -7,5 +7,5 @@ export const environment = {
     API_CLIENT_ID: '40991586-725f-445e-a488-943cef282ee3',
     API_SCOPE: 'tekvizion.access',
     // BASE URL
-    REDIRECT_URL_AFTER_LOGIN: window.location.origin + '/license-server/index.html'
+    REDIRECT_URL_AFTER_LOGIN: window.location.origin + '/index.html'
 };

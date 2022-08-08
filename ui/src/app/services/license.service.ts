@@ -16,7 +16,7 @@ export class LicenseService {
    * @param data: License
    * @returns: Observable
    */
-  public purchaseLicense(data: License) {
+  public createLicense(data: License) {
     return this.httpClient.post(this.API_URL, data);
   }
   /**

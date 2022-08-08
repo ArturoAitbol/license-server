@@ -16,7 +16,8 @@ export const permissions = {
             'addAdminEmail',
             'deleteAdminEmail',
             'addSubAccAdminEmail',
-            'deleteSubAccAdminEmail'
+            'deleteSubAccAdminEmail',
+            'auditInfo'
         ],
         tables: {
             customerOptions: [

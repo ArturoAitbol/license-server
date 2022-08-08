@@ -93,6 +93,13 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("id"));
+
+        this.subaccountId = jsonBody.getString("id");
+        assertNotNull(this.subaccountId);
+
         response = createSubaccountApi.run(this.request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
@@ -101,8 +108,8 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
+        body = (String) response.getBody();
+        jsonBody = new JSONObject(body);
 
         assertTrue(jsonBody.has("error"));
 
@@ -131,6 +138,13 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("id"));
+
+        this.subaccountId = jsonBody.getString("id");
+        assertNotNull(this.subaccountId);
+
         //Given - Arrange
         bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
@@ -148,8 +162,8 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
+        body = (String) response.getBody();
+        jsonBody = new JSONObject(body);
 
         assertTrue(jsonBody.has("error"));
 

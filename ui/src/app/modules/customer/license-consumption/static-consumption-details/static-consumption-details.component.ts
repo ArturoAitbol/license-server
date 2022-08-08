@@ -37,7 +37,7 @@ export class StaticConsumptionDetailsComponent implements OnInit {
   }
 
   deleteUsageDetail(index: number) {
-    let deleteObject = {
+    const deleteObject = {
       id: this.data.id,
       deletedDays: [this.usageDetailsList[index].id]
     };
