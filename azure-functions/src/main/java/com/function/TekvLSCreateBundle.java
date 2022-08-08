@@ -77,7 +77,7 @@ public class TekvLSCreateBundle {
         }
 
         //Build the sql query
-        String sql = "INSERT INTO bundle (name, tokens, device_access_tokens) VALUES (?,?,?) RETURNING id";
+        String sql = "INSERT INTO bundle (name, tokens, device_access_tokens) VALUES (?,?::integer,?::integer) RETURNING id";
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
@@ -90,8 +90,8 @@ public class TekvLSCreateBundle {
 
             // Set statement parameters
             statement.setString(1, jobj.getString(MANDATORY_PARAMS.NAME.value));
-            statement.setInt(2, jobj.getInt(MANDATORY_PARAMS.TOKENS.value));
-            statement.setInt(3, jobj.getInt(MANDATORY_PARAMS.DEVICE_ACCESS_TOKEN.value));
+            statement.setString(2, jobj.getString(MANDATORY_PARAMS.TOKENS.value));
+            statement.setString(3, jobj.getString(MANDATORY_PARAMS.DEVICE_ACCESS_TOKEN.value));
 
             context.getLogger().info("Execute SQL statement: " + statement);
             ResultSet bundleRaw = statement.executeQuery();
