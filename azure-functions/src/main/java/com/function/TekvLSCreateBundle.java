@@ -64,42 +64,38 @@ public class TekvLSCreateBundle {
             json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-        String[][] mandatoryParams = {
-                {"name","name"},
-                {"tokens","tokens"},
-                {"deviceAccessToken","device_access_tokens"}
-        };
-        String columns = "";
-        String values = "";
-        for (int i = 0; i < mandatoryParams.length; i++) {
-            try {
-                columns += mandatoryParams[i][1] + ",";
-                values += "'" + jobj.get(mandatoryParams[i][0]) + "',";
-            }
-            catch (Exception e) {
+
+        // Check mandatory params to be present
+        for (MANDATORY_PARAMS mandatoryParam : MANDATORY_PARAMS.values()) {
+              if (!jobj.has(mandatoryParam.value)) {
                 // Parameter not found
-                context.getLogger().info("Caught exception: " + e.getMessage());
+                context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
                 JSONObject json = new JSONObject();
-                json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
+                json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
-        columns = columns.substring(0, columns.length()-1);
-        values = values.substring(0, values.length()-1);
-        String sql = "insert into bundle (" + columns + ") values (" + values + ")";
+
+        //Build the sql query
+        String sql = "INSERT INTO bundle (name, tokens, device_access_tokens) VALUES (?,?,?) RETURNING id";
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
-        try {
-            Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            Statement statement = connection.createStatement();
-            context.getLogger().info("Execute SQL statement: " + sql);
-            statement.executeUpdate(sql);
 
-            String getId = "select * from bundle where name = '" + jobj.getString("name") + "'";
-            ResultSet bundleRaw = statement.executeQuery(getId);
+        try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+
+            // Set statement parameters
+            statement.setString(1, jobj.getString(MANDATORY_PARAMS.NAME.value));
+            statement.setInt(2, jobj.getInt(MANDATORY_PARAMS.TOKENS.value));
+            statement.setInt(3, jobj.getInt(MANDATORY_PARAMS.DEVICE_ACCESS_TOKEN.value));
+
+            context.getLogger().info("Execute SQL statement: " + statement);
+            ResultSet bundleRaw = statement.executeQuery();
+
             bundleRaw.next();
             JSONObject response = new JSONObject();
             response.put("id", bundleRaw.getString("id"));
@@ -117,6 +113,18 @@ public class TekvLSCreateBundle {
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+        }
+    }
+
+    private enum MANDATORY_PARAMS{
+        NAME("name"),
+        TOKENS("tokens"),
+        DEVICE_ACCESS_TOKEN("deviceAccessToken");
+
+        private final String value;
+
+        MANDATORY_PARAMS(String value) {
+            this.value = value;
         }
     }
 }
