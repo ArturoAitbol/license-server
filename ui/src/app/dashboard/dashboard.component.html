@@ -1,9 +1,9 @@
 <div class="container-fluid dashboard-content">
     <main>
-        <h1>Customers</h1>
+        <h1 id="customerTitle">Customers</h1>
     </main>
     <div style="float: right;">
-        <button *checkAccessFor="'addCustomer'" mat-raised-button (click)="addCustomerAccount()">Add Customer</button>
+        <button id="addCustomer" *checkAccessFor="'addCustomer'" mat-raised-button (click)="addCustomerAccount()">Add Customer</button>
         <button *checkAccessFor="'addSubaccount'" mat-raised-button (click)="addSubaccount()">Add Subaccount</button>
     </div>
     <section class="table-section">
