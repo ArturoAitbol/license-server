@@ -128,6 +128,7 @@ export class ProjectsComponent implements OnInit {
    */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
+    console.log(sortParameters);
     if (sortParameters.direction === 'asc') {
       this.projects = this.projects.sort((a: any, b: any) => {
         return a[keyName].localeCompare(b[keyName]);
@@ -163,7 +164,9 @@ export class ProjectsComponent implements OnInit {
 
   confirmCloseDialog(index: string) {
     const currentProjectData = this.projects[index];
+    console.log("current project", currentProjectData);
     const projectToClose = currentProjectData.code + '-' + currentProjectData.name;
+    console.log("project",projectToClose);
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
@@ -177,7 +180,6 @@ export class ProjectsComponent implements OnInit {
           closeDate: new Date().toLocaleString(),
           status: "Closed"
         };
-
         if (confirmed) {
           console.debug('The user confirmed the action: ', this.projects[index]);
           this.projectService.closeProject(projectToUpdate).subscribe(res => {

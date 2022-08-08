@@ -1,5 +1,3 @@
-
-
 export const CurrentCustomerServiceMock = {
     getSelectedCustomer: () =>{
         return {

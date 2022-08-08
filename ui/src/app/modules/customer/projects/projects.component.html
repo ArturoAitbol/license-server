@@ -2,13 +2,13 @@
     <main>
         <div class="row">
             <div class="col">
-                <button mat-stroked-button (click)="goToDashboard()">Back</button>
+                <button mat-stroked-button  id="go-back-button" (click)="goToDashboard()">Back</button>
             </div>
             <div class="col">
                 <h1>{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
             </div>
             <div class="col">
-                <mat-button-toggle-group *checkAccessFor="'addProject'" name="fontStyle" aria-label="Font Style">
+                <mat-button-toggle-group *lcCheckAccessFor="'addProject'" name="fontStyle" aria-label="Font Style">
                     <mat-button-toggle value="add-new-project" (click)="onNewProject()" id="add-new-project-button" >Add New Project
                     </mat-button-toggle>
                 </mat-button-toggle-group>
