@@ -29,7 +29,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatRippleModule } from '@angular/material/core';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -46,6 +46,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 @NgModule({
   declarations: [],
   imports: [
@@ -75,7 +76,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     MatInputModule,
     MatListModule,
     MatMenuModule,
-    MatNativeDateModule,
+    MatMomentDateModule,
     MatPaginatorModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
@@ -94,7 +95,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     MatTreeModule,
     OverlayModule,
     PortalModule,
-    ScrollingModule,
+    ScrollingModule
   ],
   exports: [
     A11yModule,
@@ -122,7 +123,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     MatInputModule,
     MatListModule,
     MatMenuModule,
-    MatNativeDateModule,
+    MatMomentDateModule,
     MatPaginatorModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
