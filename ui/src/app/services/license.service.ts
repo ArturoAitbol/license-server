@@ -14,15 +14,15 @@ export class LicenseService {
   /**
    * purchase new License
    * @param data: License
-   * @returns: Observable 
+   * @returns: Observable
    */
-  public purchaseLicense(data: License) {
+  public createLicense(data: License) {
     return this.httpClient.post(this.API_URL, data);
   }
   /**
    * get particular License details by licenseId
-   * @param licenseId: string 
-   * @returns: Observable 
+   * @param licenseId: string
+   * @returns: Observable
    */
   public getLicenseDetails(licenseId: string) {
     const headers = this.getHeaders();
@@ -30,21 +30,22 @@ export class LicenseService {
   }
   /**
    * fetch License details list
-   * @returns: Observable 
+   * @returns: Observable
    */
   public getLicenseList(subaccountId?: string, subaccountName?: string) {
     let params = new HttpParams();
-    if (subaccountId)
+    if (subaccountId) {
       params = params.set('subaccountId', subaccountId);
-    else if (subaccountName)
+    } else if (subaccountName) {
       params = params.set('subaccountName', subaccountName);
+    }
     const headers = this.getHeaders();
     return this.httpClient.get<License>(this.API_URL, { headers, params });
   }
   /**
    * update License details
-   * @param License: License 
-   * @returns: Observable 
+   * @param data: License
+   * @returns: Observable
    */
   public updateLicenseDetails(data: License) {
     return this.httpClient.put(`${this.API_URL}/${data.id}`, data);
@@ -52,7 +53,7 @@ export class LicenseService {
 
   /**
    * delete selected license by licenseId
-   * @param licenseId: string 
+   * @param licenseId: string
    * @returns: Observable
    */
   public deleteLicense(licenseId: string) {
@@ -61,7 +62,7 @@ export class LicenseService {
 
   /**
    * set the header for the request
-   * @returns: HttpHeaders 
+   * @returns: HttpHeaders
    */
   public getHeaders() {
     const headers = new HttpHeaders();

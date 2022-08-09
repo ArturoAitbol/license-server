@@ -1,12 +1,13 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { Constants } from '../helpers/constants';
-import { Customer } from '../model/customer.model';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {environment} from 'src/environments/environment';
+import {Constants} from '../helpers/constants';
+import {Customer} from '../model/customer.model';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class CustomerService {
   private readonly API_URL: string = environment.apiEndpoint + '/customers';
 
@@ -14,9 +15,9 @@ export class CustomerService {
   private selectedType: string;
 
   constructor(private httpClient: HttpClient) { }
-  //set the selected customer
+  // set the selected customer
   setSelectedCustomer(customer: any) { this.selectedCustomer = customer; }
-  //get the selected customer
+  // get the selected customer
   getSelectedCustomer() {
     return (this.selectedCustomer) ? this.selectedCustomer : JSON.parse(localStorage.getItem(Constants.SELECTED_CUSTOMER));
   }
@@ -29,8 +30,8 @@ export class CustomerService {
 
   /**
    * create new customer
-   * @param customerName: string 
-   * @returns: Observable 
+   * @param newCustomerDetails: Customer
+   * @returns: Observable
    */
   public createCustomer(newCustomerDetails: Customer) {
     return this.httpClient.post(this.API_URL, newCustomerDetails);
@@ -47,6 +48,7 @@ export class CustomerService {
 
   /**
    * fetch customer details list
+   * @param customerName: string
    * @returns: Observable
    */
   public getCustomerList(customerName?: string) {
@@ -55,12 +57,13 @@ export class CustomerService {
       params.append('customerName', customerName);
     }
     const headers = this.getHeaders();
-    return this.httpClient.get<Customer>(this.API_URL, { headers, params });
+    return this.httpClient.get<Customer>(this.API_URL, {headers, params});
   }
+
   /**
    * update customer details
-   * @param customer: Customer 
-   * @returns: Observable 
+   * @param customer: Customer
+   * @returns: Observable
    */
   public updateCustomer(customer: any) {
     return this.httpClient.put(`${this.API_URL}/${customer.id}`, customer);
@@ -69,20 +72,15 @@ export class CustomerService {
   /**
    * delete selected customer by customerId
    * @param customerId: string
-   * @param force: boolean
    * @returns: Observable
    */
-  public deleteCustomer(customerId: string, force= false) {
-    let params = new HttpParams();
-    params = params.append('force', force);
-    return this.httpClient.delete(`${this.API_URL}/${customerId}`, { params });
+  public deleteCustomer(customerId: string) {
+    return this.httpClient.delete(`${this.API_URL}/${customerId}`);
   }
-
-
 
   /**
    * set the header for the request
-   * @returns: HttpHeaders 
+   * @returns: HttpHeaders
    */
   public getHeaders() {
     const headers = new HttpHeaders();

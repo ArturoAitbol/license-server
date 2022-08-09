@@ -4,6 +4,6 @@ export interface DeleteCustomerDialogData {
     deleteAllDataCaption: string;
     confirmCaption: string;
     cancelCaption: string;
-    canDeleteAllData: boolean;
+    canDeleteSubaccount: boolean;
   }
   

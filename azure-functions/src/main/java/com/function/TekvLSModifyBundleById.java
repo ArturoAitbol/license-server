@@ -49,7 +49,10 @@ public class TekvLSModifyBundleById {
 
         context.getLogger().info("Java HTTP trigger processed a request.");
         if (id.equals("EMPTY")) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass an id on the query string").build();
+            context.getLogger().info("Error: There is no bundle id in the request.");
+            JSONObject json = new JSONObject();
+            json.put("error", "Please pass an id on the query string.");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -57,7 +60,7 @@ public class TekvLSModifyBundleById {
         if (requestBody.isEmpty()) {
             context.getLogger().info("error: request body is empty.");
             JSONObject json = new JSONObject();
-            json.put("error", "error: request body is empty.");
+            json.put("error", "Request body is empty.");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject body;
@@ -75,8 +78,6 @@ public class TekvLSModifyBundleById {
                 {"tokens","tokens"},
                 {"deviceAccessToken","device_access_tokens"}
         };
-        String columns ="";
-        String values ="";
         String sql = "update bundle set ";
         for (int i = 0; i < params.length; i++) {
             try {
@@ -91,12 +92,12 @@ public class TekvLSModifyBundleById {
         sql = sql.substring(0, sql.length() - 1);
         sql += " where id='" + id + "'";
 
-        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try{
             Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
             Statement statement = connection.createStatement();
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);

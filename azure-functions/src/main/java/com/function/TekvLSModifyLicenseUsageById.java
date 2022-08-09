@@ -11,10 +11,10 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
+import io.jsonwebtoken.Claims;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Optional;
-
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -40,7 +40,8 @@ public class TekvLSModifyLicenseUsageById
 				final ExecutionContext context) 
 	{
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -55,6 +56,7 @@ public class TekvLSModifyLicenseUsageById
 		}
 
 		context.getLogger().info("Entering TekvLSModifyLicenseUsageById Azure function");
+		String userId = getUserIdFromToken(tokenClaims, context);
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -68,61 +70,59 @@ public class TekvLSModifyLicenseUsageById
 		JSONObject jobj;
 		try {
 			jobj = new JSONObject(requestBody);
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
-
-		String sql = "select tokens_to_consume from device where id='" + jobj.getString("deviceId") + "';";
-		
+		// The expected parameters (and their corresponding column name in the database)
+		String[][] optionalParams = {
+				{"projectId","project_id"},
+				{"deviceId","device_id"},
+				{"consumptionDate","consumption_date"},
+				{"type","usage_type"}
+		};
+		// Build the sql query
+		String sql = "update license_consumption set ";
+		int optionalParamsFound = 0;
+		for (int i = 0; i < optionalParams.length; i++) {
+			try {
+				String paramName = jobj.getString(optionalParams[i][0]);
+				sql += optionalParams[i][1] + "='" + paramName + "',";
+				optionalParamsFound++;
+			}
+			catch (Exception e) {
+				// Parameter doesn't exist. (continue since it's optional)
+				context.getLogger().info("Ignoring exception: " + e);
+				// continue;
+			}
+		}
+		sql += " modified_date='" + LocalDate.now().toString() + "',modified_by='" + userId + "'";
+		if (optionalParamsFound == 0) {
+			return request.createResponseBuilder(HttpStatus.OK).build();
+		}
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
-			// get tokens to consume
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
-			rs.next();
-			int tokensToConsume = rs.getInt(1);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-			// The expected parameters (and their coresponding column name in the database) 
-			String[][] optionalParams = {
-				{"projectId","project_id"},
-				{"deviceId","device_id"}, 
-				{"consumptionDate","consumption_date"},
-				{"type","usage_type"}
-			};
-			// Build the sql query
-			sql = "update license_consumption set ";
-			int optionalParamsFound = 0;
-			for (int i = 0; i < optionalParams.length; i++) {
-				try {
-					String paramName = jobj.getString(optionalParams[i][0]);
-					sql += optionalParams[i][1] + "='" + paramName + "',";
-					optionalParamsFound++;
-				} 
-				catch (Exception e) {
-					// Parameter doesn't exist. (continue since it's optional)
-					context.getLogger().info("Ignoring exception: " + e);
-					continue;
-				}
-			}
-			sql += " modified_date='" + LocalDate.now().toString() + "',tokens_consumed=" + tokensToConsume;
-			if (optionalParamsFound == 0) {
-				return request.createResponseBuilder(HttpStatus.OK).build();
+			if(jobj.has("deviceId")){
+				// get tokens to consume
+				String deviceSql = "select tokens_to_consume from device where id='" + jobj.getString("deviceId") + "';";
+				context.getLogger().info("Execute SQL statement: " + deviceSql);
+				ResultSet rs = statement.executeQuery(deviceSql);
+				rs.next();
+				int tokensToConsume = rs.getInt(1);
+				sql +=",tokens_consumed=" + tokensToConsume;
 			}
 			sql += " where id='" + id + "';";
-			
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			context.getLogger().info("Execute SQL statement: " + sql);
 			statement.executeUpdate(sql);
 			context.getLogger().info("License updated successfully."); 
-
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {

@@ -13,9 +13,9 @@ export class SubAccountService {
 
   constructor(private httpClient: HttpClient) { }
 
-  //set the selected subAccount
-  setSelectedSubAccount(subAccount: any) { this.selectedSubAccount = subAccount; }
-  //get the selected subAccount
+  //set the selected subaccount
+  setSelectedSubAccount(subaccount: any) { this.selectedSubAccount = subaccount; }
+  //get the selected subaccount
   getSelectedSubAccount() {
     return (this.selectedSubAccount) ? this.selectedSubAccount : JSON.parse(localStorage.getItem(Constants.SELECTED_SUBACCOUNT));
   }
@@ -54,11 +54,11 @@ export class SubAccountService {
   }
   /**
    * update SubAccount details
-   * @param subAccount: SubAccount 
+   * @param subaccount: SubAccount 
    * @returns: Observable 
    */
-  public updateSubAccount(subAccount: any) {
-    return this.httpClient.put(`${this.API_URL}/${subAccount.id}`, subAccount);
+  public updateSubAccount(subaccount: any) {
+    return this.httpClient.put(`${this.API_URL}/${subaccount.id}`, subaccount);
   }
 
   /**

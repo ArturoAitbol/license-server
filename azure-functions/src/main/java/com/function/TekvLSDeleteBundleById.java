@@ -49,16 +49,19 @@ public class TekvLSDeleteBundleById {
 
         context.getLogger().info("Java HTTP trigger processed a request.");
         if (id.equals("EMPTY")) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass an id on the query string").build();
+            context.getLogger().info("Error: There is no bundle id in the request.");
+            JSONObject json = new JSONObject();
+            json.put("error", "Please pass an id on the query string.");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         String sql = "delete from bundle where id='" + id + "'";
 
-        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try{
             Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
             Statement statement = connection.createStatement();
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);

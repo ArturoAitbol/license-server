@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
@@ -19,7 +19,7 @@ import { ModifyProjectComponent } from "./modify-project/modify-project.componen
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.css']
 })
-export class ProjectsComponent implements OnInit, OnDestroy {
+export class ProjectsComponent implements OnInit {
 
   readonly displayedColumns: TableColumn[] = [
     { name: 'Project Code', dataKey: 'code', position: 'left', isSortable: true },
@@ -42,8 +42,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   projects: Project[] = [];
   projectsBk: Project[] = [];
   // flag
-  isLoadingResults: boolean = true;
-  isRequestCompleted: boolean = false;
+  isLoadingResults = true;
+  isRequestCompleted = false;
 
   constructor(
     private customerService: CustomerService,
@@ -60,10 +60,15 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.calculateTableHeight();
   }
 
-  private getActionMenuOptions(){
-    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    accountRoles.forEach(accountRole =>{
-      permissions[accountRole].tables.projectOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
+  private getActionMenuOptions() {
+    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    accountRoles.forEach(accountRole => {
+      permissions[accountRole].tables.projectOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
+      if (this.currentCustomer.testCustomer === false) {
+        const action = (action) => action === 'Delete';
+        const index = this.actionMenuOptions.findIndex(action);
+        this.actionMenuOptions.splice(index,);
+      }
     })
   }
 
@@ -80,7 +85,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.calculateTableHeight();
     this.currentCustomer = this.customerService.getSelectedCustomer();
-    this.projectService.setSelectedSubAccount(this.currentCustomer.id);
+    this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
     this.fetchProjects();
     this.getActionMenuOptions();
   }
@@ -107,7 +112,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   fetchProjects(): void {
-    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.id).subscribe(res => {
+    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
       this.projectsBk = this.projects = res['projects'];
@@ -118,8 +123,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
   /**
    * sort table
-   * @param sortParameters: Sort 
-   * @returns 
+   * @param sortParameters: Sort
+   * @returns
    */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
@@ -129,7 +134,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       });
     } else if (sortParameters.direction === 'desc') {
       this.projects = this.projects.sort((a: any, b: any) => {
-        return b[keyName].localeCompare(a[keyName])
+        return b[keyName].localeCompare(a[keyName]);
       });
     } else {
       return this.projects = this.projectsBk;
@@ -167,7 +172,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         cancelCaption: 'Cancel',
       })
       .subscribe((confirmed) => {
-        let projectToUpdate = {
+        const projectToUpdate = {
           id: currentProjectData.id,
           closeDate: new Date().toLocaleString(),
           status: "Closed"
@@ -215,8 +220,5 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   openConsumptionView(row: any): void {
     localStorage.setItem(Constants.PROJECT, JSON.stringify(row));
     this.router.navigate(['/customer/consumption']);
-  }
-
-  ngOnDestroy(): void {
   }
 }

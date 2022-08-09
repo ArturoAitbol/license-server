@@ -117,14 +117,14 @@ public class TekvLSCreateDevice
 		String sql = "insert into device (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
 			
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + sql);

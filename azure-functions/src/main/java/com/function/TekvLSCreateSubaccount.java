@@ -107,14 +107,14 @@ public class TekvLSCreateSubaccount
 		}
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
 			
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
 			String adminEmail = jobj.getString("subaccountAdminEmail");
 			String verifyEmails = "select count(*) from subaccount_admin where subaccount_admin_email='" +  adminEmail + "';";
@@ -128,17 +128,9 @@ public class TekvLSCreateSubaccount
 			}
 
 			// Insert
-			try {
 				context.getLogger().info("Execute SQL statement: " + sql);
 				statement.executeUpdate(sql);
-				context.getLogger().info("License usage inserted successfully."); 
-			} catch(Exception e) {
-				context.getLogger().info("Caught exception: " + e.getMessage());
-				JSONObject json = new JSONObject();
-				String modifiedResponse= subaccountUnique(e.getMessage());
-				json.put("error", modifiedResponse);
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-			}
+				context.getLogger().info("License usage inserted successfully.");
 
 			// Return the id in the response
 			sql = "select id from subaccount where name = '" + jobj.getString("subaccountName") + "' and customer_id = '" + jobj.getString("customerId") + "';";
@@ -149,26 +141,18 @@ public class TekvLSCreateSubaccount
 			JSONObject json = new JSONObject();
 			json.put("id", subaccountId);
 
-			try{
-				String adminEmailSql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES ('" + adminEmail + "', '" + subaccountId + "');";
-				context.getLogger().info("Execute SQL statement: " + adminEmailSql);
-				statement.executeUpdate(adminEmailSql);
-				context.getLogger().info("Subaccount admin emails inserted successfully.");
-
-			}
-			catch(Exception e){
-				context.getLogger().info("Caught exception: " + e.getMessage());
-				json = new JSONObject();
-				json.put("error", e.getMessage());
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-			}
+			String adminEmailSql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES ('" + adminEmail + "', '" + subaccountId + "');";
+			context.getLogger().info("Execute SQL statement: " + adminEmailSql);
+			statement.executeUpdate(adminEmailSql);
+			context.getLogger().info("Subaccount admin emails inserted successfully.");
 
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
+			String modifiedResponse= subaccountUnique(e.getMessage());
+			json.put("error", modifiedResponse);
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {

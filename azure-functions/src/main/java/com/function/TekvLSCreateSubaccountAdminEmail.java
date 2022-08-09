@@ -16,7 +16,7 @@ import java.util.Optional;
 import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSCreateSubaccountAdminEmail {
-    private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses?ssl=true&sslmode=require"
+    private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
             + "&user=" + System.getenv("POSTGRESQL_USER")
             + "&password=" + System.getenv("POSTGRESQL_PWD");
 
@@ -69,7 +69,7 @@ public class TekvLSCreateSubaccountAdminEmail {
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
              Statement statement = connection.createStatement()) {
 
-            context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);

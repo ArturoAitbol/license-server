@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
@@ -69,7 +69,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     product: ['', [this.RequireMatch]]
   });
   currentCustomer: any;
-  isDataLoading: boolean = false;
+  isDataLoading = false;
 
   constructor(
     private customerService: CustomerService,
@@ -84,13 +84,12 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentCustomer = this.customerService.getSelectedCustomer();
-    this.projectService.setSelectedSubAccount(this.currentCustomer.id);
-
+    this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
+    this.fetchData();
     if (this.data) {
       this.startDate = new Date(this.data.startDate + " 00:00:00");
       this.endDate = new Date(this.data.renewalDate + " 00:00:00");
     }
-    this.fetchData();
   }
 
   /**
@@ -98,7 +97,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   */
   fetchData(): void {
     this.isDataLoading = true;
-    const subaccountId = this.currentCustomer.id;
+    const subaccountId = this.currentCustomer.subaccountId;
     forkJoin([
       this.deviceService.getDevicesList(subaccountId),
       this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open')
@@ -109,7 +108,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
       /*Devices list*/
       this.allDevices = resDataObject['devices'];
-      let vendorsHash: any = {};
+      const vendorsHash: any = {};
       this.vendors = this.allDevices.filter(device => {
         if (device.type != "PHONE" && !vendorsHash[device.vendor] && !device.supportType) {
           vendorsHash[device.vendor] = true;
@@ -165,6 +164,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
           map(value => (typeof value === 'string' ? value : value ? value.product : '')),
           map(product => (product ? this.filterModels(product, true) : this.supportModels.slice()))
       );
+      this.loadClonedDevices();
       this.isDataLoading = false;
     });
   }
@@ -173,7 +173,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    */
   fetchProjects(): void {
     this.isDataLoading = true;
-    const subaccountId = this.currentCustomer.id;
+    const subaccountId = this.currentCustomer.subaccountId;
     this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open').subscribe((res: any) => {
       this.projects = res['projects'];
       this.addLicenseConsumptionForm.patchValue({ project: '' });
@@ -216,11 +216,12 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.models = [];
     if (value) {
       this.allDevices.forEach((device: any) => {
-        if (device.type != "PHONE" && device.vendor == value) {
+        if (device.type != "PHONE" && device.vendor == value && !device.supportType) {
+          const productLabel = device.version ? device.product + " - v." + device.version : device.product;
           this.models.push({
             id: device.id,
             vendor: value,
-            product: device.version ? device.product + " - v." + device.version : device.product
+            product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
           });
         }
       });
@@ -232,10 +233,11 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     if (value) {
       this.allDevices.forEach((device: any) => {
         if (device.type != "PHONE" && device.vendor == value && device.supportType) {
+          const productLabel = device.version ? device.product + " - v." + device.version : device.product;
           this.supportModels.push({
             id: device.id,
             vendor: value,
-            product: device.version ? device.product + " - v." + device.version : device.product
+            product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
           });
         }
       });
@@ -247,8 +249,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   pickStartWeek() {
-    let startWeek = this.addLicenseConsumptionForm.get('startWeek').value;
-    let endWeek = this.addLicenseConsumptionForm.get('endWeek').value;
+    const startWeek = this.addLicenseConsumptionForm.get('startWeek').value;
+    const endWeek = this.addLicenseConsumptionForm.get('endWeek').value;
     this.toggleUsageDays(this.deviceDays,startWeek,endWeek);
     this.toggleUsageDays(this.supportDays,startWeek,endWeek);
     this.devicesUsed.forEach(deviceUsed => this.toggleUsageDays(deviceUsed.days,startWeek,endWeek));
@@ -281,9 +283,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
-    let consumptionRequests: any[] = [];
+    const consumptionRequests: any[] = [];
     const licenseConsumptionsObject: any = {
-      subaccountId: this.currentCustomer.id,
+      subaccountId: this.currentCustomer.subaccountId,
       projectId: this.addLicenseConsumptionForm.value.project.id,
       consumptionDate: this.addLicenseConsumptionForm.value.startWeek.toISOString().split("T")[0],
       type: "Configuration",
@@ -295,7 +297,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.addDevice();
     this.addSupport();
     this.devicesUsed.forEach((device: any) => {
-      let newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
+      const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
       newConsumptionObject.deviceId = device.id;
       for (let i = 0; i < device.days.length; i++) {
         if (device.days[i].used)
@@ -304,7 +306,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
     });
     this.supportUsed.forEach((device: any) => {
-      let newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
+      const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
       newConsumptionObject.deviceId = device.id;
       for (let i = 0; i < device.days.length; i++) {
         if (device.days[i].used)
@@ -331,7 +333,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    * add device to the list
    */
   addDevice(): void {
-    let device: any = this.addDeviceForm.value.product;
+    const device: any = this.addDeviceForm.value.product;
     if (device) {
       device.days = JSON.parse(JSON.stringify(this.deviceDays));
       this.devicesUsed.push(device);
@@ -342,7 +344,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   addSupport(): void {
-    let device: any = this.addSupportForm.value.product;
+    const device: any = this.addSupportForm.value.product;
     if (device) {
       device.days = JSON.parse(JSON.stringify(this.supportDays));
       this.supportUsed.push(device);
@@ -423,9 +425,28 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   devicesAndSupportInvalid(): boolean{
-    let isInvalidDevice = this.devicesUsed.length === 0 && this.isInvalid('product');
-    let isInvalidSupport = this.supportUsed.length === 0 && this.isInvalidSupport('product');
+    const isInvalidDevice = this.devicesUsed.length === 0 && this.isInvalid('product');
+    const isInvalidSupport = this.supportUsed.length === 0 && this.isInvalidSupport('product');
     return isInvalidDevice && isInvalidSupport;
+  }
+
+  loadClonedDevices() {
+    if (this.data?.selectedConsumptions) {
+      const devices = JSON.parse(JSON.stringify(this.data.selectedConsumptions));
+      devices.forEach(device => {
+        device.id = device.deviceId;
+        device.days = JSON.parse(JSON.stringify(this.deviceDays));
+        if (device.granularity === 'week') {
+          device.days.forEach(day => {
+            if (device.usageDays.includes(day.name)) {
+              day.used = true;
+            }
+          });
+        }
+        if (this.vendors.some(vendor => vendor.vendor === device.vendor)) this.devicesUsed.push(device);
+        else this.supportUsed.push(device);
+      });
+    }
   }
 
   ngOnDestroy(): void {

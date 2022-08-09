@@ -118,14 +118,14 @@ public class TekvLSCreateCustomer
 		}
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
 			
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			String adminEmail = jobj.getString("customerAdminEmail");
 			String verifyEmails = "select count(*) from customer_admin where admin_email='" + adminEmail + "';";
@@ -139,17 +139,9 @@ public class TekvLSCreateCustomer
 			}
 			
 			// Insert
-			try{
-				context.getLogger().info("Execute SQL statement: " + sql);
-				statement.executeUpdate(sql);
-				context.getLogger().info("Customer inserted successfully."); 
-			}catch(Exception e){
-				context.getLogger().info("Caught exception: " + e.getMessage());
-				JSONObject json = new JSONObject();
-				String modifiedResponse= customerUnique(e.getMessage());
-				json.put("error", modifiedResponse);
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-			}
+			context.getLogger().info("Execute SQL statement: " + sql);
+			statement.executeUpdate(sql);
+			context.getLogger().info("Customer inserted successfully.");
 
 			// Return the customer id in the response
 			sql = "select id from customer where name = '" + jobj.getString("customerName") + "' and type = '" + jobj.getString("customerType") + "';";
@@ -170,21 +162,20 @@ public class TekvLSCreateCustomer
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
+			String modifiedResponse = customerUnique(e.getMessage());
+			json.put("error", modifiedResponse);
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 	private String customerUnique(String errorMessage){
-		String response = errorMessage;
-
-		if(errorMessage.contains("customer_unique") && errorMessage.contains("already exists"))
-			response = "Customer already exists";
-		return response;
+		if(errorMessage.contains("customer_unique"))
+			return "Customer already exists";
+		return "SQL Exception: " + errorMessage;
 	}
 }

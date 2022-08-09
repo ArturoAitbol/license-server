@@ -49,14 +49,14 @@ public class TekvLSCreateBundle {
         String requestBody = request.getBody().orElse("");
         context.getLogger().info("Request body: " + requestBody);
         if (requestBody.isEmpty()) {
-            context.getLogger().info("error: request body is empty.");
+            context.getLogger().info("Error: Request body is empty.");
             JSONObject json = new JSONObject();
-            json.put("error", "error: request body is empty.");
+            json.put("error", "Request body is empty.");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;
         try {
-            jobj = new JSONObject(requestBody);;
+            jobj = new JSONObject(requestBody);
         }
         catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
@@ -88,12 +88,12 @@ public class TekvLSCreateBundle {
         values = values.substring(0, values.length()-1);
         String sql = "insert into bundle (" + columns + ") values (" + values + ")";
 
-        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try {
             Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
             Statement statement = connection.createStatement();
             context.getLogger().info("Execute SQL statement: " + sql);
             statement.executeUpdate(sql);

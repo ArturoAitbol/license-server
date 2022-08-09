@@ -5,7 +5,6 @@ import { Subject } from 'rxjs/internal/Subject';
 import { EventMessage, EventType } from '@azure/msal-browser';
 import { filter, takeUntil } from 'rxjs/operators';
 import { AutoLogoutService } from "./services/auto-logout.service";
-import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-root',
@@ -15,7 +14,7 @@ import { environment } from 'src/environments/environment';
 export class AppComponent implements OnInit, OnDestroy {
     private readonly _destroying$ = new Subject<void>();
     title = 'license-server';
-    currentUser: boolean = false;
+    currentUser = false;
 
     constructor(
         private router: Router,
@@ -64,10 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     logout() {
         try {
-            const baseUrl: string = environment.REDIRECT_URL_AFTER_LOGIN;
-            this.msalService.logoutPopup({
-                mainWindowRedirectUri: baseUrl
-            });
+            this.msalService.logout();
         } catch (error) {
             console.error('error while logout: ', error);
         }

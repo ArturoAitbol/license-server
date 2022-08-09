@@ -1,6 +1,6 @@
 export const permissions = {
-    "tekvizion.FullAdmin":{
-        paths:[
+    'tekvizion.FullAdmin': {
+        paths: [
             'dashboard',
             'customer',
             'consumption',
@@ -16,10 +16,11 @@ export const permissions = {
             'addAdminEmail',
             'deleteAdminEmail',
             'addSubAccAdminEmail',
-            'deleteSubAccAdminEmail'
+            'deleteSubAccAdminEmail',
+            'auditInfo'
         ],
-        tables:{
-            customerOptions:[
+        tables: {
+            customerOptions: [
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
                 'VIEW_PROJECTS',
@@ -27,22 +28,22 @@ export const permissions = {
                 'VIEW_SUBACC_ADMIN_EMAILS',
                 'MODIFY_ACCOUNT',
                 'DELETE_ACCOUNT'],
-            licenseOptions:[
-                "MODIFY_LICENSE",
-                "DELETE_LICENSE"],
-            licConsumptionOptions:[
-                "EDIT",
-                "DELETE"
+            licenseOptions: [
+                'MODIFY_LICENSE',
+                'DELETE_LICENSE'],
+            licConsumptionOptions: [
+                'EDIT',
+                'DELETE'
             ],
-            projectOptions:[
-                "VIEW_CONSUMPTION",
-                "MODIFY_PROJECT",
-                "CLOSE_PROJECT",
-                "DELETE_PROJECT"
+            projectOptions: [
+                'VIEW_CONSUMPTION',
+                'MODIFY_PROJECT',
+                'CLOSE_PROJECT',
+                'DELETE_PROJECT'
             ]}
         },
-    "tekvizion.SalesAdmin":{
-        paths:[
+    'tekvizion.SalesAdmin': {
+        paths: [
             'dashboard',
             'customer',
             'consumption',
@@ -57,25 +58,25 @@ export const permissions = {
             'deleteAdminEmail',
             'addSubAccAdminEmail',
             'deleteSubAccAdminEmail'],
-        tables:{
-            customerOptions:[
+        tables: {
+            customerOptions: [
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS',
                 'MODIFY_ACCOUNT'],
-            licenseOptions:[
-                "MODIFY_LICENSE"
+            licenseOptions: [
+                'MODIFY_LICENSE'
             ],
-            licConsumptionOptions:[
+            licConsumptionOptions: [
             ],
-            projectOptions:[
-                "VIEW_CONSUMPTION"
+            projectOptions: [
+                'VIEW_CONSUMPTION'
             ]}
         },
-    "tekvizion.ConfigTester":{
-        paths:[
+    'tekvizion.ConfigTester': {
+        paths: [
             'dashboard',
             'customer',
             'consumption',
@@ -86,26 +87,26 @@ export const permissions = {
             'addProject',
             'addLicenseConsumption'
         ],
-        tables:{
-            customerOptions:[
+        tables: {
+            customerOptions: [
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS'],
-            licenseOptions:[],
-            licConsumptionOptions:[
-                "EDIT",
-                "DELETE"
+            licenseOptions: [],
+            licConsumptionOptions: [
+                'EDIT',
+                'DELETE'
             ],
-            projectOptions:[
-                "VIEW_CONSUMPTION",
-                "MODIFY_PROJECT",
-                "CLOSE_PROJECT"
+            projectOptions: [
+                'VIEW_CONSUMPTION',
+                'MODIFY_PROJECT',
+                'CLOSE_PROJECT'
             ]}
         },
-    "distributor.FullAdmin":{
-        paths:[
+    'distributor.FullAdmin': {
+        paths: [
             'dashboard',
             'customer',
             'consumption',
@@ -113,21 +114,21 @@ export const permissions = {
             'licenses'
         ],
         elements: [],
-        tables:{
-            customerOptions:[
+        tables: {
+            customerOptions: [
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS'],
-            licenseOptions:[],
-            licConsumptionOptions:[],
-            projectOptions:[
-                "VIEW_CONSUMPTION"
+            licenseOptions: [],
+            licConsumptionOptions: [],
+            projectOptions: [
+                'VIEW_CONSUMPTION'
             ]}
         },
-    "customer.FullAdmin":{
-        paths:[
+    'customer.FullAdmin': {
+        paths: [
             'dashboard',
             'customer',
             'consumption',
@@ -135,21 +136,21 @@ export const permissions = {
             'licenses'
         ],
         elements: [],
-        tables:{
-            customerOptions:[
+        tables: {
+            customerOptions: [
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS'],
-            licenseOptions:[],
-            licConsumptionOptions:[],
-            projectOptions:[
-                "VIEW_CONSUMPTION"
+            licenseOptions: [],
+            licConsumptionOptions: [],
+            projectOptions: [
+                'VIEW_CONSUMPTION'
             ]}
         },
-    "customer.SubaccountAdmin":{
-        paths:[
+    'customer.SubaccountAdmin': {
+        paths: [
             'dashboard',
             'customer',
             'consumption',
@@ -157,17 +158,17 @@ export const permissions = {
             'licenses'
         ],
         elements: [],
-        tables:{
-            customerOptions:[
+        tables: {
+            customerOptions: [
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS'],
-            licenseOptions:[],
-            licConsumptionOptions:[],
-            projectOptions:[
-                "VIEW_CONSUMPTION"
+            licenseOptions: [],
+            licConsumptionOptions: [],
+            projectOptions: [
+                'VIEW_CONSUMPTION'
             ]}
         }
 };

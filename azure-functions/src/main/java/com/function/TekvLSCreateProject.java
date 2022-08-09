@@ -100,6 +100,10 @@ public class TekvLSCreateProject
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
+		if (jobj.has("projectOwner")) {
+			sqlPart1 += "project_owner,";
+			sqlPart2 += "'" + jobj.getString("projectOwner") + "',";
+		}
 
 		// Remove the comma after the last parameter and build the SQL statement
 		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
@@ -107,28 +111,19 @@ public class TekvLSCreateProject
 		String sql = "insert into project (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
 			
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
 			// Insert
-			try{
-				context.getLogger().info("Execute SQL statement: " + sql);
-				statement.executeUpdate(sql);
-				context.getLogger().info("Project inserted successfully."); 
-			}catch(Exception e){
-				context.getLogger().info("Caught exception: " + e.getMessage());
-				JSONObject json = new JSONObject();
-				String modifiedResponse= projectUnique(e.getMessage());
-				json.put("error", modifiedResponse);
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-			}
-
+			context.getLogger().info("Execute SQL statement: " + sql);
+			statement.executeUpdate(sql);
+			context.getLogger().info("Project inserted successfully."); 
 			// Return the id in the response
 			sql = "select id from project where " + 
 				"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
@@ -137,31 +132,26 @@ public class TekvLSCreateProject
 				"status = '" + jobj.getString("status") + "' and " +
 				"open_date = '" + jobj.getString("openDate") + "';";
 			context.getLogger().info("Execute SQL statement: " + sql);
-			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
 			JSONObject json = new JSONObject();
 			json.put("id", rs.getString("id"));
-
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			String modifiedResponse= projectUnique(e.getMessage());
+			json.put("error", modifiedResponse);
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+		} catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
-		catch (Exception e) {
-			context.getLogger().info("Caught exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-		}
 	}
-
 	private String projectUnique(String errorMessage){
 		String response = errorMessage;
-		
 		if(errorMessage.contains("project_unique") && errorMessage.contains("already exists"))
 			response = "Project already exists";
 		return response;

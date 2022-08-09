@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ProjectService } from 'src/app/services/project.service';
@@ -9,8 +9,8 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
   templateUrl: './add-project.component.html',
   styleUrls: ['./add-project.component.css']
 })
-export class AddProjectComponent implements OnInit {
-  isDataLoading: boolean = false;
+export class AddProjectComponent {
+  isDataLoading = false;
   readonly OPEN_STATUS = 'Open';
 
   addProjectForm = this.formBuilder.group({
@@ -25,9 +25,6 @@ export class AddProjectComponent implements OnInit {
     public dialogRef: MatDialogRef<AddProjectComponent>
   ) {
 
-  }
-
-  ngOnInit() {
   }
 
   onCancel(): void {

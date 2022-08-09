@@ -1,15 +1,8 @@
-# Workflow to build and deploy to Azure cloud the License Server UI  
-
 name: License Server CI/CD
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push to main branch
   push:
     branches: [ main ]
-  # or pull request events but only for the main branch
-  # pull_request:
-  #   branches: [ main ]
 
 env:
   AZURE_FUNCTIONAPP_NAME: tekvLicenseServerPOCFunction
@@ -22,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
     - uses: azure/login@v1
       with:
           creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
@@ -35,10 +31,34 @@ jobs:
       shell: bash
       run: |
         pushd './${{ env.POM_XML_DIRECTORY }}'
-        ls
-        mvn clean package
+        mvn clean package -Dmaven.test.skip -Dexec.skip -q
         mvn azure-functions:package
         popd
+
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+    
+    - name: Get Commit Short Hash
+      id: hash
+      run: echo "::set-output name=hash::$(git rev-parse --short "$GITHUB_SHA")"
+    
+    - name: Get Latest tag
+      id: current_tag
+      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+    
+    - name: 'Get next minor version'
+      id: next_tag
+      uses: "WyriHaximus/github-action-next-semvers@v1"
+      with:
+        version: ${{ steps.current_tag.outputs.tag }}
+    
+    - name: Archive Azure Functions Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/'
+        recursive: true
+        dest: 'af-release-${{steps.date.outputs.date}}.zip'
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
@@ -52,17 +72,36 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.20'
+    
+    - name: Build Angular Production web app
+      run: |
+        cd ./ui
+        npm install
+        npm run build:prod
         
-    - name: Build Angular web app
+    - name: Archive UI Production Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: './ui/dist/'
+        recursive: true
+        dest: 'ui-prod-release-${{steps.date.outputs.date}}.zip'
+
+    - name: Build Angular Integration web app
       run: |
         cd ./ui
         npm install
         npm run build
-        # npm run build -- "--base-href=/license-server/ --configuration production"
-        # ng build --base-href='/license-server/' --configuration production
-        ls ./dist
+    
+    - name: Archive UI Integration Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: './ui/dist/'
+        recursive: true        
+        dest: 'ui-integration-release-${{steps.date.outputs.date}}.zip'
 
-        
+    - name: Add Release version file
+      run: echo "Released ${{ steps.next_tag.outputs.patch }} Build" > ./ui/dist/license-server/ReleaseVersion.txt
+
     - name: Upload to blob storagerun
       uses: azure/CLI@v1
       with:
@@ -74,12 +113,68 @@ jobs:
       with:
         inlineScript: |
           # az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
+        
+    - name: Run API tests
+      id: run-newman
+      uses: matt-ball/newman-action@master
+      with:
+        collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
+        environment: ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
+        reporters: '["junit"]'
+        reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
 
-    - name: 'Run API tests'
-      run: |
-        ls
-        npm install -g newman
-        newman run ./tests/api/postman/LicenseServerAPIs.postman_collection.json -e ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
+    - name: Publish JUnit Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      with:
+        report_paths: './tests/api/postman/newman-report.xml'
+        summary: 'true'
+        check_name: 'API Test Report'
+    
+    - name: Bump version and push tag
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Archive Full Build
+      uses: vimtor/action-zip@v1
+      with:
+        files: 'af-release-${{steps.date.outputs.date}}.zip ui-integration-release-${{steps.date.outputs.date}}.zip ui-prod-release-${{steps.date.outputs.date}}.zip'
+        recursive: true        
+        dest: 'LS-release-${{github.run_number}}-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
+    
+    - name: Get latest release details
+      id: release_details
+      uses: cardinalby/git-get-release-action@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        latest: true
+    
+    - name: Get Latest Release commit hash
+      id: get_commit
+      uses: actions/github-script@0.9.0
+      with:
+        script: |
+          const commit = "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();
+          core.setOutput('commit', commit);
+    
+    - name: Create Release Notes from commit history
+      id: list_messages
+      run: git log --pretty=format:%s --ancestry-path ${{steps.get_commit.outputs.commit}}^..${{steps.hash.outputs.hash}} > ReleaseNotes.txt
+
+    - name: Create a GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ steps.tag_version.outputs.new_tag }}
+        name: Release ${{ steps.tag_version.outputs.new_tag }}
+        bodyFile: "./ReleaseNotes.txt" 
+        artifacts: 'LS-release-${{github.run_number}}-${{steps.date.outputs.date}}-${{steps.hash.outputs.hash}}.zip'
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Print Release Version
+      run: echo 'Released ${{ steps.tag_version.outputs.new_tag }} Build'
     
   # Azure logout
     - name: logout

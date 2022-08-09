@@ -13,9 +13,11 @@ import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -42,7 +44,7 @@ public class TekvLSGetAllProjects {
 		final ExecutionContext context) 
    {
 
-	   JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+	   Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 	   String currentRole = getRoleFromToken(tokenClaims,context);
 	   if(currentRole.isEmpty()){
 		   JSONObject json = new JSONObject();
@@ -67,7 +69,7 @@ public class TekvLSGetAllProjects {
 		
 		// Build SQL statement
 		String sql = "select * from project";
-	   	String subQuery;
+	   	String subQuery="";
 	   	String email = getEmailFromToken(tokenClaims,context);
 	   	List<String> conditionsList = new ArrayList<>();
 	   	// adding conditions according to the role
@@ -111,16 +113,29 @@ public class TekvLSGetAllProjects {
 	   	sql += " order by open_date desc, code, name;";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
-			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+			Statement statement = connection.createStatement()) {
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+			ResultSet rs;
+
+			if(!subQuery.isEmpty() && id.equals("EMPTY")){
+				String sqlVerifySubaccount = subQuery + "and " + (currentRole.equals(SUBACCOUNT_ADMIN) ? "subaccount_id='" : "s.id='")+subaccountId+"';";
+
+				context.getLogger().info("Execute SQL devices statement: " + sqlVerifySubaccount);
+				rs = statement.executeQuery(sqlVerifySubaccount);
+				if(!rs.next()){
+					context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + email);
+					json.put("error",MESSAGE_FOR_INVALID_ID);
+					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+				}
+			}
 			
 			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
+			rs = statement.executeQuery(sql);
 			// Return a JSON array of projects
 			JSONArray array = new JSONArray();
 			String closeDate;
@@ -134,8 +149,18 @@ public class TekvLSGetAllProjects {
 				item.put("openDate", rs.getString("open_date").split(" ")[0]);
 				closeDate = rs.getString("close_date");
 				item.put("closeDate", closeDate != null ? closeDate.split(" ")[0] : JSONObject.NULL);
+				if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO))
+					item.put("projectOwner", rs.getString("project_owner"));
 				array.put(item);
 			}
+
+			if(!id.equals("EMPTY") && array.isEmpty()){
+				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
 			json.put("projects", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}

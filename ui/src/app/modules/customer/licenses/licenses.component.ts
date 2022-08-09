@@ -32,8 +32,8 @@ export class LicensesComponent implements OnInit {
   licenses: License[] = [];
   licensesBk: License[] = [];
   // flag
-  isLoadingResults: boolean = true;
-  isRequestCompleted: boolean = false;
+  isLoadingResults = true;
+  isRequestCompleted = false;
 
   readonly MODIFY_LICENSE: string = 'Edit';
   readonly DELETE_LICENSE: string = 'Delete';
@@ -55,9 +55,14 @@ export class LicensesComponent implements OnInit {
   }
 
   private getActionMenuOptions(){
-    let accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     accountRoles.forEach(accountRole =>{
       permissions[accountRole].tables.licenseOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
+      if(this.currentCustomer.testCustomer === false){
+        const action = (action) => action === 'Delete';
+        const index = this.actionMenuOptions.findIndex(action);
+        this.actionMenuOptions.splice(index, );
+      }
     })
   }
 
@@ -102,7 +107,7 @@ export class LicensesComponent implements OnInit {
   fetchLicenses(): void {
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
-    this.licenseService.getLicenseList(this.currentCustomer.id).subscribe(res => {
+    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
       this.licensesBk = this.licenses = res['licenses'];

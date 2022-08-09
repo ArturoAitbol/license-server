@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "eb89f75c-a0ca-44b6-b433-e70017103836",
+		"_postman_id": "24dd0ce0-d177-4554-b45b-26bc399f8c8e",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8463491"
+		"_exporter_id": "8463466"
 	},
 	"item": [
 		{
@@ -26,7 +26,30 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							""
+							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
+							"\r",
+							"const clientId = pm.variables.get(\"clientId_DevicesAdmin\");\r",
+							"const clientSecret = pm.variables.get(\"clientSecret_DevicesAdmin\");\r",
+							"const grantType = pm.variables.get(\"grant_type\");\r",
+							"const scope = pm.variables.get(\"scope\");\r",
+							"\r",
+							"const getTokenRequest = {\r",
+							"  method: 'POST',\r",
+							"  url: tokenUrl,\r",
+							"  body: {\r",
+							"      mode: 'formdata',\r",
+							"      formdata: [\r",
+							"          { key: 'client_id', value: clientId },\r",
+							"          { key: 'client_secret', value: clientSecret },\r",
+							"          { key: 'grant_type', value: grantType },\r",
+							"          { key: 'scope', value: scope}\r",
+							"      ]\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
+							"  pm.collectionVariables.set('access_token_DA', response.json().access_token);\r",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -38,7 +61,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{devicesAdminToken}}",
+							"value": "{{access_token_DA}}",
 							"type": "string"
 						}
 					]
@@ -81,6 +104,38 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
+							"\r",
+							"const clientId = pm.variables.get(\"clientId_FullAdmin\");\r",
+							"const clientSecret = pm.variables.get(\"clientSecret_FullAdmin\");\r",
+							"const grantType = pm.variables.get(\"grant_type\");\r",
+							"const scope = pm.variables.get(\"scope\");\r",
+							"\r",
+							"const getTokenRequest = {\r",
+							"  method: 'POST',\r",
+							"  url: tokenUrl,\r",
+							"  body: {\r",
+							"      mode: 'formdata',\r",
+							"      formdata: [\r",
+							"          { key: 'client_id', value: clientId },\r",
+							"          { key: 'client_secret', value: clientSecret },\r",
+							"          { key: 'grant_type', value: grantType },\r",
+							"          { key: 'scope', value: scope}\r",
+							"      ]\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
+							"  pm.collectionVariables.set('access_token', response.json().access_token);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -102,6 +157,57 @@
 					],
 					"path": [
 						"customers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"bundleId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"CICDTest\",\r\n    \"tokens\":\"10\",\r\n    \"deviceAccessToken\":\"100\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/bundles",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles"
 					]
 				}
 			},
@@ -361,6 +467,43 @@
 			"response": []
 		},
 		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tokens\":\"20\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/bundles/{{bundleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles",
+						"{{bundleId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "customers",
 			"event": [
 				{
@@ -417,7 +560,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{devicesAdminToken}}",
+							"value": "{{access_token_DA}}",
 							"type": "string"
 						}
 					]
@@ -743,9 +886,11 @@
 							"pm.test(\"Response body test\", function () {\r",
 							"    pm.response.to.have.jsonBody(\"tokenConsumption\");\r",
 							"    pm.response.to.have.jsonBody(\"usage\");\r",
-							"    pm.response.to.have.jsonBody(\"configurationTokens\");\r",
+							"    pm.response.to.have.jsonBody(\"weeklyConsumption\");\r",
+							"    pm.response.to.have.jsonBody(\"projectConsumption\");\r",
 							"    pm.expect(pm.response.json().usage).to.be.an(\"array\")\r",
-							"    pm.expect(pm.response.json().configurationTokens).to.be.an(\"array\")\r",
+							"    pm.expect(pm.response.json().weeklyConsumption).to.be.an(\"array\")\r",
+							"    pm.expect(pm.response.json().projectConsumption).to.be.an(\"array\")\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1019,7 +1164,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{devicesAdminToken}}",
+							"value": "{{access_token_DA}}",
 							"type": "string"
 						}
 					]
@@ -1034,6 +1179,34 @@
 					"path": [
 						"devices",
 						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/bundles/{{bundleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles",
+						"{{bundleId}}"
 					]
 				}
 			},
@@ -1138,7 +1311,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "{{fullAdminToken}}",
+				"value": "{{access_token}}",
 				"type": "string"
 			}
 		]
@@ -1177,6 +1350,10 @@
 			"value": ""
 		},
 		{
+			"key": "bundleId",
+			"value": ""
+		},
+		{
 			"key": "customerId",
 			"value": ""
 		},
@@ -1204,6 +1381,51 @@
 		{
 			"key": "devicesAdminToken",
 			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjJaUXBKM1VwYmpBWVhZR2FYRUpsOGxWMFRPSSJ9.eyJhdWQiOiJlNjQzZmM5ZC1iMTI3LTQ4ODMtOGI4MC0yOTI3ZGY5MGUyNzUiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vZTNhNDYwMDctMzFjYi00NTI5LWI4Y2MtMWU1OWI5N2ViZGJkL3YyLjAiLCJpYXQiOjE2NTY0NDE4MTgsIm5iZiI6MTY1NjQ0MTgxOCwiZXhwIjoxNjU2NDQ1NzE4LCJuYW1lIjoidGVzdCBkZXZpY2VzIGFkbWluIHJvbGUiLCJub25jZSI6Ijc4OGNkYWVlLTA4YTAtNDVjYy04NmE1LTllYzkxODI5YjkxOCIsIm9pZCI6IjU0ZDlmNDRhLTdmODEtNGY5NS05ZWM2LWEyZGU2NjBiYzFmZCIsInByZWZlcnJlZF91c2VybmFtZSI6InRlc3QtZGV2aWNlcy1hZG1pbkB0ZWt2aXppb25sYWJzLmNvbSIsInJoIjoiMC5BUk1BQjJDazQ4c3hLVVc0ekI1WnVYNjl2WjM4US1ZbnNZTklpNEFwSjktUTRuVVRBTTAuIiwicm9sZXMiOlsidGVrdml6aW9uLkRldmljZXNBZG1pbiJdLCJzdWIiOiJ2TnBWOW0wcWdwT1FRc2VhTnplVXM3dFczSmNncnQ0dWh1VVNSQ0x0SWVZIiwidGlkIjoiZTNhNDYwMDctMzFjYi00NTI5LWI4Y2MtMWU1OWI5N2ViZGJkIiwidXRpIjoiX0o1S0FESFVFRS1TNHdJamYwZHVBQSIsInZlciI6IjIuMCJ9.ZEuYwkVdrwmE1Xd7AyByU2H0YUxDLQR0revtx4VVEts2tQOG_GfifxwGzGGG57fvVXIeZv3NBqNvTKFX2UMYsJXjPuEveJI85HrdA7Yh8gH6PfP7IRE4tuFItJZNhi-UdkDCpvvncIN3TRUzql4vb8-mwDM42FSedh5CkXwdHxAV86M5cigztErtkTsqPTFAUE5gJev39kGshs5YFmkfNFGVFe1P4zoAJii0duawKF1ncFPU9FGLLddfzDSDVD1I_YGTad5OY5doaP71qJC43huZeV7OhY1iSvgx1N-nDxwMR3zzIsXkWoOVmE5erLh7OFrQIFIuQanTETTLVkZ_1Q",
+			"type": "string"
+		},
+		{
+			"key": "authorization_url",
+			"value": "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/oauth2/v2.0/token",
+			"type": "string"
+		},
+		{
+			"key": "scope",
+			"value": "api://e643fc9d-b127-4883-8b80-2927df90e275/.default",
+			"type": "string"
+		},
+		{
+			"key": "grant_type",
+			"value": "client_credentials",
+			"type": "string"
+		},
+		{
+			"key": "clientId_FullAdmin",
+			"value": "823fea2e-ad8b-4369-8a04-20787b966768",
+			"type": "string"
+		},
+		{
+			"key": "clientSecret_FullAdmin",
+			"value": "uvm8Q~lpjklMZajzmd9rXgzWQEQZVRwbpA6RAcR4",
+			"type": "string"
+		},
+		{
+			"key": "clientId_DevicesAdmin",
+			"value": "c7ce5df4-6db7-45fa-8c4e-c077cf504c7c",
+			"type": "string"
+		},
+		{
+			"key": "clientSecret_DevicesAdmin",
+			"value": "6yS8Q~0t1kzI6-OH1NbI4JkRdrwGSbfZ64ECPbMM",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "access_token_DA",
+			"value": "",
 			"type": "string"
 		}
 	]

@@ -13,9 +13,11 @@ import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -43,7 +45,7 @@ public class TekvLSGetAllLicenses
 		final ExecutionContext context) 
 	{
 
-		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -65,7 +67,7 @@ public class TekvLSGetAllLicenses
   
 		// Build SQL statement
 		String sql = "select * from license";
-		String subQuery;
+		String subQuery="";
 		String email = getEmailFromToken(tokenClaims,context);
 		List<String> conditionsList = new ArrayList<>();
 		// adding conditions according to the role
@@ -102,14 +104,28 @@ public class TekvLSGetAllLicenses
 		sql += " order by start_date desc;";
 		
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			Statement statement = connection.createStatement()) {
 			
-			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+			ResultSet rs;
+			JSONObject json = new JSONObject();
+
+			if(!subQuery.isEmpty() && id.equals("EMPTY") && !subaccountId.isEmpty()){
+				String sqlVerifySubaccount = subQuery + "and " + (currentRole.equals(SUBACCOUNT_ADMIN) ? "subaccount_id='" : "s.id='")+subaccountId+"';";
+
+				context.getLogger().info("Execute SQL devices statement: " + sqlVerifySubaccount);
+				rs = statement.executeQuery(sqlVerifySubaccount);
+				if(!rs.next()){
+					context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + email);
+					json.put("error",MESSAGE_FOR_INVALID_ID);
+					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+				}
+			}
 
 			if(id.equals("EMPTY") && subaccountId.isEmpty()){
 				//Update status by checking renewal date
@@ -119,11 +135,10 @@ public class TekvLSGetAllLicenses
 				context.getLogger().info("Licenses status updated successfully.");
 			}
 
-			// Retrive licenses. TODO: pagination
+			// Retrieve licenses.
 			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
+			rs = statement.executeQuery(sql);
 			// Return a JSON array of licenses
-			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
 			while (rs.next()) {
 				JSONObject item = new JSONObject();
@@ -139,6 +154,14 @@ public class TekvLSGetAllLicenses
 				}
 				array.put(item);
 			}
+
+			if(!id.equals("EMPTY") && array.isEmpty()){
+				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
 			json.put("licenses", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}

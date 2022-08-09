@@ -12,8 +12,11 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,7 +42,7 @@ public class TekvLSGetConsumptionUsageDetails {
 			@BindingName("id") String id,
 		final ExecutionContext context) {
 
-		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -90,11 +93,11 @@ public class TekvLSGetConsumptionUsageDetails {
 		sql +=";";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
-			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement()) {
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of usageDays
@@ -108,22 +111,40 @@ public class TekvLSGetConsumptionUsageDetails {
 				item.put("usageDate", rs.getString("usage_date"));
 				item.put("macAddress", rs.getString("mac_address"));
 				item.put("serialNumber", rs.getString("serial_number"));
+				if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO))
+					item.put("modifiedBy", rs.getString("modified_by"));
 				array.put(item);
 			}
+			if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO)) {
+				sql = "SELECT modified_by FROM license_consumption WHERE id='" + id + "';";// get tokens to consume
+				context.getLogger().info("Execute SQL statement: " + sql);
+				rs = statement.executeQuery(sql);
+				if(rs.next()){
+					json.put("modifiedBy", rs.getString("modified_by"));
+				}
+			}
+
+			if(!id.equals("EMPTY") && array.isEmpty()){
+				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
 			json.put("usageDays", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
+			json.put("error", "SQL exception:" + e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }

@@ -15,30 +15,30 @@ import { SubaccountAdminEmailService } from "../../services/subaccount-admin-ema
 export class SubaccountAdminEmailsComponent implements OnInit {
 
   adminEmailsForm: any = this.formBuilder.group({
-    name: ['', Validators.required],
+    subaccountName: ['', Validators.required],
     emails: this.formBuilder.array([])
   });
 
   private previousFormValue: any;
-  isDataLoading: boolean = false;
+  isDataLoading = false;
   adminEmails: string[];
 
   constructor(
       private formBuilder: FormBuilder,
       private subaccountAdminEmailService: SubaccountAdminEmailService,
-      private subAccountService: SubAccountService,
+      private subaccountService: SubAccountService,
       private snackBarService: SnackBarService,
       public dialogRef: MatDialogRef<SubaccountAdminEmailsComponent>,
       @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   ngOnInit() {
-    this.adminEmailsForm.controls.name.disable();
+    this.adminEmailsForm.controls.subaccountName.disable();
     if (this.data) {
       this.isDataLoading = true;
       this.adminEmailsForm.patchValue(this.data);
       this.previousFormValue = {...this.adminEmailsForm};
-      this.subAccountService.getSubAccountDetails(this.data.id).subscribe((res: any) => {
+      this.subaccountService.getSubAccountDetails(this.data.subaccountId).subscribe((res: any) => {
         this.adminEmails = res.subaccounts[0]?.subaccountAdminEmails;
         this.isDataLoading = false
       })
@@ -54,7 +54,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
     if (this.emailForms.length > 0) {
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.subaccountAdminEmailService.createAdminEmail({
         subaccountAdminEmail: value.email,
-        subaccountId: this.data.id,
+        subaccountId: this.data.subaccountId,
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
         if (!res.error) {

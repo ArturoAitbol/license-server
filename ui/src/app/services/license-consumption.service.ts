@@ -24,7 +24,7 @@ export class LicenseConsumptionService {
    * @param licenseId: string 
    * @returns: Observable 
    */
-  public getLicenseDetails(data: any) {
+  public getLicenseConsumptionDetails(data: any) {
     const headers = this.getHeaders();
     let params = new HttpParams()
         .set('subaccountId', data.subaccount)
@@ -36,11 +36,15 @@ export class LicenseConsumptionService {
     if (data.type)
       params = params.set('type', data.type);
     if (data.project)
-      params = params.set('project', data.project);
+      params = params.set('projectId', data.project);
     if (data.startDate && data.endDate) {
       params = params.set('startDate', data.startDate);
       params = params.set('endDate', data.endDate);
     }
+    if (data.limit)
+      params = params.set('limit', data.limit);
+    if (data.offset)
+      params = params.set('offset', data.offset);
     return this.httpClient.get(this.API_URL, { headers, params });
   }
   /**

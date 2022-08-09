@@ -44,14 +44,14 @@ public class TekvLSDeleteSubaccountAdminEmail {
 
         context.getLogger().info("Entering TekvLSCreateCustomer Azure function");
         // Connect to the database
-        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses?ssl=true&sslmode=require"
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try (
                 Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 Statement statement = connection.createStatement()) {
 
-            context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Delete device
             String sql = "DELETE FROM subaccount_admin WHERE subaccount_admin_email='" + email + "';";
@@ -63,13 +63,13 @@ public class TekvLSDeleteSubaccountAdminEmail {
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
-            json.put("error", e.getMessage());
+            json.put("error", "SQL Exception: " + e.getMessage());
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }
 }

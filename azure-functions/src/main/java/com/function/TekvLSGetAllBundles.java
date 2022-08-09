@@ -67,16 +67,17 @@ public class TekvLSGetAllBundles {
 		sql += ";";
 		
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
+		context.getLogger().info("JDBC CONNECTION STRING: "+dbConnectionUrl);	
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			Statement statement = connection.createStatement();) {
 			
-			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
-			// Retrive all bundles. TODO: pagination
+			// Retrive all bundles.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of bundles

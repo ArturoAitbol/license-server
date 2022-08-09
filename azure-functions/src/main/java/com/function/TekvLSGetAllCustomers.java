@@ -1,7 +1,6 @@
 package com.function;
 
 import com.function.auth.Permission;
-import com.function.auth.RoleAuthHandler;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -15,6 +14,7 @@ import com.microsoft.azure.functions.annotation.BindingName;
 import java.sql.*;
 import java.util.*;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,7 +30,7 @@ public class TekvLSGetAllCustomers {
 	 * 2. curl "{your host}/api/customers"
 	 */
 
-	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 
@@ -46,7 +46,7 @@ public class TekvLSGetAllCustomers {
 				final ExecutionContext context) 
 	{
 
-		JSONObject tokenClaims = getTokenClaimsFromHeader(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -109,11 +109,11 @@ public class TekvLSGetAllCustomers {
 		// Connect to the database
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			Statement statement = connection.createStatement()) {
 			
-			context.getLogger().info("Successfully connected to: " + dbConnectionUrl);
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
-			// Retrive all customers. TODO: pagination
+			// Retrieve all customers.
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			// Return a JSON array of customers (id and names)
@@ -134,13 +134,21 @@ public class TekvLSGetAllCustomers {
 				}
 				array.put(item);
 			}
+
+			if(!id.equals("EMPTY") && array.isEmpty()){
+				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
 			json.put("customers", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
+			json.put("error", "SQL Exception: " + e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
@@ -159,7 +167,7 @@ public class TekvLSGetAllCustomers {
 	private Map<String, List<String>> loadAdminEmails(ExecutionContext context, String sql) {
 		Map<String, List<String>> emailsMap = new HashMap<>();
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			 Statement statement = connection.createStatement();) {
+			 Statement statement = connection.createStatement()) {
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			while (rs.next()) {
@@ -173,10 +181,4 @@ public class TekvLSGetAllCustomers {
 		}
 		return emailsMap;
 	}
-
-
-
-
-
-
 }

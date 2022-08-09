@@ -10,6 +10,7 @@ import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
+import io.jsonwebtoken.Claims;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Iterator;
@@ -39,7 +40,8 @@ public class TekvLSCreateLicenseUsageDetail
 				HttpRequestMessage<Optional<String>> request,
 				final ExecutionContext context) {
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		String currentRole = getRoleFromToken(tokenClaims, context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -54,6 +56,7 @@ public class TekvLSCreateLicenseUsageDetail
 		}
 
 		context.getLogger().info("Entering TekvLSCreateLicenseUsageDetail Azure function");
+		String userId = getEmailFromToken(tokenClaims, context);
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -74,7 +77,7 @@ public class TekvLSCreateLicenseUsageDetail
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
-		// The expected parameters (and their coresponding column name in the database) 
+		// The expected parameters (and their corresponding column name in the database)
 		String[][] mandatoryParams = {
 			{"subaccountId","subaccount_id"}, 
 			{"deviceId","device_id"}, 
@@ -82,20 +85,34 @@ public class TekvLSCreateLicenseUsageDetail
 			{"type","usage_type"}
 		};
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses?ssl=true&sslmode=require"
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		// Build the sql query to get tokens consumption
-		String sql = "select tokens_to_consume from device where id='" + jobj.getString("deviceId") + "';";
+		// Build the sql query to get tokens consumption and granularity from device table
+		String deviceId = jobj.getString("deviceId");
+		String sql = "select tokens_to_consume, granularity from device where id='" + deviceId + "';";
 
-		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
-			context.getLogger().info("Successfully connected to:" + dbConnectionUrl);
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement()) {
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			// get tokens to consume
 			context.getLogger().info("Execute SQL statement: " + sql);
 			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
-			int tokensToConsume = rs.getInt(1);
-			// Build the sql insertion query
+			int tokensToConsume = rs.getInt("tokens_to_consume");
+			String granularity = rs.getString("granularity");
+			// check if there was a consumption for this device in the same project previously.
+			if (granularity.equalsIgnoreCase("static")) {
+				String projectIdCondition = jobj.has("projectId")? "='" + jobj.getString("projectId") + "'" : " IS NULL";
+				String devicePerProjectConsumptionSql = "select id from license_consumption where device_id='" + deviceId + "' and project_id" + projectIdCondition + " LIMIT 1;";
+				rs = statement.executeQuery(devicePerProjectConsumptionSql);
+				// if there was a condition only create usage details and not a consumption, otherwise continue the normal flow
+				if (rs.next()) {
+					jobj.put("id", rs.getString("id"));
+					jobj.put("userId", userId);
+					return this.createUsageDetail(jobj, statement, request, context);
+				}
+			}
+			// Build the sql insertion query if there was no match in the previous if statements
 			String sqlPart1 = "";
 			String sqlPart2 = "";
 			for (int i = 0; i < mandatoryParams.length; i++) {
@@ -118,15 +135,17 @@ public class TekvLSCreateLicenseUsageDetail
 				sqlPart1 += "project_id,";
 				sqlPart2 += "'" + jobj.getString("projectId") + "',";
 			}
-			// modifed_date is always consumption_date when creating the record
-			sqlPart1 += "modified_date,tokens_consumed";
-			sqlPart2 += "'" + LocalDate.now().toString() + "'," + tokensToConsume;
+			// modified_date is always local date when creating the record
+			// also adding the user that performed the operation
+			sqlPart1 += "modified_date,tokens_consumed,modified_by";
+			sqlPart2 += "'" + LocalDate.now().toString() + "'," + tokensToConsume + ",'" + userId + "'";
 			sql = "insert into license_consumption (" + sqlPart1 + ") values (" + sqlPart2 + ") returning id;";	
-			// Insert
+			// Insert consumption
 			context.getLogger().info("Execute SQL statement: " + sql);
 			rs = statement.executeQuery(sql);
 			rs.next();
 			jobj.put("id", rs.getString("id"));
+			jobj.put("userId", userId);
 			context.getLogger().info("License consumption inserted successfully.");
 			return this.createUsageDetail(jobj, statement, request, context);
 		}
@@ -144,10 +163,11 @@ public class TekvLSCreateLicenseUsageDetail
 		}
 	}
 
-	private HttpResponseMessage createUsageDetail(JSONObject consumptionObj, Statement statement, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) {
-		String sql = "insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number) values ";
+	private HttpResponseMessage createUsageDetail(JSONObject consumptionObj, Statement statement, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) throws SQLException {
+		String sql = "insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number,modified_date,modified_by) values ";
 		String consumptionId = consumptionObj.getString("id");
 		LocalDate consumptionDate = LocalDate.parse(consumptionObj.getString("consumptionDate"));
+		String userAndDateSentence = "'" + LocalDate.now().toString() + "','" + consumptionObj.getString("userId") + "'";
 		try {
 			final JSONArray usageDays = consumptionObj.getJSONArray("usageDays");
 			if (usageDays != null && usageDays.length() > 0) {
@@ -156,27 +176,29 @@ public class TekvLSCreateLicenseUsageDetail
 				Integer usage;
 				while(iterator.hasNext()) {
 					usage = Integer.parseInt(iterator.next().toString());
-					sql += "\n('" + consumptionId + "','" + consumptionDate.plusDays(usage).toString() + "'," + usage + ",'',''),";
+					sql += "\n('" + consumptionId + "','" + consumptionDate.plusDays(usage).toString() + "'," + usage + ",'',''," + userAndDateSentence + "),";
 				}
 				sql = sql.substring(0, sql.length() - 1) + ";";
 			} else {
 				String macAddress = consumptionObj.getString("macAddress");
 				String serialNumber = consumptionObj.getString("serialNumber");
-				sql += "('" + consumptionId + "','" + consumptionDate.toString() + "',0,'" + macAddress + "','" + serialNumber + "');";
+				sql += "('" + consumptionId + "','" + consumptionDate.toString() + "',0,'" + macAddress + "','" + serialNumber + "'," + userAndDateSentence + ");";
 			}
 			context.getLogger().info("Execute create usages SQL statement: " + sql);
 			statement.executeUpdate(sql);
 			context.getLogger().info("License usage details inserted successfully.");
 			return request.createResponseBuilder(HttpStatus.OK).body(consumptionObj.toString()).build();
-		} catch (SQLException e) {
-			context.getLogger().info("SQL exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
+
+			//Delete license consumption
+			sql = "delete from license_consumption where id='"+consumptionObj.getString("id")+"';";
+			context.getLogger().info("Execute create usages SQL statement: " + sql);
+			statement.executeUpdate(sql);
+			context.getLogger().info("License consumption deleted successfully.");
+
 			context.getLogger().info("Caught exception: " + e.toString());
 			JSONObject json = new JSONObject();
-			json.put("error", e);
+			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}

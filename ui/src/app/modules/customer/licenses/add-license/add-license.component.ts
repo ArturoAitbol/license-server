@@ -50,14 +50,14 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
    */
   submit() {
     const licenseObject: License | any = {
-      subaccountId: this.currentCustomer.id,
+      subaccountId: this.currentCustomer.subaccountId,
       startDate: this.addLicenseForm.value.startDate,
       packageType: this.selectedType,
       tokensPurchased: this.addLicenseForm.get("tokensPurchased").value,
       deviceLimit: this.addLicenseForm.get("deviceLimit").value,
       renewalDate: this.addLicenseForm.value.renewalDate
     };
-    this.licenseService.purchaseLicense(licenseObject).subscribe((res: any) => {
+    this.licenseService.createLicense(licenseObject).subscribe((res: any) => {
       if (!res.error) {
         this.snackBarService.openSnackBar('Package added successfully!', '');
         this.dialogRef.close(res);
@@ -84,13 +84,13 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
   }
 
   onStartDateChange(value) {
-    let minDate = new Date(value);
+    const minDate = new Date(value);
     minDate.setDate(minDate.getDate() + 1);
     this.renewalDateMin = minDate;
   }
 
   onRenewalDateChange(value) {
-    let maxDate = new Date(value);
+    const maxDate = new Date(value);
     maxDate.setDate(maxDate.getDate() - 1);
     this.startDateMax = maxDate;
   }
