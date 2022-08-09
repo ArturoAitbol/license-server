@@ -22,43 +22,43 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
 
-      # - name: 'Restore Project Dependencies Using Mvn and Run Unit Tests'
-      #   shell: bash
-      #   run: |
-      #     pushd './${{ env.POM_XML_DIRECTORY }}'
-      #     sudo sed -i -e 's/local   all             postgres                                peer/local   all             postgres                                trust/g' /etc/postgresql/14/main/pg_hba.conf
-      #     sudo systemctl start postgresql.service
-      #     psql "dbname=postgres user=postgres password=postgres" -c "ALTER USER postgres WITH PASSWORD 'postgres';"
-      #     chmod 777 src/test/resources/Script.sh
-      #     mvn clean package -q
-      #     popd
+      - name: 'Restore Project Dependencies Using Mvn and Run Unit Tests'
+        shell: bash
+        run: |
+          pushd './${{ env.POM_XML_DIRECTORY }}'
+          sudo sed -i -e 's/local   all             postgres                                peer/local   all             postgres                                trust/g' /etc/postgresql/14/main/pg_hba.conf
+          sudo systemctl start postgresql.service
+          psql "dbname=postgres user=postgres password=postgres" -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+          chmod 777 src/test/resources/Script.sh
+          mvn clean package -q
+          popd
 
-      # - name: Publish JUnit Report
-      #   uses: mikepenz/action-junit-report@v3
-      #   if: always() # always run even if the previous step fails
-      #   with:
-      #     report_paths: '**/target/surefire-reports/TEST-*.xml'
-      #     summary: 'true'
+      - name: Publish JUnit Report
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: '**/target/surefire-reports/TEST-*.xml'
+          summary: 'true'
       
-      # - name: Angular Test web app
-      #   run: |
-      #     cd ./ui
-      #     npm install
-      #     npm run test -- --no-watch --no-progress
+      - name: Angular Test web app
+        run: |
+          cd ./ui
+          npm install
+          npm run test -- --no-watch --no-progress
   
-      # - name: Publish Test Results
-      #   uses: EnricoMi/publish-unit-test-result-action@v1
-      #   if: always()
-      #   with:
-      #     files: "ui/test-results/*.xml"
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "ui/test-results/*.xml"
     
-      # - name: Comment Test Coverage
-      #   uses: AthleticNet/comment-test-coverage@1.1
-      #   if: always()
-      #   with:
-      #     token: ${{ github.token }}
-      #     path: ui/test-results/coverage-summary.json
-      #     title: Karma Test Coverage
+      - name: Comment Test Coverage
+        uses: AthleticNet/comment-test-coverage@1.1
+        if: always()
+        with:
+          token: ${{ github.token }}
+          path: ui/test-results/coverage-summary.json
+          title: Karma Test Coverage
 
       - name: Run UI Tests
         run: |
