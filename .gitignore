@@ -13,13 +13,6 @@ ui/package-lock.json
 *.prefs
 .vscode
 
-ui/coverage
-coverage/*
-azure-functions/coverage/*
-ui/fe-coverage/*
-ui/test-results
-.DS_Store
-
 azure-functions/logs/*.log
 
 # Ignore Gradle project-specific cache directory
@@ -27,6 +20,7 @@ tests/ui/.gradle/
 tests/ui/build
 tests/ui/reports/
 tests/ui/gradle/wrapper/*.jar
+.gradle/
+
 # tests/ui/src/test/java/acp/runner/RunCucumberTests.java
 # tests/ui/environment.json
-
