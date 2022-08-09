@@ -461,7 +461,6 @@ class TekvLSGetAllCustomersTest extends TekvLSTest {
     public void getCustomerByNonexistentIdTest() {
         //Given - Arrange
         this.id = "00000000-0000-0000-0000-000000000000";
-        String expectedName = "Test RealCustomer";
 
         //When - Action
         HttpResponseMessage response = getAllCustomersApi.run(this.request, this.id, this.context);
