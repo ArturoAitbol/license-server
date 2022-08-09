@@ -1,4 +1,4 @@
 {
-  "browser" : "chrome",
-  "url" : "http://localhost:4200/dashboard"
+  "browser" : "headless_chrome",
+  "url" : "https://lswebappstorage.z21.web.core.windows.net/license-server/"
 }

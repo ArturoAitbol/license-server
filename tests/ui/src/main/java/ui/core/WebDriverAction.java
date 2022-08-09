@@ -71,15 +71,6 @@ public class WebDriverAction {
         }
     }
 
-    public String getText(WebElement element, String text){
-        boolean present;
-        present = wait.until(ExpectedConditions.textToBePresentInElement(element, text));
-        if (present)
-            return element.getText();
-        else
-            return "There isn't this text: " + text;
-    }
-
     public void selectOption(WebElement element, By option){
         try {
             wait.until(ExpectedConditions.elementToBeClickable(element));
@@ -89,8 +80,6 @@ public class WebDriverAction {
         catch (Exception e){
             LOGGER.warn("Selected option is not able: " + option.toString());
             LOGGER.warn("Ex: "+ e.toString());
-//            System.out.println("Selected option is not able: " + option.toString());
-//            System.out.println("Ex: "+ e.toString());
         }
     }
 

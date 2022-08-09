@@ -6,6 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
 import ui.pages.Customers;
+import ui.pages.Header;
 import ui.pages.Landing;
 import ui.pages.LoginForm;
 
@@ -13,6 +14,7 @@ public class LoginSteps {
     Landing landing;
     LoginForm loginForm;
     Customers customers;
+    Header header;
     private String logged;
 
     public LoginSteps(Landing landing){
@@ -39,6 +41,7 @@ public class LoginSteps {
 
     @And("I logout")
     public void iLogout() {
-
+        this.header = new Header();
+        this.header.logout();
     }
 }
