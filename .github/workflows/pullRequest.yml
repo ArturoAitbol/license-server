@@ -62,7 +62,7 @@ jobs:
 
       - name: Run UI Tests
         run: |
-          cd ui
+          cd test/ui
           gradle uiTests
       - uses: deblockt/cucumber-report-annotations-action@v1.7
         with:
