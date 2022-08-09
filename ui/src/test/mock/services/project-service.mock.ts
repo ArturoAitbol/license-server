@@ -42,7 +42,7 @@ const PROJECT_LIST = {
 };
 
 export const ProjectServiceMock = {
-    customerListValue: PROJECT_LIST,
+    projectsListValue: PROJECT_LIST,
     getProjectDetailsBySubAccount: () => {
         return new Observable((observer) => {
             observer.next(
@@ -56,5 +56,41 @@ export const ProjectServiceMock = {
     },
     setSelectedSubAccount: (value: string) => {
         // TODO
+    },
+    closeProject: () => {
+        return new Observable((observer) => {
+            observer.next(
+                { 
+                    body:[
+                        {
+                            id:'459cf3ca-7365-47a1-8d9b-1abee381545c',
+                            status:'Open',
+                            closeDate:'2022-05-29 05:00:00'
+                        }
+                    ]
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    deleteProject: () => {
+        return new Observable((observer) => {
+            observer.next(
+                { 
+                    body:[
+                        {
+                            id:'459cf3ca-7365-47a1-8d9b-1abee381545c',
+                        }
+                    ]
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
     }
 };

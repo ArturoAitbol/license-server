@@ -127,7 +127,7 @@ describe('Data collection and parsing tests', () => {
         expect(CurrentCustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(ProjectServiceMock.setSelectedSubAccount).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
-        expect(projectsComponentTestInstance.projects).toBe(ProjectServiceMock.customerListValue.projects)
+        expect(projectsComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects)
     });
 });
 
@@ -140,13 +140,7 @@ describe('Dialog calls and interactions', () => {
     })
 
     it('should execute rowAction() with expected data given set arguments', () => {
-        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: 'selectedTestItem' };
-        const expectedArgument = {
-            title: 'Confirm Action',
-            message: 'Do you want to close this project?',
-            confirmCaption: 'Confirm',
-            cancelCaption: 'Cancel',
-        }
+        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
         spyOn(projectsComponentTestInstance, 'openDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'confirmCloseDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'confirmDeleteDialog').and.callThrough();
@@ -174,8 +168,12 @@ describe('Dialog calls and interactions', () => {
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(projectsComponentTestInstance.confirmCloseDialog).toHaveBeenCalledWith(selectedTestData.selectedIndex);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
-       
-
+        
+        selectedTestData.selectedOption = projectsComponentTestInstance.DELETE_PROJECT;
+        dialogService.setExpectedValue(true);
+        projectsComponentTestInstance.rowAction(selectedTestData);
+        expect(projectsComponentTestInstance.confirmDeleteDialog).toHaveBeenCalledWith(selectedTestData.selectedIndex);
+        expect(dialogService.confirmDialog).toHaveBeenCalled();
     });
 });
 

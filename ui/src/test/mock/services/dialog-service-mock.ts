@@ -20,5 +20,7 @@ export class DialogServiceMock {
         });
     }
 
-    afterClosed(): void{}
+    afterClosed(): void {}
+
+    afterAll(): void {}
 }

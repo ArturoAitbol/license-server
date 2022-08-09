@@ -164,9 +164,7 @@ export class ProjectsComponent implements OnInit {
 
   confirmCloseDialog(index: string) {
     const currentProjectData = this.projects[index];
-    console.log("current project", currentProjectData);
-    const projectToClose = currentProjectData.code + '-' + currentProjectData.name;
-    console.log("project",projectToClose);
+    const projectToClose = currentProjectData.number + '-' + currentProjectData.name;
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
