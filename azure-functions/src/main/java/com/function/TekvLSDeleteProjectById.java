@@ -54,21 +54,24 @@ public class TekvLSDeleteProjectById
 		}
 
 		context.getLogger().info("Entering TekvLSDeleteProjectById Azure function");
-		
+
+		String sql = "DELETE FROM project WHERE id = ?::uuid;";
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = connection.prepareStatement(sql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+
+			statement.setString(1, id);
+
 			// Delete project
-			String sql = "delete from project where id='" + id +"';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			statement.executeUpdate();
 			context.getLogger().info("Project delete successfully."); 
 
 			return request.createResponseBuilder(HttpStatus.OK).build();

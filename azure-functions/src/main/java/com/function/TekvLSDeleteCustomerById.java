@@ -56,9 +56,12 @@ public class TekvLSDeleteCustomerById
 		context.getLogger().info("Entering TekvLSDeleteCustomerById Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-		String sql;
 		String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
 		Boolean deleteFlag = Boolean.parseBoolean(forceDelete);
+
+		String isTestCustomerSql = "SELECT test_customer FROM customer WHERE id = ?::uuid;";
+		String tombstoneSql = "UPDATE customer SET tombstone=true WHERE id = ?::uuid;";
+		String deleteSql = "DELETE FROM customer WHERE id = ?::uuid;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -66,26 +69,31 @@ public class TekvLSDeleteCustomerById
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
-			
+			PreparedStatement isTestCustomerStmt = connection.prepareStatement(isTestCustomerSql);
+			PreparedStatement tombstoneStmt = connection.prepareStatement(tombstoneSql);
+			PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			// Get test_customer by id if not force delete
 			if (!deleteFlag) {
-				String subQuery = "select test_customer from customer where id = '"+ id +"';";
-				context.getLogger().info("Execute SQL statement: " + subQuery);
-				ResultSet rs = statement.executeQuery(subQuery);
+				isTestCustomerStmt.setString(1, id);
+				context.getLogger().info("Execute SQL statement: " + isTestCustomerStmt);
+				ResultSet rs = isTestCustomerStmt.executeQuery();
 				rs.next();
 				// override delete flag with the test customer value when delete force is not true
 				deleteFlag = rs.getBoolean("test_customer");
 				context.getLogger().info("test_customer is: " + deleteFlag);
 			}
 			// Delete customer
-			if (deleteFlag)
-				sql = "delete from customer where id='" + id +"';";
-			else 
-				sql = "update customer set tombstone=true where id='" + id +"';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			if (deleteFlag) {
+				deleteStmt.setString(1, id);
+				context.getLogger().info("Execute SQL statement: " + deleteStmt);
+				deleteStmt.executeUpdate();
+			}
+			else {
+				tombstoneStmt.setString(1, id);
+				context.getLogger().info("Execute SQL statement: " + tombstoneStmt);
+				tombstoneStmt.executeUpdate();
+			}
 			context.getLogger().info("Customer delete successfully."); 
 
 			return request.createResponseBuilder(HttpStatus.OK).build();

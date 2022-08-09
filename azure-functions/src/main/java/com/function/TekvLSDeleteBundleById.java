@@ -1,9 +1,6 @@
 package com.function;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 import com.function.auth.Permission;
@@ -54,17 +51,20 @@ public class TekvLSDeleteBundleById {
             json.put("error", "Please pass an id on the query string.");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-        String sql = "delete from bundle where id='" + id + "'";
+        String sql = "DELETE FROM bundle WHERE id = ?::uuid";
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
-        try{
-            Connection connection = DriverManager.getConnection(dbConnectionUrl);
+        try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
+            PreparedStatement statement = connection.prepareStatement(sql)) {
+
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            Statement statement = connection.createStatement();
-            context.getLogger().info("Execute SQL statement: " + sql);
-            statement.executeUpdate(sql);
+
+            statement.setString(1, id);
+
+            context.getLogger().info("Execute SQL statement: " + statement);
+            statement.executeUpdate();
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
         catch (SQLException e) {
