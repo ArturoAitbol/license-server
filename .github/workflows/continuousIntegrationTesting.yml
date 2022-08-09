@@ -18,7 +18,7 @@ jobs:
       with:
         collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
         environment: ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
-        reporters: '["junit"]'
+        reporters: '["junit", "cli"]'
         reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
 
     - name: Publish JUnit Report
