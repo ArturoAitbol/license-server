@@ -192,6 +192,33 @@ const MOCK_FILTERED_NAME_LICENSES_LIST = {
     ]
 };
 
+const MOCK_UNSORTED_STATUS_LICENSES_LIST = {
+    licenses: [
+        MOCK_LICENSE_A,
+        MOCK_LICENSE_E,
+        MOCK_LICENSE_B,
+        MOCK_LICENSE_G
+    ]
+}
+
+const MOCK_SORTED_ASC_STATUS_LICENSES_LIST = {
+    licenses: [
+        MOCK_LICENSE_A,
+        MOCK_LICENSE_B,
+        MOCK_LICENSE_E,
+        MOCK_LICENSE_G
+    ]
+}
+
+const MOCK_SORTED_DESC_STATUS_LICENSES_LIST = {
+    licenses: [
+        MOCK_LICENSE_E,
+        MOCK_LICENSE_G,
+        MOCK_LICENSE_A,
+        MOCK_LICENSE_B
+    ]
+}
+
 const MOCK_DELETED_LICENSE: License = {
     subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
     id: '273a38b7-20a1-487e-82fb-8861d96280fe',
@@ -228,13 +255,16 @@ export const LicenseServiceMock = {
     updatedMockLicenseD: MOCK_UPDATED_LICENSE_D,
     mockDeletedLicense: MOCK_DELETED_LICENSE,
     mockNewLicense:MOCK_CREATED_LICENSE,
+    unsortedLicensesList: MOCK_UNSORTED_STATUS_LICENSES_LIST,
+    sortedAscLicensesList: MOCK_SORTED_ASC_STATUS_LICENSES_LIST,
+    sortedDescLicensesList: MOCK_SORTED_DESC_STATUS_LICENSES_LIST,
     getLicenseList: (subaccountId?: string, subaccountName?: string) => {
         return new Observable((observer) => {
             let licenseList;
             if (subaccountId)
-                licenseList = MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.subaccountId === subaccountId));
+                licenseList = {licenses: MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.subaccountId === subaccountId))};
             else if (subaccountName)
-                licenseList = MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.subaccountName === subaccountName));
+                licenseList = {licenses: MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.subaccountName === subaccountName))};
             else
                 licenseList = MOCK_LICENSES_LIST;
             observer.next(licenseList);
