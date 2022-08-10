@@ -5,6 +5,10 @@ import { Subject } from 'rxjs/internal/Subject';
 import { EventMessage, EventType } from '@azure/msal-browser';
 import { filter, takeUntil } from 'rxjs/operators';
 import { AutoLogoutService } from "./services/auto-logout.service";
+import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
+import { environment } from 'src/environments/environment';
+
 
 @Component({
     selector: 'app-root',
@@ -16,12 +20,26 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'license-server';
     currentUser = false;
 
-    constructor(
-        private router: Router,
-        private msalService: MsalService,
-        private broadcastService: MsalBroadcastService,
-        private autoLogoutService: AutoLogoutService
-    ) { }
+    constructor(private router: Router, private msalService: MsalService,
+        private broadcastService: MsalBroadcastService, private autoLogoutService: AutoLogoutService) {
+        var angularPlugin = new AngularPlugin();
+        const appInsights = new ApplicationInsights({
+            config: {
+                // instrumentationKey: environment.INSTRUMENTATION_KEY,
+                connectionString: environment.INSTRUMENTATION_CONN_STRING,
+                enableCorsCorrelation: true,
+                enableRequestHeaderTracking: true,
+                enableResponseHeaderTracking: true,
+                correlationHeaderExcludedDomains: ['*.queue.core.windows.net'],
+                extensions: [angularPlugin],
+                extensionConfig: {
+                    [angularPlugin.identifier]: { router: this.router }
+                }
+            }
+        });
+        appInsights.loadAppInsights();
+        appInsights.trackPageView();
+    }
 
     ngOnInit() {
         if (!this.isLoggedIn()) {
