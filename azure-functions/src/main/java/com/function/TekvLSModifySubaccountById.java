@@ -23,8 +23,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSModifySubaccountById 
 {
 	/**
-	 * This function listens at endpoint "/api/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/subaccounts/{id}
+	 * This function listens at endpoint "/v1.0/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccounts/{id}
 	 */
 	@FunctionName("TekvLSModifySubaccountById")
 	public HttpResponseMessage run(
