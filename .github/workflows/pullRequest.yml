@@ -59,13 +59,3 @@ jobs:
           token: ${{ github.token }}
           path: ui/test-results/coverage-summary.json
           title: Karma Test Coverage
-
-      - name: Run UI Tests
-        run: |
-          cd tests/ui
-          gradle uiTests
-      - uses: deblockt/cucumber-report-annotations-action@v1.7
-        with:
-            name: "Publish Cucumber Report"
-            access-token: ${{ secrets.GITHUB_TOKEN }}
-            path: "**/cucumber.json"
