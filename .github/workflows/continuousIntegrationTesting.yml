@@ -28,3 +28,13 @@ jobs:
         report_paths: './tests/api/postman/newman-report.xml'
         summary: 'true'
         check_name: 'API Test Report'
+
+    - name: Run UI tests
+      run: |
+        cd ui
+        gradle uiTests -Denv=integration
+    - uses: deblockt/cucumber-report-annotations-action@v1.7
+      name: Publish Cucumber Report
+      with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "**/cucumber.json"
