@@ -92,5 +92,18 @@ export const ProjectServiceMock = {
                 unsubscribe() { }
             };
         });
+    },
+    updateProject: (project: any) => {
+        return new Observable((observer) => {
+            observer.next(
+                {
+                  
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
     }
 };

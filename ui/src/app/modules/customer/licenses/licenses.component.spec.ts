@@ -79,8 +79,6 @@ describe('UI verification tests',()=>{
     beforeEach(beforeEachFunction);
 
     it('should display essential UI and components',()=>{
-        spyOn(CustomerServiceMock,'getSelectedCustomer').and.callThrough();
-
         fixture.detectChanges();
 
         const h1: HTMLElement = fixture.nativeElement.querySelector('#page-title');
