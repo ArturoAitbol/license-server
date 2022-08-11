@@ -12,6 +12,7 @@ import { LicenseConsumptionService } from 'src/app/services/license-consumption.
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from '../../projects/add-project/add-project.component';
+import moment, { Moment } from 'moment';
 
 @Component({
   selector: 'app-add-license-consumption',
@@ -257,9 +258,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.supportUsed.forEach(supportUsed => this.toggleUsageDays(supportUsed.days,startWeek,endWeek));
   }
 
-  toggleUsageDays(days:any[],startWeek: Date,endWeek: Date){
+  toggleUsageDays(days:any[],startWeek: Moment,endWeek: Moment){
     days.forEach((day,index)=> {
-      if(index<startWeek.getDay() || index>endWeek.getDay()){
+      if(index<startWeek.day() || index>endWeek.day()){
         day.disabled = true;
         day.used = false;
       }else{
@@ -284,16 +285,18 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   submit(): void {
     const consumptionRequests: any[] = [];
+    const stringDate = this.addLicenseConsumptionForm.value.startWeek.format("YYYY-MM-DD");
     const licenseConsumptionsObject: any = {
       subaccountId: this.currentCustomer.subaccountId,
       projectId: this.addLicenseConsumptionForm.value.project.id,
-      consumptionDate: this.addLicenseConsumptionForm.value.startWeek.toISOString().split("T")[0],
+      consumptionDate: stringDate,
       type: "Configuration",
       macAddress: "",
       serialNumber: "",
       deviceId: "",
       usageDays: []
     };
+
     this.addDevice();
     this.addSupport();
     this.devicesUsed.forEach((device: any) => {
@@ -338,7 +341,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       device.days = JSON.parse(JSON.stringify(this.deviceDays));
       this.devicesUsed.push(device);
       this.addDeviceForm.reset();
-      // this.addDeviceForm.patchValue({ vendor: '', product: '' });
       this.deviceDays.forEach(deviceDay => deviceDay.used = false);
     }
   }

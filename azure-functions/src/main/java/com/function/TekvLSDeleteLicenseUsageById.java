@@ -24,8 +24,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSDeleteLicenseUsageById 
 {
 	/**
-	 * This function listens at endpoint "/api/licenseUsageDetails". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/licenseUsageDetails
+	 * This function listens at endpoint "/v1.0/licenseUsageDetails". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/licenseUsageDetails
 	 */
 	@FunctionName("TekvLSDeleteLicenseUsageById")
 	public HttpResponseMessage run(

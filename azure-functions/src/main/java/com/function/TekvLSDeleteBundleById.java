@@ -18,9 +18,9 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSDeleteBundleById {
     /**
-     * This function listens at endpoint "/api/bundle". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/bundle
-     * 2. curl {your host}/api/bundle
+     * This function listens at endpoint "/v1.0/bundle". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/bundle
+     * 2. curl {your host}/v1.0/bundle
      */
     @FunctionName("TekvLSDeleteBundle")
     public HttpResponseMessage run(

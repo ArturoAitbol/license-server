@@ -28,7 +28,7 @@ describe('License service http requests test', () => {
 
     it('should return licenses list for specific subaccountId', (done: DoneFn) => {
         const subaccountId = "3819dc98-0e34-4237-ad0f-e79895b887e9";
-        const expectedLicenses: any = LicenseServiceMock.filteredSubAccountIdList.licenses;
+        const expectedLicenses: any = LicenseServiceMock.filteredSubAccountIdList;
         httpClientSpy.get.and.returnValue(LicenseServiceMock.getLicenseList(subaccountId));
         licenseService.getLicenseList(subaccountId).subscribe({
             next: licenses => {
@@ -42,7 +42,7 @@ describe('License service http requests test', () => {
 
     it('should return licenses list for specific subaccountName', (done: DoneFn) => {
         const subaccountName = "subaccountNameA";
-        const expectedLicenses: any = LicenseServiceMock.filteredSubAccountNameList.licenses;
+        const expectedLicenses: any = LicenseServiceMock.filteredSubAccountNameList;
         httpClientSpy.get.and.returnValue(LicenseServiceMock.getLicenseList(null, subaccountName));
         licenseService.getLicenseList(null, subaccountName).subscribe({
             next: licenses => {

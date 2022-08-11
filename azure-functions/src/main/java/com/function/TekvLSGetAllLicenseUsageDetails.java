@@ -33,9 +33,9 @@ public class TekvLSGetAllLicenseUsageDetails {
 	String LIMIT = "100";
 	String OFFSET = "0";
 	/**
-	 * This function listens at endpoint "/api/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/devices/{vendor}/{product}/{version}
-	 * 2. curl "{your host}/api/devices"
+	 * This function listens at endpoint "/v1.0/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/devices/{vendor}/{product}/{version}
+	 * 2. curl "{your host}/v1.0/devices"
 	 */
 	@FunctionName("TekvLSGetAllLicenseUsageDetails")
 	public HttpResponseMessage run(
