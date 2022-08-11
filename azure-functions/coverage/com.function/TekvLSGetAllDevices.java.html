@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TekvLSGetAllDevices.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function</a> &gt; <span class="el_source">TekvLSGetAllDevices.java</span></div><h1>TekvLSGetAllDevices.java</h1><pre class="source lang-java linenums">package com.function;
+
+import com.function.auth.Permission;
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpMethod;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpResponseMessage;
+import com.microsoft.azure.functions.HttpStatus;
+import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.HttpTrigger;
+import com.microsoft.azure.functions.annotation.BindingName;
+
+import java.sql.*;
+import java.util.Optional;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
+
+/**
+ * Azure Functions with HTTP Trigger.
+ */
+<span class="fc" id="L25">public class TekvLSGetAllDevices {</span>
+	/**
+	 * This function listens at endpoint &quot;/api/devices/{vendor}/{product}/{version}&quot;. Two ways to invoke it using &quot;curl&quot; command in bash:
+	 * 1. curl -d &quot;HTTP Body&quot; {your host}/api/devices/{vendor}/{product}/{version}
+	 * 2. curl &quot;{your host}/api/devices&quot;
+	 */
+	@FunctionName(&quot;TekvLSGetAllDevices&quot;)
+	public HttpResponseMessage run(
+		@HttpTrigger(
+			name = &quot;req&quot;,
+			methods = {HttpMethod.GET},
+			authLevel = AuthorizationLevel.ANONYMOUS,
+			route = &quot;devices/{id=EMPTY}&quot;)
+		HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+	  @BindingName(&quot;id&quot;) String id,
+		final ExecutionContext context) {
+
+<span class="fc" id="L42">		String currentRole = getRoleFromToken(request,context);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		if(currentRole.isEmpty()){</span>
+<span class="fc" id="L44">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L45">			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L46">			json.put(&quot;error&quot;, MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L47">			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();</span>
+		}
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		if(!hasPermission(currentRole, Permission.GET_ALL_DEVICES)){</span>
+<span class="fc" id="L50">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L51">			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);</span>
+<span class="fc" id="L52">			json.put(&quot;error&quot;, MESSAGE_FOR_FORBIDDEN);</span>
+<span class="fc" id="L53">			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();</span>
+		}
+
+<span class="fc" id="L56">		context.getLogger().info(&quot;Entering TekvLSGetAllDevices Azure function&quot;);</span>
+
+		// Get query parameters
+<span class="fc" id="L59">		context.getLogger().info(&quot;URL parameters are: &quot; + request.getQueryParameters());</span>
+<span class="fc" id="L60">		String vendor = request.getQueryParameters().getOrDefault(&quot;vendor&quot;, &quot;&quot;);</span>
+<span class="fc" id="L61">		String product = request.getQueryParameters().getOrDefault(&quot;product&quot;, &quot;&quot;);</span>
+<span class="fc" id="L62">		String version = request.getQueryParameters().getOrDefault(&quot;version&quot;, &quot;&quot;);</span>
+<span class="fc" id="L63">		String subaccountId = request.getQueryParameters().getOrDefault(&quot;subaccountId&quot;, &quot;&quot;);</span>
+<span class="fc" id="L64">		String licenseStartDate = request.getQueryParameters().getOrDefault(&quot;date&quot;, &quot;&quot;);</span>
+  
+		// Build SQL statement
+<span class="fc" id="L67">		String sql = &quot;&quot;;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (id.equals(&quot;EMPTY&quot;)) {</span>
+<span class="fc bfc" id="L69" title="All 10 branches covered.">			if (!vendor.isEmpty() || !subaccountId.isEmpty() || !product.isEmpty() || !version.isEmpty() || !licenseStartDate.isEmpty()) {</span>
+<span class="fc" id="L70">				sql = &quot;select * from device where &quot;;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			   if (!subaccountId.isEmpty()) {</span>
+<span class="fc" id="L72">				  sql += &quot;subaccount_id is NULL or subaccount_id = '&quot; + subaccountId + &quot;' and &quot;;</span>
+			   }
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			   if (!vendor.isEmpty()) {</span>
+<span class="fc" id="L75">				  sql += &quot;vendor = '&quot; + vendor + &quot;' and &quot;;</span>
+			   }
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			   if (!product.isEmpty()) {</span>
+<span class="fc" id="L78">				  sql += &quot;product = '&quot; + product + &quot;' and &quot;;</span>
+			   }
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			   if (!version.isEmpty()) {</span>
+<span class="fc" id="L81">				  sql += &quot;version = '&quot; + version + &quot;' and &quot;;</span>
+			   }
+<span class="fc bfc" id="L83" title="All 2 branches covered.">			   if (!licenseStartDate.isEmpty()) {</span>
+<span class="fc" id="L84">				  sql += &quot;'&quot; + licenseStartDate + &quot;' &gt;= start_date and '&quot; + licenseStartDate + &quot;' &lt; deprecated_date and &quot;;</span>
+			   }
+			   // Remove the last &quot; and &quot; from the string
+<span class="fc" id="L87">			   sql = sql.substring(0, sql.length() - 5) + &quot;;&quot;;</span>
+			} else {
+<span class="fc" id="L89">				sql = &quot;select * from device where subaccount_id is NULL;&quot;;</span>
+			}
+		} else {
+<span class="fc" id="L92">			sql = &quot;select * from device where id='&quot; + id +&quot;';&quot;;</span>
+		}
+		
+		// Connect to the database
+<span class="fc" id="L96">		String dbConnectionUrl = &quot;jdbc:postgresql://&quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;) +&quot;/licenses&quot; + System.getenv(&quot;POSTGRESQL_SECURITY_MODE&quot;)</span>
+<span class="fc" id="L97">			+ &quot;&amp;user=&quot; + System.getenv(&quot;POSTGRESQL_USER&quot;)</span>
+<span class="fc" id="L98">			+ &quot;&amp;password=&quot; + System.getenv(&quot;POSTGRESQL_PWD&quot;);</span>
+<span class="fc" id="L99">		try (</span>
+<span class="fc" id="L100">			Connection connection = DriverManager.getConnection(dbConnectionUrl);</span>
+<span class="fc" id="L101">			Statement statement = connection.createStatement();) {</span>
+			
+<span class="fc" id="L103">			context.getLogger().info(&quot;Successfully connected to: &quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;));</span>
+			
+			// Execute sql query. TO DO: pagination
+<span class="fc" id="L106">			context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L107">			ResultSet rs = statement.executeQuery(sql);</span>
+			// Return a JSON array
+<span class="fc" id="L109">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L110">			JSONArray array = new JSONArray();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			while (rs.next()) {</span>
+<span class="fc" id="L112">				JSONObject item = new JSONObject();</span>
+<span class="fc" id="L113">				item.put(&quot;id&quot;, rs.getString(&quot;id&quot;));</span>
+<span class="fc" id="L114">				item.put(&quot;vendor&quot;, rs.getString(&quot;vendor&quot;));</span>
+<span class="fc" id="L115">				item.put(&quot;product&quot;, rs.getString(&quot;product&quot;));</span>
+<span class="fc" id="L116">				item.put(&quot;version&quot;, rs.getString(&quot;version&quot;));</span>
+<span class="fc" id="L117">				item.put(&quot;supportType&quot;, rs.getBoolean(&quot;support_type&quot;));</span>
+<span class="fc" id="L118">				item.put(&quot;tokensToConsume&quot;, rs.getInt(&quot;tokens_to_consume&quot;));</span>
+<span class="fc" id="L119">				item.put(&quot;granularity&quot;, rs.getString(&quot;granularity&quot;));</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">				if (!id.equals(&quot;EMPTY&quot;)) {</span>
+<span class="fc" id="L121">					subaccountId = rs.getString(&quot;subaccount_id&quot;);</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">					if (rs.wasNull())</span>
+<span class="fc" id="L123">						subaccountId = &quot;&quot;;</span>
+<span class="fc" id="L124">					item.put(&quot;subaccountId&quot;, subaccountId);</span>
+<span class="fc" id="L125">					item.put(&quot;type&quot;, rs.getString(&quot;type&quot;));</span>
+<span class="fc" id="L126">					item.put(&quot;startDate&quot;, rs.getString(&quot;start_date&quot;));</span>
+<span class="fc" id="L127">					item.put(&quot;deprecatedDate&quot;, rs.getString(&quot;deprecated_date&quot;));</span>
+				}
+<span class="fc" id="L129">				array.put(item);</span>
+<span class="fc" id="L130">			}</span>
+<span class="fc" id="L131">			json.put(&quot;devices&quot;, array);</span>
+<span class="fc" id="L132">			return request.createResponseBuilder(HttpStatus.OK).header(&quot;Content-Type&quot;, &quot;application/json&quot;).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L134">		catch (SQLException e) {</span>
+<span class="fc" id="L135">			context.getLogger().info(&quot;SQL exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L136">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L137">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L138">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L140">		catch (Exception e) {</span>
+<span class="fc" id="L141">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L142">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L143">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L144">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

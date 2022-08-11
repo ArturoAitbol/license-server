@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Permission.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function.auth</a> &gt; <span class="el_source">Permission.java</span></div><h1>Permission.java</h1><pre class="source lang-java linenums">package com.function.auth;
+
+<span class="fc" id="L3">public enum Permission {</span>
+        //CREATE
+<span class="fc" id="L5">        CREATE_ADMIN_EMAIL(&quot;TekvLSCreateAdminEmail&quot;),</span>
+<span class="fc" id="L6">        CREATE_CUSTOMER(&quot;TekvLSCreateCustomer&quot;),</span>
+<span class="fc" id="L7">        CREATE_DEVICE(&quot;TekvLSCreateDevice&quot;),</span>
+<span class="fc" id="L8">        CREATE_LICENSE(&quot;TekvLSCreateLicense&quot;),</span>
+<span class="fc" id="L9">        CREATE_LICENSE_USAGE_DETAIL(&quot;TekvLSCreateLicenseUsageDetail&quot;),</span>
+<span class="fc" id="L10">        CREATE_PROJECT(&quot;TekvLSCreateProject&quot;),</span>
+<span class="fc" id="L11">        CREATE_SUBACCOUNT(&quot;TekvLSCreateSubaccount&quot;),</span>
+<span class="fc" id="L12">        CREATE_SUBACCOUNT_ADMIN_MAIL(&quot;TekvLSCreateSubaccountAdminEmail&quot;),</span>
+<span class="fc" id="L13">        CREATE_USAGE_DETAILS(&quot;TekvLSCreateUsageDetails&quot;),</span>
+<span class="fc" id="L14">        CREATE_BUNDLE(&quot;TekvLSCreateBundle&quot;),</span>
+
+        //DELETE
+<span class="fc" id="L17">        DELETE_ADMIN_EMAIL(&quot;TekvLSDeleteAdminEmail&quot;),</span>
+<span class="fc" id="L18">        DELETE_CUSTOMER(&quot;TekvLSDeleteCustomerById&quot;),</span>
+<span class="fc" id="L19">        DELETE_DEVICE(&quot;TekvLSDeleteDeviceById&quot;),</span>
+<span class="fc" id="L20">        DELETE_LICENSE(&quot;TekvLSDeleteLicenseById&quot;),</span>
+<span class="fc" id="L21">        DELETE_LICENSE_USAGE(&quot;TekvLSDeleteLicenseUsageById&quot;),</span>
+<span class="fc" id="L22">        DELETE_PROJECT(&quot;TekvLSDeleteProjectById&quot;),</span>
+<span class="fc" id="L23">        DELETE_SUBACCOUNT_ADMIN_EMAIL(&quot;TekvLSDeleteSubaccountAdminEmail&quot;),</span>
+<span class="fc" id="L24">        DELETE_SUB_ACCOUNT(&quot;TekvLSDeleteSubaccountById&quot;),</span>
+<span class="fc" id="L25">        DELETE_USAGE_DETAILS(&quot;TekvLSDeleteUsageDetailsById&quot;),</span>
+<span class="fc" id="L26">        DELETE_BUNDLE(&quot;TekvLSDeleteBundleById&quot;),</span>
+
+        //READ
+<span class="fc" id="L29">        GET_ALL_BUNDLES(&quot;TekvLSGetAllBundles&quot;),</span>
+<span class="fc" id="L30">        GET_ALL_CUSTOMERS(&quot;TekvLSGetAllCustomers&quot;),</span>
+<span class="fc" id="L31">        GET_ALL_DEVICES (&quot;TekvLSGetAllDevices&quot;),</span>
+<span class="fc" id="L32">        GET_ALL_LICENSES(&quot;TekvLSGetAllLicenses&quot;),</span>
+<span class="fc" id="L33">        GET_ALL_LICENSE_USAGE_DETAILS(&quot;TekvLSGetAllLicenseUsageDetails&quot;),</span>
+<span class="fc" id="L34">        GET_ALL_PROJECTS(&quot;TekvLSGetAllProjects&quot;),</span>
+<span class="fc" id="L35">        GET_ALL_SUBACCOUNTS(&quot;TekvLSGetAllSubaccounts&quot;),</span>
+<span class="fc" id="L36">        GET_CONSUMPTION_USAGE_DETAILS(&quot;TekvLSGetConsumptionUsageDetails&quot;),</span>
+<span class="fc" id="L37">        GET_USER_EMAIL_INFO(&quot;TekvLSGetUserEmailsInfo&quot;),</span>
+
+        //UPDATE
+<span class="fc" id="L40">        MODIFY_CUSTOMER(&quot;TekvLSModifyCustomerById&quot;),</span>
+<span class="fc" id="L41">        MODIFY_DEVICE(&quot;TekvLSModifyDeviceById&quot;),</span>
+<span class="fc" id="L42">        MODIFY_LICENSE(&quot;TekvLSModifyLicenseById&quot;),</span>
+<span class="fc" id="L43">        MODIFY_LICENSE_USAGE(&quot;TekvLSModifyLicenseUsageById&quot;),</span>
+<span class="fc" id="L44">        MODIFY_PROJECT(&quot;TekvLSModifyProjectById&quot;),</span>
+<span class="fc" id="L45">        MODIFY_SUBACCOUNT(&quot;TekvLSModifySubaccountById&quot;),</span>
+<span class="fc" id="L46">        MODIFY_BUNDLE(&quot;TekvLSModifyBundleById&quot;);</span>
+
+        private final String value;
+
+<span class="fc" id="L50">        Permission(String value){</span>
+<span class="fc" id="L51">                this.value = value;</span>
+<span class="fc" id="L52">        }</span>
+        public String value() {
+<span class="nc" id="L54">                return this.value;</span>
+        }
+
+
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

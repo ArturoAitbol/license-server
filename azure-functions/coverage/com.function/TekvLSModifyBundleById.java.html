@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TekvLSModifyBundleById.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function</a> &gt; <span class="el_source">TekvLSModifyBundleById.java</span></div><h1>TekvLSModifyBundleById.java</h1><pre class="source lang-java linenums">package com.function;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+
+import com.function.auth.Permission;
+import com.microsoft.azure.functions.annotation.*;
+import com.microsoft.azure.functions.*;
+import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
+
+/**
+ * Azure Functions with HTTP Trigger.
+ */
+<span class="fc" id="L19">public class TekvLSModifyBundleById {</span>
+    /**
+     * This function listens at endpoint &quot;/api/TekvLSModifyBundleById&quot;. Two ways to invoke it using &quot;curl&quot; command in bash:
+     * 1. curl -d &quot;HTTP Body&quot; {your host}/api/TekvLSModifyBundleById
+     * 2. curl {your host}/api/TekvLSModifyBundleById?name=HTTP%20Query
+     */
+    @FunctionName(&quot;TekvLSModifyBundleById&quot;)
+    public HttpResponseMessage run(
+            @HttpTrigger(
+                    name = &quot;req&quot;,
+                    methods = {HttpMethod.PUT},
+                    authLevel = AuthorizationLevel.ANONYMOUS,
+                    route = &quot;bundles/{id=EMPTY}&quot;
+            ) HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+            @BindingName(&quot;id&quot;) String id,
+            final ExecutionContext context) {
+
+<span class="fc" id="L36">        String currentRole = getRoleFromToken(request,context);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if(currentRole.isEmpty()){</span>
+<span class="fc" id="L38">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L39">            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L40">            json.put(&quot;error&quot;, MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L41">            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();</span>
+        }
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if(!hasPermission(currentRole, Permission.MODIFY_BUNDLE)){</span>
+<span class="fc" id="L44">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L45">            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);</span>
+<span class="fc" id="L46">            json.put(&quot;error&quot;, MESSAGE_FOR_FORBIDDEN);</span>
+<span class="fc" id="L47">            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();</span>
+        }
+
+<span class="fc" id="L50">        context.getLogger().info(&quot;Java HTTP trigger processed a request.&quot;);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        if (id.equals(&quot;EMPTY&quot;)) {</span>
+<span class="fc" id="L52">            context.getLogger().info(&quot;Error: There is no bundle id in the request.&quot;);</span>
+<span class="fc" id="L53">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L54">            json.put(&quot;error&quot;, &quot;Please pass an id on the query string.&quot;);</span>
+<span class="fc" id="L55">            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+        }
+        // Parse request body and extract parameters needed
+<span class="fc" id="L58">        String requestBody = request.getBody().orElse(&quot;&quot;);</span>
+<span class="fc" id="L59">        context.getLogger().info(&quot;Request body: &quot; + requestBody);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (requestBody.isEmpty()) {</span>
+<span class="fc" id="L61">            context.getLogger().info(&quot;error: request body is empty.&quot;);</span>
+<span class="fc" id="L62">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L63">            json.put(&quot;error&quot;, &quot;Request body is empty.&quot;);</span>
+<span class="fc" id="L64">            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+        }
+        JSONObject body;
+        try{
+<span class="fc" id="L68">            body = new JSONObject(requestBody);</span>
+        }
+<span class="fc" id="L70">        catch (Exception e) {</span>
+<span class="fc" id="L71">            context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L72">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L73">            json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L74">            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+<span class="fc" id="L75">        }</span>
+<span class="fc" id="L76">        String[][] params = {</span>
+                {&quot;name&quot;,&quot;name&quot;},
+                {&quot;tokens&quot;,&quot;tokens&quot;},
+                {&quot;deviceAccessToken&quot;,&quot;device_access_tokens&quot;}
+        };
+<span class="fc" id="L81">        String sql = &quot;update bundle set &quot;;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        for (int i = 0; i &lt; params.length; i++) {</span>
+            try {
+<span class="fc" id="L84">                String value = body.getString(params[i][0]);</span>
+<span class="fc" id="L85">                sql += params[i][1] + &quot;='&quot; + value + &quot;',&quot;;</span>
+            }
+<span class="fc" id="L87">            catch (Exception e) {</span>
+<span class="fc" id="L88">                context.getLogger().info(&quot;Ignoring exception: &quot; + e);</span>
+//                continue;
+<span class="fc" id="L90">            }</span>
+        }
+<span class="fc" id="L92">        sql = sql.substring(0, sql.length() - 1);</span>
+<span class="fc" id="L93">        sql += &quot; where id='&quot; + id + &quot;'&quot;;</span>
+
+<span class="fc" id="L95">        String dbConnectionUrl = &quot;jdbc:postgresql://&quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;) +&quot;/licenses&quot; + System.getenv(&quot;POSTGRESQL_SECURITY_MODE&quot;)</span>
+<span class="fc" id="L96">                + &quot;&amp;user=&quot; + System.getenv(&quot;POSTGRESQL_USER&quot;)</span>
+<span class="fc" id="L97">                + &quot;&amp;password=&quot; + System.getenv(&quot;POSTGRESQL_PWD&quot;);</span>
+        try{
+<span class="fc" id="L99">            Connection connection = DriverManager.getConnection(dbConnectionUrl);</span>
+<span class="fc" id="L100">            context.getLogger().info(&quot;Successfully connected to: &quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;));</span>
+<span class="fc" id="L101">            Statement statement = connection.createStatement();</span>
+<span class="fc" id="L102">            context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L103">            statement.executeUpdate(sql);</span>
+<span class="fc" id="L104">            context.getLogger().info(&quot;Bundle updated successfully&quot;);</span>
+<span class="fc" id="L105">            return request.createResponseBuilder(HttpStatus.OK).build();</span>
+        }
+<span class="fc" id="L107">        catch (SQLException e) {</span>
+<span class="fc" id="L108">            context.getLogger().info(&quot;SQL exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L109">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L110">            json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L111">            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+        }
+<span class="fc" id="L113">        catch (Exception e) {</span>
+<span class="fc" id="L114">            context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L115">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L116">            json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L117">            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -26,7 +26,7 @@ import { SharedModule } from './modules/shared/shared.module';
 import { environment } from 'src/environments/environment';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
 import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applicationinsights-angularplugin-js';
-
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 
 @NgModule({
     declarations: [
@@ -74,7 +74,8 @@ import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applica
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-        { provide: ErrorHandler, useClass: ApplicationinsightsAngularpluginErrorService }
+        { provide: ErrorHandler, useClass: ApplicationinsightsAngularpluginErrorService },
+        { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true, strict: true} }
     ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

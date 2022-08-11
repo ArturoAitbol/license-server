@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RoleAuthHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function.auth</a> &gt; <span class="el_source">RoleAuthHandler.java</span></div><h1>RoleAuthHandler.java</h1><pre class="source lang-java linenums">package com.function.auth;
+
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SecurityException;
+import org.json.JSONArray;
+import java.util.EnumSet;
+import java.util.Map;
+
+import static com.function.auth.Permission.*;
+
+<span class="nc" id="L13">public class RoleAuthHandler {</span>
+
+<span class="fc" id="L15">   private static final EnumSet&lt;Permission&gt; FullAdminPermissions = EnumSet.of(</span>
+           //CREATE
+           CREATE_CUSTOMER,
+           CREATE_SUBACCOUNT,
+           CREATE_ADMIN_EMAIL,
+           CREATE_SUBACCOUNT_ADMIN_MAIL,
+           CREATE_LICENSE,
+           CREATE_LICENSE_USAGE_DETAIL,
+           CREATE_USAGE_DETAILS,
+           CREATE_PROJECT,
+           //DELETE
+           DELETE_CUSTOMER,
+           DELETE_SUB_ACCOUNT,
+           DELETE_ADMIN_EMAIL,
+           DELETE_SUBACCOUNT_ADMIN_EMAIL,
+           DELETE_LICENSE,
+           DELETE_PROJECT,
+           DELETE_LICENSE_USAGE,
+           DELETE_USAGE_DETAILS,
+           //READ
+           GET_ALL_CUSTOMERS,
+           GET_ALL_SUBACCOUNTS,
+           GET_ALL_LICENSES,
+           GET_ALL_DEVICES,
+           GET_ALL_PROJECTS,
+           GET_ALL_BUNDLES,
+           GET_ALL_LICENSE_USAGE_DETAILS,
+           GET_CONSUMPTION_USAGE_DETAILS,
+           GET_USER_EMAIL_INFO,
+           //UPDATE
+           MODIFY_CUSTOMER,
+           MODIFY_SUBACCOUNT,
+           MODIFY_LICENSE,
+           MODIFY_PROJECT,
+           MODIFY_LICENSE_USAGE);
+
+
+<span class="fc" id="L52">    private static final EnumSet&lt;Permission&gt; SaleAdminPermissions = EnumSet.of(</span>
+            //CREATE
+            CREATE_CUSTOMER,
+            CREATE_SUBACCOUNT,
+            CREATE_SUBACCOUNT_ADMIN_MAIL,
+            CREATE_ADMIN_EMAIL,
+            CREATE_LICENSE,
+            //READ
+            GET_ALL_CUSTOMERS,
+            GET_ALL_SUBACCOUNTS,
+            GET_ALL_LICENSES,
+            GET_ALL_LICENSE_USAGE_DETAILS,
+            GET_CONSUMPTION_USAGE_DETAILS,
+            GET_ALL_DEVICES,
+            GET_ALL_PROJECTS,
+            GET_ALL_BUNDLES,
+            //UPDATE
+            MODIFY_CUSTOMER,
+            MODIFY_SUBACCOUNT,
+            MODIFY_LICENSE);
+
+<span class="fc" id="L73">    private static final EnumSet&lt;Permission&gt; ConfigTesterPermissions = EnumSet.of(</span>
+            //CREATE
+            CREATE_LICENSE_USAGE_DETAIL,
+            CREATE_PROJECT,
+            CREATE_USAGE_DETAILS,
+            //DELETE
+            DELETE_LICENSE_USAGE,
+            DELETE_USAGE_DETAILS,
+            //READ
+            GET_ALL_CUSTOMERS,
+            GET_ALL_SUBACCOUNTS,
+            GET_ALL_LICENSES,
+            GET_ALL_LICENSE_USAGE_DETAILS,
+            GET_CONSUMPTION_USAGE_DETAILS,
+            GET_ALL_DEVICES,
+            GET_ALL_PROJECTS,
+            GET_ALL_BUNDLES,
+            //UPDATE
+            MODIFY_PROJECT,
+            MODIFY_LICENSE_USAGE);
+
+<span class="fc" id="L94">    private static final EnumSet&lt;Permission&gt; SupportDevicesAdminPermissions = EnumSet.of(</span>
+            //CREATE
+            CREATE_DEVICE,
+            CREATE_BUNDLE,
+            //DELETE
+            DELETE_DEVICE,
+            DELETE_BUNDLE,
+            //READ
+            GET_ALL_DEVICES,
+            GET_ALL_BUNDLES,
+            //UPDATE
+            MODIFY_DEVICE,
+            MODIFY_BUNDLE);
+
+<span class="fc" id="L108">    private static final EnumSet&lt;Permission&gt; AutoPlatformAppPermissions = EnumSet.of(</span>
+            //CREATE
+            CREATE_LICENSE_USAGE_DETAIL,
+            CREATE_USAGE_DETAILS,
+            //READ
+            GET_ALL_DEVICES);
+
+<span class="fc" id="L115">    private static final EnumSet&lt;Permission&gt; crmPermissions = EnumSet.of(</span>
+            //CREATE
+            CREATE_CUSTOMER,
+            CREATE_SUBACCOUNT,
+            CREATE_ADMIN_EMAIL,
+            CREATE_SUBACCOUNT_ADMIN_MAIL,
+            CREATE_LICENSE,
+            //READ
+            GET_ALL_CUSTOMERS,
+            GET_ALL_SUBACCOUNTS,
+            GET_ALL_LICENSES,
+            GET_ALL_LICENSE_USAGE_DETAILS,
+            GET_CONSUMPTION_USAGE_DETAILS,
+            //UPDATE
+            MODIFY_CUSTOMER,
+            MODIFY_SUBACCOUNT,
+            MODIFY_LICENSE);
+
+
+<span class="fc" id="L134">    private static final EnumSet&lt;Permission&gt; customerDistFullAdminPermissions = EnumSet.of(</span>
+            //READ
+            GET_ALL_CUSTOMERS,
+            GET_ALL_SUBACCOUNTS,
+            GET_ALL_LICENSES,
+            GET_ALL_LICENSE_USAGE_DETAILS,
+            GET_CONSUMPTION_USAGE_DETAILS,
+            GET_ALL_DEVICES,
+            GET_ALL_PROJECTS,
+            GET_ALL_BUNDLES);
+
+<span class="fc" id="L145">    private static final EnumSet&lt;Permission&gt; customerFullAdminPermissions = EnumSet.of(</span>
+            //READ
+            GET_ALL_CUSTOMERS,
+            GET_ALL_SUBACCOUNTS,
+            GET_ALL_LICENSES,
+            GET_ALL_LICENSE_USAGE_DETAILS,
+            GET_CONSUMPTION_USAGE_DETAILS,
+            GET_ALL_DEVICES,
+            GET_ALL_PROJECTS,
+            GET_ALL_BUNDLES);
+
+<span class="fc" id="L156">    private static final EnumSet&lt;Permission&gt; customerSubAccountPermissions = EnumSet.of(</span>
+            //READ
+            GET_ALL_CUSTOMERS,
+            GET_ALL_SUBACCOUNTS,
+            GET_ALL_LICENSES,
+            GET_ALL_LICENSE_USAGE_DETAILS,
+            GET_CONSUMPTION_USAGE_DETAILS,
+            GET_ALL_DEVICES,
+            GET_ALL_PROJECTS,
+            GET_ALL_BUNDLES);
+
+    public static final String DISTRIBUTOR_FULL_ADMIN = &quot;distributor.FullAdmin&quot;;
+    public static final String CUSTOMER_FULL_ADMIN = &quot;customer.FullAdmin&quot;;
+    public static final String SUBACCOUNT_ADMIN = &quot;customer.SubaccountAdmin&quot;;
+
+    public static final String LOG_MESSAGE_FOR_UNAUTHORIZED = &quot;Unauthorized error: Access denied due to missing or invalid credentials.&quot;;
+    public static final String MESSAGE_FOR_UNAUTHORIZED = &quot;UNAUTHORIZED: Access denied due to missing or invalid credentials&quot;;
+    public static final String LOG_MESSAGE_FOR_FORBIDDEN = &quot;Forbidden error: Expected permission is missing. Role provided: &quot;;
+    public static final String MESSAGE_FOR_FORBIDDEN = &quot;FORBIDDEN ACCESS. You do not have permission to perform this action.&quot;;
+
+    private static final String ISSUER = &quot;https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/v2.0&quot;;
+
+    public static boolean hasPermission(String role,Permission permission){
+        EnumSet&lt;Permission&gt; rolePermissions;
+<span class="pc bpc" id="L180" title="4 of 10 branches missed.">        switch (role){</span>
+            case &quot;tekvizion.FullAdmin&quot;:
+<span class="fc" id="L182">                rolePermissions = FullAdminPermissions;</span>
+<span class="fc" id="L183">                break;</span>
+            case &quot;tekvizion.SalesAdmin&quot;:
+<span class="nc" id="L185">                rolePermissions = SaleAdminPermissions;</span>
+<span class="nc" id="L186">                break;</span>
+            case &quot;tekvizion.ConfigTester&quot;:
+<span class="nc" id="L188">                rolePermissions = ConfigTesterPermissions;</span>
+<span class="nc" id="L189">                break;</span>
+            case &quot;tekvizion.DevicesAdmin&quot;:
+<span class="fc" id="L191">                rolePermissions = SupportDevicesAdminPermissions;</span>
+<span class="fc" id="L192">                break;</span>
+            case &quot;tekvizion.AutomationPlatformApplication&quot;:
+<span class="nc" id="L194">                rolePermissions = AutoPlatformAppPermissions;</span>
+<span class="nc" id="L195">                break;</span>
+            case &quot;tekvizion.CRM&quot;:
+<span class="fc" id="L197">                rolePermissions = crmPermissions;</span>
+<span class="fc" id="L198">                break;</span>
+            case DISTRIBUTOR_FULL_ADMIN:
+<span class="fc" id="L200">                rolePermissions = customerDistFullAdminPermissions;</span>
+<span class="fc" id="L201">                break;</span>
+            case CUSTOMER_FULL_ADMIN:
+<span class="fc" id="L203">                rolePermissions = customerFullAdminPermissions;</span>
+<span class="fc" id="L204">                break;</span>
+            case SUBACCOUNT_ADMIN:
+<span class="fc" id="L206">                rolePermissions = customerSubAccountPermissions;</span>
+<span class="fc" id="L207">                break;</span>
+            default:
+<span class="nc" id="L209">                return false;</span>
+        }
+<span class="fc" id="L211">       return rolePermissions.contains(permission);</span>
+    }
+
+
+    public static Claims getTokenClaimsFromHeader(HttpRequestMessage&lt;?&gt; request,ExecutionContext context) {
+<span class="fc" id="L216">        Map&lt;String, String&gt; headers = request.getHeaders();</span>
+<span class="fc" id="L217">        String authHeader = headers.get(&quot;authorization&quot;);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        if(authHeader==null){</span>
+<span class="fc" id="L219">            context.getLogger().info(&quot;error: Authorization Header is missing.&quot;);</span>
+<span class="fc" id="L220">            return null;</span>
+        }
+<span class="fc" id="L222">        String[] authorization = authHeader.split(&quot; &quot;);</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">        if (authorization.length!=2) {</span>
+<span class="nc" id="L224">            context.getLogger().info(&quot;error: Invalid Authorization Header format.&quot;);</span>
+<span class="nc" id="L225">            return null;</span>
+        }
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if(!authorization[0].equals(&quot;Bearer&quot;)){</span>
+<span class="nc" id="L228">            context.getLogger().info(&quot;error: Invalid token type: &quot;+ authorization[0] + &quot;. Required: Bearer&quot;);</span>
+<span class="nc" id="L229">            return null;</span>
+        }
+<span class="fc" id="L231">        String[] tokenChunks = authorization[1].split(&quot;\\.&quot;);</span>
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">        if (tokenChunks.length != 3) {</span>
+<span class="nc" id="L233">            context.getLogger().info(&quot;error: Invalid token format.&quot;);</span>
+<span class="nc" id="L234">            return null;</span>
+        }
+        try{
+<span class="fc" id="L237">            Jws&lt;Claims&gt; token = verifyToken(authorization[1]);</span>
+<span class="fc" id="L238">            return token.getBody();</span>
+<span class="nc" id="L239">        }catch (Exception e){</span>
+<span class="nc" id="L240">            context.getLogger().info(e.getMessage());</span>
+<span class="nc" id="L241">            return null;</span>
+        }
+
+    }
+
+    public static Jws&lt;Claims&gt; verifyToken(String jwt) throws Exception {
+
+        try{
+<span class="fc" id="L249">            SigningKeyResolver signingKeyResolver = SigningKeyResolver.getInstance();</span>
+<span class="fc" id="L250">            return Jwts.parserBuilder()</span>
+<span class="fc" id="L251">                    .setSigningKeyResolver(signingKeyResolver)</span>
+<span class="fc" id="L252">                    .requireIssuer(ISSUER)</span>
+<span class="fc" id="L253">                    .build()</span>
+<span class="fc" id="L254">                    .parseClaimsJws(jwt);</span>
+<span class="nc" id="L255">        }catch (SecurityException exception){</span>
+<span class="nc" id="L256">            throw new Exception(&quot;Invalid Signature Exception: &quot; + exception.getMessage());</span>
+<span class="nc" id="L257">        }catch (ExpiredJwtException exception){</span>
+<span class="nc" id="L258">            throw new Exception(&quot;Expired Token Exception: &quot; + exception.getMessage());</span>
+<span class="nc" id="L259">        }catch (JwtException exception){</span>
+<span class="nc" id="L260">            throw new Exception(&quot;JWT Exception: &quot; + exception.getMessage());</span>
+<span class="nc" id="L261">        } catch (Exception exception){</span>
+<span class="nc" id="L262">            throw new Exception(&quot;Caught Exception: &quot; + exception.getMessage());</span>
+        }
+    }
+
+    public static String getRoleFromToken(HttpRequestMessage&lt;?&gt; request,ExecutionContext context){
+<span class="fc" id="L267">        Claims tokenClaims = getTokenClaimsFromHeader(request,context);</span>
+<span class="fc" id="L268">        return getRoleFromToken(tokenClaims,context);</span>
+    }
+
+    public static String getRoleFromToken(Claims tokenClaims,ExecutionContext context){
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        if(tokenClaims!=null) {</span>
+            try {
+<span class="fc" id="L274">                JSONArray roles = new JSONArray(tokenClaims.get(&quot;roles&quot;).toString());</span>
+<span class="fc" id="L275">                return roles.getString(0);</span>
+<span class="nc" id="L276">            } catch (Exception e) {</span>
+<span class="nc" id="L277">                context.getLogger().info(&quot;Caught exception: Getting roles claim failed.&quot;);</span>
+            }
+        }
+<span class="fc" id="L280">        return &quot;&quot;;</span>
+    }
+
+    public static String getEmailFromToken(Claims tokenClaims,ExecutionContext context){
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">        if(tokenClaims!=null) {</span>
+            try {
+<span class="nc" id="L286">                return tokenClaims.get(&quot;preferred_username&quot;).toString();</span>
+<span class="fc" id="L287">            } catch (Exception e) {</span>
+<span class="fc" id="L288">                context.getLogger().info(&quot;Caught exception: Getting preferred_username claim failed.&quot;);</span>
+            }
+        }
+<span class="fc" id="L291">        return &quot;&quot;;</span>
+    }
+
+    public static String getUserIdFromToken(Claims tokenClaims,ExecutionContext context){
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">        if(tokenClaims!=null) {</span>
+            try {
+<span class="fc" id="L297">                return tokenClaims.get(&quot;oid&quot;).toString();</span>
+<span class="nc" id="L298">            } catch (Exception e) {</span>
+<span class="nc" id="L299">                context.getLogger().info(&quot;Caught exception: Getting user oid claim failed.&quot;);</span>
+            }
+        }
+<span class="nc" id="L302">        return &quot;&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

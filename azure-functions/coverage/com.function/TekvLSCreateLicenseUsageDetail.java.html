@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TekvLSCreateLicenseUsageDetail.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function</a> &gt; <span class="el_source">TekvLSCreateLicenseUsageDetail.java</span></div><h1>TekvLSCreateLicenseUsageDetail.java</h1><pre class="source lang-java linenums">package com.function;
+
+import com.function.auth.Permission;
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpMethod;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpResponseMessage;
+import com.microsoft.azure.functions.HttpStatus;
+import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.HttpTrigger;
+
+import io.jsonwebtoken.Claims;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.Optional;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
+
+/**
+ * Azure Functions with HTTP Trigger.
+ */
+<span class="fc" id="L27">public class TekvLSCreateLicenseUsageDetail</span>
+{
+	/**
+	 * This function listens at endpoint &quot;/api/licenseUsageDetails&quot;. Two ways to invoke it using &quot;curl&quot; command in bash:
+	 * 1. curl -d &quot;HTTP Body&quot; {your host}/api/licenseUsageDetails
+	 */
+	@FunctionName(&quot;TekvLSCreateLicenseUsageDetail&quot;)
+	public HttpResponseMessage run(
+			@HttpTrigger(
+				name = &quot;req&quot;,
+				methods = {HttpMethod.POST},
+				authLevel = AuthorizationLevel.ANONYMOUS,
+				route = &quot;licenseUsageDetails&quot;)
+				HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+				final ExecutionContext context) {
+
+<span class="fc" id="L43">		Claims tokenClaims = getTokenClaimsFromHeader(request, context);</span>
+<span class="fc" id="L44">		String currentRole = getRoleFromToken(tokenClaims, context);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if(currentRole.isEmpty()){</span>
+<span class="fc" id="L46">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L47">			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L48">			json.put(&quot;error&quot;, MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L49">			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();</span>
+		}
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		if(!hasPermission(currentRole, Permission.CREATE_LICENSE_USAGE_DETAIL)){</span>
+<span class="fc" id="L52">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L53">			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);</span>
+<span class="fc" id="L54">			json.put(&quot;error&quot;, MESSAGE_FOR_FORBIDDEN);</span>
+<span class="fc" id="L55">			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();</span>
+		}
+
+<span class="fc" id="L58">		context.getLogger().info(&quot;Entering TekvLSCreateLicenseUsageDetail Azure function&quot;);</span>
+<span class="fc" id="L59">		String userId = getEmailFromToken(tokenClaims, context);</span>
+		
+		// Parse request body and extract parameters needed
+<span class="fc" id="L62">		String requestBody = request.getBody().orElse(&quot;&quot;);</span>
+<span class="fc" id="L63">		context.getLogger().info(&quot;Request body: &quot; + requestBody);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (requestBody.isEmpty()) {</span>
+<span class="fc" id="L65">			context.getLogger().info(&quot;error: request body is empty.&quot;);</span>
+<span class="fc" id="L66">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L67">			json.put(&quot;error&quot;, &quot;error: request body is empty.&quot;);</span>
+<span class="fc" id="L68">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		}
+		JSONObject jobj;
+		try {
+<span class="fc" id="L72">			jobj = new JSONObject(requestBody);</span>
+		} 
+<span class="fc" id="L74">		catch (Exception e) {</span>
+<span class="fc" id="L75">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L76">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L77">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L78">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+<span class="fc" id="L79">		}</span>
+		// The expected parameters (and their coresponding column name in the database) 
+<span class="fc" id="L81">		String[][] mandatoryParams = {</span>
+			{&quot;subaccountId&quot;,&quot;subaccount_id&quot;}, 
+			{&quot;deviceId&quot;,&quot;device_id&quot;}, 
+			{&quot;consumptionDate&quot;,&quot;consumption_date&quot;},
+			{&quot;type&quot;,&quot;usage_type&quot;}
+		};
+		// Connect to the database
+<span class="fc" id="L88">		String dbConnectionUrl = &quot;jdbc:postgresql://&quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;) +&quot;/licenses&quot; + System.getenv(&quot;POSTGRESQL_SECURITY_MODE&quot;)</span>
+<span class="fc" id="L89">			+ &quot;&amp;user=&quot; + System.getenv(&quot;POSTGRESQL_USER&quot;)</span>
+<span class="fc" id="L90">			+ &quot;&amp;password=&quot; + System.getenv(&quot;POSTGRESQL_PWD&quot;);</span>
+		// Build the sql query to get tokens consumption and granularity from device table
+<span class="fc" id="L92">		String deviceId = jobj.getString(&quot;deviceId&quot;);</span>
+<span class="fc" id="L93">		String sql = &quot;select tokens_to_consume, granularity from device where id='&quot; + deviceId + &quot;';&quot;;</span>
+
+<span class="fc" id="L95">		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {</span>
+<span class="fc" id="L96">			context.getLogger().info(&quot;Successfully connected to: &quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;));</span>
+			// get tokens to consume
+<span class="fc" id="L98">			context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L99">			ResultSet rs = statement.executeQuery(sql);</span>
+<span class="fc" id="L100">			rs.next();</span>
+<span class="fc" id="L101">			int tokensToConsume = rs.getInt(&quot;tokens_to_consume&quot;);</span>
+<span class="fc" id="L102">			String granularity = rs.getString(&quot;granularity&quot;);</span>
+			// check if there was a consumption for this device in the same project previously.
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (granularity.equalsIgnoreCase(&quot;static&quot;)) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">				String projectIdCondition = jobj.has(&quot;projectId&quot;)? &quot;='&quot; + jobj.getString(&quot;projectId&quot;) + &quot;'&quot; : &quot; IS NULL&quot;;</span>
+<span class="fc" id="L106">				String devicePerProjectConsumptionSql = &quot;select id from license_consumption where device_id='&quot; + deviceId + &quot;' and project_id&quot; + projectIdCondition + &quot; LIMIT 1;&quot;;</span>
+<span class="fc" id="L107">				rs = statement.executeQuery(devicePerProjectConsumptionSql);</span>
+				// if there was a condition only create usage details and not a consumption, otherwise continue the normal flow
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				if (rs.next()) {</span>
+<span class="fc" id="L110">					jobj.put(&quot;id&quot;, rs.getString(&quot;id&quot;));</span>
+<span class="fc" id="L111">					jobj.put(&quot;userId&quot;, userId);</span>
+<span class="fc" id="L112">					return this.createUsageDetail(jobj, statement, request, context);</span>
+				}
+			}
+			// Build the sql insertion query if there was no match in the previous if statements
+<span class="fc" id="L116">			String sqlPart1 = &quot;&quot;;</span>
+<span class="fc" id="L117">			String sqlPart2 = &quot;&quot;;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			for (int i = 0; i &lt; mandatoryParams.length; i++) {</span>
+				try {
+<span class="fc" id="L120">					String paramValue = jobj.getString(mandatoryParams[i][0]);</span>
+<span class="fc" id="L121">					sqlPart1 += mandatoryParams[i][1] + &quot;,&quot;;</span>
+<span class="fc" id="L122">					sqlPart2 += &quot;'&quot; + paramValue + &quot;',&quot;;</span>
+				} 
+<span class="fc" id="L124">				catch (Exception e) {</span>
+					// Parameter not found
+<span class="fc" id="L126">					context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L127">					context.getLogger().info(&quot;Missing mandatory parameter: &quot; + mandatoryParams[i][0]);</span>
+<span class="fc" id="L128">					JSONObject json = new JSONObject();</span>
+<span class="fc" id="L129">					json.put(&quot;error&quot;, &quot;Missing mandatory parameter: &quot; + mandatoryParams[i][0]);</span>
+<span class="fc" id="L130">					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+<span class="fc" id="L131">				}</span>
+			}
+			//Optional parameters
+<span class="fc bfc" id="L134" title="All 2 branches covered.">			if (jobj.has(&quot;projectId&quot;)){</span>
+<span class="fc" id="L135">				sqlPart1 += &quot;project_id,&quot;;</span>
+<span class="fc" id="L136">				sqlPart2 += &quot;'&quot; + jobj.getString(&quot;projectId&quot;) + &quot;',&quot;;</span>
+			}
+			// modifed_date is always local date when creating the record
+			// also adding the user that performed the opperation
+<span class="fc" id="L140">			sqlPart1 += &quot;modified_date,tokens_consumed,modified_by&quot;;</span>
+<span class="fc" id="L141">			sqlPart2 += &quot;'&quot; + LocalDate.now().toString() + &quot;',&quot; + tokensToConsume + &quot;,'&quot; + userId + &quot;'&quot;;</span>
+<span class="fc" id="L142">			sql = &quot;insert into license_consumption (&quot; + sqlPart1 + &quot;) values (&quot; + sqlPart2 + &quot;) returning id;&quot;;	</span>
+			// Insert consumption
+<span class="fc" id="L144">			context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L145">			rs = statement.executeQuery(sql);</span>
+<span class="fc" id="L146">			rs.next();</span>
+<span class="fc" id="L147">			jobj.put(&quot;id&quot;, rs.getString(&quot;id&quot;));</span>
+<span class="fc" id="L148">			jobj.put(&quot;userId&quot;, userId);</span>
+<span class="fc" id="L149">			context.getLogger().info(&quot;License consumption inserted successfully.&quot;);</span>
+<span class="fc" id="L150">			return this.createUsageDetail(jobj, statement, request, context);</span>
+		}
+<span class="fc" id="L152">		catch (SQLException e) {</span>
+<span class="fc" id="L153">			context.getLogger().info(&quot;SQL exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L154">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L155">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L156">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L158">		catch (Exception e) {</span>
+<span class="fc" id="L159">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L160">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L161">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L162">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+	}
+
+	private HttpResponseMessage createUsageDetail(JSONObject consumptionObj, Statement statement, HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request, final ExecutionContext context) {
+<span class="fc" id="L167">		String sql = &quot;insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number,modified_date,modified_by) values &quot;;</span>
+<span class="fc" id="L168">		String consumptionId = consumptionObj.getString(&quot;id&quot;);</span>
+<span class="fc" id="L169">		LocalDate consumptionDate = LocalDate.parse(consumptionObj.getString(&quot;consumptionDate&quot;));</span>
+<span class="fc" id="L170">		String userAndDateSentence = &quot;'&quot; + LocalDate.now().toString() + &quot;','&quot; + consumptionObj.getString(&quot;userId&quot;) + &quot;'&quot;;</span>
+		try {
+<span class="fc" id="L172">			final JSONArray usageDays = consumptionObj.getJSONArray(&quot;usageDays&quot;);</span>
+<span class="pc bpc" id="L173" title="1 of 4 branches missed.">			if (usageDays != null &amp;&amp; usageDays.length() &gt; 0) {</span>
+				//Iterating the contents of the array
+<span class="fc" id="L175">				Iterator&lt;Object&gt; iterator = usageDays.iterator();</span>
+				Integer usage;
+<span class="fc bfc" id="L177" title="All 2 branches covered.">				while(iterator.hasNext()) {</span>
+<span class="fc" id="L178">					usage = Integer.parseInt(iterator.next().toString());</span>
+<span class="fc" id="L179">					sql += &quot;\n('&quot; + consumptionId + &quot;','&quot; + consumptionDate.plusDays(usage).toString() + &quot;',&quot; + usage + &quot;,'','',&quot; + userAndDateSentence + &quot;),&quot;;</span>
+				}
+<span class="fc" id="L181">				sql = sql.substring(0, sql.length() - 1) + &quot;;&quot;;</span>
+<span class="fc" id="L182">			} else {</span>
+<span class="fc" id="L183">				String macAddress = consumptionObj.getString(&quot;macAddress&quot;);</span>
+<span class="fc" id="L184">				String serialNumber = consumptionObj.getString(&quot;serialNumber&quot;);</span>
+<span class="fc" id="L185">				sql += &quot;('&quot; + consumptionId + &quot;','&quot; + consumptionDate.toString() + &quot;',0,'&quot; + macAddress + &quot;','&quot; + serialNumber + &quot;',&quot; + userAndDateSentence + &quot;);&quot;;</span>
+			}
+<span class="fc" id="L187">			context.getLogger().info(&quot;Execute create usages SQL statement: &quot; + sql);</span>
+<span class="fc" id="L188">			statement.executeUpdate(sql);</span>
+<span class="fc" id="L189">			context.getLogger().info(&quot;License usage details inserted successfully.&quot;);</span>
+<span class="fc" id="L190">			return request.createResponseBuilder(HttpStatus.OK).body(consumptionObj.toString()).build();</span>
+<span class="fc" id="L191">		} catch (Exception e) {</span>
+<span class="fc" id="L192">			context.getLogger().info(&quot;Caught exception: &quot; + e.toString());</span>
+<span class="fc" id="L193">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L194">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L195">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

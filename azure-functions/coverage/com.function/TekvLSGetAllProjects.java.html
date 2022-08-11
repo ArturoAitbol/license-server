@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TekvLSGetAllProjects.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function</a> &gt; <span class="el_source">TekvLSGetAllProjects.java</span></div><h1>TekvLSGetAllProjects.java</h1><pre class="source lang-java linenums">package com.function;
+
+import com.function.auth.Permission;
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpMethod;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpResponseMessage;
+import com.microsoft.azure.functions.HttpStatus;
+import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.HttpTrigger;
+import com.microsoft.azure.functions.annotation.BindingName;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import io.jsonwebtoken.Claims;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
+
+/**
+ * Azure Functions with HTTP Trigger.
+ */
+<span class="fc" id="L28">public class TekvLSGetAllProjects {</span>
+	/**
+	 * This function listens at endpoint &quot;/api/projects&quot;. Two ways to invoke it using &quot;curl&quot; command in bash:
+	 * 1. curl -d &quot;HTTP Body&quot; {your host}/api/projects
+	 * 2. curl &quot;{your host}/api/projects&quot;
+	 */
+	@FunctionName(&quot;TekvLSGetAllProjects&quot;)
+	public HttpResponseMessage run(
+		@HttpTrigger(
+			name = &quot;req&quot;,
+			methods = {HttpMethod.GET},
+			authLevel = AuthorizationLevel.ANONYMOUS,
+			route = &quot;projects/{id=EMPTY}&quot;)
+		HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+		@BindingName(&quot;id&quot;) String id,
+		final ExecutionContext context) 
+   {
+
+<span class="fc" id="L46">	   Claims tokenClaims = getTokenClaimsFromHeader(request,context);</span>
+<span class="fc" id="L47">	   String currentRole = getRoleFromToken(tokenClaims,context);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">	   if(currentRole.isEmpty()){</span>
+<span class="fc" id="L49">		   JSONObject json = new JSONObject();</span>
+<span class="fc" id="L50">		   context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L51">		   json.put(&quot;error&quot;, MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L52">		   return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();</span>
+	   }
+<span class="fc bfc" id="L54" title="All 2 branches covered.">	   if(!hasPermission(currentRole, Permission.GET_ALL_PROJECTS)){</span>
+<span class="fc" id="L55">		   JSONObject json = new JSONObject();</span>
+<span class="fc" id="L56">		   context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);</span>
+<span class="fc" id="L57">		   json.put(&quot;error&quot;, MESSAGE_FOR_FORBIDDEN);</span>
+<span class="fc" id="L58">		   return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();</span>
+	   }
+
+<span class="fc" id="L61">		context.getLogger().info(&quot;Entering TekvLSGetAllProjects Azure function&quot;);</span>
+<span class="fc" id="L62">		JSONObject json = new JSONObject();</span>
+
+		// Get query parameters
+<span class="fc" id="L65">		context.getLogger().info(&quot;URL parameters are: &quot; + request.getQueryParameters());</span>
+<span class="fc" id="L66">		String subaccountId = request.getQueryParameters().getOrDefault(&quot;subaccountId&quot;, &quot;&quot;);</span>
+<span class="fc" id="L67">		String status = request.getQueryParameters().getOrDefault(&quot;status&quot;, &quot;&quot;);</span>
+		
+		// Build SQL statement
+<span class="fc" id="L70">		String sql = &quot;select * from project&quot;;</span>
+	   	String subQuery;
+<span class="fc" id="L72">	   	String email = getEmailFromToken(tokenClaims,context);</span>
+<span class="fc" id="L73">	   	List&lt;String&gt; conditionsList = new ArrayList&lt;&gt;();</span>
+	   	// adding conditions according to the role
+<span class="fc bfc" id="L75" title="All 4 branches covered.">	   	switch (currentRole){</span>
+		   case DISTRIBUTOR_FULL_ADMIN:
+<span class="fc" id="L77">			   String distributorId = &quot;select distributor_id from customer c,customer_admin ca &quot; +</span>
+					   &quot;where c.id = ca.customer_id and admin_email='&quot;+email+&quot;'&quot;;
+<span class="fc" id="L79">			   subQuery = &quot;select s.id from subaccount s, customer c &quot; +</span>
+					   &quot;where s.customer_id = c.id and distributor_id =(&quot;+ distributorId +&quot;)&quot;;
+<span class="fc" id="L81">			   conditionsList.add(&quot;subaccount_id IN (&quot; + subQuery + &quot;)&quot;);</span>
+<span class="fc" id="L82">			   break;</span>
+		   case CUSTOMER_FULL_ADMIN:
+<span class="fc" id="L84">			   subQuery = &quot;select s.id from subaccount s, customer_admin ca where s.customer_id = ca.customer_id &quot; +</span>
+					   &quot;and admin_email = '&quot;+email+&quot;'&quot;;
+<span class="fc" id="L86">			   conditionsList.add(&quot;subaccount_id IN (&quot; + subQuery + &quot;)&quot;);</span>
+<span class="fc" id="L87">			   break;</span>
+		   case SUBACCOUNT_ADMIN:
+<span class="fc" id="L89">			   subQuery = &quot;select subaccount_id from subaccount_admin where subaccount_admin_email ='&quot;+email+&quot;'&quot;;</span>
+<span class="fc" id="L90">			   conditionsList.add(&quot;subaccount_id=(&quot; + subQuery + &quot;)&quot;);</span>
+			   break;
+	   	}
+
+<span class="fc bfc" id="L94" title="All 2 branches covered.">	   	if (id.equals(&quot;EMPTY&quot;)) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		   if (!subaccountId.isEmpty()){</span>
+<span class="fc" id="L96">			   conditionsList.add(&quot;subaccount_id='&quot; + subaccountId + &quot;'&quot;);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			   if (!status.isEmpty())</span>
+<span class="fc" id="L98">			   		conditionsList.add(&quot;status='&quot; + status + &quot;'&quot;);</span>
+		   }else{
+<span class="fc" id="L100">			   json.put(&quot;error&quot;, &quot;Missing mandatory parameter: subaccountId&quot;);</span>
+<span class="fc" id="L101">				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		   }
+		   
+	   	}else{
+<span class="fc" id="L105">		   conditionsList.add(&quot;id='&quot; + id +&quot;'&quot;);</span>
+	   	}
+
+<span class="fc" id="L108">	   	String sqlConditions = String.join(&quot; and &quot;,conditionsList);</span>
+
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">	   	if(!sqlConditions.isEmpty())</span>
+<span class="fc" id="L111">		   sql += &quot; where &quot;+ sqlConditions;</span>
+<span class="fc" id="L112">	   	sql += &quot; order by open_date desc, code, name;&quot;;</span>
+
+		// Connect to the database
+<span class="fc" id="L115">		String dbConnectionUrl = &quot;jdbc:postgresql://&quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;) +&quot;/licenses&quot; + System.getenv(&quot;POSTGRESQL_SECURITY_MODE&quot;)</span>
+<span class="fc" id="L116">			+ &quot;&amp;user=&quot; + System.getenv(&quot;POSTGRESQL_USER&quot;)</span>
+<span class="fc" id="L117">			+ &quot;&amp;password=&quot; + System.getenv(&quot;POSTGRESQL_PWD&quot;);</span>
+<span class="fc" id="L118">		try (</span>
+<span class="fc" id="L119">			Connection connection = DriverManager.getConnection(dbConnectionUrl);</span>
+<span class="fc" id="L120">			Statement statement = connection.createStatement();) {</span>
+<span class="fc" id="L121">			context.getLogger().info(&quot;Successfully connected to: &quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;));</span>
+			
+<span class="fc" id="L123">			context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L124">			ResultSet rs = statement.executeQuery(sql);</span>
+			// Return a JSON array of projects
+<span class="fc" id="L126">			JSONArray array = new JSONArray();</span>
+			String closeDate;
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			while (rs.next()) {</span>
+<span class="fc" id="L129">				JSONObject item = new JSONObject();</span>
+<span class="fc" id="L130">				item.put(&quot;id&quot;, rs.getString(&quot;id&quot;));</span>
+<span class="fc" id="L131">				item.put(&quot;subaccountId&quot;, rs.getString(&quot;subaccount_id&quot;));</span>
+<span class="fc" id="L132">				item.put(&quot;name&quot;, rs.getString(&quot;name&quot;));</span>
+<span class="fc" id="L133">				item.put(&quot;code&quot;, rs.getString(&quot;code&quot;));</span>
+<span class="fc" id="L134">				item.put(&quot;status&quot;, rs.getString(&quot;status&quot;));</span>
+<span class="fc" id="L135">				item.put(&quot;openDate&quot;, rs.getString(&quot;open_date&quot;).split(&quot; &quot;)[0]);</span>
+<span class="fc" id="L136">				closeDate = rs.getString(&quot;close_date&quot;);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">				item.put(&quot;closeDate&quot;, closeDate != null ? closeDate.split(&quot; &quot;)[0] : JSONObject.NULL);</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">				if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO))</span>
+<span class="fc" id="L139">					item.put(&quot;projectOwner&quot;, rs.getString(&quot;project_owner&quot;));</span>
+<span class="fc" id="L140">				array.put(item);</span>
+<span class="fc" id="L141">			}</span>
+<span class="fc" id="L142">			json.put(&quot;projects&quot;, array);</span>
+<span class="fc" id="L143">			return request.createResponseBuilder(HttpStatus.OK).header(&quot;Content-Type&quot;, &quot;application/json&quot;).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L145">		catch (SQLException e) {</span>
+<span class="fc" id="L146">			context.getLogger().info(&quot;SQL exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L147">			json = new JSONObject();</span>
+<span class="fc" id="L148">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L149">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L151">		catch (Exception e) {</span>
+<span class="fc" id="L152">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L153">			json = new JSONObject();</span>
+<span class="fc" id="L154">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L155">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

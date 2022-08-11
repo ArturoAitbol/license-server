@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TekvLSCreateUsageDetails.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function</a> &gt; <span class="el_source">TekvLSCreateUsageDetails.java</span></div><h1>TekvLSCreateUsageDetails.java</h1><pre class="source lang-java linenums">package com.function;
+
+import com.function.auth.Permission;
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpMethod;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpResponseMessage;
+import com.microsoft.azure.functions.HttpStatus;
+import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.BindingName;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.HttpTrigger;
+import io.jsonwebtoken.Claims;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.Optional;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
+
+/**
+ * Azure Functions with HTTP Trigger.
+ */
+<span class="fc" id="L27">public class TekvLSCreateUsageDetails</span>
+{
+	/**
+	 * This function listens at endpoint &quot;/api/usageDetails&quot;. Two ways to invoke it using &quot;curl&quot; command in bash:
+	 * 1. curl -d &quot;HTTP Body&quot; {your host}/api/usageDetails
+	 */
+	@FunctionName(&quot;TekvLSCreateUsageDetails&quot;)
+	public HttpResponseMessage run(
+			@HttpTrigger(
+				name = &quot;req&quot;,
+				methods = {HttpMethod.POST},
+				authLevel = AuthorizationLevel.ANONYMOUS,
+				route = &quot;usageDetails/{id}&quot;)
+				HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+				@BindingName(&quot;id&quot;) String id,
+				final ExecutionContext context) {
+
+<span class="fc" id="L44">		Claims tokenClaims = getTokenClaimsFromHeader(request, context);</span>
+<span class="fc" id="L45">		String currentRole = getRoleFromToken(tokenClaims,context);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if(currentRole.isEmpty()){</span>
+<span class="fc" id="L47">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L48">			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L49">			json.put(&quot;error&quot;, MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L50">			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();</span>
+		}
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if(!hasPermission(currentRole, Permission.CREATE_USAGE_DETAILS)){</span>
+<span class="fc" id="L53">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L54">			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);</span>
+<span class="fc" id="L55">			json.put(&quot;error&quot;, MESSAGE_FOR_FORBIDDEN);</span>
+<span class="fc" id="L56">			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();</span>
+		}
+
+<span class="fc" id="L59">		context.getLogger().info(&quot;Entering TekvLSCreateUsageDetails Azure function&quot;);</span>
+<span class="fc" id="L60">		String userId = getEmailFromToken(tokenClaims, context);</span>
+<span class="fc" id="L61">		JSONObject json = new JSONObject();</span>
+		// Parse request body and extract parameters needed
+<span class="fc" id="L63">		String requestBody = request.getBody().orElse(&quot;&quot;);</span>
+<span class="fc" id="L64">		context.getLogger().info(&quot;Request body: &quot; + requestBody);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (requestBody.isEmpty()) {</span>
+<span class="fc" id="L66">			context.getLogger().info(&quot;error: request body is empty.&quot;);</span>
+<span class="fc" id="L67">			json.put(&quot;error&quot;, &quot;error: request body is empty.&quot;);</span>
+<span class="fc" id="L68">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		}
+		JSONObject jobj;
+		String sql;
+		try {
+<span class="fc" id="L73">			jobj = new JSONObject(requestBody);</span>
+			// Build the sql insertion query
+<span class="fc" id="L75">			String sqlPart2 = &quot;&quot;;</span>
+<span class="fc" id="L76">			final JSONArray addedDays = jobj.getJSONArray(&quot;addedDays&quot;);</span>
+<span class="pc bpc" id="L77" title="1 of 4 branches missed.">			if (addedDays != null &amp;&amp; addedDays.length() &gt; 0) {</span>
+				//Iterating the contents of the array
+<span class="fc" id="L79">				Iterator&lt;Object&gt; iterator = addedDays.iterator();</span>
+				Integer usage;
+<span class="fc" id="L81">				LocalDate consumptionDate = LocalDate.parse(jobj.getString(&quot;consumptionDate&quot;));</span>
+				// modifed_date is always local date when creating the record
+				// also adding the user that performed the opperation
+<span class="fc" id="L84">				String userAndDateSentence = &quot;'&quot; + LocalDate.now().toString() + &quot;','&quot; + userId + &quot;'&quot;;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				while(iterator.hasNext()) {</span>
+<span class="fc" id="L86">					usage = Integer.parseInt(iterator.next().toString());</span>
+<span class="fc" id="L87">					sqlPart2 += &quot;\n('&quot; + id + &quot;','&quot; + consumptionDate.plusDays(usage).toString() + &quot;',&quot; + usage + &quot;,'','', &quot; + userAndDateSentence + &quot;),&quot;;</span>
+				}
+<span class="fc" id="L89">				sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);</span>
+<span class="fc" id="L90">			} else {</span>
+<span class="fc" id="L91">				json.put(&quot;error&quot;, &quot;Missing mandatory parameter: addedDays&quot;);</span>
+<span class="fc" id="L92">				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+			}
+<span class="fc" id="L94">			sql = &quot;insert into usage_detail (consumption_id,usage_date,day_of_week,mac_address,serial_number,modified_date,modified_by) values &quot; + sqlPart2 + &quot;;&quot;;	</span>
+<span class="fc" id="L95">		} catch (Exception e) {</span>
+<span class="fc" id="L96">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L97">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L98">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+<span class="fc" id="L99">		}</span>
+		// Connect to the database
+<span class="fc" id="L101">		String dbConnectionUrl = &quot;jdbc:postgresql://&quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;) +&quot;/licenses&quot; + System.getenv(&quot;POSTGRESQL_SECURITY_MODE&quot;)</span>
+<span class="fc" id="L102">			+ &quot;&amp;user=&quot; + System.getenv(&quot;POSTGRESQL_USER&quot;)</span>
+<span class="fc" id="L103">			+ &quot;&amp;password=&quot; + System.getenv(&quot;POSTGRESQL_PWD&quot;);</span>
+
+<span class="fc" id="L105">		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {</span>
+<span class="fc" id="L106">			context.getLogger().info(&quot;Successfully connected to: &quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;));</span>
+			// get tokens to consume
+<span class="fc" id="L108">			context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L109">			statement.executeUpdate(sql);</span>
+<span class="fc" id="L110">			context.getLogger().info(&quot;License consumption inserted successfully.&quot;);</span>
+<span class="fc" id="L111">			return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();</span>
+		}
+<span class="fc" id="L113">		catch (SQLException e) {</span>
+<span class="fc" id="L114">			context.getLogger().info(&quot;SQL exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L115">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L116">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L118">		catch (Exception e) {</span>
+<span class="fc" id="L119">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L120">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L121">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

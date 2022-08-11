@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TekvLSGetAllLicenseUsageDetails.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function</a> &gt; <span class="el_source">TekvLSGetAllLicenseUsageDetails.java</span></div><h1>TekvLSGetAllLicenseUsageDetails.java</h1><pre class="source lang-java linenums">package com.function;
+
+import com.function.auth.Permission;
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpMethod;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpResponseMessage;
+import com.microsoft.azure.functions.HttpStatus;
+import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.HttpTrigger;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
+import java.util.Optional;
+
+import io.jsonwebtoken.Claims;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
+
+/**
+ * Azure Functions with HTTP Trigger.
+ */
+<span class="fc" id="L31">public class TekvLSGetAllLicenseUsageDetails {</span>
+	/* default values for pagination */
+<span class="fc" id="L33">	String LIMIT = &quot;100&quot;;</span>
+<span class="fc" id="L34">	String OFFSET = &quot;0&quot;;</span>
+	/**
+	 * This function listens at endpoint &quot;/api/devices/{vendor}/{product}/{version}&quot;. Two ways to invoke it using &quot;curl&quot; command in bash:
+	 * 1. curl -d &quot;HTTP Body&quot; {your host}/api/devices/{vendor}/{product}/{version}
+	 * 2. curl &quot;{your host}/api/devices&quot;
+	 */
+	@FunctionName(&quot;TekvLSGetAllLicenseUsageDetails&quot;)
+	public HttpResponseMessage run(
+		@HttpTrigger(
+			name = &quot;req&quot;,
+			methods = {HttpMethod.GET},
+			authLevel = AuthorizationLevel.ANONYMOUS,
+			route = &quot;licenseUsageDetails&quot;)
+		HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+		final ExecutionContext context) {
+
+<span class="fc" id="L50">		Claims tokenClaims = getTokenClaimsFromHeader(request,context);</span>
+<span class="fc" id="L51">		String currentRole = getRoleFromToken(tokenClaims,context);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if(currentRole.isEmpty()){</span>
+<span class="fc" id="L53">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L54">			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L55">			json.put(&quot;error&quot;, MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L56">			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();</span>
+		}
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if(!hasPermission(currentRole, Permission.GET_ALL_LICENSE_USAGE_DETAILS)){</span>
+<span class="fc" id="L59">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L60">			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);</span>
+<span class="fc" id="L61">			json.put(&quot;error&quot;, MESSAGE_FOR_FORBIDDEN);</span>
+<span class="fc" id="L62">			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();</span>
+		}
+
+<span class="fc" id="L65">		context.getLogger().info(&quot;Entering TekvLSGetAllLicenseUsageDetails Azure function&quot;);</span>
+
+		// Get query parameters
+<span class="fc" id="L68">		context.getLogger().info(&quot;URL parameters are: &quot; + request.getQueryParameters());</span>
+<span class="fc" id="L69">		String subaccountId = request.getQueryParameters().getOrDefault(&quot;subaccountId&quot;, &quot;&quot;);</span>
+<span class="fc" id="L70">		String view = request.getQueryParameters().getOrDefault(&quot;view&quot;, &quot;&quot;);</span>
+<span class="fc" id="L71">		String startDate = request.getQueryParameters().getOrDefault(&quot;startDate&quot;, &quot;&quot;);</span>
+<span class="fc" id="L72">		String endDate = request.getQueryParameters().getOrDefault(&quot;endDate&quot;, &quot;&quot;);</span>
+<span class="fc" id="L73">		String sqlCommonConditions = &quot;l.subaccount_id = '&quot; + subaccountId + &quot;'&quot;;</span>
+
+		String subQuery;
+<span class="fc" id="L76">		String email = getEmailFromToken(tokenClaims,context);</span>
+<span class="fc" id="L77">		String sqlRoleCondition=&quot;&quot;;</span>
+		// adding conditions according to the role
+<span class="fc bfc" id="L79" title="All 4 branches covered.">		switch (currentRole){</span>
+			case DISTRIBUTOR_FULL_ADMIN:
+<span class="fc" id="L81">				String distributorId = &quot;select distributor_id from customer c,customer_admin ca &quot; +</span>
+						&quot;where c.id = ca.customer_id and admin_email='&quot;+email+&quot;'&quot;;
+<span class="fc" id="L83">				subQuery = &quot;select s.id from subaccount s, customer c &quot; +</span>
+						&quot;where s.customer_id = c.id and distributor_id =(&quot;+ distributorId +&quot;)&quot;;
+<span class="fc" id="L85">				sqlRoleCondition = &quot;l.subaccount_id IN (&quot; + subQuery + &quot;)&quot;;</span>
+<span class="fc" id="L86">				break;</span>
+			case CUSTOMER_FULL_ADMIN:
+<span class="fc" id="L88">				subQuery = &quot;select s.id from subaccount s, customer_admin ca where s.customer_id = ca.customer_id &quot; +</span>
+						&quot;and admin_email = '&quot;+email+&quot;'&quot;;
+<span class="fc" id="L90">				sqlRoleCondition = &quot;l.subaccount_id IN (&quot; + subQuery + &quot;)&quot;;</span>
+<span class="fc" id="L91">				break;</span>
+			case SUBACCOUNT_ADMIN:
+<span class="fc" id="L93">				subQuery = &quot;select subaccount_id from subaccount_admin where subaccount_admin_email ='&quot;+email+&quot;'&quot;;</span>
+<span class="fc" id="L94">				sqlRoleCondition = &quot;l.subaccount_id=(&quot; + subQuery + &quot;)&quot;;</span>
+				break;
+		}
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if(!sqlRoleCondition.isEmpty())</span>
+<span class="fc" id="L99">			sqlCommonConditions += &quot; and &quot;+ sqlRoleCondition;</span>
+
+<span class="pc bpc" id="L101" title="1 of 4 branches missed.">		if (!startDate.isEmpty() &amp;&amp; !endDate.isEmpty())</span>
+<span class="fc" id="L102">			sqlCommonConditions += &quot; and l.consumption_date&gt;='&quot; + startDate + &quot;' and l.consumption_date&lt;='&quot; + endDate + &quot;'&quot;;</span>
+		// Connect to the database
+<span class="fc" id="L104">		String dbConnectionUrl = &quot;jdbc:postgresql://&quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;) +&quot;/licenses&quot; + System.getenv(&quot;POSTGRESQL_SECURITY_MODE&quot;)</span>
+<span class="fc" id="L105">			+ &quot;&amp;user=&quot; + System.getenv(&quot;POSTGRESQL_USER&quot;)</span>
+<span class="fc" id="L106">			+ &quot;&amp;password=&quot; + System.getenv(&quot;POSTGRESQL_PWD&quot;);</span>
+<span class="fc" id="L107">		try (</span>
+<span class="fc" id="L108">			Connection connection = DriverManager.getConnection(dbConnectionUrl);</span>
+<span class="fc" id="L109">			Statement statement = connection.createStatement();) {</span>
+<span class="fc" id="L110">			context.getLogger().info(&quot;Successfully connected to: &quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;));</span>
+<span class="fc" id="L111">			JSONObject json = new JSONObject();</span>
+			ResultSet rs;
+<span class="fc bfc" id="L113" title="All 3 branches covered.">			switch (view.toLowerCase()) {</span>
+				case &quot;summary&quot;: {
+					// First get the devices connected
+					// Get number of connected devices
+<span class="fc" id="L117">					String sqlDevicesConnected = &quot;select count(distinct device_id) from license_consumption l where &quot; + sqlCommonConditions + &quot; AND l.usage_type ='&quot;</span>
+<span class="fc" id="L118">							+ USAGE_TYPE_ENUM.AUTOMATION_PLATFORM.getValue() + &quot;';&quot;;</span>
+<span class="fc" id="L119">					context.getLogger().info(&quot;Execute SQL devices statement: &quot; + sqlDevicesConnected);</span>
+<span class="fc" id="L120">					rs = statement.executeQuery(sqlDevicesConnected);</span>
+<span class="fc" id="L121">					rs.next();</span>
+<span class="fc" id="L122">					json.put(&quot;devicesConnected&quot;, rs.getInt(1));</span>
+
+					// Get tokens consumed
+<span class="fc" id="L125">					String sqlTokensConsumed = &quot;select sum(tokens_consumed) from license_consumption l where &quot; + sqlCommonConditions + &quot;;&quot;;</span>
+<span class="fc" id="L126">					context.getLogger().info(&quot;Execute SQL tokens statement: &quot; + sqlTokensConsumed);</span>
+<span class="fc" id="L127">					rs = statement.executeQuery(sqlTokensConsumed);</span>
+<span class="fc" id="L128">					rs.next();</span>
+<span class="fc" id="L129">					json.put(&quot;tokensConsumed&quot;, rs.getInt(1));</span>
+<span class="fc" id="L130">				} break;</span>
+				case &quot;equipment&quot;: {
+<span class="fc" id="L132">					JSONArray array = new JSONArray();</span>
+<span class="fc" id="L133">					String sqlEquipmentSummary = </span>
+						&quot;select d.id,d.vendor,d.product,d.version from device d, license_consumption l where d.id=l.device_id and &quot; + 
+						sqlCommonConditions + &quot; group by d.id;&quot;;
+<span class="fc" id="L136">					context.getLogger().info(&quot;Execute SQL equipment statement: &quot; + sqlEquipmentSummary);</span>
+<span class="fc" id="L137">					rs = statement.executeQuery(sqlEquipmentSummary);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">					while (rs.next()) {</span>
+<span class="fc" id="L139">						JSONObject item = new JSONObject();</span>
+<span class="fc" id="L140">						item.put(&quot;id&quot;, rs.getString(&quot;id&quot;));</span>
+<span class="fc" id="L141">						item.put(&quot;vendor&quot;, rs.getString(&quot;vendor&quot;));</span>
+<span class="fc" id="L142">						item.put(&quot;product&quot;, rs.getString(&quot;product&quot;));</span>
+<span class="fc" id="L143">						item.put(&quot;version&quot;, rs.getString(&quot;version&quot;));</span>
+<span class="fc" id="L144">						array.put(item);</span>
+<span class="fc" id="L145">					}</span>
+<span class="fc" id="L146">					json.put(&quot;equipmentSummary&quot;, array);</span>
+<span class="fc" id="L147">				} break;</span>
+				default: {
+					// add special filters
+<span class="fc" id="L150">					String year = request.getQueryParameters().getOrDefault(&quot;year&quot;, &quot;&quot;);</span>
+<span class="fc" id="L151">					String month = request.getQueryParameters().getOrDefault(&quot;month&quot;, &quot;&quot;);</span>
+<span class="fc" id="L152">					String project = request.getQueryParameters().getOrDefault(&quot;projectId&quot;, &quot;&quot;);</span>
+<span class="fc" id="L153">					String type = request.getQueryParameters().getOrDefault(&quot;type&quot;, &quot;&quot;);</span>
+<span class="fc" id="L154">					String limit = request.getQueryParameters().getOrDefault(&quot;limit&quot;, LIMIT);</span>
+<span class="fc" id="L155">					String offset = request.getQueryParameters().getOrDefault(&quot;offset&quot;, OFFSET);</span>
+<span class="pc bpc" id="L156" title="2 of 6 branches missed.">					if (view.isEmpty() &amp;&amp; !year.isEmpty() &amp;&amp; !month.isEmpty())</span>
+<span class="fc" id="L157">						sqlCommonConditions += &quot; and EXTRACT(MONTH FROM l.consumption_date) = &quot; + month + &quot; and EXTRACT(YEAR FROM l.consumption_date) = &quot; + year;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">					if (!project.isEmpty())</span>
+<span class="fc" id="L159">						sqlCommonConditions += &quot; and l.project_id='&quot; + project + &quot;'&quot;;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">					if (!type.isEmpty())</span>
+<span class="fc" id="L161">						sqlCommonConditions += &quot; and l.usage_type='&quot; + type + &quot;'&quot;;</span>
+					// This is the default case (aggregated data)
+<span class="fc" id="L163">					JSONArray array = new JSONArray();</span>
+<span class="fc" id="L164">					String sqlAll = &quot;select l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id, CONCAT('Week ',DATE_PART('week',consumption_date+'1 day'::interval)) as consumption, &quot; +</span>
+							&quot;l.project_id, d.vendor, d.product, d.version, d.granularity, json_agg(DISTINCT day_of_week) AS usage_days&quot; +
+							&quot; from device d, license_consumption l, usage_detail u &quot; +
+							&quot; where d.id=l.device_id and u.consumption_id = l.id and &quot; + sqlCommonConditions +
+							&quot; group by l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,d.vendor, d.product, d.version, d.granularity&quot; +
+							&quot; order by consumption_date desc limit &quot; + limit + &quot; offset &quot; + offset + &quot;;&quot;;
+<span class="fc" id="L170">					context.getLogger().info(&quot;Execute SQL all statement: &quot; + sqlAll);</span>
+<span class="fc" id="L171">					rs = statement.executeQuery(sqlAll);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">					while (rs.next()) {</span>
+<span class="fc" id="L173">						JSONObject item = new JSONObject();</span>
+<span class="fc" id="L174">						item.put(&quot;id&quot;, rs.getString(&quot;id&quot;));</span>
+<span class="fc" id="L175">						item.put(&quot;deviceId&quot;, rs.getString(&quot;device_id&quot;));</span>
+<span class="fc" id="L176">						item.put(&quot;projectId&quot;, rs.getString(&quot;project_id&quot;));</span>
+<span class="fc" id="L177">						item.put(&quot;consumptionDate&quot;, rs.getString(&quot;consumption_date&quot;).split(&quot; &quot;)[0]);</span>
+<span class="fc" id="L178">						item.put(&quot;vendor&quot;, rs.getString(&quot;vendor&quot;));</span>
+<span class="fc" id="L179">						item.put(&quot;product&quot;, rs.getString(&quot;product&quot;));</span>
+<span class="fc" id="L180">						item.put(&quot;version&quot;, rs.getString(&quot;version&quot;));</span>
+<span class="fc" id="L181">						item.put(&quot;granularity&quot;, rs.getString(&quot;granularity&quot;));</span>
+<span class="fc" id="L182">						item.put(&quot;usageType&quot;, rs.getString(&quot;usage_type&quot;));</span>
+<span class="fc" id="L183">						item.put(&quot;tokensConsumed&quot;, rs.getInt(&quot;tokens_consumed&quot;));</span>
+<span class="fc" id="L184">						item.put(&quot;consumption&quot;, item.getString(&quot;consumptionDate&quot;) + &quot; - &quot; + rs.getString(&quot;consumption&quot;));</span>
+<span class="fc" id="L185">						item.put(&quot;usageDays&quot;,new JSONArray(rs.getString(&quot;usage_days&quot;)));</span>
+<span class="fc" id="L186">						array.put(item);</span>
+<span class="fc" id="L187">					}</span>
+<span class="fc" id="L188">					json.put(&quot;usage&quot;, array);</span>
+
+					// Get aggregated consumption for configuration
+<span class="fc" id="L191">					JSONArray array2 = new JSONArray();</span>
+<span class="fc" id="L192">					String sqlWeeklyConfigurationTokensConsumed = &quot;select consumption_date, CONCAT('Week ',DATE_PART('week',consumption_date+'1 day'::interval)) as consumption_week, sum(tokens_consumed) from license_consumption l where &quot; +</span>
+						sqlCommonConditions + &quot; group by consumption_date, consumption_week order by consumption_date desc;&quot;;
+<span class="fc" id="L194">					context.getLogger().info(&quot;Execute SQL weekly statement: &quot; + sqlWeeklyConfigurationTokensConsumed);</span>
+<span class="fc" id="L195">					rs = statement.executeQuery(sqlWeeklyConfigurationTokensConsumed);</span>
+					LocalDate dt, startWeek, endWeek;
+<span class="fc bfc" id="L197" title="All 2 branches covered.">					while (rs.next()) {</span>
+<span class="fc" id="L198">						dt = LocalDateTime.parse(rs.getString(1), DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;)).toLocalDate();</span>
+<span class="fc" id="L199">						TemporalField DAY_OF_WEEK  = WeekFields.of(Locale.US).dayOfWeek();</span>
+<span class="fc" id="L200">						startWeek = dt.with(DAY_OF_WEEK, 1);</span>
+<span class="fc" id="L201">						endWeek = dt.with(DAY_OF_WEEK, 7);</span>
+<span class="fc" id="L202">						JSONObject item = new JSONObject();</span>
+<span class="fc" id="L203">						item.put(&quot;weekId&quot;, rs.getString(2) + &quot; (&quot; + startWeek.toString() + &quot; - &quot; + endWeek.toString() + &quot;)&quot;);</span>
+<span class="fc" id="L204">						item.put(&quot;tokensConsumed&quot;, rs.getInt(3));</span>
+<span class="fc" id="L205">						array2.put(item);</span>
+<span class="fc" id="L206">					}</span>
+<span class="fc" id="L207">					json.put(&quot;configurationTokens&quot;, array2);</span>
+
+<span class="fc" id="L209">					String tokensConsumedSql = &quot;SELECT usage_type, sum(tokens_consumed) as consumed_tokens, count(*) from license_consumption l where &quot; +</span>
+							sqlCommonConditions + &quot; GROUP BY usage_type;&quot;;
+<span class="fc" id="L211">					context.getLogger().info(&quot;Execute SQL weekly statement: &quot; + tokensConsumedSql);</span>
+<span class="fc" id="L212">					rs = statement.executeQuery(tokensConsumedSql);</span>
+<span class="fc" id="L213">					int count = 0;</span>
+<span class="fc" id="L214">					JSONObject tokenConsumption = new JSONObject();</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">					while (rs.next()) {</span>
+<span class="fc" id="L216">						tokenConsumption.put(rs.getString(&quot;usage_type&quot;), rs.getInt(&quot;consumed_tokens&quot;));</span>
+<span class="fc" id="L217">						count += rs.getInt(&quot;count&quot;);</span>
+					}
+<span class="fc" id="L219">					json.put(&quot;tokenConsumption&quot;, tokenConsumption);</span>
+<span class="fc" id="L220">					json.put(&quot;usageTotalCount&quot;, count);</span>
+				} break;
+			}
+
+<span class="fc" id="L224">			return request.createResponseBuilder(HttpStatus.OK).header(&quot;Content-Type&quot;, &quot;application/json&quot;).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L226">		catch (SQLException e) {</span>
+<span class="fc" id="L227">			context.getLogger().info(&quot;SQL exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L228">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L229">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L230">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L232">		catch (Exception e) {</span>
+<span class="fc" id="L233">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L234">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L235">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L236">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		}
+	}
+
+<span class="fc" id="L240">	enum USAGE_TYPE_ENUM {</span>
+<span class="fc" id="L241">		CONFIGURATION(&quot;Configuration&quot;),</span>
+<span class="fc" id="L242">		AUTOMATION_PLATFORM(&quot;AutomationPlatform&quot;);</span>
+
+		private final String value;
+<span class="fc" id="L245">		USAGE_TYPE_ENUM(String value) {</span>
+<span class="fc" id="L246">			this.value = value;</span>
+<span class="fc" id="L247">		}</span>
+		public String getValue() {
+<span class="fc" id="L249">			return value;</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

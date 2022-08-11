@@ -25,9 +25,9 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSGetAllCustomers {
 	/**
-	 * This function listens at endpoint "/api/customers". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/customers
-	 * 2. curl "{your host}/api/customers"
+	 * This function listens at endpoint "/v1.0/customers". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/customers
+	 * 2. curl "{your host}/v1.0/customers"
 	 */
 
 	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TekvLSDeleteAdminEmail.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function</a> &gt; <span class="el_source">TekvLSDeleteAdminEmail.java</span></div><h1>TekvLSDeleteAdminEmail.java</h1><pre class="source lang-java linenums">package com.function;
+
+import com.function.auth.Permission;
+import com.microsoft.azure.functions.*;
+import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.BindingName;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.HttpTrigger;
+import org.json.JSONObject;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Optional;
+
+import static com.function.auth.RoleAuthHandler.*;
+
+<span class="fc" id="L19">public class TekvLSDeleteAdminEmail {</span>
+
+    @FunctionName(&quot;TekvLSDeleteAdminEmail&quot;)
+    public HttpResponseMessage run(
+            @HttpTrigger(
+                    name = &quot;req&quot;,
+                    methods = {HttpMethod.DELETE},
+                    authLevel = AuthorizationLevel.ANONYMOUS,
+                    route = &quot;customerAdminEmails/{email}&quot;)
+            HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+            @BindingName(&quot;email&quot;) String email,
+            final ExecutionContext context) {
+
+<span class="fc" id="L32">        String currentRole = getRoleFromToken(request,context);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if(currentRole.isEmpty()){</span>
+<span class="fc" id="L34">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L35">            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L36">            json.put(&quot;error&quot;, MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L37">            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();</span>
+        }
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if(!hasPermission(currentRole, Permission.DELETE_ADMIN_EMAIL)){</span>
+<span class="fc" id="L40">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L41">            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);</span>
+<span class="fc" id="L42">            json.put(&quot;error&quot;, MESSAGE_FOR_FORBIDDEN);</span>
+<span class="fc" id="L43">            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();</span>
+        }
+
+<span class="fc" id="L46">        context.getLogger().info(&quot;Entering TekvLSCreateCustomer Azure function&quot;);</span>
+        // Connect to the database
+<span class="fc" id="L48">        String dbConnectionUrl = &quot;jdbc:postgresql://&quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;) + &quot;/licenses&quot; + System.getenv(&quot;POSTGRESQL_SECURITY_MODE&quot;)</span>
+<span class="fc" id="L49">                + &quot;&amp;user=&quot; + System.getenv(&quot;POSTGRESQL_USER&quot;)</span>
+<span class="fc" id="L50">                + &quot;&amp;password=&quot; + System.getenv(&quot;POSTGRESQL_PWD&quot;);</span>
+<span class="fc" id="L51">        try (</span>
+<span class="fc" id="L52">                Connection connection = DriverManager.getConnection(dbConnectionUrl);</span>
+<span class="fc" id="L53">                Statement statement = connection.createStatement()) {</span>
+
+<span class="fc" id="L55">            context.getLogger().info(&quot;Successfully connected to: &quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;));</span>
+
+            // Delete device
+<span class="fc" id="L58">            String sql = &quot;DELETE FROM customer_admin WHERE admin_email='&quot; + email + &quot;';&quot;;</span>
+<span class="fc" id="L59">            context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L60">            statement.executeUpdate(sql);</span>
+<span class="fc" id="L61">            context.getLogger().info(&quot;Admin email deleted successfully.&quot;);</span>
+
+<span class="fc" id="L63">            return request.createResponseBuilder(HttpStatus.OK).build();</span>
+<span class="fc" id="L64">        } catch (SQLException e) {</span>
+<span class="fc" id="L65">            context.getLogger().info(&quot;SQL exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L66">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L67">            json.put(&quot;error&quot;, &quot;SQL Exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L68">            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+<span class="fc" id="L69">        } catch (Exception e) {</span>
+<span class="fc" id="L70">            context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L71">            JSONObject json = new JSONObject();</span>
+<span class="fc" id="L72">            json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L73">            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

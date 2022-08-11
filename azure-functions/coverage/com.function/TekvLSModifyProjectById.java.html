@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TekvLSModifyProjectById.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function</a> &gt; <span class="el_source">TekvLSModifyProjectById.java</span></div><h1>TekvLSModifyProjectById.java</h1><pre class="source lang-java linenums">package com.function;
+
+import com.function.auth.Permission;
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpMethod;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpResponseMessage;
+import com.microsoft.azure.functions.HttpStatus;
+import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.HttpTrigger;
+import com.microsoft.azure.functions.annotation.BindingName;
+
+import java.sql.*;
+import java.util.Optional;
+import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
+
+/**
+ * Azure Functions with HTTP Trigger.
+ */
+<span class="fc" id="L23">public class TekvLSModifyProjectById </span>
+{
+	/**
+	 * This function listens at endpoint &quot;/api/projects/{id}&quot;. Two ways to invoke it using &quot;curl&quot; command in bash:
+	 * 1. curl -d &quot;HTTP Body&quot; {your host}/api/projects/{id}
+	 */
+	@FunctionName(&quot;TekvLSModifyProjectById&quot;)
+	public HttpResponseMessage run(
+			@HttpTrigger(
+				name = &quot;req&quot;,
+				methods = {HttpMethod.PUT},
+				authLevel = AuthorizationLevel.ANONYMOUS,
+				route = &quot;projects/{id}&quot;)
+				HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+				@BindingName(&quot;id&quot;) String id,
+				final ExecutionContext context) 
+	{
+
+<span class="fc" id="L41">		String currentRole = getRoleFromToken(request,context);</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		if(currentRole.isEmpty()){</span>
+<span class="fc" id="L43">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L44">			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L45">			json.put(&quot;error&quot;, MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L46">			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();</span>
+		}
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if(!hasPermission(currentRole, Permission.MODIFY_PROJECT)){</span>
+<span class="fc" id="L49">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L50">			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);</span>
+<span class="fc" id="L51">			json.put(&quot;error&quot;, MESSAGE_FOR_FORBIDDEN);</span>
+<span class="fc" id="L52">			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();</span>
+		}
+
+<span class="fc" id="L55">		context.getLogger().info(&quot;Entering TekvLSModifyProjectById Azure function&quot;);</span>
+		
+		// Parse request body and extract parameters needed
+<span class="fc" id="L58">		String requestBody = request.getBody().orElse(&quot;&quot;);</span>
+<span class="fc" id="L59">		context.getLogger().info(&quot;Request body: &quot; + requestBody);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (requestBody.isEmpty()) {</span>
+<span class="fc" id="L61">			context.getLogger().info(&quot;error: request body is empty.&quot;);</span>
+<span class="fc" id="L62">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L63">			json.put(&quot;error&quot;, &quot;error: request body is empty.&quot;);</span>
+<span class="fc" id="L64">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		}
+		JSONObject jobj;
+		try {
+<span class="fc" id="L68">			jobj = new JSONObject(requestBody);</span>
+<span class="fc" id="L69">		}  catch (Exception e) {</span>
+<span class="fc" id="L70">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L71">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L72">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L73">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+<span class="fc" id="L74">		}</span>
+
+		// The expected parameters (and their coresponding column name in the database) 
+<span class="fc" id="L77">		String[][] optionalParams = {</span>
+			{&quot;projectName&quot;,&quot;name&quot;}, 
+			{&quot;projectNumber&quot;,&quot;code&quot;},
+			{&quot;status&quot;,&quot;status&quot;}, 
+			{&quot;openDate&quot;, &quot;open_date&quot;}, 
+			{&quot;closeDate&quot;,&quot;close_date&quot;},
+			{&quot;projectOwner&quot;,&quot;project_owner&quot;}};
+		// Build the sql query
+<span class="fc" id="L85">		String sql = &quot;update project set &quot;;</span>
+<span class="fc" id="L86">		int optionalParamsFound = 0;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (int i = 0; i &lt; optionalParams.length; i++) {</span>
+			try {
+<span class="fc" id="L89">				String paramValue = jobj.getString(optionalParams[i][0]);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				sql += optionalParams[i][1] + (paramValue.equals(&quot;&quot;) ? &quot;=null,&quot; : &quot;='&quot; + paramValue + &quot;',&quot;);</span>
+<span class="fc" id="L91">				optionalParamsFound++;</span>
+			} 
+<span class="fc" id="L93">			catch (Exception e) {</span>
+				// Parameter doesn't exist. (continue since it's optional)
+<span class="fc" id="L95">				context.getLogger().info(&quot;Ignoring exception: &quot; + e);</span>
+<span class="fc" id="L96">				continue;</span>
+<span class="fc" id="L97">			}</span>
+		}
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (optionalParamsFound == 0) {</span>
+<span class="fc" id="L100">			return request.createResponseBuilder(HttpStatus.OK).build();</span>
+		}
+		// Remove the comma after the last parameter and add the where clause
+<span class="fc" id="L103">		sql = sql.substring(0, sql.length() - 1);</span>
+<span class="fc" id="L104">		sql += &quot; where id='&quot; + id + &quot;';&quot;;</span>
+
+		// Connect to the database
+<span class="fc" id="L107">		String dbConnectionUrl = &quot;jdbc:postgresql://&quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;) +&quot;/licenses&quot; + System.getenv(&quot;POSTGRESQL_SECURITY_MODE&quot;)</span>
+<span class="fc" id="L108">			+ &quot;&amp;user=&quot; + System.getenv(&quot;POSTGRESQL_USER&quot;)</span>
+<span class="fc" id="L109">			+ &quot;&amp;password=&quot; + System.getenv(&quot;POSTGRESQL_PWD&quot;);</span>
+<span class="fc" id="L110">		try (</span>
+<span class="fc" id="L111">			Connection connection = DriverManager.getConnection(dbConnectionUrl);</span>
+<span class="fc" id="L112">			Statement statement = connection.createStatement();) {</span>
+			
+<span class="fc" id="L114">			context.getLogger().info(&quot;Successfully connected to: &quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;));</span>
+<span class="fc" id="L115">			context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L116">			statement.executeUpdate(sql);</span>
+<span class="fc" id="L117">			context.getLogger().info(&quot;Project updated successfully.&quot;); </span>
+
+<span class="fc" id="L119">			return request.createResponseBuilder(HttpStatus.OK).build();</span>
+		}
+<span class="fc" id="L121">		catch (SQLException e) {</span>
+<span class="fc" id="L122">			context.getLogger().info(&quot;SQL exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L123">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L124">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L125">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L127">		catch (Exception e) {</span>
+<span class="fc" id="L128">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L129">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L130">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L131">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

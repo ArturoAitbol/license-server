@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TekvLSCreateSubaccount.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function</a> &gt; <span class="el_source">TekvLSCreateSubaccount.java</span></div><h1>TekvLSCreateSubaccount.java</h1><pre class="source lang-java linenums">package com.function;
+
+import com.function.auth.Permission;
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpMethod;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpResponseMessage;
+import com.microsoft.azure.functions.HttpStatus;
+import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.HttpTrigger;
+
+import java.sql.*;
+import java.util.Optional;
+import org.json.JSONObject;
+
+import static com.function.auth.RoleAuthHandler.*;
+
+/**
+ * Azure Functions with HTTP Trigger.
+ */
+<span class="fc" id="L22">public class TekvLSCreateSubaccount </span>
+{
+	/**
+	 * This function listens at endpoint &quot;/api/subaccounts&quot;. Two ways to invoke it using &quot;curl&quot; command in bash:
+	 * 1. curl -d &quot;HTTP Body&quot; {your host}/api/subaccounts
+	 */
+	@FunctionName(&quot;TekvLSCreateSubaccount&quot;)
+	public HttpResponseMessage run(
+			@HttpTrigger(
+				name = &quot;req&quot;,
+				methods = {HttpMethod.POST},
+				authLevel = AuthorizationLevel.ANONYMOUS,
+				route = &quot;subaccounts&quot;)
+				HttpRequestMessage&lt;Optional&lt;String&gt;&gt; request,
+				final ExecutionContext context) 
+	{
+
+<span class="fc" id="L39">		String currentRole = getRoleFromToken(request,context);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		if(currentRole.isEmpty()){</span>
+<span class="fc" id="L41">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L42">			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L43">			json.put(&quot;error&quot;, MESSAGE_FOR_UNAUTHORIZED);</span>
+<span class="fc" id="L44">			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();</span>
+		}
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if(!hasPermission(currentRole, Permission.CREATE_SUBACCOUNT)){</span>
+<span class="fc" id="L47">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L48">			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);</span>
+<span class="fc" id="L49">			json.put(&quot;error&quot;, MESSAGE_FOR_FORBIDDEN);</span>
+<span class="fc" id="L50">			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();</span>
+		}
+
+<span class="fc" id="L53">		context.getLogger().info(&quot;Entering TekvLSCreateSubaccount Azure function&quot;);</span>
+
+		// Parse request body and extract parameters needed
+<span class="fc" id="L56">		String requestBody = request.getBody().orElse(&quot;&quot;);</span>
+<span class="fc" id="L57">		context.getLogger().info(&quot;Request body: &quot; + requestBody);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (requestBody.isEmpty()) {</span>
+<span class="fc" id="L59">			context.getLogger().info(&quot;error: request body is empty.&quot;);</span>
+<span class="fc" id="L60">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L61">			json.put(&quot;error&quot;, &quot;error: request body is empty.&quot;);</span>
+<span class="fc" id="L62">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		}
+
+		JSONObject jobj;
+		try {
+<span class="fc" id="L67">			jobj = new JSONObject(requestBody);</span>
+		} 
+<span class="fc" id="L69">		catch (Exception e) {</span>
+<span class="fc" id="L70">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L71">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L72">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L73">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+<span class="fc" id="L74">		}</span>
+
+		// The expected parameters (and their coresponding column name in the database) 
+<span class="fc" id="L77">		String[][] mandatoryParams = {</span>
+			{&quot;subaccountName&quot;,&quot;name&quot;}, 
+			{&quot;customerId&quot;,&quot;customer_id&quot;}
+		};
+		// Build the sql query
+<span class="fc" id="L82">		String sqlPart1 = &quot;&quot;;</span>
+<span class="fc" id="L83">		String sqlPart2 = &quot;&quot;;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int i = 0; i &lt; mandatoryParams.length; i++) {</span>
+			try {
+<span class="fc" id="L86">				String paramValue = jobj.getString(mandatoryParams[i][0]);</span>
+<span class="fc" id="L87">				sqlPart1 += mandatoryParams[i][1] + &quot;,&quot;;</span>
+<span class="fc" id="L88">				sqlPart2 += &quot;'&quot; + paramValue + &quot;',&quot;;</span>
+			} 
+<span class="fc" id="L90">			catch (Exception e) {</span>
+				// Parameter not found
+<span class="fc" id="L92">				context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L93">				JSONObject json = new JSONObject();</span>
+<span class="fc" id="L94">				json.put(&quot;error&quot;, &quot;Missing mandatory parameter: &quot; + mandatoryParams[i][0]);</span>
+<span class="fc" id="L95">				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+<span class="fc" id="L96">			}</span>
+		}
+		// Remove the comma after the last parameter and build the SQL statement
+<span class="fc" id="L99">		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);</span>
+<span class="fc" id="L100">		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);</span>
+<span class="fc" id="L101">		String sql = &quot;insert into subaccount (&quot; + sqlPart1 + &quot;) values (&quot; + sqlPart2 + &quot;);&quot;;</span>
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		if (!jobj.has(&quot;subaccountAdminEmail&quot;))  {</span>
+<span class="fc" id="L104">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L105">			json.put(&quot;error&quot;, &quot;Missing mandatory parameter: subaccountAdminEmail&quot;);</span>
+<span class="fc" id="L106">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		}
+
+		// Connect to the database
+<span class="fc" id="L110">		String dbConnectionUrl = &quot;jdbc:postgresql://&quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;) +&quot;/licenses&quot; + System.getenv(&quot;POSTGRESQL_SECURITY_MODE&quot;)</span>
+<span class="fc" id="L111">			+ &quot;&amp;user=&quot; + System.getenv(&quot;POSTGRESQL_USER&quot;)</span>
+<span class="fc" id="L112">			+ &quot;&amp;password=&quot; + System.getenv(&quot;POSTGRESQL_PWD&quot;);</span>
+<span class="fc" id="L113">		try (</span>
+<span class="fc" id="L114">			Connection connection = DriverManager.getConnection(dbConnectionUrl);</span>
+<span class="fc" id="L115">			Statement statement = connection.createStatement();) {</span>
+			
+<span class="fc" id="L117">			context.getLogger().info(&quot;Successfully connected to: &quot; + System.getenv(&quot;POSTGRESQL_SERVER&quot;));</span>
+			
+<span class="fc" id="L119">			String adminEmail = jobj.getString(&quot;subaccountAdminEmail&quot;);</span>
+<span class="fc" id="L120">			String verifyEmails = &quot;select count(*) from subaccount_admin where subaccount_admin_email='&quot; +  adminEmail + &quot;';&quot;;</span>
+<span class="fc" id="L121">			context.getLogger().info(&quot;Execute SQL statement: &quot; + verifyEmails);</span>
+<span class="fc" id="L122">			ResultSet rsEmails = statement.executeQuery(verifyEmails);</span>
+<span class="fc" id="L123">			rsEmails.next();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">			if (rsEmails.getInt(1) &gt; 0){</span>
+<span class="fc" id="L125">				JSONObject json = new JSONObject();</span>
+<span class="fc" id="L126">				json.put(&quot;error&quot;, &quot;Subaccount email already exists&quot;);</span>
+<span class="fc" id="L127">				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+			}
+
+			// Insert
+<span class="fc" id="L131">				context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L132">				statement.executeUpdate(sql);</span>
+<span class="fc" id="L133">				context.getLogger().info(&quot;License usage inserted successfully.&quot;);</span>
+
+			// Return the id in the response
+<span class="fc" id="L136">			sql = &quot;select id from subaccount where name = '&quot; + jobj.getString(&quot;subaccountName&quot;) + &quot;' and customer_id = '&quot; + jobj.getString(&quot;customerId&quot;) + &quot;';&quot;;</span>
+<span class="fc" id="L137">			context.getLogger().info(&quot;Execute SQL statement: &quot; + sql);</span>
+<span class="fc" id="L138">			ResultSet rs = statement.executeQuery(sql);</span>
+<span class="fc" id="L139">			rs.next();</span>
+<span class="fc" id="L140">			String subaccountId = rs.getString(&quot;id&quot;);</span>
+<span class="fc" id="L141">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L142">			json.put(&quot;id&quot;, subaccountId);</span>
+
+<span class="fc" id="L144">			String adminEmailSql = &quot;INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES ('&quot; + adminEmail + &quot;', '&quot; + subaccountId + &quot;');&quot;;</span>
+<span class="fc" id="L145">			context.getLogger().info(&quot;Execute SQL statement: &quot; + adminEmailSql);</span>
+<span class="fc" id="L146">			statement.executeUpdate(adminEmailSql);</span>
+<span class="fc" id="L147">			context.getLogger().info(&quot;Subaccount admin emails inserted successfully.&quot;);</span>
+
+<span class="fc" id="L149">			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L151">		catch (SQLException e) {</span>
+<span class="fc" id="L152">			context.getLogger().info(&quot;SQL exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L153">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L154">			String modifiedResponse= subaccountUnique(e.getMessage());</span>
+<span class="fc" id="L155">			json.put(&quot;error&quot;, modifiedResponse);</span>
+<span class="fc" id="L156">			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();</span>
+		}
+<span class="fc" id="L158">		catch (Exception e) {</span>
+<span class="fc" id="L159">			context.getLogger().info(&quot;Caught exception: &quot; + e.getMessage());</span>
+<span class="fc" id="L160">			JSONObject json = new JSONObject();</span>
+<span class="fc" id="L161">			json.put(&quot;error&quot;, e.getMessage());</span>
+<span class="fc" id="L162">			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();</span>
+		}
+	}
+
+	private String subaccountUnique(String errorMessage){
+<span class="fc" id="L167">		String response = errorMessage;</span>
+		
+<span class="pc bpc" id="L169" title="1 of 4 branches missed.">		if(errorMessage.contains(&quot;subaccount_unique&quot;) &amp;&amp; errorMessage.contains(&quot;already exists&quot;))</span>
+<span class="fc" id="L170">			response = &quot;Subaccount already exists&quot;;</span>
+<span class="fc" id="L171">		return response;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

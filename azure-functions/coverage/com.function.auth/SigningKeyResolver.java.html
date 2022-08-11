@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SigningKeyResolver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Azure Java Functions</a> &gt; <a href="index.source.html" class="el_package">com.function.auth</a> &gt; <span class="el_source">SigningKeyResolver.java</span></div><h1>SigningKeyResolver.java</h1><pre class="source lang-java linenums">package com.function.auth;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.SigningKeyResolverAdapter;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
+import java.util.Base64;
+
+<span class="fc" id="L21">public class SigningKeyResolver extends SigningKeyResolverAdapter {</span>
+
+<span class="fc" id="L23">    private JSONArray keysSet = null;</span>
+
+    private static class InstanceProvider{
+<span class="fc" id="L26">        private static final SigningKeyResolver INSTANCE = new SigningKeyResolver();</span>
+    }
+
+    public static SigningKeyResolver getInstance(){
+<span class="fc" id="L30">        return InstanceProvider.INSTANCE;</span>
+    }
+
+    @Override
+    @SuppressWarnings(&quot;rawtypes&quot;)
+    public Key resolveSigningKey(JwsHeader jwsHeader, Claims claims) {
+<span class="fc" id="L36">        String keyId = jwsHeader.getKeyId();</span>
+<span class="fc" id="L37">        return lookupVerificationKey(keyId);</span>
+    }
+
+    private Key lookupVerificationKey(String keyId){
+        try{
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            if(keysSet == null){</span>
+<span class="fc" id="L43">                synchronized (this){</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">                    if(keysSet == null)</span>
+<span class="fc" id="L45">                        keysSet =  getKeysFromAzure();</span>
+<span class="fc" id="L46">                }</span>
+            }
+<span class="fc" id="L48">            JSONObject key = searchKey(keyId);</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">            if(key==null){</span>
+<span class="nc" id="L50">                synchronized (this) {</span>
+<span class="nc" id="L51">                    keysSet = getKeysFromAzure();</span>
+<span class="nc" id="L52">                }</span>
+<span class="nc" id="L53">                key = searchKey(keyId);</span>
+            }
+<span class="fc" id="L55">            return generatePublicKey(key);</span>
+
+<span class="nc" id="L57">        } catch (Exception exception){</span>
+<span class="nc" id="L58">            exception.printStackTrace();</span>
+        }
+<span class="nc" id="L60">        return null;</span>
+    }
+
+    private JSONObject searchKey(String keyId){
+<span class="fc" id="L64">        JSONObject key = null;</span>
+<span class="fc" id="L65">        boolean keyFound = false;</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        for (int i = 0; i &lt; keysSet.length();i++){</span>
+<span class="fc" id="L67">            key = keysSet.getJSONObject(i);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            if(key.getString(&quot;kid&quot;).equals(keyId)){</span>
+<span class="fc" id="L69">                keyFound = true;</span>
+<span class="fc" id="L70">                break;</span>
+            }
+        }
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        return keyFound ? key : null ;</span>
+    }
+
+    private PublicKey generatePublicKey(JSONObject key) throws Exception {
+        try {
+<span class="fc" id="L78">            BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(key.getString(&quot;n&quot;)));</span>
+<span class="fc" id="L79">            BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(key.getString(&quot;e&quot;)));</span>
+
+<span class="fc" id="L81">            RSAPublicKeySpec publicSpec = new RSAPublicKeySpec(modulus, exponent);</span>
+<span class="fc" id="L82">            KeyFactory factory = KeyFactory.getInstance(&quot;RSA&quot;);</span>
+<span class="fc" id="L83">            return factory.generatePublic(publicSpec);</span>
+<span class="nc" id="L84">        } catch(Exception e){</span>
+<span class="nc" id="L85">            throw new Exception(&quot;Key generation failed&quot;, e);</span>
+        }
+    }
+
+     private JSONArray getKeysFromAzure() throws Exception {
+<span class="fc" id="L90">        String openIdConfigURL = &quot;https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration&quot;;</span>
+<span class="fc" id="L91">        JSONObject openIdConfiguration = httpGet(openIdConfigURL);</span>
+<span class="fc" id="L92">        String jwksUri = openIdConfiguration.getString(&quot;jwks_uri&quot;);</span>
+<span class="fc" id="L93">        JSONObject keysSet = httpGet(jwksUri);</span>
+<span class="fc" id="L94">        return keysSet.getJSONArray(&quot;keys&quot;);</span>
+    }
+
+    private JSONObject httpGet(String endpoint) throws Exception {
+<span class="fc" id="L98">        URL url = new URL(endpoint);</span>
+<span class="fc" id="L99">        HttpURLConnection connection = (HttpURLConnection) url.openConnection();</span>
+<span class="fc" id="L100">        connection.setRequestMethod(&quot;GET&quot;);</span>
+<span class="fc" id="L101">        connection.setRequestProperty(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
+<span class="fc" id="L102">        InputStream responseStream = connection.getInputStream();</span>
+<span class="fc" id="L103">        BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));</span>
+<span class="fc" id="L104">        String inputLine = in.readLine();</span>
+<span class="fc" id="L105">        return new JSONObject(inputLine);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

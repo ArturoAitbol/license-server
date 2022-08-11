@@ -15,9 +15,9 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSCreateBundle {
     /**
-     * This function listens at endpoint "/api/bundles". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/bundles
-     * 2. curl {your host}/api/bundle?name=HTTP%20Query
+     * This function listens at endpoint "/v1.0/bundles". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/bundles
+     * 2. curl {your host}/v1.0/bundle?name=HTTP%20Query
      */
     @FunctionName("TekvLSCreateBundle")
     public HttpResponseMessage run(

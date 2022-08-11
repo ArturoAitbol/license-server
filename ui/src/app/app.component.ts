@@ -46,7 +46,6 @@ export class AppComponent implements OnInit, OnDestroy {
             this.router.navigate(['/login']);
         } else {
             this.currentUser = this.isLoggedIn();
-            this.navigateToDashboard();
             this.autoLogoutService.validateLastActivityTime();
         }
         this.broadcastService.msalSubject$.pipe(
@@ -71,10 +70,10 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.msalService.instance.getActiveAccount() != null;
     }
     /**
-     * navigate to dashboard page
+     * navigate to main view
      */
-    navigateToDashboard(): void {
-        this.router.navigate(['/dashboard']);
+    navigateToMainView(): void {
+        this.router.navigate(['/']);
     }
     /**
      * logout 
