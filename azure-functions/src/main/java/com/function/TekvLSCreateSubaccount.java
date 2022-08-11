@@ -22,8 +22,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSCreateSubaccount 
 {
 	/**
-	 * This function listens at endpoint "/api/subaccounts". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/subaccounts
+	 * This function listens at endpoint "/v1.0/subaccounts". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccounts
 	 */
 	@FunctionName("TekvLSCreateSubaccount")
 	public HttpResponseMessage run(

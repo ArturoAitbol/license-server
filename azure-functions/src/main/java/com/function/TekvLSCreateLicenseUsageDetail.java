@@ -27,8 +27,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSCreateLicenseUsageDetail
 {
 	/**
-	 * This function listens at endpoint "/api/licenseUsageDetails". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/licenseUsageDetails
+	 * This function listens at endpoint "/v1.0/licenseUsageDetails". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/licenseUsageDetails
 	 */
 	@FunctionName("TekvLSCreateLicenseUsageDetail")
 	public HttpResponseMessage run(

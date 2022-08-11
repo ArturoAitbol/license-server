@@ -9,7 +9,6 @@ import { LicenseService } from 'src/app/services/license.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { AddLicenseComponent } from './add-license/add-license.component';
 import { ModifyLicenseComponent } from './modify-license/modify-license.component';
-import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
 
@@ -40,10 +39,9 @@ export class LicensesComponent implements OnInit {
   actionMenuOptions: any = [];
 
   constructor(
-    private customerSerivce: CustomerService,
+    private customerService: CustomerService,
     private licenseService: LicenseService,
     private dialogService: DialogService,
-    private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog,
     private msalService: MsalService
@@ -78,7 +76,7 @@ export class LicensesComponent implements OnInit {
 
   ngOnInit(): void {
     this.calculateTableHeight();
-    this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    this.currentCustomer = this.customerService.getSelectedCustomer();
     this.fetchLicenses();
     this.getActionMenuOptions();
   }
@@ -123,18 +121,18 @@ export class LicensesComponent implements OnInit {
    */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
+    let arrayToSort = [...this.licenses];
     if (sortParameters.direction === 'asc') {
-      this.licenses = this.licenses.sort((a: any, b: any) => {
-        if (keyName === 'number') {
+      this.licenses = arrayToSort.sort((a: any, b: any) => {
+        if (typeof a[keyName] === 'number') {
           return +a[keyName] > +b[keyName] ? 1 : (+a[keyName] < +b[keyName] ? -1 : 0);
         }
         return a[keyName].localeCompare(b[keyName]);
       });
     } else if (sortParameters.direction === 'desc') {
-      this.licenses = this.licenses.sort((a: any, b: any) => {
-        if (keyName === 'number') {
+      this.licenses = arrayToSort.sort((a: any, b: any) => {
+        if (typeof a[keyName] === 'number') {
           return +a[keyName] < +b[keyName] ? 1 : (+a[keyName] > +b[keyName] ? -1 : 0);
-
         }
         return b[keyName].localeCompare(a[keyName])
       });

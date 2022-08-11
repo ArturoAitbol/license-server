@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs';
+import {observable, Observable} from 'rxjs';
 
 export const MatDialogMock = {
     open: <T, D = any, R = any>(arg1, options) => {
