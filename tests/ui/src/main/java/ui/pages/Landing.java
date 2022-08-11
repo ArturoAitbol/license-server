@@ -1,10 +1,8 @@
 package ui.pages;
 
-import org.openqa.selenium.By;
+import org.aeonbits.owner.ConfigFactory;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.WindowType;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import ui.core.AbstractPageObject;
 import ui.utils.Environment;
 
@@ -13,9 +11,11 @@ public class Landing extends AbstractPageObject {
 //    private By loginButton = By.cssSelector("button.rsdLoginButton");
     @FindBy(css="button.rsdLoginButton")
     private WebElement loginButton;
+    Environment environment = ConfigFactory.create(Environment.class);
 
     public Landing(){
-        driver.get(Environment.getInstance().getValue("$['url']"));
+        driver.get(this.environment.url());
+        System.out.println(this.environment.url());
     }
 
     public LoginForm openLoginForm(){

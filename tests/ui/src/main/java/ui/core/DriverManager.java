@@ -1,5 +1,6 @@
 package ui.core;
 
+import org.aeonbits.owner.ConfigFactory;
 import ui.utils.Environment;
 import org.openqa.selenium.WebDriver;
 
@@ -8,7 +9,9 @@ public class DriverManager {
     private static DriverManager driverManager;
 
     private DriverManager(){
-        String browser = Environment.getInstance().getValue("$['browser']").toLowerCase();
+//        String browser = Environment.getInstance().getValue("$['browser']").toLowerCase();
+        Environment environment = ConfigFactory.create(Environment.class);
+        String browser = environment.browser().toLowerCase();
         this.driver = DriverFactory.createDriver(browser);
         this.driver.manage().window().maximize();
     }
