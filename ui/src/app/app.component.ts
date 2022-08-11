@@ -22,14 +22,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
     constructor(private router: Router, private msalService: MsalService,
         private broadcastService: MsalBroadcastService, private autoLogoutService: AutoLogoutService) {
-        var angularPlugin = new AngularPlugin();
+        const angularPlugin = new AngularPlugin();
         const appInsights = new ApplicationInsights({
             config: {
-                // instrumentationKey: environment.INSTRUMENTATION_KEY,
                 connectionString: environment.INSTRUMENTATION_CONN_STRING,
                 enableCorsCorrelation: true,
                 enableRequestHeaderTracking: true,
                 enableResponseHeaderTracking: true,
+                enableAutoRouteTracking: false,
+                loggingLevelConsole: 2,
+                loggingLevelTelemetry:2,
                 correlationHeaderExcludedDomains: ['*.queue.core.windows.net'],
                 extensions: [angularPlugin],
                 extensionConfig: {
