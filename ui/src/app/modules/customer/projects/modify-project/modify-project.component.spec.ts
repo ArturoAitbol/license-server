@@ -9,8 +9,8 @@ import { MsalService } from "@azure/msal-angular";
 import { SharedModule } from "src/app/modules/shared/shared.module";
 import { ProjectService } from "src/app/services/project.service";
 import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
-import { CurrentPorjectServiceMock } from "src/test/mock/services/current-project-service.mock";
-import { dialogMock } from "src/test/mock/services/dialog-service.mock";
+import { currentProject } from "src/test/mock/services/current-project-service.mock";
+import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
 import { ProjectsComponent } from "../projects.component";
@@ -19,6 +19,7 @@ import { ModifyProjectComponent } from "./modify-project.component";
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
 let dialogRef: MatDialogRef<ModifyProjectComponent>;
+const dialogMock = new DialogServiceMock();
 
 const RouterMock = {
     navigate: (commands: string[]) => {}
@@ -59,13 +60,7 @@ const beforeEachFunction = () => {
             },
             {
                 provide: MAT_DIALOG_DATA,
-                useValue: {
-                    projectName: 'testj2',
-                    projectNumber: 'testNumber',
-                    openDate: '2022-01-26 05:00:00',
-                    closeDate: '2022-05-29 05:00:00',
-                    status: 'Open'
-                }
+                useValue: currentProject
             }
         ]
     });
