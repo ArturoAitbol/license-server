@@ -62,7 +62,6 @@ jobs:
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
-      id: fa
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
         package: './${{ env.POM_XML_DIRECTORY }}/target/azure-functions/${{ env.POM_FUNCTIONAPP_NAME }}'
@@ -120,7 +119,7 @@ jobs:
       with:
         collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
         environment: ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
-        reporters: '["junit"]'
+        reporters: '["junit", "cli"]'
         reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
 
     - name: Publish JUnit Report
@@ -130,6 +129,17 @@ jobs:
         report_paths: './tests/api/postman/newman-report.xml'
         summary: 'true'
         check_name: 'API Test Report'
+
+    - name: Run UI tests
+      run: |
+        cd tests/ui
+        gradle uiTests -Denv=integration
+    - uses: deblockt/cucumber-report-annotations-action@v1.7
+      name: Publish Cucumber Report
+      with:
+        name: UI Test Report
+        access-token: ${{ secrets.GITHUB_TOKEN }}
+        path: "**/cucumber.json"
     
     - name: Bump version and push tag
       id: tag_version

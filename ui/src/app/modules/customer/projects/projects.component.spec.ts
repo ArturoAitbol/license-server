@@ -20,7 +20,7 @@ import { AddProjectComponent } from './add-project/add-project.component';
 import { ModifyProjectComponent } from './modify-project/modify-project.component';
 import { ProjectsComponent } from './projects.component';
 import { Sort } from '@angular/material/sort';
-import { DialogServiceMock } from 'src/test/mock/services/dialog-service-mock';
+import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 
 let projectsComponentTestInstance: ProjectsComponent;
 let fixture: ComponentFixture<ProjectsComponent>;
