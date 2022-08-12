@@ -90,6 +90,124 @@
 			"response": []
 		},
 		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/devices/{{deviceId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices",
+						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"bundleId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"CICDTest\",\r\n    \"tokens\":\"10\",\r\n    \"deviceAccessToken\":\"100\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/bundles",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/bundles/{{bundleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles",
+						"{{bundleId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "customers",
 			"event": [
 				{
@@ -157,57 +275,6 @@
 					],
 					"path": [
 						"customers"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "bundles",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"id\");\r",
-							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"bundleId\", pm.response.json().id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"CICDTest\",\r\n    \"tokens\":\"10\",\r\n    \"deviceAccessToken\":\"100\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/bundles",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles"
 					]
 				}
 			},
@@ -1140,73 +1207,6 @@
 					"path": [
 						"licenses",
 						"{{licenseId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "devices",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/devices/{{deviceId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices",
-						"{{deviceId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "bundles",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/bundles/{{bundleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles",
-						"{{bundleId}}"
 					]
 				}
 			},
