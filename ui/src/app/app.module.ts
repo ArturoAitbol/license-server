@@ -1,6 +1,6 @@
 // Angular modules
 import { BrowserModule } from '@angular/platform-browser';
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -25,7 +25,9 @@ import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
 import { SharedModule } from './modules/shared/shared.module';
 import { environment } from 'src/environments/environment';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
+import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applicationinsights-angularplugin-js';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -72,6 +74,7 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapte
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+        { provide: ErrorHandler, useClass: ApplicationinsightsAngularpluginErrorService },
         { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true, strict: true} }
     ],
     bootstrap: [AppComponent],

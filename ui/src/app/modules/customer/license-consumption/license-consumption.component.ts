@@ -336,7 +336,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       selectedWeek.subtract(7, "days");
     }
 
-    let notFoundWeeks: any[] = [];
+    const notFoundWeeks: any[] = [];
     weeklyConsumption.forEach(item => {
       const i = weeklyConsumptionDetail.findIndex(week => week.weekId === item.weekId);
       if (i !== -1)

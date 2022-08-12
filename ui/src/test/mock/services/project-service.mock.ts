@@ -92,5 +92,55 @@ export const ProjectServiceMock = {
                 unsubscribe() { }
             };
         });
+    },
+    updateProject: (project: any) => {
+        return new Observable((observer) => {
+            observer.next(
+                {
+                  
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
+    },
+    getSelectedSubAccount: () => {
+        return new Observable((observer) => {
+            observer.next(
+                { 
+                    body:[
+                        {
+                           projectName: "tttt6",
+                           projectNumber: "666t",
+                           status: "Open",
+                           subaccountId: "eea5f3b8-37eb-41fe-adad-5f94da124a5a"
+                        }
+                    ]
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    createProject: () => {
+        return new Observable((observer) => {
+            observer.next(
+                { 
+                    body:[
+                        {
+                 
+                        }
+                    ]
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
     }
 };
