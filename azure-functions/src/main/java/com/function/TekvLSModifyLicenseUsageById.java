@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.UpdateQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -76,54 +78,53 @@ public class TekvLSModifyLicenseUsageById
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
-		// The expected parameters (and their corresponding column name in the database)
-		String[][] optionalParams = {
-				{"projectId","project_id"},
-				{"deviceId","device_id"},
-				{"consumptionDate","consumption_date"},
-				{"type","usage_type"}
-		};
+
 		// Build the sql query
-		String sql = "update license_consumption set ";
+		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("license_consumption");
 		int optionalParamsFound = 0;
-		for (int i = 0; i < optionalParams.length; i++) {
+		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
 			try {
-				String paramName = jobj.getString(optionalParams[i][0]);
-				sql += optionalParams[i][1] + "='" + paramName + "',";
+				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
 				optionalParamsFound++;
 			}
 			catch (Exception e) {
-				// Parameter doesn't exist. (continue since it's optional)
 				context.getLogger().info("Ignoring exception: " + e);
-				// continue;
 			}
 		}
-		sql += " modified_date='" + LocalDate.now().toString() + "',modified_by='" + userId + "'";
+		queryBuilder.appendValueModification("modified_date", LocalDate.now().toString(), QueryBuilder.DATA_TYPE.TIMESTAMP);
+		queryBuilder.appendValueModification("modified_by", userId);
 		if (optionalParamsFound == 0) {
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
+
+		String deviceSql = null;
+		if(jobj.has(OPTIONAL_PARAMS.DEVICE_ID.jsonAttrib)){
+			deviceSql = "SELECT tokens_to_consume FROM device WHERE id = ?::uuid;";
+		}
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-
-			if(jobj.has("deviceId")){
-				// get tokens to consume
-				String deviceSql = "select tokens_to_consume from device where id='" + jobj.getString("deviceId") + "';";
-				context.getLogger().info("Execute SQL statement: " + deviceSql);
-				ResultSet rs = statement.executeQuery(deviceSql);
-				rs.next();
-				int tokensToConsume = rs.getInt(1);
-				sql +=",tokens_consumed=" + tokensToConsume;
+			if (deviceSql != null) {
+				try (PreparedStatement deviceStmt = connection.prepareStatement(deviceSql)) {
+					deviceStmt.setString(1, jobj.getString(OPTIONAL_PARAMS.DEVICE_ID.jsonAttrib));
+					context.getLogger().info("Execute SQL statement: " + deviceStmt);
+					ResultSet rs = deviceStmt.executeQuery();
+					rs.next();
+					Integer tokensToConsume = rs.getInt(1);
+					queryBuilder.appendValueModification("tokens_consumed", tokensToConsume.toString(), QueryBuilder.DATA_TYPE.INTEGER);
+				}
 			}
-			sql += " where id='" + id + "';";
-			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
-			context.getLogger().info("License updated successfully."); 
-			return request.createResponseBuilder(HttpStatus.OK).build();
+			queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
+			try (PreparedStatement stmt = queryBuilder.build(connection)) {
+				context.getLogger().info("Execute SQL statement: " + stmt);
+				stmt.executeUpdate();
+				context.getLogger().info("License updated successfully.");
+				return request.createResponseBuilder(HttpStatus.OK).build();
+			}
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
@@ -136,6 +137,30 @@ public class TekvLSModifyLicenseUsageById
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
+
+	private enum OPTIONAL_PARAMS {
+		PROJECT_ID("projectId", "project_id", QueryBuilder.DATA_TYPE.UUID),
+		DEVICE_ID("deviceId", "device_id", QueryBuilder.DATA_TYPE.UUID),
+		CONSUMPTION_DATE("consumptionDate", "consumption_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
+		USAGE_TYPE("type", "usage_type", "usage_type_enum");
+
+		private final String jsonAttrib;
+		private final String columnName;
+
+		private final String dataType;
+
+		OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
+			this.jsonAttrib = jsonAttrib;
+			this.columnName = columnName;
+			this.dataType = dataType;
+		}
+
+		OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
+			this.jsonAttrib = jsonAttrib;
+			this.columnName = columnName;
+			this.dataType = dataType.getValue();
 		}
 	}
 }

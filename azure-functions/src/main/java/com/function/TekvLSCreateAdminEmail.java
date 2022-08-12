@@ -9,8 +9,8 @@ import org.json.JSONObject;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -54,6 +54,7 @@ public class TekvLSCreateAdminEmail {
 
         CreateAdminRequest createAdminRequest = request.getBody().get();
 
+        // Check mandatory params to be present
         if (createAdminRequest.getAdminEmail() == null) {
             context.getLogger().info("error: Missing customerAdminEmail parameter.");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter customerAdminEmail.\"}")).build();
@@ -63,16 +64,20 @@ public class TekvLSCreateAdminEmail {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter customerId.\"}")).build();
         }
 
-        final String sql = "INSERT INTO customer_admin (admin_email, customer_id) VALUES ('" + createAdminRequest.getAdminEmail() + "', '" +
-                createAdminRequest.getCustomerId() + "');";
+        //Build the sql query
+        final String sql = "INSERT INTO customer_admin (admin_email, customer_id) VALUES (?, ?::uuid);";
 
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-             Statement statement = connection.createStatement()) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-            context.getLogger().info("Execute SQL statement: " + sql);
-            statement.executeUpdate(sql);
+            // Set statement parameters
+            statement.setString(1, createAdminRequest.customerAdminEmail);
+            statement.setString(2, createAdminRequest.customerId);
+
+            context.getLogger().info("Execute SQL statement: " + statement);
+            statement.executeUpdate();
             context.getLogger().info("License usage inserted successfully.");
 
             return request.createResponseBuilder(HttpStatus.OK).build();
