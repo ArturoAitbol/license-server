@@ -7,176 +7,6 @@
 	},
 	"item": [
 		{
-			"name": "devices",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"id\");\r",
-							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"deviceId\", pm.response.json().id);"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
-							"\r",
-							"const clientId = pm.variables.get(\"clientId_DevicesAdmin\");\r",
-							"const clientSecret = pm.variables.get(\"clientSecret_DevicesAdmin\");\r",
-							"const grantType = pm.variables.get(\"grant_type\");\r",
-							"const scope = pm.variables.get(\"scope\");\r",
-							"\r",
-							"const getTokenRequest = {\r",
-							"  method: 'POST',\r",
-							"  url: tokenUrl,\r",
-							"  body: {\r",
-							"      mode: 'formdata',\r",
-							"      formdata: [\r",
-							"          { key: 'client_id', value: clientId },\r",
-							"          { key: 'client_secret', value: clientSecret },\r",
-							"          { key: 'grant_type', value: grantType },\r",
-							"          { key: 'scope', value: scope}\r",
-							"      ]\r",
-							"  }\r",
-							"};\r",
-							"\r",
-							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
-							"  pm.collectionVariables.set('access_token_DA', response.json().access_token);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"type\": \"OTHER\",\r\n    \"granularity\": \"week\",\r\n    \"tokensToConsume\": \"1\",\r\n    \"supportType\": \"true\",\r\n    \"startDate\": \"{{$isoTimestamp}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/devices",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "devices",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/devices/{{deviceId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices",
-						"{{deviceId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "devices",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/devices/{{deviceId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices",
-						"{{deviceId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "bundles",
 			"event": [
 				{
@@ -287,6 +117,89 @@
 					"path": [
 						"bundles",
 						"{{bundleId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"deviceId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
+							"\r",
+							"const clientId = pm.variables.get(\"clientId_DevicesAdmin\");\r",
+							"const clientSecret = pm.variables.get(\"clientSecret_DevicesAdmin\");\r",
+							"const grantType = pm.variables.get(\"grant_type\");\r",
+							"const scope = pm.variables.get(\"scope\");\r",
+							"\r",
+							"const getTokenRequest = {\r",
+							"  method: 'POST',\r",
+							"  url: tokenUrl,\r",
+							"  body: {\r",
+							"      mode: 'formdata',\r",
+							"      formdata: [\r",
+							"          { key: 'client_id', value: clientId },\r",
+							"          { key: 'client_secret', value: clientSecret },\r",
+							"          { key: 'grant_type', value: grantType },\r",
+							"          { key: 'scope', value: scope}\r",
+							"      ]\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
+							"  pm.collectionVariables.set('access_token_DA', response.json().access_token);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"vendor\": \"CICDTest\",\r\n    \"product\": \"{{name}}\",\r\n    \"version\": \"1.0\",\r\n    \"type\": \"OTHER\",\r\n    \"granularity\": \"week\",\r\n    \"tokensToConsume\": \"1\",\r\n    \"supportType\": \"true\",\r\n    \"startDate\": \"{{$isoTimestamp}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/devices",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices"
 					]
 				}
 			},
@@ -481,47 +394,6 @@
 			"response": []
 		},
 		{
-			"name": "projects",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"id\");\r",
-							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"projectId\", pm.response.json().id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"projectName\": \"{{name}}\",\r\n    \"projectNumber\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/projects",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"projects"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "licenses",
 			"event": [
 				{
@@ -557,6 +429,47 @@
 					],
 					"path": [
 						"licenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"projectId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"projectName\": \"{{name}}\",\r\n    \"projectNumber\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/projects",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"projects"
 					]
 				}
 			},
@@ -1088,6 +1001,54 @@
 			"response": []
 		},
 		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/devices/{{deviceId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices",
+						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "adminEmail",
 			"event": [
 				{
@@ -1184,7 +1145,7 @@
 			"response": []
 		},
 		{
-			"name": "licenses",
+			"name": "devices",
 			"event": [
 				{
 					"listen": "test",
@@ -1197,16 +1158,26 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/licenses/{{licenseId}}",
+					"raw": "{{HOST}}/devices/{{deviceId}}",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
-						"licenses",
-						"{{licenseId}}"
+						"devices",
+						"{{deviceId}}"
 					]
 				}
 			},
@@ -1236,6 +1207,35 @@
 					"path": [
 						"projects",
 						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/licenses/{{licenseId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenses",
+						"{{licenseId}}"
 					]
 				}
 			},
