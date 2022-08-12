@@ -261,7 +261,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\",\r\n    \"customerId\":\"aa85388d-1ce9-425d-9df7-d6e8a8baaec2\"\r\n}",
+					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -458,7 +458,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"licenseId\":\"31d82e5c-b911-460d-edbe-6860f8464233\",\r\n    \"status\": \"Active\"\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"status\": \"Active\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
