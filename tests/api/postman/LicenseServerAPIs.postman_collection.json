@@ -113,6 +113,54 @@
 						}
 					]
 				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/devices/{{deviceId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices",
+						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
@@ -174,6 +222,43 @@
 					],
 					"path": [
 						"bundles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tokens\":\"20\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/bundles/{{bundleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles",
+						"{{bundleId}}"
 					]
 				}
 			},
@@ -534,43 +619,6 @@
 			"response": []
 		},
 		{
-			"name": "bundles",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"tokens\":\"20\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/bundles/{{bundleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles",
-						"{{bundleId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "customers",
 			"event": [
 				{
@@ -603,54 +651,6 @@
 					"path": [
 						"customers",
 						"{{customerId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "devices",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/devices/{{deviceId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices",
-						"{{deviceId}}"
 					]
 				}
 			},
