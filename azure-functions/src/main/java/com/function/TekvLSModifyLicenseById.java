@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.UpdateQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -75,36 +77,22 @@ public class TekvLSModifyLicenseById
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// The expected parameters (and their coresponding column name in the database) 
-		String[][] optionalParams = {
-			{"subaccountId","subaccount_id"}, 
-			{"startDate","start_date"}, 
-			{"packageType","package_type"}, 
-			{"renewalDate","renewal_date"}, 
-			{"tokensPurchased","tokens"}, 
-			{"deviceLimit","device_access_limit"}, 
-			{"status","status"}};
 		// Build the sql query
-		String sql = "update license set ";
+		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("license");
 		int optionalParamsFound = 0;
-		for (int i = 0; i < optionalParams.length; i++) {
+		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
 			try {
-				String paramName = jobj.getString(optionalParams[i][0]);
-				sql += optionalParams[i][1] + "='" + paramName + "',";
+				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
 				optionalParamsFound++;
-			} 
+			}
 			catch (Exception e) {
-				// Parameter doesn't exist. (continue since it's optional)
 				context.getLogger().info("Ignoring exception: " + e);
-				continue;
 			}
 		}
 		if (optionalParamsFound == 0) {
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
-		// Remove the comma after the last parameter and add the where clause
-		sql = sql.substring(0, sql.length() - 1);
-		sql += " where id='" + id + "';";
+		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -112,11 +100,11 @@ public class TekvLSModifyLicenseById
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = queryBuilder.build(connection)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			statement.executeUpdate();
 			context.getLogger().info("License updated successfully."); 
 
 			return request.createResponseBuilder(HttpStatus.OK).build();
@@ -132,6 +120,33 @@ public class TekvLSModifyLicenseById
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
+
+	private enum OPTIONAL_PARAMS {
+		SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
+		START_DATE("startDate", "start_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
+		PACKAGE_TYPE("packageType", "package_type", "package_type_enum"),
+		RENEWAL_DATE("renewalDate", "renewal_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
+		TOKENS("tokensPurchased", "tokens", QueryBuilder.DATA_TYPE.INTEGER),
+		DEVICE_ACCESS_LIMIT("deviceLimit", "device_access_limit", QueryBuilder.DATA_TYPE.INTEGER),
+		status("status", "status", "status_type_enum");
+
+		private final String jsonAttrib;
+		private final String columnName;
+
+		private final String dataType;
+
+		OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
+			this.jsonAttrib = jsonAttrib;
+			this.columnName = columnName;
+			this.dataType = dataType;
+		}
+
+		OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
+			this.jsonAttrib = jsonAttrib;
+			this.columnName = columnName;
+			this.dataType = dataType.getValue();
 		}
 	}
 }
