@@ -7,6 +7,122 @@
 	},
 	"item": [
 		{
+			"name": "bundles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"bundleId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"CICDTest\",\r\n    \"tokens\":\"10\",\r\n    \"deviceAccessToken\":\"100\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/bundles",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tokens\":\"20\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/bundles/{{bundleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles",
+						"{{bundleId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/bundles/{{bundleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles",
+						"{{bundleId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "devices",
 			"event": [
 				{
@@ -143,7 +259,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\",\r\n    \"customerId\":\"aa85388d-1ce9-425d-9df7-d6e8a8baaec2\"\r\n}",
+					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -157,57 +273,6 @@
 					],
 					"path": [
 						"customers"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "bundles",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"id\");\r",
-							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"bundleId\", pm.response.json().id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"CICDTest\",\r\n    \"tokens\":\"10\",\r\n    \"deviceAccessToken\":\"100\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/bundles",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles"
 					]
 				}
 			},
@@ -329,6 +394,47 @@
 			"response": []
 		},
 		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"licenseId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"status\": \"Active\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/licenses",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "projects",
 			"event": [
 				{
@@ -364,47 +470,6 @@
 					],
 					"path": [
 						"projects"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "licenses",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"id\");\r",
-							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"licenseId\", pm.response.json().id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"licenseId\":\"31d82e5c-b911-460d-edbe-6860f8464233\",\r\n    \"status\": \"Active\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/licenses",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenses"
 					]
 				}
 			},
@@ -467,43 +532,6 @@
 			"response": []
 		},
 		{
-			"name": "bundles",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"tokens\":\"20\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/bundles/{{bundleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles",
-						"{{bundleId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "customers",
 			"event": [
 				{
@@ -536,54 +564,6 @@
 					"path": [
 						"customers",
 						"{{customerId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "devices",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/devices/{{deviceId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices",
-						"{{deviceId}}"
 					]
 				}
 			},
@@ -1021,6 +1001,54 @@
 			"response": []
 		},
 		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/devices/{{deviceId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices",
+						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "adminEmail",
 			"event": [
 				{
@@ -1117,35 +1145,6 @@
 			"response": []
 		},
 		{
-			"name": "licenses",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/licenses/{{licenseId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenses",
-						"{{licenseId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "devices",
 			"event": [
 				{
@@ -1185,34 +1184,6 @@
 			"response": []
 		},
 		{
-			"name": "bundles",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/bundles/{{bundleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles",
-						"{{bundleId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "projects",
 			"event": [
 				{
@@ -1236,6 +1207,35 @@
 					"path": [
 						"projects",
 						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/licenses/{{licenseId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenses",
+						"{{licenseId}}"
 					]
 				}
 			},

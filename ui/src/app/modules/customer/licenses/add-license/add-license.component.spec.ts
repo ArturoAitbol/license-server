@@ -66,10 +66,16 @@ describe('UI and component verification tests',()=>{
         const h1: HTMLElement = fixture.nativeElement.querySelector('#dialog-title');
         const cancelButton: HTMLElement = fixture.nativeElement.querySelector('#cancel-button');
         const submitButton: HTMLElement = fixture.nativeElement.querySelector('#submit-button');
+        const labels: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('label'));
 
         expect(h1.textContent).toBe('Add tekVizion 360 Package');
         expect(cancelButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
+        expect(labels.find(label => label.textContent.includes("Start Date"))).not.toBeUndefined();
+        expect(labels.find(label => label.textContent.includes("Renewal Date"))).not.toBeUndefined();
+        expect(labels.find(label => label.textContent.includes("Package Type"))).not.toBeUndefined();
+        expect(labels.find(label => label.textContent.includes("Device Access tekTokens"))).not.toBeUndefined();
+        expect(labels.find(label => label.textContent.includes("tekTokens"))).not.toBeUndefined();
     });
 });
 
@@ -132,7 +138,7 @@ describe('Data collection and parsing tests',()=>{
 
 });
 
-describe('Dialog calls and interactions', ()=>{
+describe('Calls and interactions', ()=>{
 
     beforeEach(beforeEachFunction);
 
