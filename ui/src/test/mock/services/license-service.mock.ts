@@ -311,6 +311,15 @@ export const LicenseServiceMock = {
                 unsubscribe() { }
             };
         });
+    },
+    updateLicenseDetails: (license) =>{
+        return new Observable((observer) => {
+            observer.next();
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
     }
 
 };
