@@ -23,8 +23,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSCreateProject
 {
 	/**
-	 * This function listens at endpoint "/api/projects". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/projects
+	 * This function listens at endpoint "/v1.0/projects". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/projects
 	 */
 	@FunctionName("TekvLSCreateProject")
 	public HttpResponseMessage run(

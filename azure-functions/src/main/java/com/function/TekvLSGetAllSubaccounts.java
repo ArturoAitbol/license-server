@@ -28,9 +28,9 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSGetAllSubaccounts 
 {
 	/**
-	 * This function listens at endpoint "/api/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/subaccounts/{id}
-	 * 2. curl "{your host}/api/subaccounts"
+	 * This function listens at endpoint "/v1.0/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccounts/{id}
+	 * 2. curl "{your host}/v1.0/subaccounts"
 	 */
 	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")

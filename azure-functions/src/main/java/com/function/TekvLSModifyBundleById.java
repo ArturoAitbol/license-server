@@ -17,9 +17,9 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSModifyBundleById {
     /**
-     * This function listens at endpoint "/api/TekvLSModifyBundleById". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/TekvLSModifyBundleById
-     * 2. curl {your host}/api/TekvLSModifyBundleById?name=HTTP%20Query
+     * This function listens at endpoint "/v1.0/TekvLSModifyBundleById". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/TekvLSModifyBundleById
+     * 2. curl {your host}/v1.0/TekvLSModifyBundleById?name=HTTP%20Query
      */
     @FunctionName("TekvLSModifyBundleById")
     public HttpResponseMessage run(

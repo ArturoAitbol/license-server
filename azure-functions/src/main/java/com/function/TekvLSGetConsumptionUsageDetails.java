@@ -24,9 +24,9 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSGetConsumptionUsageDetails {
 	/**
-	 * This function listens at endpoint "/api/usageDetails/{consumptionId}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/usageDetails/{consumptionId}
-	 * 2. curl "{your host}/api/usageDetails"
+	 * This function listens at endpoint "/v1.0/usageDetails/{consumptionId}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/usageDetails/{consumptionId}
+	 * 2. curl "{your host}/v1.0/usageDetails"
 	 */
 	@FunctionName("TekvLSGetConsumptionUsageDetails")
 	public HttpResponseMessage run(

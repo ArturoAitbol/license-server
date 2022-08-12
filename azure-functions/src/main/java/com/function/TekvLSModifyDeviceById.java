@@ -26,8 +26,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSModifyDeviceById 
 {
 	/**
-	 * This function listens at endpoint "/api/devices/{id}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/devices/{id}
+	 * This function listens at endpoint "/v1.0/devices/{id}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/devices/{id}
 	 */
 	@FunctionName("TekvLSModifyDeviceById")
 	public HttpResponseMessage run(
