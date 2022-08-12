@@ -1,6 +1,7 @@
 import {HttpClient, HttpParams, HttpHeaders} from '@angular/common/http';
 import {CustomerService} from './customer.service';
 import {environment} from '../../environments/environment';
+import {Customer} from "../model/customer.model";
 import {CustomerServiceMock} from '../../test/mock/services/customer-service.mock';
 
 let httpClientSpy: jasmine.SpyObj<HttpClient>;
@@ -27,5 +28,25 @@ describe('Customer service http requests test', () => {
             error: done.fail
         });
         expect(httpClientSpy.get).toHaveBeenCalledTimes(1);
+    });
+    it('should update customer Name and return Customer with updated name', (done: DoneFn) => {
+        const updatedCustomer: Customer = {
+            customerType: 'Reseller',
+            testCustomer: true,
+            customerName: 'new test customer s updated',
+            id: '19660f52-4f35-489d-ae44-80161cbb7bd4',
+            adminEmails: ['samuel-vs6+6@hotmail.com']
+        };
+
+        const expectedCustomer: Customer = CustomerServiceMock.updatedMockCustomer;
+        httpClientSpy.put.and.returnValue(CustomerServiceMock.updateCustomer(updatedCustomer));
+        customerService.updateCustomer(updatedCustomer).subscribe({
+            next: customer => {
+                expect(customer).toEqual(expectedCustomer);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.put).toHaveBeenCalledTimes(1);
     });
 });
