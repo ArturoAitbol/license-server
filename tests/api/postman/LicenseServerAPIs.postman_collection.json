@@ -21,6 +21,38 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
+							"\r",
+							"const clientId = pm.variables.get(\"clientId_DevicesAdmin\");\r",
+							"const clientSecret = pm.variables.get(\"clientSecret_DevicesAdmin\");\r",
+							"const grantType = pm.variables.get(\"grant_type\");\r",
+							"const scope = pm.variables.get(\"scope\");\r",
+							"\r",
+							"const getTokenRequest = {\r",
+							"  method: 'POST',\r",
+							"  url: tokenUrl,\r",
+							"  body: {\r",
+							"      mode: 'formdata',\r",
+							"      formdata: [\r",
+							"          { key: 'client_id', value: clientId },\r",
+							"          { key: 'client_secret', value: clientSecret },\r",
+							"          { key: 'grant_type', value: grantType },\r",
+							"          { key: 'scope', value: scope}\r",
+							"      ]\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
+							"  pm.collectionVariables.set('access_token_DA', response.json().access_token);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -134,38 +166,6 @@
 							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
 							"});\r",
 							"pm.collectionVariables.set(\"deviceId\", pm.response.json().id);"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
-							"\r",
-							"const clientId = pm.variables.get(\"clientId_DevicesAdmin\");\r",
-							"const clientSecret = pm.variables.get(\"clientSecret_DevicesAdmin\");\r",
-							"const grantType = pm.variables.get(\"grant_type\");\r",
-							"const scope = pm.variables.get(\"scope\");\r",
-							"\r",
-							"const getTokenRequest = {\r",
-							"  method: 'POST',\r",
-							"  url: tokenUrl,\r",
-							"  body: {\r",
-							"      mode: 'formdata',\r",
-							"      formdata: [\r",
-							"          { key: 'client_id', value: clientId },\r",
-							"          { key: 'client_secret', value: clientSecret },\r",
-							"          { key: 'grant_type', value: grantType },\r",
-							"          { key: 'scope', value: scope}\r",
-							"      ]\r",
-							"  }\r",
-							"};\r",
-							"\r",
-							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
-							"  pm.collectionVariables.set('access_token_DA', response.json().access_token);\r",
-							"});"
 						],
 						"type": "text/javascript"
 					}
