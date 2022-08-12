@@ -1,25 +1,21 @@
 package com.function;
 
 import com.function.auth.Permission;
-import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.HttpMethod;
-import com.microsoft.azure.functions.HttpRequestMessage;
-import com.microsoft.azure.functions.HttpResponseMessage;
-import com.microsoft.azure.functions.HttpStatus;
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
+import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
-import com.microsoft.azure.functions.annotation.BindingName;
-
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.sql.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
 
@@ -66,64 +62,71 @@ public class TekvLSGetAllLicenses
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
   
 		// Build SQL statement
-		String sql = "select * from license";
-		String subQuery="";
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM license");
+		SelectQueryBuilder verificationQueryBuilder = null;
 		String email = getEmailFromToken(tokenClaims,context);
-		List<String> conditionsList = new ArrayList<>();
+
 		// adding conditions according to the role
 		switch (currentRole){
 			case DISTRIBUTOR_FULL_ADMIN:
-				String distributorId = "select distributor_id from customer c,customer_admin ca " +
-						"where c.id = ca.customer_id and admin_email='"+email+"'";
-				subQuery = "select s.id from subaccount s, customer c " +
-						"where s.customer_id = c.id and distributor_id =("+ distributorId +")";
-				conditionsList.add("subaccount_id IN (" + subQuery + ")");
+				queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id from subaccount s, customer c WHERE s.customer_id = c.id " +
+						"AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca WHERE c.id = ca.customer_id AND admin_email = ?))", email);
+				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer c");
+				verificationQueryBuilder.appendCustomCondition("s.customer_id = c.id AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
+						"WHERE c.id = ca.customer_id and admin_email= ?)", email);
 				break;
 			case CUSTOMER_FULL_ADMIN:
-				subQuery = "select s.id from subaccount s, customer_admin ca where s.customer_id = ca.customer_id " +
-						"and admin_email = '"+email+"'";
-				conditionsList.add("subaccount_id IN (" + subQuery + ")");
+				queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id FROM subaccount s, customer_admin ca " +
+						"WHERE s.customer_id = ca.customer_id AND admin_email = ?)", email);
+				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer_admin ca");
+				verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?", email);
 				break;
 			case SUBACCOUNT_ADMIN:
-				subQuery = "select subaccount_id from subaccount_admin where subaccount_admin_email ='"+email+"'";
-				conditionsList.add("subaccount_id=(" + subQuery + ")");
+				queryBuilder.appendCustomCondition("subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
+				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
+				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
 				break;
 		}
 
 		if (id.equals("EMPTY")){
-			if (!subaccountId.isEmpty())
-				conditionsList.add("subaccount_id = '" + subaccountId + "'");
+			if (!subaccountId.isEmpty()) {
+				queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+			}
 		}else{
-			conditionsList.add("id='" + id +"'");
+			queryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
 		}
 
-		String sqlConditions = String.join(" and ",conditionsList);
+		queryBuilder.appendOrderBy("start_date", SelectQueryBuilder.ORDER_DIRECTION.DESC);
 
-		if(!sqlConditions.isEmpty())
-			sql += " where "+ sqlConditions;
-		sql += " order by start_date desc;";
-		
+		if (verificationQueryBuilder != null) {
+			if (currentRole.equals(SUBACCOUNT_ADMIN))
+				verificationQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+			else
+				verificationQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+		}
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement()) {
-			
+			Statement statement = connection.createStatement();
+			PreparedStatement selectStmt = queryBuilder.build(connection)) {
+
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			ResultSet rs;
 			JSONObject json = new JSONObject();
 
-			if(!subQuery.isEmpty() && id.equals("EMPTY") && !subaccountId.isEmpty()){
-				String sqlVerifySubaccount = subQuery + "and " + (currentRole.equals(SUBACCOUNT_ADMIN) ? "subaccount_id='" : "s.id='")+subaccountId+"';";
-
-				context.getLogger().info("Execute SQL devices statement: " + sqlVerifySubaccount);
-				rs = statement.executeQuery(sqlVerifySubaccount);
-				if(!rs.next()){
-					context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + email);
-					json.put("error",MESSAGE_FOR_INVALID_ID);
-					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			if (verificationQueryBuilder != null && id.equals("EMPTY") && !subaccountId.isEmpty()) {
+				try (PreparedStatement verificationStmt = verificationQueryBuilder.build(connection)) {
+					context.getLogger().info("Execute SQL role verification statement: " + verificationStmt);
+					rs = verificationStmt.executeQuery();
+					if (!rs.next()) {
+						context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + email);
+						json.put("error", MESSAGE_FOR_INVALID_ID);
+						return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+					}
 				}
 			}
 
@@ -136,8 +139,8 @@ public class TekvLSGetAllLicenses
 			}
 
 			// Retrieve licenses.
-			context.getLogger().info("Execute SQL statement: " + sql);
-			rs = statement.executeQuery(sql);
+			context.getLogger().info("Execute SQL statement: " + selectStmt);
+			rs = selectStmt.executeQuery();
 			// Return a JSON array of licenses
 			JSONArray array = new JSONArray();
 			while (rs.next()) {
