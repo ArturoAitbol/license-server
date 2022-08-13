@@ -9,7 +9,7 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Customer Name</mat-label>
-                        <input matInput required formControlName="name">
+                        <input matInput required formControlName="name" id="customerName">
                     </mat-form-field>
                 </div>
                 <div>
@@ -39,7 +39,7 @@
         <mat-dialog-actions>
             <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" [disabled]="!(updateCustomerForm.valid ) || disableSumbitBtn()"
-                type="submit">Submit</button>
+                type="submit" id="submitBtn">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>
