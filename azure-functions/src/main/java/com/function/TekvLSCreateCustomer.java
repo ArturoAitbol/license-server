@@ -73,49 +73,25 @@ public class TekvLSCreateCustomer
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// The expected parameters (and their corresponding column name in the database)
-		String[][] mandatoryParams = {
-			{"customerName","name"},
-			{"customerType","type"},
-		    {"test","test_customer"}
-		};
-		// Build the sql query
-		String sqlPart1 = "";
-		String sqlPart2 = "";
-		for (int i = 0; i < mandatoryParams.length; i++) {
-			try {
-				String paramValue = jobj.getString(mandatoryParams[i][0]);
-				sqlPart1 += mandatoryParams[i][1] + ",";
-				sqlPart2 += "'" + paramValue + "',";
-			}
-			catch (Exception e) {
+		// Check mandatory params to be present
+		for (MANDATORY_PARAMS mandatoryParam: MANDATORY_PARAMS.values()) {
+			if (!jobj.has(mandatoryParam.value)) {
 				// Parameter not found
-				context.getLogger().info("Caught exception: " + e.getMessage());
+				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
-				json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
+				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
 
-		//Optional parameters
-		if (jobj.has("distributorId")){
-			sqlPart1 += "distributor_id,";
-			sqlPart2 += "'" + jobj.getString("distributorId") + "',";
+		//Build the sql query
+		String sql;
+		if (jobj.has(OPTIONAL_PARAMS.CUSTOMER_ID.value)) {
+			sql = "INSERT INTO customer (name, type, test_customer, distributor_id, id) VALUES (?, ?, ?::boolean, ?::uuid, ?::uuid) RETURNING id;";
+		} else {
+			sql = "INSERT INTO customer (name, type, test_customer, distributor_id) VALUES (?, ?, ?::boolean, ?::uuid) RETURNING id;";
 		}
-		if (jobj.has("customerId")) {
-			sqlPart1 += "id,";
-			sqlPart2 += "'" + jobj.getString("customerId") + "',";
-		}
-		// Remove the comma after the last parameter and build the SQL statement
-		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
-		String sql = "insert into customer (" + sqlPart1 + ") values (" + sqlPart2 + ");";
-
-		if (!jobj.has("customerAdminEmail"))  {
-			JSONObject json = new JSONObject();
-			json.put("error", "Missing mandatory parameter: customerAdminEmail");
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-		}
+		String adminEmailSql = "INSERT INTO customer_admin (admin_email, customer_id) VALUES (?,?::uuid);";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -123,38 +99,35 @@ public class TekvLSCreateCustomer
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = connection.prepareStatement(sql);
+			PreparedStatement emailStatement = connection.prepareStatement(adminEmailSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-			String adminEmail = jobj.getString("customerAdminEmail");
-			String verifyEmails = "select count(*) from customer_admin where admin_email='" + adminEmail + "';";
-			context.getLogger().info("Execute SQL statement: " + verifyEmails);
-			ResultSet rsEmails = statement.executeQuery(verifyEmails);
-			rsEmails.next();
-			if (rsEmails.getInt(1) > 0){
-				JSONObject json = new JSONObject();
-				json.put("error", "Administrator email already exists");
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-			}
+			// Set statement parameters
+			statement.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_NAME.value));
+			statement.setString(2, jobj.getString(MANDATORY_PARAMS.CUSTOMER_TYPE.value));
+			statement.setString(3, jobj.getString(MANDATORY_PARAMS.TEST.value));
+
+			statement.setString(4, jobj.has(OPTIONAL_PARAMS.DISTRIBUTOR_ID.value) ? jobj.getString(OPTIONAL_PARAMS.DISTRIBUTOR_ID.value) : null);
+			if (jobj.has(OPTIONAL_PARAMS.CUSTOMER_ID.value))
+				statement.setString(5, jobj.getString(OPTIONAL_PARAMS.CUSTOMER_ID.value));
 			
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
 			context.getLogger().info("Customer inserted successfully.");
 
 			// Return the customer id in the response
-			sql = "select id from customer where name = '" + jobj.getString("customerName") + "' and type = '" + jobj.getString("customerType") + "';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
 			String customerId = rs.getString("id");
 			JSONObject json = new JSONObject();
 			json.put("id", customerId);
 
-			String adminEmailSql = "INSERT INTO customer_admin (admin_email, customer_id) VALUES ('" + adminEmail + "', '" + customerId + "');";
-			context.getLogger().info("Execute SQL statement: " + adminEmailSql);
-			statement.executeUpdate(adminEmailSql);
+			emailStatement.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ADMIN_EMAIL.value));
+			emailStatement.setString(2, customerId);
+			context.getLogger().info("Execute SQL statement: " + emailStatement);
+			emailStatement.executeUpdate();
 			context.getLogger().info("Admin emails inserted successfully.");
 
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
@@ -162,7 +135,7 @@ public class TekvLSCreateCustomer
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			String modifiedResponse = customerUnique(e.getMessage());
+			String modifiedResponse = adminEmailUnique(customerUnique(e.getMessage()));
 			json.put("error", modifiedResponse);
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
@@ -177,5 +150,35 @@ public class TekvLSCreateCustomer
 		if(errorMessage.contains("customer_unique"))
 			return "Customer already exists";
 		return "SQL Exception: " + errorMessage;
+	}
+
+	private String adminEmailUnique(String errorMessage){
+		if(errorMessage.contains("customer_admin_pk"))
+			return "Administrator email already exists";
+		return errorMessage;
+	}
+
+	private enum MANDATORY_PARAMS {
+		CUSTOMER_NAME("customerName"),
+		CUSTOMER_TYPE("customerType"),
+		TEST("test"),
+		CUSTOMER_ADMIN_EMAIL("customerAdminEmail");
+
+		private final String value;
+
+		MANDATORY_PARAMS(String value) {
+			this.value = value;
+		}
+	}
+
+	private enum OPTIONAL_PARAMS {
+		DISTRIBUTOR_ID("distributorId"),
+		CUSTOMER_ID("customerId");
+
+		private final String value;
+
+		OPTIONAL_PARAMS(String value) {
+			this.value = value;
+		}
 	}
 }

@@ -54,26 +54,31 @@ public class TekvLSDeleteLicenseUsageById
 		}
 
 		context.getLogger().info("Entering TekvLSDeleteLicenseUsageById Azure function");
-		
+
+		String deleteDetailSql = "DELETE FROM usage_detail WHERE consumption_id = ?::uuid;";
+		String deleteLicenseSql = "DELETE FROM license_consumption WHERE id = ?::uuid;";
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement deleteDetailStmt = connection.prepareStatement(deleteDetailSql);
+			PreparedStatement deleteLicenseStmt = connection.prepareStatement(deleteLicenseSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+
+			deleteDetailStmt.setString(1, id);
+			deleteLicenseStmt.setString(1, id);
+
 			// Delete usage details
-			String sql = "delete from usage_detail where consumption_id='" + id +"';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + deleteDetailStmt);
+			deleteDetailStmt.executeUpdate();
 			
 			// Delete license consumption
-			sql = "delete from license_consumption where id='" + id +"';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + deleteLicenseStmt);
+			deleteLicenseStmt.executeUpdate();
 			context.getLogger().info("License usage delete successfully."); 
 
 			return request.createResponseBuilder(HttpStatus.OK).build();
