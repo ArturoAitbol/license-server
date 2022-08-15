@@ -33,4 +33,4 @@ Feature: Customers
       | type          | MSP                     |
       | subaccount    | subaccountModified      |
     Then I should see the modified data in Customers table
-    And I should see the message "Customer and subaccount edited successfully!"
+    And I should see the message "Customer deleted successfully!"
