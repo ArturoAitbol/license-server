@@ -22,8 +22,8 @@ public class WebDriverAction {
     }
 
     public void click(WebElement element){
-        wait.until(ExpectedConditions.elementToBeClickable(element));
-        element.click();
+            wait.until(ExpectedConditions.elementToBeClickable(element));
+            element.click();
     }
 
     public void click(By locator){
@@ -101,18 +101,7 @@ public class WebDriverAction {
     }
 
     public String getText(By locator){
-        String output;
-        try{
-            output = wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getText();
-        }
-        catch (Exception e){
-            LOGGER.warn("Ex: "+ e.toString());
-            LOGGER.warn("Element wasn't visible: " + locator.toString());
-//            System.out.println("Ex: "+ e.toString());
-//            System.out.println("Element wasn't visible: " + locator.toString());
-            output = "none";
-        }
-        return output;
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getText();
     }
 
     public String errorPresent(By locator){
@@ -141,7 +130,11 @@ public class WebDriverAction {
     }
 
     public void checkTitle(String title){
-        this.wait.until(ExpectedConditions.titleIs(title));
+        try{
+            this.wait.until(ExpectedConditions.titleIs(title));
+        }
+        catch (Exception e){
+            System.out.println("Window didn't get the title:" + title);
+        }
     }
-
 }
