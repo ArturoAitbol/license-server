@@ -123,7 +123,7 @@ describe('Calls and interactions', ()=>{
         spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
         fixture.detectChanges();
 
-        staticConsumptionDetailsComponent.deleteUsageDetail(0);
+        staticConsumptionDetailsComponent.deleteUsageDetail(1);
 
         expect(UsageDetailServiceMock.deleteUsageDetails).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Usage deleted', '');
@@ -139,7 +139,7 @@ describe('Calls and interactions', ()=>{
         spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
         fixture.detectChanges();
 
-        staticConsumptionDetailsComponent.deleteUsageDetail(0);
+        staticConsumptionDetailsComponent.deleteUsageDetail(1);
 
         expect(UsageDetailServiceMock.deleteUsageDetails).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error while deleting usage detail!');
@@ -153,7 +153,7 @@ describe('Calls and interactions', ()=>{
         spyOn(console,'error').and.callThrough();
         fixture.detectChanges();
 
-        staticConsumptionDetailsComponent.deleteUsageDetail(0);
+        staticConsumptionDetailsComponent.deleteUsageDetail(1);
 
         expect(UsageDetailServiceMock.deleteUsageDetails).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error deleting usage detail!');

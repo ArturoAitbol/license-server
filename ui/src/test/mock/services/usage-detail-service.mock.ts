@@ -28,7 +28,7 @@ export const UsageDetailServiceMock = {
     usageDetails: USAGE_DETAIL_LIST,
     getUsageDetailsByConsumptionId : (consumptionId: string)=>{
         return new Observable( (observer) => {
-            observer.next({...USAGE_DETAIL_LIST});
+            observer.next(JSON.parse(JSON.stringify(USAGE_DETAIL_LIST)));
             observer.complete();
             return {
                 unsubscribe() { }
