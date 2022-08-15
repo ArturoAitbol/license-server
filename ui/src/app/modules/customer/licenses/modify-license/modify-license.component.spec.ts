@@ -160,7 +160,7 @@ describe('Calls and interactions', ()=>{
         expect(modifyLicenseComponentTestInstance.disableSumbitBtn()).toBeFalse();
     });
 
-    it('should close the openDialog when calling onCancel()',()=>{
+    it('should close the dialog when calling onCancel()',()=>{
         spyOn(modifyLicenseComponentTestInstance.dialogRef,'close');
         fixture.detectChanges();
         modifyLicenseComponentTestInstance.onCancel();
@@ -206,7 +206,7 @@ describe('Calls and interactions', ()=>{
 
     });
 
-    it('should close the openDialog when updating license throws an error after calling submit()',()=>{
+    it('should close the dialog when updating license throws an error after calling submit()',()=>{
         const error = "some error";
         spyOn(LicenseServiceMock,'updateLicenseDetails').and.returnValue(throwError(error));
         spyOn(modifyLicenseComponentTestInstance.dialogRef,'close');
