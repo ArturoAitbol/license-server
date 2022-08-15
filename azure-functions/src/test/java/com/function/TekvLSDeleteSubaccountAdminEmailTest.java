@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -77,7 +78,12 @@ class TekvLSDeleteSubaccountAdminEmailTest extends TekvLSTest {
     @Test
     public void sqlExceptionTest() {
         //When - Action
-        HttpResponseMessage response = deleteSubaccountAdminEmailApi.run(this.request, "'", this.context);
+        HttpResponseMessage response;
+        try {
+            response = new EnvironmentVariables("POSTGRESQL_SERVER", "test").execute(() -> deleteSubaccountAdminEmailApi.run(this.request, "'", this.context));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
@@ -89,9 +95,9 @@ class TekvLSDeleteSubaccountAdminEmailTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "in SQL DELETE FROM subaccount_admin WHERE subaccount_admin_email=''';. Expected  char";
+        String expectedResponse = "SQL Exception: The connection attempt failed.";
         String actualResponse = jsonBody.getString("error");
-        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test

@@ -73,38 +73,21 @@ public class TekvLSCreateSubaccount
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// The expected parameters (and their coresponding column name in the database) 
-		String[][] mandatoryParams = {
-			{"subaccountName","name"}, 
-			{"customerId","customer_id"}
-		};
-		// Build the sql query
-		String sqlPart1 = "";
-		String sqlPart2 = "";
-		for (int i = 0; i < mandatoryParams.length; i++) {
-			try {
-				String paramValue = jobj.getString(mandatoryParams[i][0]);
-				sqlPart1 += mandatoryParams[i][1] + ",";
-				sqlPart2 += "'" + paramValue + "',";
-			} 
-			catch (Exception e) {
+		// Check mandatory params to be present
+		for (MANDATORY_PARAMS mandatoryParam: MANDATORY_PARAMS.values()) {
+			if (!jobj.has(mandatoryParam.value)) {
 				// Parameter not found
-				context.getLogger().info("Caught exception: " + e.getMessage());
+				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
-				json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
+				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
-		// Remove the comma after the last parameter and build the SQL statement
-		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
-		String sql = "insert into subaccount (" + sqlPart1 + ") values (" + sqlPart2 + ");";
 
-		if (!jobj.has("subaccountAdminEmail"))  {
-			JSONObject json = new JSONObject();
-			json.put("error", "Missing mandatory parameter: subaccountAdminEmail");
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-		}
+		// Build the sql queries
+		String insertSql = "INSERT INTO subaccount (name, customer_id) VALUES (?, ?::uuid) RETURNING id;";
+		String verifyEmailsSql = "SELECT count(*) FROM subaccount_admin WHERE subaccount_admin_email=?;";
+		String adminEmailSql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid);";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -112,14 +95,17 @@ public class TekvLSCreateSubaccount
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement insertStmt = connection.prepareStatement(insertSql);
+			PreparedStatement verifyEmailStmt = connection.prepareStatement(verifyEmailsSql);
+			PreparedStatement insertEmailStmt = connection.prepareStatement(adminEmailSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
-			String adminEmail = jobj.getString("subaccountAdminEmail");
-			String verifyEmails = "select count(*) from subaccount_admin where subaccount_admin_email='" +  adminEmail + "';";
-			context.getLogger().info("Execute SQL statement: " + verifyEmails);
-			ResultSet rsEmails = statement.executeQuery(verifyEmails);
+
+			// Set statement parameters
+			verifyEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+
+			context.getLogger().info("Execute SQL statement: " + verifyEmailStmt);
+			ResultSet rsEmails = verifyEmailStmt.executeQuery();
 			rsEmails.next();
 			if (rsEmails.getInt(1) > 0){
 				JSONObject json = new JSONObject();
@@ -127,24 +113,28 @@ public class TekvLSCreateSubaccount
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 
+			//Insert parameters to statement
+			insertStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value));
+			insertStmt.setString(2, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ID.value));
+
 			// Insert
-				context.getLogger().info("Execute SQL statement: " + sql);
-				statement.executeUpdate(sql);
-				context.getLogger().info("License usage inserted successfully.");
+			context.getLogger().info("Execute SQL statement: " + insertStmt);
+			ResultSet rs = insertStmt.executeQuery();
+			context.getLogger().info("License usage inserted successfully.");
 
 			// Return the id in the response
-			sql = "select id from subaccount where name = '" + jobj.getString("subaccountName") + "' and customer_id = '" + jobj.getString("customerId") + "';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
 			String subaccountId = rs.getString("id");
 			JSONObject json = new JSONObject();
 			json.put("id", subaccountId);
 
-			String adminEmailSql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES ('" + adminEmail + "', '" + subaccountId + "');";
-			context.getLogger().info("Execute SQL statement: " + adminEmailSql);
-			statement.executeUpdate(adminEmailSql);
-			context.getLogger().info("Subaccount admin emails inserted successfully.");
+			//Insert parameters to statement
+			insertEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+			insertEmailStmt.setString(2, subaccountId);
+
+			context.getLogger().info("Execute SQL statement: " + insertEmailStmt);
+			insertEmailStmt.executeUpdate();
+			context.getLogger().info("Subaccount admin email inserted successfully.");
 
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
@@ -169,5 +159,18 @@ public class TekvLSCreateSubaccount
 		if(errorMessage.contains("subaccount_unique") && errorMessage.contains("already exists"))
 			response = "Subaccount already exists";
 		return response;
+	}
+
+	private enum MANDATORY_PARAMS {
+
+		SUBACCOUNT_NAME("subaccountName"),
+		CUSTOMER_ID("customerId"),
+		SUBACCOUNT_ADMIN_EMAIL("subaccountAdminEmail");
+
+		private final String value;
+
+		MANDATORY_PARAMS(String value) {
+			this.value = value;
+		}
 	}
 }

@@ -121,7 +121,7 @@ export class LicensesComponent implements OnInit {
    */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
-    let arrayToSort = [...this.licenses];
+    const arrayToSort = [...this.licenses];
     if (sortParameters.direction === 'asc') {
       this.licenses = arrayToSort.sort((a: any, b: any) => {
         if (typeof a[keyName] === 'number') {

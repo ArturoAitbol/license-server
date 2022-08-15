@@ -131,7 +131,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private customerSerivce: CustomerService,
+    private customerService: CustomerService,
     private dialogService: DialogService,
     private projectService: ProjectService,
     private licenseService: LicenseService,
@@ -145,7 +145,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     const projectItem: string = localStorage.getItem(Constants.PROJECT);
     if (projectItem)
       this.selectedProject = JSON.parse(projectItem).id;
-    this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    this.currentCustomer = this.customerService.getSelectedCustomer();
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
@@ -336,7 +336,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       selectedWeek.subtract(7, "days");
     }
 
-    let notFoundWeeks: any[] = [];
+    const notFoundWeeks: any[] = [];
     weeklyConsumption.forEach(item => {
       const i = weeklyConsumptionDetail.findIndex(week => week.weekId === item.weekId);
       if (i !== -1)
@@ -459,7 +459,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
  * @param sortParameters: Sort
  * @param data: any[]
  */
-  sortDataGeneric(sortParameters: Sort, data: any[]) {
+  sortData(sortParameters: Sort, data: any[]) {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
       data = data.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));

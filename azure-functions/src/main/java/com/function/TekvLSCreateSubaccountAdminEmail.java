@@ -7,10 +7,7 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import org.json.JSONObject;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -63,16 +60,19 @@ public class TekvLSCreateSubaccountAdminEmail {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(new JSONObject("{\"error\": \"Missing mandatory parameter subaccountId.\"}")).build();
         }
 
-        final String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES ('" + createSubaccountAdminRequest.getAdminEmail() + "', '" +
-                createSubaccountAdminRequest.getSubaccountId() + "');";
+        final String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid);";
 
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-             Statement statement = connection.createStatement()) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-            context.getLogger().info("Execute SQL statement: " + sql);
-            statement.executeUpdate(sql);
+            // Set statement parameters
+            statement.setString(1, createSubaccountAdminRequest.getAdminEmail());
+            statement.setString(2, createSubaccountAdminRequest.getSubaccountId());
+
+            context.getLogger().info("Execute SQL statement: " + statement);
+            statement.executeUpdate();
             context.getLogger().info("License usage inserted successfully.");
 
             return request.createResponseBuilder(HttpStatus.OK).build();
