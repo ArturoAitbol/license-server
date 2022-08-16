@@ -8,10 +8,7 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import org.json.JSONObject;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -43,21 +40,23 @@ public class TekvLSDeleteAdminEmail {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSCreateCustomer Azure function");
+        context.getLogger().info("Entering TekvLSDeleteAdminEmail Azure function");
+
+        String sql = "DELETE FROM customer_admin WHERE admin_email = ?;";
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
-        try (
-                Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                Statement statement = connection.createStatement()) {
+        try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
+            statement.setString(1, email);
+
             // Delete device
-            String sql = "DELETE FROM customer_admin WHERE admin_email='" + email + "';";
-            context.getLogger().info("Execute SQL statement: " + sql);
-            statement.executeUpdate(sql);
+            context.getLogger().info("Execute SQL statement: " + statement);
+            statement.executeUpdate();
             context.getLogger().info("Admin email deleted successfully.");
 
             return request.createResponseBuilder(HttpStatus.OK).build();

@@ -24,6 +24,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     deviceLimit: ['', Validators.required],
     renewalDate: ['', Validators.required]
   }, { validators: renewalDateValidator });
+  isDataLoading = false;
   startDateMax: Date = null;
   renewalDateMin: Date = null;
   constructor(
@@ -49,6 +50,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
    * add license
    */
   submit() {
+    this.isDataLoading = true;
     const licenseObject: License | any = {
       subaccountId: this.currentCustomer.subaccountId,
       startDate: this.addLicenseForm.value.startDate,
@@ -60,9 +62,12 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     this.licenseService.createLicense(licenseObject).subscribe((res: any) => {
       if (!res.error) {
         this.snackBarService.openSnackBar('Package added successfully!', '');
+        this.isDataLoading = false;
         this.dialogRef.close(res);
-      } else
+      } else{
         this.snackBarService.openSnackBar(res.error, 'Error adding package!');
+        this.isDataLoading = false;
+      }
     });
   }
 

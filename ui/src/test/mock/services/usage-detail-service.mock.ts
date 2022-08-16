@@ -1,39 +1,46 @@
-import { Observable } from "rxjs";
+import { Observable } from "rxjs"
 
-export const usageDetailServiceMock = {
-    getUsageDetailsByConsumptionId: () => {
-        return new Observable((observer) => {
-            observer.next(
-                {
-                    usageDays: [
-                        {
-                            consumptionId: "bc12f1d1-8cf0-4d20-af81-fc11c12bf152",
-                            dayOfWeek: 0,
-                            id: "012e75a4-2f66-457c-a2ad-820953e2587b",
-                            macAddress: "",
-                            modifiedBy: "pfernandez@tekvizionlabs.com",
-                            serialNumber: "",
-                            usageDate: "2022-08-21"
-                        }
-                    ]
-                }
-            );
+const USAGE_DETAIL_LIST = {
+    modifiedBy: "user@tekvizionlabs.com",
+    usageDays: [
+        {
+            consumptionId: "483b7876-9be9-4bfa-b097-275bea5ac9a0",
+            dayOfWeek: 4,
+            id: "2c06c971-0074-4c43-b113-5c3e2c393c38",
+            macAddress: "",
+            modifiedBy: "user@tekvizionlabs.com",
+            serialNumber: "",
+            usageDate: "2024-02-05",
+        },
+        {
+            consumptionId: "483b7876-9be9-4bfa-b097-275bea5ac9a0",
+            dayOfWeek: 5,
+            id: "a6a2ffae-61a6-4094-b26a-6efb959957fc",
+            macAddress: "",
+            modifiedBy: "user@tekvizionlabs.com",
+            serialNumber: "",
+            usageDate: "2024-02-06",
+        }
+    ]
+};
+
+export const UsageDetailServiceMock = {
+    usageDetails: USAGE_DETAIL_LIST,
+    getUsageDetailsByConsumptionId : (consumptionId: string)=>{
+        return new Observable( (observer) => {
+            observer.next(JSON.parse(JSON.stringify(USAGE_DETAIL_LIST)));
             observer.complete();
             return {
-                unsubscribe() {}
+                unsubscribe() { }
             };
         });
     },
-    createUsageDetails: () => {
-        return new Observable((observer) => {
-            observer.next(
-                {
-                  
-                }
-            );
+    deleteUsageDetails : (data: any)=>{
+        return new Observable( (observer) => {
+            observer.next();
             observer.complete();
             return {
-                unsubscribe() {}
+                unsubscribe() { }
             };
         });
     }
