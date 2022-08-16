@@ -22,7 +22,7 @@ import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { ConsumptionServiceMock } from "src/test/mock/services/license-consumption-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
-import { usageDetailServiceMock } from "src/test/mock/services/usage-detail-service.mock";
+import { UsageDetailServiceMock } from "src/test/mock/services/usage-detail-service.mock";
 import { ProjectsComponent } from "../../projects/projects.component";
 import { ModifyLicenseConsumptionDetailsComponent } from "./modify-license-consumption-details.component";
 
@@ -33,6 +33,21 @@ const dialogService = new DialogServiceMock();
 const RouterMock = {
     navigate: (commands: string[]) => {}
 };
+const currentLicense = {
+    usageDays: [2],
+    consumption: "2022-08-07 - Week 32",
+    deviceId: "001ee852-4ab5-4642-85e1-58f5a477fbb3",
+    version: "1.0",
+    vendor: "tekVizion",
+    granularity: "static",
+    id: "1397ed28-543d-477c-871e-06f450831465",
+    tokensConsumed: 15,
+    projectName: "test",
+    projectId: "459cf3ca-7365-47a1-8d9b-1abee381545c",
+    usageType: "Configuration",
+    consumptionDate: "2022-08-07",
+    product: "SIP Trunk Testing Engagement"
+}
 
 const beforeEachFunction = () => {
     TestBed.configureTestingModule({
@@ -61,7 +76,7 @@ const beforeEachFunction = () => {
             },
             {
                 provide: UsageDetailService,
-                useValue: usageDetailServiceMock
+                useValue: UsageDetailServiceMock
             },
             {
                 provide: DialogService,
@@ -89,21 +104,7 @@ const beforeEachFunction = () => {
             },
             {
                 provide: MAT_DIALOG_DATA,
-                useValue: { 
-                    consumptionDate: "2022-08-07",
-                    product: "SIP Trunk Testing Engagement",
-                    usageDays: [2],
-                    consumption: "2022-08-07 - Week 32",
-                    deviceId: "001ee852-4ab5-4642-85e1-58f5a477fbb3",
-                    version: "1.0",
-                    vendor: "tekVizion",
-                    granularity: "static",
-                    id: "1397ed28-543d-477c-871e-06f450831465",
-                    tokensConsumed: 15,
-                    projectName: "test",
-                    projectId: "459cf3ca-7365-47a1-8d9b-1abee381545c",
-                    usageType: "Configuration"
-                }
+                useValue: currentLicense
             }
         ]
     });
@@ -114,7 +115,7 @@ const beforeEachFunction = () => {
     spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
     spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
     spyOn(CustomerServiceMock, 'getSelectedCustomer').and.callThrough();
-    spyOn(usageDetailServiceMock, 'getUsageDetailsByConsumptionId').and.callThrough();
+    spyOn(UsageDetailServiceMock, 'getUsageDetailsByConsumptionId').and.callThrough();
 
 };
 
@@ -125,24 +126,24 @@ describe('Data collection and parsin test', () => {
 
         expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
-        expect(usageDetailServiceMock.getUsageDetailsByConsumptionId).toHaveBeenCalled();
+        expect(UsageDetailServiceMock.getUsageDetailsByConsumptionId).toHaveBeenCalled();
         
     });
 });
 
-fdescribe('modify license consumption details interactions', () => {
+describe('modify license consumption details interactions', () => {
     beforeEach(beforeEachFunction);
     it('should call submit', () => {
         fixture.detectChanges();
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'setChecked').and.callThrough();
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'submit').and.callThrough();
-        spyOn(usageDetailServiceMock, 'createUsageDetails').and.callThrough();
+        spyOn(UsageDetailServiceMock, 'createUsageDetails').and.callThrough();
 
         modifyLicenseConsumptionDetailTestInstance.setChecked(true, 1);
         expect(modifyLicenseConsumptionDetailTestInstance.setChecked).toHaveBeenCalledOnceWith(true, 1);
 
-        usageDetailServiceMock.createUsageDetails();
-        expect(usageDetailServiceMock.createUsageDetails).toHaveBeenCalled()
+        UsageDetailServiceMock.createUsageDetails();
+        expect(UsageDetailServiceMock.createUsageDetails).toHaveBeenCalled()
 
         modifyLicenseConsumptionDetailTestInstance.submit();
         expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
@@ -150,7 +151,7 @@ fdescribe('modify license consumption details interactions', () => {
     });
 });
 
-fdescribe('modify functions interactions', () => {
+describe('modify functions interactions', () => {
     beforeEach(beforeEachFunction);
     it('should call modifys functions', () => {
         fixture.detectChanges();
