@@ -43,5 +43,18 @@ export const UsageDetailServiceMock = {
                 unsubscribe() { }
             };
         });
+    },
+    createUsageDetails: () => {
+        return new Observable((observer) => {
+            observer.next(
+                {
+                  
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
     }
 }
