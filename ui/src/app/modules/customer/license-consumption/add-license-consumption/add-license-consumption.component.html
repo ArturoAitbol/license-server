@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Add tekToken Consumption</h1>
+    <h1 id="page-title" mat-dialig-title>Add tekToken Consumption</h1>
     <form [formGroup]="addLicenseConsumptionForm" (ngSubmit)="submit()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
@@ -31,7 +31,7 @@
                             <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>
                         </mat-form-field>
                         <div *lcCheckAccessFor="'addProject'" class="col-3 no-padding" style="float: right;">
-                            <button mat-stroked-button type="button" class="plus-button" title="New Project"
+                            <button mat-stroked-button type="button" class="plus-button" title="New Project" id="new-project-button"
                                     (click)="onAddProject()">
                                 <mat-icon>add</mat-icon>
                             </button>
@@ -101,7 +101,7 @@
                             </div>
                             <div class="mt-3">
                                 <button mat-mini-fab color="primary" type="button" class="plus-button mb-3"
-                                        title="New Device"
+                                        title="New Device" id="add-device-button"
                                         (click)="addDevice()" [disabled]="!addDeviceForm.valid || isInvalid('product')">
                                     <mat-icon>add</mat-icon>
                                 </button>
@@ -171,7 +171,7 @@
                             </div>
                             <div class="mt-3">
                                 <button mat-mini-fab color="primary" type="button" class="plus-button mb-3"
-                                        title="New Support"
+                                        title="New Support" id="add-support-button"
                                         (click)="addSupport()" [disabled]="!addSupportForm.valid || isInvalidSupport('product')">
                                     <mat-icon>add</mat-icon>
                                 </button>
@@ -183,11 +183,9 @@
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
-            <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
-            <button mat-raised-button color="primary" type="submit"
-                    [disabled]="!addLicenseConsumptionForm.valid || devicesAndSupportInvalid()">
-                Submit
-            </button>
+            <button mat-stroked-button id="cancel-button" type="button" (click)="onCancel()">Cancel</button>
+            <button mat-raised-button id="submit-button" color="primary" type="submit"
+                    [disabled]="!addLicenseConsumptionForm.valid || devicesAndSupportInvalid()">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>
