@@ -9,11 +9,17 @@ public class Header extends AbstractPageObject {
     @FindBy(css="#settings-button")
     WebElement settingsButton;
 
-    public void logout(){
-        this.action.click(this.settingsButton);
-        By logoutSelector = By.cssSelector("#logout-button");
-        this.action.click(logoutSelector);
-        By logoutMessage = By.cssSelector("div[role='heading']");
-        this.action.waitVisibilityElement(logoutMessage);
+    public boolean logout(){
+        try{
+            this.action.click(this.settingsButton);
+            By logoutSelector = By.cssSelector("#logout-button");
+            this.action.click(logoutSelector);
+            By logoutMessage = By.cssSelector("div[role='heading']");
+            this.action.waitVisibilityElement(logoutMessage);
+            return true;
+        }catch (Exception e) {
+            System.out.println("Couldn't execute the logout process: Some buttons/messages weren't available");
+            return false;
+        }
     }
 }

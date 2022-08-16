@@ -6,10 +6,10 @@
         </mat-dialog-content>
     </div>
     <mat-dialog-actions>
-        <button mat-raised-button [mat-dialog-close]="false">
+        <button mat-raised-button [mat-dialog-close]="false" id="cancel">
             {{data?.cancelCaption}}
         </button>
-        <button mat-raised-button color="primary" [mat-dialog-close]="true">
+        <button mat-raised-button color="primary" [mat-dialog-close]="true" id="confirm">
             {{data?.confirmCaption}}
         </button>
     </mat-dialog-actions>

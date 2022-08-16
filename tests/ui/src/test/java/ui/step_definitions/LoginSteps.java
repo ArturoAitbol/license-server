@@ -48,6 +48,7 @@ public class LoginSteps {
     @And("I logout")
     public void iLogout() {
         this.header = new Header();
-        this.header.logout();
+        boolean result = this.header.logout();
+        Assert.assertTrue("Couldn't logout from License Server", result);
     }
 }
