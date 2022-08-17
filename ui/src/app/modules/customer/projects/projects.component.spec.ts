@@ -151,7 +151,7 @@ describe('Data collection and parsing tests', () => {
     });
 });
 
-fdescribe('Dialog calls and interactions', () => {
+describe('Dialog calls and interactions', () => {
     beforeEach(beforeEachFunction);
     it('should open new project comp', () =>{
         spyOn(projectsComponentTestInstance, 'openDialog');
@@ -208,11 +208,8 @@ fdescribe('Dialog calls and interactions', () => {
         selectedTestData.selectedOption = projectsComponentTestInstance.CLOSE_PROJECT;
         dialogService.setExpectedValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
-        projectsComponentTestInstance.confirmCloseDialog(selectedTestData.selectedIndex);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
-       // SnackBarServiceMock.openSnackBar(response.body.error, 'Error closing project!' );
-    
-        
+
         expect(ProjectServiceMock.closeProject).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.body.error, 'Error closing project!' );
     });
@@ -237,7 +234,7 @@ fdescribe('Dialog calls and interactions', () => {
     it('should show a message if successfully deleted a project after calling confirmDeleteDialog()', () => {
         const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
         const response = {status: 200};
-       // spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(ProjectServiceMock, 'deleteProject').and.returnValue(of(response));
         spyOn(dialogService, 'confirmDialog').and.callThrough();
         fixture.detectChanges();
@@ -245,12 +242,10 @@ fdescribe('Dialog calls and interactions', () => {
         selectedTestData.selectedOption = projectsComponentTestInstance.DELETE_PROJECT;
         dialogService.setExpectedValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
-        projectsComponentTestInstance.confirmCloseDialog(selectedTestData.selectedIndex);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
-       // SnackBarServiceMock.openSnackBar('Project deleted successfully!');
     
         expect(ProjectServiceMock.deleteProject).toHaveBeenCalled();
-       // expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project deleted successfully!');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project deleted successfully!');
     });
 });
 
