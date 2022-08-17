@@ -80,7 +80,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Device</mat-label>
                                     <input type="text" placeholder="Select a device" aria-label="Device" matInput
-                                           formControlName="product" [matAutocomplete]="devicesList">
+                                           formControlName="product" [matAutocomplete]="devicesList" id="device-auto-complete">
                                     <mat-autocomplete #devicesList="matAutocomplete" [displayWith]="displayFnDevice">
                                         <mat-option *ngFor="let item of filteredModels | async" [value]="item">
                                             {{item.product}}
@@ -150,7 +150,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Device</mat-label>
                                     <input type="text" placeholder="Select a device" aria-label="SupportDevice" matInput
-                                           formControlName="product" [matAutocomplete]="supportDevicesList">
+                                           formControlName="product" [matAutocomplete]="supportDevicesList" id="support-device-auto-complete">
                                     <mat-autocomplete #supportDevicesList="matAutocomplete" [displayWith]="displayFnDevice">
                                         <mat-option *ngFor="let item of filteredSupportModels | async" [value]="item">
                                             {{item.product}}

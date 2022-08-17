@@ -386,7 +386,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     if (!support) {
       return this.models.filter(option => option.product.toLowerCase().includes(filterValue));
     } else {
-      return this.supportModels.filter(option => option.product.toLowerCase().includes(filterValue) && option.supportType);
+      return this.supportModels.filter(option => option.product.toLowerCase().includes(filterValue));
     }
   }
 

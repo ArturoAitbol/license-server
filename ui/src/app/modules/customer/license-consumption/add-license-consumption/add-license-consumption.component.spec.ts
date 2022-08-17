@@ -385,6 +385,30 @@ describe('add-license-consumption - On event methods', () => {
         expect(testInstance.fetchProjects).toHaveBeenCalledTimes(1);
         expect(testInstance.updateProjects.emit).toHaveBeenCalledTimes(1);
     });
+
+    it('should filter devices on form change', async () => {
+        testInstance.onChangeVendor({ vendor: 'Alcatel Lucent' });
+        fixture.detectChanges();
+        const inputElement = fixture.nativeElement.querySelector('#device-auto-complete');
+        inputElement.dispatchEvent(new Event('focusin'));
+        testInstance.addDeviceForm.get('product').setValue('OXO');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const options = fixture.debugElement.queryAll(By.css('mat-option'));
+        expect(options.length).toBe(1);
+    });
+
+    it('should filter support on form change', async () => {
+        testInstance.onChangeSupportVendor({ vendor: 'HylaFAX' });
+        fixture.detectChanges();
+        const inputElement = fixture.nativeElement.querySelector('#support-device-auto-complete');
+        inputElement.dispatchEvent(new Event('focusin'));
+        testInstance.addSupportForm.get('product').setValue('Enterprise');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const options = fixture.debugElement.queryAll(By.css('mat-option'));
+        expect(options.length).toBe(1);
+    });
 });
 
 describe('add-license-consumption - Day toggles', () => {
@@ -435,14 +459,24 @@ describe('add-license-consumption - Day toggles', () => {
     });
 
     it('toggle the days of already added devices', () => {
+        testInstance.setChecked(false, 0, null);
+        expect(testInstance.deviceDays[0].used).toBeFalse();
+    });
+
+    it('toggle the days of already added devices', () => {
+        testInstance.setSupportDay(false, 0, null);
+        expect(testInstance.supportDays[0].used).toBeFalse();
+    });
+
+    it('toggle the days of already added devices', () => {
         testInstance.setChecked(false, 0, 0);
         expect(testInstance.devicesUsed[0].days[0].used).toBeFalse();
-    })
+    });
 
     it('toggle the days of already added support', () => {
         testInstance.setSupportDay(false, 0, 0);
         expect(testInstance.supportUsed[0].days[0].used).toBeFalse();
-    })
+    });
 });
 
 describe('add-license-consumption - Cloning consumptions', () => {
@@ -507,6 +541,69 @@ describe('add-license-consumption - Cloning consumptions', () => {
         expect(vendorLabels[1].nativeElement.textContent).toBe('Device:');
         expect(vendorLabels[3].nativeElement.textContent).toBe('Device:');
 
+    });
+});
+
+describe('add-license-consumption - devicesAndSupportInvalid', () => {
+    beforeEach(beforeEachFunction);
+
+    it('should enable the submit button on valid device form', () => {
+        fixture.detectChanges();
+        const addLicenseConsumptionForm = testInstance.addLicenseConsumptionForm;
+        const addDeviceForm = testInstance.addDeviceForm;
+        const addSupportForm = testInstance.addSupportForm;
+        addLicenseConsumptionForm.setValue({
+            startWeek: moment('16-08-2022', 'DDMMYYYY'),
+            endWeek: moment('20-08-2022', 'DDMMYYYY'),
+            project: { test: 'test' },
+        });
+        addDeviceForm.setValue({
+            vendor: { test: 'test' },
+            product: { test: 'test' }
+        });
+        addSupportForm.setValue({
+            vendor: '',
+            product: ''
+        });
+
+        expect(testInstance.devicesAndSupportInvalid()).toBeFalse();
+        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeTrue()
+    });
+
+    it('should enable the submit button on valid support device form', () => {
+        fixture.detectChanges();
+        const addLicenseConsumptionForm = testInstance.addLicenseConsumptionForm;
+        const addDeviceForm = testInstance.addDeviceForm;
+        const addSupportForm = testInstance.addSupportForm;
+        addLicenseConsumptionForm.setValue({
+            startWeek: moment('16-08-2022', 'DDMMYYYY'),
+            endWeek: moment('20-08-2022', 'DDMMYYYY'),
+            project: { test: 'test' },
+        });
+        addSupportForm.setValue({
+            vendor: { test: 'test' },
+            product: { test: 'test' }
+        });
+        addDeviceForm.setValue({
+            vendor: '',
+            product: ''
+        });
+
+        expect(testInstance.devicesAndSupportInvalid()).toBeFalse();
+        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeTrue()
+    });
+
+    it('should enable the submit button on not empty deviceUsed', () => {
+        fixture.detectChanges();
+        testInstance.devicesUsed.push({test: 'test'});
+        expect(testInstance.devicesAndSupportInvalid()).toBeFalse();
+        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeTrue()
+    });
+
+    it('should disable the submit button on empty form', () => {
+        fixture.detectChanges();
+        expect(testInstance.devicesAndSupportInvalid()).toBeTrue();
+        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeTrue()
     });
 });
 
