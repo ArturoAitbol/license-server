@@ -7,7 +7,7 @@ const BASIC_BUNDLE = {
     id: "bf219b3a-5bb9-417d-bc02-7b8cb659059d"
 };
 
-const ADDON_BUNDLE =  {
+const ADDON_BUNDLE = {
     name: "AddOn",
     deviceAccessTokens: "0",
     tokens: "20",
@@ -20,7 +20,7 @@ const CUSTOM_BUNDLE = {
 };
 
 const BUNDLE_LIST = {
-    bundles : [
+    bundles: [
         BASIC_BUNDLE,
         {
             name: "Small",
@@ -46,11 +46,11 @@ const BUNDLE_LIST = {
 }
 
 export const BundleServiceMock = {
-    bundleList : BUNDLE_LIST,
-    basicBundle : BASIC_BUNDLE,
-    addonBundle : ADDON_BUNDLE,
-    customBundle : CUSTOM_BUNDLE,
-    getBundleList:()=>{
+    bundleList: BUNDLE_LIST,
+    basicBundle: BASIC_BUNDLE,
+    addonBundle: ADDON_BUNDLE,
+    customBundle: CUSTOM_BUNDLE,
+    getBundleList: () => {
         return new Observable((observer) => {
             observer.next(BUNDLE_LIST);
             observer.complete();

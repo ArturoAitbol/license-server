@@ -15,7 +15,6 @@ public class CustomerRow extends AbstractPageObject {
             columnSelector = By.xpath(this.CUSTOMER_NAME_XPATH);
         else
             columnSelector = By.xpath(String.format(this.CUSTOMER_NAME_XPATH + "/following-sibling::td[@id='%s']", column));
-//        System.out.println(columnSelector);
         return this.action.getText(columnSelector);
     }
 
