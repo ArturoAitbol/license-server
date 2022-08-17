@@ -5,6 +5,7 @@ import { LicenseService } from 'src/app/services/license.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { BundleService } from 'src/app/services/bundle.service';
 import { renewalDateValidator } from "src/app/helpers/renewal-date.validator";
+import { ConsoleLogger } from '@angular/compiler-cli/private/localize';
 
 @Component({
     selector: 'app-modify-license',
@@ -60,12 +61,14 @@ export class ModifyLicenseComponent implements OnInit {
     }
 
     onChangeType(bundleName: string) {
-        this.selectedType = this.packageTypes.find(item => item.bundleName == bundleName)
+        this.selectedType = this.packageTypes.find(item => item.bundleName === bundleName)
         if (this.selectedType) {
-            this.updateCustomerForm.patchValue({
-                tokensPurchased: this.selectedType.defaultTokens,
-                deviceLimit: this.selectedType.defaultDeviceAccessTokenss,
-            });
+            if (this.selectedType.bundleName !== "Custom") {
+                this.updateCustomerForm.patchValue({
+                    tokensPurchased: this.selectedType.defaultTokens,
+                    deviceLimit: this.selectedType.defaultDeviceAccessTokens,
+                });
+            }
             if (this.selectedType.bundleName == "Custom" || this.selectedType.bundleName == "AddOn") {
                 this.updateCustomerForm.get('tokensPurchased').enable();
                 this.updateCustomerForm.get('deviceLimit').enable();
@@ -73,6 +76,8 @@ export class ModifyLicenseComponent implements OnInit {
                 this.updateCustomerForm.get('tokensPurchased').disable();
                 this.updateCustomerForm.get('deviceLimit').disable();
             }
+            console.log("tokensPurchased", this.updateCustomerForm.get('tokensPurchased').value);
+            console.log("deviceLimit", this.updateCustomerForm.get('deviceLimit').value);
         }
     }
 
@@ -85,7 +90,7 @@ export class ModifyLicenseComponent implements OnInit {
         const currentDate = new Date(); 
         currentDate.setHours(0,0,0,0);
         const newDate = new Date(mergedLicenseObject.renewalDate);
-        mergedLicenseObject.status =newDate>=currentDate ? 'Active' : 'Expired';
+        mergedLicenseObject.status = newDate >= currentDate ? 'Active' : 'Expired';
         mergedLicenseObject.tokensPurchased = this.updateCustomerForm.get("tokensPurchased").value;
         mergedLicenseObject.deviceLimit = this.updateCustomerForm.get("deviceLimit").value;
         this.licenseService.updateLicenseDetails(mergedLicenseObject).subscribe((res: any) => {

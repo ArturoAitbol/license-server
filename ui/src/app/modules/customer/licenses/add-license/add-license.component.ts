@@ -56,7 +56,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     const licenseObject: License | any = {
       subaccountId: this.currentCustomer.subaccountId,
       startDate: this.addLicenseForm.value.startDate,
-      packageType: this.selectedType.bundleName,
+      packageType: this.addLicenseForm.value.packageType,
       tokensPurchased: this.addLicenseForm.get("tokensPurchased").value,
       deviceLimit: this.addLicenseForm.get("deviceLimit").value,
       renewalDate: this.addLicenseForm.value.renewalDate
@@ -78,7 +78,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
       this.selectedType = this.types.find((item) => item.bundleName === bundleName);
       this.addLicenseForm.patchValue({
         tokensPurchased: this.selectedType.defaultTokens,
-        deviceLimit: this.selectedType.defaultDeviceAccessTokenss,
+        deviceLimit: this.selectedType.defaultDeviceAccessTokens,
       });
       if (this.selectedType.bundleName == "Custom" || this.selectedType.bundleName == "AddOn") {
         this.addLicenseForm.get('tokensPurchased').enable();

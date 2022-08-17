@@ -30,7 +30,7 @@ const data = {
     startDate: "2022-06-01",
     status: "Active",
     subaccountId: "70e77c75-c972-4c0b-94cc-2fd04f726341",
-    tokensPurchased: 55
+    tokensPurchased: "55"
 }
 
 const beforeEachFunction = () =>{
@@ -231,30 +231,27 @@ describe('Calls and interactions', ()=>{
 
     it('should modify tokensPurchased and deviceLimit form controls according to the packageType when calling onChangeType()',()=>{
         modifyLicenseComponentTestInstance.packageTypes = BundleServiceMock.bundleList.bundles;
-        const data = modifyLicenseComponentTestInstance.data;
         const updateCustomerForm = modifyLicenseComponentTestInstance.updateCustomerForm;
-        let packageType : {id:string,bundleName:string,defaultTokens?:string,defaultDeviceAccessTokenss?:string};
-
+        let packageType : {id:string,bundleName:string,defaultTokens?:string,defaultDeviceAccessTokens?:string};
+        
         packageType = BundleServiceMock.customBundle;
         modifyLicenseComponentTestInstance.onChangeType(packageType.bundleName);
         expect(updateCustomerForm.get('tokensPurchased').enabled).toBeTrue();
         expect(updateCustomerForm.get('deviceLimit').enabled).toBeTrue();
-        expect(updateCustomerForm.get('tokensPurchased').value).toBe(data.tokensPurchased);
-        expect(updateCustomerForm.get('deviceLimit').value).toBe(data.deviceLimit);
 
         packageType = BundleServiceMock.addonBundle;
         modifyLicenseComponentTestInstance.onChangeType(packageType.bundleName);
         expect(updateCustomerForm.get('tokensPurchased').enabled).toBeTrue();
         expect(updateCustomerForm.get('deviceLimit').enabled).toBeTrue();
         expect(updateCustomerForm.get('tokensPurchased').value).toBe(packageType.defaultTokens);
-        expect(updateCustomerForm.get('deviceLimit').value).toBe(packageType.defaultDeviceAccessTokenss);
+        expect(updateCustomerForm.get('deviceLimit').value).toBe(packageType.defaultDeviceAccessTokens);
         
         packageType = BundleServiceMock.basicBundle;
         modifyLicenseComponentTestInstance.onChangeType(packageType.bundleName);
         expect(updateCustomerForm.get('tokensPurchased').disabled).toBeTrue();
         expect(updateCustomerForm.get('deviceLimit').disabled).toBeTrue();
         expect(updateCustomerForm.get('tokensPurchased').value).toBe(packageType.defaultTokens);
-        expect(updateCustomerForm.get('deviceLimit').value).toBe(packageType.defaultDeviceAccessTokenss);
+        expect(updateCustomerForm.get('deviceLimit').value).toBe(packageType.defaultDeviceAccessTokens);
     });
 
 });

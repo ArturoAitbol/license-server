@@ -197,13 +197,13 @@ describe('Calls and interactions', () => {
         expect(addLicenseForm.get('tokensPurchased').enabled).toBeTrue();
         expect(addLicenseForm.get('deviceLimit').enabled).toBeTrue();
         expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.addonBundle.defaultTokens);
-        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.addonBundle.defaultDeviceAccessTokenss);
+        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.addonBundle.defaultDeviceAccessTokens);
 
         addLicenseComponentTestInstance.onChangeType(BundleServiceMock.basicBundle.bundleName);
         expect(addLicenseForm.get('tokensPurchased').disabled).toBeTrue();
         expect(addLicenseForm.get('deviceLimit').disabled).toBeTrue();
         expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.basicBundle.defaultTokens);
-        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.basicBundle.defaultDeviceAccessTokenss);
+        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.basicBundle.defaultDeviceAccessTokens);
     });
 
 });
