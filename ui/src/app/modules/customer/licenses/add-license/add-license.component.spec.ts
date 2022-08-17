@@ -182,6 +182,11 @@ describe('Calls and interactions', () => {
     it('should modify tokensPurchased and deviceLimit form controls according to the type (bundle) selected when calling onChangeType()', () => {
 
         const addLicenseForm = addLicenseComponentTestInstance.addLicenseForm;
+        //Retrieve existing bundles list
+        spyOn(BundleServiceMock, 'getBundleList').and.callThrough();
+        fixture.detectChanges();
+        expect(BundleServiceMock.getBundleList).toHaveBeenCalled();
+
         addLicenseComponentTestInstance.onChangeType(BundleServiceMock.customBundle.name);
         expect(addLicenseForm.get('tokensPurchased').enabled).toBeTrue();
         expect(addLicenseForm.get('deviceLimit').enabled).toBeTrue();
