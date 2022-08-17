@@ -19,7 +19,7 @@ public class TekvLSModifyBundleById {
     /**
      * This function listens at endpoint "/v1.0/TekvLSModifyBundleById". Two ways to invoke it using "curl" command in bash:
      * 1. curl -d "HTTP Body" {your host}/v1.0/TekvLSModifyBundleById
-     * 2. curl {your host}/v1.0/TekvLSModifyBundleById?name=HTTP%20Query
+     * 2. curl {your host}/v1.0/TekvLSModifyBundleById/{id}
      */
     @FunctionName("TekvLSModifyBundleById")
     public HttpResponseMessage run(
@@ -111,9 +111,9 @@ public class TekvLSModifyBundleById {
     }
 
     private enum OPTIONAL_PARAMS {
-        NAME("name", "name", QueryBuilder.DATA_TYPE.VARCHAR),
-        TOKENS("tokens", "tokens", QueryBuilder.DATA_TYPE.INTEGER),
-        DEVICE_ACCESS_TOKENS("deviceAccessToken", "device_access_tokens", QueryBuilder.DATA_TYPE.INTEGER);
+        NAME("bundleName", "name", QueryBuilder.DATA_TYPE.VARCHAR),
+        TOKENS("defaultTokens", "tokens", QueryBuilder.DATA_TYPE.INTEGER),
+        DEVICE_ACCESS_TOKENS("defaultDeviceAccessTokens", "device_access_tokens", QueryBuilder.DATA_TYPE.INTEGER);
 
         private final String jsonAttrib;
         private final String columnName;

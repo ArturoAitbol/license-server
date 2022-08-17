@@ -54,8 +54,8 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         JSONObject firstFound = projectsArray.getJSONObject(0);
         assertTrue(firstFound.has("id"));
         assertTrue(firstFound.has("subaccountId"));
-        assertTrue(firstFound.has("name"));
-        assertTrue(firstFound.has("code"));
+        assertTrue(firstFound.has("projectName"));
+        assertTrue(firstFound.has("projectNumber"));
         assertTrue(firstFound.has("status"));
         assertTrue(firstFound.has("openDate"));
         assertTrue(firstFound.has("closeDate"));
@@ -86,8 +86,8 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         JSONObject firstFound = projectsArray.getJSONObject(0);
         assertTrue(firstFound.has("id"));
         assertTrue(firstFound.has("subaccountId"));
-        assertTrue(firstFound.has("name"));
-        assertTrue(firstFound.has("code"));
+        assertTrue(firstFound.has("projectName"));
+        assertTrue(firstFound.has("projectNumber"));
         assertTrue(firstFound.has("status"));
         assertTrue(firstFound.has("openDate"));
         assertTrue(firstFound.has("closeDate"));
