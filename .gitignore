@@ -27,4 +27,5 @@ tests/ui/reports/
 tests/ui/gradle/wrapper/*.jar
 .gradle/
 tests/ui/src/main/resources/local.properties
+tests/ui/bin/main/local.properties
 # tests/ui/src/test/java/acp/runner/RunCucumberTests.java
