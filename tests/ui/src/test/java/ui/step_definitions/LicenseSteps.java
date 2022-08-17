@@ -19,7 +19,7 @@ public class LicenseSteps {
     private Customers customers;
     private LicenseForm licenseForm;
 
-    public LicenseSteps(Licenses licenses){
+    public LicenseSteps(Licenses licenses) {
         this.licenses = licenses;
     }
 
@@ -47,7 +47,9 @@ public class LicenseSteps {
         String startDate = license.get("startDate");
         String renewalDate = license.get("renewalDate");
         String packageType = license.get("packageType");
-        this.licenses = licenseForm.createLicense(startDate, renewalDate, packageType, null, null);
+        String deviceLimit = license.getOrDefault("deviceAccessTekTokens", null);
+        String tokensPurchased = license.getOrDefault("tekTokens", null);
+        this.licenses = licenseForm.createLicense(startDate, renewalDate, packageType, deviceLimit, tokensPurchased);
     }
 
     @Then("I see the {string} package in the table")

@@ -3,7 +3,6 @@ package ui.pages.Licenses;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
 import ui.core.AbstractPageObject;
 
 public class LicenseForm extends AbstractPageObject {
@@ -20,13 +19,13 @@ public class LicenseForm extends AbstractPageObject {
     @FindBy(css = "button#submit-button")
     WebElement submitButton;
 
-    public Licenses createLicense(String startDate, String renewalDate, String packageType, String deviceLimit,
+    public Licenses createLicense(String startDate, String renewalDate, String type, String deviceLimit,
             String tokensPurchased) {
         this.action.sendText(this.startDate, startDate);
         this.action.sendText(this.renewalDate, renewalDate);
-        By optionType = By.cssSelector(String.format("[ng-reflect-name='%s']", "packageType"));
+        By optionType = By.cssSelector(String.format("[ng-reflect-value='%s']", type));
         this.action.selectOption(this.packageType, optionType);
-        if (packageType.equalsIgnoreCase("AddOn") || packageType.equalsIgnoreCase("Custom")) {
+        if (type.equalsIgnoreCase("AddOn") || type.equalsIgnoreCase("Custom")) {
             this.action.sendText(this.deviceLimit, deviceLimit);
             this.action.sendText(this.tokensPurchased, tokensPurchased);
         }
