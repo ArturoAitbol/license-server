@@ -3,7 +3,7 @@ Feature: Subaccounts
 
   Background: : Login successfully with valid credentials
     Given I am on the landing page
-    When I try to login with "aamoroso@tekvizionlabs.com" as email and "Arthag19" as password
+    When I try to login with email and password
 
   @createSubaccount
   Scenario: Create a subaccount

@@ -50,7 +50,7 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
 
         JSONObject firstBund = bundlesArray.getJSONObject(0);
         assertTrue(firstBund.has("id"));
-        assertTrue(firstBund.has("name"));
+        assertTrue(firstBund.has("bundleName"));
         assertTrue(firstBund.has("deviceAccessTokens"));
         assertTrue(firstBund.has("tokens"));
     }
@@ -83,7 +83,7 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
     public void getBundleByNameTest(){
         String id = "EMPTY";
         String expectedName = "Medium";
-        this.queryParams.put("name", expectedName);
+        this.queryParams.put("bundleName", expectedName);
 
         HttpResponseMessage response = new TekvLSGetAllBundles().run(this.request, id, this.context);
         this.context.getLogger().info("HttpResponse: "+response.getBody().toString());
@@ -99,7 +99,7 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
         assertTrue(bundles.length() > 0);
 
         JSONObject bundle = (JSONObject) bundles.get(0);
-        String actualName = bundle.getString("name");
+        String actualName = bundle.getString("bundleName");
         assertEquals(expectedName, actualName, "Actual name is not: ".concat(expectedName));
     }
 
@@ -164,7 +164,7 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
