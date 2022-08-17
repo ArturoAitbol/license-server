@@ -15,7 +15,6 @@ public class LoginSteps {
     LoginForm loginForm;
     Customers customers;
     Header header;
-    private String logged;
 
     public LoginSteps(Landing landing){
         this.landing = landing;
