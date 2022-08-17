@@ -15,7 +15,7 @@ import { renewalDateValidator } from "src/app/helpers/renewal-date.validator";
 })
 export class AddLicenseComponent implements OnInit, OnDestroy {
   types: any[] = [];
-  selectedType: string;
+  selectedType: any;
   private currentCustomer: any;
   addLicenseForm = this.formBuilder.group({
     startDate: ['', Validators.required],
@@ -38,8 +38,10 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    this.isDataLoading = true;
     this.bundleService.getBundleList().subscribe((res: any) => {
       if (res) this.types = res.bundles;
+      this.isDataLoading = false;
     });
   }
 
@@ -54,7 +56,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     const licenseObject: License | any = {
       subaccountId: this.currentCustomer.subaccountId,
       startDate: this.addLicenseForm.value.startDate,
-      packageType: this.selectedType,
+      packageType: this.selectedType.bundleName,
       tokensPurchased: this.addLicenseForm.get("tokensPurchased").value,
       deviceLimit: this.addLicenseForm.get("deviceLimit").value,
       renewalDate: this.addLicenseForm.value.renewalDate
@@ -71,15 +73,14 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     });
   }
 
-  onChangeType(itemName: string) {
-    if (itemName) {
-      const item = this.types.find((item) => item.bundleName === itemName);
-      this.selectedType = item.bundleName;
+  onChangeType(bundleName: string) {
+    if (bundleName) {
+      this.selectedType = this.types.find((item) => item.bundleName === bundleName);
       this.addLicenseForm.patchValue({
-        tokensPurchased: item.tokens,
-        deviceLimit: item.deviceAccessTokens,
+        tokensPurchased: this.selectedType.defaultTokens,
+        deviceLimit: this.selectedType.defaultDeviceAccessTokenss,
       });
-      if (item.bundleName == "Custom" || item.bundleName == "AddOn") {
+      if (this.selectedType.bundleName == "Custom" || this.selectedType.bundleName == "AddOn") {
         this.addLicenseForm.get('tokensPurchased').enable();
         this.addLicenseForm.get('deviceLimit').enable();
       } else {

@@ -1,6 +1,6 @@
 export interface Bundle {
     id?: string;
     name: string;
-    tokens?: string;
-    deviceAccessToken?: string;
+    defaultTokens?: string;
+    defaultDeviceAccessTokens?: string;
 }

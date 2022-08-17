@@ -46,7 +46,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
     @Test
     public void modifyBundleTest(){
         //Given - Arrange
-        String bodyCreate = "{'bundleName':'UnitTestOriginal','tokens':'30', 'deviceAccessToken':'5'}";
+        String bodyCreate = "{'bundleName':'UnitTestOriginal','defaultTokens':'30', 'defaultDeviceAccessTokens':'5'}";
         TekvLSCreateBundle createBundle = new TekvLSCreateBundle();
         doReturn(Optional.of(bodyCreate)).when(request).getBody();
         HttpResponseMessage responseCreate = createBundle.run(this.request, this.context);
@@ -98,7 +98,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
     public void invalidBodyFormat(){
         //Given - Arrange
         this.bundleId="a7798683-2cde-4318-ae9c-c0c77828939f";
-        String bodyRequest = "{'tokens':'hundred'}";
+        String bodyRequest = "{'defaultTokens':'hundred'}";
 
         //When - Action
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -169,7 +169,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
     public void invalidIdFormat(){
         //Given - Arrange
         this.bundleId = "Medium";
-        String bodyCreate = "{'bundleName':'UnitTestOriginal','tokens':'30', 'deviceAccessToken':'5'}";
+        String bodyCreate = "{'bundleName':'UnitTestOriginal','defaultTokens':'30', 'defaultDeviceAccessTokens':'5'}";
         doReturn(Optional.of(bodyCreate)).when(request).getBody();
 
         //When - Action

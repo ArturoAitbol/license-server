@@ -118,8 +118,8 @@ public class TekvLSCreateBundle {
 
     private enum MANDATORY_PARAMS{
         NAME("bundleName"),
-        TOKENS("tokens"),
-        DEVICE_ACCESS_TOKEN("deviceAccessToken");
+        TOKENS("defaultTokens"),
+        DEVICE_ACCESS_TOKEN("defaultDeviceAccessTokens");
 
         private final String value;
 

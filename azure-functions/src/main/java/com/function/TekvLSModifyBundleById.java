@@ -112,8 +112,8 @@ public class TekvLSModifyBundleById {
 
     private enum OPTIONAL_PARAMS {
         NAME("bundleName", "name", QueryBuilder.DATA_TYPE.VARCHAR),
-        TOKENS("tokens", "tokens", QueryBuilder.DATA_TYPE.INTEGER),
-        DEVICE_ACCESS_TOKENS("deviceAccessToken", "device_access_tokens", QueryBuilder.DATA_TYPE.INTEGER);
+        TOKENS("defaultTokens", "tokens", QueryBuilder.DATA_TYPE.INTEGER),
+        DEVICE_ACCESS_TOKENS("defaultDeviceAccessTokens", "device_access_tokens", QueryBuilder.DATA_TYPE.INTEGER);
 
         private final String jsonAttrib;
         private final String columnName;

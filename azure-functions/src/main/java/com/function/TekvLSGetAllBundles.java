@@ -88,8 +88,8 @@ public class TekvLSGetAllBundles {
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("id"));
 				item.put("bundleName", rs.getString("name"));
-				item.put("deviceAccessTokens", rs.getString("device_access_tokens"));
-				item.put("tokens", rs.getString("tokens"));
+				item.put("defaultDeviceAccessTokenss", rs.getString("device_access_tokens"));
+				item.put("defaultTokens", rs.getString("tokens"));
 				array.put(item);
 			}
 			json.put("bundles", array);

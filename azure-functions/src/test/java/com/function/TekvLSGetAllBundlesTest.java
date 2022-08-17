@@ -51,8 +51,8 @@ public class TekvLSGetAllBundlesTest extends TekvLSTest {
         JSONObject firstBund = bundlesArray.getJSONObject(0);
         assertTrue(firstBund.has("id"));
         assertTrue(firstBund.has("bundleName"));
-        assertTrue(firstBund.has("deviceAccessTokens"));
-        assertTrue(firstBund.has("tokens"));
+        assertTrue(firstBund.has("defaultDeviceAccessTokenss"));
+        assertTrue(firstBund.has("defaultTokens"));
     }
 
     @Tag("acceptance")
