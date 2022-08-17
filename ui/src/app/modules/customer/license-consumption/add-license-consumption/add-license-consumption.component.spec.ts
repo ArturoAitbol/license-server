@@ -118,6 +118,44 @@ describe('add-license-consumption - UI verification tests', () => {
         expect(addSupportButton.disabled).toBeTrue();
         expect(addSupportButton.title).toBe('New Support');
     });
+
+    it('should display correctly the object selected in the mat-autocompletes', async () => {
+        const addLicenseConsumptionForm = testInstance.addLicenseConsumptionForm;
+        const addDeviceForm = testInstance.addDeviceForm;
+        const addSupportForm = testInstance.addSupportForm;
+        const projectInput = fixture.nativeElement.querySelector('#project-auto-complete');
+        const vendorInput = fixture.nativeElement.querySelector('#vendor-auto-complete');
+        const deviceInput = fixture.nativeElement.querySelector('#device-auto-complete');
+        const supportVendorInput = fixture.nativeElement.querySelector('#support-vendor-auto-complete');
+        const supportDeviceInput = fixture.nativeElement.querySelector('#support-device-auto-complete');
+
+        projectInput.dispatchEvent(new Event('focus'));
+        projectInput.dispatchEvent(new Event('input'));
+        vendorInput.dispatchEvent(new Event('focus'));
+        vendorInput.dispatchEvent(new Event('input'));
+        deviceInput.dispatchEvent(new Event('focus'));
+        deviceInput.dispatchEvent(new Event('input'));
+        supportVendorInput.dispatchEvent(new Event('focus'));
+        supportVendorInput.dispatchEvent(new Event('input'));
+        supportDeviceInput.dispatchEvent(new Event('focus'));
+        supportDeviceInput.dispatchEvent(new Event('input'));
+        addLicenseConsumptionForm.get('project').setValue({name: 'TestProject'});
+        addDeviceForm.get('vendor').setValue({vendor: 'TestVendor'});
+        addDeviceForm.get('product').setValue({product: 'TestProduct'});
+        addSupportForm.get('vendor').setValue({vendor: 'TestVendor'});
+        addSupportForm.get('product').setValue({product: 'TestProduct'});
+
+        fixture.detectChanges();
+
+        await fixture.whenStable();
+
+        expect(projectInput.value).toBe('TestProject');
+        expect(vendorInput.value).toBe('TestVendor');
+        expect(deviceInput.value).toBe('TestProduct');
+        expect(supportVendorInput.value).toBe('TestVendor');
+        expect(supportDeviceInput.value).toBe('TestProduct');
+
+    });
 });
 
 describe('add-license-consumption - FormGroup verification tests', () => {
@@ -363,6 +401,17 @@ describe('add-license-consumption - Add support, remove support methods', () => 
 describe('add-license-consumption - On event methods', () => {
     beforeEach(beforeEachFunction);
 
+    it('should filter projects on input change', async () => {
+        const inputElement = fixture.nativeElement.querySelector('#project-auto-complete');
+        inputElement.dispatchEvent(new Event('focusin'));
+        testInstance.addLicenseConsumptionForm.get('project').setValue('Test1');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const options = fixture.debugElement.queryAll(By.css('mat-option'));
+        expect(options.length).toBe(1);
+        expect(options[0].nativeElement.textContent).toBe(' Project-Test1 ');
+    });
+
     it('should filter devices on vendor change', () => {
         testInstance.onChangeVendor({ vendor: '3CX' });
         expect(testInstance.models.length).toBe(1);
@@ -398,6 +447,19 @@ describe('add-license-consumption - On event methods', () => {
         expect(options.length).toBe(1);
     });
 
+    it('should filter devices on form change and display only product name when version is null', async () => {
+        testInstance.onChangeVendor({ vendor: 'Test' });
+        fixture.detectChanges();
+        const inputElement = fixture.nativeElement.querySelector('#device-auto-complete');
+        inputElement.dispatchEvent(new Event('focusin'));
+        testInstance.addDeviceForm.get('product').setValue('Test');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const options = fixture.debugElement.queryAll(By.css('mat-option'));
+        expect(options.length).toBe(1);
+        expect(options[0].nativeElement.textContent).toBe(' Test (week - 2) ');
+    });
+
     it('should filter support on form change', async () => {
         testInstance.onChangeSupportVendor({ vendor: 'HylaFAX' });
         fixture.detectChanges();
@@ -408,6 +470,19 @@ describe('add-license-consumption - On event methods', () => {
         await fixture.whenStable();
         const options = fixture.debugElement.queryAll(By.css('mat-option'));
         expect(options.length).toBe(1);
+    });
+
+    it('should filter support on form change and display only product name when version is null', async () => {
+        testInstance.onChangeSupportVendor({ vendor: 'TestSupport' });
+        fixture.detectChanges();
+        const inputElement = fixture.nativeElement.querySelector('#support-device-auto-complete');
+        inputElement.dispatchEvent(new Event('focusin'));
+        testInstance.addSupportForm.get('product').setValue('Test');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const options = fixture.debugElement.queryAll(By.css('mat-option'));
+        expect(options.length).toBe(1);
+        expect(options[0].nativeElement.textContent).toBe(' Test (week - 2) ');
     });
 });
 

@@ -22,7 +22,7 @@
                         <mat-form-field class="col-9 no-padding" appearance="outline">
                             <mat-label>Project</mat-label>
                             <input type="text" placeholder="Select a project" aria-label="Project" matInput
-                                   formControlName="project" [matAutocomplete]="projectsList">
+                                   formControlName="project" [matAutocomplete]="projectsList" id="project-auto-complete">
                             <mat-autocomplete #projectsList="matAutocomplete" [displayWith]="displayFnProject">
                                 <mat-option *ngFor="let item of filteredProjects | async" [value]="item">
                                     {{item.name}}
@@ -66,7 +66,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Vendor</mat-label>
                                     <input type="text" placeholder="Select a vendor" aria-label="Vendor" matInput
-                                           formControlName="vendor" [matAutocomplete]="vendorsList">
+                                           formControlName="vendor" [matAutocomplete]="vendorsList" id="vendor-auto-complete">
                                     <mat-autocomplete #vendorsList="matAutocomplete" [displayWith]="displayFnVendor"
                                                       (optionSelected)="onChangeVendor($event.option.value)">
                                         <mat-option *ngFor="let item of filteredVendors | async" [value]="item">
@@ -136,7 +136,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Vendor</mat-label>
                                     <input type="text" placeholder="Select a vendor" aria-label="SupportVendor" matInput
-                                           formControlName="vendor" [matAutocomplete]="supportVendorsList">
+                                           formControlName="vendor" [matAutocomplete]="supportVendorsList" id="support-vendor-auto-complete">
                                     <mat-autocomplete #supportVendorsList="matAutocomplete" [displayWith]="displayFnVendor"
                                                       (optionSelected)="onChangeSupportVendor($event.option.value)">
                                         <mat-option *ngFor="let item of filteredSupportVendors | async" [value]="item">

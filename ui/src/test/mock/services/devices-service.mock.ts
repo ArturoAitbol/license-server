@@ -631,6 +631,24 @@ const DEVICE_LIST = {
             id: "4119fcd9-b40f-40a1-9d72-0d6f84db04b2",
             version: "5.0.3",
             tokensToConsume: 2
+        },
+        {
+            supportType: false,
+            product: "Test",
+            vendor: "Test",
+            granularity: "week",
+            id: "eb2e8d89-b5a0-4e6c-8b11-83aad2674d7f",
+            version: null,
+            tokensToConsume: 2
+        },
+        {
+            supportType: true,
+            product: "Test",
+            vendor: "TestSupport",
+            granularity: "week",
+            id: "eb2e8d89-b5a0-4e6c-8b11-83aad3674d7f",
+            version: null,
+            tokensToConsume: 2
         }
     ]
 };
