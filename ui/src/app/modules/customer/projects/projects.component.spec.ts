@@ -21,6 +21,7 @@ import { ModifyProjectComponent } from './modify-project/modify-project.componen
 import { ProjectsComponent } from './projects.component';
 import { Sort } from '@angular/material/sort';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
+import { SnackBarService } from "../../../services/snack-bar.service";
 
 let projectsComponentTestInstance: ProjectsComponent;
 let fixture: ComponentFixture<ProjectsComponent>;
@@ -66,6 +67,10 @@ const beforeEachFunction = () => {
             {
                 provide: HttpClient,
                 useValue: HttpClient
+            },
+            {
+                provide: SnackBarService,
+                useValue: SnackBarServiceMock
             }
         ]
     });
@@ -212,10 +217,10 @@ fdescribe('Dialog calls and interactions', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.body.error, 'Error closing project!' );
     });
 
-    fit('should show a message if successfully closed a project after calling confirmCloseDialog()', () => {
+    it('should show a message if successfully closed a project after calling confirmCloseDialog()',  () => {
         const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
         const response = {body: null}
-        //spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(ProjectServiceMock, 'closeProject').and.returnValue(of(response));
         spyOn(dialogService, 'confirmDialog').and.callThrough();
         fixture.detectChanges();
@@ -223,11 +228,10 @@ fdescribe('Dialog calls and interactions', () => {
         selectedTestData.selectedOption = projectsComponentTestInstance.CLOSE_PROJECT;
         dialogService.setExpectedValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
-        projectsComponentTestInstance.confirmCloseDialog(selectedTestData.selectedIndex);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
     
         expect(ProjectServiceMock.closeProject).toHaveBeenCalled();
-        //expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project updated successfully!');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project updated successfully!');
     });
 
     it('should show a message if successfully deleted a project after calling confirmDeleteDialog()', () => {
