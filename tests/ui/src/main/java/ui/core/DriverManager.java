@@ -9,7 +9,6 @@ public class DriverManager {
     private static DriverManager driverManager;
 
     private DriverManager(){
-//        String browser = Environment.getInstance().getValue("$['browser']").toLowerCase();
         Environment environment = ConfigFactory.create(Environment.class);
         String browser = environment.browser().toLowerCase();
         this.driver = DriverFactory.createDriver(browser);

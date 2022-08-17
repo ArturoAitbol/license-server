@@ -6,6 +6,8 @@ import org.aeonbits.owner.Config;
         "classpath:${env}.properties"
 })
 public interface Environment extends Config {
+    String username();
+    String password();
     String browser();
     String url();
     @Key("db.port")

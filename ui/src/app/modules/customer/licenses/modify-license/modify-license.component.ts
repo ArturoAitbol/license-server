@@ -60,7 +60,7 @@ export class ModifyLicenseComponent implements OnInit {
         this.dialogRef.close();
     }
 
-    onChangeType(newType: String) {
+    onChangeType(newType: string) {
         this.selectedType = this.packageTypes.find(item => item.name == newType)
         if (this.selectedType) {
             this.updateCustomerForm.patchValue({

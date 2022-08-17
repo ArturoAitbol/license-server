@@ -12,7 +12,7 @@ import { LicenseConsumptionService } from 'src/app/services/license-consumption.
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from '../../projects/add-project/add-project.component';
-import moment, { Moment } from 'moment';
+import { Moment } from 'moment';
 
 @Component({
   selector: 'app-add-license-consumption',
@@ -386,7 +386,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     if (!support) {
       return this.models.filter(option => option.product.toLowerCase().includes(filterValue));
     } else {
-      return this.supportModels.filter(option => option.product.toLowerCase().includes(filterValue) && option.supportType);
+      return this.supportModels.filter(option => option.product.toLowerCase().includes(filterValue));
     }
   }
 
@@ -433,7 +433,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   loadClonedDevices() {
-    if (this.data?.selectedConsumptions) {
+    if (this.data.selectedConsumptions) {
       const devices = JSON.parse(JSON.stringify(this.data.selectedConsumptions));
       devices.forEach(device => {
         device.id = device.deviceId;

@@ -14,8 +14,7 @@ import org.junit.runner.RunWith;
                 "rerun:reports/rerun/rerun.txt"
         },
         features = "src/test/resources/features/",
-        glue = "ui",
-        tags = "@validCredentials"
+        glue = "ui"
 )
 public class RunCucumberTests {
     @AfterClass

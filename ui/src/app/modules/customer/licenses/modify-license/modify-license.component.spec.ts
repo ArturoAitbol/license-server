@@ -233,7 +233,7 @@ describe('Calls and interactions', ()=>{
         modifyLicenseComponentTestInstance.packageTypes = BundleServiceMock.bundleList.bundles;
         const data = modifyLicenseComponentTestInstance.data;
         const updateCustomerForm = modifyLicenseComponentTestInstance.updateCustomerForm;
-        let packageType : {id:String,name:String,tokens?:String,deviceAccessTokens?:String};
+        let packageType : {id:string,name:string,tokens?:string,deviceAccessTokens?:string};
 
         packageType = BundleServiceMock.customBundle;
         modifyLicenseComponentTestInstance.onChangeType(packageType.name);
