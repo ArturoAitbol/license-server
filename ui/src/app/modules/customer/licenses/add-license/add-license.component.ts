@@ -64,15 +64,16 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
         this.snackBarService.openSnackBar('Package added successfully!', '');
         this.isDataLoading = false;
         this.dialogRef.close(res);
-      } else{
+      } else {
         this.snackBarService.openSnackBar(res.error, 'Error adding package!');
         this.isDataLoading = false;
       }
     });
   }
 
-  onChangeType(item: any) {
-    if (item) {
+  onChangeType(itemName: string) {
+    if (itemName) {
+      const item = this.types.find((item) => item.name === itemName);
       this.selectedType = item.name;
       this.addLicenseForm.patchValue({
         tokensPurchased: item.tokens,

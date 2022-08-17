@@ -17,13 +17,13 @@ ext {
     javaMainClass = "MainClass"
 }
 application {
-    mainClassName = javaMainClass
+    mainClass = javaMainClass
 }
 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -90,6 +90,6 @@ task runWithJavaExec(type: JavaExec) {
     group = "Execution"
     description = "Run the main class with JavaExecTask"
     classpath = sourceSets.main.runtimeClasspath
-    main = javaMainClass
+    mainClass = javaMainClass
     systemProperty 'env', System.getProperty('env', 'env')
 }
