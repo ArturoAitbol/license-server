@@ -218,7 +218,7 @@ export const ConsumptionServiceMock = {
             };
         });
     },
-    addConsumptionConsumptionDetails: (data) =>{
+    addLicenseConsumptionDetails: (data) =>{
         return new Observable((observer) => {
             observer.next(MOCK_CREATED_CONSUMPTION);
             observer.complete();
