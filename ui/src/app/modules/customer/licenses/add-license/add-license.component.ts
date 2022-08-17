@@ -73,13 +73,13 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
 
   onChangeType(itemName: string) {
     if (itemName) {
-      const item = this.types.find((item) => item.name === itemName);
-      this.selectedType = item.name;
+      const item = this.types.find((item) => item.bundleName === itemName);
+      this.selectedType = item.bundleName;
       this.addLicenseForm.patchValue({
         tokensPurchased: item.tokens,
         deviceLimit: item.deviceAccessTokens,
       });
-      if (item.name == "Custom" || item.name == "AddOn") {
+      if (item.bundleName == "Custom" || item.bundleName == "AddOn") {
         this.addLicenseForm.get('tokensPurchased').enable();
         this.addLicenseForm.get('deviceLimit').enable();
       } else {

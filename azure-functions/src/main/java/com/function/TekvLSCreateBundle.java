@@ -17,7 +17,7 @@ public class TekvLSCreateBundle {
     /**
      * This function listens at endpoint "/v1.0/bundles". Two ways to invoke it using "curl" command in bash:
      * 1. curl -d "HTTP Body" {your host}/v1.0/bundles
-     * 2. curl {your host}/v1.0/bundle?name=HTTP%20Query
+     * 2. curl {your host}/v1.0/bundle?bundleName=HTTP%20Query
      */
     @FunctionName("TekvLSCreateBundle")
     public HttpResponseMessage run(
@@ -117,7 +117,7 @@ public class TekvLSCreateBundle {
     }
 
     private enum MANDATORY_PARAMS{
-        NAME("name"),
+        NAME("bundleName"),
         TOKENS("tokens"),
         DEVICE_ACCESS_TOKEN("deviceAccessToken");
 

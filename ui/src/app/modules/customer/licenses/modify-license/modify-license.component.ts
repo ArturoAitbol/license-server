@@ -61,7 +61,7 @@ export class ModifyLicenseComponent implements OnInit {
     }
 
     onChangeType(newType: string) {
-        this.selectedType = this.packageTypes.find(item => item.name == newType)
+        this.selectedType = this.packageTypes.find(item => item.bundleName == newType)
         if (this.selectedType) {
             this.updateCustomerForm.patchValue({
                 tokensPurchased: newType=== "Custom"? this.data.tokensPurchased : this.selectedType.tokens,

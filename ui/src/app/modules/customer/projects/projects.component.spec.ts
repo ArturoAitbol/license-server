@@ -105,7 +105,7 @@ describe('UI verification test', () => {
     });
 
     it('should execute sortData()', () => {
-        const sort: Sort  = {active:'name', direction:'desc'  }
+        const sort: Sort  = {active:'projectName', direction:'desc'  }
 
         spyOn(projectsComponentTestInstance, 'sortData').and.callThrough();
 

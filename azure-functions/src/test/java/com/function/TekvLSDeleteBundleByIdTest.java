@@ -30,7 +30,7 @@ class TekvLSDeleteBundleByIdTest extends TekvLSTest {
     @Test
     public void deleteBundleTest(){
         //Given - Arrange
-        String bodyRequest = "{'name':'UnitTestDelete','tokens':'30', 'deviceAccessToken':'5'}";
+        String bodyRequest = "{'bundleName':'UnitTestDelete','tokens':'30', 'deviceAccessToken':'5'}";
         TekvLSCreateBundle createBundle = new TekvLSCreateBundle();
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage responseCreate = createBundle.run(this.request, this.context);

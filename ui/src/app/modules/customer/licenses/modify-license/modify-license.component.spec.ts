@@ -233,24 +233,24 @@ describe('Calls and interactions', ()=>{
         modifyLicenseComponentTestInstance.packageTypes = BundleServiceMock.bundleList.bundles;
         const data = modifyLicenseComponentTestInstance.data;
         const updateCustomerForm = modifyLicenseComponentTestInstance.updateCustomerForm;
-        let packageType : {id:string,name:string,tokens?:string,deviceAccessTokens?:string};
+        let packageType : {id:string,bundleName:string,tokens?:string,deviceAccessTokens?:string};
 
         packageType = BundleServiceMock.customBundle;
-        modifyLicenseComponentTestInstance.onChangeType(packageType.name);
+        modifyLicenseComponentTestInstance.onChangeType(packageType.bundleName);
         expect(updateCustomerForm.get('tokensPurchased').enabled).toBeTrue();
         expect(updateCustomerForm.get('deviceLimit').enabled).toBeTrue();
         expect(updateCustomerForm.get('tokensPurchased').value).toBe(data.tokensPurchased);
         expect(updateCustomerForm.get('deviceLimit').value).toBe(data.deviceLimit);
 
         packageType = BundleServiceMock.addonBundle;
-        modifyLicenseComponentTestInstance.onChangeType(packageType.name);
+        modifyLicenseComponentTestInstance.onChangeType(packageType.bundleName);
         expect(updateCustomerForm.get('tokensPurchased').enabled).toBeTrue();
         expect(updateCustomerForm.get('deviceLimit').enabled).toBeTrue();
         expect(updateCustomerForm.get('tokensPurchased').value).toBe(packageType.tokens);
         expect(updateCustomerForm.get('deviceLimit').value).toBe(packageType.deviceAccessTokens);
         
         packageType = BundleServiceMock.basicBundle;
-        modifyLicenseComponentTestInstance.onChangeType(packageType.name);
+        modifyLicenseComponentTestInstance.onChangeType(packageType.bundleName);
         expect(updateCustomerForm.get('tokensPurchased').disabled).toBeTrue();
         expect(updateCustomerForm.get('deviceLimit').disabled).toBeTrue();
         expect(updateCustomerForm.get('tokensPurchased').value).toBe(packageType.tokens);

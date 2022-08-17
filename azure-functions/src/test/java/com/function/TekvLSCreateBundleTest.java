@@ -44,7 +44,7 @@ class TekvLSCreateBundleTest extends TekvLSTest {
     @Test
     public void createBundleTest(){
         //Given - Arrange
-        this.bodyRequest = "{'name':'UnitTest','tokens':'30', 'deviceAccessToken':'5'}";
+        this.bodyRequest = "{'bundleName':'UnitTest','tokens':'30', 'deviceAccessToken':'5'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         //When - Action
@@ -68,7 +68,7 @@ class TekvLSCreateBundleTest extends TekvLSTest {
     @Test
     public void incompleteBody(){
         //Given - Arrange
-        this.bodyRequest = "{'name':'Test','tokens':'30'}";
+        this.bodyRequest = "{'bundleName':'Test','tokens':'30'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         //When - Action
@@ -146,7 +146,7 @@ class TekvLSCreateBundleTest extends TekvLSTest {
     @Test
     public void invalidFormatBody(){
         //Given - Arrange
-        this.bodyRequest = "{'name':'UnitTest','tokens':'hundred', 'deviceAccessToken':'5'}";
+        this.bodyRequest = "{'bundleName':'UnitTest','tokens':'hundred', 'deviceAccessToken':'5'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         //When - Action
@@ -204,7 +204,7 @@ class TekvLSCreateBundleTest extends TekvLSTest {
     @Test
     public void genericException(){
         //Given - Arrange
-        this.bodyRequest = "{'name':'UnitTest','tokens':'30', 'deviceAccessToken':'5'}";
+        this.bodyRequest = "{'bundleName':'UnitTest','tokens':'30', 'deviceAccessToken':'5'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 

@@ -46,7 +46,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
     @Test
     public void modifyBundleTest(){
         //Given - Arrange
-        String bodyCreate = "{'name':'UnitTestOriginal','tokens':'30', 'deviceAccessToken':'5'}";
+        String bodyCreate = "{'bundleName':'UnitTestOriginal','tokens':'30', 'deviceAccessToken':'5'}";
         TekvLSCreateBundle createBundle = new TekvLSCreateBundle();
         doReturn(Optional.of(bodyCreate)).when(request).getBody();
         HttpResponseMessage responseCreate = createBundle.run(this.request, this.context);
@@ -56,7 +56,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
         this.bundleId = jsonBody.getString("id");
 
         //When - Action
-        String bodyRequest = "{'name':'UnitTestModified'}";
+        String bodyRequest = "{'bundleName':'UnitTestModified'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         TekvLSModifyBundleById modifyBundleById = new TekvLSModifyBundleById();
         HttpResponseMessage response = modifyBundleById.run(this.request, this.bundleId, this.context);
@@ -72,7 +72,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
     public void invalidBody(){
         //Given - Arrange
         this.bundleId="a7798683-2cde-4318-ae9c-c0c77828939f";
-        String bodyRequest = "'name':'UnitTestModified'";
+        String bodyRequest = "'bundleName':'UnitTestModified'";
 
         //When - Action
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -169,7 +169,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
     public void invalidIdFormat(){
         //Given - Arrange
         this.bundleId = "Medium";
-        String bodyCreate = "{'name':'UnitTestOriginal','tokens':'30', 'deviceAccessToken':'5'}";
+        String bodyCreate = "{'bundleName':'UnitTestOriginal','tokens':'30', 'deviceAccessToken':'5'}";
         doReturn(Optional.of(bodyCreate)).when(request).getBody();
 
         //When - Action
@@ -231,7 +231,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
     public void genericException(){
         //Given - Arrange
         this.bundleId="a7798683-2cde-4318-ae9c-c0c77828939f";
-        String bodyRequest = "{'name':'UnitTestModified'}";
+        String bodyRequest = "{'bundleName':'UnitTestModified'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
