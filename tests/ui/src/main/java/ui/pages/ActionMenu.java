@@ -23,4 +23,10 @@ public class ActionMenu extends AbstractPageObject {
         By editSelector = By.cssSelector("button#Edit");
         this.action.click(editSelector);
     }
+
+    public Projects goToProjects(){
+        By projectsSelector = By.xpath("//button[@id='View Projects List']");
+        this.action.click(projectsSelector);
+        return new Projects();
+    }
 }
