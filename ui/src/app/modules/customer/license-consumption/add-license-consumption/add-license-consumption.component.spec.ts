@@ -139,7 +139,7 @@ describe('add-license-consumption - UI verification tests', () => {
         supportVendorInput.dispatchEvent(new Event('input'));
         supportDeviceInput.dispatchEvent(new Event('focus'));
         supportDeviceInput.dispatchEvent(new Event('input'));
-        addLicenseConsumptionForm.get('project').setValue({name: 'TestProject'});
+        addLicenseConsumptionForm.get('project').setValue({projectName: 'TestProject'});
         addDeviceForm.get('vendor').setValue({vendor: 'TestVendor'});
         addDeviceForm.get('product').setValue({product: 'TestProduct'});
         addSupportForm.get('vendor').setValue({vendor: 'TestVendor'});
