@@ -26,3 +26,5 @@ Feature: Projects
       | closeDate | 8/30/2022         |
     Then I should see the modified data in Projects table
     And I should see the message "Project edited successfully!"
+
+    
