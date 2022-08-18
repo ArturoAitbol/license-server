@@ -20,31 +20,31 @@ export class LicenseConsumptionService {
     return this.httpClient.post(this.API_URL, data);
   }
   /**
-   * get particular LicenseConsumption details by licenseId
-   * @param licenseId: string 
+   * get particular LicenseConsumption details by parameters
+   * @param filters: any 
    * @returns: Observable 
    */
-  public getLicenseConsumptionDetails(data: any) {
+  public getLicenseConsumptionDetails(filters: any) {
     const headers = this.getHeaders();
     let params = new HttpParams()
-        .set('subaccountId', data.subaccount)
-        .set('view', data.view);
-    if (data.year)
-      params = params.set('year', data.year);
-    if (data.month)
-      params = params.set('month', data.month);
-    if (data.type)
-      params = params.set('type', data.type);
-    if (data.project)
-      params = params.set('project', data.project);
-    if (data.startDate && data.endDate) {
-      params = params.set('startDate', data.startDate);
-      params = params.set('endDate', data.endDate);
+        .set('subaccountId', filters.subaccount)
+        .set('view', filters.view);
+    if (filters.year)
+      params = params.set('year', filters.year);
+    if (filters.month)
+      params = params.set('month', filters.month);
+    if (filters.type)
+      params = params.set('type', filters.type);
+    if (filters.project)
+      params = params.set('projectId', filters.project);
+    if (filters.startDate && filters.endDate) {
+      params = params.set('startDate', filters.startDate);
+      params = params.set('endDate', filters.endDate);
     }
-    if (data.limit)
-      params = params.set('limit', data.limit);
-    if (data.offset)
-      params = params.set('offset', data.offset);
+    if (filters.limit)
+      params = params.set('limit', filters.limit);
+    if (filters.offset)
+      params = params.set('offset', filters.offset);
     return this.httpClient.get(this.API_URL, { headers, params });
   }
   /**

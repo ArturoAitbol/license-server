@@ -18,7 +18,7 @@ import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { DataTableComponent } from '../../../generics/data-table/data-table.component';
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 
 @Component({
   selector: 'app-license-consumption',
@@ -42,9 +42,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   data: any = [];
   equipmentData = [];
   weeklyConsumptionData = [];
+  projectConsumptionData = [];
   detailedConsumptionData = [];
   tokenConsumptionData = [];
-  licenseForm: any = this.formBuilder.group({
+  licenseForm = this.formBuilder.group({
     licenseId: ['']
   });
   range: FormGroup = this.formBuilder.group({
@@ -78,13 +79,21 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: 'Total Consumption', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
-  readonly detailedConsumptionColumns: TableColumn[] = [
+  readonly weeklyConsumptionColumns: TableColumn[] = [
     { name: 'Week', dataKey: 'weekId', position: 'left', isSortable: true },
     { name: 'tekTokens', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
+  
+  readonly projectConsumptionColumns: TableColumn[] = [
+    { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
+    { name: 'Status', dataKey: 'status', position: 'left', isSortable: true },
+    { name: 'tekTokens', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
+  ];
 
-  readonly detailedConsumptionSummaryColumns: TableColumn[] = [
+  readonly detailedConsumptionColumns: TableColumn[] = [
     { name: 'Consumption Date', dataKey: 'consumption', position: 'left', isSortable: true },
+    { name: 'Project', dataKey: 'projectName', position: 'left', isSortable: true },
+    { name: 'Type', dataKey: 'usageType', position: 'left', isSortable: true },
     { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
     { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
     { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
@@ -104,6 +113,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   isDetailedConsumptionLoadingResults = true;
   isDetailedConsumptionRequestCompleted = false;
   isLicenseListLoaded = false;
+  detailedConsumptionTableSelectable = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
@@ -121,7 +131,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private customerSerivce: CustomerService,
+    private customerService: CustomerService,
     private dialogService: DialogService,
     private projectService: ProjectService,
     private licenseService: LicenseService,
@@ -135,7 +145,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     const projectItem: string = localStorage.getItem(Constants.PROJECT);
     if (projectItem)
       this.selectedProject = JSON.parse(projectItem).id;
-    this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    this.currentCustomer = this.customerService.getSelectedCustomer();
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
@@ -192,8 +202,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       then send the start and end dates as the beginning and end of this week
     */
     if (view === '' && this.aggregation === 'week') {
-      requestObject.startDate = this.range.get('start').value.toISOString().split('T')[0];
-      requestObject.endDate = this.range.get('end').value.toISOString().split('T')[0];
+      requestObject.startDate = this.range.get('start').value.format('YYYY-MM-DD');
+      requestObject.endDate = this.range.get('end').value.format('YYYY-MM-DD');
     } else {
       requestObject.startDate = this.selectedLicense.startDate;
       requestObject.endDate = this.selectedLicense.renewalDate;
@@ -259,6 +269,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   fetchAggregatedData(pageNumber = 0, pageSize = 6) {
     this.weeklyConsumptionData = [];
+    this.projectConsumptionData = [];
     this.detailedConsumptionData = [];
     this.tokenConsumptionData = [];
     this.isDetailedConsumptionSupplementalLoadingResults = true;
@@ -275,7 +286,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       });
       this.detailedConsumptionData = res.usage;
       this.detailedConsumptionDataLength = res.usageTotalCount;
-      this.weeklyConsumptionData = this.getWeeksDetail(res.configurationTokens);
+      this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
+      this.projectConsumptionData = res.projectConsumption;
       this.tokenConsumptionData = this.formatTokenConsumption(res.tokenConsumption);
       this.detailsConsumptionTable.setPageIndex(0);
       this.isDetailedConsumptionSupplementalLoadingResults = false;
@@ -291,47 +303,49 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getWeeksDetail(configurationTokens: any[]): any[] {
-
-    let startDate: string | Date;
-    let endDate: string | Date;
+  getWeeksDetail(weeklyConsumption: any[]): any[] {
+    let startDate: string | Moment;
+    let endDate: string | Moment;
     if (this.aggregation === "month" || this.aggregation === "week") {
       startDate = this.range.get('start').value;
       endDate = this.range.get('end').value;
     } else {
       startDate = this.selectedLicense.startDate + " 00:00:00";
-      endDate = this.selectedLicense.renewalDate + " 00:00:00";
+      endDate = moment.utc();
     }
-    const licenseStartWeek = new Date(startDate);
-    licenseStartWeek.setDate(licenseStartWeek.getDate() - licenseStartWeek.getDay());
-    const licenseEndWeek = new Date(endDate);
-    licenseEndWeek.setDate(licenseEndWeek.getDate() - licenseEndWeek.getDay());
+    const licenseStartWeek = moment.utc(startDate);
+    licenseStartWeek.subtract(licenseStartWeek.day(), "days");
+    const licenseEndWeek = moment.utc(endDate);
+    licenseEndWeek.subtract(licenseEndWeek.day(), "days");
 
-    const weekStart = licenseStartWeek;
+    const selectedWeek = licenseEndWeek;
     const weeklyConsumptionDetail = [];
 
-    while (weekStart <= licenseEndWeek) {
-      const date = new Date(weekStart);
-      date.setDate(date.getDate() + 1);
+    while (selectedWeek >= licenseStartWeek) {
+      const date = moment.utc(selectedWeek);
+      date.add(1, 'days');
       const week = moment(date).isoWeek();
 
-      const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekStart.getDate() + 6);
+      const weekEnd = moment.utc(selectedWeek);
+      weekEnd.add(6, 'days');
 
       weeklyConsumptionDetail.push({
-        weekId: "Week " + week + " (" + weekStart.toISOString().split("T")[0] + " - " + weekEnd.toISOString().split("T")[0] + ")",
+        weekId: "Week " + week + " (" + selectedWeek.format("YYYY-MM-DD") + " - " + weekEnd.format("YYYY-MM-DD") + ")",
         tokensConsumed: 0
       });
-      weekStart.setDate(weekStart.getDate() + 7);
+      selectedWeek.subtract(7, "days");
     }
 
-    configurationTokens.forEach(item => {
+    const notFoundWeeks: any[] = [];
+    weeklyConsumption.forEach(item => {
       const i = weeklyConsumptionDetail.findIndex(week => week.weekId === item.weekId);
       if (i !== -1)
         weeklyConsumptionDetail[i].tokensConsumed = item.tokensConsumed;
+      else
+        notFoundWeeks.push(item);
     })
 
-    return weeklyConsumptionDetail;
+    return notFoundWeeks.concat(weeklyConsumptionDetail);
   }
 
   fetchDetailedConsumptionData(pageNumber = 0, pageSize = 6) {
@@ -358,20 +372,20 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   private formatTokenConsumption(tokenConsumption: any): any[] {
-    let AutomationTokens = tokenConsumption.AutomationPlatform ?? 0;
-    let ConfigurationTokens = tokenConsumption.Configuration ?? 0;
-    const totalConsumption = AutomationTokens + ConfigurationTokens;
+    let automationTokens = tokenConsumption.AutomationPlatform ?? 0;
+    let configurationTokens = tokenConsumption.Configuration ?? 0;
+    const totalConsumption = automationTokens + configurationTokens;
 
     if (this.selectedType === 'Configuration') {
-      AutomationTokens = null;
+      automationTokens = null;
     }
     if (this.selectedType === 'AutomationPlatform') {
-      ConfigurationTokens = null;
+      configurationTokens = null;
     }
 
     const consumptionDetail = {
-      AutomationPlatformTokensConsumed: AutomationTokens,
-      ConfigurationTokensConsumed: ConfigurationTokens,
+      AutomationPlatformTokensConsumed: automationTokens,
+      ConfigurationTokensConsumed: configurationTokens,
       tokensConsumed: totalConsumption,
     };
 
@@ -443,30 +457,14 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   /**
  * sort table
  * @param sortParameters: Sort
+ * @param data: any[]
  */
-  sortDataEquipment(sortParameters: Sort): any[] {
+  sortData(sortParameters: Sort, data: any[]) {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      this.equipmentData = this.equipmentData.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      data = data.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
     } else if (sortParameters.direction === 'desc') {
-      this.equipmentData = this.equipmentData.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
-    } else {
-      return this.equipmentData = this.equipmentData;
-    }
-  }
-
-  /**
- * sort table
- * @param sortParameters: Sort
- */
-  sortData(sortParameters: Sort): any[] {
-    const keyName = sortParameters.active;
-    if (sortParameters.direction === 'asc') {
-      this.detailedConsumptionData = this.detailedConsumptionData.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
-    } else if (sortParameters.direction === 'desc') {
-      this.detailedConsumptionData = this.detailedConsumptionData.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
-    } else {
-      return this.detailedConsumptionData = this.detailedConsumptionData;
+      data = data.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
     }
   }
   /**
@@ -500,17 +498,17 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  setMonthAndYear(newDateSelection: Date, datepicker: MatDateRangePicker<any>) {
-    this.month = newDateSelection.getMonth() + 1;
-    this.year = newDateSelection.getFullYear();
+  setMonthAndYear(newDateSelection: Moment, datepicker: MatDateRangePicker<any>) {
+    this.month = newDateSelection.month() + 1;
+    this.year = newDateSelection.year();
     this.setMonthRange(newDateSelection);
     datepicker.close();
     this.fetchAggregatedData();
   }
 
-  setMonthRange(date: Date) {
+  setMonthRange(date: Moment) {
     const startMonth = date;
-    const endMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const endMonth = new Date(date.year(), date.month() + 1, 0);
     this.range.patchValue({
       start: startMonth,
       end: endMonth
@@ -564,6 +562,16 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   onPageChange(event: { pageIndex, pageSize }) {
     this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize);
+  }
+
+  toggleSelectableConsumptions() {
+    this.detailedConsumptionTableSelectable = !this.detailedConsumptionTableSelectable;
+  }
+
+  cloneConsumptions() {
+    this.openDialog(AddLicenseConsumptionComponent, {...this.selectedLicense, selectedConsumptions: this.detailsConsumptionTable.selection.selected});
+    this.toggleSelectableConsumptions();
+    this.detailsConsumptionTable.selection.clear();
   }
 
   ngOnDestroy(): void {

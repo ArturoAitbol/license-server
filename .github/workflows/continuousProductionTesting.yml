@@ -1,0 +1,40 @@
+name: Continuous testing in Production
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+
+permissions: write-all
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run API tests
+      id: run-newman
+      uses: matt-ball/newman-action@master
+      with:
+        collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
+        environment: ./tests/api/postman/LicenseServerAPIsProdEnv.postman_environment.json
+        reporters: '["junit", "cli"]'
+        reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
+
+    - name: Publish JUnit Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      with:
+        report_paths: './tests/api/postman/newman-report.xml'
+        summary: 'true'
+        check_name: 'API Test Report'
+
+    - name: Run UI tests
+      run: |
+        cd tests/ui
+        gradle uiTests -Denv=production
+    - uses: deblockt/cucumber-report-annotations-action@v1.7
+      name: Publish Cucumber Report
+      with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "**/cucumber.json"

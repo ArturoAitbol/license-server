@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -26,9 +28,9 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSGetAllSubaccounts 
 {
 	/**
-	 * This function listens at endpoint "/api/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/subaccounts/{id}
-	 * 2. curl "{your host}/api/subaccounts"
+	 * This function listens at endpoint "/v1.0/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccounts/{id}
+	 * 2. curl "{your host}/v1.0/subaccounts"
 	 */
 	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -69,50 +71,41 @@ public class TekvLSGetAllSubaccounts
 
 		Map<String, List<String>> adminEmailsMap = new HashMap<>();
 		// Build SQL statement
-		String sql = "select * from subaccount";
-		String subQuery;
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM subaccount");
 		String email = getEmailFromToken(tokenClaims,context);
-		List<String> conditionsList = new ArrayList<>();
 		// adding conditions according to the role
 		switch (currentRole){
 			case DISTRIBUTOR_FULL_ADMIN:
-				String distributorId = "select distributor_id from customer c,customer_admin ca " +
-						"where c.id = ca.customer_id and admin_email='"+email+"'";
-				subQuery = "select id from customer where distributor_id =(" + distributorId + ")";
-				conditionsList.add("customer_id IN (" + subQuery + ")");
+				queryBuilder.appendCustomCondition("customer_id IN (SELECT id FROM customer WHERE distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
+						"WHERE c.id = ca.customer_id AND admin_email = ?))", email);
 				break;
 			case CUSTOMER_FULL_ADMIN:
-				String customer = "select customer_id from customer_admin where admin_email='"+email+"'";
-				conditionsList.add("customer_id = (" + customer + ")");
+				queryBuilder.appendCustomCondition("customer_id = (select customer_id from customer_admin where admin_email = ?)", email);
 				break;
 			case SUBACCOUNT_ADMIN:
-				subQuery = "select subaccount_id from subaccount_admin where subaccount_admin_email ='"+email+"'";
-				conditionsList.add("id=(" + subQuery + ")");
+				queryBuilder.appendCustomCondition("id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
 				break;
 		}
 
 		if (id.equals("EMPTY")) {
 			if (!customerId.isEmpty()) {
-				conditionsList.add("customer_id='"+customerId+"'");
+				queryBuilder.appendEqualsCondition("customer_id", customerId, QueryBuilder.DATA_TYPE.UUID);
 			}
 		}else{
-			conditionsList.add("id='" + id +"'");
-			adminEmailsMap = loadSubaccountAdminEmails(id, context);
+			queryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
+			adminEmailsMap = loadAdminEmails(id, context);
 		}
-
-		String sqlConditions = String.join(" and ",conditionsList);
-		sql += (sqlConditions.isEmpty() ? ";" : " where "+sqlConditions+";");
 
 		// Connect to the database
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement selectStmt = queryBuilder.build(connection)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
-			// Retrive subaccounts.
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
+			// Retrieve subaccounts.
+			context.getLogger().info("Execute SQL statement: " + selectStmt);
+			ResultSet rs = selectStmt.executeQuery();
 			// Return a JSON array of subaccounts
 			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
@@ -126,6 +119,14 @@ public class TekvLSGetAllSubaccounts
 					item.put("id", rs.getString("id"));
 				array.put(item);
 			}
+
+			if(!id.equals("EMPTY") && array.isEmpty()){
+				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
 			json.put("subaccounts", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
@@ -143,17 +144,16 @@ public class TekvLSGetAllSubaccounts
 		}
 	}
 
-	private Map<String, List<String>> loadSubaccountAdminEmails(String subaccountId, ExecutionContext context) {
-		String sql = "SELECT * FROM subaccount_admin WHERE subaccount_id = '" + subaccountId + "';";
-		return loadAdminEmails(context, sql);
-	}
-
-	private Map<String, List<String>> loadAdminEmails(ExecutionContext context, String sql) {
+	private Map<String, List<String>> loadAdminEmails(String subaccountId, ExecutionContext context) {
 		Map<String, List<String>> emailsMap = new HashMap<>();
+		String sql = "SELECT * FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			 Statement statement = connection.createStatement();) {
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
+			 PreparedStatement statement = connection.prepareStatement(sql)) {
+
+			statement.setString(1, subaccountId);
+
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
 				emailsMap.computeIfAbsent(rs.getString("subaccount_id"), k -> new ArrayList<>()).add(rs.getString("subaccount_admin_email"));
 			}

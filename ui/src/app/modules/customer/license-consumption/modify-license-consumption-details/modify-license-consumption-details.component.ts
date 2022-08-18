@@ -196,6 +196,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       const resDataObject: any = res.reduce((current: any, next: any) => {
         return { ...current, ...next };
       }, {});
+      this.currentCustomer.modifiedBy = resDataObject['modifiedBy'];
       this.devices = resDataObject['devices'];
       const vendorsHash: any = {};
       this.vendors = this.devices.filter(device => {
@@ -233,7 +234,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   }
 
   displayFnProject(project: Project): string {
-    return project?.name;
+    return project?.projectName;
   }
 
   displayFnDevice(device: Device): string {
@@ -254,7 +255,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   private filterProjects(value: string): Project[] {
     const filterValue = value.toLowerCase();
-    return this.projects.filter(option => option.name.toLowerCase().includes(filterValue));
+    return this.projects.filter(option => option.projectName.toLowerCase().includes(filterValue));
   }
 
   private filterVendors(value: string): string[] {

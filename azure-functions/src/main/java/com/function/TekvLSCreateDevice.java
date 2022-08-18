@@ -23,8 +23,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSCreateDevice
 {
 	/**
-	 * This function listens at endpoint "/api/devices". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/devices
+	 * This function listens at endpoint "/v1.0/devices". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/devices
 	 */
 	@FunctionName("TekvLSCreateDevice")
 	public HttpResponseMessage run(
@@ -74,47 +74,20 @@ public class TekvLSCreateDevice
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// The expected parameters (and their coresponding column name in the database) 
-		String[][] mandatoryParams = {
-			{"vendor","vendor"}, 
-			{"product","product"}, 
-			{"version","version"}, 
-			{"type","type"},
-			{"supportType","support_type"},
-			{"granularity","granularity"},
-			{"tokensToConsume","tokens_to_consume"},
-			{"startDate","start_date"}
-		};
-		// Build the sql query
-		String sqlPart1 = "";
-		String sqlPart2 = "";
-		for (int i = 0; i < mandatoryParams.length; i++) {
-			try {
-				String paramValue = jobj.getString(mandatoryParams[i][0]);
-				sqlPart1 += mandatoryParams[i][1] + ",";
-				sqlPart2 += "'" + paramValue + "',";
-			} 
-			catch (Exception e) {
+		// Check mandatory params to be present
+		for (MANDATORY_PARAMS mandatoryParam: MANDATORY_PARAMS.values()) {
+			if (!jobj.has(mandatoryParam.value)) {
 				// Parameter not found
-				context.getLogger().info("Caught exception: " + e.getMessage());
+				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
-				json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
+				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
-		// add subaccountId or deprecatedDate type if present
-		if (jobj.has("subaccountId")) {
-			sqlPart1 += "subaccount_id,";
-			sqlPart2 += "'" + jobj.getString("subaccountId") + "',";
-		}
-		if (jobj.has("deprecatedDate")) {
-			sqlPart1 += "deprecated_date,";
-			sqlPart2 += "'" + jobj.getString("deprecatedDate") + "',";
-		}
-		// Remove the comma after the last parameter and build the SQL statement
-		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
-		String sql = "insert into device (" + sqlPart1 + ") values (" + sqlPart2 + ");";
+
+		// Build the sql query
+		String sql = "INSERT INTO device (vendor, product, version, type, support_type, granularity, tokens_to_consume, start_date, subaccount_id, deprecated_date) " +
+					 "VALUES (?, ?, ?, ?::device_type_enum, ?::boolean, ?::granularity_type_enum, ?, ?::timestamp, ?::uuid, ?::timestamp) RETURNING id;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -122,23 +95,29 @@ public class TekvLSCreateDevice
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = connection.prepareStatement(sql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+
+			// Set statement parameters
+			statement.setString(1, jobj.getString(MANDATORY_PARAMS.VENDOR.value));
+			statement.setString(2, jobj.getString(MANDATORY_PARAMS.PRODUCT.value));
+			statement.setString(3, jobj.getString(MANDATORY_PARAMS.VERSION.value));
+			statement.setString(4, jobj.getString(MANDATORY_PARAMS.TYPE.value));
+			statement.setString(5, jobj.getString(MANDATORY_PARAMS.SUPPORT_TYPE.value));
+			statement.setString(6, jobj.getString(MANDATORY_PARAMS.GRANULARITY.value));
+			statement.setInt(7, jobj.getInt(MANDATORY_PARAMS.TOKENS_TO_CONSUME.value));
+			statement.setString(8, jobj.getString(MANDATORY_PARAMS.START_DATE.value));
+
+			statement.setString(9, jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.value) ? jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.value) : null);
+			statement.setString(10, jobj.has(OPTIONAL_PARAMS.DEPRECATED_DATE.value) ? jobj.getString(OPTIONAL_PARAMS.DEPRECATED_DATE.value) : "infinity");
+
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
 			context.getLogger().info("License usage inserted successfully."); 
 
 			// Return the id in the response
-			sql = "select id from device where " + 
-				"vendor = '" + jobj.getString("vendor") + "' and " +
-				"product = '" + jobj.getString("product") + "' and " +
-				"version = '" + jobj.getString("version") + "' and " +
-				"type = '" + jobj.getString("type") + "';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
 			JSONObject json = new JSONObject();
 			json.put("id", rs.getString("id"));
@@ -156,6 +135,36 @@ public class TekvLSCreateDevice
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
+
+	private enum MANDATORY_PARAMS {
+
+		VENDOR("vendor"),
+		PRODUCT("product"),
+		VERSION("version"),
+		TYPE("type"),
+		SUPPORT_TYPE("supportType"),
+		GRANULARITY("granularity"),
+		TOKENS_TO_CONSUME("tokensToConsume"),
+		START_DATE("startDate");
+
+		private final String value;
+
+		MANDATORY_PARAMS(String value) {
+			this.value = value;
+		}
+	}
+
+	private enum OPTIONAL_PARAMS {
+
+		SUBACCOUNT_ID("subaccountId"),
+		DEPRECATED_DATE("deprecatedDate");
+
+		private final String value;
+
+		OPTIONAL_PARAMS(String value) {
+			this.value = value;
 		}
 	}
 }

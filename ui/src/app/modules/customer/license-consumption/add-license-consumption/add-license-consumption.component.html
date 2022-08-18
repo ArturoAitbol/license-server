@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Add tekToken Consumption</h1>
+    <h1 id="page-title" mat-dialig-title>Add tekToken Consumption</h1>
     <form [formGroup]="addLicenseConsumptionForm" (ngSubmit)="submit()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
@@ -22,16 +22,16 @@
                         <mat-form-field class="col-9 no-padding" appearance="outline">
                             <mat-label>Project</mat-label>
                             <input type="text" placeholder="Select a project" aria-label="Project" matInput
-                                   formControlName="project" [matAutocomplete]="projectsList">
+                                   formControlName="project" [matAutocomplete]="projectsList" id="project-auto-complete">
                             <mat-autocomplete #projectsList="matAutocomplete" [displayWith]="displayFnProject">
-                                <mat-option *ngFor="let item of filteredProjects | async" [value]="item">
-                                    {{item.name}}
+                                <mat-option *ngFor="let project of filteredProjects | async" [value]="project">
+                                    {{project.projectName}}
                                 </mat-option>
                             </mat-autocomplete>
                             <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>
                         </mat-form-field>
                         <div *lcCheckAccessFor="'addProject'" class="col-3 no-padding" style="float: right;">
-                            <button mat-stroked-button type="button" class="plus-button" title="New Project"
+                            <button mat-stroked-button type="button" class="plus-button" title="New Project" id="new-project-button"
                                     (click)="onAddProject()">
                                 <mat-icon>add</mat-icon>
                             </button>
@@ -66,7 +66,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Vendor</mat-label>
                                     <input type="text" placeholder="Select a vendor" aria-label="Vendor" matInput
-                                           formControlName="vendor" [matAutocomplete]="vendorsList">
+                                           formControlName="vendor" [matAutocomplete]="vendorsList" id="vendor-auto-complete">
                                     <mat-autocomplete #vendorsList="matAutocomplete" [displayWith]="displayFnVendor"
                                                       (optionSelected)="onChangeVendor($event.option.value)">
                                         <mat-option *ngFor="let item of filteredVendors | async" [value]="item">
@@ -80,7 +80,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Device</mat-label>
                                     <input type="text" placeholder="Select a device" aria-label="Device" matInput
-                                           formControlName="product" [matAutocomplete]="devicesList">
+                                           formControlName="product" [matAutocomplete]="devicesList" id="device-auto-complete">
                                     <mat-autocomplete #devicesList="matAutocomplete" [displayWith]="displayFnDevice">
                                         <mat-option *ngFor="let item of filteredModels | async" [value]="item">
                                             {{item.product}}
@@ -101,7 +101,7 @@
                             </div>
                             <div class="mt-3">
                                 <button mat-mini-fab color="primary" type="button" class="plus-button mb-3"
-                                        title="New Device"
+                                        title="New Device" id="add-device-button"
                                         (click)="addDevice()" [disabled]="!addDeviceForm.valid || isInvalid('product')">
                                     <mat-icon>add</mat-icon>
                                 </button>
@@ -136,7 +136,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Vendor</mat-label>
                                     <input type="text" placeholder="Select a vendor" aria-label="SupportVendor" matInput
-                                           formControlName="vendor" [matAutocomplete]="supportVendorsList">
+                                           formControlName="vendor" [matAutocomplete]="supportVendorsList" id="support-vendor-auto-complete">
                                     <mat-autocomplete #supportVendorsList="matAutocomplete" [displayWith]="displayFnVendor"
                                                       (optionSelected)="onChangeSupportVendor($event.option.value)">
                                         <mat-option *ngFor="let item of filteredSupportVendors | async" [value]="item">
@@ -150,7 +150,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Device</mat-label>
                                     <input type="text" placeholder="Select a device" aria-label="SupportDevice" matInput
-                                           formControlName="product" [matAutocomplete]="supportDevicesList">
+                                           formControlName="product" [matAutocomplete]="supportDevicesList" id="support-device-auto-complete">
                                     <mat-autocomplete #supportDevicesList="matAutocomplete" [displayWith]="displayFnDevice">
                                         <mat-option *ngFor="let item of filteredSupportModels | async" [value]="item">
                                             {{item.product}}
@@ -171,7 +171,7 @@
                             </div>
                             <div class="mt-3">
                                 <button mat-mini-fab color="primary" type="button" class="plus-button mb-3"
-                                        title="New Support"
+                                        title="New Support" id="add-support-button"
                                         (click)="addSupport()" [disabled]="!addSupportForm.valid || isInvalidSupport('product')">
                                     <mat-icon>add</mat-icon>
                                 </button>
@@ -183,11 +183,9 @@
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
-            <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
-            <button mat-raised-button color="primary" type="submit"
-                    [disabled]="!addLicenseConsumptionForm.valid || devicesAndSupportInvalid()">
-                Submit
-            </button>
+            <button mat-stroked-button id="cancel-button" type="button" (click)="onCancel()">Cancel</button>
+            <button mat-raised-button id="submit-button" color="primary" type="submit"
+                    [disabled]="!addLicenseConsumptionForm.valid || devicesAndSupportInvalid()">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>

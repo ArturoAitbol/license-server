@@ -5,7 +5,6 @@ import {CustomerServiceMock} from '../../test/mock/services/customer-service.moc
 
 let httpClientSpy: jasmine.SpyObj<HttpClient>;
 let customerService: CustomerService;
-const customerServiceMock = new CustomerServiceMock();
 
 describe('Customer service http requests test', () => {
     beforeEach(() => {
@@ -18,7 +17,7 @@ describe('Customer service http requests test', () => {
         const expectedCustomers: any = CustomerServiceMock.customerListValue;
 
         // observable customer list response
-        httpClientSpy.get.and.returnValue(customerServiceMock.getCustomerList());
+        httpClientSpy.get.and.returnValue(CustomerServiceMock.getCustomerList());
 
         customerService.getCustomerList().subscribe({
             next: customer => {

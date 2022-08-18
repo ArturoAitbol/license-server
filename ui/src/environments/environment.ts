@@ -10,6 +10,7 @@ export const environment = {
   UI_CLIENT_ID: 'e643fc9d-b127-4883-8b80-2927df90e275',
   API_CLIENT_ID: 'abb49487-0434-4a82-85fa-b9be4443d158',
   API_SCOPE: 'tekvizion.access',
+  INSTRUMENTATION_CONN_STRING: 'InstrumentationKey=d93dae32-180f-40b2-a8b1-1d4ae7fdddcb;IngestionEndpoint=https://southcentralus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://southcentralus.livediagnostics.monitor.azure.com/',
   // BASE URL
   REDIRECT_URL_AFTER_LOGIN: window.location.origin + '/dashboard'
 };

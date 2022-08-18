@@ -29,27 +29,12 @@ import { DialogServiceMock } from '../../test/mock/services/dialog.service.mock'
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
 const dialogServiceMock = new DialogServiceMock();
-const customerServiceMock = new CustomerServiceMock();
 
 const RouterMock = {
     navigate: (commands: string[]) => {}
 };
 
 const beforeEachFunction = async () => {
-    let mockStorage = {};
-
-    spyOn(localStorage, 'getItem').and.callFake( (key: string): string => {
-        return mockStorage[key] || null;
-    });
-    spyOn(localStorage, 'removeItem').and.callFake((key:string): void => {
-        delete mockStorage[key];
-    });
-    spyOn(localStorage, 'setItem').and.callFake((key:string, value:string):string =>  {
-        return mockStorage[key] = <string>value;
-    });
-    spyOn(localStorage, 'clear').and.callFake(() => {
-        mockStorage = {};
-    });
     TestBed.configureTestingModule({
         declarations: [DashboardComponent, DataTableComponent, AddCustomerAccountModalComponent, AddSubaccountModalComponent, ModifyCustomerAccountComponent, AdminEmailsComponent, SubaccountAdminEmailsComponent],
         imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule],
@@ -68,7 +53,7 @@ const beforeEachFunction = async () => {
             },
             {
                 provide: CustomerService,
-                useValue: customerServiceMock
+                useValue: CustomerServiceMock
             },
             {
                 provide: DialogService,
@@ -126,11 +111,11 @@ describe('UI verification tests', () => {
 describe('Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
     it('should make a call to get customers, licences and subaccounts', () => {
-        spyOn(customerServiceMock, 'getCustomerList').and.callThrough();
+        spyOn(CustomerServiceMock, 'getCustomerList').and.callThrough();
         spyOn(LicenseServiceMock, 'getLicenseList').and.callThrough();
         spyOn(SubaccountServiceMock, 'getSubAccountList').and.callThrough();
         fixture.detectChanges();
-        expect(customerServiceMock.getCustomerList).toHaveBeenCalled();
+        expect(CustomerServiceMock.getCustomerList).toHaveBeenCalled();
         expect(dashboardComponentTestInstance.isLoadingResults).toBeFalse();
         expect(dashboardComponentTestInstance.isRequestCompleted).toBeTrue();
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
@@ -201,7 +186,7 @@ describe('Dialog calls and interactions', () => {
         };
         spyOn(dashboardComponentTestInstance, 'openConfirmCancelDialog').and.callThrough();
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
-        spyOn(customerServiceMock, 'deleteCustomer').and.callThrough();
+        spyOn(CustomerServiceMock, 'deleteCustomer').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
         dashboardComponentTestInstance.customerList['0'] = expectedCustomerObject;
         dashboardComponentTestInstance.openConfirmCancelDialog('0');
@@ -214,7 +199,7 @@ describe('Dialog calls and interactions', () => {
             cancelCaption: 'Cancel',
             canDeleteSubaccount: false
         });
-        expect(customerServiceMock.deleteCustomer).toHaveBeenCalledWith(expectedCustomerObject.id);
+        expect(CustomerServiceMock.deleteCustomer).toHaveBeenCalledWith(expectedCustomerObject.id);
     });
 
     it('should delete subaccount if resultAllData is false', () => {
@@ -249,21 +234,21 @@ describe('Dialog calls and interactions', () => {
 describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', () => {
     beforeEach(beforeEachFunction);
     it('should navigate to customer licenses after calling openLicenseDetails()', () => {
-        spyOn(customerServiceMock, 'setSelectedCustomer');
+        spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseDetails({});
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/licenses']);
     });
 
     it('should navigate to license consumption after calling openLicenseConsumption()', () => {
-        spyOn(customerServiceMock, 'setSelectedCustomer');
+        spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseConsumption({});
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption']);
     });
 
     it('should navigate to project details after calling openProjectDetails()', () => {
-        spyOn(customerServiceMock, 'setSelectedCustomer');
+        spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openProjectDetails({});
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects']);
@@ -402,7 +387,7 @@ describe('.rowAction()', () => {
             selectedIndex: 'selectedTestItem',
             subaccountId: 'test-id'
         };
-        spyOn(dashboardComponentTestInstance, 'onDeleteAccount').and.callThrough();
+        spyOn(dashboardComponentTestInstance, 'onDeleteAccount');
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.DELETE_ACCOUNT;
         dashboardComponentTestInstance.rowAction(selectedTestData);

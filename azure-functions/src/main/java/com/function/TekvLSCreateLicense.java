@@ -25,8 +25,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSCreateLicense
 {
 	/**
-	 * This function listens at endpoint "/api/licenses". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/licenses
+	 * This function listens at endpoint "/v1.0/licenses". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/licenses
 	 */
 	@FunctionName("TekvLSCreateLicense")
 	public HttpResponseMessage run(
@@ -76,76 +76,59 @@ public class TekvLSCreateLicense
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// The expected parameters (and their coresponding column name in the database) 
-		String[][] mandatoryParams = {
-			{"subaccountId","subaccount_id"}, 
-			{"startDate","start_date"}, 
-			{"packageType","package_type"}, 
-			{"renewalDate","renewal_date"},
-			{"tokensPurchased","tokens"}, 
-			{"deviceLimit","device_access_limit"}
-		};
-		// Build the sql query
-		String sqlPart1 = "";
-		String sqlPart2 = "";
-		for (int i = 0; i < mandatoryParams.length; i++) {
-			try {
-				String paramValue = jobj.getString(mandatoryParams[i][0]);
-				sqlPart1 += mandatoryParams[i][1] + ",";
-				sqlPart2 += "'" + paramValue + "',";
-			} 
-			catch (Exception e) {
+		// Check mandatory params to be present
+		for (MANDATORY_PARAMS mandatoryParam: MANDATORY_PARAMS.values()) {
+			if (!jobj.has(mandatoryParam.value)) {
 				// Parameter not found
-				context.getLogger().info("Caught exception: " + e.getMessage());
+				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
-				json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
+				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
-		if (jobj.has("licenseId")) {
-			sqlPart1 += "id,";
-			sqlPart2 += "'" + jobj.getString("licenseId") + "',";
-		}
+
 		LocalDate currentDate = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd");
 		String actualDate = currentDate.format(formatter);
 		String renewalDate = jobj.getString("renewalDate");
-		if ((renewalDate.compareTo(actualDate)) < 0 ){
-			sqlPart1 += "status" + ",";
-			sqlPart2 += "'" + "Expired" + "',"; 
-		}else{
-			sqlPart1 += "status" + ",";
-			sqlPart2 += "'" + "Active" + "',"; 
+		String status = (renewalDate.compareTo(actualDate)) < 0 ? "Expired" : "Active";
+
+		String sql;
+		if (jobj.has(OPTIONAL_PARAMS.LICENSE_ID.value)) {
+			sql = "INSERT INTO license (subaccount_id, start_date, package_type, renewal_date, tokens, device_access_limit, status, id) " +
+					"VALUES (?::uuid, ?::timestamp, ?::package_type_enum, ?::timestamp, ?, ?, '%s'::status_type_enum, ?::uuid) RETURNING id;";
+		} else {
+			sql = "INSERT INTO license (subaccount_id, start_date, package_type, renewal_date, tokens, device_access_limit, status) " +
+					"VALUES (?::uuid, ?::timestamp, ?::package_type_enum, ?::timestamp, ?, ?, '%s'::status_type_enum) RETURNING id;";
 		}
-		// Remove the comma after the last parameter and build the SQL statement
-		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
-		String sql = "insert into license (" + sqlPart1 + ") values (" + sqlPart2 + ");";
+		sql = String.format(sql, status);
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			PreparedStatement statement = connection.prepareStatement(sql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+
+			// Set statement parameters
+			statement.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+			statement.setString(2, jobj.getString(MANDATORY_PARAMS.START_DATE.value));
+			statement.setString(3, jobj.getString(MANDATORY_PARAMS.PACKAGE_TYPE.value));
+			statement.setString(4, jobj.getString(MANDATORY_PARAMS.RENEWAL_DATE.value));
+			statement.setInt(5, jobj.getInt(MANDATORY_PARAMS.TOKENS_PURCHASED.value));
+			statement.setInt(6, jobj.getInt(MANDATORY_PARAMS.DEVICE_LIMIT.value));
+
+			if (jobj.has(OPTIONAL_PARAMS.LICENSE_ID.value))
+				statement.setString(7,jobj.getString(OPTIONAL_PARAMS.LICENSE_ID.value));
+
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
 			context.getLogger().info("License inserted successfully."); 
 
 			// Return the id in the response
-			sql = "select id from license where " + 
-				"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
-				"start_date = '" + jobj.getString("startDate") + "' and " +
-				"package_type = '" + jobj.getString("packageType") + "' and " +
-				"renewal_date = '" + jobj.getString("renewalDate") + "';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
 			JSONObject json = new JSONObject();
 			json.put("id", rs.getString("id"));
@@ -163,6 +146,31 @@ public class TekvLSCreateLicense
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+		}
+	}
+
+	private enum MANDATORY_PARAMS {
+		SUBACCOUNT_ID("subaccountId"),
+		START_DATE("startDate"),
+		PACKAGE_TYPE("packageType"),
+		RENEWAL_DATE("renewalDate"),
+		TOKENS_PURCHASED("tokensPurchased"),
+		DEVICE_LIMIT("deviceLimit");
+
+		private final String value;
+
+		MANDATORY_PARAMS(String value) {
+			this.value = value;
+		}
+	}
+
+	private enum OPTIONAL_PARAMS {
+		LICENSE_ID("licenseId");
+
+		private final String value;
+
+		OPTIONAL_PARAMS(String value) {
+			this.value = value;
 		}
 	}
 }

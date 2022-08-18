@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>tekToken Usage Details</h1>
+    <h1 id="dialog-title" mat-dialig-title>tekToken Usage Details</h1>
     <div class="flex-container">
         <div class="loading-shade" *ngIf="isDataLoading">
             <mat-spinner *ngIf="isDataLoading"></mat-spinner>
@@ -14,6 +14,11 @@
                         <label class="subtitle">Date:</label>
                         <label>{{ usage.usageDate | date:'fullDate' }}</label>
                         <br>
+                        <div *lcCheckAccessFor="'auditInfo'">
+                            <label class="subtitle">Modified By:</label>
+                            <label>{{ usage.modifiedBy }}</label>
+                            <br>
+                        </div>
                         <div *ngIf="isAutomationPlatform">
                             <label class="subtitle">Mac Address:</label>
                             <label>{{ usage.macAddress }}</label>
@@ -32,6 +37,6 @@
         </mat-dialog-content>
     </div>
     <mat-dialog-actions>
-        <button mat-stroked-button type="button" (click)="close()">Close</button>
+        <button id="close-button" mat-stroked-button type="button" (click)="close()">Close</button>
     </mat-dialog-actions>
 </div>

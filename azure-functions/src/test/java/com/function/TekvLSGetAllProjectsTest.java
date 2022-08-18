@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TekvLSGetAllProjectsTest extends TekvLSTest {
     private final String emptyId = "EMPTY";
+    private final TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
 
     @BeforeEach
     public void setup(){
@@ -32,7 +33,6 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
     @Test
     public void getProjectByProjectIdTest() {
         String expectedId = "f2b57afb-c389-48ec-a54b-7d8a05a51f32";
-        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
         HttpResponseMessage response = getAllProjects.run(this.request, expectedId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
@@ -54,8 +54,8 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         JSONObject firstFound = projectsArray.getJSONObject(0);
         assertTrue(firstFound.has("id"));
         assertTrue(firstFound.has("subaccountId"));
-        assertTrue(firstFound.has("name"));
-        assertTrue(firstFound.has("code"));
+        assertTrue(firstFound.has("projectName"));
+        assertTrue(firstFound.has("projectNumber"));
         assertTrue(firstFound.has("status"));
         assertTrue(firstFound.has("openDate"));
         assertTrue(firstFound.has("closeDate"));
@@ -65,7 +65,6 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
     @Tag("acceptance")
     @Test
     public void getAllProjectBySubaccountIdTest() {
-        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
         HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
@@ -87,15 +86,33 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         JSONObject firstFound = projectsArray.getJSONObject(0);
         assertTrue(firstFound.has("id"));
         assertTrue(firstFound.has("subaccountId"));
-        assertTrue(firstFound.has("name"));
-        assertTrue(firstFound.has("code"));
+        assertTrue(firstFound.has("projectName"));
+        assertTrue(firstFound.has("projectNumber"));
         assertTrue(firstFound.has("status"));
         assertTrue(firstFound.has("openDate"));
         assertTrue(firstFound.has("closeDate"));
         assertTrue(firstFound.has("projectOwner"));
     }
 
-    @Tag("acceptance")
+    @Test
+    public void getProjectByNonexistentProjectIdTest() {
+        String expectedId = "00000000-0000-0000-0000-000000000000";
+        HttpResponseMessage response = getAllProjects.run(this.request, expectedId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = RoleAuthHandler.MESSAGE_ID_NOT_FOUND;
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
     @Test
     public void getProjectIncompleteSubaccountIdTest() {
         String expectedId = "21";
@@ -108,12 +125,10 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
-    @Tag("acceptance")
     @Test
     public void getAllProjectMissingSubaccountIdTest() {
         this.queryParams.remove("subaccountId");
 
-        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
         HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
@@ -156,12 +171,10 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
-    @Tag("acceptance")
     @Test
     public void getAllProjectBySubaccountIdExceptionTest() {
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
-        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
         HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
@@ -176,7 +189,6 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         String status = "Open";
         this.queryParams.put("status", status);
 
-        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
         HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
@@ -187,44 +199,217 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void getAllProjectCustomerAdminTest() {
+    public void getForCustomerAdminRoleTest() {
+        //Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
-
-        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
+        //When
         HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
         this.context.getLogger().info(response.getBody().toString());
-
+        //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("projects"));
+
+        JSONArray projects = jsonBody.getJSONArray("projects");
+        assertTrue(projects.length()>0);
+
+        String expectedSubaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        for(int i=0;i<projects.length();i++){
+            JSONObject project = projects.getJSONObject(i);
+            String actualSubaccount = project.getString("subaccountId");
+            assertEquals(expectedSubaccountId,actualSubaccount,
+                    "Project with subaccountId:"+actualSubaccount+" not expected in response (id:" + project.getString("id") + ")");
+        }
     }
 
     @Tag("acceptance")
     @Test
-    public void getAllProjectDistributorFullAdminTest() {
+    public void getForCustomerAdminRoleIncorrectSubaccountIdTest() {
+        //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+        String subaccountId = "cebe6542-2032-4398-882e-ffb44ade169d";
+        this.queryParams.put("subaccountId", subaccountId);
+        //When
+        HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForCustomerAdminRoleIncorrectProjectIdTest() {
+        //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+        String expectedId = "a42edf7f-9b38-472f-afa3-10a4632acca1";
+        //When
+        HttpResponseMessage response = getAllProjects.run(this.request, expectedId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getForDistributorAdminRoleTest() {
+        //Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
-
-        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
+        String subaccountId = "cebe6542-2032-4398-882e-ffb44ade169d";
+        this.queryParams.put("subaccountId", subaccountId);
+        //When
         HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
         this.context.getLogger().info(response.getBody().toString());
-
+        //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("projects"));
+
+        JSONArray projects = jsonBody.getJSONArray("projects");
+        assertEquals(1, projects.length());
+
+        JSONObject project = projects.getJSONObject(0);
+        assertEquals(subaccountId,project.getString("subaccountId"));
     }
 
     @Tag("acceptance")
     @Test
-    public void getAllProjectSubaccountAdminTest() {
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
-
-        TekvLSGetAllProjects getAllProjects = new TekvLSGetAllProjects();
+    public void getForDistributorAdminRoleIncorrectSubaccountIdTest() {
+        //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
+        //When
         HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForDistributorAdminRoleIncorrectProjectIdTest() {
+        //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
+        String expectedId = "f2b57afb-c389-48ec-a54b-7d8a05a51f32";
+        //When
+        HttpResponseMessage response = getAllProjects.run(this.request, expectedId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getForSubaccountAdminRoleTest() {
+        //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+        String subaccountId = "96234b32-32d3-45a4-af26-4c912c0d6a06";
+        this.queryParams.put("subaccountId", subaccountId);
+        //When
+        HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("projects"));
+
+        JSONArray projects = jsonBody.getJSONArray("projects");
+        assertEquals(1, projects.length());
+
+        JSONObject project = projects.getJSONObject(0);
+        assertEquals(subaccountId,project.getString("subaccountId"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForSubaccountAdminRoleIncorrectSubaccountIdTest() {
+        //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+        //When
+        HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForSubaccountAdminRoleIncorrectProjectIdTest() {
+        //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+        String expectedId = "f2b57afb-c389-48ec-a54b-7d8a05a51f32";
+        //When
+        HttpResponseMessage response = getAllProjects.run(this.request, expectedId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+
     }
 
 }

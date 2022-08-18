@@ -1,12 +1,11 @@
 package com.function;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.UpdateQueryBuilder;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 import org.json.JSONObject;
@@ -18,9 +17,9 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSModifyBundleById {
     /**
-     * This function listens at endpoint "/api/TekvLSModifyBundleById". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/TekvLSModifyBundleById
-     * 2. curl {your host}/api/TekvLSModifyBundleById?name=HTTP%20Query
+     * This function listens at endpoint "/v1.0/TekvLSModifyBundleById". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/TekvLSModifyBundleById
+     * 2. curl {your host}/v1.0/TekvLSModifyBundleById/{id}
      */
     @FunctionName("TekvLSModifyBundleById")
     public HttpResponseMessage run(
@@ -73,34 +72,27 @@ public class TekvLSModifyBundleById {
             json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-        String[][] params = {
-                {"name","name"},
-                {"tokens","tokens"},
-                {"deviceAccessToken","device_access_tokens"}
-        };
-        String sql = "update bundle set ";
-        for (int i = 0; i < params.length; i++) {
+
+        UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("bundle");
+
+        for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
             try {
-                String value = body.getString(params[i][0]);
-                sql += params[i][1] + "='" + value + "',";
+                queryBuilder.appendValueModification(param.columnName, body.getString(param.jsonAttrib), param.dataType);
             }
             catch (Exception e) {
                 context.getLogger().info("Ignoring exception: " + e);
-//                continue;
             }
         }
-        sql = sql.substring(0, sql.length() - 1);
-        sql += " where id='" + id + "'";
+        queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
-        try{
-            Connection connection = DriverManager.getConnection(dbConnectionUrl);
+        try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
+            PreparedStatement statement = queryBuilder.build(connection)) {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            Statement statement = connection.createStatement();
-            context.getLogger().info("Execute SQL statement: " + sql);
-            statement.executeUpdate(sql);
+            context.getLogger().info("Execute SQL statement: " + statement);
+            statement.executeUpdate();
             context.getLogger().info("Bundle updated successfully");
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
@@ -115,6 +107,23 @@ public class TekvLSModifyBundleById {
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+        }
+    }
+
+    private enum OPTIONAL_PARAMS {
+        NAME("bundleName", "name", QueryBuilder.DATA_TYPE.VARCHAR),
+        TOKENS("defaultTokens", "tokens", QueryBuilder.DATA_TYPE.INTEGER),
+        DEVICE_ACCESS_TOKENS("defaultDeviceAccessTokens", "device_access_tokens", QueryBuilder.DATA_TYPE.INTEGER);
+
+        private final String jsonAttrib;
+        private final String columnName;
+
+        private final String dataType;
+
+        OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
+            this.jsonAttrib = jsonAttrib;
+            this.columnName = columnName;
+            this.dataType = dataType.getValue();
         }
     }
 }

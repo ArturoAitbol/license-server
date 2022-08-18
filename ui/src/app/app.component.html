@@ -6,13 +6,13 @@
     <section>
         <div>
             <mat-toolbar color="primary" class="position-fixed">
-                <span style="cursor: pointer;" (click)="navigateToDashboard()">TekToken Consumption Portal</span>
+                <span style="cursor: pointer;" (click)="navigateToMainView()">TekToken Consumption Portal</span>
                 <span class="example-spacer"></span>
-                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                <button mat-icon-button [matMenuTriggerFor]="menu" id="settings-button" aria-label="Example icon-button with a menu">
                     <mat-icon>settings</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="logout()">
+                    <button mat-menu-item (click)="logout()" id="logout-button">
                         <mat-icon>logout</mat-icon>
                         <span>Logout</span>
                     </button>

@@ -1,8 +1,6 @@
 # Workflow to acquire release and deploy to Azure cloud the License Server components
-
 name: Push Release
 
-# Controls when the workflow will run
 on:
   workflow_dispatch:
     inputs:
@@ -16,6 +14,7 @@ env:
 
 jobs:
   build:
+      if: github.actor == 'tekviziondev'
       runs-on: ubuntu-latest
       steps:
         - uses: azure/login@v1
@@ -47,7 +46,7 @@ jobs:
           uses: azure/CLI@v1
           with:
             inlineScript: |
-              az storage blob upload-batch --overwrite --account-name tekvizionportal --auth-mode key -d '$web' -s ./Release/UI-prod-build
+              az storage blob upload-batch --overwrite --account-name tekvizionportal --auth-mode key -d '$web' -s ./Release/UI-prod-build/license-server
         
         - name: Purge CDN endpoint
           uses: azure/CLI@v1

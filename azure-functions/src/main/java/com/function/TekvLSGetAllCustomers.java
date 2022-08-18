@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -25,9 +27,9 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSGetAllCustomers {
 	/**
-	 * This function listens at endpoint "/api/customers". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/customers
-	 * 2. curl "{your host}/api/customers"
+	 * This function listens at endpoint "/v1.0/customers". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/customers
+	 * 2. curl "{your host}/v1.0/customers"
 	 */
 
 	private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -70,52 +72,48 @@ public class TekvLSGetAllCustomers {
 
 		Map<String, List<String>> adminEmailsMap = new HashMap<>();
 		// Build SQL statement
-		String sql = "select * from customer where tombstone= "+ tombstone +" ";
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM customer");
+		queryBuilder.appendEqualsCondition("tombstone", tombstone, QueryBuilder.DATA_TYPE.BOOLEAN);
+
 		String email = getEmailFromToken(tokenClaims,context);
-		List<String> conditionsList = new ArrayList<>();
-		String customerId;
+
 		// adding conditions according to the role
 		switch (currentRole){
 			case DISTRIBUTOR_FULL_ADMIN:
-				String distributorId = "select distributor_id from customer c,customer_admin ca " +
-						"where c.id = ca.customer_id and admin_email='"+email+"'";
-				conditionsList.add("distributor_id = (" + distributorId + ")");
+				queryBuilder.appendCustomCondition("distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
+						"WHERE c.id = ca.customer_id AND admin_email = ?)", email);
 				break;
 			case CUSTOMER_FULL_ADMIN:
-				customerId = "select customer_id from customer_admin where admin_email='"+email+"'";
-				conditionsList.add("id = (" + customerId + ")");
+				queryBuilder.appendCustomCondition("id = (SELECT customer_id FROM customer_admin WHERE admin_email = ?)", email);
 				break;
 			case SUBACCOUNT_ADMIN:
-				customerId = "select customer_id from subaccount s, subaccount_admin sa where s.id = sa.subaccount_id" +
-						" and subaccount_admin_email = '"+email+"'";
-				conditionsList.add("id=(" + customerId + ")");
+				queryBuilder.appendCustomCondition("id = (SELECT customer_id FROM subaccount s, subaccount_admin sa " +
+						"WHERE s.id = sa.subaccount_id AND subaccount_admin_email = ?)", email);
 				break;
 		}
 
 		if (id.equals("EMPTY")) {
 			if (!customerType.isEmpty()) {
-				conditionsList.add("type = '" + customerType + "'");
+				queryBuilder.appendEqualsCondition("type", customerType);
 			}
 			if(!customerName.isEmpty()){
-				conditionsList.add("name = '" + customerName + "'");
+				queryBuilder.appendEqualsCondition("name", customerName);
 			}
 		}else{
-			conditionsList.add("id='" + id +"'");
+			queryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
 			adminEmailsMap = loadAdminEmails(id, context);
 		}
-		String sqlConditions = String.join(" and ",conditionsList);
-		sql += (sqlConditions.isEmpty() ? ";" : " and "+sqlConditions+";");
 		
 		// Connect to the database
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = queryBuilder.build(connection)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
-			// Retrive all customers.
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
+			// Retrieve all customers.
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
 			// Return a JSON array of customers (id and names)
 			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
@@ -134,6 +132,14 @@ public class TekvLSGetAllCustomers {
 				}
 				array.put(item);
 			}
+
+			if(!id.equals("EMPTY") && array.isEmpty()){
+				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
 			json.put("customers", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
@@ -151,17 +157,15 @@ public class TekvLSGetAllCustomers {
 		}
 	}
 
-	private Map<String, List<String>> loadAdminEmails(String customerId, ExecutionContext context) {
-		String sql = "SELECT * FROM customer_admin WHERE customer_id = '" + customerId + "';";
-		return loadAdminEmails(context, sql);
-	}
 
-	private Map<String, List<String>> loadAdminEmails(ExecutionContext context, String sql) {
+	private Map<String, List<String>> loadAdminEmails(String customerId, ExecutionContext context) {
 		Map<String, List<String>> emailsMap = new HashMap<>();
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM customer_admin");
+		queryBuilder.appendEqualsCondition("customer_id", customerId, QueryBuilder.DATA_TYPE.UUID);
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			 Statement statement = connection.createStatement();) {
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
+			 PreparedStatement statement = queryBuilder.build(connection)) {
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
 				emailsMap.computeIfAbsent(rs.getString("customer_id"), k -> new ArrayList<>()).add(rs.getString("admin_email"));
 			}

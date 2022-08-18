@@ -53,8 +53,7 @@ export class ModifyProjectComponent implements OnInit {
     console.log("Submit called")
     this.isDataLoading = true;
     this.updateProjectForm.enable();
-    const mergedProjectDetails = { ... this.data, ...this.updateProjectForm.value };
-    this.projectService.updateProject(mergedProjectDetails).subscribe((res: any) => {
+    this.projectService.updateProject(this.preparePayload()).subscribe((res: any) => {
       if (!res?.error) {
         this.snackBarService.openSnackBar('Project edited successfully!', '');
         this.dialogRef.close(true);
@@ -64,6 +63,20 @@ export class ModifyProjectComponent implements OnInit {
       }
       this.isDataLoading = false;
     });
+  }
+
+  preparePayload(): any {
+    let mergedProjectDetails: any = { id: this.data.id }
+    for (let key in this.updateProjectForm.controls) {
+      if (this.updateProjectForm.controls.hasOwnProperty(key)) {
+        const fieldValue = this.updateProjectForm.get(key).value;
+        const oldValue = this.previousFormValue.value[key];
+        /* if value has changed */
+        if (fieldValue != oldValue)
+          mergedProjectDetails[key] = fieldValue;
+      }
+    };
+    return mergedProjectDetails;
   }
 
   onChanginStatus(status: string){

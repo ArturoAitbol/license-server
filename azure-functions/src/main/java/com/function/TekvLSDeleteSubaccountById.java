@@ -24,8 +24,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSDeleteSubaccountById 
 {
 	/**
-	 * This function listens at endpoint "/api/subaccounts". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/subaccounts
+	 * This function listens at endpoint "/v1.0/subaccounts". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccounts
 	 */
 	@FunctionName("TekvLSDeleteSubaccountById")
 	public HttpResponseMessage run(
@@ -54,6 +54,8 @@ public class TekvLSDeleteSubaccountById
 		}
 
 		context.getLogger().info("Entering TekvLSDeleteSubaccountById Azure function");
+
+		String sql = "DELETE FROM subaccount WHERE id = ?::uuid;";
 		
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -61,14 +63,15 @@ public class TekvLSDeleteSubaccountById
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = connection.prepareStatement(sql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+
+			statement.setString(1, id);
+
 			// Delete subaccount
-			String sql = "delete from subaccount where id='" + id +"';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			statement.executeUpdate();
 			context.getLogger().info("Subaccount delete successfully."); 
 
 			return request.createResponseBuilder(HttpStatus.OK).build();

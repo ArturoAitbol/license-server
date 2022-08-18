@@ -1,7 +1,10 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Add tekVizion 360 Package</h1>
+    <h1 id="dialog-title" mat-dialig-title>Add tekVizion 360 Package</h1>
     <form [formGroup]="addLicenseForm" (ngSubmit)="submit()">
         <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">
@@ -22,11 +25,10 @@
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label>Type</mat-label>
+                        <mat-label>Package Type</mat-label>
                         <mat-select required formControlName="packageType" (valueChange)="onChangeType($event)">
-                            <mat-option *ngFor="let item of types" [value]="item"
-                                [selected]="item.name === selectedType">
-                                {{item.name}}
+                            <mat-option *ngFor="let bundle of types" [value]="bundle.bundleName">
+                                {{bundle.bundleName}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -48,8 +50,8 @@
         </div>
         <!-- <div class="btn-flex-container"> -->
         <mat-dialog-actions>
-            <button mat-stroked-button (click)="onCancel()" type="button">Cancel</button>
-            <button mat-raised-button color="primary" [disabled]="!addLicenseForm.valid" type="submit">Submit</button>
+            <button id="cancel-button" mat-stroked-button (click)="onCancel()" type="button">Cancel</button>
+            <button id="submit-button" mat-raised-button color="primary" [disabled]="!addLicenseForm.valid" type="submit">Submit</button>
             <!-- </div> -->
         </mat-dialog-actions>
     </form>

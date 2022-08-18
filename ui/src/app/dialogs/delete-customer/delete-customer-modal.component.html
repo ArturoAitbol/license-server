@@ -6,13 +6,13 @@
         </mat-dialog-content>
     </div>
     <mat-dialog-actions>
-        <button mat-raised-button [mat-dialog-close]="{confirm: false, deleteAllData: false}">
+        <button mat-raised-button [mat-dialog-close]="{confirm: false, deleteAllData: false}" id="cancel">
             {{data?.cancelCaption}}
         </button>
-        <button *ngIf="data.canDeleteSubaccount" mat-raised-button color="primary" [mat-dialog-close]="{confirm: true, deleteAllData: false}">
+        <button *ngIf="data.canDeleteSubaccount" mat-raised-button color="primary" [mat-dialog-close]="{confirm: true, deleteAllData: false}" id="confirm">
             {{data?.confirmCaption}}
         </button>
-        <button mat-raised-button color="warn" [mat-dialog-close]="{confirm: true, deleteAllData: true}">
+        <button mat-raised-button color="warn" [mat-dialog-close]="{confirm: true, deleteAllData: true}" id="reconfirm">
             {{data?.deleteAllDataCaption}}
         </button>
     </mat-dialog-actions>

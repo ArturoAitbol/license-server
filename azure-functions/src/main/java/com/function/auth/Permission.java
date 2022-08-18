@@ -53,8 +53,5 @@ public enum Permission {
         public String value() {
                 return this.value;
         }
-
-
-
 }
 

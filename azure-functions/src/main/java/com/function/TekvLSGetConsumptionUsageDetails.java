@@ -1,22 +1,21 @@
 package com.function;
 
 import com.function.auth.Permission;
-import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.HttpMethod;
-import com.microsoft.azure.functions.HttpRequestMessage;
-import com.microsoft.azure.functions.HttpResponseMessage;
-import com.microsoft.azure.functions.HttpStatus;
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
+import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
-
-import java.sql.*;
-import java.util.Optional;
-
 import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.sql.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
 
@@ -25,9 +24,9 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSGetConsumptionUsageDetails {
 	/**
-	 * This function listens at endpoint "/api/usageDetails/{consumptionId}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/usageDetails/{consumptionId}
-	 * 2. curl "{your host}/api/usageDetails"
+	 * This function listens at endpoint "/v1.0/usageDetails/{consumptionId}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/usageDetails/{consumptionId}
+	 * 2. curl "{your host}/v1.0/usageDetails"
 	 */
 	@FunctionName("TekvLSGetConsumptionUsageDetails")
 	public HttpResponseMessage run(
@@ -57,47 +56,36 @@ public class TekvLSGetConsumptionUsageDetails {
 
 
 		context.getLogger().info("Entering TekvLSGetConsumptionUsageDetails Azure function");
-		String sql = "select * from usage_detail where consumption_id='" + id +"'";
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM usage_detail");
+		queryBuilder.appendEqualsCondition("consumption_id", id, QueryBuilder.DATA_TYPE.UUID);
 
-		String subQuery;
 		String email = getEmailFromToken(tokenClaims,context);
-		String sqlRoleCondition="";
 		// adding conditions according to the role
 		switch (currentRole){
 			case DISTRIBUTOR_FULL_ADMIN:
-				String distributorId = "select distributor_id from customer c,customer_admin ca " +
-						"where c.id = ca.customer_id and admin_email='"+email+"'";
-				subQuery = "select l.id from license_consumption l, subaccount s, customer c" +
-						" where l.subaccount_id = s.id and s.customer_id = c.id" +
-						" and distributor_id =("+distributorId+")";
-				sqlRoleCondition="consumption_id IN(" + subQuery + ")";
+				queryBuilder.appendCustomCondition("consumption_id IN (SELECT l.id FROM license_consumption l, subaccount s, customer c " +
+						"WHERE l.subaccount_id = s.id and s.customer_id = c.id AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
+						"WHERE c.id = ca.customer_id AND admin_email = ?))", email);
 				break;
 			case CUSTOMER_FULL_ADMIN:
-				subQuery = "select lc.id from license_consumption lc, subaccount s, customer_admin ca" +
-						" where lc.subaccount_id = s.id and s.customer_id = ca.customer_id" +
-						" and admin_email = '"+email+"'";
-				sqlRoleCondition="consumption_id IN(" + subQuery + ")";
+				queryBuilder.appendCustomCondition("consumption_id IN (SELECT lc.id FROM license_consumption lc, subaccount s, customer_admin ca " +
+						"WHERE lc.subaccount_id = s.id AND s.customer_id = ca.customer_id AND admin_email = ?)", email);
 				break;
 			case SUBACCOUNT_ADMIN:
-				subQuery = "select lc.id from license_consumption lc,subaccount_admin sa " +
-						" where lc.subaccount_id = sa.subaccount_id" +
-						" and subaccount_admin_email ='"+email+"'";
-				sqlRoleCondition="consumption_id IN(" + subQuery + ")";
+				queryBuilder.appendCustomCondition("consumption_id IN (SELECT lc.id FROM license_consumption lc,subaccount_admin sa " +
+						"WHERE lc.subaccount_id = sa.subaccount_id AND subaccount_admin_email = ?)", email);
 				break;
 		}
-
-		if(!sqlRoleCondition.isEmpty())
-			sql += " and "+ sqlRoleCondition;
-		sql +=";";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		try (Connection connection = DriverManager.getConnection(dbConnectionUrl); Statement statement = connection.createStatement();) {
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			 PreparedStatement selectStatement = queryBuilder.build(connection)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
+			context.getLogger().info("Execute SQL statement: " + selectStatement);
+			ResultSet rs = selectStatement.executeQuery();
 			// Return a JSON array of usageDays
 			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
@@ -114,12 +102,24 @@ public class TekvLSGetConsumptionUsageDetails {
 				array.put(item);
 			}
 			if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO)) {
-				sql = "SELECT modified_by FROM license_consumption WHERE id='" + id + "';";// get tokens to consume
-				context.getLogger().info("Execute SQL statement: " + sql);
-				rs = statement.executeQuery(sql);
-				rs.next();
-				json.put("modifiedBy", rs.getString("modified_by"));	
+				final String sql = "SELECT modified_by FROM license_consumption WHERE id = ?::uuid;";// get tokens to consume
+				try (PreparedStatement modifiedByStmt = connection.prepareStatement(sql)) {
+					modifiedByStmt.setString(1, id);
+					context.getLogger().info("Execute SQL statement: " + modifiedByStmt);
+					rs = modifiedByStmt.executeQuery();
+					if (rs.next()) {
+						json.put("modifiedBy", rs.getString("modified_by"));
+					}
+				}
 			}
+
+			if(!id.equals("EMPTY") && array.isEmpty()){
+				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
 			json.put("usageDays", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}

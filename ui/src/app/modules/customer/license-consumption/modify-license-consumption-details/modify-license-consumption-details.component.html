@@ -1,5 +1,6 @@
 <div class="container" style="text-align: center;">
     <h1 mat-dialig-title>Edit tekToken Consumption</h1>
+    <h3 *lcCheckAccessFor="'auditInfo'">Modified By: {{currentCustomer.modifiedBy}}</h3>
     <form [formGroup]="updateForm" (ngSubmit)="submit()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
@@ -29,7 +30,7 @@
                             [matAutocomplete]="projects">
                         <mat-autocomplete autoActiveFirstOption #projects="matAutocomplete" [displayWith]="displayFnProject">
                             <mat-option *ngFor="let project of filteredProjects | async" [value]="project">
-                                {{project.name}}
+                                {{project.projectName}}
                             </mat-option>
                         </mat-autocomplete>
                         <mat-error *ngIf="isInvalid('project')">{{getErrorMessage()}}</mat-error>

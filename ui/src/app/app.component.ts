@@ -5,6 +5,10 @@ import { Subject } from 'rxjs/internal/Subject';
 import { EventMessage, EventType } from '@azure/msal-browser';
 import { filter, takeUntil } from 'rxjs/operators';
 import { AutoLogoutService } from "./services/auto-logout.service";
+import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
+import { environment } from 'src/environments/environment';
+
 
 @Component({
     selector: 'app-root',
@@ -16,19 +20,34 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'license-server';
     currentUser = false;
 
-    constructor(
-        private router: Router,
-        private msalService: MsalService,
-        private broadcastService: MsalBroadcastService,
-        private autoLogoutService: AutoLogoutService
-    ) { }
+    constructor(private router: Router, private msalService: MsalService,
+        private broadcastService: MsalBroadcastService, private autoLogoutService: AutoLogoutService) {
+        const angularPlugin = new AngularPlugin();
+        const appInsights = new ApplicationInsights({
+            config: {
+                connectionString: environment.INSTRUMENTATION_CONN_STRING,
+                enableCorsCorrelation: true,
+                enableRequestHeaderTracking: true,
+                enableResponseHeaderTracking: true,
+                enableAutoRouteTracking: false,
+                loggingLevelConsole: 2,
+                loggingLevelTelemetry:2,
+                correlationHeaderExcludedDomains: ['*.queue.core.windows.net'],
+                extensions: [angularPlugin],
+                extensionConfig: {
+                    [angularPlugin.identifier]: { router: this.router }
+                }
+            }
+        });
+        appInsights.loadAppInsights();
+        appInsights.trackPageView();
+    }
 
     ngOnInit() {
         if (!this.isLoggedIn()) {
             this.router.navigate(['/login']);
         } else {
             this.currentUser = this.isLoggedIn();
-            this.navigateToDashboard();
             this.autoLogoutService.validateLastActivityTime();
         }
         this.broadcastService.msalSubject$.pipe(
@@ -53,17 +72,17 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.msalService.instance.getActiveAccount() != null;
     }
     /**
-     * navigate to dashboard page
+     * navigate to main view
      */
-    navigateToDashboard(): void {
-        this.router.navigate(['/dashboard']);
+    navigateToMainView(): void {
+        this.router.navigate(['/']);
     }
     /**
      * logout 
      */
     logout() {
         try {
-            this.msalService.logoutRedirect();
+            this.msalService.logout();
         } catch (error) {
             console.error('error while logout: ', error);
         }

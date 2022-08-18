@@ -12,7 +12,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.json.JSONArray;
@@ -26,8 +26,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSDeleteUsageDetailsById 
 {
 	/**
-	 * This function listens at endpoint "/api/usageDetails". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/usageDetails
+	 * This function listens at endpoint "/v1.0/usageDetails". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/usageDetails
 	 */
 	@FunctionName("TekvLSDeleteUsageDetailsById")
 	public HttpResponseMessage run(
@@ -66,39 +66,40 @@ public class TekvLSDeleteUsageDetailsById
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		JSONObject jobj;
-		String sql;
 		try {
 			jobj = new JSONObject(requestBody);
-			// Delete usage details
-			sql = "delete from usage_detail where consumption_id='" + id +"' and (";
-			final JSONArray deletedDays = jobj.getJSONArray("deletedDays");
-			if (deletedDays != null && deletedDays.length() > 0) {
-				//Iterating the contents of the array
-				Iterator<Object> iterator = deletedDays.iterator();
-				while(iterator.hasNext()) {
-					sql += "id='" + iterator.next().toString() + "' or ";
-				}
-				sql = sql.substring(0, sql.length() - 4) + ");";
-			} else {
-				json.put("error", "Missing mandatory parameter: deletedDays");
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			// Check mandatory params to be present
+			for (MANDATORY_PARAMS mandatoryParam: MANDATORY_PARAMS.values()) {
+				if (!jobj.has(mandatoryParam.value)) throw new Exception("Missing Missing mandatory parameter: " + mandatoryParam.value);
 			}
+			JSONArray deletedDays = jobj.getJSONArray(MANDATORY_PARAMS.DELETED_DAYS.value);
+			if (deletedDays == null || deletedDays.length() < 1) throw new Exception("Missing mandatory parameter: " + MANDATORY_PARAMS.DELETED_DAYS.value);
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
+
+		String sql = "DELETE FROM usage_detail WHERE consumption_id= ?::uuid AND id = ANY (?);";
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = connection.prepareStatement(sql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+
+			ArrayList<String> deletedDays = new ArrayList<>();
+			jobj.getJSONArray(MANDATORY_PARAMS.DELETED_DAYS.value).forEach(object -> deletedDays.add(object.toString()));
+			Array array = statement.getConnection().createArrayOf("UUID", deletedDays.toArray(new String[0]));
+			statement.setString(1, id);
+			statement.setArray(2, array);
+
+			context.getLogger().info("Execute SQL statement: " + statement);
+			statement.executeUpdate();
 			context.getLogger().info("License usage delete successfully."); 
 
 			return request.createResponseBuilder(HttpStatus.OK).build();
@@ -112,6 +113,16 @@ public class TekvLSDeleteUsageDetailsById
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
+
+	private enum MANDATORY_PARAMS {
+		DELETED_DAYS("deletedDays");
+
+		private final String value;
+
+		MANDATORY_PARAMS(String value) {
+			this.value = value;
 		}
 	}
 }
