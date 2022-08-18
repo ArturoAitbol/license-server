@@ -134,6 +134,7 @@ describe('change status of projects', () => {
 });
 
 describe('Dialog calls and interactions', () => {
+    beforeEach(beforeEachFunction);
     it('should show a message if an error ocurred while a submit failed', () => {
         const response = {error:"some error message"};
         spyOn(ProjectServiceMock, 'updateProject').and.returnValue(of(response));
