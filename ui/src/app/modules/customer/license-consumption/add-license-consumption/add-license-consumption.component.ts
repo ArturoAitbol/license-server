@@ -391,7 +391,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   displayFnProject(item: any): string {
-    return item && item.name ? item.name : '';
+    return item && item.projectName ? item.projectName : '';
   }
   displayFnDevice(item: any): string {
     return item && item.product ? item.product : '';
