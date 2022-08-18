@@ -19,7 +19,6 @@ import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.componen
 import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from '../helpers/role-permissions';
-import { SubAccount } from '../model/subaccount.model';
 
 @Component({
     selector: 'app-dashboard',
@@ -104,54 +103,40 @@ export class DashboardComponent implements OnInit {
      */
     private fetchDataToDisplay(): void {
         this.isRequestCompleted = false;
+        this.isLoadingResults = true;
         // here we are fetching all the data from the server
         forkJoin([
             this.customerService.getCustomerList(),
             this.subaccountService.getSubAccountList(),
             this.licenseService.getLicenseList()
         ]).subscribe(res => {
-            this.isLoadingResults = false;
             this.isRequestCompleted = true;
             const newDataObject: any = res.reduce((current, next) => {
                 return { ...current, ...next };
             }, {});
-            this.customerList = newDataObject['customers'];
-            this.customerList.forEach((account: any) => {
-                const subaccountDetails = newDataObject['subaccounts'].find((s: SubAccount) => s.customerId === account.id);
-                if (subaccountDetails !== undefined) {
-                    account.subaccountName = subaccountDetails.name;
-                    account.subaccountId = subaccountDetails.id;
-                    const subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccountDetails.id));
-                    if (subaccountLicenses.length > 0) {
-                        const licenseDetails = subaccountLicenses.find((l: License) => (l.status === "Active"));
-                        account.status = licenseDetails ? licenseDetails.status : "Expired";
-                    } else {
-                        account.status = "Inactive";
-                    }
+            const customerList = [];
+            newDataObject['customers'].forEach(customer => {
+                const subaccounts = newDataObject['subaccounts'].filter(s => s.customerId === customer.id);
+                if (subaccounts.length > 0) {
+                    subaccounts.forEach(subaccount => {
+                        const customerWithDetails = { ...customer };
+                        customerWithDetails.subaccountName = subaccount.name;
+                        customerWithDetails.subaccountId = subaccount.id;
+                        const subaccountLicenses = newDataObject['licenses'].filter((l: License) => (l.subaccountId === subaccount.id));
+                        customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
+                        customerList.push(customerWithDetails);
+                    })
+                } else {
+                    customerList.push({ ...customer });
                 }
             });
-            this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            this.customerList = customerList;
+            this.isLoadingResults = false;
         }, err => {
             console.debug('error', err);
             this.isLoadingResults = false;
             this.isRequestCompleted = true;
-        });
-    }
-
-    assignSubAccountData(subAccounts: SubAccount[], licences: License[]): void {
-        this.customerList.forEach((customer: any) => {
-            const subaccountDetails = subAccounts.find((s: SubAccount) => s.customerId === customer.id);
-            if (subaccountDetails !== undefined) {
-                customer.subaccountName = subaccountDetails.name;
-                customer.subaccountId = subaccountDetails.id;
-                const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccountDetails.id));
-                if (subaccountLicenses.length > 0) {
-                    const licenseDetails = subaccountLicenses.find((l: License) => (l.status === 'Active'));
-                    customer.status = licenseDetails ? licenseDetails.status : 'Expired';
-                } else {
-                    customer.status = 'Inactive';
-                }
-            }
         });
     }
 
