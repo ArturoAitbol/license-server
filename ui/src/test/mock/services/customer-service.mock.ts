@@ -161,7 +161,7 @@ const CUSTOMER_LIST = {
         {
             customerType: 'MSP',
             testCustomer: false,
-            name: 'Vonage',
+            name: 'Unit Test',
             id: '821f079f-be9f-4b11-b364-4f9652c581ce'
         },
         {
@@ -341,9 +341,10 @@ const CUSTOMER_LIST = {
     ]
 };
 
-export const CustomerServiceMock = {
-    customerListValue: CUSTOMER_LIST,
-    getCustomerList: () => {
+export class CustomerServiceMock {
+    static customerListValue = CUSTOMER_LIST;
+    expectedResponse:{ res: {} };
+    public getCustomerList() {
         return new Observable((observer) => {
             observer.next(
                 CUSTOMER_LIST
@@ -353,8 +354,18 @@ export const CustomerServiceMock = {
                 unsubscribe() { }
             };
         });
-    },
-    setSelectedCustomer: () => {
-
     }
-};
+
+    public setSelectedCustomer() { }
+
+    public deleteCustomer (customerId: string) {
+        return new Observable((observer) => {
+            observer.next(this.expectedResponse);
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    }
+}
+
