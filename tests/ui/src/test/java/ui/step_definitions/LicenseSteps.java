@@ -9,7 +9,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import junit.framework.Assert;
-import ui.pages.Customers;
+// import ui.pages.Customers;
 import ui.pages.Licenses.LicenseForm;
 import ui.pages.Licenses.LicenseRow;
 import ui.pages.Licenses.Licenses;
@@ -17,7 +17,7 @@ import ui.pages.Licenses.Licenses;
 public class LicenseSteps {
     private LicenseRow licenseRow;
     private Licenses licenses;
-    private Customers customers;
+    // private Customers customers;
     private LicenseForm licenseForm;
 
     public LicenseSteps(Licenses licenses) {
@@ -78,6 +78,6 @@ public class LicenseSteps {
     @When("I click back button")
     public void iClickBackButton() {
         this.licenses.clickBackButton();
-        this.customers = new Customers();
+        // this.customers = new Customers();
     }
 }

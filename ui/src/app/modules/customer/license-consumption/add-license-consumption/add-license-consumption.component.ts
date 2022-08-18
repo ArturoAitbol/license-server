@@ -369,7 +369,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   private filterProjects(value: string): Project[] {
     const filterValue = value.toLowerCase();
-    return this.projects.filter(option => option.name.toLowerCase().includes(filterValue));
+    return this.projects.filter(option => option.projectName.toLowerCase().includes(filterValue));
   }
 
   private filterVendors(value: string, support = false): any[] {

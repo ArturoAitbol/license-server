@@ -187,23 +187,23 @@ describe('Calls and interactions', () => {
         fixture.detectChanges();
         expect(BundleServiceMock.getBundleList).toHaveBeenCalled();
 
-        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.customBundle.name);
+        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.customBundle.bundleName);
         expect(addLicenseForm.get('tokensPurchased').enabled).toBeTrue();
         expect(addLicenseForm.get('deviceLimit').enabled).toBeTrue();
         expect(addLicenseForm.get('tokensPurchased').value).toBe(undefined);
         expect(addLicenseForm.get('deviceLimit').value).toBe(undefined);
 
-        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.addonBundle.name);
+        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.addonBundle.bundleName);
         expect(addLicenseForm.get('tokensPurchased').enabled).toBeTrue();
         expect(addLicenseForm.get('deviceLimit').enabled).toBeTrue();
-        expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.addonBundle.tokens);
-        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.addonBundle.deviceAccessTokens);
+        expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.addonBundle.defaultTokens);
+        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.addonBundle.defaultDeviceAccessTokens);
 
-        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.basicBundle.name);
+        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.basicBundle.bundleName);
         expect(addLicenseForm.get('tokensPurchased').disabled).toBeTrue();
         expect(addLicenseForm.get('deviceLimit').disabled).toBeTrue();
-        expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.basicBundle.tokens);
-        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.basicBundle.deviceAccessTokens);
+        expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.basicBundle.defaultTokens);
+        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.basicBundle.defaultDeviceAccessTokens);
     });
 
 });

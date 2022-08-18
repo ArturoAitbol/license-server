@@ -142,8 +142,8 @@ public class TekvLSGetAllProjects {
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("id"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
-				item.put("name", rs.getString("name"));
-				item.put("code", rs.getString("code"));
+				item.put("projectName", rs.getString("name"));
+				item.put("projectNumber", rs.getString("code"));
 				item.put("status", rs.getString("status"));
 				item.put("openDate", rs.getString("open_date").split(" ")[0]);
 				closeDate = rs.getString("close_date");

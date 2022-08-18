@@ -42,7 +42,7 @@ export class ProjectService {
    * @param project: Project 
    * @returns: Observable 
    */
-  public updateProject(project: Project): Observable<any> {
+  public updateProject(project: any): Observable<any> {
     return this.httpClient.put(`${this.API_URL}/${project.id}`, project);
   }
 

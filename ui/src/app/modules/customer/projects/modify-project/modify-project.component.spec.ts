@@ -15,6 +15,9 @@ import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
 import { ProjectsComponent } from "../projects.component";
 import { ModifyProjectComponent } from "./modify-project.component";
+import { of } from 'rxjs';
+import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
+import { SnackBarService } from "src/app/services/snack-bar.service";
 
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
@@ -61,6 +64,10 @@ const beforeEachFunction = () => {
             {
                 provide: MAT_DIALOG_DATA,
                 useValue: currentProject
+            },
+            {
+                provide: SnackBarService,
+                useValue: SnackBarServiceMock
             }
         ]
     });
@@ -108,11 +115,35 @@ describe('modify project interactions', () => {
 describe('change status of projects', () => {
     beforeEach(beforeEachFunction);
     it('should execute changingStatus()', () => {
-        const status = ''
         spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
-
+        let status = 'Open'
         modifyPorjectComponentTestInstance.onChanginStatus(status)
-        expect(modifyPorjectComponentTestInstance.onChanginStatus).toHaveBeenCalledOnceWith(status);
+        fixture.detectChanges();
 
+        expect(modifyPorjectComponentTestInstance.onChanginStatus).toHaveBeenCalledWith(status);
+    });
+
+    it('should execute changinStatus() with close status', () => {
+        spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
+        let status = 'close';
+        modifyPorjectComponentTestInstance.onChanginStatus(status);
+        fixture.detectChanges();
+
+        expect(modifyPorjectComponentTestInstance.onChanginStatus).toHaveBeenCalledWith(status)
     });
 });
+
+describe('Dialog calls and interactions', () => {
+    beforeEach(beforeEachFunction);
+    it('should show a message if an error ocurred while a submit failed', () => {
+        const response = {error:"some error message"};
+        spyOn(ProjectServiceMock, 'updateProject').and.returnValue(of(response));
+        spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+        fixture.detectChanges();
+
+        modifyPorjectComponentTestInstance.submit();
+
+        expect(ProjectServiceMock.updateProject).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error updating project!');
+    });
+}); 

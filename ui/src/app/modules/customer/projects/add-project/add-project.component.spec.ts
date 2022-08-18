@@ -7,12 +7,15 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MsalService } from "@azure/msal-angular";
 import { SharedModule } from "src/app/modules/shared/shared.module";
 import { ProjectService } from "src/app/services/project.service";
+import { SnackBarService } from "src/app/services/snack-bar.service";
 import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
+import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { ProjectsComponent } from "../projects.component";
 import { AddProjectComponent } from "./add-project.component";
+import { of, throwError } from 'rxjs';
 
 let addPorjectComponentTestInstance: AddProjectComponent;
 let fixture: ComponentFixture<AddProjectComponent>;
@@ -48,6 +51,10 @@ const beforeEachFunction = () => {
             {
                 provide: MatDialogRef,
                 useValue: dialogMock
+            },
+            {
+                provide: SnackBarService,
+                useValue: SnackBarServiceMock
             }
         ]
     });
@@ -83,4 +90,33 @@ describe('add projects interactions', () => {
         addPorjectComponentTestInstance.onCancel();
         expect(addPorjectComponentTestInstance.onCancel).toHaveBeenCalled();
     });
+});
+
+describe('Dialog calls and interactions', () => {
+    beforeEach(beforeEachFunction);
+    it('should show a message if an error ocurred while a submit failed', () => {
+        const response = {error:"some error message"};
+        spyOn(ProjectServiceMock, 'createProject').and.returnValue(of(response));
+        spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+        fixture.detectChanges();
+
+        addPorjectComponentTestInstance.submit();
+
+        expect(ProjectServiceMock.createProject).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error adding project!');
+    });
+    it('should show a message if an error was thrown while adding a project after calling submit()', () => {
+        const err = { error:"some error"};
+        spyOn(ProjectServiceMock, 'createProject').and.returnValue(throwError(err));
+        spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+        spyOn(console, 'error').and.callThrough();
+        fixture.detectChanges();
+
+        addPorjectComponentTestInstance.submit();
+
+        expect(ProjectServiceMock.createProject).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error adding project!');
+        expect(console.error).toHaveBeenCalledWith('error adding a new project', err);
+        expect(addPorjectComponentTestInstance.isDataLoading).toBeFalse();
+    })
 });

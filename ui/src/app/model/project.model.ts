@@ -1,7 +1,7 @@
 export interface Project {
     id: string;
-    name: string;
-    number: string;
+    projectName: string;
+    projectNumber: string;
     subaccountId: string;
     openDate: string;
     closeDate: string;

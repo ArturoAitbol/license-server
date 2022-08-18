@@ -5,6 +5,7 @@ import { LicenseService } from 'src/app/services/license.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { BundleService } from 'src/app/services/bundle.service';
 import { renewalDateValidator } from "src/app/helpers/renewal-date.validator";
+import { ConsoleLogger } from '@angular/compiler-cli/private/localize';
 
 @Component({
     selector: 'app-modify-license',
@@ -41,14 +42,13 @@ export class ModifyLicenseComponent implements OnInit {
             this.selectedType = this.data.packageType;
             this.data.startDate = new Date (this.data.startDate + " 00:00:00");
             this.data.renewalDate = new Date (this.data.renewalDate + " 00:00:00");
-            this.updateCustomerForm.patchValue(this.data);
-            this.previousFormValue = { ...this.updateCustomerForm.getRawValue() };
-            this.previousFormValue.tokensPurchased = this.previousFormValue.tokensPurchased.toString(); 
             this.onStartDateChange(this.data.startDate);
             this.onRenewalDateChange(this.data.renewalDate);
             this.bundleService.getBundleList().subscribe((res: any) => {
                 if (res) this.packageTypes = res.bundles;
                 this.onChangeType(this.data.packageType);
+                this.updateCustomerForm.patchValue(this.data);
+                this.previousFormValue = { ...this.updateCustomerForm.getRawValue() };
                 this.isDataLoading = false;
             });
         }
@@ -60,20 +60,24 @@ export class ModifyLicenseComponent implements OnInit {
         this.dialogRef.close();
     }
 
-    onChangeType(newType: string) {
-        this.selectedType = this.packageTypes.find(item => item.name == newType)
+    onChangeType(bundleName: string) {
+        this.selectedType = this.packageTypes.find(item => item.bundleName === bundleName)
         if (this.selectedType) {
-            this.updateCustomerForm.patchValue({
-                tokensPurchased: newType=== "Custom"? this.data.tokensPurchased : this.selectedType.tokens,
-                deviceLimit: newType=== "Custom"? this.data.deviceLimit : this.selectedType.deviceAccessTokens,
-            });
-            if (newType == "Custom" || newType == "AddOn") {
+            if (this.selectedType.bundleName !== "Custom") {
+                this.updateCustomerForm.patchValue({
+                    tokensPurchased: this.selectedType.defaultTokens,
+                    deviceLimit: this.selectedType.defaultDeviceAccessTokens,
+                });
+            }
+            if (this.selectedType.bundleName == "Custom" || this.selectedType.bundleName == "AddOn") {
                 this.updateCustomerForm.get('tokensPurchased').enable();
                 this.updateCustomerForm.get('deviceLimit').enable();
             } else {
                 this.updateCustomerForm.get('tokensPurchased').disable();
                 this.updateCustomerForm.get('deviceLimit').disable();
             }
+            console.log("tokensPurchased", this.updateCustomerForm.get('tokensPurchased').value);
+            console.log("deviceLimit", this.updateCustomerForm.get('deviceLimit').value);
         }
     }
 
@@ -86,7 +90,7 @@ export class ModifyLicenseComponent implements OnInit {
         const currentDate = new Date(); 
         currentDate.setHours(0,0,0,0);
         const newDate = new Date(mergedLicenseObject.renewalDate);
-        mergedLicenseObject.status =newDate>=currentDate ? 'Active' : 'Expired';
+        mergedLicenseObject.status = newDate >= currentDate ? 'Active' : 'Expired';
         mergedLicenseObject.tokensPurchased = this.updateCustomerForm.get("tokensPurchased").value;
         mergedLicenseObject.deviceLimit = this.updateCustomerForm.get("deviceLimit").value;
         this.licenseService.updateLicenseDetails(mergedLicenseObject).subscribe((res: any) => {
