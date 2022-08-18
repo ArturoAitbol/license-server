@@ -16,6 +16,7 @@ public class Header extends AbstractPageObject {
             this.action.click(logoutSelector);
             By logoutMessage = By.cssSelector("div[role='heading']");
             this.action.waitVisibilityElement(logoutMessage);
+            driver.manage().deleteAllCookies();
             return true;
         }catch (Exception e) {
             System.out.println("Couldn't execute the logout process: Some buttons/messages weren't available");
