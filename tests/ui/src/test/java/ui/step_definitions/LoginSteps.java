@@ -7,6 +7,8 @@ import io.cucumber.java.en.When;
 
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.Assert;
+
+import ui.core.DriverManager;
 import ui.pages.Customers;
 import ui.pages.Header;
 import ui.pages.Landing;
@@ -35,14 +37,12 @@ public class LoginSteps {
         String email = environment.username();
         String password = environment.password();
         this.customers = this.loginForm.SignIn(email, password);
-        // System.out.println(this.logged);
     }
 
     @Then("I should see the {string} page")
     public void iShouldSeeThePage(String expectedTitle) {
         String actualTitle = this.customers.getTitle();
         Assert.assertEquals("Page doesn't have the title: ".concat(expectedTitle), expectedTitle, actualTitle);
-        // System.out.println(actualTitle + "=" + expectedTitle);
     }
 
     @And("I logout")
