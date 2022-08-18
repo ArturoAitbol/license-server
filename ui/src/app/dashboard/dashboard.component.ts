@@ -20,7 +20,6 @@ import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from '../helpers/role-permissions';
 import { SubAccount } from '../model/subaccount.model';
-import {Customer} from '../model/customer.model';
 
 @Component({
     selector: 'app-dashboard',
@@ -105,13 +104,13 @@ export class DashboardComponent implements OnInit {
      */
     private fetchDataToDisplay(): void {
         this.isRequestCompleted = false;
+        this.isLoadingResults = true;
         // here we are fetching all the data from the server
         forkJoin([
             this.customerService.getCustomerList(),
             this.subaccountService.getSubAccountList(),
             this.licenseService.getLicenseList()
         ]).subscribe(res => {
-            this.isLoadingResults = false;
             this.isRequestCompleted = true;
             const newDataObject: any = res.reduce((current, next) => {
                 return { ...current, ...next };
@@ -119,6 +118,7 @@ export class DashboardComponent implements OnInit {
             this.customerList = newDataObject['customers'];
             this.assignSubAccountData(newDataObject['subaccounts'], newDataObject['licenses']);
             this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            this.isLoadingResults = false;
         }, err => {
             console.debug('error', err);
             this.isLoadingResults = false;
@@ -126,21 +126,33 @@ export class DashboardComponent implements OnInit {
         });
     }
 
-    assignSubAccountData(subAccounts: SubAccount[], licences: License[]): void {
-        this.customerList.forEach((customer: any) => {
-            const subaccountDetails = subAccounts.find((s: SubAccount) => s.customerId === customer.id);
-            if (subaccountDetails !== undefined) {
-                customer.subaccountName = subaccountDetails.name;
-                customer.subaccountId = subaccountDetails.id;
-                const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccountDetails.id));
-                if (subaccountLicenses.length > 0) {
-                    const licenseDetails = subaccountLicenses.find((l: License) => (l.status === 'Active'));
-                    customer.status = licenseDetails ? licenseDetails.status : 'Expired';
-                } else {
-                    customer.status = 'Inactive';
-                }
+    assignSubAccountData(subaccountsList: SubAccount[], licences: License[]): void {
+        const fullCustomerList = [];
+        this.customerList.forEach(customer => {
+            const subaccounts = subaccountsList.filter(s => s.customerId === customer.id);
+            if (subaccounts.length > 0) {
+                subaccounts.forEach(subaccount => {
+                    const customerWithDetails = { ...customer };
+                    customerWithDetails.subaccountName = subaccount.name;
+                    customerWithDetails.subaccountId = subaccount.id;
+                    const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccount.id));
+                    customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
+                    fullCustomerList.push(customerWithDetails);
+                })
+            } else {
+                fullCustomerList.push({ ...customer });
             }
         });
+        this.customerList = fullCustomerList;
+    }
+
+    getCustomerLicenseStatus(subaccountLicenses: License[]): string {
+        if (subaccountLicenses.length > 0) {
+            const licenseDetails = subaccountLicenses.find((l: License) => (l.status === 'Active'));
+            return licenseDetails ? licenseDetails.status : 'Expired';
+        } else {
+            return 'Inactive';
+        }
     }
 
     getColor(value: string) {
@@ -317,25 +329,22 @@ export class DashboardComponent implements OnInit {
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
         switch (object.selectedOption) {
             case this.VIEW_LICENSES:
-                if (object.selectedRow.subaccountId !== undefined) {
+                if (object.selectedRow.subaccountId !== undefined)
                     this.openLicenseDetails(object.selectedRow);
-                } else {
+                else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Packages view', '');
-                }
                 break;
             case this.VIEW_CONSUMPTION:
-                if (object.selectedRow.subaccountId !== undefined) {
+                if (object.selectedRow.subaccountId !== undefined)
                     this.openLicenseConsumption(object.selectedRow);
-                } else {
+                else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
-                }
                 break;
             case this.VIEW_PROJECTS:
-                if (object.selectedRow.subaccountId !== undefined) {
+                if (object.selectedRow.subaccountId !== undefined)
                     this.openProjectDetails(object.selectedRow);
-                } else {
+                else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access Projects view', '');
-                }
                 break;
             case this.VIEW_ADMIN_EMAILS:
                 this.openDialog(object.selectedOption, object.selectedRow);
@@ -359,21 +368,17 @@ export class DashboardComponent implements OnInit {
     columnAction(object: { selectedRow: any, selectedIndex: string, columnName: string }) {
         switch (object.columnName) {
             case 'Subaccount':
-                if (object.selectedRow.subaccountId !== undefined) {
+                if (object.selectedRow.subaccountId !== undefined)
                     this.openLicenseConsumption(object.selectedRow);
-                    break;
-                } else {
+                else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
-                    break;
-                }
+                break;
             case 'Subscription Status':
-                if (object.selectedRow.status !== undefined) {
+                if (object.selectedRow.status !== undefined)
                     this.openLicenseDetails(object.selectedRow);
-                    break;
-                } else {
+                else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Packages view', '');
-                    break;
-                }
+                break;
         }
     }
 }
