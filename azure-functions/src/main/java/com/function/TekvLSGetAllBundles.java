@@ -55,7 +55,7 @@ public class TekvLSGetAllBundles {
 	   }
 
 	   context.getLogger().info("Entering TekvLSGetAllBundles Azure function");
-	   String name = request.getQueryParameters().getOrDefault("name", "");
+	   String name = request.getQueryParameters().getOrDefault("bundleName", "");
 
 	   // Build SQL statement
 		String sql = "SELECT * FROM bundle";
@@ -87,9 +87,9 @@ public class TekvLSGetAllBundles {
 			while (rs.next()) {
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("id"));
-				item.put("name", rs.getString("name"));
-				item.put("deviceAccessTokens", rs.getString("device_access_tokens"));
-				item.put("tokens", rs.getString("tokens"));
+				item.put("bundleName", rs.getString("name"));
+				item.put("defaultDeviceAccessTokens", rs.getString("device_access_tokens"));
+				item.put("defaultTokens", rs.getString("tokens"));
 				array.put(item);
 			}
 			json.put("bundles", array);
@@ -105,7 +105,7 @@ public class TekvLSGetAllBundles {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }

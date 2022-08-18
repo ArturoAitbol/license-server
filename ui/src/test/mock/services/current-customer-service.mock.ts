@@ -7,7 +7,7 @@ export const CurrentCustomerServiceMock = {
             customerType: 'MSP',
             subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
             subaccountName: 'testSubP2',
-            testCustomer: true
+            testCustomer: false
         }
     }
     

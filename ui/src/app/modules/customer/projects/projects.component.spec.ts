@@ -5,7 +5,7 @@ import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import { Observable } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { DataTableComponent } from 'src/app/generics/data-table/data-table.component';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
@@ -21,6 +21,7 @@ import { ModifyProjectComponent } from './modify-project/modify-project.componen
 import { ProjectsComponent } from './projects.component';
 import { Sort } from '@angular/material/sort';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
+import { SnackBarService } from "../../../services/snack-bar.service";
 
 let projectsComponentTestInstance: ProjectsComponent;
 let fixture: ComponentFixture<ProjectsComponent>;
@@ -66,6 +67,10 @@ const beforeEachFunction = () => {
             {
                 provide: HttpClient,
                 useValue: HttpClient
+            },
+            {
+                provide: SnackBarService,
+                useValue: SnackBarServiceMock
             }
         ]
     });
@@ -75,16 +80,20 @@ const beforeEachFunction = () => {
     spyOn(console, 'log').and.callThrough();
     spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer' ).and.callThrough();
     spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
-    spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
 };
 
 describe('UI verification test', () => {
     beforeEach(beforeEachFunction);
     it('should display essential UI and components', () =>{
         fixture.detectChanges();
+        spyOn(projectsComponentTestInstance, 'sizeChange').and.callThrough();
+
         const h2 = fixture.nativeElement.querySelector('#page-title');
         const addProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
         const goBackButton = fixture.nativeElement.querySelector('#go-back-button');
+
+        projectsComponentTestInstance.sizeChange();
+        expect(projectsComponentTestInstance.sizeChange).toHaveBeenCalled();
         expect(h2.textContent).toBe('Project Summary');
         expect(addProjectButton.textContent).toBe('Add New Project ');
         expect(goBackButton.textContent).toBe('Back');
@@ -105,7 +114,7 @@ describe('UI verification test', () => {
     });
 
     it('should execute sortData()', () => {
-        const sort: Sort  = {active:'name', direction:'desc'  }
+        const sort: Sort  = {active:'projectName', direction:'desc'  }
 
         spyOn(projectsComponentTestInstance, 'sortData').and.callThrough();
 
@@ -123,11 +132,22 @@ describe('UI verification test', () => {
 describe('Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
     it('should make a call to get project list after initializing', () => {
+        spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
+
         fixture.detectChanges();
+        projectsComponentTestInstance.currentCustomer = null;
         expect(CurrentCustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(ProjectServiceMock.setSelectedSubAccount).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
-        expect(projectsComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects)
+        expect(projectsComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects);
+    });
+
+    it('should change the loading-related variables if getProjects() got an error', () => {
+        spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.returnValue(throwError("error"));
+        fixture.detectChanges();
+
+        expect(projectsComponentTestInstance.isLoadingResults).toBeFalse();
+        expect(projectsComponentTestInstance.isRequestCompleted).toBeTrue();
     });
 });
 
@@ -137,16 +157,17 @@ describe('Dialog calls and interactions', () => {
         spyOn(projectsComponentTestInstance, 'openDialog');
         projectsComponentTestInstance.onNewProject();
         expect(projectsComponentTestInstance.openDialog).toHaveBeenCalledWith(AddProjectComponent);
-    })
+    });
 
     it('should execute rowAction() with expected data given set arguments', () => {
         const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
+       
         spyOn(projectsComponentTestInstance, 'openDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'confirmCloseDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'confirmDeleteDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'openConsumptionView').and.callThrough();
         spyOn(dialogService, 'confirmDialog').and.callThrough();
-
+        
         selectedTestData.selectedOption = projectsComponentTestInstance.MODIFY_PROJECT;
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(projectsComponentTestInstance.openDialog).toHaveBeenCalledWith(ModifyProjectComponent, selectedTestData.selectedRow);
@@ -168,12 +189,63 @@ describe('Dialog calls and interactions', () => {
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(projectsComponentTestInstance.confirmCloseDialog).toHaveBeenCalledWith(selectedTestData.selectedIndex);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
-        
+
         selectedTestData.selectedOption = projectsComponentTestInstance.DELETE_PROJECT;
         dialogService.setExpectedValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(projectsComponentTestInstance.confirmDeleteDialog).toHaveBeenCalledWith(selectedTestData.selectedIndex);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
+    });
+
+    it('should show a message if an error ocurred while closing a project after calling confirmCloseDialog()', () => {
+        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
+        const response = {body: {error:"some error message"}};
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(ProjectServiceMock, 'closeProject').and.returnValue(of(response));
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+        fixture.detectChanges();
+        
+        selectedTestData.selectedOption = projectsComponentTestInstance.CLOSE_PROJECT;
+        dialogService.setExpectedValue(true);
+        projectsComponentTestInstance.rowAction(selectedTestData);
+        expect(dialogService.confirmDialog).toHaveBeenCalled();
+
+        expect(ProjectServiceMock.closeProject).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.body.error, 'Error closing project!' );
+    });
+
+    it('should show a message if successfully closed a project after calling confirmCloseDialog()',  () => {
+        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
+        const response = {body: null}
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(ProjectServiceMock, 'closeProject').and.returnValue(of(response));
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+        fixture.detectChanges();
+ 
+        selectedTestData.selectedOption = projectsComponentTestInstance.CLOSE_PROJECT;
+        dialogService.setExpectedValue(true);
+        projectsComponentTestInstance.rowAction(selectedTestData);
+        expect(dialogService.confirmDialog).toHaveBeenCalled();
+    
+        expect(ProjectServiceMock.closeProject).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project updated successfully!');
+    });
+
+    it('should show a message if successfully deleted a project after calling confirmDeleteDialog()', () => {
+        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
+        const response = {status: 200};
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(ProjectServiceMock, 'deleteProject').and.returnValue(of(response));
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+        fixture.detectChanges();
+ 
+        selectedTestData.selectedOption = projectsComponentTestInstance.DELETE_PROJECT;
+        dialogService.setExpectedValue(true);
+        projectsComponentTestInstance.rowAction(selectedTestData);
+        expect(dialogService.confirmDialog).toHaveBeenCalled();
+    
+        expect(ProjectServiceMock.deleteProject).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project deleted successfully!');
     });
 });
 

@@ -70,7 +70,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"CICDTest\",\r\n    \"tokens\":\"10\",\r\n    \"deviceAccessToken\":\"100\"\r\n}",
+					"raw": "{\r\n    \"bundleName\":\"CICDTest\",\r\n    \"defaultTokens\":\"10\",\r\n    \"defaultDeviceAccessTokens\":\"100\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -106,7 +106,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"tokens\":\"20\"\r\n}",
+					"raw": "{\r\n    \"defaultTokens\":\"20\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

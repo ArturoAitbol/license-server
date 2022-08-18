@@ -17,17 +17,17 @@ import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mo
 import { AddLicenseComponent } from "./add-license.component";
 
 let addLicenseComponentTestInstance: AddLicenseComponent;
-let fixture : ComponentFixture<AddLicenseComponent>;
+let fixture: ComponentFixture<AddLicenseComponent>;
 
-const MatDialogRefMock = { 
-    close: ()=>{return null} 
+const MatDialogRefMock = {
+    close: () => { return null }
 };
 
-const beforeEachFunction = () =>{
+const beforeEachFunction = () => {
     TestBed.configureTestingModule({
-        declarations:[AddLicenseComponent],
-        imports: [CommonModule,SharedModule,BrowserAnimationsModule,FormsModule,ReactiveFormsModule],
-        providers: [ {
+        declarations: [AddLicenseComponent],
+        imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
+        providers: [{
             provide: CustomerService,
             useValue: CustomerServiceMock
         },
@@ -51,17 +51,17 @@ const beforeEachFunction = () =>{
             provide: HttpClient,
             useValue: HttpClient
         }
-    ]
+        ]
     });
     fixture = TestBed.createComponent(AddLicenseComponent);
     addLicenseComponentTestInstance = fixture.componentInstance;
 }
 
-describe('UI and component verification tests',()=>{
+describe('UI and component verification tests', () => {
 
     beforeEach(beforeEachFunction);
 
-    it('should display essential UI and components',()=>{
+    it('should display essential UI and components', () => {
         fixture.detectChanges();
         const h1: HTMLElement = fixture.nativeElement.querySelector('#dialog-title');
         const cancelButton: HTMLElement = fixture.nativeElement.querySelector('#cancel-button');
@@ -79,26 +79,26 @@ describe('UI and component verification tests',()=>{
     });
 });
 
-describe('FormGroup verification tests',()=>{
+describe('FormGroup verification tests', () => {
 
     beforeEach(beforeEachFunction);
-    
-    it('should create a formGroup with the necesary controls',()=>{
+
+    it('should create a formGroup with the necesary controls', () => {
         expect(addLicenseComponentTestInstance.addLicenseForm.contains('startDate')).toBeTrue();
         expect(addLicenseComponentTestInstance.addLicenseForm.contains('packageType')).toBeTrue();
         expect(addLicenseComponentTestInstance.addLicenseForm.contains('tokensPurchased')).toBeTrue();
         expect(addLicenseComponentTestInstance.addLicenseForm.contains('deviceLimit')).toBeTrue();
         expect(addLicenseComponentTestInstance.addLicenseForm.contains('renewalDate')).toBeTrue();
     });
-    
-    it('should make all the controls required',()=>{
+
+    it('should make all the controls required', () => {
         const addLicenseForm = addLicenseComponentTestInstance.addLicenseForm;
         addLicenseForm.setValue({
-            startDate:'',
-            packageType:'',
-            tokensPurchased:'',
-            deviceLimit:'',
-            renewalDate:''
+            startDate: '',
+            packageType: '',
+            tokensPurchased: '',
+            deviceLimit: '',
+            renewalDate: ''
         });
 
         expect(addLicenseForm.get('startDate').valid).toBeFalse();
@@ -108,7 +108,7 @@ describe('FormGroup verification tests',()=>{
         expect(addLicenseForm.get('renewalDate').valid).toBeFalse();
     });
 
-    it('should validate that renewalDate is always after startDate',()=>{
+    it('should validate that renewalDate is always after startDate', () => {
         const addLicenseForm = addLicenseComponentTestInstance.addLicenseForm;
 
         addLicenseForm.get('startDate').setValue('2022-06-17');
@@ -123,13 +123,13 @@ describe('FormGroup verification tests',()=>{
 
 });
 
-describe('Data collection and parsing tests',()=>{
+describe('Data collection and parsing tests', () => {
 
     beforeEach(beforeEachFunction);
 
-    it('should make a call to get selected Customer and bundles list (types)',()=>{
-        spyOn(CustomerServiceMock,'getSelectedCustomer').and.callThrough();
-        spyOn(BundleServiceMock,'getBundleList').and.callThrough();
+    it('should make a call to get selected Customer and bundles list (types)', () => {
+        spyOn(CustomerServiceMock, 'getSelectedCustomer').and.callThrough();
+        spyOn(BundleServiceMock, 'getBundleList').and.callThrough();
         fixture.detectChanges();
         expect(CustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(BundleServiceMock.getBundleList).toHaveBeenCalled();
@@ -138,20 +138,20 @@ describe('Data collection and parsing tests',()=>{
 
 });
 
-describe('Calls and interactions', ()=>{
+describe('Calls and interactions', () => {
 
     beforeEach(beforeEachFunction);
 
-    it('should close the openDialog when calling onCancel()',()=>{
-        spyOn(addLicenseComponentTestInstance.dialogRef,'close');
+    it('should close the openDialog when calling onCancel()', () => {
+        spyOn(addLicenseComponentTestInstance.dialogRef, 'close');
         fixture.detectChanges();
         addLicenseComponentTestInstance.onCancel();
         expect(addLicenseComponentTestInstance.dialogRef.close).toHaveBeenCalled();
     });
 
-    it('should create a license after calling submit()',()=>{
-        spyOn(LicenseServiceMock,'createLicense').and.callThrough();
-        spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+    it('should create a license after calling submit()', () => {
+        spyOn(LicenseServiceMock, 'createLicense').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
         addLicenseComponentTestInstance.submit();
 
@@ -159,11 +159,11 @@ describe('Calls and interactions', ()=>{
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Package added successfully!', '');
     });
 
-    it('should show an error when adding license failed after calling submit()',()=>{
-        spyOn(LicenseServiceMock,'createLicense').and.returnValue(of({error:'some error message'}));
-        spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+    it('should show an error when adding license failed after calling submit()', () => {
+        spyOn(LicenseServiceMock, 'createLicense').and.returnValue(of({ error: 'some error message' }));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
-        
+
         addLicenseComponentTestInstance.submit();
 
         expect(LicenseServiceMock.createLicense).toHaveBeenCalled();
@@ -171,7 +171,7 @@ describe('Calls and interactions', ()=>{
 
     });
 
-    it('should set the minimun renewalData value and the maximun startDate value so startDate is always before renewalDate',()=>{
+    it('should set the minimun renewalData value and the maximun startDate value so startDate is always before renewalDate', () => {
         addLicenseComponentTestInstance.onStartDateChange('2022-01-06 00:00:00');
         expect(addLicenseComponentTestInstance.renewalDateMin).toEqual(new Date('2022-01-07 00:00:00'));
 
@@ -179,27 +179,31 @@ describe('Calls and interactions', ()=>{
         expect(addLicenseComponentTestInstance.startDateMax).toEqual(new Date('2022-01-05 00:00:00'));
     });
 
-    it('should modify tokensPurchased and deviceLimit form controls according to the type (bundle) selected when calling onChangeType()',()=>{
+    it('should modify tokensPurchased and deviceLimit form controls according to the type (bundle) selected when calling onChangeType()', () => {
 
         const addLicenseForm = addLicenseComponentTestInstance.addLicenseForm;
+        //Retrieve existing bundles list
+        spyOn(BundleServiceMock, 'getBundleList').and.callThrough();
+        fixture.detectChanges();
+        expect(BundleServiceMock.getBundleList).toHaveBeenCalled();
 
-        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.customBundle);
+        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.customBundle.bundleName);
         expect(addLicenseForm.get('tokensPurchased').enabled).toBeTrue();
         expect(addLicenseForm.get('deviceLimit').enabled).toBeTrue();
         expect(addLicenseForm.get('tokensPurchased').value).toBe(undefined);
         expect(addLicenseForm.get('deviceLimit').value).toBe(undefined);
 
-        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.addonBundle);
+        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.addonBundle.bundleName);
         expect(addLicenseForm.get('tokensPurchased').enabled).toBeTrue();
         expect(addLicenseForm.get('deviceLimit').enabled).toBeTrue();
-        expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.addonBundle.tokens);
-        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.addonBundle.deviceAccessTokens);
-        
-        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.basicBundle);
+        expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.addonBundle.defaultTokens);
+        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.addonBundle.defaultDeviceAccessTokens);
+
+        addLicenseComponentTestInstance.onChangeType(BundleServiceMock.basicBundle.bundleName);
         expect(addLicenseForm.get('tokensPurchased').disabled).toBeTrue();
         expect(addLicenseForm.get('deviceLimit').disabled).toBeTrue();
-        expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.basicBundle.tokens);
-        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.basicBundle.deviceAccessTokens);
+        expect(addLicenseForm.get('tokensPurchased').value).toBe(BundleServiceMock.basicBundle.defaultTokens);
+        expect(addLicenseForm.get('deviceLimit').value).toBe(BundleServiceMock.basicBundle.defaultDeviceAccessTokens);
     });
 
 });
