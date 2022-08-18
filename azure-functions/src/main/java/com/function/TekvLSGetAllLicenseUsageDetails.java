@@ -30,7 +30,6 @@ public class TekvLSGetAllLicenseUsageDetails {
 	/* default values for pagination */
 	String LIMIT = "100";
 	String OFFSET = "0";
-	private String whereStatement;
 
 	/**
 	 * This function listens at endpoint "/v1.0/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
@@ -123,9 +122,9 @@ public class TekvLSGetAllLicenseUsageDetails {
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			JSONObject json = new JSONObject();
-			ResultSet rs;
 
 			if(verificationQueryBuilder != null){
+				ResultSet rs;
 				try (PreparedStatement verificationStmt = verificationQueryBuilder.build(connection)) {
 					context.getLogger().info("Execute SQL role verification statement: " + verificationStmt);
 					rs = verificationStmt.executeQuery();
@@ -156,6 +155,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 
 					try (PreparedStatement stmt = connectedDevicesQueryBuilder.build(connection)) {
+						ResultSet rs;
 						context.getLogger().info("Execute SQL devices statement: " + stmt);
 						rs = stmt.executeQuery();
 						rs.next();
@@ -164,6 +164,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 					// Get tokens consumed
 					try (PreparedStatement stmt = tokensConsumedQueryBuilder.build(connection)) {
+						ResultSet rs;
 						context.getLogger().info("Execute SQL tokens statement: " + stmt);
 						rs = stmt.executeQuery();
 						rs.next();
@@ -185,6 +186,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 					try (PreparedStatement stmt = queryBuilder.build(connection)) {
 						context.getLogger().info("Execute SQL equipment statement: " + stmt);
+						ResultSet rs;
 						rs = stmt.executeQuery();
 						while (rs.next()) {
 							JSONObject item = new JSONObject();
@@ -260,6 +262,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					try (PreparedStatement stmt = allQueryBuilder.build(connection)) {
 						context.getLogger().info("Execute SQL paginated consumption statement: " + stmt);
 
+						ResultSet rs;
 						rs = stmt.executeQuery();
 						while (rs.next()) {
 							JSONObject item = new JSONObject();
@@ -286,6 +289,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					try (PreparedStatement stmt = weeklyConfigTokensConsumedQueryBuilder.build(connection)) {
 						context.getLogger().info("Execute SQL weekly statement: " + stmt);
 
+						ResultSet rs;
 						rs = stmt.executeQuery();
 						LocalDate dt, startWeek, endWeek;
 						while (rs.next()) {
@@ -306,6 +310,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					try (PreparedStatement stmt = tokensConsumedByProjectQueryBuilder.build(connection)) {
 						context.getLogger().info("Execute SQL project statement: " + stmt);
 
+						ResultSet rs;
 						rs = stmt.executeQuery();
 						while (rs.next()) {
 							JSONObject item = new JSONObject();
@@ -322,6 +327,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					try (PreparedStatement stmt = tokensConsumedQueryBuilder.build(connection)) {
 						context.getLogger().info("Execute SQL tokenConsumption statement: " + stmt);
 
+						ResultSet rs;
 						rs = stmt.executeQuery();
 						int count = 0;
 						JSONObject tokenConsumption = new JSONObject();

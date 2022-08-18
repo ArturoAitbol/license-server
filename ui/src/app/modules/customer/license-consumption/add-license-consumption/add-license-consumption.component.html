@@ -24,8 +24,8 @@
                             <input type="text" placeholder="Select a project" aria-label="Project" matInput
                                    formControlName="project" [matAutocomplete]="projectsList" id="project-auto-complete">
                             <mat-autocomplete #projectsList="matAutocomplete" [displayWith]="displayFnProject">
-                                <mat-option *ngFor="let item of filteredProjects | async" [value]="item">
-                                    {{item.name}}
+                                <mat-option *ngFor="let project of filteredProjects | async" [value]="project">
+                                    {{project.projectName}}
                                 </mat-option>
                             </mat-autocomplete>
                             <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>

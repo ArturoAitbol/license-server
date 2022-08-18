@@ -19,7 +19,7 @@ public class LoginSteps {
     Customers customers;
     Header header;
     Environment environment = ConfigFactory.create(Environment.class);
-    private String logged;
+    // private String logged;
 
     public LoginSteps(Landing landing) {
         this.landing = landing;

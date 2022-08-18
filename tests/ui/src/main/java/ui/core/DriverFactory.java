@@ -1,6 +1,5 @@
 package ui.core;
 
-import ui.core.AbstractDriver;
 import org.openqa.selenium.WebDriver;
 import ui.core.browsers.Chrome;
 import ui.core.browsers.ChromeHeadless;

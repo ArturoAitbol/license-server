@@ -27,8 +27,8 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Package Type</mat-label>
                         <mat-select required formControlName="packageType" (valueChange)="onChangeType($event)">
-                            <mat-option *ngFor="let item of packageTypes" [value]="item.name">
-                                {{item.name}}
+                            <mat-option *ngFor="let bundle of packageTypes" [value]="bundle.bundleName">
+                                {{bundle.bundleName}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
