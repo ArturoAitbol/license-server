@@ -1,7 +1,7 @@
 @subaccountsTest
 Feature: Subaccounts
 
-  Background: : Login successfully with valid credentials
+  Background: Login successfully with valid credentials
     Given I am on the landing page
     When I try to login with email and password
 
@@ -30,3 +30,4 @@ Feature: Subaccounts
     Given I see in the table the customer "Test NoDistributor" and its subaccount "subTest"
     When I delete the subaccount "subTest" of the customer "Test NoDistributor"
     Then I should see the message "Subaccount deleted successfully!"
+    And I logout

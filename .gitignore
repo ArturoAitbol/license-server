@@ -23,6 +23,7 @@ ui/test-results
 # Ignore Gradle project-specific cache directory
 tests/ui/.gradle/
 tests/ui/build
+tests/ui/bin
 tests/ui/reports/
 tests/ui/gradle/wrapper/*.jar
 .gradle/

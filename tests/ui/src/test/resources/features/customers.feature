@@ -18,6 +18,7 @@ Feature: Customers
       | subAdminEmail | test-admin@tekvizionlabs.com  |
       | testCustomer  | yes                           |
     Then I see the customer "customerTest" in the table
+    And I wait 3 seconds
   
   @editCustomer
   Scenario: Edit a test customer
@@ -28,6 +29,7 @@ Feature: Customers
       | subaccount    | subaccountModified      |
     Then I should see the modified data in Customers table
     And I should see the message "Customer and subaccount edited successfully!"
+    And I wait 3 seconds
     
 
   @deleteCustomer
@@ -35,4 +37,5 @@ Feature: Customers
     Given I see the customer "customerModified" in the table
     When I delete the customer "customerModified"
     Then I should see the message "Customer deleted successfully!"
+    And I logout
   

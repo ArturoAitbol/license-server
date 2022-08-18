@@ -3,9 +3,13 @@
   "Values": {
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "java",
-    "POSTGRESQL_SERVER": "tekv-db-server.postgres.database.azure.com:5432",
-    "POSTGRESQL_USER": "tekvdbadmin@tekv-db-server",
-    "POSTGRESQL_PWD": "MhZJh94z9D3Db3vW",
-    "POSTGRESQL_SECURITY_MODE": "?ssl=true&sslmode=require"
+    "POSTGRESQL_SERVER": "localhost:5432",
+    "POSTGRESQL_USER": "root",
+    "POSTGRESQL_PWD": "devT3st2022",
+    "POSTGRESQL_SECURITY_MODE": "?ssl=false&sslmode=disable"
+  },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "*"
   }
 }
