@@ -86,6 +86,7 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         JSONObject firstFound = projectsArray.getJSONObject(0);
         assertTrue(firstFound.has("id"));
         assertTrue(firstFound.has("subaccountId"));
+        assertTrue(firstFound.has("licenseId"));
         assertTrue(firstFound.has("projectName"));
         assertTrue(firstFound.has("projectNumber"));
         assertTrue(firstFound.has("status"));
@@ -172,7 +173,7 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
     }
 
     @Test
-    public void getAllProjectBySubaccountIdExceptionTest() {
+    public void getAllProjectsExceptionTest() {
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
         HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
@@ -185,7 +186,7 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void getAllProjectBySubaccountIdAndStatusTest() {
+    public void getAllProjectsBySubaccountIdAndStatusTest() {
         String status = "Open";
         this.queryParams.put("status", status);
 
@@ -195,6 +196,33 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getAllProjectsBySubaccountIdAndLicenseId() {
+        String licenseId = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
+        this.queryParams.put("licenseId", licenseId);
+
+        HttpResponseMessage response = getAllProjects.run(this.request, emptyId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("projects"));
+
+        JSONArray projects = jsonBody.getJSONArray("projects");
+        assertTrue(projects.length() > 0);
+        
+        for (int i = 0; i < projects.length(); i++) {
+            JSONObject project = projects.getJSONObject(i);
+            String actualLicense = project.getString("licenseId");
+            assertEquals(licenseId, actualLicense, "Project with licenseId:" + actualLicense + " not expected in response (id:" + project.getString("id") + ")");
+        }
     }
 
     @Tag("acceptance")
@@ -215,14 +243,13 @@ public class TekvLSGetAllProjectsTest extends TekvLSTest {
         assertTrue(jsonBody.has("projects"));
 
         JSONArray projects = jsonBody.getJSONArray("projects");
-        assertTrue(projects.length()>0);
+        assertTrue(projects.length() > 0);
 
         String expectedSubaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
-        for(int i=0;i<projects.length();i++){
+        for (int i = 0; i < projects.length(); i++) {
             JSONObject project = projects.getJSONObject(i);
             String actualSubaccount = project.getString("subaccountId");
-            assertEquals(expectedSubaccountId,actualSubaccount,
-                    "Project with subaccountId:"+actualSubaccount+" not expected in response (id:" + project.getString("id") + ")");
+            assertEquals(expectedSubaccountId, actualSubaccount, "Project with subaccountId:" + actualSubaccount + " not expected in response (id:" + project.getString("id") + ")");
         }
     }
 

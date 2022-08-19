@@ -88,14 +88,14 @@ test2@tekvizion.com	069dc3aa-dcb1-45e6-886f-be8f2345080f
 -- Data for Name: license; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.license (id, subaccount_id, start_date, package_type, renewal_date, tokens, device_access_limit, status) FROM stdin;
-1d1bf1e8-6522-4ab9-956a-864041f890e2	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-01 04:00:00	Basic	2022-07-31 04:00:00	55	5000	Active
-6524a6ab-b88b-49a8-aee5-624e86e24dcd	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-10 04:00:00	Small	2022-07-18 04:00:00	150	5000	Active
-b84852d7-0f04-4e9a-855c-7b2f01f61591	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2022-03-14 05:00:00	Small	2023-03-13 05:00:00	150	5000	Active
-16f4f014-5bed-4166-b10a-808b2e6655e3	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-08-01 04:00:00	Small	2022-09-30 04:00:00	150	5000	Active
-986137d3-063d-4c0e-9b27-85fcf3b3272e	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-07 04:00:00	Small	2022-07-12 04:00:00	150	5000	Expired
-ebc71e49-4f63-44b2-9c90-7750d3ccca05	cebe6542-2032-4398-882e-ffb44ade169d	2022-07-01 04:00:00	Basic	2022-07-31 04:00:00	55	5000	Expired
-d9cb5f93-c4d0-427e-8133-77905abd8487	96234b32-32d3-45a4-af26-4c912c0d6a06	2021-12-26 04:00:00	Small	2022-01-22 04:00:00	150	5000	Expired
+COPY public.license (id, subaccount_id, start_date, package_type, renewal_date, tokens, device_access_limit, status, description) FROM stdin;
+1d1bf1e8-6522-4ab9-956a-864041f890e2	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-01 04:00:00	Basic	2022-07-31 04:00:00	55	5000	Active	License1
+6524a6ab-b88b-49a8-aee5-624e86e24dcd	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-10 04:00:00	Small	2022-07-18 04:00:00	150	5000	Active	License2
+b84852d7-0f04-4e9a-855c-7b2f01f61591	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2022-03-14 05:00:00	Small	2023-03-13 05:00:00	150	5000	Active	License3
+16f4f014-5bed-4166-b10a-808b2e6655e3	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-08-01 04:00:00	Small	2022-09-30 04:00:00	150	5000	Active	License4
+986137d3-063d-4c0e-9b27-85fcf3b3272e	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-07 04:00:00	Small	2022-07-12 04:00:00	150	5000	Expired	Expired1
+ebc71e49-4f63-44b2-9c90-7750d3ccca05	cebe6542-2032-4398-882e-ffb44ade169d	2022-07-01 04:00:00	Basic	2022-07-31 04:00:00	55	5000	Expired	Expired2
+d9cb5f93-c4d0-427e-8133-77905abd8487	96234b32-32d3-45a4-af26-4c912c0d6a06	2021-12-26 04:00:00	Small	2022-01-22 04:00:00	150	5000	Expired	Expired3
 \.
 
 
@@ -103,11 +103,11 @@ d9cb5f93-c4d0-427e-8133-77905abd8487	96234b32-32d3-45a4-af26-4c912c0d6a06	2021-1
 -- Data for Name: project; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.project (id, subaccount_id, code, name, status, open_date, close_date, project_owner) FROM stdin;
-f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	00	app development	Open	2022-03-20 18:30:00	2022-04-20 18:30:00	powner@email.com
-2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	01	test 2	Open	2022-03-20 18:30:00	\N	powner@email.com
-a42edf7f-9b38-472f-afa3-10a4632acca1	cebe6542-2032-4398-882e-ffb44ade169d	0022	Project 2	Open	2022-08-01 04:00:00	\N	\N
-be612704-c26e-48ea-ab9b-19312f03d644	96234b32-32d3-45a4-af26-4c912c0d6a06	0011	Project 1	Open	2022-07-03 04:00:00	\N	\N
+COPY public.project (id, subaccount_id, code, name, status, open_date, close_date, project_owner, license_id) FROM stdin;
+f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	00	app development	Open	2022-03-20 18:30:00	2022-04-20 18:30:00	powner@email.com	b84852d7-0f04-4e9a-855c-7b2f01f61591
+2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	01	test 2	Open	2022-03-20 18:30:00	\N	powner@email.com	b84852d7-0f04-4e9a-855c-7b2f01f61591
+a42edf7f-9b38-472f-afa3-10a4632acca1	cebe6542-2032-4398-882e-ffb44ade169d	0022	Project 2	Open	2022-08-01 04:00:00	\N	\N	ebc71e49-4f63-44b2-9c90-7750d3ccca05
+be612704-c26e-48ea-ab9b-19312f03d644	96234b32-32d3-45a4-af26-4c912c0d6a06	0011	Project 1	Open	2022-07-03 04:00:00	\N	\N	d9cb5f93-c4d0-427e-8133-77905abd8487
 \.
 
 
