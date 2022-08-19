@@ -40,20 +40,6 @@ describe('License service http requests test', () => {
         expect(httpClientSpy.get).toHaveBeenCalledTimes(1);
     });
 
-    it('should return licenses list for specific subaccountName', (done: DoneFn) => {
-        const subaccountName = "subaccountNameA";
-        const expectedLicenses: any = LicenseServiceMock.filteredSubAccountNameList;
-        httpClientSpy.get.and.returnValue(LicenseServiceMock.getLicenseList(null, subaccountName));
-        licenseService.getLicenseList(null, subaccountName).subscribe({
-            next: licenses => {
-                expect(licenses).toEqual(expectedLicenses);
-                done();
-            },
-            error: done.fail
-        });
-        expect(httpClientSpy.get).toHaveBeenCalledTimes(1);
-    });
-
     it('should return expected license when retrieving per ID', (done: DoneFn) => {
         const id = "16f4f014-5bed-4166-b10a-808b2e6655e3";
         const expectedLicense: License = LicenseServiceMock.mockLicenseA;
@@ -74,13 +60,10 @@ describe('License service http requests test', () => {
             id: '273a38b7-20a1-487e-82fb-8861d96280fe',
             status: 'Inactive',
             deviceLimit: "",
-            tokensPurchased: "",
+            tokensPurchased: 0,
             startDate: "",
             renewalDate: "",
-            packageType: "",
-            customerName: "",
-            subaccountName: "",
-            customerType: ""
+            packageType: ""
         };
 
         const expectedLicense: License = LicenseServiceMock.updatedMockLicenseD;
@@ -115,13 +98,10 @@ describe('License service http requests test', () => {
             id: '5232b68b-e211-48a8-8ee2-44e505c0961f',
             status: 'Active',
             deviceLimit: "12",
-            tokensPurchased: "120",
+            tokensPurchased: 120,
             startDate: "",
             renewalDate: "",
-            packageType: "",
-            customerName: "",
-            subaccountName: "",
-            customerType: ""
+            packageType: ""
         };
 
         const expectedLicense: License = LicenseServiceMock.mockNewLicense;
