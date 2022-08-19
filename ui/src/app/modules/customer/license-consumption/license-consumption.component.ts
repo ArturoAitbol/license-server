@@ -180,7 +180,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.licConsumptionActionMenuOptions = [];
     const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     accountRoles.forEach(accountRole => {
-      permissions[accountRole].tables.licConsumptionOptions?.forEach(item => this.licConsumptionActionMenuOptions.push(this[item]));
+      permissions[accountRole].tables.licConsumptionOptions.forEach(item => this.licConsumptionActionMenuOptions.push(this[item]));
     })
   }
 
@@ -303,7 +303,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getWeeksDetail(weeklyConsumption: any[]): any[] {
+  private getWeeksDetail(weeklyConsumption: any[]): any[] {
     let startDate: string | Moment;
     let endDate: string | Moment;
     if (this.aggregation === "month" || this.aggregation === "week") {
@@ -392,9 +392,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     return [consumptionDetail];
   }
 
-  onChangeLicense(newLicense: any) {
-    if (newLicense) {
-      this.selectedLicense = this.licensesList.find(item => item.id === newLicense);
+  onChangeLicense(newLicenseId: string) {
+    if (newLicenseId) {
+      this.selectedLicense = this.licensesList.find(item => item.id === newLicenseId);
       this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
       this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
       this.resetPeriodFilter();
@@ -487,8 +487,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  getMultipleChoiceAnswer(newValue: any) {
-    this.aggregation = newValue.value;
+  getMultipleChoiceAnswer(newValue: string) {
+    this.aggregation = newValue;
     this.resetCalendar();
     if (this.aggregation === 'period') {
       this.range.disable();
@@ -508,7 +508,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   setMonthRange(date: Moment) {
     const startMonth = date;
-    const endMonth = new Date(date.year(), date.month() + 1, 0);
+    const endMonth = moment(new Date(date.year(), date.month() + 1, 0));
     this.range.patchValue({
       start: startMonth,
       end: endMonth
@@ -519,17 +519,17 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getProject(newValue: any) {
-    this.selectedProject = newValue;
+  getProject(projectId: string) {
+    this.selectedProject = projectId;
     this.fetchAggregatedData();
   }
 
-  getType(newValue: any) {
-    this.selectedType = newValue;
+  getType(type: string) {
+    this.selectedType = type;
     this.fetchAggregatedData();
   }
 
-  getDatePickerPlaceHolder(): string {
+  getDatePickerLabel(): string {
     switch (this.aggregation) {
       case 'month':
         return 'Choose Month and Year';
