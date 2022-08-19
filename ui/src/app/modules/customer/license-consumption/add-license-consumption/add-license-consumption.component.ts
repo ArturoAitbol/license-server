@@ -390,14 +390,14 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  displayFnProject(item: any): string {
-    return item && item.name ? item.name : '';
+  displayFnProject(project: any): string {
+    return project && project.projectName ? project.projectName : '';
   }
-  displayFnDevice(item: any): string {
-    return item && item.product ? item.product : '';
+  displayFnDevice(device: any): string {
+    return device && device.product ? device.product : '';
   }
-  displayFnVendor(item: any): string {
-    return item && item.vendor ? item.vendor : '';
+  displayFnVendor(device: any): string {
+    return device && device.vendor ? device.vendor : '';
   }
 
   private RequireMatch(control: AbstractControl) {
