@@ -66,8 +66,8 @@ export class ModifyProjectComponent implements OnInit {
   }
 
   preparePayload(): any {
-    let mergedProjectDetails: any = { id: this.data.id }
-    for (let key in this.updateProjectForm.controls) {
+    const mergedProjectDetails: any = { id: this.data.id }
+    for (const key in this.updateProjectForm.controls) {
       if (this.updateProjectForm.controls.hasOwnProperty(key)) {
         const fieldValue = this.updateProjectForm.get(key).value;
         const oldValue = this.previousFormValue.value[key];
@@ -75,7 +75,7 @@ export class ModifyProjectComponent implements OnInit {
         if (fieldValue != oldValue)
           mergedProjectDetails[key] = fieldValue;
       }
-    };
+    }
     return mergedProjectDetails;
   }
 

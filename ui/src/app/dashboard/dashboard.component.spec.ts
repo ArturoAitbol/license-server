@@ -156,7 +156,7 @@ describe('Dialog calls and interactions', () => {
         spyOn(dashboardComponentTestInstance, 'addCustomerAccount').and.callThrough();
         spyOn(dashboardComponentTestInstance, 'openDialog');
         fixture.detectChanges();
-        let button = fixture.debugElement.nativeElement.querySelector('#add-customer-button');
+        const button = fixture.debugElement.nativeElement.querySelector('#add-customer-button');
         button.click();
         tick();
         expect(dashboardComponentTestInstance.addCustomerAccount).toHaveBeenCalled();
@@ -167,7 +167,7 @@ describe('Dialog calls and interactions', () => {
         spyOn(dashboardComponentTestInstance, 'addSubaccount').and.callThrough();
         spyOn(dashboardComponentTestInstance, 'openDialog');
         fixture.detectChanges();
-        let button = fixture.debugElement.nativeElement.querySelector('#add-subaccount-button');
+        const button = fixture.debugElement.nativeElement.querySelector('#add-subaccount-button');
         button.click();
         tick();
         expect(dashboardComponentTestInstance.addSubaccount).toHaveBeenCalled();
