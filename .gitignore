@@ -11,9 +11,8 @@ dist
 .project
 *.prefs
 .vscode
-azure-functions/logs/*.log
+azure-functions/logs/logger.*
 .DS_Store
-azure-functions/local.settings.json
 
 # Ignore test reports
 ui/coverage
