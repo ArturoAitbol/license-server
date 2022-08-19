@@ -5,11 +5,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "java",
     "POSTGRESQL_SERVER": "localhost:5432",
     "POSTGRESQL_USER": "root",
-    "POSTGRESQL_PWD": "devT3st2022",
+    "POSTGRESQL_PWD": "root",
     "POSTGRESQL_SECURITY_MODE": "?ssl=false&sslmode=disable"
-  },
-  "Host": {
-    "LocalHttpPort": 7071,
-    "CORS": "*"
   }
 }
