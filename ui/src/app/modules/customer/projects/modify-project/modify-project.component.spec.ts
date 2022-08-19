@@ -91,7 +91,7 @@ describe('UI verification test for modify component', () => {
         expect(startDateLabel.textContent).toBe('Start Date');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
-        expect(projectTypeLable.textContent).toBe('Type');
+        expect(projectTypeLable.textContent).toBe('Status');
         expect(closeButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
     });
