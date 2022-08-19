@@ -33,4 +33,12 @@ public class ActionMenu extends AbstractPageObject {
         By id = By.id(item);
         this.action.click(id);
     }
+
+    public String close() {
+        By deleteSelector = By.cssSelector("button#Close");
+        this.action.click(deleteSelector);
+        Modal confirmModal = new Modal();
+        confirmModal.confirmAction();
+        return this.action.getText(this.messageSelector);
+    }
 }

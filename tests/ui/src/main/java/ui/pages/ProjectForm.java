@@ -8,9 +8,9 @@ import ui.core.AbstractPageObject;
 public class ProjectForm extends AbstractPageObject {
     @FindBy(css="[formcontrolname='openDate']")
     WebElement startDate;
-    @FindBy(css="#projectName")
+    @FindBy(css="[formcontrolname='projectName']")
     WebElement projectName;
-    @FindBy(css="#projectNumber")
+    @FindBy(css="[formcontrolname='projectNumber']")
     WebElement projectCode;
     @FindBy(css = "[formcontrolname='status']")
     WebElement projectStatus;
@@ -42,6 +42,7 @@ public class ProjectForm extends AbstractPageObject {
             if (type.equals("Closed") || !closeDate.equals("N/A"))
                 this.action.sendText(this.closeDate, closeDate);
         }
+        this.action.click(this.submitButton);
         return new Projects();
     }
 }

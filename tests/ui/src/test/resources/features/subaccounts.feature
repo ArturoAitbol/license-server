@@ -22,8 +22,8 @@ Feature: Subaccounts
       | name          | Test Customer           |
       | type          | MSP                     |
       | subaccount    | subaccountModified      |
-    Then I should see the modified data in Customers table
-    And I should see the message "Customer and subaccount edited successfully!"
+    Then I should see the message "Customer and subaccount edited successfully!"
+    And I should see the modified data in Customers table
 
   @deleteSubaccount
   Scenario: Delete a subaccount

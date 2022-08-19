@@ -5,6 +5,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
+import ui.core.DriverManager;
 import ui.pages.ActionMenu;
 import ui.pages.CustomerForm;
 import ui.pages.CustomerRow;
@@ -54,16 +55,19 @@ public class CustomerSteps {
     public void iDeleteTheCustomer(String customerName) {
         this.actionMenu = this.customerRow.openActionMenu();
         this.actualMessage = this.actionMenu.delete("customer");
+        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @When("I delete the subaccount {string} of the customer {string}")
     public void iDeleteTheSubaccount(String subaccountName, String customerName) {
         this.actionMenu = this.customerRow.openActionMenu();
         this.actualMessage = this.actionMenu.delete("subaccount");
+        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @Then("I should see the message {string}")
     public void iShouldSeeTheMessage(String message) {
+        this.actualMessage = DriverManager.getInstance().getMessage();
         Assert.assertEquals("This message was not displayed: ".concat(message), message, this.actualMessage);
     }
 
@@ -77,6 +81,7 @@ public class CustomerSteps {
         this.actionMenu.edit();
         this.customerForm = new CustomerForm();
         this.actualMessage = customerForm.editCustomer(this.customerName, this.type, this.subaccount);
+        DriverManager.getInstance().setMessage(this.actualMessage);
         this.customerRow = new CustomerRow(this.customerName);
     }
 
