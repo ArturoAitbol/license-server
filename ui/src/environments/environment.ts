@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  //apiEndpoint: 'https://tekvlicenseserverpocfunction.azurewebsites.net/v1.0',
   apiEndpoint: 'http://localhost:7071/v1.0',
   // Azure Active Directory Application details
   TENANT_ID: 'e3a46007-31cb-4529-b8cc-1e59b97ebdbd',

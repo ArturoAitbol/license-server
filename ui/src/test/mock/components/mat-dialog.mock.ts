@@ -1,4 +1,4 @@
-import {observable, Observable} from 'rxjs';
+import { Observable} from 'rxjs';
 
 export const MatDialogMock = {
     open: <T, D = any, R = any>(arg1, options) => {
@@ -13,7 +13,8 @@ export const MatDialogMock = {
                         unsubscribe() { }
                     };
                 });
-            }
+            },
+            componentInstance:{}
         };
     },
 };

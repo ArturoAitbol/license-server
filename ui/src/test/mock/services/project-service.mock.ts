@@ -1,4 +1,4 @@
-import {Observable, throwError} from 'rxjs';
+import {Observable} from 'rxjs';
 
 const PROJECT_LIST = {
     projects: [
@@ -43,7 +43,7 @@ const PROJECT_LIST = {
 
 export const ProjectServiceMock = {
     projectsListValue: PROJECT_LIST,
-    getProjectDetailsBySubAccount: () => {
+    getProjectDetailsBySubAccount: (id?:String) => {
         return new Observable((observer) => {
             observer.next(
                 PROJECT_LIST
