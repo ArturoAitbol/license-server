@@ -55,6 +55,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(license.has("id"));
         assertTrue(license.has("subaccountId"));
         assertTrue(license.has("status"));
+        assertTrue(license.has("description"));
     }
 
     @Tag("acceptance")
@@ -136,6 +137,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(license.has("id"));
         assertTrue(license.has("subaccountId"));
         assertTrue(license.has("status"));
+        assertTrue(license.has("description"));
 
         String licenseId;
         List<String> expectedLicenses = Arrays.asList("ebc71e49-4f63-44b2-9c90-7750d3ccca05",
@@ -225,6 +227,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(license.has("id"));
         assertTrue(license.has("subaccountId"));
         assertTrue(license.has("status"));
+        assertTrue(license.has("description"));
 
         String expectedLicenseId = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
         assertEquals(expectedLicenseId,license.getString("id"));
@@ -307,6 +310,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(license.has("id"));
         assertTrue(license.has("subaccountId"));
         assertTrue(license.has("status"));
+        assertTrue(license.has("description"));
 
         String expectedLicenseId = "d9cb5f93-c4d0-427e-8133-77905abd8487";
         assertEquals(expectedLicenseId,license.getString("id"));

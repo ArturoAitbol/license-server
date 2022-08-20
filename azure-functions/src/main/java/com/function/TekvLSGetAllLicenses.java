@@ -148,6 +148,7 @@ public class TekvLSGetAllLicenses
 				item.put("id", rs.getString("id"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
 				item.put("status", rs.getString("status"));
+				item.put("description", rs.getString("description"));
 				if (!id.equals("EMPTY") || !subaccountId.isEmpty()){
 					item.put("startDate", rs.getString("start_date").split(" ")[0]);
 					item.put("packageType", rs.getString("package_type"));

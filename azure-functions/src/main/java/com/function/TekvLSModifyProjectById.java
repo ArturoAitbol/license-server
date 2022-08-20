@@ -126,6 +126,7 @@ public class TekvLSModifyProjectById
 	}
 
 	private enum OPTIONAL_PARAMS {
+		LICENSE_ID("licenseId", "license_id", QueryBuilder.DATA_TYPE.UUID),
 		CODE("projectNumber", "code", QueryBuilder.DATA_TYPE.VARCHAR),
 		NAME("projectName", "name", QueryBuilder.DATA_TYPE.VARCHAR),
 		STATUS("status", "status", "project_status_type_enum"),

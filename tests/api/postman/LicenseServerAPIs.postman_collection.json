@@ -415,7 +415,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"status\": \"Active\"\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"description\": \"LicenseTest\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"status\": \"Active\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -456,7 +456,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"projectName\": \"{{name}}\",\r\n    \"projectNumber\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"licenseId\": \"{{licenseId}}\",\r\n    \"projectName\": \"{{name}}\",\r\n    \"projectNumber\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
