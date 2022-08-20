@@ -80,7 +80,11 @@ public class TekvLSModifyProjectById
 		int optionalParamsFound = 0;
 		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
 			try {
-				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
+				String paramValue = jobj.getString(param.jsonAttrib);
+				queryBuilder.appendValueModification(param.columnName, paramValue, param.dataType);
+				if(param.jsonAttrib.equals(OPTIONAL_PARAMS.STATUS.jsonAttrib) && paramValue.equals("Open")){
+					queryBuilder.appendValueModificationToNull(OPTIONAL_PARAMS.CLOSE_DATE.columnName);
+				}
 				optionalParamsFound++;
 			}
 			catch (Exception e) {

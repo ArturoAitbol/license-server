@@ -35,7 +35,6 @@ export class ModifyProjectComponent implements OnInit {
 
   ngOnInit() {
     if (this.data) {
-      console.log("This.data: " + JSON.stringify(this.data))
       this.isDataLoading = true;
       this.updateProjectForm.patchValue(this.data);
       this.previousFormValue = { ...this.updateProjectForm };
@@ -50,7 +49,6 @@ export class ModifyProjectComponent implements OnInit {
   }
 
   submit() {
-    console.log("Submit called")
     this.isDataLoading = true;
     this.updateProjectForm.enable();
     this.projectService.updateProject(this.preparePayload()).subscribe((res: any) => {
@@ -81,7 +79,6 @@ export class ModifyProjectComponent implements OnInit {
 
   onChanginStatus(status: string){
     if(status === 'Open'){
-      this.updateProjectForm.patchValue({closeDate : ''});
       this.updateProjectForm.get('closeDate').disable();
     }else{
       this.updateProjectForm.get('closeDate').enable();
