@@ -5,7 +5,6 @@ import {DeleteCustomerDialogData} from '../../../app/model/delete-customer-dialo
 export class DialogServiceMock {
     expectedResult: {confirm, deleteAllData};
     expectedConfirmDialogValue: boolean;
-    constructor() { }
 
     setExpectedConfirmDialogValue(expectedConfirmDialogValue: boolean): void {
         this.expectedConfirmDialogValue = expectedConfirmDialogValue;

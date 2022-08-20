@@ -116,7 +116,7 @@ describe('change status of projects', () => {
     beforeEach(beforeEachFunction);
     it('should execute changingStatus()', () => {
         spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
-        let status = 'Open'
+        const status = 'Open'
         modifyPorjectComponentTestInstance.onChanginStatus(status)
         fixture.detectChanges();
 
@@ -125,7 +125,7 @@ describe('change status of projects', () => {
 
     it('should execute changinStatus() with close status', () => {
         spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
-        let status = 'close';
+        const status = 'close';
         modifyPorjectComponentTestInstance.onChanginStatus(status);
         fixture.detectChanges();
 

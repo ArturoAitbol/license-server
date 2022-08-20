@@ -9,7 +9,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import junit.framework.Assert;
-// import ui.pages.Customers;
+import ui.pages.ActionMenu;
 import ui.pages.Licenses.LicenseForm;
 import ui.pages.Licenses.LicenseRow;
 import ui.pages.Licenses.Licenses;
@@ -17,8 +17,9 @@ import ui.pages.Licenses.Licenses;
 public class LicenseSteps {
     private LicenseRow licenseRow;
     private Licenses licenses;
-    // private Customers customers;
     private LicenseForm licenseForm;
+    private ActionMenu actionMenu;
+    private String actualMessage = "none";
 
     public LicenseSteps(Licenses licenses) {
         this.licenses = licenses;
@@ -75,9 +76,19 @@ public class LicenseSteps {
                 pkgTekTokens);
     }
 
+    @Then("I delete the {string} license")
+    public void iDeleteALicense(String license) {
+        this.actionMenu = this.licenseRow.openActionMenu();
+        this.actualMessage = this.actionMenu.delete("license");
+    }
+
+    @Then("I should see the alert {string}")
+    public void iShouldSeeTheMessage(String message) {
+        Assert.assertEquals("This message was not displayed: ".concat(message), message, this.actualMessage);
+    }
+
     @When("I click back button")
     public void iClickBackButton() {
         this.licenses.clickBackButton();
-        // this.customers = new Customers();
     }
 }
