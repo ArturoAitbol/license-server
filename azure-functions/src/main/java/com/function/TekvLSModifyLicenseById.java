@@ -130,7 +130,8 @@ public class TekvLSModifyLicenseById
 		RENEWAL_DATE("renewalDate", "renewal_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
 		TOKENS("tokensPurchased", "tokens", QueryBuilder.DATA_TYPE.INTEGER),
 		DEVICE_ACCESS_LIMIT("deviceLimit", "device_access_limit", QueryBuilder.DATA_TYPE.INTEGER),
-		status("status", "status", "status_type_enum");
+		STATUS("status", "status", "status_type_enum"),
+		DESCRIPTION("description", "description", QueryBuilder.DATA_TYPE.VARCHAR);
 
 		private final String jsonAttrib;
 		private final String columnName;

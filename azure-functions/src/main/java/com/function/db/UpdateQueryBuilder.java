@@ -29,6 +29,14 @@ public class UpdateQueryBuilder implements QueryBuilder {
     }
 
     /**
+     * Appends a value modification to null to the query
+     * @param columnName the name of the column on the DB
+     */
+    public void appendValueModificationToNull(String columnName) {
+        query.append(columnName).append(" = NULL").append(", ");
+    }
+
+    /**
      * Appends a value modification to the query
      * @param columnName the name of the column on the DB
      * @param value the new value for the column

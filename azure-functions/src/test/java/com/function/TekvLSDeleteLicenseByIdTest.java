@@ -35,6 +35,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
+                "'description': 'CICDTest'," +
                 "'tokensPurchased': '55'," +
                 "'deviceLimit': '5000'," +
                 "'licenseId':'"+licenseId+"'," +

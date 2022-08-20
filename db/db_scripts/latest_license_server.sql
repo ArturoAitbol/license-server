@@ -16,7 +16,6 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-DROP DATABASE IF EXISTS licenses;
 --
 -- Name: licenses; Type: DATABASE; Schema: -; Owner: -
 --
@@ -231,7 +230,8 @@ CREATE TABLE public.license (
     renewal_date timestamp without time zone,
     tokens integer DEFAULT 0,
     device_access_limit integer DEFAULT 0,
-    status public.status_type_enum DEFAULT 'Active'::public.status_type_enum NOT NULL
+    status public.status_type_enum DEFAULT 'Active'::public.status_type_enum NOT NULL,
+    description character varying NOT NULL
 );
 
 
@@ -258,7 +258,8 @@ CREATE TABLE public.license_consumption (
 
 CREATE TABLE public.project (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    subaccount_id uuid,
+    subaccount_id uuid NOT NULL,
+    license_id uuid NOT NULL,
     code character varying DEFAULT 0,
     name character varying NOT NULL,
     status public.project_status_type_enum DEFAULT 'Open'::public.project_status_type_enum NOT NULL,
@@ -786,6 +787,14 @@ ALTER TABLE ONLY public.license
 
 ALTER TABLE ONLY public.project
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+
+
+--
+-- Name: project fk_license; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project
+    ADD CONSTRAINT fk_license FOREIGN KEY (license_id) REFERENCES public.license(id) ON DELETE CASCADE;
 
 
 --

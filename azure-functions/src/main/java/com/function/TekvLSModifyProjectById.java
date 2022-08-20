@@ -80,7 +80,11 @@ public class TekvLSModifyProjectById
 		int optionalParamsFound = 0;
 		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
 			try {
-				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
+				String paramValue = jobj.getString(param.jsonAttrib);
+				queryBuilder.appendValueModification(param.columnName, paramValue, param.dataType);
+				if(param.jsonAttrib.equals(OPTIONAL_PARAMS.STATUS.jsonAttrib) && paramValue.equals("Open")){
+					queryBuilder.appendValueModificationToNull(OPTIONAL_PARAMS.CLOSE_DATE.columnName);
+				}
 				optionalParamsFound++;
 			}
 			catch (Exception e) {
@@ -122,6 +126,7 @@ public class TekvLSModifyProjectById
 	}
 
 	private enum OPTIONAL_PARAMS {
+		LICENSE_ID("licenseId", "license_id", QueryBuilder.DATA_TYPE.UUID),
 		CODE("projectNumber", "code", QueryBuilder.DATA_TYPE.VARCHAR),
 		NAME("projectName", "name", QueryBuilder.DATA_TYPE.VARCHAR),
 		STATUS("status", "status", "project_status_type_enum"),
