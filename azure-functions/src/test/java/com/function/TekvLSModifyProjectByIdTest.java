@@ -27,7 +27,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
 
     @Test
     public void fullModifyProjectTest() {
-        this.bodyRequest = "{'licenseId':'b84852d7-0f04-4e9a-855c-7b2f01f61591', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Closed', 'openDate':'2022-06-26 05:00:00', 'closeDate':'2022-06-29 05:00:00', }";
+        this.bodyRequest = "{'licenseId':'b84852d7-0f04-4e9a-855c-7b2f01f61591', 'projectNumber':'1test', 'projectName':'ModifiedProjectTest','status':'Closed', 'openDate':'2022-06-26 05:00:00', 'closeDate':'2022-06-29 05:00:00', }";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSModifyProjectById modifyProject = new TekvLSModifyProjectById();
@@ -136,7 +136,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
 
     @Test
     public void modifyProjectExceptionTest() {
-        this.bodyRequest = "{'projectNumber':'1test', 'projectName':'ProjectTest','status':'Closed', 'openDate':'2022-06-26 05:00:00', 'closeDate':'2022-06-29 05:00:00'}";
+        this.bodyRequest = "{'projectNumber':'1test', 'projectName':'ModifiedProjectTest','status':'Closed', 'openDate':'2022-06-26 05:00:00', 'closeDate':'2022-06-29 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
