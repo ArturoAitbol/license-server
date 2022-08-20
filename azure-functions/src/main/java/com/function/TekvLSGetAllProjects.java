@@ -61,6 +61,7 @@ public class TekvLSGetAllProjects {
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
+		String licenseId = request.getQueryParameters().getOrDefault("licenseId", "");
 		String status = request.getQueryParameters().getOrDefault("status", "");
 		
 		// Build SQL statement
@@ -92,6 +93,9 @@ public class TekvLSGetAllProjects {
 	   if (id.equals("EMPTY")) {
 		   if (!subaccountId.isEmpty()) {
 			   queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+			   if (!licenseId.isEmpty()) {
+				   queryBuilder.appendEqualsCondition("license_id", licenseId, QueryBuilder.DATA_TYPE.UUID);
+			   }
 			   if (!status.isEmpty()) {
 				   queryBuilder.appendEqualsCondition("status", status, "project_status_type_enum");
 			   }
@@ -142,6 +146,7 @@ public class TekvLSGetAllProjects {
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("id"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
+				item.put("licenseId", rs.getString("license_id"));
 				item.put("projectName", rs.getString("name"));
 				item.put("projectNumber", rs.getString("code"));
 				item.put("status", rs.getString("status"));

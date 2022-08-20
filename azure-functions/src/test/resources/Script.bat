@@ -13,7 +13,8 @@ if not defined DB_USERNAME (
     set /p DB_USERNAME="Type your Postgres username:"
     set /p DB_PASSWORD="Type the password of %db_username% user:"
 )
-psql "dbname=postgres user=%DB_USERNAME% password=%DB_PASSWORD%" < db_scripts/latest_license_server.sql -q
+psql "dbname=postgres user=%DB_USERNAME% password=%DB_PASSWORD%" < db_scripts/delete_db.sql -q
+psql "dbname=postgres user=%DB_USERNAME% password=%DB_PASSWORD%" < ../../../../db/db_scripts/latest_license_server.sql -q
   IF %ERRORLEVEL% NEQ 0 (
     echo Error executing DB restore
     goto :error) ELSE (

@@ -95,11 +95,11 @@ public class TekvLSCreateLicense
 
 		String sql;
 		if (jobj.has(OPTIONAL_PARAMS.LICENSE_ID.value)) {
-			sql = "INSERT INTO license (subaccount_id, start_date, package_type, renewal_date, tokens, device_access_limit, status, id) " +
-					"VALUES (?::uuid, ?::timestamp, ?::package_type_enum, ?::timestamp, ?, ?, '%s'::status_type_enum, ?::uuid) RETURNING id;";
+			sql = "INSERT INTO license (subaccount_id, start_date, package_type, renewal_date, tokens, device_access_limit, status, description, id) " +
+					"VALUES (?::uuid, ?::timestamp, ?::package_type_enum, ?::timestamp, ?, ?, '%s'::status_type_enum, ?, ?::uuid) RETURNING id;";
 		} else {
-			sql = "INSERT INTO license (subaccount_id, start_date, package_type, renewal_date, tokens, device_access_limit, status) " +
-					"VALUES (?::uuid, ?::timestamp, ?::package_type_enum, ?::timestamp, ?, ?, '%s'::status_type_enum) RETURNING id;";
+			sql = "INSERT INTO license (subaccount_id, start_date, package_type, renewal_date, tokens, device_access_limit, status, description) " +
+					"VALUES (?::uuid, ?::timestamp, ?::package_type_enum, ?::timestamp, ?, ?, '%s'::status_type_enum, ?) RETURNING id;";
 		}
 		sql = String.format(sql, status);
 
@@ -119,9 +119,10 @@ public class TekvLSCreateLicense
 			statement.setString(4, jobj.getString(MANDATORY_PARAMS.RENEWAL_DATE.value));
 			statement.setInt(5, jobj.getInt(MANDATORY_PARAMS.TOKENS_PURCHASED.value));
 			statement.setInt(6, jobj.getInt(MANDATORY_PARAMS.DEVICE_LIMIT.value));
+			statement.setString(7, jobj.has(OPTIONAL_PARAMS.DESCRIPTION.value) ? jobj.getString(OPTIONAL_PARAMS.DESCRIPTION.value) : null);
 
 			if (jobj.has(OPTIONAL_PARAMS.LICENSE_ID.value))
-				statement.setString(7,jobj.getString(OPTIONAL_PARAMS.LICENSE_ID.value));
+				statement.setString(8,jobj.getString(OPTIONAL_PARAMS.LICENSE_ID.value));
 
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + statement);
@@ -165,7 +166,8 @@ public class TekvLSCreateLicense
 	}
 
 	private enum OPTIONAL_PARAMS {
-		LICENSE_ID("licenseId");
+		LICENSE_ID("licenseId"),
+		DESCRIPTION("description");
 
 		private final String value;
 

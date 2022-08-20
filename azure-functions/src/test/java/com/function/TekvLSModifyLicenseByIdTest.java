@@ -30,6 +30,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
+                "'description': 'LicenseTest'," +
                 "'tokensPurchased': '55'," +
                 "'deviceLimit': '5000'," +
                 "'licenseId':'"+licenseId+"'," +
@@ -55,6 +56,23 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
         String bodyRequest = "{'packageType': 'Small'," +
                 "'tokensPurchased': '150'," +
                 "'deviceLimit': '5000'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSModifyLicenseById.run(this.request,this.licenseId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void modifyLicenseDescriptionTest(){
+        //Given
+        String bodyRequest = "{'description': 'CICDTest'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
