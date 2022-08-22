@@ -6,6 +6,8 @@ import { MatSnackBarModule, MatSnackBarRef } from "@angular/material/snack-bar";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MsalService } from "@azure/msal-angular";
+import { throwError } from "@microsoft/applicationinsights-core-js";
+import { Observable, of } from "rxjs";
 import { DataTableComponent } from "src/app/generics/data-table/data-table.component";
 import { SharedModule } from "src/app/modules/shared/shared.module";
 import { CustomerService } from "src/app/services/customer.service";
@@ -22,6 +24,7 @@ import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { ConsumptionServiceMock } from "src/test/mock/services/license-consumption-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
+import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { UsageDetailServiceMock } from "src/test/mock/services/usage-detail-service.mock";
 import { ProjectsComponent } from "../../projects/projects.component";
 import { ModifyLicenseConsumptionDetailsComponent } from "./modify-license-consumption-details.component";
@@ -34,11 +37,11 @@ const RouterMock = {
     navigate: (commands: string[]) => {}
 };
 const currentLicense = {
-    usageDays: [2],
+    usageDays: [0],
     consumption: "2022-08-07 - Week 32",
-    deviceId: "001ee852-4ab5-4642-85e1-58f5a477fbb3",
+    deviceId: "eb2e8d89-b5a0-4e6c-8b11-83aad2674d7f",
     version: "1.0",
-    vendor: "tekVizion",
+    vendor: "Opentext",
     granularity: "static",
     id: "1397ed28-543d-477c-871e-06f450831465",
     tokensConsumed: 15,
@@ -46,7 +49,9 @@ const currentLicense = {
     projectId: "459cf3ca-7365-47a1-8d9b-1abee381545c",
     usageType: "Configuration",
     consumptionDate: "2022-08-07",
-    product: "SIP Trunk Testing Engagement"
+    product: "SIP Trunk Testing Engagement",
+    consDate: new Date(),
+    endLicensePeriod: "2021-12-30",
 }
 
 const beforeEachFunction = () => {
@@ -119,7 +124,7 @@ const beforeEachFunction = () => {
 
 };
 
-describe('Data collection and parsin test', () => {
+describe('Data collection and parsing test', () => {
     beforeEach(beforeEachFunction);
     it('should make a call to get license consumption details list after initializing', () => {
         fixture.detectChanges();
@@ -127,6 +132,10 @@ describe('Data collection and parsin test', () => {
         expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
         expect(UsageDetailServiceMock.getUsageDetailsByConsumptionId).toHaveBeenCalled();
+
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue({name: "testA"});
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor').setValue({vendor: "testB"});
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('device').setValue({product: "testC"});
         
     });
 });
@@ -137,17 +146,15 @@ describe('modify license consumption details interactions', () => {
         fixture.detectChanges();
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'setChecked').and.callThrough();
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'submit').and.callThrough();
-        spyOn(UsageDetailServiceMock, 'createUsageDetails').and.callThrough();
 
-        modifyLicenseConsumptionDetailTestInstance.setChecked(true, 1);
-        expect(modifyLicenseConsumptionDetailTestInstance.setChecked).toHaveBeenCalledOnceWith(true, 1);
-
-        UsageDetailServiceMock.createUsageDetails();
-        expect(UsageDetailServiceMock.createUsageDetails).toHaveBeenCalled()
-
+        modifyLicenseConsumptionDetailTestInstance.setChecked(true, 0);
+        expect(modifyLicenseConsumptionDetailTestInstance.setChecked).toHaveBeenCalledWith(true, 0);
+        
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue({name: "testA"});
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor').setValue({vendor: "testB"});
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('device').setValue({product: "testC"});
         modifyLicenseConsumptionDetailTestInstance.submit();
         expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
-        
     });
 });
 
@@ -156,11 +163,40 @@ describe('modify functions interactions', () => {
     it('should call modifys functions', () => {
         fixture.detectChanges();
         
-        spyOn(modifyLicenseConsumptionDetailTestInstance, 'onCancel').and.callThrough();
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'onChangeVendor').and.callThrough();
+        spyOn(modifyLicenseConsumptionDetailTestInstance, 'disableSumbitBtn').and.callThrough();
+        spyOn(modifyLicenseConsumptionDetailTestInstance, 'getErrorMessage').and.callThrough();
+        spyOn(modifyLicenseConsumptionDetailTestInstance, 'onCancel').and.callThrough();
     
+        modifyLicenseConsumptionDetailTestInstance.onChangeVendor({vendor:"Opentext"});
+        modifyLicenseConsumptionDetailTestInstance.disableSumbitBtn();
+        modifyLicenseConsumptionDetailTestInstance.getErrorMessage();
         modifyLicenseConsumptionDetailTestInstance.onCancel();
-        modifyLicenseConsumptionDetailTestInstance.onChangeVendor("tekVizion");
+
+        expect(modifyLicenseConsumptionDetailTestInstance.disableSumbitBtn).toHaveBeenCalled();
+        expect(modifyLicenseConsumptionDetailTestInstance.onChangeVendor).toHaveBeenCalledWith({vendor:"Opentext"});
+        expect(modifyLicenseConsumptionDetailTestInstance.getErrorMessage).toHaveBeenCalled();
         
+    });
+
+    it('should call onChangeVendor and change the value of vendor', () => {
+        spyOn(modifyLicenseConsumptionDetailTestInstance, 'onChangeVendor').and.callThrough();
+
+        modifyLicenseConsumptionDetailTestInstance.onChangeVendor({vendor:"Test"});
+
+        expect(modifyLicenseConsumptionDetailTestInstance.onChangeVendor).toHaveBeenCalledWith({vendor:"Test"});
+    })
+
+
+    it('should call the deleteUsageDetails', () => {
+        spyOn(modifyLicenseConsumptionDetailTestInstance, 'submit').and.callThrough();
+
+        modifyLicenseConsumptionDetailTestInstance.fetchData();
+        modifyLicenseConsumptionDetailTestInstance.days[4].used = false
+        fixture.detectChanges();
+
+        modifyLicenseConsumptionDetailTestInstance.submit();
+
+        expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
     });
 });
