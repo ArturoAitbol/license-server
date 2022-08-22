@@ -91,7 +91,7 @@ describe('UI verification test for modify component', () => {
         expect(startDateLabel.textContent).toBe('Start Date');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
-        expect(projectTypeLable.textContent).toBe('Type');
+        expect(projectTypeLable.textContent).toBe('Status');
         expect(closeButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
     });
@@ -116,7 +116,7 @@ describe('change status of projects', () => {
     beforeEach(beforeEachFunction);
     it('should execute changingStatus()', () => {
         spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
-        let status = 'Open'
+        const status = 'Open'
         modifyPorjectComponentTestInstance.onChanginStatus(status)
         fixture.detectChanges();
 
@@ -125,7 +125,7 @@ describe('change status of projects', () => {
 
     it('should execute changinStatus() with close status', () => {
         spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
-        let status = 'close';
+        const status = 'close';
         modifyPorjectComponentTestInstance.onChanginStatus(status);
         fixture.detectChanges();
 

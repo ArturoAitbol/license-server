@@ -35,7 +35,6 @@ export class ModifyProjectComponent implements OnInit {
 
   ngOnInit() {
     if (this.data) {
-      console.log("This.data: " + JSON.stringify(this.data))
       this.isDataLoading = true;
       this.updateProjectForm.patchValue(this.data);
       this.previousFormValue = { ...this.updateProjectForm };
@@ -50,7 +49,6 @@ export class ModifyProjectComponent implements OnInit {
   }
 
   submit() {
-    console.log("Submit called")
     this.isDataLoading = true;
     this.updateProjectForm.enable();
     this.projectService.updateProject(this.preparePayload()).subscribe((res: any) => {
@@ -66,8 +64,8 @@ export class ModifyProjectComponent implements OnInit {
   }
 
   preparePayload(): any {
-    let mergedProjectDetails: any = { id: this.data.id }
-    for (let key in this.updateProjectForm.controls) {
+    const mergedProjectDetails: any = { id: this.data.id }
+    for (const key in this.updateProjectForm.controls) {
       if (this.updateProjectForm.controls.hasOwnProperty(key)) {
         const fieldValue = this.updateProjectForm.get(key).value;
         const oldValue = this.previousFormValue.value[key];
@@ -75,13 +73,12 @@ export class ModifyProjectComponent implements OnInit {
         if (fieldValue != oldValue)
           mergedProjectDetails[key] = fieldValue;
       }
-    };
+    }
     return mergedProjectDetails;
   }
 
   onChanginStatus(status: string){
     if(status === 'Open'){
-      this.updateProjectForm.patchValue({closeDate : ''});
       this.updateProjectForm.get('closeDate').disable();
     }else{
       this.updateProjectForm.get('closeDate').enable();

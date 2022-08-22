@@ -49,11 +49,12 @@ Feature: Licenses
         Then I see the "AddOn" package in the table
         And I wait 5 seconds
 
-    # @deleteBasicLicense
-    # Scenario: Delete Basic License
-    #     Given I see the "Basic" package starting "8/20/2022" ending in "2/20/2023" in the table
-    #     Then I delete the "Basic" License
-    #     And I wait 3 seconds
+    @deleteBasicLicense
+    Scenario: Delete Basic License
+        Given I see the "Basic" package in the table
+        Then I delete the "Basic" license
+        Then I should see the alert "License deleted successfully!"
+        And I wait 3 seconds
 
     @returnToCustomersPage
     Scenario: Return to Customers page

@@ -43,7 +43,7 @@ const PROJECT_LIST = {
 
 export const ProjectServiceMock = {
     projectsListValue: PROJECT_LIST,
-    getProjectDetailsBySubAccount: (id?:String) => {
+    getProjectDetailsBySubAccount: (id?:string) => {
         return new Observable((observer) => {
             observer.next(
                 PROJECT_LIST
