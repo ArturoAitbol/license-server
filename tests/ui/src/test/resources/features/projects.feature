@@ -32,7 +32,7 @@ Feature: Projects
   Scenario: Close a project
     Given I see the project "projectModified" in the table
     When I close the project "projectModified"
-    Then I should see the message "Project closed successfully!"
+    Then I should see the message "Project updated successfully!"
     And I should see the project "projectModified" in the table with a status "Closed"
 
   @deleteProject
