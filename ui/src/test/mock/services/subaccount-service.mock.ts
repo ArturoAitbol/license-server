@@ -168,7 +168,7 @@ const SUBACCOUNT_LIST = {
             id: '01442bce-d452-4742-bcb5-27b93a44314f'
         },
         {
-            name: 'Vonage - 360 Small - Old Token Model',
+            name: 'Unit Test - 360 Small - Old Token Model',
             customerId: '821f079f-be9f-4b11-b364-4f9652c581ce',
             id: '565e134e-62ef-4820-b077-2d8a6f628702'
         },
@@ -342,6 +342,15 @@ export const SubaccountServiceMock = {
             observer.next(
                 SUBACCOUNT_LIST
             );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    deleteSubAccount: (subAccountId: string) => {
+        return new Observable((observer) => {
+            observer.next({ res: {} });
             observer.complete();
             return {
                 unsubscribe() { }

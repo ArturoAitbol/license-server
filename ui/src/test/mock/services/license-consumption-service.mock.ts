@@ -163,8 +163,17 @@ const MOCK_DETAILED_INFO = {
     usageTotalCount: MOCK_CONSUMPTIONS_LIST.length,
     weeklyConsumption: MOCK_WEEKLY_LIST,
     projectConsumption: MOCK_PROJECT_CONSUMPTION_LIST,
-    tokenConsumption: { Configuration: 46 }
+    tokenConsumption: { AutomationPlatform: 10 , Configuration: 46 }
 };
+
+const MOCK_DETAILED_INFO_NO_TOKEN_CONSUMPTION = {
+    usage: [],
+    usageTotalCount: 0,
+    weeklyConsumption: [],
+    projectConsumption: [],
+    tokenConsumption: {}
+};
+
 const MOCK_EQUIPMENT_INFO = {
     equipmentSummary: MOCK_EQUIPMENT_LIST
 };
@@ -178,7 +187,13 @@ export const ConsumptionServiceMock = {
     mockNewConsumption:MOCK_CREATED_CONSUMPTION,
     updatedMockConsumptionD: MOCK_UPDATED_CONSUMPTION,
     mockDeletedConsumption: MOCK_DELETED_CONSUMPTION,
-    getConsumptionConsumptionDetails: (data) => {
+    mockSummaryInfo: MOCK_SUMMARY_INFO,
+    mockEquipmentInfo: MOCK_EQUIPMENT_INFO,
+    mockDetailedInfo: MOCK_DETAILED_INFO,
+    mockConsumptionA: MOCK_CONSUMPTION_A,
+    mockConsumptionD: MOCK_CONSUMPTION_D,
+    mockDetailedInfoNoTokenConsumption: MOCK_DETAILED_INFO_NO_TOKEN_CONSUMPTION,
+    getLicenseConsumptionDetails: (data) => {
         return new Observable((observer) => {
             let consumptionInfo;
             switch (data.view) {
@@ -189,7 +204,7 @@ export const ConsumptionServiceMock = {
                     consumptionInfo = MOCK_EQUIPMENT_INFO;
                     break;
                 default:
-                    consumptionInfo = MOCK_DETAILED_INFO;
+                    consumptionInfo = JSON.parse(JSON.stringify(MOCK_DETAILED_INFO));
                     break;
            }
             observer.next(consumptionInfo);
@@ -199,7 +214,7 @@ export const ConsumptionServiceMock = {
            };
         });
     },
-    updateConsumptionConsumptionDetails: (data) => {
+    updateLicenseConsumptionDetails: (data) => {
         return new Observable((observer) => {
             observer.next(MOCK_UPDATED_CONSUMPTION);
             observer.complete();
@@ -208,7 +223,7 @@ export const ConsumptionServiceMock = {
             };
         });
     },
-    deleteConsumptionConsumptionDetails: (consumptionId) => {
+    deleteLicenseConsumptionDetails: (consumptionId) => {
         return new Observable((observer) => {
             const removedConsumption = MOCK_CONSUMPTIONS_LIST.find((consumption: any) => consumption.id === consumptionId);
             observer.next(removedConsumption);

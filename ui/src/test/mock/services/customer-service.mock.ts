@@ -161,7 +161,7 @@ const CUSTOMER_LIST = {
         {
             customerType: 'MSP',
             testCustomer: false,
-            name: 'Vonage',
+            name: 'Unit Test',
             id: '821f079f-be9f-4b11-b364-4f9652c581ce'
         },
         {
@@ -376,9 +376,19 @@ export const CustomerServiceMock = {
             };
         });
     },
+    deleteCustomer (customerId: string) {
+        return new Observable((observer) => {
+            observer.next(this.expectedResponse);
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
     setSelectedCustomer: () => {
     },
     getSelectedCustomer: () => {
         return SELECTED_CUSTOMER;
     }
-};
+}
+

@@ -86,8 +86,8 @@ public class TekvLSCreateProject
 		}
 
 		// Build the sql query
-		String sql = "INSERT INTO project (subaccount_id, code, name, status, open_date, project_owner) " +
-					 "VALUES (?::uuid, ?, ?, ?::project_status_type_enum, ?::timestamp, ?) RETURNING id;";
+		String sql = "INSERT INTO project (subaccount_id, code, name, status, open_date, project_owner, license_id) " +
+					 "VALUES (?::uuid, ?, ?, ?::project_status_type_enum, ?::timestamp, ?, ?::uuid) RETURNING id;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -106,7 +106,7 @@ public class TekvLSCreateProject
 			statement.setString(4, jobj.getString(MANDATORY_PARAMS.STATUS.value));
 			statement.setString(5, jobj.getString(MANDATORY_PARAMS.OPEN_DATE.value));
 			statement.setString(6, jobj.has(OPTIONAL_PARAMS.PROJECT_OWNER.value) ? jobj.getString(OPTIONAL_PARAMS.PROJECT_OWNER.value) : null);
-
+			statement.setString(7, jobj.has(OPTIONAL_PARAMS.LICENSE_ID.value) ? jobj.getString(OPTIONAL_PARAMS.LICENSE_ID.value) : null);
 
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + statement);
@@ -153,7 +153,8 @@ public class TekvLSCreateProject
 	}
 
 	private enum OPTIONAL_PARAMS {
-		PROJECT_OWNER("projectOwner");
+		PROJECT_OWNER("projectOwner"),
+		LICENSE_ID("licenseId");
 
 		private final String value;
 
