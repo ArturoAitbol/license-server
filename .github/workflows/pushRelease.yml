@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'Release Version'
+        description: 'Release Version (use tags/vxx.xx.xx format)'
         required: true
         default: 'latest'
 env:
@@ -67,7 +67,15 @@ jobs:
             publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_PRODUCTION }}
         
         - name: Print deployed Release Version
-          run: echo 'Released ${{ steps.release_download.outputs.version }} Build'
+          run: |
+            echo 'Released ${{ steps.release_download.outputs.version }} Build'
+            echo "Build-${{ steps.release_download.outputs.version }}" > ./ReleaseBuild.txt
+        
+        - name: Archive Release Build Version
+          uses: actions/upload-artifact@v3
+          with:
+            name: prod-released-version
+            path: ./ReleaseBuild.txt
           
         - name: logout
           run: az logout
