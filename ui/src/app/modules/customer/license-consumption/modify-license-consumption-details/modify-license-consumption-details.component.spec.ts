@@ -28,6 +28,7 @@ import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mo
 import { UsageDetailServiceMock } from "src/test/mock/services/usage-detail-service.mock";
 import { ProjectsComponent } from "../../projects/projects.component";
 import { ModifyLicenseConsumptionDetailsComponent } from "./modify-license-consumption-details.component";
+import { SnackBarService } from "../../../../services/snack-bar.service";
 
 let modifyLicenseConsumptionDetailTestInstance: ModifyLicenseConsumptionDetailsComponent;
 let fixture: ComponentFixture<ModifyLicenseConsumptionDetailsComponent>;
@@ -110,6 +111,10 @@ const beforeEachFunction = () => {
             {
                 provide: MAT_DIALOG_DATA,
                 useValue: currentLicense
+            },
+            {
+                provide: SnackBarService,
+                useValue: SnackBarServiceMock
             }
         ]
     });
@@ -190,13 +195,24 @@ describe('modify functions interactions', () => {
 
     it('should call the deleteUsageDetails', () => {
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'submit').and.callThrough();
-
-        modifyLicenseConsumptionDetailTestInstance.fetchData();
-        modifyLicenseConsumptionDetailTestInstance.days[4].used = false
         fixture.detectChanges();
+        modifyLicenseConsumptionDetailTestInstance.setChecked(false, 4);
 
         modifyLicenseConsumptionDetailTestInstance.submit();
 
         expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
+    });
+
+    it('should return error message to the user', () => {
+        spyOn(UsageDetailServiceMock, 'deleteUsageDetails').and.returnValue(of({error: "Some error"}));
+        spyOn(modifyLicenseConsumptionDetailTestInstance, 'submit').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        fixture.detectChanges();
+
+        modifyLicenseConsumptionDetailTestInstance.setChecked(false, 4);
+        modifyLicenseConsumptionDetailTestInstance.submit();
+
+        expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledOnceWith("Some error", 'Error editing license consumption!');
     });
 });
