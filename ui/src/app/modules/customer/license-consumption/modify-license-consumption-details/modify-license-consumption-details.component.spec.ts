@@ -4,10 +4,8 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatSnackBarModule, MatSnackBarRef } from "@angular/material/snack-bar";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Router } from "@angular/router";
 import { MsalService } from "@azure/msal-angular";
-import { throwError } from "@microsoft/applicationinsights-core-js";
-import { Observable, of } from "rxjs";
+import { of } from "rxjs";
 import { DataTableComponent } from "src/app/generics/data-table/data-table.component";
 import { SharedModule } from "src/app/modules/shared/shared.module";
 import { CustomerService } from "src/app/services/customer.service";
@@ -34,9 +32,6 @@ let modifyLicenseConsumptionDetailTestInstance: ModifyLicenseConsumptionDetailsC
 let fixture: ComponentFixture<ModifyLicenseConsumptionDetailsComponent>;
 const dialogService = new DialogServiceMock();
 
-const RouterMock = {
-    navigate: (commands: string[]) => {}
-};
 const currentLicense = {
     usageDays: [0],
     consumption: "2022-08-07 - Week 32",
@@ -53,17 +48,13 @@ const currentLicense = {
     product: "SIP Trunk Testing Engagement",
     consDate: new Date(),
     endLicensePeriod: "2021-12-30",
-}
+};
 
 const beforeEachFunction = () => {
     TestBed.configureTestingModule({
         declarations: [  ModifyLicenseConsumptionDetailsComponent, ProjectsComponent, DataTableComponent  ],
         imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule, ReactiveFormsModule ],
         providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
             {
                 provide: MatDialog,
                 useValue: MatDialogMock
