@@ -91,7 +91,7 @@ public class TekvLSModifyProjectByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyProjectIncorrectSubaccountIdTest() {
+    public void modifyProjectIncorrectProjectIdTest() {
         String projectId = "";
         this.bodyRequest = "{'projectNumber':'1test', 'projectName':'ModifiedProjectTest','status':'Closed', 'openDate':'2022-06-26 05:00:00', 'closeDate':'2022-06-29 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
