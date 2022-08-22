@@ -10,6 +10,13 @@ public class ActionMenu extends AbstractPageObject {
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
     @FindBy(css = "button#Delete")
     WebElement deleteButton;
+    @FindBy(css = "button#Edit")
+    WebElement editButton;
+    @FindBy(xpath = "//button[@id='View Projects List']")
+    WebElement projectsButton;
+    @FindBy(css = "button#Close")
+    WebElement closeButton;
+
 
     public String delete(String type) {
 /*        By deleteSelector = By.cssSelector("button#Delete");
@@ -26,13 +33,17 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public void edit() {
-        By editSelector = By.cssSelector("button#Edit");
-        this.action.click(editSelector);
+/*        By editSelector = By.cssSelector("button#Edit");
+        this.action.click(editSelector);*/
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", this.editButton);
     }
 
     public Projects goToProjects(){
-        By projectsSelector = By.xpath("//button[@id='View Projects List']");
-        this.action.click(projectsSelector);
+/*        By projectsSelector = By.xpath("//button[@id='View Projects List']");
+        this.action.click(projectsSelector);*/
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", this.projectsButton);
         return new Projects();
     }
 
@@ -42,8 +53,10 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public String close() {
-        By deleteSelector = By.cssSelector("button#Close");
-        this.action.click(deleteSelector);
+/*        By deleteSelector = By.cssSelector("button#Close");
+        this.action.click(deleteSelector);*/
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", this.closeButton);
         Modal confirmModal = new Modal();
         confirmModal.confirmAction();
         return this.action.getText(this.messageSelector);

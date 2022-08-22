@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
         },
         features = "src/test/resources/features/",
         glue = "ui",
-        tags = "@loginTest")
+        tags = "not @licenses")
 public class RunCucumberTests {
 
     @AfterClass

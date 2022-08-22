@@ -47,6 +47,8 @@ public class ProjectSteps {
         this.name = projectTable.get("name");
         this.code = projectTable.get("code");
         this.projects = this.projectForm.createProject(startDate, name, code);
+        this.actualMessage = this.projects.getMessage();
+        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
 
