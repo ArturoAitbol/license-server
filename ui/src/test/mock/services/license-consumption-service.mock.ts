@@ -241,22 +241,5 @@ export const ConsumptionServiceMock = {
                 unsubscribe() { }
             };
         });
-    },
-    updateLicenseConsumptionDetails: () => {
-        return new Observable((observer) => {
-            observer.next(
-                { 
-                    body:[
-                        {
-                 
-                        }
-                    ]
-                }
-            );
-            observer.complete();
-            return {
-                unsubscribe() { }
-            };
-        });
     }
 };
