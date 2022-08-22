@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 
 public class WebDriverAction {
@@ -29,19 +30,6 @@ public class WebDriverAction {
 
     public String confirmModal(WebElement element) {
         return element.getAttribute("disabled");
-    }
-
-    public String simpleClick(By locator) {
-        String output;
-        try {
-            WebElement element = this.driver.findElement(locator);
-            element.click();
-            output = "ok";
-        } catch (Exception e) {
-            System.out.println("Element is not present: " + e.toString());
-            output = "error";
-        }
-        return output;
     }
 
     public void waitModal(By locator) {
@@ -117,7 +105,9 @@ public class WebDriverAction {
     }
 
     public void waitVisibilityElement(WebElement element) {
+        this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOf(element));
+        this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(60));
     }
 
     public void waitVisibilityElement(By locator) {
