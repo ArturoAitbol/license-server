@@ -41,6 +41,9 @@ public class CustomerSteps {
         String testCustomer = customer.getOrDefault("testCustomer", "yes").toLowerCase();
         this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,
                 testCustomer);
+        this.actualMessage = this.customers.getMessage();
+        System.out.println(this.actualMessage);
+//        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @Then("I see the customer {string} in the table")

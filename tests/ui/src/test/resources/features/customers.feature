@@ -32,5 +32,3 @@ Feature: Customers
     Given I see the customer "customerModified" in the table
     When I delete the customer "customerModified"
     Then I should see the message "Customer deleted successfully!"
-    And I logout
-  
