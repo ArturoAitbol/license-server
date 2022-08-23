@@ -2,23 +2,23 @@
     <main>
         <div class="row">
             <div class="col">
-                <button mat-stroked-button (click)="goToDashboard()">Back</button>
+                <button id="back-button" mat-stroked-button (click)="goToDashboard()">Back</button>
             </div>
             <div class="col">
-                <h1>{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
+                <h1 id="page-title">{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" (change)="onChangeToggle($event)">
+                    <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-new-license" (change)="onChangeToggle($event)">
                         Add tekVizion 360 Package
                     </mat-button-toggle>
-                    <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
+                    <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
                         Add tekToken Consumption
                     </mat-button-toggle>
                     <ng-container *lcCheckAccessFor="'addLicenseConsumption'">
-                        <mat-button-toggle *ngIf="!detailedConsumptionTableSelectable" (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded">
+                        <mat-button-toggle *ngIf="!detailedConsumptionTableSelectable" id="clone-consumption" (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded">
                             Clone Consumption</mat-button-toggle>
-                        <mat-button-toggle class="confirm-button" *ngIf="detailedConsumptionTableSelectable" (click)="cloneConsumptions()">
+                        <mat-button-toggle class="confirm-button" *ngIf="detailedConsumptionTableSelectable" id="confirm-cloning" (click)="cloneConsumptions()">
                             Confirm Cloning</mat-button-toggle>
                     </ng-container>
                 </mat-button-toggle-group>
@@ -27,22 +27,20 @@
     </main>
     <!-- license summary section -->
     <form [formGroup]="licenseForm">
-        <div>
-            <mat-form-field appearance="outline" class="example-form-field">
-                <mat-label>License Period</mat-label>
-                <mat-select formControlName="licenseId" (valueChange)="onChangeLicense($event)">
-                    <mat-option *ngFor="let item of licensesList" [value]="item.id">
-                        {{item.startDate}} - {{item.renewalDate}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
+        <mat-form-field id="license-period-form" appearance="outline" class="example-form-field">
+            <mat-label>License Period</mat-label>
+            <mat-select formControlName="licenseId" (valueChange)="onChangeLicense($event)">
+                <mat-option *ngFor="let item of licensesList" [value]="item.id">
+                    {{item.startDate}} - {{item.renewalDate}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
     </form>
-    <h2>tekVizion 360 Package Consumption Summary</h2>
+    <h2 id="first-section-title">tekVizion 360 Package Consumption Summary</h2>
     <section>
         <div class="row">
             <div class="col-6">
-                <div class="mat-elevation-z8">
+                <div id="tektokens-summary-table" class="mat-elevation-z8">
                     <app-data-table [tableData]="data" [tableColumns]="tekTokensSummaryColumns" [isFilterable]="false"
                         [isPageable]="false" [isLoadingResults]="isLicenseSummaryLoadingResults"
                         [isRequestCompleted]="isLicenseSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
@@ -51,7 +49,7 @@
                 </div>
             </div>
             <div class="col-6">
-                <div class="mat-elevation-z8">
+                <div id="automation-summary-table" class="mat-elevation-z8">
                     <app-data-table [tableData]="data" [tableColumns]="automationSummaryColumns" [isFilterable]="false"
                         [isPageable]="false" [isLoadingResults]="isLicenseSummaryLoadingResults"
                         [isRequestCompleted]="isLicenseSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
@@ -63,27 +61,27 @@
     </section>
     <br>
     <!-- Detailed Consumption for selection -->
-    <h2> tekTokens Consumption</h2>
+    <h2 id="second-section-title">tekTokens Consumption</h2>
     <section>
         <!-- filters -->
         <div style="display: flex;">
             <div class="col-4">
-                <mat-radio-group>
+                <mat-radio-group id="period-filter">
                     <mat-radio-button color="primary" value="period" [checked]="aggregation === 'period'"
-                        (change)="getMultipleChoiceAnswer($event)">License Period</mat-radio-button>
+                        (change)="getMultipleChoiceAnswer($event.value)">License Period</mat-radio-button>
                     <br>
                     <div class="row">
                         <div class="col-4">
                             <mat-radio-button color="primary" value="week" [checked]="aggregation === 'week'" [disabled]="!isLicenseListLoaded"
-                                (change)="getMultipleChoiceAnswer($event)">Week</mat-radio-button>
+                                (change)="getMultipleChoiceAnswer($event.value)">Week</mat-radio-button>
                             <br>
                             <mat-radio-button color="primary" value="month" [checked]="aggregation === 'month'" [disabled]="!isLicenseListLoaded"
-                                (change)="getMultipleChoiceAnswer($event)">Month</mat-radio-button>
+                                (change)="getMultipleChoiceAnswer($event.value)">Month</mat-radio-button>
                             <br>
                         </div>
                         <div class="col-8">
-                            <mat-form-field appearance="outline">
-                                <mat-label>{{getDatePickerPlaceHolder()}}</mat-label>
+                            <mat-form-field id="date-form" appearance="outline">
+                                <mat-label>{{getDatePickerLabel()}}</mat-label>
                                 <mat-date-range-input [formGroup]="range" [rangePicker]="picker" [min]="startDate" [max]="endDate">
                                 <input formControlName="start" matStartDate placeholder="Start date" [readonly]="true"> 
                                 <input formControlName="end" matEndDate placeholder="End date" [readonly]="true" (dateChange)="setWeek()">
@@ -98,7 +96,7 @@
                 </mat-radio-group>
             </div>
             <div class="col-4 d-flex justify-content-center">
-                <mat-form-field appearance="outline">
+                <mat-form-field id="project-form" appearance="outline">
                     <mat-label>Project</mat-label>
                     <mat-select [(value)]="selectedProject" (valueChange)="getProject($event)">
                         <mat-option value="">All</mat-option>
@@ -109,7 +107,7 @@
                 </mat-form-field>
             </div>
             <div class="col-4 d-flex justify-content-center">
-                <mat-form-field appearance="outline">
+                <mat-form-field id="consumption-type-form" appearance="outline">
                     <mat-label>Consumption Type</mat-label>
                     <mat-select (valueChange)="getType($event)">
                         <mat-option value="">All</mat-option>
@@ -122,7 +120,7 @@
         <br>
         <div class="row">
             <div class="col-6">
-                <div class="overflow-auto mat-elevation-z8">
+                <div id="tektokens-consumption-table" class="overflow-auto mat-elevation-z8">
                     <app-data-table [tableData]="tokenConsumptionData" [tableColumns]="tekTokenConsumptionColumns"
                         [isFilterable]="false" [isPageable]="false"
                         [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
@@ -134,9 +132,9 @@
         <br>
         <div class="row">
             <div class="col-4">
-                <div class="table-container mat-elevation-z8">
+                <div id="weekly-consumption-table" class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="weeklyConsumptionColumns"
-                                    [isFilterable]="false" [isPageable]="false" (sort)="sortDataGeneric($event, weeklyConsumptionData)" 
+                                    [isFilterable]="false" [isPageable]="false" (sort)="sortData($event, weeklyConsumptionData)" 
                                     [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
                                     [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted" [paginationSizes]="[5,10,20]"
                                     [defaultPageSize]="5">
@@ -144,9 +142,9 @@
                 </div>
             </div>
             <div class="col-8">
-                <div class="table-container mat-elevation-z8">
+                <div id="project-consumption-table" class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="projectConsumptionData" [tableColumns]="projectConsumptionColumns"
-                                    [isFilterable]="false" [isPageable]="false" (sort)="sortDataGeneric($event, projectConsumptionData)" 
+                                    [isFilterable]="false" [isPageable]="false" (sort)="sortData($event, projectConsumptionData)" 
                                     [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
                                     [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted" [paginationSizes]="[5,10,20]"
                                     [defaultPageSize]="5">
@@ -157,12 +155,12 @@
         <br>
         <div class="row">
             <div class="col-12">
-                <div class="table-container mat-elevation-z8">
+                <div id="detailed-consumption-table" class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="detailedConsumptionData"
                                     [tableColumns]="detailedConsumptionColumns" [isFilterable]="false" [isPageable]="true"
                                     [isLoadingResults]="isDetailedConsumptionLoadingResults"
                                     [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[6, 10, 20, 50]"
-                                    [defaultPageSize]="6" (sort)="sortDataGeneric($event, detailedConsumptionData)" [rowActionIcon]="'more_vert'"
+                                    [defaultPageSize]="6" (sort)="sortData($event, detailedConsumptionData)" [rowActionIcon]="'more_vert'"
                                     (rowAction)="licConsumptionRowAction($event)"
                                     [actionMenuList]="licConsumptionActionMenuOptions" [serverSidePagination]="true"
                                     (pageChanged)="onPageChange($event)" [length]="detailedConsumptionDataLength" [isSelectable]="detailedConsumptionTableSelectable"
@@ -174,13 +172,13 @@
     </section>
     <br>
     <!-- Equipment summary section -->
-    <h2>Equipment Summary</h2>
+    <h2 id="third-section-title">Equipment Summary</h2>
     <section>
-        <div class="table-container mat-elevation-z8">
+        <div id="equipment-summary-table" class="table-container mat-elevation-z8">
             <app-data-table [tableData]="equipmentData" [tableColumns]="equipmentSummaryColumns" [isFilterable]="false"
                 [isPageable]="false" [isLoadingResults]="isEquipmentSummaryLoadingResults"
                 [isRequestCompleted]="isEquipmentSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
-                [defaultPageSize]="5" (sort)="sortDataGeneric($event, equipmentData)">
+                [defaultPageSize]="5" (sort)="sortData($event, equipmentData)">
             </app-data-table>
         </div>
     </section>

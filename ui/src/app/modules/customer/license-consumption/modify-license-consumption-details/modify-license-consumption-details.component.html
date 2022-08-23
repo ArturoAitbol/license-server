@@ -30,7 +30,7 @@
                             [matAutocomplete]="projects">
                         <mat-autocomplete autoActiveFirstOption #projects="matAutocomplete" [displayWith]="displayFnProject">
                             <mat-option *ngFor="let project of filteredProjects | async" [value]="project">
-                                {{project.name}}
+                                {{project.projectName}}
                             </mat-option>
                         </mat-autocomplete>
                         <mat-error *ngIf="isInvalid('project')">{{getErrorMessage()}}</mat-error>

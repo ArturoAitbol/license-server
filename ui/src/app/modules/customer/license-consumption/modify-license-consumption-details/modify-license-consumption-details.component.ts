@@ -212,9 +212,9 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         this.days[day.dayOfWeek].id = day.id;
       });
       this.originalDays = JSON.parse(JSON.stringify(this.days));
-      const currentProject = this.projects.filter(project => project.id === this.data.projectId)?.[0];
-      const currentDevice = this.devices.filter(device => device.id === this.data.deviceId)?.[0];
-      const currentVendor = this.vendors.filter(vendor => vendor.vendor === currentDevice.vendor)?.[0];
+      const currentProject = this.projects.filter(project => project.id === this.data.projectId)[0];
+      const currentDevice = this.devices.filter(device => device.id === this.data.deviceId)[0];
+      const currentVendor = this.vendors.filter(vendor => vendor.vendor === currentDevice.vendor)[0];
       const patchValue = {...this.data};
       patchValue.project = currentProject;
       patchValue.device = currentDevice;
@@ -234,7 +234,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   }
 
   displayFnProject(project: Project): string {
-    return project?.name;
+    return project?.projectName;
   }
 
   displayFnDevice(device: Device): string {
@@ -255,7 +255,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   private filterProjects(value: string): Project[] {
     const filterValue = value.toLowerCase();
-    return this.projects.filter(option => option.name.toLowerCase().includes(filterValue));
+    return this.projects.filter(option => option.projectName.toLowerCase().includes(filterValue));
   }
 
   private filterVendors(value: string): string[] {

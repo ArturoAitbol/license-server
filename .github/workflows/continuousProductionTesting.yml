@@ -1,6 +1,7 @@
 name: Continuous testing in Production
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 */2 * * *'
 
@@ -10,7 +11,40 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Download Version artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: pushRelease.yml
+        name: prod-released-version
+        workflow_conclusion: success        
+
+    - name: Set release Version variable
+      run: echo "build_version=$(cat ./ReleaseBuild.txt | cut -d "-" -f2-)" >> $GITHUB_ENV
+    
+    - name: Get release details
+      id: release_details
+      uses: cardinalby/git-get-release-action@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag: ${{ env.build_version }}
+
+    - name: Get Latest Release commit hash
+      id: get_commit
+      uses: actions/github-script@0.9.0
+      with:
+        script: |
+          const commit = "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();
+          core.setOutput('commit', commit);
+    
+    - name: Download Repository code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+      
+    - name: Checkout specific commit 
+      run: git checkout ${{steps.get_commit.outputs.commit}}
 
     - name: Run API tests
       id: run-newman
@@ -28,3 +62,13 @@ jobs:
         report_paths: './tests/api/postman/newman-report.xml'
         summary: 'true'
         check_name: 'API Test Report'
+
+    - name: Run UI tests
+      run: |
+        cd tests/ui
+        gradle uiTests -Denv=production
+    - uses: deblockt/cucumber-report-annotations-action@v1.7
+      name: Publish Cucumber Report
+      with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "**/cucumber.json"

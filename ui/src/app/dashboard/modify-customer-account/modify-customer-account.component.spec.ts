@@ -82,7 +82,7 @@ describe('UI verification test', () => {
     const type = fixture.nativeElement.querySelector('#customer-type');
     // const subaccount = fixture.nativeElement.querySelector('#customer-subaccount');
     const cancel = fixture.nativeElement.querySelector('#cancel-button');
-    const submit = fixture.nativeElement.querySelector('#submit-button');
+    const submit = fixture.nativeElement.querySelector('#submitBtn');
 
     expect(title.textContent).toBe('Edit Customer Account');
     expect(name.textContent).toBe('Customer Name');
@@ -100,7 +100,7 @@ describe('UI verification test', () => {
     updateCustomerForm.get('subaccountName').setValue('subaccountName');
     updateCustomerForm.get('testCustomer').setValue(true);
     expect(updateCustomerForm.errors).toBeNull();
-    expect(fixture.debugElement.nativeElement.querySelector('#submit-button').disabled).toBeFalsy();
+    expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
   });
   it('should execute diablebutton()', () => {
     spyOn(CustomerComponentTestInstance, 'disableSumbitBtn').and.callThrough();
@@ -136,7 +136,7 @@ describe('modify customers flow', () => {
     spyOn(CustomerComponentTestInstance, 'submit').and.callThrough();
     CustomerComponentTestInstance.submit();
     expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
-    expect(fixture.debugElement.nativeElement.querySelector('#submit-button').disabled).toBeFalsy();
+    expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
   });
 });
 

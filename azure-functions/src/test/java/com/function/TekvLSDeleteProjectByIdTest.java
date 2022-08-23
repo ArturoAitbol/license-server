@@ -29,7 +29,7 @@ public class TekvLSDeleteProjectByIdTest extends TekvLSTest {
     @Tag("acceptance")
     @Test
     public void deleteProjectByIdTest() {
-        String bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00', 'projectOwner':'98bbfc7e-d477-4534-a4b7-aafee90cddd3'}";
+        String bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'licenseId':'b84852d7-0f04-4e9a-855c-7b2f01f61591', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00', 'projectOwner':'98bbfc7e-d477-4534-a4b7-aafee90cddd3'}";
         Mockito.doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();
@@ -74,7 +74,7 @@ public class TekvLSDeleteProjectByIdTest extends TekvLSTest {
         this.context.getLogger().info(response.getStatus().toString());
 
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 

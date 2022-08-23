@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.UpdateQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -24,8 +26,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSModifyDeviceById 
 {
 	/**
-	 * This function listens at endpoint "/api/devices/{id}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/devices/{id}
+	 * This function listens at endpoint "/v1.0/devices/{id}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/devices/{id}
 	 */
 	@FunctionName("TekvLSModifyDeviceById")
 	public HttpResponseMessage run(
@@ -75,40 +77,22 @@ public class TekvLSModifyDeviceById
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// The expected parameters (and their coresponding column name in the database) 
-		String[][] optionalParams = {
-			{"vendor","vendor"}, 
-			{"product","product"}, 
-			{"version","version"}, 
-			{"type","type"},
-			{"supportType","support_type"},
-			{"granularity","granularity"},
-			{"subaccountId","subaccount_id"},
-			{"tokensToConsume","tokens_to_consume"},
-			{"startDate","start_date"},
-			{"deprecatedDate", "deprecated_date"}
-		};
 		// Build the sql query
-		String sql = "update device set ";
+		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("device");
 		int optionalParamsFound = 0;
-		for (int i = 0; i < optionalParams.length; i++) {
+		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
 			try {
-				String paramName = jobj.getString(optionalParams[i][0]);
-				sql += optionalParams[i][1] + "='" + paramName + "',";
+				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
 				optionalParamsFound++;
-			} 
+			}
 			catch (Exception e) {
-				// Parameter doesn't exist. (continue since it's optional)
 				context.getLogger().info("Ignoring exception: " + e);
-				continue;
 			}
 		}
 		if (optionalParamsFound == 0) {
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
-		// Remove the comma after the last parameter and add the where clause
-		sql = sql.substring(0, sql.length() - 1);
-		sql += " where id='" + id + "';";
+		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -116,11 +100,11 @@ public class TekvLSModifyDeviceById
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = queryBuilder.build(connection)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			statement.executeUpdate();
 			context.getLogger().info("Device updated successfully."); 
 
 			return request.createResponseBuilder(HttpStatus.OK).build();
@@ -136,6 +120,36 @@ public class TekvLSModifyDeviceById
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
+
+	private enum OPTIONAL_PARAMS {
+		VENDOR("vendor", "vendor", QueryBuilder.DATA_TYPE.VARCHAR),
+		PRODUCT("product", "product", QueryBuilder.DATA_TYPE.VARCHAR),
+		VERSION("version", "version", QueryBuilder.DATA_TYPE.VARCHAR),
+		TYPE("type", "type", "device_type_enum"),
+		GRANULARITY("granularity", "granularity", "granularity_type_enum"),
+		TOKENS_TO_CONSUME("tokensToConsume", "tokens_to_consume", QueryBuilder.DATA_TYPE.INTEGER),
+		START_DATE("startDate", "start_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
+		DEPRECATED_DATE("deprecatedDate", "deprecated_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
+		SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
+		SUPPORT_TYPE("supportType", "support_type", QueryBuilder.DATA_TYPE.BOOLEAN);
+
+		private final String jsonAttrib;
+		private final String columnName;
+
+		private final String dataType;
+
+		OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
+			this.jsonAttrib = jsonAttrib;
+			this.columnName = columnName;
+			this.dataType = dataType;
+		}
+
+		OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
+			this.jsonAttrib = jsonAttrib;
+			this.columnName = columnName;
+			this.dataType = dataType.getValue();
 		}
 	}
 }

@@ -3,8 +3,6 @@ import {Observable} from 'rxjs';
 
 export class DialogServiceMock {
     expectedValue:any;
-    constructor() {
-    }
 
     setExpectedValue(expectedValue: any): void {
         this.expectedValue = expectedValue;

@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.UpdateQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -23,8 +25,8 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSModifyProjectById 
 {
 	/**
-	 * This function listens at endpoint "/api/projects/{id}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/projects/{id}
+	 * This function listens at endpoint "/v1.0/projects/{id}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/projects/{id}
 	 */
 	@FunctionName("TekvLSModifyProjectById")
 	public HttpResponseMessage run(
@@ -73,47 +75,38 @@ public class TekvLSModifyProjectById
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// The expected parameters (and their coresponding column name in the database) 
-		String[][] optionalParams = {
-			{"projectName","name"}, 
-			{"projectNumber","code"},
-			{"status","status"}, 
-			{"openDate", "open_date"}, 
-			{"closeDate","close_date"},
-			{"projectOwner","project_owner"}};
 		// Build the sql query
-		String sql = "update project set ";
+		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("project");
 		int optionalParamsFound = 0;
-		for (int i = 0; i < optionalParams.length; i++) {
+		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
 			try {
-				String paramValue = jobj.getString(optionalParams[i][0]);
-				sql += optionalParams[i][1] + (paramValue.equals("") ? "=null," : "='" + paramValue + "',");
+				String paramValue = jobj.getString(param.jsonAttrib);
+				queryBuilder.appendValueModification(param.columnName, paramValue, param.dataType);
+				if(param.jsonAttrib.equals(OPTIONAL_PARAMS.STATUS.jsonAttrib) && paramValue.equals("Open")){
+					queryBuilder.appendValueModificationToNull(OPTIONAL_PARAMS.CLOSE_DATE.columnName);
+				}
 				optionalParamsFound++;
-			} 
+			}
 			catch (Exception e) {
-				// Parameter doesn't exist. (continue since it's optional)
 				context.getLogger().info("Ignoring exception: " + e);
-				continue;
 			}
 		}
 		if (optionalParamsFound == 0) {
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
-		// Remove the comma after the last parameter and add the where clause
-		sql = sql.substring(0, sql.length() - 1);
-		sql += " where id='" + id + "';";
+
+		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			PreparedStatement statement = queryBuilder.build(connection)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			statement.executeUpdate();
 			context.getLogger().info("Project updated successfully."); 
 
 			return request.createResponseBuilder(HttpStatus.OK).build();
@@ -129,6 +122,33 @@ public class TekvLSModifyProjectById
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
+	}
+
+	private enum OPTIONAL_PARAMS {
+		LICENSE_ID("licenseId", "license_id", QueryBuilder.DATA_TYPE.UUID),
+		CODE("projectNumber", "code", QueryBuilder.DATA_TYPE.VARCHAR),
+		NAME("projectName", "name", QueryBuilder.DATA_TYPE.VARCHAR),
+		STATUS("status", "status", "project_status_type_enum"),
+		OPEN_DATE("openDate", "open_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
+		CLOSE_DATE("closeDate", "close_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
+		PROJECT_OWNER("projectOwner", "project_owner", QueryBuilder.DATA_TYPE.VARCHAR);
+
+		private final String jsonAttrib;
+		private final String columnName;
+
+		private final String dataType;
+
+		OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
+			this.jsonAttrib = jsonAttrib;
+			this.columnName = columnName;
+			this.dataType = dataType;
+		}
+
+		OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
+			this.jsonAttrib = jsonAttrib;
+			this.columnName = columnName;
+			this.dataType = dataType.getValue();
 		}
 	}
 }

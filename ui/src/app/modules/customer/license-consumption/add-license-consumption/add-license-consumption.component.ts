@@ -12,7 +12,7 @@ import { LicenseConsumptionService } from 'src/app/services/license-consumption.
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from '../../projects/add-project/add-project.component';
-import moment, { Moment } from 'moment';
+import { Moment } from 'moment';
 
 @Component({
   selector: 'app-add-license-consumption',
@@ -369,7 +369,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   private filterProjects(value: string): Project[] {
     const filterValue = value.toLowerCase();
-    return this.projects.filter(option => option.name.toLowerCase().includes(filterValue));
+    return this.projects.filter(option => option.projectName.toLowerCase().includes(filterValue));
   }
 
   private filterVendors(value: string, support = false): any[] {
@@ -386,18 +386,18 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     if (!support) {
       return this.models.filter(option => option.product.toLowerCase().includes(filterValue));
     } else {
-      return this.supportModels.filter(option => option.product.toLowerCase().includes(filterValue) && option.supportType);
+      return this.supportModels.filter(option => option.product.toLowerCase().includes(filterValue));
     }
   }
 
-  displayFnProject(item: any): string {
-    return item && item.name ? item.name : '';
+  displayFnProject(project: any): string {
+    return project && project.projectName ? project.projectName : '';
   }
-  displayFnDevice(item: any): string {
-    return item && item.product ? item.product : '';
+  displayFnDevice(device: any): string {
+    return device && device.product ? device.product : '';
   }
-  displayFnVendor(item: any): string {
-    return item && item.vendor ? item.vendor : '';
+  displayFnVendor(device: any): string {
+    return device && device.vendor ? device.vendor : '';
   }
 
   private RequireMatch(control: AbstractControl) {
@@ -433,7 +433,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   loadClonedDevices() {
-    if (this.data?.selectedConsumptions) {
+    if (this.data.selectedConsumptions) {
       const devices = JSON.parse(JSON.stringify(this.data.selectedConsumptions));
       devices.forEach(device => {
         device.id = device.deviceId;

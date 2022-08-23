@@ -161,7 +161,7 @@ const CUSTOMER_LIST = {
         {
             customerType: 'MSP',
             testCustomer: false,
-            name: 'Vonage',
+            name: 'Unit Test',
             id: '821f079f-be9f-4b11-b364-4f9652c581ce'
         },
         {
@@ -357,10 +357,22 @@ const SELECTED_CUSTOMER = {
     subaccountId:"ac7a78c2-d0b2-4c81-9538-321562d426c7",
     status:"Active"
 }
+
+const REAL_CUSTOMER = {
+    customerType:"MSP",
+    testCustomer:false,
+    name: 'Amazon',
+    id: 'aa85399d-1ce9-425d-9df7-d6e8a8baaec2',
+    subaccountName:"360 Custom (No Tokens)",
+    subaccountId:"24372e49-5f31-4b38-bc3e-fb6a5c371623",
+    status:"Active"
+}
+
 export const CustomerServiceMock = {
     customerListValue: CUSTOMER_LIST,
-    updatedMockCustomer: MOCK_UPDATED_CUSTOMER,
     selectedCustomer: SELECTED_CUSTOMER,
+    realCustomer:REAL_CUSTOMER,
+    updatedMockCustomer: MOCK_UPDATED_CUSTOMER,
     getCustomerList: () => {
         return new Observable((observer) => {
             observer.next(
@@ -372,11 +384,17 @@ export const CustomerServiceMock = {
             };
         });
     },
+    deleteCustomer (customerId: string) {
+        return new Observable((observer) => {
+            observer.next(this.expectedResponse);
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
     setSelectedCustomer: () => {
 
-    },
-    getSelectedCustomer: () => {
-        return SELECTED_CUSTOMER;
     },
     getCustomerById: () => {
         return new Observable((observer) => {
@@ -401,5 +419,9 @@ export const CustomerServiceMock = {
                 unsubscribe() {}
             };
         });
+    },
+    getSelectedCustomer: () => {
+        return SELECTED_CUSTOMER;
     }
-};
+}
+

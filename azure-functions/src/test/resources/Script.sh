@@ -2,7 +2,7 @@
 echo "DB Restore"
 echo "============================="
 echo "*******Remove Locale String*******"
-sed -i "s/LOCALE = 'English_United States.1252';/\;/g" db_scripts/latest_license_server.sql
+sed -i "s/LOCALE = 'English_United States.1252';/\;/g" ../../../../db/db_scripts/latest_license_server.sql
 psql -V
 if [ $? -ne 0 ];
     then
@@ -16,7 +16,8 @@ else
 	  else
 		  echo $DB_USERNAME
 	  fi
-    psql "dbname=postgres user=$DB_USERNAME password=postgres" < db_scripts/latest_license_server.sql -q
+    psql "dbname=postgres user=$DB_USERNAME password=postgres" < db_scripts/delete_db.sql -q
+    psql "dbname=postgres user=$DB_USERNAME password=postgres" < ../../../../db/db_scripts/latest_license_server.sql -q
     if [ $? -ne 0 ];
         then
             echo "Error executing DB restore"

@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -24,9 +26,9 @@ import static com.function.auth.RoleAuthHandler.*;
  */
 public class TekvLSGetAllDevices {
 	/**
-	 * This function listens at endpoint "/api/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/api/devices/{vendor}/{product}/{version}
-	 * 2. curl "{your host}/api/devices"
+	 * This function listens at endpoint "/v1.0/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/devices/{vendor}/{product}/{version}
+	 * 2. curl "{your host}/v1.0/devices"
 	 */
 	@FunctionName("TekvLSGetAllDevices")
 	public HttpResponseMessage run(
@@ -64,32 +66,30 @@ public class TekvLSGetAllDevices {
 		String licenseStartDate = request.getQueryParameters().getOrDefault("date", "");
   
 		// Build SQL statement
-		String sql = "";
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM device");
 		if (id.equals("EMPTY")) {
 			if (!vendor.isEmpty() || !subaccountId.isEmpty() || !product.isEmpty() || !version.isEmpty() || !licenseStartDate.isEmpty()) {
-				sql = "select * from device where ";
 			   if (!subaccountId.isEmpty()) {
-				  sql += "subaccount_id is NULL or subaccount_id = '" + subaccountId + "' and ";
+				   queryBuilder.appendCustomCondition("subaccount_id is NULL or subaccount_id = ?::uuid", subaccountId);
 			   }
 			   if (!vendor.isEmpty()) {
-				  sql += "vendor = '" + vendor + "' and ";
+				   queryBuilder.appendEqualsCondition("vendor", vendor);
 			   }
 			   if (!product.isEmpty()) {
-				  sql += "product = '" + product + "' and ";
+				   queryBuilder.appendEqualsCondition("product", product);
 			   }
 			   if (!version.isEmpty()) {
-				  sql += "version = '" + version + "' and ";
+				   queryBuilder.appendEqualsCondition("version", version);
 			   }
 			   if (!licenseStartDate.isEmpty()) {
-				  sql += "'" + licenseStartDate + "' >= start_date and '" + licenseStartDate + "' < deprecated_date and ";
+				   queryBuilder.appendCustomCondition("?::timestamp >= start_date", licenseStartDate);
+				   queryBuilder.appendCustomCondition("?::timestamp < deprecated_date", licenseStartDate);
 			   }
-			   // Remove the last " and " from the string
-			   sql = sql.substring(0, sql.length() - 5) + ";";
 			} else {
-				sql = "select * from device where subaccount_id is NULL;";
+				queryBuilder.appendColumnIsNull("subaccount_id");
 			}
 		} else {
-			sql = "select * from device where id='" + id +"';";
+			queryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
 		}
 		
 		// Connect to the database
@@ -98,14 +98,14 @@ public class TekvLSGetAllDevices {
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = queryBuilder.build(connection)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
 			// Execute sql query. TO DO: pagination
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
-			// Return a JSON array
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
+//			// Return a JSON array
 			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
 			while (rs.next()) {

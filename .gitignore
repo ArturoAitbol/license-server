@@ -1,7 +1,6 @@
 .angular
 node_modules
 dist
-ui/package-lock.json
 .idea
 .class
 *.class
@@ -12,10 +11,23 @@ ui/package-lock.json
 .project
 *.prefs
 .vscode
+azure-functions/logs/logger.*
+.DS_Store
+
+# Ignore test reports
 ui/coverage
 coverage/*
 azure-functions/coverage/*
 ui/fe-coverage/*
 ui/test-results
-.DS_Store
-azure-functions/logs/*
+
+# Ignore Gradle project-specific cache directory
+tests/ui/.gradle/
+tests/ui/build
+tests/ui/bin
+tests/ui/reports/
+tests/ui/gradle/wrapper/*.jar
+.gradle/
+tests/ui/src/main/resources/local.properties
+tests/ui/bin/main/local.properties
+# tests/ui/src/test/java/acp/runner/RunCucumberTests.java
