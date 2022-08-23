@@ -201,16 +201,16 @@ public class TekvLSGetAllLicenseUsageDetails {
 				} break;
 				default: {
 					// add special filters
-					String year = request.getQueryParameters().getOrDefault("year", "");
-					String month = request.getQueryParameters().getOrDefault("month", "");
+//					String year = request.getQueryParameters().getOrDefault("year", "");
+//					String month = request.getQueryParameters().getOrDefault("month", "");
 					String project = request.getQueryParameters().getOrDefault("projectId", "");
 					String type = request.getQueryParameters().getOrDefault("type", "");
 					String limit = request.getQueryParameters().getOrDefault("limit", LIMIT);
 					String offset = request.getQueryParameters().getOrDefault("offset", OFFSET);
-					if (view.isEmpty() && !year.isEmpty() && !month.isEmpty()) {
-						commonConditions.add(new Condition<>("EXTRACT(MONTH FROM l.consumption_date) = ?::integer", month));
-						commonConditions.add(new Condition<>("EXTRACT(YEAR FROM l.consumption_date) = ?::integer", year));
-					}
+//					if (view.isEmpty() && !year.isEmpty() && !month.isEmpty()) {
+//						commonConditions.add(new Condition<>("EXTRACT(MONTH FROM l.consumption_date) = ?::integer", month));
+//						commonConditions.add(new Condition<>("EXTRACT(YEAR FROM l.consumption_date) = ?::integer", year));
+//					}
 					if (!project.isEmpty()) {
 						commonConditions.add(new Condition<>("l.project_id= ?::uuid", project));
 					}
