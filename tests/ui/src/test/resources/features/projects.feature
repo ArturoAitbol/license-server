@@ -1,4 +1,4 @@
-@ProjectsTest
+@projectsTest
 Feature: Projects
   Background: : Login successfully with valid credentials
     Given I am on the landing page
@@ -64,4 +64,3 @@ Feature: Projects
     Given I see the customer "projectCustomerTest" in the table
     When I delete the customer "projectCustomerTest"
     Then I should see the message "Customer deleted successfully!"
-    And I logout

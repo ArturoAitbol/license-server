@@ -48,4 +48,3 @@ Feature: Subaccounts
     Given I see the customer "subCustomTest" in the table
     When I delete the customer "subCustomTest"
     Then I should see the message "Customer deleted successfully!"
-    And I logout
