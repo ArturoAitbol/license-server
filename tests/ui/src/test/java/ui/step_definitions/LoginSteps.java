@@ -42,7 +42,7 @@ public class LoginSteps {
             this.customers = this.loginForm.SignIn(email, password);
         }
         if (this.logged.equals("error")){
-            System.out.println("User has already been logged on");
+//            System.out.println("User has already been logged on");
             this.customers = new Customers();
         }
     }

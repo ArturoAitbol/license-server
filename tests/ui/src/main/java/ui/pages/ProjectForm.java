@@ -37,7 +37,7 @@ public class ProjectForm extends AbstractPageObject {
             this.action.replaceText(this.projectCode, code);
         if (!type.equals("none"))
         {
-            By typeSelector = By.cssSelector(String.format("[ng-reflect-value='%s']", type));
+            By typeSelector = By.cssSelector(String.format("mat-option[title='%s']", type));
             this.action.selectOption(this.projectStatus, typeSelector);
             if (type.equals("Closed") || !closeDate.equals("N/A"))
                 this.action.sendText(this.closeDate, closeDate);

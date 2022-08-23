@@ -15,6 +15,7 @@ Feature: Customers
       | subaccount    | subaccountTest                    |
       | subAdminEmail | test-customer@tekvizionlabs.com   |
       | testCustomer  | yes                               |
+    Then I should see the message "Customer added successfully!"
     Then I see the customer "customerTest" in the table
 
   @editCustomer
@@ -32,5 +33,3 @@ Feature: Customers
     Given I see the customer "customerModified" in the table
     When I delete the customer "customerModified"
     Then I should see the message "Customer deleted successfully!"
-    And I logout
-  

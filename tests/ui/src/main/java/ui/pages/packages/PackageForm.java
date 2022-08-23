@@ -24,7 +24,7 @@ public class PackageForm extends AbstractPageObject {
                                   String tokensPurchased) {
         this.action.sendText(this.startDate, startDate);
         this.action.sendText(this.renewalDate, renewalDate);
-        By optionType = By.cssSelector(String.format("[ng-reflect-value='%s']", type));
+        By optionType = By.cssSelector(String.format("mat-option[title='%s']", type));
         this.action.selectOption(this.packageType, optionType);
         if (type.equalsIgnoreCase("AddOn") || type.equalsIgnoreCase("Custom")) {
             this.action.sendText(this.deviceLimit, deviceLimit);
@@ -41,7 +41,7 @@ public class PackageForm extends AbstractPageObject {
             this.action.replaceText(this.renewalDate, renewalDate);
         if (!packageType.equals("none"))
         {
-            By typeSelector = By.cssSelector(String.format("[ng-reflect-value='%s']", packageType));
+            By typeSelector = By.cssSelector(String.format("mat-option[title='%s']", packageType));
             this.action.selectOption(this.packageType, typeSelector);
             if (packageType.equals("AddOn") || packageType.equals("Custom"))
             {

@@ -32,7 +32,7 @@ public class Landing extends AbstractPageObject {
             this.action.waitVisibilityElement(this.loginButton);
             return "ok";
         } catch (Exception e){
-            System.out.println("Couldn't find the login button");
+//            System.out.println("Couldn't find the login button");
             return "error";
         }
     }
