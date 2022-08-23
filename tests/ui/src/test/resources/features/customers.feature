@@ -1,6 +1,5 @@
 @customersTest
 Feature: Customers
-
   Background: : Login successfully with valid credentials
     Given I am on the landing page
     When I try to login with email and password
@@ -17,7 +16,6 @@ Feature: Customers
       | subAdminEmail | test-customer@tekvizionlabs.com   |
       | testCustomer  | yes                               |
     Then I see the customer "customerTest" in the table
-    And I logout
 
   @editCustomer
   Scenario: Edit a test customer
@@ -28,7 +26,6 @@ Feature: Customers
       | subaccount    | subaccountModified      |
     Then I should see the message "Customer and subaccount edited successfully!"
     And I should see the modified data in Customers table
-    And I logout
 
   @deleteCustomer
   Scenario: Delete a test customer

@@ -110,12 +110,6 @@ public class CustomerSteps {
                 customerName, actualCustomerName);
     }
 
-    @When("I click {string} option")
-    public void iClickOnMenuOption(String option) {
-        this.actionMenu = this.customerRow.openActionMenu();
-        this.actionMenu.viewItem(option);
-    }
-
     @Then("I should see the modified data in Subaccounts table")
     public void iShouldSeeTheModifiedDataInSubaccountsTable() {
         this.customerRow = new CustomerRow(this.subaccount);

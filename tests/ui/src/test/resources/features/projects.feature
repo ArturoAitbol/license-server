@@ -1,6 +1,5 @@
 @ProjectsTest
 Feature: Projects
-
   Background: : Login successfully with valid credentials
     Given I am on the landing page
     When I try to login with email and password
@@ -59,3 +58,10 @@ Feature: Projects
     And I see the project "projectModified" in the table
     When I delete the project "projectModified"
     Then I should see the message "Project deleted successfully!"
+
+  @deleteCustomerProject
+  Scenario: Delete test projects customer
+    Given I see the customer "projectCustomerTest" in the table
+    When I delete the customer "projectCustomerTest"
+    Then I should see the message "Customer deleted successfully!"
+    And I logout

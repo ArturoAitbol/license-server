@@ -1,11 +1,12 @@
-package ui.pages.Licenses;
+package ui.pages.packages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import ui.core.AbstractPageObject;
 
-public class Licenses extends AbstractPageObject {
+public class Packages extends AbstractPageObject {
     @FindBy(id = "#page-title")
     WebElement licensesTitle;
     @FindBy(id = "table-title")
@@ -14,12 +15,7 @@ public class Licenses extends AbstractPageObject {
     WebElement addLicenseButton;
     @FindBy(css = "button#back-button")
     WebElement backButton;
-
-    public String getTitle() {
-        String title = "none";
-        title = this.action.getText(this.licensesTitle);
-        return title;
-    }
+    By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
 
     public String getTableTitle() {
         String title = "none";
@@ -27,16 +23,12 @@ public class Licenses extends AbstractPageObject {
         return title;
     }
 
-    public LicenseForm openLicenseForm() {
+    public PackageForm openPackageForm() {
         this.action.click(this.addLicenseButton);
-        return new LicenseForm();
+        return new PackageForm();
     }
 
-    public void clickBackButton() {
-        this.action.click(this.backButton);
-    }
-
-    public LicenseRow getLicense(String packageType) {
-        return new LicenseRow(packageType);
+    public String getMessage() {
+        return this.action.getText(this.messageSelector);
     }
 }

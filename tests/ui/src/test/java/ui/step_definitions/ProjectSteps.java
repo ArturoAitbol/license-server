@@ -11,7 +11,6 @@ import ui.pages.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ProjectSteps {
@@ -54,7 +53,7 @@ public class ProjectSteps {
 
     @Then("I see the project {string} in the table")
     public void iSeeTheProjectInTheTable(String projectName) {
-        ProjectRow projectRow = new ProjectRow(projectName);
+        this.projectRow = new ProjectRow(projectName);
         String actualName = projectRow.getColumnValue("Project Name");
         Assert.assertEquals("Projects table doesn't have the project: ".concat(projectName), projectName, actualName);
     }
@@ -63,7 +62,7 @@ public class ProjectSteps {
     @When("I edit the project {string} with the following data")
     public void iEditTheProjectWithTheFollowingData(String projectName, DataTable datatable) {
         this.projectRow = new ProjectRow(projectName);
-        ActionMenu actionMenu = projectRow.openActionMenu();
+        ActionMenu actionMenu = this.projectRow.openActionMenu();
         actionMenu.edit();
         this.projectForm = new ProjectForm();
         Map<String, String> projectTable = datatable.asMap(String.class, String.class);
@@ -79,13 +78,6 @@ public class ProjectSteps {
 
     @Then("I should see the modified data in Projects table")
     public void iShouldSeeTheModifiedDataInProjectsTable() throws ParseException {
-        try {
-            Thread.sleep(500);
-        }
-        catch (Exception e)
-        {
-            System.out.println("Fail");
-        }
         if (!this.name.equals("none")){
             this.projectRow = new ProjectRow(this.name);
             String actualName = this.projectRow.getColumnValue("Project Name");

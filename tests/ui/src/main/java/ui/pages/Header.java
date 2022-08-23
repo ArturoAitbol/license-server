@@ -16,7 +16,9 @@ public class Header extends AbstractPageObject {
             executor.executeScript("arguments[0].click();", this.settingsButton);
 //            this.action.click(this.settingsButton);
             By logoutSelector = By.cssSelector("#logout-button");
-            this.action.click(logoutSelector);
+            WebElement logoutButton = this.action.waitVisibilityElement(logoutSelector);
+            executor.executeScript("arguments[0].click();", logoutButton);
+//            this.action.click(logoutSelector);
             By logoutMessage = By.cssSelector("div[role='heading']");
             this.action.waitVisibilityElement(logoutMessage);
             driver.manage().deleteAllCookies();

@@ -1,6 +1,5 @@
 @subaccountsTest
 Feature: Subaccounts
-
   Background: Login successfully with valid credentials
     Given I am on the landing page
     When I try to login with email and password
@@ -38,16 +37,15 @@ Feature: Subaccounts
     Then I should see the message "Customer and subaccount edited successfully!"
     And I should see the modified data in Subaccounts table
 
-#  @deleteSubaccount
-#  Scenario: Delete a subaccount
-#    Given I see in the table the customer "subCustomTest" and its subaccount "subaccountModified"
-#    When I delete the subaccount "subaccountModified" of the customer "subCustomTest"
-#    Then I should see the message "Subaccount deleted successfully!"
-#    And I logout
-#
-#  @deleteSubaccountCustomer
-#  Scenario: Delete a test customer
-#    Given I see the customer "subCustomTest" in the table
-#    When I delete the customer "subCustomTest"
-#    Then I should see the message "Customer deleted successfully!"
-#    And I logout
+  @deleteSubaccount
+  Scenario: Delete a subaccount
+    Given I see in the table the customer "subCustomTest" and its subaccount "subaccountModified"
+    When I delete the subaccount "subaccountModified" of the customer "subCustomTest"
+    Then I should see the message "Subaccount deleted successfully!"
+
+  @deleteSubaccountCustomer
+  Scenario: Delete the test subaccount customer
+    Given I see the customer "subCustomTest" in the table
+    When I delete the customer "subCustomTest"
+    Then I should see the message "Customer deleted successfully!"
+    And I logout

@@ -67,15 +67,6 @@ public class WebDriverAction {
         }
     }
 
-    public String checkText(WebElement element, String text) {
-        boolean present;
-        present = wait.until(ExpectedConditions.textToBePresentInElement(element, text));
-        if (present)
-            return element.getText();
-        else
-            return "There isn't this text: " + text;
-    }
-
     public WebElement getElement(By locator) {
         return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
@@ -110,8 +101,8 @@ public class WebDriverAction {
         this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(60));
     }
 
-    public void waitVisibilityElement(By locator) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    public WebElement waitVisibilityElement(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     public void checkTitle(String title) {
