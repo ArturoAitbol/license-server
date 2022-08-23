@@ -1,6 +1,7 @@
 package ui.pages;
 
 import org.aeonbits.owner.ConfigFactory;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
@@ -9,7 +10,7 @@ import ui.utils.Environment;
 public class Landing extends AbstractPageObject {
 
     @FindBy(css="button.rsdLoginButton")
-    private WebElement loginButton;
+    WebElement loginButton;
     Environment environment = ConfigFactory.create(Environment.class);
 
     public Landing(){
@@ -26,4 +27,13 @@ public class Landing extends AbstractPageObject {
         return new LoginForm(originalWindow);
     }
 
+    public String checkLogin() {
+        try {
+            this.action.waitVisibilityElement(this.loginButton);
+            return "ok";
+        } catch (Exception e){
+            System.out.println("Couldn't find the login button");
+            return "error";
+        }
+    }
 }
