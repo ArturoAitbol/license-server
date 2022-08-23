@@ -15,7 +15,6 @@ Feature: Customers
       | subaccount    | subaccountTest                    |
       | subAdminEmail | test-customer@tekvizionlabs.com   |
       | testCustomer  | yes                               |
-    Then I should see the message "Customer added successfully!"
     Then I see the customer "customerTest" in the table
 
   @editCustomer
