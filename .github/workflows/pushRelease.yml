@@ -46,7 +46,7 @@ jobs:
           uses: azure/CLI@v1
           with:
             inlineScript: |
-              az storage blob upload-batch --overwrite --account-name tekvizionportal --auth-mode key -d '$web' -s ./Release/UI-prod-build/license-server
+              az storage blob upload-batch --overwrite --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME_PRODUCTION }} --auth-mode key -d '$web' -s ./Release/UI-prod-build/license-server
         
         - name: Purge CDN endpoint
           uses: azure/CLI@v1
