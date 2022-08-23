@@ -20,7 +20,7 @@ jobs:
         workflow_conclusion: success        
 
     - name: Set release Version variable
-      run: echo "build_version=$(cat ./ReleaseVersion.txt | cut -d "-" -f2-)" >> $GITHUB_ENV
+      run: echo "build_version=$(cat ./ReleaseBuild.txt | cut -d "-" -f2-)" >> $GITHUB_ENV
     
     - name: Get release details
       id: release_details
