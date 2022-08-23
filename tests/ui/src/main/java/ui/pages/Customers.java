@@ -1,5 +1,6 @@
 package ui.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
@@ -34,5 +35,10 @@ public class Customers extends AbstractPageObject {
     public SubaccountForm openSubaccountForm() {
         this.action.click(this.addSubaccountButton);
         return new SubaccountForm();
+    }
+
+    public String getMessage() {
+        By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
+        return this.action.getText(messageSelector);
     }
 }

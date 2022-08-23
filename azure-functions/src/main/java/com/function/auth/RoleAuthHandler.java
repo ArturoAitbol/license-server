@@ -183,7 +183,7 @@ public class RoleAuthHandler {
     public static final String LOG_MESSAGE_FOR_INVALID_ID = "Invalid Request Error: Id provided does not belong to the account of: ";
     public static final String MESSAGE_FOR_INVALID_ID = "The id provided does not exist in your account.";
     public static final String MESSAGE_ID_NOT_FOUND = "Id provided does not exist.";
-    private static final String ISSUER = "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/v2.0";
+    private static final String ISSUER = "https://login.microsoftonline.com/f3b3f347-d7e6-47ca-80e9-ae1890cbb23a/v2.0";
 
     public static boolean hasPermission(String role,Permission permission){
         EnumSet<Permission> rolePermissions;

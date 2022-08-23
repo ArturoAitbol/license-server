@@ -30,7 +30,7 @@ public class CustomerForm extends AbstractPageObject {
 
     public Customers createCustomer(String customerName, String type, String adminEmail, String subaccount, String subAdminEmail, String testCustomer){
         this.action.sendText(this.customerName, customerName);
-        By optionType = By.cssSelector(String.format("[ng-reflect-value='%s']", type));
+        By optionType = By.cssSelector(String.format("mat-option[title='%s']", type));
         this.action.selectOption(this.customerType, optionType);
         this.action.sendText(this.adminEmail, adminEmail);
         if (!subaccount.equals("Default"))
@@ -48,7 +48,7 @@ public class CustomerForm extends AbstractPageObject {
             this.action.replaceText(this.customerName, customerName);
         if (type != null)
         {
-            By optionType = By.cssSelector(String.format("[ng-reflect-value='%s']", type));
+            By optionType = By.cssSelector(String.format("mat-option[title='%s']", type));
             this.action.selectOption(this.customerType, optionType);
         }
         if (subaccount != null)

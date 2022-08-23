@@ -242,5 +242,4 @@ export const ConsumptionServiceMock = {
             };
         });
     }
-
 };
