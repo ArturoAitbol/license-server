@@ -12,7 +12,9 @@ import org.junit.runner.RunWith;
         "pretty",
         "json:reports/cucumber-reports/cucumber.json",
         "rerun:reports/rerun/rerun.txt"
-}, features = "src/test/resources/features/", glue = "ui")
+        },
+        features = "src/test/resources/features/",
+        glue = "ui")
 public class RunCucumberTests {
 
     @AfterClass

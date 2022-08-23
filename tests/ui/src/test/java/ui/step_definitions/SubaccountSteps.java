@@ -3,6 +3,7 @@ package ui.step_definitions;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
+import ui.core.DriverManager;
 import ui.pages.*;
 
 import java.util.Map;
@@ -30,6 +31,8 @@ public class SubaccountSteps {
         String subAccountName = subaccount.get("name");
         String subAdminEmail = subaccount.get("subAdminEmail");
         this.customers = this.subaccountForm.createSubaccount(customer, subAccountName, subAdminEmail);
+        this.actualMessage = this.customers.getMessage();
+        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
 

@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver;
 public class DriverManager {
     private WebDriver driver;
     private static DriverManager driverManager;
+    private String message;
 
     private DriverManager(){
         Environment environment = ConfigFactory.create(Environment.class);
@@ -26,4 +27,10 @@ public class DriverManager {
         return this.driver;
     }
 
+    public void setMessage(String message){
+        this.message = message;
+    }
+    public String getMessage(){
+        return this.message;
+    }
 }

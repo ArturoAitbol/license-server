@@ -231,7 +231,7 @@ CREATE TABLE public.license (
     tokens integer DEFAULT 0,
     device_access_limit integer DEFAULT 0,
     status public.status_type_enum DEFAULT 'Active'::public.status_type_enum NOT NULL,
-    description character varying NOT NULL
+    description character varying
 );
 
 
@@ -259,7 +259,7 @@ CREATE TABLE public.license_consumption (
 CREATE TABLE public.project (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     subaccount_id uuid NOT NULL,
-    license_id uuid NOT NULL,
+    license_id uuid,
     code character varying DEFAULT 0,
     name character varying NOT NULL,
     status public.project_status_type_enum DEFAULT 'Open'::public.project_status_type_enum NOT NULL,
