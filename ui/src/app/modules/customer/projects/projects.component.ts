@@ -24,6 +24,7 @@ export class ProjectsComponent implements OnInit {
   readonly displayedColumns: TableColumn[] = [
     { name: 'Project Code', dataKey: 'projectNumber', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'projectName', position: 'left', isSortable: true },
+    { name: 'tekVizion 360 Package', dataKey: 'licenseDescription', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
     { name: 'Start Date', dataKey: 'openDate', position: 'left', isSortable: true },
     { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }

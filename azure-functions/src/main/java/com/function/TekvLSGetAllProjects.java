@@ -65,7 +65,8 @@ public class TekvLSGetAllProjects {
 		String status = request.getQueryParameters().getOrDefault("status", "");
 		
 		// Build SQL statement
-		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM project");
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT p.*, l.description FROM project p, license l WHERE p.license_id = l.id");
+		// queryBuilder.appendCustomCondition("p.license_id = l.id", "");
 		SelectQueryBuilder verificationQueryBuilder = null;
 	   	String email = getEmailFromToken(tokenClaims,context);
 	   	// adding conditions according to the role
@@ -147,6 +148,7 @@ public class TekvLSGetAllProjects {
 				item.put("id", rs.getString("id"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
 				item.put("licenseId", rs.getString("license_id"));
+				item.put("licenseDescription", rs.getString("description"));
 				item.put("projectName", rs.getString("name"));
 				item.put("projectNumber", rs.getString("code"));
 				item.put("status", rs.getString("status"));

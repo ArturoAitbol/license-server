@@ -26,6 +26,7 @@ const data = {
     deviceLimit: "5000",
     id: "1871a604-4e88-4999-bf20-4403468dfc68",
     packageType: "Basic",
+    description: "Description",
     renewalDate: "2022-06-10",
     startDate: "2022-06-01",
     status: "Active",
@@ -83,6 +84,7 @@ describe('UI and component verification tests',()=>{
         expect(submitButton.textContent).toBe('Submit');
         expect(labels.find(label => label.textContent.includes("Start Date"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Renewal Date"))).not.toBeUndefined();
+        expect(labels.find(label => label.textContent.includes("Description"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Package Type"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Device Access tekTokens"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("tekTokens"))).not.toBeUndefined();
@@ -96,6 +98,7 @@ describe('FormGroup verification tests',()=>{
     
     it('should create a formGroup with the necesary controls',()=>{
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('startDate')).toBeTrue();
+        expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('description')).toBeTrue();
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('packageType')).toBeTrue();
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('tokensPurchased')).toBeTrue();
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('deviceLimit')).toBeTrue();
@@ -106,6 +109,7 @@ describe('FormGroup verification tests',()=>{
         const updateCustomerForm = modifyLicenseComponentTestInstance.updateCustomerForm;
         updateCustomerForm.setValue({
             startDate:'',
+            description:'',
             packageType:'',
             tokensPurchased:'',
             deviceLimit:'',
@@ -113,6 +117,7 @@ describe('FormGroup verification tests',()=>{
         });
 
         expect(updateCustomerForm.get('startDate').valid).toBeFalse();
+        expect(updateCustomerForm.get('description').valid).toBeFalse();
         expect(updateCustomerForm.get('packageType').valid).toBeFalse();
         expect(updateCustomerForm.get('tokensPurchased').valid).toBeFalse();
         expect(updateCustomerForm.get('deviceLimit').valid).toBeFalse();

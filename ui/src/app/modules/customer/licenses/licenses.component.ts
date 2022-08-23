@@ -22,6 +22,7 @@ export class LicensesComponent implements OnInit {
   readonly displayedColumns: TableColumn[] = [
     { name: 'Start Date', dataKey: 'startDate', position: 'left', isSortable: true },
     { name: 'Renewal Date', dataKey: 'renewalDate', position: 'left', isSortable: true },
+    { name: 'Description', dataKey: 'description', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
     { name: 'Package Type', dataKey: 'packageType', position: 'left', isSortable: true },
     { name: 'Device Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true },

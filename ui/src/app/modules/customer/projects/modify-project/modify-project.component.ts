@@ -1,6 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { License } from 'src/app/model/license.model';
+import { LicenseService } from 'src/app/services/license.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 
@@ -17,10 +19,12 @@ export class ModifyProjectComponent implements OnInit {
   ];
   isDataLoading = false;
   private previousFormValue: any;
+  licenses: License[] = [];
   
   updateProjectForm = this.formBuilder.group({
     projectName: ['', Validators.required],
     projectNumber: ['', Validators.required],
+    licenseId: ['', Validators.required],
     openDate: ['', Validators.required],
     closeDate: ['', Validators.required],
     status: ['', Validators.required]
@@ -29,6 +33,7 @@ export class ModifyProjectComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private projectService: ProjectService,
+    private liceseService: LicenseService,
     private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<ModifyProjectComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
@@ -38,9 +43,18 @@ export class ModifyProjectComponent implements OnInit {
       this.isDataLoading = true;
       this.updateProjectForm.patchValue(this.data);
       this.previousFormValue = { ...this.updateProjectForm };
-      this.isDataLoading = false;
       if(this.data.status === 'Open')
         this.updateProjectForm.get('closeDate').disable();
+      this.isDataLoading = true;
+      this.liceseService.getLicenseList(this.projectService.getSelectedSubAccount()).subscribe((res: any) => {
+        if (!res.error && res.licenses.length > 0)
+          this.licenses = res.licenses;
+        this.isDataLoading = false;
+      }, err => {
+        this.snackBarService.openSnackBar(err.error, 'Error requesting packages!');
+        console.error('error fetching packages', err);
+        this.isDataLoading = false;
+      });
     }
   }
 

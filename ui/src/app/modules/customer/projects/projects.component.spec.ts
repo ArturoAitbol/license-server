@@ -101,16 +101,14 @@ describe('UI verification test', () => {
 
     it('should load correct data columns for the table', () => {
         fixture.detectChanges();
-        const projectCodeColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[0];
-        const projectNameColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[1];
-        const projectStatusColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[2];
-        const projectStartDateColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[3];
-        const projectCloseDateColumn = fixture.nativeElement.querySelectorAll('.mat-sort-header-content')[4];
-        expect(projectCodeColumn.innerText).toBe('Project Code');
-        expect(projectNameColumn.innerText).toBe('Project Name');
-        expect(projectStatusColumn.innerText).toBe('Status');
-        expect(projectStartDateColumn.innerText).toBe('Start Date');
-        expect(projectCloseDateColumn.innerText).toBe('Close Date');
+        
+        const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
+        expect(headers[0].innerText).toBe('Project Code');
+        expect(headers[1].innerText).toBe('Project Name');
+        expect(headers[2].innerText).toBe('tekVizion 360 Package');
+        expect(headers[3].innerText).toBe('Status');
+        expect(headers[4].innerText).toBe('Start Date');
+        expect(headers[5].innerText).toBe('Close Date');
     });
 
     it('should execute sortData()', () => {
