@@ -36,7 +36,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label id="project-status-label">Status</mat-label>
                         <mat-select required formControlName="status" (selectionChange)="onChanginStatus($event.value)">
-                            <mat-option *ngFor="let item of statusTypes" [value]="item">
+                            <mat-option *ngFor="let item of statusTypes" [value]="item" title="{{item}}">
                                 {{item}}
                             </mat-option>
                         </mat-select>
