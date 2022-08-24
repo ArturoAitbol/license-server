@@ -14,6 +14,7 @@ public class Landing extends AbstractPageObject {
 
     public Landing(){
         driver.get(this.environment.url());
+        System.out.println("Navigate to:" + this.environment.url());
     }
 
     public LoginForm openLoginForm(){
@@ -27,12 +28,8 @@ public class Landing extends AbstractPageObject {
     }
 
     public String checkLogin() {
-        try {
-            this.action.waitVisibilityElement(this.loginButton);
-            return "ok";
-        } catch (Exception e){
-//            System.out.println("Couldn't find the login button");
-            return "error";
-        }
+        By copyrightSelector = By.cssSelector("p#copyright");
+        String res = this.action.checkElement(copyrightSelector);
+        return res;
     }
 }

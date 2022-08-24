@@ -27,8 +27,14 @@ export class AddSubaccountModalComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isDataLoading = true;
     this.customerService.getCustomerList().subscribe((res: any) => {
       this.customers = res.customers;
+      this.isDataLoading = false;
+    }, err => {
+      this.snackBarService.openSnackBar(err.error, 'Error retrieving customers!');
+      console.error('error while retrieving customers', err);
+      this.isDataLoading = false;
     });
   }
   /**
