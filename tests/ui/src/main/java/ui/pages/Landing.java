@@ -29,8 +29,8 @@ public class Landing extends AbstractPageObject {
     }
 
     public String checkLogin() {
-        By tekVizionLogo = By.cssSelector("p#copyright");
-        String res = this.action.checkElement(tekVizionLogo);
+        By copyrightSelector = By.cssSelector("p#copyright");
+        String res = this.action.checkElement(copyrightSelector);
         return res;
     }
 }
