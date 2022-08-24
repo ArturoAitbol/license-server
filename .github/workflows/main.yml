@@ -105,7 +105,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          az storage blob delete-batch --account-name tekvizionportal --auth-mode key -s '$web'
+          az storage blob delete-batch --account-name lswebappstorage --auth-mode key -s '$web'
 
     - name: Upload to blob storage
       uses: azure/CLI@v1
