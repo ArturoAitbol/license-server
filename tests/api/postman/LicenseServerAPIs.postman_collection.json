@@ -26,12 +26,12 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");\r",
 							"\r",
-							"const clientId = pm.variables.get(\"clientId_DevicesAdmin\");\r",
-							"const clientSecret = pm.variables.get(\"clientSecret_DevicesAdmin\");\r",
+							"const clientId = pm.variables.get(\"CLIENTID_DEVICESADMIN\");\r",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_DEVICESADMIN\");\r",
 							"const grantType = pm.variables.get(\"grant_type\");\r",
-							"const scope = pm.variables.get(\"scope\");\r",
+							"const scope = pm.variables.get(\"SCOPE\");\r",
 							"\r",
 							"const getTokenRequest = {\r",
 							"  method: 'POST',\r",
@@ -225,12 +225,12 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");\r",
 							"\r",
-							"const clientId = pm.variables.get(\"clientId_FullAdmin\");\r",
-							"const clientSecret = pm.variables.get(\"clientSecret_FullAdmin\");\r",
+							"const clientId = pm.variables.get(\"CLIENTID_FULLADMIN\");\r",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_FULLADMIN\");\r",
 							"const grantType = pm.variables.get(\"grant_type\");\r",
-							"const scope = pm.variables.get(\"scope\");\r",
+							"const scope = pm.variables.get(\"SCOPE\");\r",
 							"\r",
 							"const getTokenRequest = {\r",
 							"  method: 'POST',\r",
@@ -1384,38 +1384,8 @@
 			"type": "string"
 		},
 		{
-			"key": "authorization_url",
-			"value": "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/oauth2/v2.0/token",
-			"type": "string"
-		},
-		{
-			"key": "scope",
-			"value": "api://e643fc9d-b127-4883-8b80-2927df90e275/.default",
-			"type": "string"
-		},
-		{
 			"key": "grant_type",
 			"value": "client_credentials",
-			"type": "string"
-		},
-		{
-			"key": "clientId_FullAdmin",
-			"value": "823fea2e-ad8b-4369-8a04-20787b966768",
-			"type": "string"
-		},
-		{
-			"key": "clientSecret_FullAdmin",
-			"value": "uvm8Q~lpjklMZajzmd9rXgzWQEQZVRwbpA6RAcR4",
-			"type": "string"
-		},
-		{
-			"key": "clientId_DevicesAdmin",
-			"value": "c7ce5df4-6db7-45fa-8c4e-c077cf504c7c",
-			"type": "string"
-		},
-		{
-			"key": "clientSecret_DevicesAdmin",
-			"value": "6yS8Q~0t1kzI6-OH1NbI4JkRdrwGSbfZ64ECPbMM",
 			"type": "string"
 		},
 		{
