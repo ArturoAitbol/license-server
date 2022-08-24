@@ -73,7 +73,7 @@ public class ProjectSteps {
         this.status = projectTable.getOrDefault("status", "none");
         this.closeDate = projectTable.getOrDefault("closeDate", "N/A");
         this.license = projectTable.getOrDefault("license", "none");
-        this.projects = this.projectForm.editProject(startDate, name, code, status, closeDate, license);
+        this.projects = this.projectForm.editProject(this.startDate, this.name, this.code, this.status, this.closeDate, this.license);
         this.actualMessage = this.projects.getMessage();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }

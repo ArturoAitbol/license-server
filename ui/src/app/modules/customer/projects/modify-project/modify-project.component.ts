@@ -45,7 +45,6 @@ export class ModifyProjectComponent implements OnInit {
       this.previousFormValue = { ...this.updateProjectForm };
       if(this.data.status === 'Open')
         this.updateProjectForm.get('closeDate').disable();
-      this.isDataLoading = true;
       this.liceseService.getLicenseList(this.projectService.getSelectedSubAccount()).subscribe((res: any) => {
         if (!res.error && res.licenses.length > 0)
           this.licenses = res.licenses;

@@ -28,29 +28,29 @@ Feature: Licenses
             | renewalDate   | 2/20/2023     |
             | packageType   | Basic         |
             | description   | Description1  |
-        Then I see the "Description" package in the table
+        Then I see the "Description1" package in the table
 
     @editLicense
-    Scenario: Add AddOn license
+    Scenario: Edit to AddOn license
         Given I see the customer "licenseCustomerTest" in the table
         And I go to the Packages view of "licenseCustomerTest"
-        And I see the "Basic" package in the table
-        When I edit the package "Basic" with the following data
-#            | startDate             | 8/20/2022    |
-#            | renewalDate           | 2/20/2023    |
+        And I see the "Description1" package in the table
+        When I edit the package "Description1" with the following data
+#            | startDate             | 8/20/2022     |
+#            | renewalDate           | 2/20/2023     |
+            | description           | Description2  |
             | packageType           | AddOn         |
             | deviceAccessTekTokens | 10            |
             | tekTokens             | 30            |
-            | description           | Description2  |
         Then I should see the message "Package edited successfully!"
         And I should see the modified data in Packages table
 
     @deleteLicense
-    Scenario: Delete Basic License
+    Scenario: Delete Description2 License
         Given I see the customer "licenseCustomerTest" in the table
         And I go to the Packages view of "licenseCustomerTest"
-        And I see the "AddOn" package in the table
-        When I delete the "AddOn" package
+        And I see the "Description2" package in the table
+        When I delete the "Description2" package
         Then I should see the message "License deleted successfully!"
 
     @deleteCustomerLicense

@@ -57,10 +57,11 @@ public class LicenseSteps {
         Map<String, String> license = packageTable.asMap(String.class, String.class);
         this.startDate = license.get("startDate");
         this.renewalDate = license.get("renewalDate");
+        this.description = license.get("description");
         this.packageType = license.get("packageType");
         this.deviceLimit = license.getOrDefault("deviceAccessTekTokens", null);
         this.tokensPurchased = license.getOrDefault("tekTokens", null);
-        this.packages = this.packageForm.createPackage(this.startDate, this.renewalDate, this.packageType, this.deviceLimit, this.tokensPurchased);
+        this.packages = this.packageForm.createPackage(this.startDate, this.renewalDate, this.packageType, this.description, this.deviceLimit, this.tokensPurchased);
     }
 
     @Then("I see the {string} package in the table")
@@ -69,18 +70,6 @@ public class LicenseSteps {
         String actualPackage = this.packageRow.getColumnValue("Description");
         Assert.assertEquals("Licenses table doesn't have the license: ".concat(description), description,
                 actualPackage);
-    }
-
-    @Then("I see the {string} package with {string} type, {int} device access tokens and {int} tekTokens")
-    public void iShouldSeeThePackageInTheTable(String description, String packageType, int deviceTokens, int tekTokens) {
-        String actualPackage = this.packageRow.getColumnValue("Description");
-        String actualPackageType = this.packageRow.getColumnValue("Package Type");
-        String deviceLimit = this.packageRow.getColumnValue("Device Limit");
-        String pkgTekTokens = this.packageRow.getColumnValue("tekTokens");
-        Assert.assertEquals("Licenses table doesn't have the description: ".concat(description), description, actualPackage);
-        Assert.assertEquals("Licenses table doesn't have the package type: ".concat(packageType), packageType, actualPackageType);
-        Assert.assertEquals("Licenses table doesn't have the device access tokens: ".concat(String.valueOf(deviceTokens)), deviceTokens, deviceLimit);
-        Assert.assertEquals("Licenses table doesn't have the tekTokens: ".concat(String.valueOf(tekTokens)), tekTokens, pkgTekTokens);
     }
 
     @Then("I delete the {string} package")
@@ -104,7 +93,7 @@ public class LicenseSteps {
         this.packageType = license.getOrDefault("packageType", "none");
         this.deviceLimit = license.getOrDefault("deviceAccessTekTokens", null);
         this.tokensPurchased = license.getOrDefault("tekTokens", null);
-        this.packages = this.packageForm.editPackage(this.startDate, this.renewalDate, this.packageType, this.deviceLimit, this.tokensPurchased);
+        this.packages = this.packageForm.editPackage(this.startDate, this.renewalDate, this.packageType, this.description, this.deviceLimit, this.tokensPurchased);
         this.actualMessage = this.packages.getMessage();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }

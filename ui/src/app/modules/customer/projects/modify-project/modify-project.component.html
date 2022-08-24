@@ -2,6 +2,9 @@
     <h1 mat-dialig-title id="modal-title">Edit Project</h1>
     <form [formGroup]="updateProjectForm" (ngSubmit)="submit()">
         <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">

@@ -95,9 +95,7 @@ export class LicensesComponent implements OnInit {
       disableClose: true
     });
     dialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        this.fetchLicenses();
-      }
+      this.fetchLicenses();
     });
   }
 

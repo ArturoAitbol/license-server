@@ -18,8 +18,8 @@ Feature: Projects
     
   @addLicense
   Scenario: Add Basic license
-    Given I see the customer "licenseCustomerTest" in the table
-    And I go to the Packages view of "licenseCustomerTest"
+    Given I see the customer "projectCustomerTest" in the table
+    And I go to the Packages view of "projectCustomerTest"
     And I should see the "tekVizion 360 Packages" table
     And I open the Add Package form
     When I create a package with the following data
@@ -37,8 +37,8 @@ Feature: Projects
     When I create a project with the following data
       | startDate | 8/17/2022     |
       | name      | projectTest   |
-      | code      | PRT-001       |
-      | licenseId | Description1  |
+      | code      | PRT-01        |
+      | license   | Description1  |
     Then I should see the message "Project added successfully!"
     Then I see the project "projectTest" in the table
 
@@ -50,10 +50,10 @@ Feature: Projects
     When I edit the project "projectTest" with the following data
 #      | startDate | 8/20/2022         |
       | name      | projectModified   |
-      | code      | PRT-002           |
+      | code      | PRT-02            |
       | type      | Closed            |
       | closeDate | 8/30/2022         |
-#      | licenseId | Description1      |
+#      | license   | Description1      |
     Then I should see the message "Project edited successfully!"
     And I should see the modified data in Projects table
 
