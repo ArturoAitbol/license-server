@@ -24,10 +24,11 @@ Feature: Licenses
         And I should see the "tekVizion 360 Packages" table
         And I open the Add Package form
         When I create a package with the following data
-            | startDate     | 8/20/2022 |
-            | renewalDate   | 2/20/2023 |
-            | packageType   | Basic     |
-        Then I see the "Basic" package in the table
+            | startDate     | 8/20/2022     |
+            | renewalDate   | 2/20/2023     |
+            | packageType   | Basic         |
+            | description   | Description1  |
+        Then I see the "Description" package in the table
 
     @editLicense
     Scenario: Add AddOn license
@@ -35,11 +36,12 @@ Feature: Licenses
         And I go to the Packages view of "licenseCustomerTest"
         And I see the "Basic" package in the table
         When I edit the package "Basic" with the following data
-#            | startDate             | 8/20/2022 |
-#            | renewalDate           | 2/20/2023 |
-            | packageType           | AddOn     |
-            | deviceAccessTekTokens | 10        |
-            | tekTokens             | 30        |
+#            | startDate             | 8/20/2022    |
+#            | renewalDate           | 2/20/2023    |
+            | packageType           | AddOn         |
+            | deviceAccessTekTokens | 10            |
+            | tekTokens             | 30            |
+            | description           | Description2  |
         Then I should see the message "Package edited successfully!"
         And I should see the modified data in Packages table
 
@@ -51,7 +53,7 @@ Feature: Licenses
         When I delete the "AddOn" package
         Then I should see the message "License deleted successfully!"
 
-    @deleteCustomerProject
+    @deleteCustomerLicense
     Scenario: Delete the test licenses customer
         Given I see the customer "licenseCustomerTest" in the table
         When I delete the customer "licenseCustomerTest"

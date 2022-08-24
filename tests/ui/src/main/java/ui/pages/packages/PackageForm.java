@@ -4,7 +4,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
-import ui.pages.Projects;
 
 public class PackageForm extends AbstractPageObject {
     @FindBy(css = "[formcontrolname='startDate']")

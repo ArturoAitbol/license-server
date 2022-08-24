@@ -4,7 +4,7 @@ Feature: Projects
     Given I am on the landing page
     When I try to login with email and password
 
-  @createSubaccountCustomer
+  @createProjectCustomer
   Scenario: Create a test customer for projects tests
     Given I open the Add Customer form
     When I create a customer with the following data
@@ -15,6 +15,19 @@ Feature: Projects
       | subAdminEmail | project-subaccount@tekvizionlabs.com  |
       | testCustomer  | yes                                   |
     Then I see the customer "projectCustomerTest" in the table
+    
+  @addLicense
+  Scenario: Add Basic license
+    Given I see the customer "licenseCustomerTest" in the table
+    And I go to the Packages view of "licenseCustomerTest"
+    And I should see the "tekVizion 360 Packages" table
+    And I open the Add Package form
+    When I create a package with the following data
+      | startDate     | 8/20/2022     |
+      | renewalDate   | 2/20/2023     |
+      | packageType   | Basic         |
+      | description   | Description1  |
+    Then I see the "Basic" package in the table
 
   @createProject
   Scenario: Create a project
@@ -25,6 +38,7 @@ Feature: Projects
       | startDate | 8/17/2022     |
       | name      | projectTest   |
       | code      | PRT-001       |
+      | licenseId | Description1  |
     Then I should see the message "Project added successfully!"
     Then I see the project "projectTest" in the table
 
@@ -39,6 +53,7 @@ Feature: Projects
       | code      | PRT-002           |
       | type      | Closed            |
       | closeDate | 8/30/2022         |
+#      | licenseId | Description1      |
     Then I should see the message "Project edited successfully!"
     And I should see the modified data in Projects table
 
