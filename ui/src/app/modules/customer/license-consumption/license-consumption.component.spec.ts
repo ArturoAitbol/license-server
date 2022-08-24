@@ -249,7 +249,7 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should change the status of all the loading-related variables if there is no licenses to show after initializing', () => {
-        spyOn(LicenseServiceMock,'getLicenseList').and.returnValue(of({licenses:[]}))
+        spyOn(LicenseServiceMock,'getLicenseList').and.returnValue(of({licenses:[]}));
         fixture.detectChanges();
         expect(licenseConsumptionComponentTestInstance.isLicenseSummaryLoadingResults).toBeFalse();
         expect(licenseConsumptionComponentTestInstance.isLicenseSummaryRequestCompleted).toBeTrue();
@@ -269,7 +269,7 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.fetchSummaryData).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.fetchEquipment).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.fetchAggregatedData).toHaveBeenCalled();
-    })
+    });
 
     it('should make a call to get Projects when calling fetchProjectsList()',()=>{
         spyOn(ProjectServiceMock,'getProjectDetailsBySubAccount').and.callThrough();
@@ -277,7 +277,7 @@ describe('Data collection and parsing tests', () => {
         licenseConsumptionComponentTestInstance.fetchProjectsList();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalledWith(CurrentCustomerServiceMock.selectedCustomer.subaccountId);
         expect(licenseConsumptionComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects);
-    })
+    });
 
     it('should make a call to get licenseConsumptionDetails for summary view when calling fetchSummaryData()',()=>{
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
@@ -333,7 +333,7 @@ describe('Data collection and parsing tests', () => {
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
         const error = "some error";
         spyOn(ConsumptionServiceMock,'getLicenseConsumptionDetails').and.returnValue(throwError(error));
-        spyOn(console,'error')
+        spyOn(console,'error');
         
         licenseConsumptionComponentTestInstance.fetchEquipment();
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
@@ -391,7 +391,7 @@ describe('Data collection and parsing tests', () => {
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
         const error = "some error";
         spyOn(ConsumptionServiceMock,'getLicenseConsumptionDetails').and.returnValue(throwError(error));
-        spyOn(console,'error')
+        spyOn(console,'error');
         
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
@@ -463,7 +463,7 @@ describe('Dialog calls and interactions', () => {
         event.value = "add-license-consumption";
         licenseConsumptionComponentTestInstance.onChangeToggle(event);
         expect(licenseConsumptionComponentTestInstance.openDialog).toHaveBeenCalledWith(AddLicenseConsumptionComponent,licenseConsumptionComponentTestInstance.selectedLicense);
-    })
+    });
 
     it('sould toggle the variable detailedConsumptionTableSelectable when calling toggleSelectableConsumptions()',()=>{
         licenseConsumptionComponentTestInstance.detailedConsumptionTableSelectable = false;
@@ -549,7 +549,7 @@ describe('Dialog calls and interactions', () => {
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
         spyOn(licenseConsumptionComponentTestInstance,'fetchAggregatedData').and.callThrough();
-        spyOn(licenseConsumptionComponentTestInstance,'setMonthRange').and.callThrough();
+        spyOn(licenseConsumptionComponentTestInstance,'setMonthAndYear').and.callThrough();
         const debugElement = fixture.debugElement.query(By.directive(MatDateRangePicker));
         const dateRangePicker: MatDateRangePicker<any> = debugElement.componentInstance;
         licenseConsumptionComponentTestInstance.aggregation = 'month';
@@ -558,20 +558,21 @@ describe('Dialog calls and interactions', () => {
         
         licenseConsumptionComponentTestInstance.setMonthAndYear(date,dateRangePicker);
 
-        expect(licenseConsumptionComponentTestInstance.month).toBe(date.month()+1);
-        expect(licenseConsumptionComponentTestInstance.year).toBe(date.year());
-        expect(licenseConsumptionComponentTestInstance.setMonthRange).toHaveBeenCalled();
+        expect(licenseConsumptionComponentTestInstance.setMonthAndYear).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.fetchAggregatedData).toHaveBeenCalled();
     });
 
-    it('should set the range variables to match the startDate and endDate variables if the selected period is greater than the license period when calling setMonthRange()',()=>{
+    it('should set the range variables to match the startDate and endDate variables if the selected period is greater than the license period when calling setMonthAndYear()',()=>{
+        fixture.detectChanges();
         const date = moment(new Date());
         licenseConsumptionComponentTestInstance.startDate = moment(date).add(1,'days');
         licenseConsumptionComponentTestInstance.endDate = moment(date).subtract(1,'days');
-        licenseConsumptionComponentTestInstance.setMonthRange(date);
-        expect(licenseConsumptionComponentTestInstance.range.get('start').value).toBe(licenseConsumptionComponentTestInstance.startDate);
-        expect(licenseConsumptionComponentTestInstance.range.get('end').value).toBe(licenseConsumptionComponentTestInstance.endDate);
-    })
+        const debugElement = fixture.debugElement.query(By.directive(MatDateRangePicker));
+        const dateRangePicker: MatDateRangePicker<any> = debugElement.componentInstance;
+        licenseConsumptionComponentTestInstance.setMonthAndYear(date, dateRangePicker);
+        expect(licenseConsumptionComponentTestInstance.range.get('start').value).toEqual(licenseConsumptionComponentTestInstance.startDate);
+        expect(licenseConsumptionComponentTestInstance.range.get('end').value).toEqual(licenseConsumptionComponentTestInstance.endDate);
+    });
 
     it('should change the selected project and make a call to fetchAggregatedData when calling getProject()',()=>{
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
@@ -596,15 +597,11 @@ describe('Dialog calls and interactions', () => {
     });
 
     it('should reset month, year and range values when calling resetCalendar()',()=>{
-        licenseConsumptionComponentTestInstance.month=1;
-        licenseConsumptionComponentTestInstance.year=2022;
         const date = moment(new Date());
         licenseConsumptionComponentTestInstance.range.setValue({start:date,end:date});
         
         licenseConsumptionComponentTestInstance.resetCalendar();
 
-        expect(licenseConsumptionComponentTestInstance.month).toBeNull();
-        expect(licenseConsumptionComponentTestInstance.year).toBeNull();
         expect(licenseConsumptionComponentTestInstance.range.get('start').value).toBeNull();
         expect(licenseConsumptionComponentTestInstance.range.get('end').value).toBeNull();
     });
@@ -622,7 +619,7 @@ describe('Dialog calls and interactions', () => {
     });
 
     it('should sort the given array after calling sortData() according to the set arguments',()=>{
-        const sort: Sort  = {active:'name', direction:'asc'}
+        const sort: Sort  = {active:'name', direction:'asc'};
         const unsortedArray = [{name:"c"},{name:"a"},{name:"b"}];
         let sortedArray = [{name:"a"},{name:"b"},{name:"c"}];
 

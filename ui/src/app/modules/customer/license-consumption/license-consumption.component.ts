@@ -36,8 +36,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   startDate: any;
   endDate: any;
   aggregation = "period";
-  month: number;
-  year: number;
   licensesList: any = [];
   data: any = [];
   equipmentData = [];
@@ -127,7 +125,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     4: 'Thu',
     5: 'Fri',
     6: 'Sat'
-  }
+  };
 
   constructor(
     private formBuilder: FormBuilder,
@@ -188,8 +186,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     const requestObject: any = {
       subaccount: this.currentCustomer.subaccountId,
       view: view,
-      month: this.aggregation === 'month' ? this.month : null,
-      year: this.aggregation === 'month' ? this.year : null,
+      // month: this.aggregation === 'month' ? this.month : null,
+      // year: this.aggregation === 'month' ? this.year : null,
     };
     if (this.selectedProject) { requestObject.project = this.selectedProject; }
     if (this.selectedType) { requestObject.type = this.selectedType; }
@@ -201,7 +199,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       if it is the license consumption division and week filter is selected
       then send the start and end dates as the beginning and end of this week
     */
-    if (view === '' && this.aggregation === 'week') {
+    if (view === '' && (this.aggregation === 'week' || this.aggregation === 'month')) {
+      console.log(this.range);
       requestObject.startDate = this.range.get('start').value.format('YYYY-MM-DD');
       requestObject.endDate = this.range.get('end').value.format('YYYY-MM-DD');
     } else {
@@ -343,7 +342,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         weeklyConsumptionDetail[i].tokensConsumed = item.tokensConsumed;
       else
         notFoundWeeks.push(item);
-    })
+    });
 
     return notFoundWeeks.concat(weeklyConsumptionDetail);
   }
@@ -499,24 +498,15 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   setMonthAndYear(newDateSelection: Moment, datepicker: MatDateRangePicker<any>) {
-    this.month = newDateSelection.month() + 1;
-    this.year = newDateSelection.year();
-    this.setMonthRange(newDateSelection);
+    const startMonth = newDateSelection.startOf('month');
+    const endMonth = newDateSelection.clone().add(1, 'month').startOf('month');
+    console.log(newDateSelection, endMonth);
+    this.range.patchValue({
+      start: startMonth < this.startDate ? moment(this.startDate) : startMonth,
+      end: endMonth > this.endDate ? moment(this.endDate) : endMonth
+    });
     datepicker.close();
     this.fetchAggregatedData();
-  }
-
-  setMonthRange(date: Moment) {
-    const startMonth = date;
-    const endMonth = moment(new Date(date.year(), date.month() + 1, 0));
-    this.range.patchValue({
-      start: startMonth,
-      end: endMonth
-    });
-    this.range.patchValue({
-      start: startMonth < this.startDate ? this.startDate : startMonth,
-      end: endMonth > this.endDate ? this.endDate : endMonth
-    });
   }
 
   getProject(projectId: string) {
@@ -550,8 +540,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   resetCalendar() {
     this.range.patchValue({ start: null, end: null });
-    this.month = null;
-    this.year = null;
   }
 
   resetPeriodFilter() {
