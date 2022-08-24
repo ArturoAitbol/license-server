@@ -15,12 +15,6 @@
                     <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
                         Add tekToken Consumption
                     </mat-button-toggle>
-                    <ng-container *lcCheckAccessFor="'addLicenseConsumption'">
-                        <mat-button-toggle *ngIf="!detailedConsumptionTableSelectable" id="clone-consumption" (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded">
-                            Clone Consumption</mat-button-toggle>
-                        <mat-button-toggle class="confirm-button" *ngIf="detailedConsumptionTableSelectable" id="confirm-cloning" (click)="cloneConsumptions()">
-                            Confirm Cloning</mat-button-toggle>
-                    </ng-container>
                 </mat-button-toggle-group>
             </div>
         </div>
@@ -153,6 +147,21 @@
             </div>
         </div>
         <br>
+        <ng-container *lcCheckAccessFor="'addLicenseConsumption'">
+            <div class="row">
+                <div class="col-2 ms-auto">
+                    <button *ngIf="!detailedConsumptionTableSelectable" id="clone-consumption"
+                            (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded"
+                            mat-raised-button style="float: right">Clone Consumption
+                    </button>
+                    <button class="confirm-button" *ngIf="detailedConsumptionTableSelectable" style="float: right"
+                            id="confirm-cloning" (click)="cloneConsumptions()" mat-raised-button>Confirm Cloning
+                    </button>
+
+                </div>
+            </div>
+            <br>
+        </ng-container>
         <div class="row">
             <div class="col-12">
                 <div id="detailed-consumption-table" class="table-container mat-elevation-z8">
