@@ -56,4 +56,3 @@ Feature: Licenses
         Given I see the customer "licenseCustomerTest" in the table
         When I delete the customer "licenseCustomerTest"
         Then I should see the message "Customer deleted successfully!"
-        And I logout

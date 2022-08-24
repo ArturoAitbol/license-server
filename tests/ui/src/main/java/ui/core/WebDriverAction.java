@@ -1,6 +1,7 @@
 package ui.core;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -57,14 +58,11 @@ public class WebDriverAction {
     }
 
     public void selectOption(WebElement element, By option) {
-        try {
-            wait.until(ExpectedConditions.elementToBeClickable(element));
-            element.click();
-            wait.until(ExpectedConditions.presenceOfElementLocated(option)).click();
-        } catch (Exception e) {
-            System.out.println("Selected option is not able: " + option.toString());
-            System.out.println("Ex: " + e.toString());
-        }
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        element.click();
+        WebElement optionClickable = wait.until(ExpectedConditions.presenceOfElementLocated(option));
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", optionClickable);
     }
 
     public WebElement getElement(By locator) {
@@ -111,5 +109,18 @@ public class WebDriverAction {
         } catch (Exception e) {
             System.out.println("Window didn't get the title:" + title);
         }
+    }
+    public String checkElement(By locator){
+        String output;
+        try{
+            this.driver.findElement(locator).click();
+            output="ok";
+        }
+        catch (Exception e){
+//            LOGGER.warn("Element is not present: "+ e.toString());
+//            System.out.println("Element is not present: "+ e.toString());
+            output="error";
+        }
+        return output;
     }
 }
