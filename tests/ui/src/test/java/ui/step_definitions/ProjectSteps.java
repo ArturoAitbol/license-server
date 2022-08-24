@@ -107,10 +107,6 @@ public class ProjectSteps {
                 Assert.assertEquals("Project doesn't have this close date: ".concat(expectedDate), expectedDate, actualCloseDate);
             }
         }
-        if (!this.license.equals("none")){
-            String actualLicense = this.projectRow.getColumnValue("tekVizion 360 Package");
-            Assert.assertEquals("Project doesn't have this license: ".concat(this.license), this.license, actualLicense);
-        }
     }
 
     @When("I delete the project {string}")

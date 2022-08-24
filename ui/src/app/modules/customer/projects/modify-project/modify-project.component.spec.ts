@@ -18,6 +18,8 @@ import { ModifyProjectComponent } from "./modify-project.component";
 import { of } from 'rxjs';
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "src/app/services/snack-bar.service";
+import { LicenseService } from "src/app/services/license.service";
+import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
@@ -48,6 +50,10 @@ const beforeEachFunction = () => {
             {
                 provide: ProjectService,
                 useValue: ProjectServiceMock
+            },
+            {
+                provide: LicenseService,
+                useValue: LicenseServiceMock
             },
             {
                 provide: MsalService,

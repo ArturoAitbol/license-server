@@ -148,7 +148,6 @@ public class TekvLSGetAllProjects {
 				item.put("id", rs.getString("id"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
 				item.put("licenseId", rs.getString("license_id"));
-				item.put("licenseDescription", rs.getString("description"));
 				item.put("projectName", rs.getString("name"));
 				item.put("projectNumber", rs.getString("code"));
 				item.put("status", rs.getString("status"));
