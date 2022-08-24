@@ -16,8 +16,8 @@ export class ErrorInterceptor implements HttpInterceptor {
             catchError(err => {
                 const error = err.error || err.statusText;
                 this.snackBarService.openSnackBar(error.error, 'Error performing action!');
-                if (err.status === 401)
-                    this.autoLogoutService.logout();
+                // if (err.status === 401)
+                //     this.autoLogoutService.logout();
                 return throwError(error);
             }))
     }

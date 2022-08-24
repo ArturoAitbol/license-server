@@ -669,10 +669,16 @@ describe('add-license-consumption - devicesAndSupportInvalid', () => {
     });
 
     it('should enable the submit button on not empty deviceUsed', () => {
-        fixture.detectChanges();
+        const addLicenseConsumptionForm = testInstance.addLicenseConsumptionForm;
+        addLicenseConsumptionForm.setValue({
+            startWeek: moment('16-08-2022', 'DDMMYYYY'),
+            endWeek: moment('20-08-2022', 'DDMMYYYY'),
+            project: { test: 'test' },
+        });
         testInstance.devicesUsed.push({test: 'test'});
+        fixture.detectChanges();
         expect(testInstance.devicesAndSupportInvalid()).toBeFalse();
-        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeTrue()
+        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeFalse()
     });
 
     it('should disable the submit button on empty form', () => {
