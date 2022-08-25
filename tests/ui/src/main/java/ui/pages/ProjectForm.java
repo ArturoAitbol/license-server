@@ -19,7 +19,7 @@ public class ProjectForm extends AbstractPageObject {
     WebElement projectStatus;
     @FindBy(css = "[formControlName='closeDate']")
     WebElement closeDate;
-    @FindBy(css = "#submit-button[title='project-form']")
+    @FindBy(css = "#submit-project-button")
     WebElement submitButton;
 
     private final String licenseIdSelector = "[formcontrolname='licenseId']";
@@ -28,8 +28,6 @@ public class ProjectForm extends AbstractPageObject {
         this.action.sendText(this.openDate, openDate);
         this.action.sendText(this.projectName, name);
         this.action.sendText(this.projectCode, code);
-        // By licenseSelector = By.cssSelector(String.format("mat-option[title='%s']", license));
-        // this.action.selectOption(this.projectLicenseId, licenseSelector);
         WebElement element = driver.findElement(By.cssSelector(this.licenseIdSelector));
         element.sendKeys(license);
         this.action.click(this.submitButton);
@@ -50,8 +48,6 @@ public class ProjectForm extends AbstractPageObject {
                 this.action.sendText(this.closeDate, closeDate);
         }
         if (!license.equals("none")) {
-            // By licenseSelector = By.cssSelector(String.format("mat-option[title='%s']", license));
-            // this.action.selectOption(this.projectLicenseId, licenseSelector);
             WebElement element = driver.findElement(By.cssSelector(this.licenseIdSelector));
             element.sendKeys(license);
         }

@@ -13,7 +13,8 @@ import org.junit.runner.RunWith;
         "rerun:reports/rerun/rerun.txt"
         },
         features = "src/test/resources/features/",
-        glue = "ui")
+        glue = "ui",
+        tags = "not @licenseConsumptionTest")
 public class RunCucumberTests {
 
     @AfterClass

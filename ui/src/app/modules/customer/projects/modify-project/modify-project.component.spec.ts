@@ -93,7 +93,7 @@ describe('UI verification test for modify component', () => {
         const projectLicenseLable = fixture.nativeElement.querySelector('#project-license-label');
         const projectStatusLable = fixture.nativeElement.querySelector('#project-status-label');
         const closeButton = fixture.nativeElement.querySelector('#cancel-button');
-        const submitButton = fixture.nativeElement.querySelector('#submit-button');
+        const submitButton = fixture.nativeElement.querySelector('#submit-project-button');
         expect(h1.textContent).toBe('Edit Project');
         expect(startDateLabel.textContent).toBe('Start Date');
         expect(projectNameLabel.textContent).toBe('Project Name');

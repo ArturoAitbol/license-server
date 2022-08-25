@@ -26,6 +26,7 @@ Feature: LicensesConsumption
       | startDate     | 8/20/2022 |
       | renewalDate   | 2/20/2023 |
       | packageType   | Basic     |
+      | description   | Basic     |
     Then I should see the message "Package added successfully!"
 
   @addLicenseConsumption
