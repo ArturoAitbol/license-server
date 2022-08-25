@@ -64,3 +64,9 @@ Feature: LicensesConsumption
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the Package Consumption view of "licenseUsageCustomerTest"
     When I delete the consumption of the project "projectTest"
+
+  @deleteCustomerProject
+  Scenario: Delete the test licenses customer
+    Given I see the customer "licenseUsageCustomerTest" in the table
+    When I delete the customer "licenseUsageCustomerTest"
+    Then I should see the message "Customer deleted successfully!"
