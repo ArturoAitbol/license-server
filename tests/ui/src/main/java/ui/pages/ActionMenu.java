@@ -25,6 +25,7 @@ public class ActionMenu extends AbstractPageObject {
     public String delete(String type) {
 /*        By deleteSelector = By.cssSelector("button#Delete");
         this.action.click(deleteSelector);*/
+        String message;
         JavascriptExecutor executor = (JavascriptExecutor)this.driver;
         executor.executeScript("arguments[0].click();", this.deleteButton);
         Modal confirmModal = new Modal();
@@ -33,7 +34,11 @@ public class ActionMenu extends AbstractPageObject {
         } else {
             confirmModal.confirmAction();
         }
-        return this.action.getText(this.messageSelector);
+        if (!type.equals("licenseConsumption"))
+            message = action.getText(this.messageSelector);
+        else
+            message = "none";
+        return message;
     }
 
     public void edit() {
