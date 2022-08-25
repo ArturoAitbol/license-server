@@ -225,7 +225,7 @@ describe('Dialog calls and interactions', () => {
         expect(dialogService.confirmDialog).toHaveBeenCalled();
     
         expect(ProjectServiceMock.closeProject).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project updated successfully!');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project closed successfully!');
     });
 
     it('should show a message if successfully deleted a project after calling confirmDeleteDialog()', () => {
