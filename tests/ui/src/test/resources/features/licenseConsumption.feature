@@ -51,7 +51,7 @@ Feature: LicensesConsumption
       | available     | 53      |
 
   @editLicenseConsumption
-  Scenario: Add a tekToken Consumption
+  Scenario: Edit a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the Package Consumption view of "licenseUsageCustomerTest"
     When I edit the consumption of the project "projectTest" with the following data
@@ -60,7 +60,7 @@ Feature: LicensesConsumption
     Then I should see the message "License consumption successfully edited!"
 
   @deleteLicenseConsumption
-  Scenario: Add a tekToken Consumption
+  Scenario: Delete a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the Package Consumption view of "licenseUsageCustomerTest"
     When I delete the consumption of the project "projectTest"
