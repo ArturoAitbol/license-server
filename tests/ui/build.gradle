@@ -17,13 +17,17 @@ ext {
     javaMainClass = "MainClass"
 }
 application {
-    mainClassName = javaMainClass
+    mainClass = javaMainClass
 }
 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
     jcenter()
+    maven {
+        url "https://jitpack.io"
+    }
 }
 
 dependencies {
@@ -62,20 +66,24 @@ dependencies {
 
     //Handle multiple environments
     implementation group: 'org.aeonbits.owner', name: 'owner', version: '1.0.8'
+
+//    implementation group: 'net.lightbody.bmp', name: 'browsermob-core', version: '2.1.2'
+    // https://mvnrepository.com/artifact/net.lightbody.bmp/browsermob-core
+//    compile group: 'net.lightbody.bmp', name: 'browsermob-core', version: '2.1.5'
 }
 
-/*cluecumberReports {
+cluecumberReports {
     sourceJsonReportDirectory = "${projectDir}/reports/cucumber-reports"
     generatedHtmlReportDirectory = "${projectDir}/reports/html"
     expandBeforeAfterHooks = true
-}*/
+}
 
 task uiTests(type: Test) {
     include '**/RunCucumberTests*'
     systemProperty "cucumber.filter.tags", System.getProperty("cucumber.filter.tags")
     systemProperty 'env', System.getProperty('env', 'env')
 }
-//uiTests.finalizedBy generateCluecumberReports
+uiTests.finalizedBy generateCluecumberReports
 tasks.withType(Test) {
     dependsOn cleanTest
     testLogging {
@@ -83,13 +91,13 @@ tasks.withType(Test) {
     }
     systemProperties System.properties
 }
-/*test {
+test {
     systemProperty "cucumber.options", System.getProperty("cucumber.options")
-}*/
+}
 task runWithJavaExec(type: JavaExec) {
     group = "Execution"
     description = "Run the main class with JavaExecTask"
     classpath = sourceSets.main.runtimeClasspath
-    main = javaMainClass
+    mainClass = javaMainClass
     systemProperty 'env', System.getProperty('env', 'env')
 }

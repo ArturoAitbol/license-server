@@ -15,15 +15,17 @@ import { renewalDateValidator } from "src/app/helpers/renewal-date.validator";
 })
 export class AddLicenseComponent implements OnInit, OnDestroy {
   types: any[] = [];
-  selectedType: string;
+  selectedType: any;
   private currentCustomer: any;
   addLicenseForm = this.formBuilder.group({
     startDate: ['', Validators.required],
+    description: ['', Validators.required],
     packageType: ['', Validators.required],
     tokensPurchased: ['', Validators.required],
     deviceLimit: ['', Validators.required],
     renewalDate: ['', Validators.required]
   }, { validators: renewalDateValidator });
+  isDataLoading = false;
   startDateMax: Date = null;
   renewalDateMin: Date = null;
   constructor(
@@ -37,8 +39,10 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    this.isDataLoading = true;
     this.bundleService.getBundleList().subscribe((res: any) => {
       if (res) this.types = res.bundles;
+      this.isDataLoading = false;
     });
   }
 
@@ -49,10 +53,12 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
    * add license
    */
   submit() {
+    this.isDataLoading = true;
     const licenseObject: License | any = {
       subaccountId: this.currentCustomer.subaccountId,
       startDate: this.addLicenseForm.value.startDate,
-      packageType: this.selectedType,
+      description: this.addLicenseForm.value.description,
+      packageType: this.addLicenseForm.value.packageType,
       tokensPurchased: this.addLicenseForm.get("tokensPurchased").value,
       deviceLimit: this.addLicenseForm.get("deviceLimit").value,
       renewalDate: this.addLicenseForm.value.renewalDate
@@ -60,20 +66,23 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     this.licenseService.createLicense(licenseObject).subscribe((res: any) => {
       if (!res.error) {
         this.snackBarService.openSnackBar('Package added successfully!', '');
+        this.isDataLoading = false;
         this.dialogRef.close(res);
-      } else
+      } else {
         this.snackBarService.openSnackBar(res.error, 'Error adding package!');
+        this.isDataLoading = false;
+      }
     });
   }
 
-  onChangeType(item: any) {
-    if (item) {
-      this.selectedType = item.name;
+  onChangeType(bundleName: string) {
+    if (bundleName) {
+      this.selectedType = this.types.find((item) => item.bundleName === bundleName);
       this.addLicenseForm.patchValue({
-        tokensPurchased: item.tokens,
-        deviceLimit: item.deviceAccessTokens,
+        tokensPurchased: this.selectedType.defaultTokens,
+        deviceLimit: this.selectedType.defaultDeviceAccessTokens,
       });
-      if (item.name == "Custom" || item.name == "AddOn") {
+      if (this.selectedType.bundleName == "Custom" || this.selectedType.bundleName == "AddOn") {
         this.addLicenseForm.get('tokensPurchased').enable();
         this.addLicenseForm.get('deviceLimit').enable();
       } else {

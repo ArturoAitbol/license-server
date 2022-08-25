@@ -11,6 +11,7 @@ import { AddLicenseComponent } from './add-license/add-license.component';
 import { ModifyLicenseComponent } from './modify-license/modify-license.component';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 
 @Component({
   selector: 'app-licenses',
@@ -21,6 +22,7 @@ export class LicensesComponent implements OnInit {
   readonly displayedColumns: TableColumn[] = [
     { name: 'Start Date', dataKey: 'startDate', position: 'left', isSortable: true },
     { name: 'Renewal Date', dataKey: 'renewalDate', position: 'left', isSortable: true },
+    { name: 'Description', dataKey: 'description', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
     { name: 'Package Type', dataKey: 'packageType', position: 'left', isSortable: true },
     { name: 'Device Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true },
@@ -42,6 +44,7 @@ export class LicensesComponent implements OnInit {
     private customerService: CustomerService,
     private licenseService: LicenseService,
     private dialogService: DialogService,
+    private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog,
     private msalService: MsalService
@@ -92,9 +95,7 @@ export class LicensesComponent implements OnInit {
       disableClose: true
     });
     dialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        this.fetchLicenses();
-      }
+      this.fetchLicenses();
     });
   }
 
@@ -154,6 +155,7 @@ export class LicensesComponent implements OnInit {
       })
       .subscribe((confirmed) => {
         if (confirmed) {
+          this.snackBarService.openSnackBar('License deleted successfully!', '');
           this.licenseService.deleteLicense(license.id).subscribe((res: any) => {
             this.fetchLicenses();
           });

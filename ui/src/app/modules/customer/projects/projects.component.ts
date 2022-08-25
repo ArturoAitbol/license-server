@@ -22,8 +22,8 @@ import { ModifyProjectComponent } from "./modify-project/modify-project.componen
 export class ProjectsComponent implements OnInit {
 
   readonly displayedColumns: TableColumn[] = [
-    { name: 'Project Code', dataKey: 'code', position: 'left', isSortable: true },
-    { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
+    { name: 'Project Code', dataKey: 'projectNumber', position: 'left', isSortable: true },
+    { name: 'Project Name', dataKey: 'projectName', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
     { name: 'Start Date', dataKey: 'openDate', position: 'left', isSortable: true },
     { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
@@ -42,8 +42,8 @@ export class ProjectsComponent implements OnInit {
   projects: Project[] = [];
   projectsBk: Project[] = [];
   // flag
-  isLoadingResults = true;
-  isRequestCompleted = false;
+  isLoadingResults: Boolean;
+  isRequestCompleted: Boolean;
 
   constructor(
     private customerService: CustomerService,
@@ -112,6 +112,9 @@ export class ProjectsComponent implements OnInit {
   }
 
   fetchProjects(): void {
+    this.projects = [];
+    this.isLoadingResults = true;
+    this.isRequestCompleted = false;
     this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
@@ -164,7 +167,7 @@ export class ProjectsComponent implements OnInit {
 
   confirmCloseDialog(index: string) {
     const currentProjectData = this.projects[index];
-    const projectToClose = currentProjectData.number + '-' + currentProjectData.name;
+    const projectToClose = currentProjectData.projectNumber + '-' + currentProjectData.projectName;
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
@@ -182,8 +185,8 @@ export class ProjectsComponent implements OnInit {
           console.debug('The user confirmed the action: ', this.projects[index]);
           this.projectService.closeProject(projectToUpdate).subscribe(res => {
             if (res.body === null) {
-              this.snackBarService.openSnackBar('Project updated successfully!');
               this.fetchProjects();
+              this.snackBarService.openSnackBar('Project closed successfully!');
             } else {
               console.debug(res.body.error);
               this.snackBarService.openSnackBar(res.body.error, 'Error closing project!');
@@ -194,8 +197,8 @@ export class ProjectsComponent implements OnInit {
   }
 
   confirmDeleteDialog(index: string) {
-    const { id, name, code } = this.projects[index];
-    const projectToDelete = code + '-' + name;
+    const { id, projectName, projectNumber } = this.projects[index];
+    const projectToDelete = projectNumber + '-' + projectName;
 
     this.dialogService
       .confirmDialog({

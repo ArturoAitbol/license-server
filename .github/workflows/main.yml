@@ -101,7 +101,13 @@ jobs:
     - name: Add Release version file
       run: echo "Released ${{ steps.next_tag.outputs.patch }} Build" > ./ui/dist/license-server/ReleaseVersion.txt
 
-    - name: Upload to blob storagerun
+    - name: Clear blob storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az storage blob delete-batch --account-name lswebappstorage --auth-mode key -s '$web'
+
+    - name: Upload to blob storage
       uses: azure/CLI@v1
       with:
         inlineScript: |

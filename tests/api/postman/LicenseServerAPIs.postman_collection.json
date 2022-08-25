@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "devices",
+			"name": "bundles",
 			"event": [
 				{
 					"listen": "test",
@@ -17,7 +17,7 @@
 							"    pm.response.to.have.jsonBody(\"id\");\r",
 							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
 							"});\r",
-							"pm.collectionVariables.set(\"deviceId\", pm.response.json().id);"
+							"pm.collectionVariables.set(\"bundleId\", pm.response.json().id);"
 						],
 						"type": "text/javascript"
 					}
@@ -26,12 +26,12 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");\r",
 							"\r",
-							"const clientId = pm.variables.get(\"clientId_DevicesAdmin\");\r",
-							"const clientSecret = pm.variables.get(\"clientSecret_DevicesAdmin\");\r",
+							"const clientId = pm.variables.get(\"CLIENTID_DEVICESADMIN\");\r",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_DEVICESADMIN\");\r",
 							"const grantType = pm.variables.get(\"grant_type\");\r",
-							"const scope = pm.variables.get(\"scope\");\r",
+							"const scope = pm.variables.get(\"SCOPE\");\r",
 							"\r",
 							"const getTokenRequest = {\r",
 							"  method: 'POST',\r",
@@ -50,6 +50,122 @@
 							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
 							"  pm.collectionVariables.set('access_token_DA', response.json().access_token);\r",
 							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bundleName\":\"CICDTest\",\r\n    \"defaultTokens\":\"10\",\r\n    \"defaultDeviceAccessTokens\":\"100\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/bundles",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"defaultTokens\":\"20\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/bundles/{{bundleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles",
+						"{{bundleId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundles",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/bundles/{{bundleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"bundles",
+						"{{bundleId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"deviceId\", pm.response.json().id);"
 						],
 						"type": "text/javascript"
 					}
@@ -109,12 +225,12 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const tokenUrl = pm.variables.get(\"authorization_url\");\r",
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");\r",
 							"\r",
-							"const clientId = pm.variables.get(\"clientId_FullAdmin\");\r",
-							"const clientSecret = pm.variables.get(\"clientSecret_FullAdmin\");\r",
+							"const clientId = pm.variables.get(\"CLIENTID_FULLADMIN\");\r",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_FULLADMIN\");\r",
 							"const grantType = pm.variables.get(\"grant_type\");\r",
-							"const scope = pm.variables.get(\"scope\");\r",
+							"const scope = pm.variables.get(\"SCOPE\");\r",
 							"\r",
 							"const getTokenRequest = {\r",
 							"  method: 'POST',\r",
@@ -143,7 +259,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\",\r\n    \"customerId\":\"aa85388d-1ce9-425d-9df7-d6e8a8baaec2\"\r\n}",
+					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -157,57 +273,6 @@
 					],
 					"path": [
 						"customers"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "bundles",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"id\");\r",
-							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"bundleId\", pm.response.json().id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"CICDTest\",\r\n    \"tokens\":\"10\",\r\n    \"deviceAccessToken\":\"100\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/bundles",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles"
 					]
 				}
 			},
@@ -329,47 +394,6 @@
 			"response": []
 		},
 		{
-			"name": "projects",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"id\");\r",
-							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"projectId\", pm.response.json().id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"projectName\": \"{{name}}\",\r\n    \"projectNumber\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/projects",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"projects"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "licenses",
 			"event": [
 				{
@@ -391,7 +415,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"licenseId\":\"31d82e5c-b911-460d-edbe-6860f8464233\",\r\n    \"status\": \"Active\"\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"startDate\": \"{{$isoTimestamp}}\",\r\n    \"packageType\": \"Basic\",\r\n    \"renewalDate\": \"2023-06-10T04:00:00.000Z\",\r\n    \"description\": \"LicenseTest\",\r\n    \"tokensPurchased\": \"55\",\r\n    \"deviceLimit\": \"5000\",\r\n    \"status\": \"Active\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -405,6 +429,47 @@
 					],
 					"path": [
 						"licenses"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"projectId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"licenseId\": \"{{licenseId}}\",\r\n    \"projectName\": \"{{name}}\",\r\n    \"projectNumber\": \"{{name}}\",\r\n    \"openDate\": \"{{$isoTimestamp}}\",\r\n    \"status\": \"Open\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/projects",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"projects"
 					]
 				}
 			},
@@ -467,43 +532,6 @@
 			"response": []
 		},
 		{
-			"name": "bundles",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"tokens\":\"20\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/bundles/{{bundleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles",
-						"{{bundleId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "customers",
 			"event": [
 				{
@@ -536,54 +564,6 @@
 					"path": [
 						"customers",
 						"{{customerId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "devices",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/devices/{{deviceId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"devices",
-						"{{deviceId}}"
 					]
 				}
 			},
@@ -1021,6 +1001,54 @@
 			"response": []
 		},
 		{
+			"name": "devices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"version\": \"2.0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/devices/{{deviceId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"devices",
+						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "adminEmail",
 			"event": [
 				{
@@ -1117,35 +1145,6 @@
 			"response": []
 		},
 		{
-			"name": "licenses",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/licenses/{{licenseId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"licenses",
-						"{{licenseId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "devices",
 			"event": [
 				{
@@ -1185,34 +1184,6 @@
 			"response": []
 		},
 		{
-			"name": "bundles",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/bundles/{{bundleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles",
-						"{{bundleId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "projects",
 			"event": [
 				{
@@ -1236,6 +1207,35 @@
 					"path": [
 						"projects",
 						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "licenses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/licenses/{{licenseId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"licenses",
+						"{{licenseId}}"
 					]
 				}
 			},
@@ -1384,38 +1384,8 @@
 			"type": "string"
 		},
 		{
-			"key": "authorization_url",
-			"value": "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/oauth2/v2.0/token",
-			"type": "string"
-		},
-		{
-			"key": "scope",
-			"value": "api://e643fc9d-b127-4883-8b80-2927df90e275/.default",
-			"type": "string"
-		},
-		{
 			"key": "grant_type",
 			"value": "client_credentials",
-			"type": "string"
-		},
-		{
-			"key": "clientId_FullAdmin",
-			"value": "823fea2e-ad8b-4369-8a04-20787b966768",
-			"type": "string"
-		},
-		{
-			"key": "clientSecret_FullAdmin",
-			"value": "uvm8Q~lpjklMZajzmd9rXgzWQEQZVRwbpA6RAcR4",
-			"type": "string"
-		},
-		{
-			"key": "clientId_DevicesAdmin",
-			"value": "c7ce5df4-6db7-45fa-8c4e-c077cf504c7c",
-			"type": "string"
-		},
-		{
-			"key": "clientSecret_DevicesAdmin",
-			"value": "6yS8Q~0t1kzI6-OH1NbI4JkRdrwGSbfZ64ECPbMM",
 			"type": "string"
 		},
 		{

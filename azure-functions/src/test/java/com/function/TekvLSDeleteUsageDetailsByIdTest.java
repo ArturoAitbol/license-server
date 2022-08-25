@@ -169,7 +169,7 @@ class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
     public void sqlExceptionTest() {
         //Given - Arrange
         String bodyRequest = "{\n" +
-                "    \"deletedDays\": [\"TEST\"]\n" +
+                "    \"deletedDays\": [\"" + this.usageId + "\"]\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 

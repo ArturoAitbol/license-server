@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
 import java.time.LocalDateTime;
 
@@ -44,7 +45,12 @@ class TekvLSDeleteAdminEmailTest extends TekvLSTest {
     @Test
     public void sqlExceptionTest() {
         //When - Action
-        HttpResponseMessage response = deleteAdminEmailApi.run(this.request, "'", this.context);
+        HttpResponseMessage response;
+        try {
+            response = new EnvironmentVariables("POSTGRESQL_SERVER", "test").execute(() -> deleteAdminEmailApi.run(this.request, "'", this.context));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
@@ -56,9 +62,9 @@ class TekvLSDeleteAdminEmailTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("error"));
 
-        String expectedResponse = "in SQL DELETE FROM customer_admin WHERE admin_email=''';. Expected  char";
+        String expectedResponse = "SQL Exception: The connection attempt failed.";
         String actualResponse = jsonBody.getString("error");
-        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));
+        assertEquals(expectedResponse, actualResponse);
     }
 
     @Test

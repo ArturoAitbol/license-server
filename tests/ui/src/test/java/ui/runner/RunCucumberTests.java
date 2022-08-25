@@ -7,17 +7,15 @@ import org.junit.AfterClass;
 import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(
-        plugin = {
-                "pretty",
-                "json:reports/cucumber-reports/cucumber.json",
-                "rerun:reports/rerun/rerun.txt"
+@CucumberOptions(plugin = {
+        "pretty",
+        "json:reports/cucumber-reports/cucumber.json",
+        "rerun:reports/rerun/rerun.txt"
         },
         features = "src/test/resources/features/",
-        glue = "ui",
-        tags = "@validCredentials"
-)
+        glue = "ui")
 public class RunCucumberTests {
+
     @AfterClass
     public static void close() {
         DriverManager.getInstance().getDriver().quit();

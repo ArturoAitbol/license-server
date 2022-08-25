@@ -15,6 +15,11 @@ import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
 import { ProjectsComponent } from "../projects.component";
 import { ModifyProjectComponent } from "./modify-project.component";
+import { of } from 'rxjs';
+import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
+import { SnackBarService } from "src/app/services/snack-bar.service";
+import { LicenseService } from "src/app/services/license.service";
+import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
@@ -47,6 +52,10 @@ const beforeEachFunction = () => {
                 useValue: ProjectServiceMock
             },
             {
+                provide: LicenseService,
+                useValue: LicenseServiceMock
+            },
+            {
                 provide: MsalService,
                 useValue: MsalServiceMock
             },
@@ -61,6 +70,10 @@ const beforeEachFunction = () => {
             {
                 provide: MAT_DIALOG_DATA,
                 useValue: currentProject
+            },
+            {
+                provide: SnackBarService,
+                useValue: SnackBarServiceMock
             }
         ]
     });
@@ -77,14 +90,16 @@ describe('UI verification test for modify component', () => {
         const startDateLabel = fixture.nativeElement.querySelector('#start-date-label');
         const projectNameLabel = fixture.nativeElement.querySelector('#project-name-label');
         const projectCodeLabel = fixture.nativeElement.querySelector('#project-code-label');
-        const projectTypeLable = fixture.nativeElement.querySelector('#project-type-label');
+        const projectLicenseLable = fixture.nativeElement.querySelector('#project-license-label');
+        const projectStatusLable = fixture.nativeElement.querySelector('#project-status-label');
         const closeButton = fixture.nativeElement.querySelector('#cancel-button');
         const submitButton = fixture.nativeElement.querySelector('#submit-button');
         expect(h1.textContent).toBe('Edit Project');
         expect(startDateLabel.textContent).toBe('Start Date');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
-        expect(projectTypeLable.textContent).toBe('Type');
+        expect(projectLicenseLable.textContent).toBe('tekVizion 360 Package');
+        expect(projectStatusLable.textContent).toBe('Status');
         expect(closeButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
     });
@@ -108,11 +123,35 @@ describe('modify project interactions', () => {
 describe('change status of projects', () => {
     beforeEach(beforeEachFunction);
     it('should execute changingStatus()', () => {
-        const status = ''
         spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
-
+        const status = 'Open'
         modifyPorjectComponentTestInstance.onChanginStatus(status)
-        expect(modifyPorjectComponentTestInstance.onChanginStatus).toHaveBeenCalledOnceWith(status);
+        fixture.detectChanges();
 
+        expect(modifyPorjectComponentTestInstance.onChanginStatus).toHaveBeenCalledWith(status);
+    });
+
+    it('should execute changinStatus() with close status', () => {
+        spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
+        const status = 'close';
+        modifyPorjectComponentTestInstance.onChanginStatus(status);
+        fixture.detectChanges();
+
+        expect(modifyPorjectComponentTestInstance.onChanginStatus).toHaveBeenCalledWith(status)
     });
 });
+
+describe('Dialog calls and interactions', () => {
+    beforeEach(beforeEachFunction);
+    it('should show a message if an error ocurred while a submit failed', () => {
+        const response = {error:"some error message"};
+        spyOn(ProjectServiceMock, 'updateProject').and.returnValue(of(response));
+        spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+        fixture.detectChanges();
+
+        modifyPorjectComponentTestInstance.submit();
+
+        expect(ProjectServiceMock.updateProject).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error updating project!');
+    });
+}); 

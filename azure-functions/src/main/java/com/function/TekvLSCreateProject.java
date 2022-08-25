@@ -74,41 +74,20 @@ public class TekvLSCreateProject
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// The expected parameters (and their coresponding column name in the database) 
-		String[][] mandatoryParams = {
-			{"subaccountId","subaccount_id"}, 
-			{"projectName","name"}, 
-			{"projectNumber","code"},
-			{"openDate","open_date"},
-			{"status","status"} 
-		};
-
-		// Build the sql query
-		String sqlPart1 = "";
-		String sqlPart2 = "";
-		for (int i = 0; i < mandatoryParams.length; i++) {
-			try {
-				String paramValue = jobj.getString(mandatoryParams[i][0]);
-				sqlPart1 += mandatoryParams[i][1] + ",";
-				sqlPart2 += "'" + paramValue + "',";
-			} 
-			catch (Exception e) {
+		// Check mandatory params to be present
+		for (MANDATORY_PARAMS mandatoryParam: MANDATORY_PARAMS.values()) {
+			if (!jobj.has(mandatoryParam.value)) {
 				// Parameter not found
-				context.getLogger().info("Caught exception: " + e.getMessage());
+				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
 				JSONObject json = new JSONObject();
-				json.put("error", "Missing mandatory parameter: " + mandatoryParams[i][0]);
+				json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
-		if (jobj.has("projectOwner")) {
-			sqlPart1 += "project_owner,";
-			sqlPart2 += "'" + jobj.getString("projectOwner") + "',";
-		}
 
-		// Remove the comma after the last parameter and build the SQL statement
-		sqlPart1 = sqlPart1.substring(0, sqlPart1.length() - 1);
-		sqlPart2 = sqlPart2.substring(0, sqlPart2.length() - 1);
-		String sql = "insert into project (" + sqlPart1 + ") values (" + sqlPart2 + ");";
+		// Build the sql query
+		String sql = "INSERT INTO project (subaccount_id, code, name, status, open_date, project_owner, license_id) " +
+					 "VALUES (?::uuid, ?, ?, ?::project_status_type_enum, ?::timestamp, ?, ?::uuid) RETURNING id;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -116,23 +95,25 @@ public class TekvLSCreateProject
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+			PreparedStatement statement = connection.prepareStatement(sql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+
+			// Set statement parameters
+			statement.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+			statement.setString(2, jobj.getString(MANDATORY_PARAMS.PROJECT_NUMBER.value));
+			statement.setString(3, jobj.getString(MANDATORY_PARAMS.PROJECT_NAME.value));
+			statement.setString(4, jobj.getString(MANDATORY_PARAMS.STATUS.value));
+			statement.setString(5, jobj.getString(MANDATORY_PARAMS.OPEN_DATE.value));
+			statement.setString(6, jobj.has(OPTIONAL_PARAMS.PROJECT_OWNER.value) ? jobj.getString(OPTIONAL_PARAMS.PROJECT_OWNER.value) : null);
+			statement.setString(7, jobj.getString(MANDATORY_PARAMS.LICENSE_ID.value));
+
+
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + sql);
-			statement.executeUpdate(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
 			context.getLogger().info("Project inserted successfully."); 
 			// Return the id in the response
-			sql = "select id from project where " + 
-				"subaccount_id = '" + jobj.getString("subaccountId") + "' and " +
-				"name = '" + jobj.getString("projectName") + "' and " +
-				"code = '" + jobj.getString("projectNumber") + "' and " +
-				"status = '" + jobj.getString("status") + "' and " +
-				"open_date = '" + jobj.getString("openDate") + "';";
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
 			rs.next();
 			JSONObject json = new JSONObject();
 			json.put("id", rs.getString("id"));
@@ -155,5 +136,31 @@ public class TekvLSCreateProject
 		if(errorMessage.contains("project_unique") && errorMessage.contains("already exists"))
 			response = "Project already exists";
 		return response;
+	}
+
+	private enum MANDATORY_PARAMS {
+
+		SUBACCOUNT_ID("subaccountId"),
+		PROJECT_NAME("projectName"),
+		PROJECT_NUMBER("projectNumber"),
+		OPEN_DATE("openDate"),
+		STATUS("status"),
+		LICENSE_ID("licenseId");
+
+		private final String value;
+
+		MANDATORY_PARAMS(String value) {
+			this.value = value;
+		}
+	}
+
+	private enum OPTIONAL_PARAMS {
+		PROJECT_OWNER("projectOwner");
+
+		private final String value;
+
+		OPTIONAL_PARAMS(String value) {
+			this.value = value;
+		}
 	}
 }

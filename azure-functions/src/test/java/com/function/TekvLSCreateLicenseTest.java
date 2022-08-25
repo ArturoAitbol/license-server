@@ -51,9 +51,10 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
+                "'description': 'LicenseTest'," +
                 "'tokensPurchased': '55'," +
                 "'deviceLimit': '5000'," +
-                "'licenseId':'"+licenseId+"'," +
+                "'licenseId':'" + licenseId + "'," +
                 "'status': 'Active'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -84,6 +85,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
+                "'description': 'LicenseTest'," +
                 "'tokensPurchased': '55'," +
                 "'deviceLimit': '5000'," +
                 "'status': 'Active'}";
@@ -117,9 +119,10 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
                 "'startDate': '2022-06-01T04:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '"+renewalDate+"'," +
+                "'description': 'LicenseTest'," +
                 "'tokensPurchased': '55'," +
                 "'deviceLimit': '5000'," +
-                "'licenseId':'"+licenseId+"'," +
+                "'licenseId':'" + licenseId + "'," +
                 "'status': 'Active'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -142,16 +145,17 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
     }
 
     @Test
-    void incompleteBodyTest() {
+    void bodyWithoutSubaccountTest() {
         //Given
         String licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
         String bodyRequest = "{ "+
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
+                "'description': 'LicenseTest'," +
                 "'tokensPurchased': '55'," +
                 "'deviceLimit': '5000'," +
-                "'licenseId':'"+licenseId+"'," +
+                "'licenseId':'" + licenseId + "'," +
                 "'status': 'Active'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -170,6 +174,38 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
 
         String actualResponse = jsonBody.getString("error");
         String expectedResponse = "Missing mandatory parameter: subaccountId";
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    void incompleteBodyTest() {
+        //Given
+        String licenseId = "31d82e5c-b911-460d-edbe-6860f8464233";
+        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+                "'startDate': '2023-06-01T00:00:00.000Z'," +
+                "'packageType': 'Basic'," +
+                "'renewalDate': '2023-06-10T04:00:00.000Z'," +
+                "'tokensPurchased': '55'," +
+                "'deviceLimit': '5000'," +
+                "'licenseId':'" + licenseId + "'," +
+                "'status': 'Active'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateLicense.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "Missing mandatory parameter: description";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
@@ -277,9 +313,10 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
+                "'description': 'LicenseTest'," +
                 "'tokensPurchased': '55'," +
                 "'deviceLimit': '5000'," +
-                "'licenseId':'"+licenseId+"'," +
+                "'licenseId':'" + licenseId + "'," +
                 "'status': 'Active'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -301,9 +338,10 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
+                "'description': 'LicenseTest'," +
                 "'tokensPurchased': '55'," +
                 "'deviceLimit': '5000'," +
-                "'licenseId':'"+licenseId+"'," +
+                "'licenseId':'" + licenseId + "'," +
                 "'status': 'Active'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);

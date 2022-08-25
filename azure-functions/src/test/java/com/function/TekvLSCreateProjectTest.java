@@ -46,7 +46,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectTest() {
-        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00', 'projectOwner':'98bbfc7e-d477-4534-a4b7-aafee90cddd3'}";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'licenseId':'b84852d7-0f04-4e9a-855c-7b2f01f61591', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00', 'projectOwner':'98bbfc7e-d477-4534-a4b7-aafee90cddd3'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();
@@ -67,7 +67,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectIncorrectSubaccountIdTypeTest() {
-        this.bodyRequest = "{'subaccountId':'1', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        this.bodyRequest = "{'subaccountId':'1', 'licenseId':'b84852d7-0f04-4e9a-855c-7b2f01f61591', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();
@@ -90,7 +90,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectIncomplete() {
-        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'projectNumber':'1test', 'status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'licenseId':'b84852d7-0f04-4e9a-855c-7b2f01f61591', 'projectNumber':'1test', 'status':'Open', 'openDate':'2022-06-27 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();
@@ -107,6 +107,29 @@ class TekvLSCreateProjectTest extends TekvLSTest {
         assertTrue(jsonBody.has("error"));
 
         String expectedResponse = "Missing mandatory parameter: projectName";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void createProjectWithoutLicenseId() {
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'projectNumber':'CICDTest', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
+
+        TekvLSCreateProject createProject = new TekvLSCreateProject();
+        HttpResponseMessage response = createProject.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected , actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Missing mandatory parameter: licenseId";
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
@@ -184,8 +207,8 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectExceptionTest() {
-        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c','status':'Open', 'openDate':'2021-06-27 05:00:00', " +
-                "'projectNumber':'xxxxxxx', " + "'projectName':'unitTest"+LocalDateTime.now()+"'}'";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'licenseId':'b84852d7-0f04-4e9a-855c-7b2f01f61591', 'openDate':'2021-06-27 05:00:00', " +
+                "'status':'Open', 'projectNumber':'xxxxxxx', 'projectName':'unitTest" + LocalDateTime.now() + "'}'";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
@@ -201,7 +224,7 @@ class TekvLSCreateProjectTest extends TekvLSTest {
 
     @Test
     public void createProjectDuplicatedTest() {
-        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'licenseId':'b84852d7-0f04-4e9a-855c-7b2f01f61591', 'projectNumber':'1test', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         TekvLSCreateProject createProject = new TekvLSCreateProject();

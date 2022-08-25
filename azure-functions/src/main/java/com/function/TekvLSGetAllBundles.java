@@ -55,40 +55,41 @@ public class TekvLSGetAllBundles {
 	   }
 
 	   context.getLogger().info("Entering TekvLSGetAllBundles Azure function");
-	   String name = request.getQueryParameters().getOrDefault("name", "");
+	   String name = request.getQueryParameters().getOrDefault("bundleName", "");
 
 	   // Build SQL statement
-		String sql = "select * from bundle ";
+		String sql = "SELECT * FROM bundle";
 		if (!id.equals("EMPTY"))
-			sql += "where id='" + id +"'";
+			sql += " WHERE id = ?::uuid";
 		else if(!name.isEmpty()){
-			sql += "where name='" + name + "'";
+			sql += " WHERE name = ?";
 		}
-		sql += ";";
 		
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		context.getLogger().info("JDBC CONNECTION STRING: "+dbConnectionUrl);	
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();) {
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			PreparedStatement statement = connection.prepareStatement(sql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+
+			if (!id.equals("EMPTY")) statement.setString(1, id);
+			else if(!name.isEmpty()) statement.setString(1, name);
+
 			// Retrive all bundles.
-			context.getLogger().info("Execute SQL statement: " + sql);
-			ResultSet rs = statement.executeQuery(sql);
+			context.getLogger().info("Execute SQL statement: " + statement);
+			ResultSet rs = statement.executeQuery();
 			// Return a JSON array of bundles
 			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
 			while (rs.next()) {
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("id"));
-				item.put("name", rs.getString("name"));
-				item.put("deviceAccessTokens", rs.getString("device_access_tokens"));
-				item.put("tokens", rs.getString("tokens"));
+				item.put("bundleName", rs.getString("name"));
+				item.put("defaultDeviceAccessTokens", rs.getString("device_access_tokens"));
+				item.put("defaultTokens", rs.getString("tokens"));
 				array.put(item);
 			}
 			json.put("bundles", array);
@@ -104,7 +105,7 @@ public class TekvLSGetAllBundles {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }

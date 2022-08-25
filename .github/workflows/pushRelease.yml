@@ -5,11 +5,11 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'Release Version'
+        description: 'Release Version (use tags/vxx.xx.xx format)'
         required: true
         default: 'latest'
 env:
-  AZURE_FUNCTIONAPP_NAME: tekvizion-portal
+  AZURE_FUNCTIONAPP_NAME: tekvizion360-portal-fa
   POM_FUNCTIONAPP_NAME: myFunction-12345
 
 jobs:
@@ -42,11 +42,17 @@ jobs:
         - name: Add Release version file
           run: echo "Released ${{ steps.release_download.outputs.version }} Build" > ./Release/UI-prod-build/license-server/ReleaseVersion.txt
 
-        - name: Upload to blob storagerun
+        - name: Clear blob storage
           uses: azure/CLI@v1
           with:
             inlineScript: |
-              az storage blob upload-batch --overwrite --account-name tekvizionportal --auth-mode key -d '$web' -s ./Release/UI-prod-build/license-server
+              az storage blob delete-batch --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME_PRODUCTION }} --auth-mode key -s '$web'
+        
+        - name: Upload to blob storage
+          uses: azure/CLI@v1
+          with:
+            inlineScript: |
+              az storage blob upload-batch --overwrite --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME_PRODUCTION }} --auth-mode key -d '$web' -s ./Release/UI-prod-build/license-server
         
         - name: Purge CDN endpoint
           uses: azure/CLI@v1
@@ -67,7 +73,15 @@ jobs:
             publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_PRODUCTION }}
         
         - name: Print deployed Release Version
-          run: echo 'Released ${{ steps.release_download.outputs.version }} Build'
+          run: |
+            echo 'Released ${{ steps.release_download.outputs.version }} Build'
+            echo "Build-${{ steps.release_download.outputs.version }}" > ./ReleaseBuild.txt
+        
+        - name: Archive Release Build Version
+          uses: actions/upload-artifact@v3
+          with:
+            name: prod-released-version
+            path: ./ReleaseBuild.txt
           
         - name: logout
           run: az logout

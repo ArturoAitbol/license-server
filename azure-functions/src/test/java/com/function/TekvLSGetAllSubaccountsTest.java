@@ -398,21 +398,4 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
-
-    @Test
-    public void genericException2Test() {
-        //Given - Arrange
-        Mockito.when(this.context.getLogger()).thenReturn(TekvLSTest.logger).thenReturn(TekvLSTest.logger)
-                .thenReturn(TekvLSTest.logger).thenThrow(new RuntimeException("Generic error")).thenReturn(TekvLSTest.logger);
-        String expectedId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
-
-        //When - Action
-        HttpResponseMessage response = getAllSubaccountsApi.run(this.request, expectedId, this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        //Then - Assert
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-    }
 }

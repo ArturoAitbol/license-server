@@ -516,27 +516,4 @@ class TekvLSGetAllCustomersTest extends TekvLSTest {
         String actualResponse = jsonBody.getString("error");
         assertFalse(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
     }
-
-    @Test
-    public void genericException2Test() {
-        //Given - Arrange
-        Mockito.when(this.context.getLogger()).thenReturn(TekvLSTest.logger).thenReturn(TekvLSTest.logger)
-                .thenReturn(TekvLSTest.logger).thenThrow(new RuntimeException("Generic error")).thenReturn(TekvLSTest.logger);
-        String expectedId = "xxxx";
-
-        //When - Action
-        HttpResponseMessage response = getAllCustomersApi.run(this.request, expectedId, this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        //Then - Assert
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-        
-        String expectedResponse = "SQL";
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        String actualResponse = jsonBody.getString("error");
-        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't contain: ".concat(expectedResponse));
-    }
 }
