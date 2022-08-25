@@ -232,10 +232,10 @@ describe('add-license-consumption - Data collection and parsing tests', () => {
 
     it('should make a call to get device list and project list', () => {
         spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
-        spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
+        spyOn(ProjectServiceMock, 'getProjectDetailsByLicense').and.callThrough();
         testInstance.ngOnInit();
         expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
-        expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
+        expect(ProjectServiceMock.getProjectDetailsByLicense).toHaveBeenCalled();
     });
 
 });

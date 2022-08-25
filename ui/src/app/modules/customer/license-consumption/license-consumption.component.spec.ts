@@ -153,7 +153,7 @@ describe('UI verification test', () => {
         const projectForm = await loader.getHarness(MatFormFieldHarness.with({selector:"#project-form"}));
         const dateForm = await loader.getHarness(MatFormFieldHarness.with({selector:"#date-form"}));
         expect(await consumptionTypeForm.getLabel()).toContain('Consumption Type');
-        expect(await licensePeriodForm.getLabel()).toContain('License Period');
+        expect(await licensePeriodForm.getLabel()).toContain('tekVizion 360 Package');
         expect(await projectForm.getLabel()).toContain('Project');
         expect(await dateForm.getLabel()).toContain(licenseConsumptionComponentTestInstance.getDatePickerLabel());
         
@@ -272,10 +272,11 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should make a call to get Projects when calling fetchProjectsList()',()=>{
-        spyOn(ProjectServiceMock,'getProjectDetailsBySubAccount').and.callThrough();
+        spyOn(ProjectServiceMock,'getProjectDetailsByLicense').and.callThrough();
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
+        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
         licenseConsumptionComponentTestInstance.fetchProjectsList();
-        expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalledWith(CurrentCustomerServiceMock.selectedCustomer.subaccountId);
+        expect(ProjectServiceMock.getProjectDetailsByLicense).toHaveBeenCalledWith(CurrentCustomerServiceMock.selectedCustomer.subaccountId, CurrentCustomerServiceMock.selectedCustomer.licenseId);
         expect(licenseConsumptionComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects);
     });
 

@@ -187,11 +187,10 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   fetchData(): void {
     this.isDataLoading = true;
     const subaccountId = this.currentCustomer.subaccountId;
-    const { id } = this.data;
     forkJoin([
       this.deviceService.getDevicesList(subaccountId),
-      this.projectService.getProjectDetailsBySubAccount(subaccountId),
-      this.usageDetailService.getUsageDetailsByConsumptionId(id)
+      this.projectService.getProjectDetailsByLicense(subaccountId, this.currentCustomer.licenseId),
+      this.usageDetailService.getUsageDetailsByConsumptionId(this.data.id)
     ]).subscribe(res => {
       const resDataObject: any = res.reduce((current: any, next: any) => {
         return { ...current, ...next };

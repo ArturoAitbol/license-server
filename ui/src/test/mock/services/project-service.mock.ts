@@ -58,6 +58,17 @@ export const ProjectServiceMock = {
             };
         });
     },
+    getProjectDetailsByLicense: (subaccountId?: string, licenseId?: string) => {
+        return new Observable((observer) => {
+            observer.next(
+                PROJECT_LIST
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
     setSelectedSubAccount: (value: string) => {
         // TODO
     },
