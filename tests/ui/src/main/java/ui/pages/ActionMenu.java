@@ -19,7 +19,8 @@ public class ActionMenu extends AbstractPageObject {
     WebElement projectsButton;
     @FindBy(xpath = "//button[@id='View tekVizion 360 Packages']")
     WebElement packagesButton;
-
+    @FindBy(xpath = "//button[@id='View tekToken Consumption']")
+    WebElement consumptionsButton;
 
     public String delete(String type) {
 /*        By deleteSelector = By.cssSelector("button#Delete");
@@ -69,5 +70,11 @@ public class ActionMenu extends AbstractPageObject {
         Modal confirmModal = new Modal();
         confirmModal.confirmAction();
         return this.action.getText(this.messageSelector);
+    }
+
+    public Consumptions goToConsumption() {
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", this.consumptionsButton);
+        return new Consumptions();
     }
 }

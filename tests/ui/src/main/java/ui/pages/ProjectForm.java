@@ -16,7 +16,7 @@ public class ProjectForm extends AbstractPageObject {
     WebElement projectStatus;
     @FindBy(css = "[formControlName='closeDate']")
     WebElement closeDate;
-    @FindBy(css = "#submit-button")
+    @FindBy(css = "#submit-button[title='project-form']")
     WebElement submitButton;
 
 

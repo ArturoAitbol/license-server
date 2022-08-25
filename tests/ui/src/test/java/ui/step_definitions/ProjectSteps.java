@@ -39,6 +39,12 @@ public class ProjectSteps {
         this.projectForm = this.projects.openProjectForm();
     }
 
+    @And("I open the Add Project form from Consumption form")
+    public void iOpenTheAddProjectFormFromConsumptionForm() {
+        this.projects = new Projects();
+        this.projectForm = this.projects.openProjectForm();
+    }
+
     @When("I create a project with the following data")
     public void iCreateAProjectWithTheFollowingData(DataTable datatable) {
         Map<String, String> projectTable = datatable.asMap(String.class, String.class);
