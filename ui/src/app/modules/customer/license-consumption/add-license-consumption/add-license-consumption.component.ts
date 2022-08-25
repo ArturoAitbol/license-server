@@ -101,7 +101,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     const subaccountId = this.currentCustomer.subaccountId;
     forkJoin([
       this.deviceService.getDevicesList(subaccountId),
-      this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open')
+      this.projectService.getProjectDetailsByLicense(subaccountId, this.currentCustomer.licenseId, 'Open')
     ]).subscribe((res: any) => {
       const resDataObject: any = res.reduce((current: any, next: any) => {
         return { ...current, ...next };
@@ -174,8 +174,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    */
   fetchProjects(): void {
     this.isDataLoading = true;
-    const subaccountId = this.currentCustomer.subaccountId;
-    this.projectService.getProjectDetailsBySubAccount(subaccountId, 'Open').subscribe((res: any) => {
+    this.projectService.getProjectDetailsByLicense(this.currentCustomer.subaccountId, this.currentCustomer.licenseId, 'Open').subscribe((res: any) => {
       this.projects = res['projects'];
       this.addLicenseConsumptionForm.patchValue({ project: '' });
       this.isDataLoading = false;

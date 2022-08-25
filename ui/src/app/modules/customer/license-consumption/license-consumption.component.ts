@@ -19,6 +19,7 @@ import { permissions } from 'src/app/helpers/role-permissions';
 import { DataTableComponent } from '../../../generics/data-table/data-table.component';
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
 import moment, { Moment } from 'moment';
+import { License } from 'src/app/model/license.model';
 
 @Component({
   selector: 'app-license-consumption',
@@ -147,12 +148,11 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
-        this.selectedLicense = res.licenses[0];
+        this.setSelectedLicense(res.licenses[0]);
         this.licenseForm.patchValue({ licenseId: this.selectedLicense.id });
-        this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
-        this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
         this.isLicenseListLoaded = true;
         this.fetchDataToDisplay();
+        this.fetchProjectsList();
       } else {
         this.isLicenseSummaryLoadingResults = false;
         this.isLicenseSummaryRequestCompleted = true;
@@ -164,8 +164,15 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         this.isDetailedConsumptionRequestCompleted = true;
       }
     });
-    this.fetchProjectsList();
     this.getActionMenuOptions();
+  }
+
+  private setSelectedLicense(license: License) {
+    this.selectedLicense = license;
+    this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
+    this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
+    this.currentCustomer.licenseId = license.id;
+    this.customerService.setSelectedCustomer(this.currentCustomer);
   }
 
   fetchDataToDisplay() {
@@ -211,7 +218,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   fetchProjectsList() {
-    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe((res: any) => {
+    this.projectService.getProjectDetailsByLicense(this.currentCustomer.subaccountId, this.selectedLicense.id).subscribe((res: any) => {
       if (!res.error && res.projects) {
         this.projects = res.projects;
       }
@@ -393,11 +400,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   onChangeLicense(newLicenseId: string) {
     if (newLicenseId) {
-      this.selectedLicense = this.licensesList.find(item => item.id === newLicenseId);
-      this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
-      this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
+      this.setSelectedLicense(this.licensesList.find(item => item.id === newLicenseId));
       this.resetPeriodFilter();
       this.fetchDataToDisplay();
+      this.fetchProjectsList();
     }
   }
 
