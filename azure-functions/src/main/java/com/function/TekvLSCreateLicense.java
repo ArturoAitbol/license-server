@@ -119,7 +119,7 @@ public class TekvLSCreateLicense
 			statement.setString(4, jobj.getString(MANDATORY_PARAMS.RENEWAL_DATE.value));
 			statement.setInt(5, jobj.getInt(MANDATORY_PARAMS.TOKENS_PURCHASED.value));
 			statement.setInt(6, jobj.getInt(MANDATORY_PARAMS.DEVICE_LIMIT.value));
-			statement.setString(7, jobj.has(OPTIONAL_PARAMS.DESCRIPTION.value) ? jobj.getString(OPTIONAL_PARAMS.DESCRIPTION.value) : null);
+			statement.setString(7, jobj.getString(MANDATORY_PARAMS.DESCRIPTION.value));
 
 			if (jobj.has(OPTIONAL_PARAMS.LICENSE_ID.value))
 				statement.setString(8,jobj.getString(OPTIONAL_PARAMS.LICENSE_ID.value));
@@ -156,7 +156,8 @@ public class TekvLSCreateLicense
 		PACKAGE_TYPE("packageType"),
 		RENEWAL_DATE("renewalDate"),
 		TOKENS_PURCHASED("tokensPurchased"),
-		DEVICE_LIMIT("deviceLimit");
+		DEVICE_LIMIT("deviceLimit"),
+		DESCRIPTION("description");
 
 		private final String value;
 
@@ -166,8 +167,7 @@ public class TekvLSCreateLicense
 	}
 
 	private enum OPTIONAL_PARAMS {
-		LICENSE_ID("licenseId"),
-		DESCRIPTION("description");
+		LICENSE_ID("licenseId");
 
 		private final String value;
 

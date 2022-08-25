@@ -2,6 +2,9 @@
     <h1 mat-dialig-title id="modal-title">Edit Project</h1>
     <form [formGroup]="updateProjectForm" (ngSubmit)="submit()">
         <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">
@@ -24,8 +27,18 @@
                     </mat-form-field>
                 </div>
                 <div>
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label id="project-license-label">tekVizion 360 Package</mat-label>
+                        <mat-select required formControlName="licenseId">
+                            <mat-option *ngFor="let license of licenses" [value]="license.id">
+                                {{license.description}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div>
                     <mat-form-field appearance="outline">
-                        <mat-label id="project-type-label">Status</mat-label>
+                        <mat-label id="project-status-label">Status</mat-label>
                         <mat-select required formControlName="status" (selectionChange)="onChanginStatus($event.value)">
                             <mat-option *ngFor="let item of statusTypes" [value]="item" title="{{item}}">
                                 {{item}}

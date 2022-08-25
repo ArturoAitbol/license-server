@@ -90,7 +90,7 @@ public class TekvLSGetAllProjects {
 			   break;
 	   	}
 
-	   if (id.equals("EMPTY")) {
+	    if (id.equals("EMPTY")) {
 		   if (!subaccountId.isEmpty()) {
 			   queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 			   if (!licenseId.isEmpty()) {
@@ -103,17 +103,16 @@ public class TekvLSGetAllProjects {
 			   json.put("error", "Missing mandatory parameter: subaccountId");
 			   return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		   }
-	   } else
+	    } else
 		   queryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
-
+		   
 		queryBuilder.appendCustomOrderBy("open_date DESC, code, name");
-
 		if (verificationQueryBuilder != null) {
 			if (currentRole.equals(SUBACCOUNT_ADMIN))
 				verificationQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 			else
 				verificationQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
-   }
+		}
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")

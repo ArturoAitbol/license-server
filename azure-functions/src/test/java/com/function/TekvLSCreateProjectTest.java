@@ -112,6 +112,29 @@ class TekvLSCreateProjectTest extends TekvLSTest {
     }
 
     @Test
+    public void createProjectWithoutLicenseId() {
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'projectNumber':'CICDTest', 'projectName':'ProjectTest','status':'Open', 'openDate':'2022-06-27 05:00:00'}";
+        doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
+
+        TekvLSCreateProject createProject = new TekvLSCreateProject();
+        HttpResponseMessage response = createProject.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected , actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Missing mandatory parameter: licenseId";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
     public void createEmptyBodyTest() {
         this.bodyRequest = "";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();

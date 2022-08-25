@@ -16,6 +16,8 @@ import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mo
 import { ProjectsComponent } from "../projects.component";
 import { AddProjectComponent } from "./add-project.component";
 import { of, throwError } from 'rxjs';
+import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
+import { LicenseService } from "src/app/services/license.service";
 
 let addPorjectComponentTestInstance: AddProjectComponent;
 let fixture: ComponentFixture<AddProjectComponent>;
@@ -39,6 +41,10 @@ const beforeEachFunction = () => {
             {
                 provide: ProjectService,
                 useValue: ProjectServiceMock
+            },
+            {
+                provide: LicenseService,
+                useValue: LicenseServiceMock
             },
             {
                 provide: MsalService,
@@ -69,10 +75,12 @@ describe('UI verification for add project component', () => {
         const h1 = fixture.nativeElement.querySelector('#page-title');
         const  projectNameLabel = fixture.nativeElement.querySelector('#project-name-label');
         const  projectCodeLabel = fixture.nativeElement.querySelector('#project-code-label');
+        const  projectLicenseLabel = fixture.nativeElement.querySelector('#project-license-label');
         const  cancelButton = fixture.nativeElement.querySelector('#cancel-button');
         expect(h1.textContent).toBe('Add Project');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
+        expect(projectLicenseLabel.textContent).toBe('tekVizion 360 Package');
         expect(cancelButton.textContent).toBe('Cancel');
     });
 });

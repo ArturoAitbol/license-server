@@ -17,6 +17,7 @@ export class ModifyLicenseComponent implements OnInit {
     selectedType: any;
     updateCustomerForm: FormGroup = this.formBuilder.group({
         startDate: ['', Validators.required],
+        description: ['', Validators.required],
         packageType: ['', Validators.required],
         tokensPurchased: ['', Validators.required],
         deviceLimit: ['', Validators.required],
