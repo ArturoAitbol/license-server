@@ -40,15 +40,14 @@ export class ModifyLicenseComponent implements OnInit {
     ngOnInit() {
         if (this.data) {
             this.isDataLoading = true;
-            this.selectedType = this.data.packageType;
             this.data.startDate = new Date (this.data.startDate + " 00:00:00");
             this.data.renewalDate = new Date (this.data.renewalDate + " 00:00:00");
             this.onStartDateChange(this.data.startDate);
             this.onRenewalDateChange(this.data.renewalDate);
+            this.updateCustomerForm.patchValue(this.data);
             this.bundleService.getBundleList().subscribe((res: any) => {
                 if (res) this.packageTypes = res.bundles;
                 this.onChangeType(this.data.packageType);
-                this.updateCustomerForm.patchValue(this.data);
                 this.previousFormValue = { ...this.updateCustomerForm.getRawValue() };
                 this.isDataLoading = false;
             });

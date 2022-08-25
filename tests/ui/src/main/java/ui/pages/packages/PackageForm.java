@@ -25,9 +25,9 @@ public class PackageForm extends AbstractPageObject {
                                   String tokensPurchased) {
         this.action.sendText(this.startDate, startDate);
         this.action.sendText(this.renewalDate, renewalDate);
+        this.action.sendText(this.description, description);
         By optionType = By.cssSelector(String.format("mat-option[title='%s']", type));
         this.action.selectOption(this.packageType, optionType);
-        this.action.sendText(this.description, description);
         if (type.equalsIgnoreCase("AddOn") || type.equalsIgnoreCase("Custom")) {
             this.action.sendText(this.deviceLimit, deviceLimit);
             this.action.sendText(this.tokensPurchased, tokensPurchased);
