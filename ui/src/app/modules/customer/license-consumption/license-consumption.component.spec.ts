@@ -141,7 +141,7 @@ describe('UI verification test', () => {
 
         const cloneConsumptionButton: HTMLElement = fixture.nativeElement.querySelector('#clone-consumption');
         expect(cloneConsumptionButton.textContent).toContain('Clone Consumption');
-        cloneConsumptionButton.click();
+        licenseConsumptionComponentTestInstance.toggleSelectableConsumptions();
         fixture.detectChanges();
         const confirmCloningButton = fixture.nativeElement.querySelector('#confirm-cloning');
         expect(confirmCloningButton.textContent).toContain('Confirm Cloning');
