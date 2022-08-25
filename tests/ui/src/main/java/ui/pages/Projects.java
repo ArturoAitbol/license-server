@@ -6,7 +6,7 @@ import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 
 public class Projects extends AbstractPageObject {
-    @FindBy(css="#add-new-project-button-button")
+    @FindBy(css="#add-new-project-button")
     WebElement addProjectButton;
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
 

@@ -22,7 +22,7 @@
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-new-license" (change)="onChangeToggle($event)">
+                    <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-license-button" (change)="onChangeToggle($event)">
                         Add tekVizion 360 Package
                     </mat-button-toggle>
                     <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">

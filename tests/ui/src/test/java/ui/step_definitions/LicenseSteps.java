@@ -52,6 +52,12 @@ public class LicenseSteps {
         this.packageForm = this.packages.openPackageForm();
     }
 
+    @Given("I open the Add Package form from Consumption View")
+    public void iOpenTheAddPackageFormFromConsumptionView() {
+        this.packages = new Packages();
+        this.packageForm = this.packages.openPackageForm();
+    }
+
     @When("I create a package with the following data")
     public void iCreateAPackageWithTheFollowingData(DataTable packageTable) {
         Map<String, String> license = packageTable.asMap(String.class, String.class);
@@ -62,6 +68,8 @@ public class LicenseSteps {
         this.deviceLimit = license.getOrDefault("deviceAccessTekTokens", null);
         this.tokensPurchased = license.getOrDefault("tekTokens", null);
         this.packages = this.packageForm.createPackage(this.startDate, this.renewalDate, this.packageType, this.description, this.deviceLimit, this.tokensPurchased);
+        this.actualMessage = this.packages.getMessage();
+        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @Then("I see the {string} package in the table")

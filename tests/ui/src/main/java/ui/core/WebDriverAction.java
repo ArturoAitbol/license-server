@@ -57,6 +57,15 @@ public class WebDriverAction {
         }
     }
 
+    public void replaceOption(WebElement element, By option){
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        element.clear();
+        element.click();
+        WebElement optionClickable = wait.until(ExpectedConditions.presenceOfElementLocated(option));
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", optionClickable);
+    }
+
     public void selectOption(WebElement element, By option) {
         wait.until(ExpectedConditions.elementToBeClickable(element));
         element.click();

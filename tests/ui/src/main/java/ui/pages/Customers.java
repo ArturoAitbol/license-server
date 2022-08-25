@@ -40,7 +40,15 @@ public class Customers extends AbstractPageObject {
     }
 
     public String getMessage() {
+        String message;
         By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
-        return this.action.getText(messageSelector);
+        try{
+            message = this.action.getText(messageSelector);
+        } catch (Exception e){
+            System.out.println("Message couldn't be retrieved");
+            System.out.println(e.toString());
+            message = "None";
+        }
+        return message;
     }
 }
