@@ -42,7 +42,7 @@ public class CustomerSteps {
         this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,
                 testCustomer);
         this.actualMessage = this.customers.getMessage();
-        System.out.println(this.actualMessage);
+        System.out.println("Message: " + this.actualMessage);
 //        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 

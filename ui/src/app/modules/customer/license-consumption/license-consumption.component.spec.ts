@@ -132,7 +132,7 @@ describe('UI verification test', () => {
         
         
         //Buttons
-        const addLicenseButton = fixture.nativeElement.querySelector('#add-new-license');
+        const addLicenseButton = fixture.nativeElement.querySelector('#add-license-button');
         const addLicenseConsumptionButton = fixture.nativeElement.querySelector('#add-license-consumption');
         const goBackButton = fixture.nativeElement.querySelector('#back-button');
         expect(addLicenseButton.textContent).toContain('Add tekVizion 360 Package');
