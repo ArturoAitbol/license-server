@@ -6,5 +6,6 @@ export interface License {
     startDate: string;
     renewalDate: string;
     packageType: string;
+    description: string;
     status: string;
 }

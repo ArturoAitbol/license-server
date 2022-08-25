@@ -69,8 +69,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.fetchData();
       this.filteredProjects = this.updateForm.controls['project'].valueChanges.pipe(
         startWith(''),
-        map(value => (typeof value === 'string' ? value : value.name)),
-        map(name => (name ? this.filterProjects(name) : this.projects.slice())),
+        map(value => (typeof value === 'string' ? value : value.projectName)),
+        map(projectName => (projectName ? this.filterProjects(projectName) : this.projects.slice())),
       );
       this.filteredVendors = this.updateForm.controls['vendor'].valueChanges.pipe(
         startWith(''),

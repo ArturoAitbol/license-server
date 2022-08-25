@@ -18,6 +18,8 @@ import { ModifyProjectComponent } from "./modify-project.component";
 import { of } from 'rxjs';
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "src/app/services/snack-bar.service";
+import { LicenseService } from "src/app/services/license.service";
+import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
@@ -48,6 +50,10 @@ const beforeEachFunction = () => {
             {
                 provide: ProjectService,
                 useValue: ProjectServiceMock
+            },
+            {
+                provide: LicenseService,
+                useValue: LicenseServiceMock
             },
             {
                 provide: MsalService,
@@ -84,14 +90,16 @@ describe('UI verification test for modify component', () => {
         const startDateLabel = fixture.nativeElement.querySelector('#start-date-label');
         const projectNameLabel = fixture.nativeElement.querySelector('#project-name-label');
         const projectCodeLabel = fixture.nativeElement.querySelector('#project-code-label');
-        const projectTypeLable = fixture.nativeElement.querySelector('#project-type-label');
+        const projectLicenseLable = fixture.nativeElement.querySelector('#project-license-label');
+        const projectStatusLable = fixture.nativeElement.querySelector('#project-status-label');
         const closeButton = fixture.nativeElement.querySelector('#cancel-button');
         const submitButton = fixture.nativeElement.querySelector('#submit-button');
         expect(h1.textContent).toBe('Edit Project');
         expect(startDateLabel.textContent).toBe('Start Date');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
-        expect(projectTypeLable.textContent).toBe('Status');
+        expect(projectLicenseLable.textContent).toBe('tekVizion 360 Package');
+        expect(projectStatusLable.textContent).toBe('Status');
         expect(closeButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
     });

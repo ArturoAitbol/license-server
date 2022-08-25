@@ -101,7 +101,7 @@ describe('add-license-consumption - UI verification tests', () => {
         const h1 = fixture.nativeElement.querySelector('#page-title');
         const cancelButton = fixture.nativeElement.querySelector('#cancel-button');
         const submitButton = fixture.nativeElement.querySelector('#submit-button');
-        const newProjectButton = fixture.nativeElement.querySelector('#new-project-button');
+        const newProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
         const addDeviceButton = fixture.nativeElement.querySelector('#add-device-button');
         const addSupportButton = fixture.nativeElement.querySelector('#add-support-button');
         const h2 = fixture.debugElement.queryAll(By.css("h2"));
@@ -669,10 +669,16 @@ describe('add-license-consumption - devicesAndSupportInvalid', () => {
     });
 
     it('should enable the submit button on not empty deviceUsed', () => {
-        fixture.detectChanges();
+        const addLicenseConsumptionForm = testInstance.addLicenseConsumptionForm;
+        addLicenseConsumptionForm.setValue({
+            startWeek: moment('16-08-2022', 'DDMMYYYY'),
+            endWeek: moment('20-08-2022', 'DDMMYYYY'),
+            project: { test: 'test' },
+        });
         testInstance.devicesUsed.push({test: 'test'});
+        fixture.detectChanges();
         expect(testInstance.devicesAndSupportInvalid()).toBeFalse();
-        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeTrue()
+        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeFalse()
     });
 
     it('should disable the submit button on empty form', () => {

@@ -73,6 +73,7 @@ describe('UI and component verification tests', () => {
         expect(submitButton.textContent).toBe('Submit');
         expect(labels.find(label => label.textContent.includes("Start Date"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Renewal Date"))).not.toBeUndefined();
+        expect(labels.find(label => label.textContent.includes("Description"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Package Type"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Device Access tekTokens"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("tekTokens"))).not.toBeUndefined();
@@ -85,6 +86,7 @@ describe('FormGroup verification tests', () => {
 
     it('should create a formGroup with the necesary controls', () => {
         expect(addLicenseComponentTestInstance.addLicenseForm.contains('startDate')).toBeTrue();
+        expect(addLicenseComponentTestInstance.addLicenseForm.contains('description')).toBeTrue();
         expect(addLicenseComponentTestInstance.addLicenseForm.contains('packageType')).toBeTrue();
         expect(addLicenseComponentTestInstance.addLicenseForm.contains('tokensPurchased')).toBeTrue();
         expect(addLicenseComponentTestInstance.addLicenseForm.contains('deviceLimit')).toBeTrue();
@@ -95,6 +97,7 @@ describe('FormGroup verification tests', () => {
         const addLicenseForm = addLicenseComponentTestInstance.addLicenseForm;
         addLicenseForm.setValue({
             startDate: '',
+            description: '',
             packageType: '',
             tokensPurchased: '',
             deviceLimit: '',
@@ -102,6 +105,7 @@ describe('FormGroup verification tests', () => {
         });
 
         expect(addLicenseForm.get('startDate').valid).toBeFalse();
+        expect(addLicenseForm.get('description').valid).toBeFalse();
         expect(addLicenseForm.get('packageType').valid).toBeFalse();
         expect(addLicenseForm.get('tokensPurchased').valid).toBeFalse();
         expect(addLicenseForm.get('deviceLimit').valid).toBeFalse();

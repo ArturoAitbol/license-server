@@ -19,7 +19,7 @@ public class ProjectSteps {
     Projects projects;
     ProjectForm projectForm;
     ProjectRow projectRow;
-    String startDate, name, code, type, closeDate;
+    String startDate, name, code, status, closeDate, license;
     String actualMessage;
     SimpleDateFormat formatter = new SimpleDateFormat("M/d/yyyy");
 
@@ -51,7 +51,8 @@ public class ProjectSteps {
         this.startDate = projectTable.get("startDate");
         this.name = projectTable.get("name");
         this.code = projectTable.get("code");
-        this.projects = this.projectForm.createProject(startDate, name, code);
+        this.license = projectTable.get("license");
+        this.projects = this.projectForm.createProject(startDate, name, code, license);
         this.actualMessage = this.projects.getMessage();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
@@ -75,9 +76,10 @@ public class ProjectSteps {
         this.startDate = projectTable.getOrDefault("startDate", "none");
         this.name = projectTable.getOrDefault("name", "none");
         this.code = projectTable.getOrDefault("code", "none");
-        this.type = projectTable.getOrDefault("type", "none");
+        this.status = projectTable.getOrDefault("status", "none");
         this.closeDate = projectTable.getOrDefault("closeDate", "N/A");
-        this.projects = this.projectForm.editProject(startDate, name, code, type, closeDate);
+        this.license = projectTable.getOrDefault("license", "none");
+        this.projects = this.projectForm.editProject(this.startDate, this.name, this.code, this.status, this.closeDate, this.license);
         this.actualMessage = this.projects.getMessage();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
@@ -100,9 +102,9 @@ public class ProjectSteps {
             String actualCode = this.projectRow.getColumnValue("Project Code");
             Assert.assertEquals("Project doesn't have this code: ".concat(this.code), this.code, actualCode);
         }
-        if (!this.type.equals("none")){
+        if (!this.status.equals("none")){
             String actualStatus = this.projectRow.getColumnValue("Status");
-            Assert.assertEquals("Project doesn't have this status: ".concat(this.type), this.type, actualStatus);
+            Assert.assertEquals("Project doesn't have this status: ".concat(this.status), this.status, actualStatus);
             if (!this.closeDate.equals("none")){
                 Date startDate = formatter.parse(this.closeDate);
                 formatter = new SimpleDateFormat("yyyy-MM-dd");

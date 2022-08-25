@@ -128,8 +128,8 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.projects = resDataObject['projects'];
       this.filteredProjects = this.addLicenseConsumptionForm.controls['project'].valueChanges.pipe(
           startWith(''),
-          map(value => (typeof value === 'string' ? value : value.name)),
-          map(name => (name ? this.filterProjects(name) : this.projects.slice())),
+          map(value => (typeof value === 'string' ? value : value.projectName)),
+          map(projectName => (projectName ? this.filterProjects(projectName) : this.projects.slice())),
       );
       this.filteredVendors = this.addDeviceForm.controls['vendor'].valueChanges.pipe(
           startWith(''),

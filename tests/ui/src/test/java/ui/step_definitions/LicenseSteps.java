@@ -16,7 +16,6 @@ import ui.core.DriverManager;
 import ui.pages.ActionMenu;
 import ui.pages.CustomerRow;
 import ui.pages.Customers;
-import ui.pages.ProjectRow;
 import ui.pages.packages.PackageForm;
 import ui.pages.packages.PackageRow;
 import ui.pages.packages.Packages;
@@ -28,7 +27,7 @@ public class LicenseSteps {
     private Packages packages;
     private PackageForm packageForm;
     private String actualMessage = "none";
-    String startDate, renewalDate, packageType, deviceLimit, tokensPurchased;
+    String startDate, renewalDate, packageType, description, deviceLimit, tokensPurchased;
     SimpleDateFormat formatter = new SimpleDateFormat("M/d/yyyy");
 
     public LicenseSteps(Customers customers) {
@@ -64,33 +63,21 @@ public class LicenseSteps {
         Map<String, String> license = packageTable.asMap(String.class, String.class);
         this.startDate = license.get("startDate");
         this.renewalDate = license.get("renewalDate");
+        this.description = license.get("description");
         this.packageType = license.get("packageType");
         this.deviceLimit = license.getOrDefault("deviceAccessTekTokens", null);
         this.tokensPurchased = license.getOrDefault("tekTokens", null);
-        this.packages = this.packageForm.createPackage(this.startDate, this.renewalDate, this.packageType, this.deviceLimit, this.tokensPurchased);
+        this.packages = this.packageForm.createPackage(this.startDate, this.renewalDate, this.packageType, this.description, this.deviceLimit, this.tokensPurchased);
         this.actualMessage = this.packages.getMessage();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @Then("I see the {string} package in the table")
-    public void iShouldSeeThePackageInTheTable(String packageType) {
-        this.packageRow = new PackageRow(packageType);
-        String actualPackage = this.packageRow.getColumnValue("Package Type");
-        Assert.assertEquals("Licenses table doesn't have the license: ".concat(packageType), packageType,
+    public void iShouldSeeThePackageInTheTable(String description) {
+        this.packageRow = new PackageRow(description);
+        String actualPackage = this.packageRow.getColumnValue("Description");
+        Assert.assertEquals("Licenses table doesn't have the license: ".concat(description), description,
                 actualPackage);
-    }
-
-    @Then("I see the {string} package with {int} device access tokens and {int} tekTokens")
-    public void iShouldSeeThePackageInTheTable(String packageType, int deviceTokens, int tekTokens) {
-        String actualPackage = this.packageRow.getColumnValue("Package Type");
-        String deviceLimit = this.packageRow.getColumnValue("Device Limit");
-        String pkgTekTokens = this.packageRow.getColumnValue("tekTokens");
-        Assert.assertEquals("Licenses table doesn't have the license: ".concat(packageType), packageType,
-                actualPackage);
-        Assert.assertEquals("Licenses table doesn't have the license: ".concat(packageType), deviceTokens,
-                deviceLimit);
-        Assert.assertEquals("Licenses table doesn't have the license: ".concat(packageType), tekTokens,
-                pkgTekTokens);
     }
 
     @Then("I delete the {string} package")
@@ -102,35 +89,40 @@ public class LicenseSteps {
     }
 
     @And("I edit the package {string} with the following data")
-    public void iEditThePackageWithTheFollowingData(String packageType, DataTable dataTable) {
-        this.packageRow = new PackageRow(packageType);
+    public void iEditThePackageWithTheFollowingData(String packageDescription, DataTable dataTable) {
+        this.packageRow = new PackageRow(packageDescription);
         ActionMenu actionMenu = this.packageRow.openActionMenu();
         actionMenu.edit();
         this.packageForm = new PackageForm();
         Map<String, String> license = dataTable.asMap(String.class, String.class);
         this.startDate = license.getOrDefault("startDate", "none");
         this.renewalDate = license.getOrDefault("renewalDate", "none");
+        this.description = license.getOrDefault("description", "none");
         this.packageType = license.getOrDefault("packageType", "none");
         this.deviceLimit = license.getOrDefault("deviceAccessTekTokens", null);
         this.tokensPurchased = license.getOrDefault("tekTokens", null);
-        this.packages = this.packageForm.editPackage(this.startDate, this.renewalDate, this.packageType, this.deviceLimit, this.tokensPurchased);
+        this.packages = this.packageForm.editPackage(this.startDate, this.renewalDate, this.packageType, this.description, this.deviceLimit, this.tokensPurchased);
         this.actualMessage = this.packages.getMessage();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @And("I should see the modified data in Packages table")
     public void iShouldSeeTheModifiedDataInPackagesTable() throws ParseException {
+        this.packageRow = new PackageRow(this.description);
+        if (!this.description.equals("none")){
+            String actualName = this.packageRow.getColumnValue("Description");
+            Assert.assertEquals("License doesn't have this description: ".concat(this.description), this.description, actualName);
+        }
         if (!this.packageType.equals("none")){
-            this.packageRow = new PackageRow(this.packageType);
-            String actualName = this.packageRow.getColumnValue("Package Type");
-            Assert.assertEquals("Project doesn't have this name: ".concat(this.packageType), this.packageType, actualName);
+            String actualType = this.packageRow.getColumnValue("Package Type");
+            Assert.assertEquals("License doesn't have this type: ".concat(this.packageType), this.packageType, actualType);
             if (!this.deviceLimit.equals("none")){
                 String actualDeviceLimit = this.packageRow.getColumnValue("Device Limit");
-                Assert.assertEquals("Project doesn't have this name: ".concat(this.deviceLimit), this.deviceLimit, actualDeviceLimit);
+                Assert.assertEquals("License doesn't have this device limit: ".concat(this.deviceLimit), this.deviceLimit, actualDeviceLimit);
             }
             if (!this.tokensPurchased.equals("none")){
                 String actualTokens = this.packageRow.getColumnValue("tekTokens");
-                Assert.assertEquals("Project doesn't have this name: ".concat(this.tokensPurchased), this.tokensPurchased, actualTokens);
+                Assert.assertEquals("License doesn't have this tekTokens: ".concat(this.tokensPurchased), this.tokensPurchased, actualTokens);
             }
         }
         if (!this.startDate.equals("none")){
@@ -138,14 +130,14 @@ public class LicenseSteps {
             formatter = new SimpleDateFormat("yyyy-MM-dd");
             String expectedDate = formatter.format(startDate);
             String actualStartDate = this.packageRow.getColumnValue("Start Date");
-            Assert.assertEquals("Project doesn't have this start date: ".concat(expectedDate), expectedDate, actualStartDate);
+            Assert.assertEquals("License doesn't have this start date: ".concat(expectedDate), expectedDate, actualStartDate);
         }
         if (!this.renewalDate.equals("none")){
             Date renewalDate = formatter.parse(this.renewalDate);
             formatter = new SimpleDateFormat("yyyy-MM-dd");
             String expectedDate = formatter.format(renewalDate);
             String actualRenewalDate = this.packageRow.getColumnValue("Renewal Date");
-            Assert.assertEquals("Project doesn't have this start date: ".concat(expectedDate), expectedDate, actualRenewalDate);
+            Assert.assertEquals("License doesn't have this renewal date: ".concat(expectedDate), expectedDate, actualRenewalDate);
         }
     }
 }

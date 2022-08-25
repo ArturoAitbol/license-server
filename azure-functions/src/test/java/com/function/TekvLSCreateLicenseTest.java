@@ -184,7 +184,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
         String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
                 "'packageType': 'Basic'," +
-                "'description': 'LicenseTest'," +
+                "'renewalDate': '2023-06-10T04:00:00.000Z'," +
                 "'tokensPurchased': '55'," +
                 "'deviceLimit': '5000'," +
                 "'licenseId':'" + licenseId + "'," +
@@ -205,7 +205,7 @@ class TekvLSCreateLicenseTest extends TekvLSTest {
         assertTrue(jsonBody.has("error"));
 
         String actualResponse = jsonBody.getString("error");
-        String expectedResponse = "Missing mandatory parameter: renewalDate";
+        String expectedResponse = "Missing mandatory parameter: description";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
