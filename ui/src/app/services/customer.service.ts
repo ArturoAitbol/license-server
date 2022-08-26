@@ -15,9 +15,9 @@ export class CustomerService {
   private selectedType: string;
 
   constructor(private httpClient: HttpClient) { }
-  // set the selected customer
+
   setSelectedCustomer(customer: any) { this.selectedCustomer = customer; }
-  // get the selected customer
+
   getSelectedCustomer() {
     return (this.selectedCustomer) ? this.selectedCustomer : JSON.parse(localStorage.getItem(Constants.SELECTED_CUSTOMER));
   }
