@@ -94,7 +94,7 @@ public class LicenseConsumptionSteps {
     public void iShouldSeeTheSameDataInTheTekTokensConsumptionEventsTable() {
         String defaultType = "Configuration";
         String defaultUsageDays = "Sun";
-        String actualConsumptionDate = this.consumptions.getValueXpath(detailedConsumptionTableId,"Consumption Date");
+        // String actualConsumptionDate = this.consumptions.getValueXpath(detailedConsumptionTableId,"Consumption Date");
         String actualProject = this.consumptions.getValue(detailedConsumptionTableId,"Project");
         String actualType = this.consumptions.getValue(detailedConsumptionTableId,"Type");
         String actualVendor = this.consumptions.getValue(detailedConsumptionTableId,"Vendor");
@@ -102,7 +102,7 @@ public class LicenseConsumptionSteps {
         String actualVersion = this.consumptions.getValue(detailedConsumptionTableId,"Version");
         String actualTekTokens = this.consumptions.getValueXpath(detailedConsumptionTableId,"tekTokens Used");
         String actualUsageDays = this.consumptions.getValueXpath(detailedConsumptionTableId,"Usage Days");
-//        if (this.startWeek.isEmpty()) Assert.assertEquals("Consumption doesn't have consumptionDate: ".concat(startWeek), startWeek, actualConsumptionDate);
+        // if (this.startWeek.isEmpty()) Assert.assertEquals("Consumption doesn't have consumptionDate: ".concat(startWeek), startWeek, actualConsumptionDate);
         if (!this.project.isEmpty()) Assert.assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
         Assert.assertEquals("Consumption doesn't have this type: ".concat(defaultType), defaultType, actualType);
         if (!this.deviceVendor.isEmpty()) Assert.assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), deviceVendor, actualVendor);
