@@ -67,6 +67,15 @@ export class ProjectService {
     return this.httpClient.get<Project[]>(this.API_URL, { headers, params });
   }
 
+  public getProjectDetailsByLicense(subaccountId: string, licenseId: string, status?: string): Observable<Project[]> {
+    const headers = this.getHeaders();
+    let params = new HttpParams();
+    params = params.set('subaccountId', subaccountId)
+          .set('licenseId', licenseId);
+    if (status) params = params.set('status', status);
+    return this.httpClient.get<Project[]>(this.API_URL, { headers, params });
+  }
+
   /**
    * set the header for the request
    * @returns: HttpHeaders 

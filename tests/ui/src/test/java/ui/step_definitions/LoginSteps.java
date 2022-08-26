@@ -8,7 +8,6 @@ import io.cucumber.java.en.When;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.Assert;
 
-import ui.core.DriverManager;
 import ui.pages.Customers;
 import ui.pages.Header;
 import ui.pages.Landing;

@@ -69,8 +69,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.fetchData();
       this.filteredProjects = this.updateForm.controls['project'].valueChanges.pipe(
         startWith(''),
-        map(value => (typeof value === 'string' ? value : value.name)),
-        map(name => (name ? this.filterProjects(name) : this.projects.slice())),
+        map(value => (typeof value === 'string' ? value : value.projectName)),
+        map(projectName => (projectName ? this.filterProjects(projectName) : this.projects.slice())),
       );
       this.filteredVendors = this.updateForm.controls['vendor'].valueChanges.pipe(
         startWith(''),
@@ -187,11 +187,10 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   fetchData(): void {
     this.isDataLoading = true;
     const subaccountId = this.currentCustomer.subaccountId;
-    const { id } = this.data;
     forkJoin([
       this.deviceService.getDevicesList(subaccountId),
-      this.projectService.getProjectDetailsBySubAccount(subaccountId),
-      this.usageDetailService.getUsageDetailsByConsumptionId(id)
+      this.projectService.getProjectDetailsByLicense(subaccountId, this.currentCustomer.licenseId),
+      this.usageDetailService.getUsageDetailsByConsumptionId(this.data.id)
     ]).subscribe(res => {
       const resDataObject: any = res.reduce((current: any, next: any) => {
         return { ...current, ...next };

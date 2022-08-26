@@ -97,10 +97,11 @@ describe('UI verification tests',()=>{
         const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
         expect(headers[0].innerText).toBe('Start Date');
         expect(headers[1].innerText).toBe('Renewal Date');
-        expect(headers[2].innerText).toBe('Status');
-        expect(headers[3].innerText).toBe('Package Type');
-        expect(headers[4].innerText).toBe('Device Limit');
-        expect(headers[5].innerText).toBe('tekTokens');
+        expect(headers[2].innerText).toBe('Description');
+        expect(headers[3].innerText).toBe('Status');
+        expect(headers[4].innerText).toBe('Package Type');
+        expect(headers[5].innerText).toBe('Device Limit');
+        expect(headers[6].innerText).toBe('tekTokens');
     });
 });
 
