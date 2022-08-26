@@ -63,6 +63,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   ngOnInit() {
     if (this.data) {
+      this.isDataLoading = true;
       this.data.consDate = new Date(this.data.consumptionDate + " 00:00:00");
       this.enableUsageDays();
       this.currentCustomer = this.customerService.getSelectedCustomer();
@@ -191,7 +192,6 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    * fetch data
    */
   fetchData(): void {
-    this.isDataLoading = true;
     const subaccountId = this.currentCustomer.subaccountId;
     forkJoin([
       this.deviceService.getDevicesList(subaccountId),
