@@ -53,6 +53,7 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapte
         MsalModule.forRoot(new PublicClientApplication({
             auth: {
                 clientId: environment.UI_CLIENT_ID,
+                authority: environment.AUTHORITY,
                 redirectUri: environment.REDIRECT_URL_AFTER_LOGIN
             },
             cache: {
