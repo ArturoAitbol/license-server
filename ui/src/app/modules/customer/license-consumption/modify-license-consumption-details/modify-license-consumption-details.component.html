@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Edit tekToken Consumption</h1>
+    <h1 mat-dialig-title id="main-title">Edit tekToken Consumption</h1>
     <h3 *lcCheckAccessFor="'auditInfo'">Modified By: {{currentCustomer.modifiedBy}}</h3>
     <form [formGroup]="updateForm" (ngSubmit)="submit()">
         <div class="flex-container">
@@ -27,7 +27,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Project</mat-label>
                         <input type="text" placeholder="Pick one" aria-label="projectAutoComplete" matInput formControlName="project"
-                            [matAutocomplete]="projects">
+                            [matAutocomplete]="projects" id="projects-auto-complete">
                         <mat-autocomplete autoActiveFirstOption #projects="matAutocomplete" [displayWith]="displayFnProject">
                             <mat-option *ngFor="let project of filteredProjects | async" [value]="project">
                                 {{project.projectName}}
@@ -40,7 +40,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Vendor</mat-label>
                         <input type="text" placeholder="Pick one" aria-label="vendorAutoComplete" matInput formControlName="vendor"
-                            [matAutocomplete]="vendors">
+                            [matAutocomplete]="vendors" id="vendor-auto-complete">
                         <mat-autocomplete autoActiveFirstOption #vendors="matAutocomplete" (optionSelected)="onChangeVendor($event.option.value)" [displayWith]="displayFnVendor">
                             <mat-option *ngFor="let item of filteredVendors | async" [value]="item">
                                 {{item.vendor}}
@@ -53,7 +53,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Device</mat-label>
                         <input type="text" placeholder="Pick one" aria-label="modelsAutoComplete" matInput formControlName="device"
-                            [matAutocomplete]="modelsList">
+                            [matAutocomplete]="modelsList" id="device-auto-complete">
                         <mat-autocomplete autoActiveFirstOption #modelsList="matAutocomplete" [displayWith]="displayFnDevice">
                             <mat-option *ngFor="let device of filteredModels | async" [value]="device">
                                 {{device.product}}
@@ -67,8 +67,8 @@
         </div>
         <!-- <div class="btn-flex-container"> -->
         <mat-dialog-actions>
-            <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
-            <button mat-raised-button color="primary" [disabled]="!updateForm.valid || disableSumbitBtn()"
+            <button mat-stroked-button type="button" id= "cancel-button" (click)="onCancel()">Cancel</button>
+            <button mat-raised-button color="primary" id="submit-button" [disabled]="!updateForm.valid || disableSumbitBtn()"
                 type="submit">Submit</button>
             <!-- </div> -->
         </mat-dialog-actions>

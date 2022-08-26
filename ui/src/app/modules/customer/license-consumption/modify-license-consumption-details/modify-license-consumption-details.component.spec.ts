@@ -27,6 +27,8 @@ import { UsageDetailServiceMock } from "src/test/mock/services/usage-detail-serv
 import { ProjectsComponent } from "../../projects/projects.component";
 import { ModifyLicenseConsumptionDetailsComponent } from "./modify-license-consumption-details.component";
 import { SnackBarService } from "../../../../services/snack-bar.service";
+import moment from "moment";
+import { By } from "@angular/platform-browser";
 
 let modifyLicenseConsumptionDetailTestInstance: ModifyLicenseConsumptionDetailsComponent;
 let fixture: ComponentFixture<ModifyLicenseConsumptionDetailsComponent>;
@@ -111,7 +113,6 @@ const beforeEachFunction = () => {
     });
     fixture = TestBed.createComponent(ModifyLicenseConsumptionDetailsComponent);
     modifyLicenseConsumptionDetailTestInstance = fixture.componentInstance;
-    modifyLicenseConsumptionDetailTestInstance.ngOnInit();
     spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
     spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
     spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
@@ -119,6 +120,46 @@ const beforeEachFunction = () => {
     spyOn(UsageDetailServiceMock, 'getUsageDetailsByConsumptionId').and.callThrough();
 
 };
+
+describe('UI verification autocomplete', () => {
+    beforeEach(beforeEachFunction);
+    it('should display correctly the object selected in the mat-autocompletes', async () => {
+        const modifyLicenseConsumptionForm = modifyLicenseConsumptionDetailTestInstance.updateForm;
+        const projectInput = fixture.nativeElement.querySelector('#projects-auto-complete');
+        const vendorInput = fixture.nativeElement.querySelector('#vendor-auto-complete');
+        const deviceInput = fixture.nativeElement.querySelector('#device-auto-complete');
+
+        projectInput.dispatchEvent(new Event('focus'));
+        projectInput.dispatchEvent(new Event('input'));
+        vendorInput.dispatchEvent(new Event('focus'));
+        vendorInput.dispatchEvent(new Event('input'));
+        deviceInput.dispatchEvent(new Event('focus'));
+        deviceInput.dispatchEvent(new Event('input'));
+        modifyLicenseConsumptionForm.get('project').setValue({name: 'Project-Test1'});
+        modifyLicenseConsumptionForm.get('vendor').setValue({vendor: 'Test'});
+        modifyLicenseConsumptionForm.get('device').setValue({product: 'Test'});
+
+        fixture.detectChanges();
+
+        await fixture.whenStable();
+
+        expect(projectInput.value).toBe('Project-Test1');
+        expect(vendorInput.value).toBe('Test');
+        expect(deviceInput.value).toBe('Test');
+    });
+
+    it('should display essential UI and components', () => {
+        fixture.detectChanges();
+        const h1 = fixture.nativeElement.querySelector('#main-title');
+        const cancelButton = fixture.nativeElement.querySelector('#cancel-button');
+        const submitButton = fixture.nativeElement.querySelector('#submit-button');
+
+        expect(h1.textContent).toBe('Edit tekToken Consumption');
+        expect(cancelButton.textContent).toBe('Cancel');
+        expect(submitButton.disabled).toBeTrue();
+        expect(submitButton.textContent).toBe('Submit');
+    });
+});
 
 describe('Data collection and parsing test', () => {
     beforeEach(beforeEachFunction);
@@ -129,7 +170,7 @@ describe('Data collection and parsing test', () => {
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
         expect(UsageDetailServiceMock.getUsageDetailsByConsumptionId).toHaveBeenCalled();
 
-        modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue({name: "testA"});
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue({name: "Project-Test1"});
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor').setValue({vendor: "testB"});
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('device').setValue({product: "testC"});
         
@@ -146,7 +187,7 @@ describe('modify license consumption details interactions', () => {
         modifyLicenseConsumptionDetailTestInstance.setChecked(true, 0);
         expect(modifyLicenseConsumptionDetailTestInstance.setChecked).toHaveBeenCalledWith(true, 0);
         
-        modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue({name: "testA"});
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue({name: "Project-Test1"});
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor').setValue({vendor: "testB"});
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('device').setValue({product: "testC"});
         modifyLicenseConsumptionDetailTestInstance.submit();
@@ -205,5 +246,123 @@ describe('modify functions interactions', () => {
 
         expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledOnceWith("Some error", 'Error editing license consumption!');
+    });
+});
+
+describe('modify-license-consumption-details FormGroup verification', () => {
+    beforeEach(beforeEachFunction);
+    it('should create formGroup with necessary controls', () => {
+        fixture.detectChanges();
+        expect(modifyLicenseConsumptionDetailTestInstance.updateForm.get('consDate')).toBeTruthy();
+        expect(modifyLicenseConsumptionDetailTestInstance.updateForm.get('project')).toBeTruthy();
+        expect(modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor')).toBeTruthy();
+        expect(modifyLicenseConsumptionDetailTestInstance.updateForm.get('device')).toBeTruthy();
+    });
+
+    it('should make all the controls required', () => {
+        const modifyLicenseForm = modifyLicenseConsumptionDetailTestInstance.updateForm;
+        modifyLicenseForm.setValue({
+            consDate: '',
+            project:'',
+            vendor:'',
+            device:''
+        });
+        expect(modifyLicenseForm.get('consDate').valid).toBeFalse();
+        expect(modifyLicenseForm.get('project').valid).toBeFalse();
+        expect(modifyLicenseForm.get('vendor').valid).toBeFalse();
+        expect(modifyLicenseForm.get('device').valid).toBeFalse();
+    });
+
+    it('should not show submit button if there are missing parameters', () => {
+        fixture.detectChanges();
+        const modifyLicenseForm = modifyLicenseConsumptionDetailTestInstance.updateForm;
+        modifyLicenseForm.setValue({
+            consDate: '',
+            project: '',
+            vendor: '',
+            device: ''
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeTrue();
+    });
+
+    it('should show submit button if the parameters are completed', () => {
+        fixture.detectChanges();
+        const modifyLicenseForm = modifyLicenseConsumptionDetailTestInstance.updateForm;
+        modifyLicenseForm.setValue({
+            consDate: moment('16-08-2022', 'DDMMYYYY'),
+            project: { test:"test" },
+            vendor: { test:"test" },
+            device: { test:"test" }
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeFalse();
+    });
+});
+
+describe('modify-license-consumption - Day toggle', () => {
+    beforeEach(beforeEachFunction);
+    it('should toggle days according to the days selected', () => {
+        modifyLicenseConsumptionDetailTestInstance.setChecked(false, 4);
+
+        fixture.detectChanges();
+
+        expect(modifyLicenseConsumptionDetailTestInstance.days[0].used).toBeFalse();
+        expect(modifyLicenseConsumptionDetailTestInstance.days[1].used).toBeFalse();
+        expect(modifyLicenseConsumptionDetailTestInstance.days[2].used).toBeFalse();
+        expect(modifyLicenseConsumptionDetailTestInstance.days[3].used).toBeFalse();
+        expect(modifyLicenseConsumptionDetailTestInstance.days[4].used).toBeTrue();
+        expect(modifyLicenseConsumptionDetailTestInstance.days[5].used).toBeTrue();
+        expect(modifyLicenseConsumptionDetailTestInstance.days[6].used).toBeFalse();
+
+    });
+
+    it('toggle days of modified license', () => {
+        modifyLicenseConsumptionDetailTestInstance.setChecked(true, 0);
+        expect(modifyLicenseConsumptionDetailTestInstance.days[0].used).toBeTrue();
+    });
+
+    it('should not toggle the day of modified license', () => {
+        modifyLicenseConsumptionDetailTestInstance.setChecked(false, 1);
+        expect(modifyLicenseConsumptionDetailTestInstance.days[0].used).toBeFalse();
+    })
+});
+
+describe('modify-license-consumption - on event methods', () => {
+    beforeEach(beforeEachFunction);
+    it('should filter projects on input change', async () => {
+        fixture.detectChanges();
+        const inputElement = fixture.nativeElement.querySelector('#projects-auto-complete');
+        inputElement.dispatchEvent(new Event('focusin'));
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue('Test1');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const option = fixture.debugElement.queryAll(By.css('mat-option'));
+        expect(option.length).toBe(1);
+        expect(option[0].nativeElement.textContent).toBe(' Project-Test1 ');
+    });
+
+    it('should filter vendors on input change', async () => {
+        fixture.detectChanges();
+        const inputElement = fixture.nativeElement.querySelector('#vendor-auto-complete');
+        inputElement.dispatchEvent(new Event('focusin'));
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor').setValue('Hyl');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const option = fixture.debugElement.queryAll(By.css('mat-option'));
+        expect(option.length).toBe(1);
+        expect(option[0].nativeElement.textContent).toBe(' HylaFAX ');
+    });
+
+    it('should filter device on input change', async () => {
+        fixture.detectChanges();
+        const inputElement = fixture.nativeElement.querySelector('#device-auto-complete');
+        inputElement.dispatchEvent(new Event('focusin'));
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('device').setValue('OpenText');
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const option = fixture.debugElement.queryAll(By.css('mat-option'));
+        expect(option.length).toBe(1);
+        expect(option[0].nativeElement.textContent).toBe(' OpenText--Right FAX - v.20.2 ');
     });
 });

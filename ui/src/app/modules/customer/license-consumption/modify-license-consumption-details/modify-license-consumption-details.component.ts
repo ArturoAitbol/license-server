@@ -111,13 +111,17 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   private filterVendorDevices(value: string): void {
     this.models = [];
     if (value) {
-      this.models = this.devices.filter(device => device.type != "PHONE" && device.vendor === value);
-      this.models.forEach(device => {
-        device.product = device.version ? device.product + " - v." + device.version : device.product;
+      this.devices.forEach((device: any) => {
+        if (device.type != "PHONE" && device.vendor == value) {
+          const productLabel = device.version ? device.product + " - v." + device.version : device.product;
+          const deviceModel = {...device};
+          deviceModel.product = productLabel;
+          this.models.push(deviceModel);
+        }
       });
     }
   }
-
+  
   onCancel(): void {
     this.dialogRef.close();
   }

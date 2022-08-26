@@ -18,6 +18,7 @@ import { ModifyProjectComponent } from "./modify-project.component";
 import { of } from 'rxjs';
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "src/app/services/snack-bar.service";
+import moment from "moment";
 
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
@@ -147,3 +148,47 @@ describe('Dialog calls and interactions', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error updating project!');
     });
 }); 
+
+describe('modify-project FormGroup verification', () => {
+    beforeEach(beforeEachFunction);
+    it('should create formGroup with necessary controls', () => {
+        fixture.detectChanges();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('projectName')).toBeTruthy();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('projectNumber')).toBeTruthy();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('openDate')).toBeTruthy();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('closeDate')).toBeTruthy();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('status')).toBeTruthy();
+    });
+
+    it('should make all the controls required', () => {
+        const modifyProjectForm = modifyPorjectComponentTestInstance.updateProjectForm;
+        modifyProjectForm.setValue({
+            projectName: '',
+            projectNumber: '',
+            openDate: '',
+            closeDate: '',
+            status: ''
+        });
+
+        expect(modifyProjectForm.get('projectName').valid).toBeFalse();
+        expect(modifyProjectForm.get('projectNumber').valid).toBeFalse();
+        expect(modifyProjectForm.get('openDate').valid).toBeFalse();
+        expect(modifyProjectForm.get('closeDate').valid).toBeFalse();
+        expect(modifyProjectForm.get('status').valid).toBeFalse();
+    });
+
+    it('should not show the submit button if there are missing parameters', () => {
+        fixture.detectChanges();
+        const modifyProjectForm = modifyPorjectComponentTestInstance.updateProjectForm;
+        modifyProjectForm.setValue({
+            projectName: '',
+            projectNumber: { test: 'test' },
+            openDate: moment('16-08-2022', 'DDMMYYYY'),
+            closeDate: moment('16-08-2022', 'DDMMYYYY'),
+            status: 'Open'
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeTrue();
+    });
+
+});
