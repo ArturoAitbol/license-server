@@ -345,7 +345,7 @@ const MOCK_UPDATED_CUSTOMER: Customer = {
     testCustomer: true,
     customerName: 'new test customer s updated',
     id: '19660f52-4f35-489d-ae44-80161cbb7bd4',
-    adminEmails: ['samuelvs667@gmail.com']
+    adminEmails: ['adminEmail@unit-test.com']
 };
 
 const SELECTED_CUSTOMER = {
@@ -396,7 +396,7 @@ export const CustomerServiceMock = {
     setSelectedCustomer: () => {
 
     },
-    getCustomerById: () => {
+    getCustomerById: (customerId?: string) => {
         return new Observable((observer) => {
             const customer = CUSTOMER_LIST.customers.find((customer) => (customer.id === 'bc632667-705f-441c-9317-5323d906dc73'));
             observer.next(customer);
@@ -409,11 +409,7 @@ export const CustomerServiceMock = {
 
     updateCustomer: (customer: any) => {
         return new Observable((observer) => {
-            observer.next(
-                {
-                  
-                }
-            );
+            observer.next(MOCK_UPDATED_CUSTOMER);
             observer.complete();
             return {
                 unsubscribe() {}
@@ -422,6 +418,17 @@ export const CustomerServiceMock = {
     },
     getSelectedCustomer: () => {
         return SELECTED_CUSTOMER;
-    }
+    },
+    createCustomer: (customer: Customer) => {
+        return new Observable((observer) => {
+            observer.next({
+                id: '12341234-1234-1234-1234-123412341234'
+            });
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
+    },
 }
 
