@@ -36,6 +36,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   selectedProject: string;
   startDate: any;
   endDate: any;
+  pageSize: number = 6;
   aggregation = "period";
   licensesList: any = [];
   data: any = [];
@@ -206,7 +207,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       then send the start and end dates as the beginning and end of this week
     */
     if (view === '' && (this.aggregation === 'week' || this.aggregation === 'month')) {
-      console.log(this.range);
       requestObject.startDate = this.range.get('start').value.format('YYYY-MM-DD');
       requestObject.endDate = this.range.get('end').value.format('YYYY-MM-DD');
     }
@@ -269,7 +269,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  fetchAggregatedData(pageNumber = 0, pageSize = 6) {
+  fetchAggregatedData(pageNumber = 0, pageSize = this.pageSize) {
     this.weeklyConsumptionData = [];
     this.projectConsumptionData = [];
     this.detailedConsumptionData = [];
@@ -502,7 +502,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   setMonthAndYear(newDateSelection: Moment, datepicker: MatDateRangePicker<any>) {
     const startMonth = newDateSelection.startOf('month');
     const endMonth = newDateSelection.clone().add(1, 'month').startOf('month');
-    console.log(newDateSelection, endMonth);
     this.range.patchValue({
       start: startMonth < this.startDate ? moment(this.startDate) : startMonth,
       end: endMonth > this.endDate ? moment(this.endDate) : endMonth
@@ -551,6 +550,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(event: { pageIndex, pageSize }) {
+    this.pageSize = event.pageSize;
     this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize);
   }
 
