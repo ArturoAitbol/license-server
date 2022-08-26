@@ -23,13 +23,13 @@ Feature: LicensesConsumption
     And I go to the Package Consumption view of "licenseUsageCustomerTest"
     And I open the Add Package form from Consumption View
     When I create a package with the following data
-      | startDate     | 8/20/2022 |
-      | renewalDate   | 2/20/2023 |
+      | startWeek     | 8/20/2022 |
+      | renewalWeek   | 2/20/2023 |
       | packageType   | Basic     |
       | description   | License1  |
     Then I should see the message "Package added successfully!"
 
-  @addLicenseConsumption
+  @addLicenseConsumption @initTest
   Scenario: Add a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the Package Consumption view of "licenseUsageCustomerTest"
@@ -42,53 +42,51 @@ Feature: LicensesConsumption
       | license   | License1    |
     And I should see the message "Project added successfully!"
     When I add a consumption with the following data
-      | startDate           | 8/21/2022     |
-      | endDate             | 8/27/2022     |
+#      | startWeek           | 8/21/2022     |
+#      | endWeek             | 8/27/2022     |
       | project             | projectTest   |
-      | deviceVendor        | Adtran        |
-      | deviceModel         | 908E          |
-      | deviceVersion       | R13.3.0.E     |
+      | deviceVendor        | Cisco        |
+      | deviceModel         | Contact Center Enterprise (UCCE)          |
+      | deviceVersion       | 12.6     |
       | deviceGranularity   | week          |
-      | tekTokens           | 1             |
-    Then I should see the following data in the tekTokens Consumption view
+      | tekTokens           | 7             |
+    Then I should see the following data in the tekTokens Consumption Summary table
       | tekTokens     | 55      |
-#      | consumed      | 1       |
-#      | available     | 54      |
+#      | consumed      | 7       |
     Then I should see the following data in the tekTokens Project Consumption table
 #      | project     | projectTest   |
       | status      | Open          |
-#      | tekTokens   | 1             |
+#      | tekTokens   | 7             |
     And I should see the same data in the tekTokens Consumption Events table
 
-  @editLicenseConsumption
+  @editLicenseConsumption @initTest
   Scenario: Edit a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the Package Consumption view of "licenseUsageCustomerTest"
     When I edit the consumption of the project "projectTest" with the following data
-      | deviceVendor        | 3CX         |
-      | deviceModel         | 3CX         |
-      | deviceVersion       | 18.0.1880   |
+      | deviceVendor        | Cisco         |
+      | deviceModel         | Contact Center Express (UCCX)         |
+      | deviceVersion       | 12.5   |
       | deviceGranularity   | week        |
-      | tekTokens           | 2           |
+      | tekTokens           | 4           |
     Then I should see the message "tekToken consumption successfully edited!"
     Then I should see the following data in the tekTokens Consumption Summary table
       | tekTokens     | 55      |
-#      | consumed      | 2       |
-#      | available     | 53      |
+#      | consumed      | 4       |
     Then I should see the following data in the tekTokens Project Consumption table
-#      | project     | projectTest   |
+      | project     | projectTest   |
       | status      | Open          |
-#      | tekTokens   | 2             |
+#      | tekTokens   | 4             |
     And I should see the same data in the tekTokens Consumption Events table
 
-  @deleteLicenseConsumption
-  Scenario: Delete a tekToken Consumption
-    Given I see the customer "licenseUsageCustomerTest" in the table
-    And I go to the Package Consumption view of "licenseUsageCustomerTest"
-    When I delete the consumption of the project "projectTest"
-
-  @deleteCustomerProject
-  Scenario: Delete the test licenses customer
-    Given I see the customer "licenseUsageCustomerTest" in the table
-    When I delete the customer "licenseUsageCustomerTest"
-    Then I should see the message "Customer deleted successfully!"
+#  @deleteLicenseConsumption
+#  Scenario: Delete a tekToken Consumption
+#    Given I see the customer "licenseUsageCustomerTest" in the table
+#    And I go to the Package Consumption view of "licenseUsageCustomerTest"
+#    When I delete the consumption of the project "projectTest"
+#
+#  @deleteCustomerProject
+#  Scenario: Delete the test licenses customer
+#    Given I see the customer "licenseUsageCustomerTest" in the table
+#    When I delete the customer "licenseUsageCustomerTest"
+#    Then I should see the message "Customer deleted successfully!"

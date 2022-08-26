@@ -53,14 +53,16 @@ public class LicenseConsumptionSteps {
     }
 
     @Then("I should see the following data in the tekTokens Consumption Summary table")
-    public void iShouldSeeTheFollowingDataInTheTekTokensConsumptionSummaryTable(DataTable dataTable) {
+    public void iShouldSeeTheFollowingDataInTheTekTokensConsumptionSummaryTable(DataTable dataTable) throws InterruptedException {
+        Thread.sleep(3000);
         Map<String, String> consumption = dataTable.asMap(String.class, String.class);
         String totalTekTokens = consumption.get("tekTokens");
         // in case there are more consumptions than just one then get from table
+        // we always need to provide either consumed in the datatable or tekTokens in the edit form
         String consumed = consumption.getOrDefault("consumed", this.tekTokens);
         // in case there are more consumptions than just one then get from table
-        int defaultAvailable = Integer.parseInt(totalTekTokens) - Integer.parseInt(this.tekTokens);
-        String available = consumption.getOrDefault("available", String.valueOf(defaultAvailable));
+        int defaultAvailable = Integer.parseInt(totalTekTokens) - Integer.parseInt(consumed);
+        String available = String.valueOf(defaultAvailable);
         String actualTekTokens = this.consumptions.getValue(consumptionSummaryTableId,"tekTokens");
         String actualConsumed = this.consumptions.getValue(consumptionSummaryTableId,"Consumed");
         String actualAvailable = this.consumptions.getValue(consumptionSummaryTableId,"Available");
@@ -77,11 +79,14 @@ public class LicenseConsumptionSteps {
         String status = consumption.getOrDefault("status", "Open");
         // in case there are more consumptions than just one then get from table
         String tekTokens = consumption.getOrDefault("tekTokens", this.tekTokens);
-        String actualProject = this.consumptions.getValue(projectConsumptionTableId,"Project Name");
+        String actualProject = this.consumptions.getValueXpath(projectConsumptionTableId,"Project Name");
         String actualStatus = this.consumptions.getValue(projectConsumptionTableId,"Status");
         String actualTekTokens = this.consumptions.getValue(projectConsumptionTableId,"tekTokens");
-        Assert.assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
-        Assert.assertEquals("Consumption doesn't have this project status: ".concat(status), status, actualStatus);
+        if(!project.isEmpty())
+            Assert.assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
+        if(!status.isEmpty())
+            Assert.assertEquals("Consumption doesn't have this project status: ".concat(status), status, actualStatus);
+        if(!tekTokens.isEmpty())
         Assert.assertEquals("Consumption doesn't have this amount of tekTokens: ".concat(tekTokens), actualTekTokens, actualTekTokens);
     }
 
@@ -89,21 +94,22 @@ public class LicenseConsumptionSteps {
     public void iShouldSeeTheSameDataInTheTekTokensConsumptionEventsTable() {
         String defaultType = "Configuration";
         String defaultUsageDays = "Sun";
-        String actualConsumptionDate = this.consumptions.getValue(detailedConsumptionTableId,"Consumption Date");
-        String actualProject = this.consumptions.getValue(projectConsumptionTableId,"Project Name");
+        String actualConsumptionDate = this.consumptions.getValueXpath(detailedConsumptionTableId,"Consumption Date");
+        String actualProject = this.consumptions.getValue(detailedConsumptionTableId,"Project");
         String actualType = this.consumptions.getValue(detailedConsumptionTableId,"Type");
         String actualVendor = this.consumptions.getValue(detailedConsumptionTableId,"Vendor");
         String actualModel = this.consumptions.getValue(detailedConsumptionTableId,"Model");
         String actualVersion = this.consumptions.getValue(detailedConsumptionTableId,"Version");
-        String actualTekTokens = this.consumptions.getValue(detailedConsumptionTableId,"tekTokens Used");
-        Assert.assertEquals("Consumption doesn't have consumptionDate: ".concat(startWeek), startWeek, actualConsumptionDate);
-        Assert.assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
+        String actualTekTokens = this.consumptions.getValueXpath(detailedConsumptionTableId,"tekTokens Used");
+        String actualUsageDays = this.consumptions.getValueXpath(detailedConsumptionTableId,"Usage Days");
+//        if (this.startWeek.isEmpty()) Assert.assertEquals("Consumption doesn't have consumptionDate: ".concat(startWeek), startWeek, actualConsumptionDate);
+        if (!this.project.isEmpty()) Assert.assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
         Assert.assertEquals("Consumption doesn't have this type: ".concat(defaultType), defaultType, actualType);
-        Assert.assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), deviceVendor, actualVendor);
-        Assert.assertEquals("Consumption doesn't have this deviceModel: ".concat(deviceModel), deviceModel, actualModel);
-        Assert.assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), deviceVersion, actualVersion);
-        Assert.assertEquals("Consumption doesn't have this UsageDays: ".concat(defaultUsageDays), defaultUsageDays, actualType);
-        Assert.assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), actualTekTokens, actualTekTokens);
+        if (!this.deviceVendor.isEmpty()) Assert.assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), deviceVendor, actualVendor);
+        if (!this.deviceModel.isEmpty()) Assert.assertEquals("Consumption doesn't have this deviceModel: ".concat(deviceModel), deviceModel, actualModel);
+        if (!this.deviceVersion.isEmpty()) Assert.assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), deviceVersion, actualVersion);
+        Assert.assertEquals("Consumption doesn't have this UsageDays: ".concat(defaultUsageDays), defaultUsageDays, actualUsageDays);
+        if (!this.tekTokens.isEmpty()) Assert.assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), actualTekTokens, actualTekTokens);
     }
 
     @When("I edit the consumption of the project {string} with the following data")
@@ -120,7 +126,7 @@ public class LicenseConsumptionSteps {
         this.deviceVersion = consumption.getOrDefault("deviceVersion", "");
         this.deviceGranularity = consumption.getOrDefault("deviceGranularity", "");
         this.tekTokens = consumption.getOrDefault("tekTokens", "");
-        this.consumptions = this.consumptionForm.editConsumption(project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens);
+        this.consumptions = this.consumptionForm.editConsumption(this.project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens);
         String actualMessage = this.consumptions.getMessage();
         DriverManager.getInstance().setMessage(actualMessage);
     }
