@@ -30,7 +30,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   filteredProjects: Observable<Project[]>;
   vendors: any = [];
   filteredVendors: Observable<string[]>;
-  models: Device[] = [];
+  models: any[] = [];
   filteredModels: Observable<Device[]>;
   originalDays: any = [];
   days: any = [
@@ -111,9 +111,15 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   private filterVendorDevices(value: string): void {
     this.models = [];
     if (value) {
-      this.models = this.devices.filter(device => device.type != "PHONE" && device.vendor === value);
-      this.models.forEach(device => {
-        device.product = device.version ? device.product + " - v." + device.version : device.product;
+      this.devices.forEach((device: any) => {
+        if (device.type != "PHONE" && device.vendor == value) {
+          const productLabel = device.version ? device.product + " - v." + device.version : device.product;
+          this.models.push({
+            id: device.id,
+            vendor: value,
+            product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
+          });
+        }
       });
     }
   }
