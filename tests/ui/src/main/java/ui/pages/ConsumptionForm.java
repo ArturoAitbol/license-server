@@ -11,9 +11,9 @@ public class ConsumptionForm extends AbstractPageObject {
     @FindBy(css = "mat-form-field#consumption-week mat-datepicker-toggle")
     WebElement calendarButton;
     @FindBy(css = "[formcontrolname='startWeek']")
-    WebElement startDateInput;
+    WebElement startWeekInput;
     @FindBy(css = "[formcontrolname='endWeek']")
-    WebElement endDateInput;
+    WebElement endWeekInput;
     @FindBy(css = "[formcontrolname='project']")
     WebElement projectInput;
     @FindBy(css = "#vendor-auto-complete")
@@ -28,38 +28,51 @@ public class ConsumptionForm extends AbstractPageObject {
         return new ProjectForm();
     }
 
-    public Consumptions addConsumption(String startDate, String endDate, String project, String deviceVendor, String deviceModel) {
+    public Consumptions addConsumption(String startWeek, String endWeek, String project, String deviceVendor, 
+                        String deviceModel, String deviceVersion, String deviceGranularity, String tekTokens) {
         this.action.click(this.calendarButton);
         By todaySelector = By.cssSelector("div.mat-calendar-body-today");
         this.action.click(todaySelector);
-/*        this.action.sendText(this.startDateInput, startDate);
-        this.action.sendText(this.endDateInput, endDate);*/
+/*        this.action.sendText(this.startWeekInput, startWeek);
+        this.action.sendText(this.endWeekInput, endWeek);*/
         By projectSelector = By.cssSelector(String.format("mat-option[title='%s']", project));
         this.action.selectOption(this.projectInput, projectSelector);
         By deviceVendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
         this.action.selectOption(this.deviceVendorInput, deviceVendorSelector);
-        By deviceModelSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceModel));
+        String deviceFieldContent = getDeviceFieldContent(deviceModel, deviceVersion, deviceGranularity, tekTokens);
+        By deviceModelSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceFieldContent));
         this.action.selectOption(this.deviceModelInput, deviceModelSelector);
         this.action.click(this.submitButton);
         return new Consumptions();
     }
 
-    public Consumptions editConsumption(String project, String deviceVendor, String deviceModel) {
+    public Consumptions editConsumption(String project, String deviceVendor, String deviceModel, 
+            String deviceVersion, String deviceGranularity, String tekTokens) {
         By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
         this.action.waitModal(modalLocator);
-        if (!project.equals("none")){
+        if (!project.isEmpty()) {
             By projectSelector = By.cssSelector(String.format("mat-option[title='%s']", project));
             this.action.replaceOption(this.projectInput, projectSelector);
         }
-        if (!deviceVendor.equals("none")){
+        if (!deviceVendor.isEmpty()) {
             By deviceVendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
             this.action.replaceOption(this.deviceVendorInput, deviceVendorSelector);
         }
-        if (!deviceVendor.equals("none")){
-            By deviceModelSelector = By.cssSelector(String.format("mat-option[title*='%s']", deviceModel));
+        if (!deviceVendor.isEmpty()) {
+            String deviceFieldContent = getDeviceFieldContent(deviceModel, deviceVersion, deviceGranularity, tekTokens);
+            By deviceModelSelector = By.cssSelector(String.format("mat-option[title*='%s']", deviceFieldContent));
             this.action.replaceOption(this.deviceModelInput, deviceModelSelector);
         }
         this.action.click(this.submitButton);
         return new Consumptions();
+    }
+
+    private String getDeviceFieldContent(String deviceModel, String deviceVersion, String deviceGranularity, String tekTokens) {
+        // logic got from add-license-consumption.component.ts in the UI Application
+        String deviceFieldContent = deviceModel;
+        if (!deviceVersion.isEmpty())
+            deviceFieldContent += " - v." + deviceVersion;
+        deviceFieldContent += " (" + deviceGranularity + " - " + tekTokens + ")";
+        return deviceFieldContent;
     }
 }

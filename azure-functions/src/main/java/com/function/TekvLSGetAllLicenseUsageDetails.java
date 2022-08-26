@@ -69,6 +69,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String view = request.getQueryParameters().getOrDefault("view", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
+		String licenseId = request.getQueryParameters().getOrDefault("licenseId", "");
 
 		if (subaccountId.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -102,6 +103,11 @@ public class TekvLSGetAllLicenseUsageDetails {
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
 				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
 				break;
+		}
+		
+		if (!licenseId.isEmpty()) {
+			commonConditions.add(new Condition<>("project_id IN (SELECT lc.project_id FROM license_consumption lc, project p " + 
+					"WHERE lc.project_id = p.id and p.license_id = ?::uuid)", licenseId));
 		}
 
 		if (!startDate.isEmpty() && !endDate.isEmpty()) {

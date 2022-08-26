@@ -125,7 +125,7 @@ public class TekvLSCreateUsageDetails
 
 			context.getLogger().info("Execute SQL statement: " + statement);
 			statement.executeBatch();
-			context.getLogger().info("License consumption inserted successfully.");
+			context.getLogger().info("tekToken consumption inserted successfully.");
 			return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
 		}
 		catch (SQLException e) {

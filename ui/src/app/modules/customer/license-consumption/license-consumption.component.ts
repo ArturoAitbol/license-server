@@ -45,7 +45,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   detailedConsumptionData = [];
   tokenConsumptionData = [];
   licenseForm = this.formBuilder.group({
-    licenseId: ['']
+    selectedLicense: ['']
   });
   range: FormGroup = this.formBuilder.group({
     start: [{ value: '', disabled: true }],
@@ -149,7 +149,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         this.setSelectedLicense(res.licenses[0]);
-        this.licenseForm.patchValue({ licenseId: this.selectedLicense.id });
+        this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
         this.isLicenseListLoaded = true;
         this.fetchDataToDisplay();
         this.fetchProjectsList();
@@ -192,9 +192,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
     const requestObject: any = {
       subaccount: this.currentCustomer.subaccountId,
+      licenseId: this.selectedLicense.id,
       view: view,
-      // month: this.aggregation === 'month' ? this.month : null,
-      // year: this.aggregation === 'month' ? this.year : null,
     };
     if (this.selectedProject) { requestObject.project = this.selectedProject; }
     if (this.selectedType) { requestObject.type = this.selectedType; }
@@ -210,9 +209,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       console.log(this.range);
       requestObject.startDate = this.range.get('start').value.format('YYYY-MM-DD');
       requestObject.endDate = this.range.get('end').value.format('YYYY-MM-DD');
-    } else {
-      requestObject.startDate = this.selectedLicense.startDate;
-      requestObject.endDate = this.selectedLicense.renewalDate;
     }
     return requestObject;
   }

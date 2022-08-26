@@ -140,7 +140,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         return { ...current, ...next };
       }, {});
       if (!resDataObject.error) {
-        this.snackBarService.openSnackBar('License consumption successfully edited!', '');
+        this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
         this.dialogRef.close(res);
       } else
         this.snackBarService.openSnackBar(resDataObject.error, 'Error editing license consumption!');
