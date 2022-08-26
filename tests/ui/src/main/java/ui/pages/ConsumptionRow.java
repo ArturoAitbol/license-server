@@ -11,9 +11,9 @@ public class ConsumptionRow extends AbstractPageObject {
 
     public String getColumnValue(String column){
         By columnSelector;
-        if(column.equals("Project Name"))
+        if(column.equals("Project"))
             columnSelector = By.xpath(this.PROJECT_NAME_XPATH);
-        else if(column.equals("Project Code"))
+        else if(column.equals("Consumption Date"))
             columnSelector = By.xpath(String.format(this.PROJECT_NAME_XPATH + "/preceding-sibling::td[@id='%s']", column));
         else
             columnSelector = By.xpath(String.format(this.PROJECT_NAME_XPATH + "/following-sibling::td[@id='%s']", column));
@@ -22,7 +22,7 @@ public class ConsumptionRow extends AbstractPageObject {
 
     public ActionMenu openActionMenu(){
         By actionMenuSelector = By.xpath(this.PROJECT_NAME_XPATH + "/following-sibling::td[@id='more_vert']/button");
-        this.action.click(actionMenuSelector);
+        this.action.forceClick(actionMenuSelector);
         return new ActionMenu();
     }
 }

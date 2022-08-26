@@ -4,7 +4,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
-import ui.pages.packages.PackageForm;
 
 public class Consumptions extends AbstractPageObject {
     @FindBy(css = "#add-license-consumption")
@@ -19,7 +18,11 @@ public class Consumptions extends AbstractPageObject {
 
     public String getValue(String table, String field) {
         By fieldSelector = By.cssSelector(String.format("#%s #%s", table, field));
-        System.out.println(fieldSelector.toString());
+        return this.action.getText(fieldSelector);
+    }
+
+    public String getValueXpath(String table, String field){
+        By fieldSelector = By.xpath(String.format("//div[@id='%s']/descendant::td[@id='%s']", table, field));
         return this.action.getText(fieldSelector);
     }
 

@@ -28,6 +28,7 @@ export class LicenseConsumptionService {
     const headers = this.getHeaders();
     let params = new HttpParams()
         .set('subaccountId', filters.subaccount)
+        .set('licenseId', filters.licenseId)
         .set('view', filters.view);
     if (filters.year)
       params = params.set('year', filters.year);
