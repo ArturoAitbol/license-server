@@ -25,9 +25,15 @@
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
+                        <mat-label>Description</mat-label>
+                        <input required matInput formControlName="description">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
                         <mat-label>Package Type</mat-label>
                         <mat-select required formControlName="packageType" (valueChange)="onChangeType($event)">
-                            <mat-option *ngFor="let bundle of types" [value]="bundle.bundleName">
+                            <mat-option *ngFor="let bundle of types" [value]="bundle.bundleName" title="{{bundle.bundleName}}">
                                 {{bundle.bundleName}}
                             </mat-option>
                         </mat-select>

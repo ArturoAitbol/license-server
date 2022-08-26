@@ -42,8 +42,8 @@ export class ProjectsComponent implements OnInit {
   projects: Project[] = [];
   projectsBk: Project[] = [];
   // flag
-  isLoadingResults = true;
-  isRequestCompleted = false;
+  isLoadingResults: Boolean;
+  isRequestCompleted: Boolean;
 
   constructor(
     private customerService: CustomerService,
@@ -112,6 +112,9 @@ export class ProjectsComponent implements OnInit {
   }
 
   fetchProjects(): void {
+    this.projects = [];
+    this.isLoadingResults = true;
+    this.isRequestCompleted = false;
     this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
@@ -182,8 +185,8 @@ export class ProjectsComponent implements OnInit {
           console.debug('The user confirmed the action: ', this.projects[index]);
           this.projectService.closeProject(projectToUpdate).subscribe(res => {
             if (res.body === null) {
-              this.snackBarService.openSnackBar('Project updated successfully!');
               this.fetchProjects();
+              this.snackBarService.openSnackBar('Project closed successfully!');
             } else {
               console.debug(res.body.error);
               this.snackBarService.openSnackBar(res.body.error, 'Error closing project!');

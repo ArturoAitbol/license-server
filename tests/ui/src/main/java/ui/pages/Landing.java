@@ -1,6 +1,7 @@
 package ui.pages;
 
 import org.aeonbits.owner.ConfigFactory;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
@@ -9,11 +10,12 @@ import ui.utils.Environment;
 public class Landing extends AbstractPageObject {
 
     @FindBy(css="button.rsdLoginButton")
-    private WebElement loginButton;
+    WebElement loginButton;
     Environment environment = ConfigFactory.create(Environment.class);
 
     public Landing(){
         driver.get(this.environment.url());
+        System.out.println("Navigate to:" + this.environment.url());
     }
 
     public LoginForm openLoginForm(){
@@ -26,4 +28,9 @@ public class Landing extends AbstractPageObject {
         return new LoginForm(originalWindow);
     }
 
+    public String checkLogin() {
+        By copyrightSelector = By.cssSelector("p#copyright");
+        String res = this.action.checkElement(copyrightSelector);
+        return res;
+    }
 }

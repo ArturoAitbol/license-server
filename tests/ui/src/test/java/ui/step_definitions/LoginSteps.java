@@ -8,7 +8,6 @@ import io.cucumber.java.en.When;
 import org.aeonbits.owner.ConfigFactory;
 import org.junit.Assert;
 
-import ui.core.DriverManager;
 import ui.pages.Customers;
 import ui.pages.Header;
 import ui.pages.Landing;
@@ -21,6 +20,7 @@ public class LoginSteps {
     Customers customers;
     Header header;
     Environment environment = ConfigFactory.create(Environment.class);
+    String logged;
     // private String logged;
 
     public LoginSteps(Landing landing) {
@@ -29,14 +29,21 @@ public class LoginSteps {
 
     @Given("I am on the landing page")
     public void iAmOnTheLandingPage() {
+        this.logged = this.landing.checkLogin();
     }
 
     @When("I try to login with email and password")
     public void iTryToLoginWithEmailAndPassword() {
-        this.loginForm = this.landing.openLoginForm();
-        String email = environment.username();
-        String password = environment.password();
-        this.customers = this.loginForm.SignIn(email, password);
+        if (this.logged.equals("ok")){
+            this.loginForm = this.landing.openLoginForm();
+            String email = environment.username();
+            String password = environment.password();
+            this.customers = this.loginForm.SignIn(email, password);
+        }
+        if (this.logged.equals("error")){
+//            System.out.println("User has already been logged on");
+            this.customers = new Customers();
+        }
     }
 
     @Then("I should see the {string} page")

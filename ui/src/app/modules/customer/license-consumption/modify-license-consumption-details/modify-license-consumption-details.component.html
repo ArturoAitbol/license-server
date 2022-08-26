@@ -42,7 +42,7 @@
                         <input type="text" placeholder="Pick one" aria-label="vendorAutoComplete" matInput formControlName="vendor"
                             [matAutocomplete]="vendors" id="vendor-auto-complete">
                         <mat-autocomplete autoActiveFirstOption #vendors="matAutocomplete" (optionSelected)="onChangeVendor($event.option.value)" [displayWith]="displayFnVendor">
-                            <mat-option *ngFor="let item of filteredVendors | async" [value]="item">
+                            <mat-option *ngFor="let item of filteredVendors | async" [value]="item" title="{{item.vendor}}">
                                 {{item.vendor}}
                             </mat-option>
                         </mat-autocomplete>
@@ -55,7 +55,7 @@
                         <input type="text" placeholder="Pick one" aria-label="modelsAutoComplete" matInput formControlName="device"
                             [matAutocomplete]="modelsList" id="device-auto-complete">
                         <mat-autocomplete autoActiveFirstOption #modelsList="matAutocomplete" [displayWith]="displayFnDevice">
-                            <mat-option *ngFor="let device of filteredModels | async" [value]="device">
+                            <mat-option *ngFor="let device of filteredModels | async" [value]="device" title="{{device.product}}">
                                 {{device.product}}
                             </mat-option>
                         </mat-autocomplete>
@@ -67,9 +67,9 @@
         </div>
         <!-- <div class="btn-flex-container"> -->
         <mat-dialog-actions>
-            <button mat-stroked-button type="button" id= "cancel-button" (click)="onCancel()">Cancel</button>
-            <button mat-raised-button color="primary" id="submit-button" [disabled]="!updateForm.valid || disableSumbitBtn()"
-                type="submit">Submit</button>
+            <button mat-stroked-button type="button" id="cancel-button"  (click)="onCancel()">Cancel</button>
+            <button mat-raised-button color="primary" [disabled]="!updateForm.valid || disableSumbitBtn()"
+                type="submit" id="submit-button">Submit</button>
             <!-- </div> -->
         </mat-dialog-actions>
     </form>

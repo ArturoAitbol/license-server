@@ -1,5 +1,6 @@
 package ui.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
@@ -33,6 +34,21 @@ public class Customers extends AbstractPageObject {
 
     public SubaccountForm openSubaccountForm() {
         this.action.click(this.addSubaccountButton);
+        By modalLocator = By.cssSelector("div.loading-shade");
+        this.action.waitModal(modalLocator);
         return new SubaccountForm();
+    }
+
+    public String getMessage() {
+        String message;
+        By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
+        try{
+            message = this.action.getText(messageSelector);
+        } catch (Exception e){
+            System.out.println("Message couldn't be retrieved");
+            System.out.println(e.toString());
+            message = "None";
+        }
+        return message;
     }
 }

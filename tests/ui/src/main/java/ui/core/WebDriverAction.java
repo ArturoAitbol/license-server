@@ -1,11 +1,13 @@
 package ui.core;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 
 public class WebDriverAction {
@@ -29,19 +31,6 @@ public class WebDriverAction {
 
     public String confirmModal(WebElement element) {
         return element.getAttribute("disabled");
-    }
-
-    public String simpleClick(By locator) {
-        String output;
-        try {
-            WebElement element = this.driver.findElement(locator);
-            element.click();
-            output = "ok";
-        } catch (Exception e) {
-            System.out.println("Element is not present: " + e.toString());
-            output = "error";
-        }
-        return output;
     }
 
     public void waitModal(By locator) {
@@ -68,24 +57,21 @@ public class WebDriverAction {
         }
     }
 
-    public void selectOption(WebElement element, By option) {
-        try {
-            wait.until(ExpectedConditions.elementToBeClickable(element));
-            element.click();
-            wait.until(ExpectedConditions.presenceOfElementLocated(option)).click();
-        } catch (Exception e) {
-            System.out.println("Selected option is not able: " + option.toString());
-            System.out.println("Ex: " + e.toString());
-        }
+    public void replaceOption(WebElement element, By option){
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        element.clear();
+        element.click();
+        WebElement optionClickable = wait.until(ExpectedConditions.presenceOfElementLocated(option));
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", optionClickable);
     }
 
-    public String checkText(WebElement element, String text) {
-        boolean present;
-        present = wait.until(ExpectedConditions.textToBePresentInElement(element, text));
-        if (present)
-            return element.getText();
-        else
-            return "There isn't this text: " + text;
+    public void selectOption(WebElement element, By option) {
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        element.click();
+        WebElement optionClickable = wait.until(ExpectedConditions.presenceOfElementLocated(option));
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", optionClickable);
     }
 
     public WebElement getElement(By locator) {
@@ -117,11 +103,13 @@ public class WebDriverAction {
     }
 
     public void waitVisibilityElement(WebElement element) {
+        this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOf(element));
+        this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(60));
     }
 
-    public void waitVisibilityElement(By locator) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    public WebElement waitVisibilityElement(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     public void checkTitle(String title) {
@@ -130,5 +118,18 @@ public class WebDriverAction {
         } catch (Exception e) {
             System.out.println("Window didn't get the title:" + title);
         }
+    }
+    public String checkElement(By locator){
+        String output;
+        try{
+            this.driver.findElement(locator).click();
+            output="ok";
+        }
+        catch (Exception e){
+//            LOGGER.warn("Element is not present: "+ e.toString());
+//            System.out.println("Element is not present: "+ e.toString());
+            output="error";
+        }
+        return output;
     }
 }

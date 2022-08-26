@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-
+import { Customer } from 'src/app/model/customer.model';
 const CUSTOMER_LIST = {
     customers: [
         {
@@ -340,6 +340,13 @@ const CUSTOMER_LIST = {
         }
     ]
 };
+const MOCK_UPDATED_CUSTOMER: Customer = {
+    customerType: 'Reseller',
+    testCustomer: true,
+    customerName: 'new test customer s updated',
+    id: '19660f52-4f35-489d-ae44-80161cbb7bd4',
+    adminEmails: ['adminEmail@unit-test.com']
+};
 
 const SELECTED_CUSTOMER = {
     customerType:"MSP",
@@ -365,6 +372,7 @@ export const CustomerServiceMock = {
     customerListValue: CUSTOMER_LIST,
     selectedCustomer: SELECTED_CUSTOMER,
     realCustomer:REAL_CUSTOMER,
+    updatedMockCustomer: MOCK_UPDATED_CUSTOMER,
     getCustomerList: () => {
         return new Observable((observer) => {
             observer.next(
@@ -386,9 +394,41 @@ export const CustomerServiceMock = {
         });
     },
     setSelectedCustomer: () => {
+
+    },
+    getCustomerById: (customerId?: string) => {
+        return new Observable((observer) => {
+            const customer = CUSTOMER_LIST.customers.find((customer) => (customer.id === 'bc632667-705f-441c-9317-5323d906dc73'));
+            observer.next(customer);
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+
+    updateCustomer: (customer: any) => {
+        return new Observable((observer) => {
+            observer.next(MOCK_UPDATED_CUSTOMER);
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
     },
     getSelectedCustomer: () => {
         return SELECTED_CUSTOMER;
-    }
+    },
+    createCustomer: (customer: Customer) => {
+        return new Observable((observer) => {
+            observer.next({
+                id: '12341234-1234-1234-1234-123412341234'
+            });
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
+    },
 }
 

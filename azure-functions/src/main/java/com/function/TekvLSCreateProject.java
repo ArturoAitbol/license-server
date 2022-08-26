@@ -106,7 +106,8 @@ public class TekvLSCreateProject
 			statement.setString(4, jobj.getString(MANDATORY_PARAMS.STATUS.value));
 			statement.setString(5, jobj.getString(MANDATORY_PARAMS.OPEN_DATE.value));
 			statement.setString(6, jobj.has(OPTIONAL_PARAMS.PROJECT_OWNER.value) ? jobj.getString(OPTIONAL_PARAMS.PROJECT_OWNER.value) : null);
-			statement.setString(7, jobj.has(OPTIONAL_PARAMS.LICENSE_ID.value) ? jobj.getString(OPTIONAL_PARAMS.LICENSE_ID.value) : null);
+			statement.setString(7, jobj.getString(MANDATORY_PARAMS.LICENSE_ID.value));
+
 
 			// Insert
 			context.getLogger().info("Execute SQL statement: " + statement);
@@ -143,7 +144,8 @@ public class TekvLSCreateProject
 		PROJECT_NAME("projectName"),
 		PROJECT_NUMBER("projectNumber"),
 		OPEN_DATE("openDate"),
-		STATUS("status");
+		STATUS("status"),
+		LICENSE_ID("licenseId");
 
 		private final String value;
 
@@ -153,8 +155,7 @@ public class TekvLSCreateProject
 	}
 
 	private enum OPTIONAL_PARAMS {
-		PROJECT_OWNER("projectOwner"),
-		LICENSE_ID("licenseId");
+		PROJECT_OWNER("projectOwner");
 
 		private final String value;
 

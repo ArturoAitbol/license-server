@@ -1,70 +1,60 @@
 @licensesTest
 Feature: Licenses
-
-    @validCredentials
-    Scenario: Login successfully with valid credentials
+    Background: : Login successfully with valid credentials
         Given I am on the landing page
         When I try to login with email and password
         Then I should see the "Customers" page
-    
-    @createCustomer
-    Scenario: Create a License customer
+
+    @createLicenseCustomer
+    Scenario: Create a test customer for licenses tests
         Given I open the Add Customer form
         When I create a customer with the following data
-            | name          | LicenseCustomerTest                   |
-            | type          | Reseller                              |
-            | adminEmail    | license-test-admin@tekvizionlabs.com  |
-            | subaccount    | licenseSubaccountTest                 |
-            | subAdminEmail | license-test-admin@tekvizionlabs.com  |
+            | name          | licenseCustomerTest                   |
+            | type          | MSP                                   |
+            | adminEmail    | test-license@tekvizionlabs.com        |
+            | subaccount    | Default                               |
+            | subAdminEmail | license-subaccount@tekvizionlabs.com  |
             | testCustomer  | yes                                   |
-        Then I see the customer "LicenseCustomerTest" in the table
-        And I wait 5 seconds
+        Then I see the customer "licenseCustomerTest" in the table
     
-    @listCustomerLicenses
-    Scenario: List License customer Licenses
-        Given I see the customer "LicenseCustomerTest" in the table
-        When I click "View tekVizion 360 Packages" option
-        Then I should see the "tekVizion 360 Packages" table
-        And I wait 3 seconds
-    
-    @addBasicLicense
+    @addLicense
     Scenario: Add Basic license
-        Given I open the Add Package form
+        Given I see the customer "licenseCustomerTest" in the table
+        And I go to the Packages view of "licenseCustomerTest"
+        And I should see the "tekVizion 360 Packages" table
+        And I open the Add Package form
         When I create a package with the following data
-            | startDate     | 8/20/2022 |
-            | renewalDate   | 2/20/2023 |
-            | packageType   | Basic     |
-        Then I see the "Basic" package in the table
-        And I wait 5 seconds
-    
-    @addAddOnLicense
-    Scenario: Add AddOn license
-        Given I open the Add Package form
-        When I create a package with the following data
-            | startDate             | 8/20/2022 |
-            | renewalDate           | 2/20/2023 |
-            | packageType           | AddOn     |
-            | deviceAccessTekTokens | 10        |
-            | tekTokens             | 30        |
-        Then I see the "AddOn" package in the table
-        And I wait 5 seconds
+            | startDate     | 8/20/2022     |
+            | renewalDate   | 2/20/2023     |
+            | packageType   | Basic         |
+            | description   | Description1  |
+        Then I see the "Description1" package in the table
 
-    @deleteBasicLicense
-    Scenario: Delete Basic License
-        Given I see the "Basic" package in the table
-        Then I delete the "Basic" license
-        Then I should see the alert "License deleted successfully!"
-        And I wait 3 seconds
+    @editLicense
+    Scenario: Edit to AddOn license
+        Given I see the customer "licenseCustomerTest" in the table
+        And I go to the Packages view of "licenseCustomerTest"
+        And I see the "Description1" package in the table
+        When I edit the package "Description1" with the following data
+#            | startDate             | 8/20/2022     |
+#            | renewalDate           | 2/20/2023     |
+            | description           | Description2  |
+            | packageType           | AddOn         |
+            | deviceAccessTekTokens | 10            |
+            | tekTokens             | 30            |
+        Then I should see the message "Package edited successfully!"
+        And I should see the modified data in Packages table
 
-    @returnToCustomersPage
-    Scenario: Return to Customers page
-        Given I should see the "tekVizion 360 Packages" table
-        When I click back button
-        Then I wait 3 seconds
+    @deleteLicense
+    Scenario: Delete Description2 License
+        Given I see the customer "licenseCustomerTest" in the table
+        And I go to the Packages view of "licenseCustomerTest"
+        And I see the "Description2" package in the table
+        When I delete the "Description2" package
+        Then I should see the message "License deleted successfully!"
 
-    @deleteCustomer
-    Scenario: Delete a License customer
-        Given I see the customer "LicenseCustomerTest" in the table
-        When I delete the customer "LicenseCustomerTest"
+    @deleteCustomerLicense
+    Scenario: Delete the test licenses customer
+        Given I see the customer "licenseCustomerTest" in the table
+        When I delete the customer "licenseCustomerTest"
         Then I should see the message "Customer deleted successfully!"
-        And I logout
