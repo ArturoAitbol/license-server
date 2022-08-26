@@ -36,6 +36,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   selectedProject: string;
   startDate: any;
   endDate: any;
+  pageSize: number;
   aggregation = "period";
   licensesList: any = [];
   data: any = [];
@@ -445,7 +446,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
         if (data) { // if it comes from license consumption actions
-          this.fetchDataToDisplay();
+          this.fetchSummaryData();
+          this.fetchEquipment();
+          this.fetchAggregatedData(0,this.pageSize);
         } else {
           this.resetPeriodFilter();
           this.ngOnInit();
@@ -551,6 +554,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(event: { pageIndex, pageSize }) {
+    this.pageSize = event.pageSize;
     this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize);
   }
 
