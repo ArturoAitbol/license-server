@@ -357,7 +357,7 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isDetailedConsumptionRequestCompleted).toBeTrue();
         expect(licenseConsumptionComponentTestInstance.detailedConsumptionData.length).toBe(ConsumptionServiceMock.mockDetailedInfo.usage.length);
         expect(licenseConsumptionComponentTestInstance.detailedConsumptionDataLength).toBe(ConsumptionServiceMock.mockDetailedInfo.usageTotalCount);
-        expect(licenseConsumptionComponentTestInstance.weeklyConsumptionData).toEqual(jasmine.objectContaining(ConsumptionServiceMock.mockDetailedInfo.weeklyConsumption));
+        expect(licenseConsumptionComponentTestInstance.weeklyConsumptionData).toEqual(jasmine.arrayContaining(ConsumptionServiceMock.mockDetailedInfo.weeklyConsumption));
         expect(licenseConsumptionComponentTestInstance.projectConsumptionData).toEqual(ConsumptionServiceMock.mockDetailedInfo.projectConsumption);
         const automationPlatformTokens = ConsumptionServiceMock.mockDetailedInfo.tokenConsumption.AutomationPlatform;
         const configurationTokens = ConsumptionServiceMock.mockDetailedInfo.tokenConsumption.Configuration;

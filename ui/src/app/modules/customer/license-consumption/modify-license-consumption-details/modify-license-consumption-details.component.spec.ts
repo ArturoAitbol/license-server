@@ -125,7 +125,7 @@ describe('UI verification autocomplete', () => {
     beforeEach(beforeEachFunction);
     it('should display correctly the object selected in the mat-autocompletes', async () => {
         const modifyLicenseConsumptionForm = modifyLicenseConsumptionDetailTestInstance.updateForm;
-        const projectInput = fixture.nativeElement.querySelector('#projects-auto-complete');
+        const projectInput = fixture.nativeElement.querySelector('#project-auto-complete');
         const vendorInput = fixture.nativeElement.querySelector('#vendor-auto-complete');
         const deviceInput = fixture.nativeElement.querySelector('#device-auto-complete');
 
@@ -217,13 +217,13 @@ describe('modify functions interactions', () => {
     });
 
     it('should call onChangeVendor and change the value of vendor', () => {
+        fixture.detectChanges();
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'onChangeVendor').and.callThrough();
 
         modifyLicenseConsumptionDetailTestInstance.onChangeVendor({vendor:"Test"});
-
+        fixture.detectChanges();
         expect(modifyLicenseConsumptionDetailTestInstance.onChangeVendor).toHaveBeenCalledWith({vendor:"Test"});
     })
-
 
     it('should call the deleteUsageDetails', () => {
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'submit').and.callThrough();
@@ -332,7 +332,7 @@ describe('modify-license-consumption - on event methods', () => {
     beforeEach(beforeEachFunction);
     it('should filter projects on input change', async () => {
         fixture.detectChanges();
-        const inputElement = fixture.nativeElement.querySelector('#projects-auto-complete');
+        const inputElement = fixture.nativeElement.querySelector('#project-auto-complete');
         inputElement.dispatchEvent(new Event('focusin'));
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue('Test1');
         fixture.detectChanges();
@@ -363,6 +363,21 @@ describe('modify-license-consumption - on event methods', () => {
         await fixture.whenStable();
         const option = fixture.debugElement.queryAll(By.css('mat-option'));
         expect(option.length).toBe(1);
-        expect(option[0].nativeElement.textContent).toBe(' OpenText--Right FAX - v.20.2 ');
+        expect(option[0].nativeElement.textContent).toBe(' OpenText--Right FAX - v.20.2 (static - 0) ');
     });
 });
+
+describe('calling displays with undefined parameter', () => {
+    beforeEach(beforeEachFunction);
+    it('it should call the displat funcionts with null parameter', () => {
+        spyOn(modifyLicenseConsumptionDetailTestInstance, 'displayFnDevice').and.callThrough();
+        spyOn(modifyLicenseConsumptionDetailTestInstance,'displayFnProject').and.callThrough();
+        spyOn(modifyLicenseConsumptionDetailTestInstance,'displayFnVendor').and.callThrough();
+        modifyLicenseConsumptionDetailTestInstance.displayFnDevice(null)
+        modifyLicenseConsumptionDetailTestInstance.displayFnProject(null);
+        modifyLicenseConsumptionDetailTestInstance.displayFnVendor(null);
+        expect(modifyLicenseConsumptionDetailTestInstance.displayFnDevice).toHaveBeenCalledWith(null);
+        expect(modifyLicenseConsumptionDetailTestInstance.displayFnProject).toHaveBeenCalledWith(null);
+        expect(modifyLicenseConsumptionDetailTestInstance.displayFnVendor).toHaveBeenCalledWith(null);
+    });
+}); 

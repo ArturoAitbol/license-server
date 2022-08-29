@@ -119,6 +119,16 @@ describe('modify project interactions', () => {
         modifyPorjectComponentTestInstance.onCancel();
         expect(modifyPorjectComponentTestInstance.onCancel).toHaveBeenCalled();
     }); 
+
+    it('should execute submit action with a null respose', () => {
+        const res = undefined;
+        spyOn(modifyPorjectComponentTestInstance, 'submit').and.callThrough();
+        spyOn(ProjectServiceMock, 'updateProject').and.returnValue(of(res));
+
+        modifyPorjectComponentTestInstance.submit();
+
+        expect(ProjectServiceMock.updateProject).toHaveBeenCalled();
+    });
 });
 
 describe('change status of projects', () => {
