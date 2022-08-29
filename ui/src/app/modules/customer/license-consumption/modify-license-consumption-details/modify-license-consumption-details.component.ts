@@ -124,7 +124,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       });
     }
   }
-
+  
   onCancel(): void {
     this.dialogRef.close();
   }

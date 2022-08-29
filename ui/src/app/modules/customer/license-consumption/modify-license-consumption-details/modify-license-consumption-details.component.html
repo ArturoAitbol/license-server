@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Edit tekToken Consumption</h1>
+    <h1 mat-dialig-title id="main-title">Edit tekToken Consumption</h1>
     <h3 *lcCheckAccessFor="'auditInfo'">Modified By: {{currentCustomer.modifiedBy}}</h3>
     <form [formGroup]="updateForm" (ngSubmit)="submit()">
         <div class="flex-container">
@@ -67,7 +67,7 @@
         </div>
         <!-- <div class="btn-flex-container"> -->
         <mat-dialog-actions>
-            <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
+            <button mat-stroked-button type="button" id="cancel-button"  (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" [disabled]="!updateForm.valid || disableSumbitBtn()"
                 type="submit" id="submit-button">Submit</button>
             <!-- </div> -->
