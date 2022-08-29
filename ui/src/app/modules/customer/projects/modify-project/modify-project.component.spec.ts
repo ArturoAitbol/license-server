@@ -15,7 +15,7 @@ import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
 import { ProjectsComponent } from "../projects.component";
 import { ModifyProjectComponent } from "./modify-project.component";
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "src/app/services/snack-bar.service";
 import { LicenseService } from "src/app/services/license.service";
@@ -155,7 +155,46 @@ describe('Dialog calls and interactions', () => {
         expect(ProjectServiceMock.updateProject).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error updating project!');
     });
+
+    it('should show a message if an error ocurred while loading data', () => {  
+        const err = {error: "some error"};
+        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(throwError(err));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(console, 'error').and.callThrough();
+        fixture.detectChanges();
+
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error requesting packages!');
+        expect(console.error).toHaveBeenCalledWith('error fetching packages', err);
+        expect(modifyPorjectComponentTestInstance.isDataLoading).toBeFalse();
+    });
 }); 
+
+describe('obtaining the data of licenses in the ngOnInit()', () => {
+    beforeEach(beforeEachFunction);
+    it('should load the data of licenses in ngOnInit()', () => {
+        fixture.detectChanges();
+        const res = {
+            error: false, 
+            licenses: [{subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
+                id: '16f4f014-5bed-4166-b10a-808b2e6655e3',
+                description: 'DescriptionA',
+                status: 'Active',
+                deviceLimit: '',
+                tokensPurchased: 150,
+                startDate: '2022-08-01',
+                renewalDate: '2022-09-30',
+                packageType: ''
+            }]
+        };
+        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(res));
+
+        fixture.detectChanges();
+        modifyPorjectComponentTestInstance.ngOnInit();
+
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
+    });
+});
 
 describe('modify-project FormGroup verification', () => {
     beforeEach(beforeEachFunction);
@@ -175,7 +214,8 @@ describe('modify-project FormGroup verification', () => {
             projectNumber: '',
             openDate: '',
             closeDate: '',
-            status: ''
+            status: '',
+            licenseId: ''
         });
 
         expect(modifyProjectForm.get('projectName').valid).toBeFalse();
@@ -183,6 +223,7 @@ describe('modify-project FormGroup verification', () => {
         expect(modifyProjectForm.get('openDate').valid).toBeFalse();
         expect(modifyProjectForm.get('closeDate').valid).toBeFalse();
         expect(modifyProjectForm.get('status').valid).toBeFalse();
+        expect(modifyProjectForm.get('licenseId').valid).toBeFalse();
     });
 
     it('should not show the submit button if there are missing parameters', () => {
@@ -193,10 +234,11 @@ describe('modify-project FormGroup verification', () => {
             projectNumber: { test: 'test' },
             openDate: moment('16-08-2022', 'DDMMYYYY'),
             closeDate: moment('16-08-2022', 'DDMMYYYY'),
-            status: 'Open'
+            status: 'Open',
+            licenseId: { test:'test' }
         });
         fixture.detectChanges();
-        expect(fixture.nativeElement.querySelector('#submit-button').disabled).toBeTrue();
+        expect(fixture.nativeElement.querySelector('#submit-project-button').disabled).toBeTrue();
     });
 
 });
