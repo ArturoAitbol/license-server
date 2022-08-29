@@ -165,8 +165,8 @@ describe('Dialog calls and interactions', () => {
         fixture.detectChanges();
 
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error requesting packages!');
-        expect(console.error).toHaveBeenCalledWith('error fetching packages', err);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error requesting subscriptions!');
+        expect(console.error).toHaveBeenCalledWith('error fetching subscriptions', err);
         expect(addPorjectComponentTestInstance.isDataLoading).toBeFalse();
     });
 });
@@ -185,7 +185,7 @@ describe('obtaining the data od licenses from ngOnInit()', () => {
                 tokensPurchased: 150,
                 startDate: '2022-08-01',
                 renewalDate: '2022-09-30',
-                packageType: ''
+                subscriptionType: ''
             }]
         };
         spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(res))
