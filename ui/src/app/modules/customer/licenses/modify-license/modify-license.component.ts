@@ -13,12 +13,12 @@ import { ConsoleLogger } from '@angular/compiler-cli/private/localize';
     styleUrls: ['./modify-license.component.css']
 })
 export class ModifyLicenseComponent implements OnInit {
-    packageTypes: any[];
+    subscriptionTypes: any[];
     selectedType: any;
     updateCustomerForm: FormGroup = this.formBuilder.group({
         startDate: ['', Validators.required],
         description: ['', Validators.required],
-        packageType: ['', Validators.required],
+        subscriptionType: ['', Validators.required],
         tokensPurchased: ['', Validators.required],
         deviceLimit: ['', Validators.required],
         renewalDate: ['', Validators.required]
@@ -46,8 +46,8 @@ export class ModifyLicenseComponent implements OnInit {
             this.onRenewalDateChange(this.data.renewalDate);
             this.updateCustomerForm.patchValue(this.data);
             this.bundleService.getBundleList().subscribe((res: any) => {
-                if (res) this.packageTypes = res.bundles;
-                this.onChangeType(this.data.packageType);
+                if (res) this.subscriptionTypes = res.bundles;
+                this.onChangeType(this.data.subscriptionType);
                 this.previousFormValue = { ...this.updateCustomerForm.getRawValue() };
                 this.isDataLoading = false;
             });
@@ -61,7 +61,7 @@ export class ModifyLicenseComponent implements OnInit {
     }
 
     onChangeType(bundleName: string) {
-        this.selectedType = this.packageTypes.find(item => item.bundleName === bundleName)
+        this.selectedType = this.subscriptionTypes.find(item => item.bundleName === bundleName)
         if (this.selectedType) {
             if (this.selectedType.bundleName !== "Custom") {
                 this.updateCustomerForm.patchValue({
@@ -95,16 +95,16 @@ export class ModifyLicenseComponent implements OnInit {
         mergedLicenseObject.deviceLimit = this.updateCustomerForm.get("deviceLimit").value;
         this.licenseService.updateLicenseDetails(mergedLicenseObject).subscribe((res: any) => {
             if (res && res.error)
-                this.snackBarService.openSnackBar(res.error, 'Error updating package!');
+                this.snackBarService.openSnackBar(res.error, 'Error updating subscription!');
             else {
                 this.dialogRef.close(true);
-                this.snackBarService.openSnackBar('Package edited successfully!', '');
+                this.snackBarService.openSnackBar('Subscription edited successfully!', '');
             }
             this.isDataLoading = false;
         }, err => {
             this.isDataLoading = false;
             this.dialogRef.close(false);
-            console.error('error while updating package information row', err);
+            console.error('error while updating subscription information row', err);
         });
     }
     /**

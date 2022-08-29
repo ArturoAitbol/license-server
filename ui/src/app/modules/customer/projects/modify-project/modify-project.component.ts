@@ -50,8 +50,8 @@ export class ModifyProjectComponent implements OnInit {
           this.licenses = res.licenses;
         this.isDataLoading = false;
       }, err => {
-        this.snackBarService.openSnackBar(err.error, 'Error requesting packages!');
-        console.error('error fetching packages', err);
+        this.snackBarService.openSnackBar(err.error, 'Error requesting subscriptions!');
+        console.error('error fetching subscriptions', err);
         this.isDataLoading = false;
       });
     }

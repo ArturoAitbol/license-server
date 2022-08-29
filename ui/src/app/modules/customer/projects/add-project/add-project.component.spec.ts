@@ -80,7 +80,7 @@ describe('UI verification for add project component', () => {
         expect(h1.textContent).toBe('Add Project');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
-        expect(projectLicenseLabel.textContent).toBe('tekVizion 360 Package');
+        expect(projectLicenseLabel.textContent).toBe('tekVizion 360 Subscription');
         expect(cancelButton.textContent).toBe('Cancel');
     });
 });

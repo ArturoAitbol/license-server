@@ -10,7 +10,7 @@
                     <!-- license filter -->
                     <form [formGroup]="licenseForm">
                         <mat-form-field id="license-period-form" appearance="outline" class="full-width example-form-field">
-                            <mat-label><b>tekVizion 360 Package</b></mat-label>
+                            <mat-label><b>tekVizion 360 Subscription</b></mat-label>
                             <mat-select class="bold-field" formControlName="selectedLicense" (valueChange)="onChangeLicense($event)">
                                 <mat-option *ngFor="let license of licensesList" [value]="license.id">
                                     {{license.description}} ({{license.startDate}} - {{license.renewalDate}})
@@ -23,7 +23,7 @@
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
                     <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-license-button" (change)="onChangeToggle($event)">
-                        Add tekVizion 360 Package
+                        Add tekVizion 360 Subscription
                     </mat-button-toggle>
                     <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
                         Add tekToken Consumption
@@ -32,7 +32,7 @@
             </div>
         </div>
     </main>
-    <h2 id="first-section-title">tekVizion 360 Package Consumption Summary</h2>
+    <h2 id="first-section-title">tekVizion 360 Subscription Consumption Summary</h2>
     <section>
         <div class="row">
             <div class="col-6">

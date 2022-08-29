@@ -16,114 +16,114 @@ import ui.core.DriverManager;
 import ui.pages.ActionMenu;
 import ui.pages.CustomerRow;
 import ui.pages.Customers;
-import ui.pages.packages.PackageForm;
-import ui.pages.packages.PackageRow;
-import ui.pages.packages.Packages;
+import ui.pages.subscriptions.SubscriptionForm;
+import ui.pages.subscriptions.SubscriptionRow;
+import ui.pages.subscriptions.Subscriptions;
 
 public class LicenseSteps {
     private Customers customers;
     private CustomerRow customerRow;
-    private PackageRow packageRow;
-    private Packages packages;
-    private PackageForm packageForm;
+    private SubscriptionRow subscriptionRow;
+    private Subscriptions subscriptions;
+    private SubscriptionForm subscriptionForm;
     private String actualMessage = "none";
-    String startDate, renewalDate, packageType, description, deviceLimit, tokensPurchased;
+    String startDate, renewalDate, subscriptionType, description, deviceLimit, tokensPurchased;
     SimpleDateFormat formatter = new SimpleDateFormat("M/d/yyyy");
 
     public LicenseSteps(Customers customers) {
         this.customers = customers;
     }
 
-    @And("I go to the Packages view of {string}")
-    public void iGoToThePackagesViewOf(String customerName) {
+    @And("I go to the Subscriptions view of {string}")
+    public void iGoToTheSubscriptionsViewOf(String customerName) {
         this.customerRow = this.customers.getCustomer(customerName);
         ActionMenu actionMenu = this.customerRow.openActionMenu();
-        this.packages = actionMenu.goToPackages();
+        this.subscriptions = actionMenu.goToSubscriptions();
     }
 
     @Then("I should see the {string} table")
     public void iShouldSeeTableTitle(String expectedTitle) {
-        String actualTitle = this.packages.getTableTitle();
+        String actualTitle = this.subscriptions.getTableTitle();
         Assert.assertEquals("Page doesn't have the title: ".concat(expectedTitle), expectedTitle, actualTitle);
     }
 
-    @Given("I open the Add Package form")
-    public void iOpenTheAddPackageForm() {
-        this.packageForm = this.packages.openPackageForm();
+    @Given("I open the Add Subscription form")
+    public void iOpenTheAddSubscriptionForm() {
+        this.subscriptionForm = this.subscriptions.openSubscriptionForm();
     }
 
-    @Given("I open the Add Package form from Consumption View")
-    public void iOpenTheAddPackageFormFromConsumptionView() throws InterruptedException {
-        this.packages = new Packages();
-        this.packageForm = this.packages.openPackageForm();
+    @Given("I open the Add Subscription form from Consumption View")
+    public void iOpenTheAddSubscriptionFormFromConsumptionView() throws InterruptedException {
+        this.subscriptions = new Subscriptions();
+        this.subscriptionForm = this.subscriptions.openSubscriptionForm();
     }
 
-    @When("I create a package with the following data")
-    public void iCreateAPackageWithTheFollowingData(DataTable packageTable) throws InterruptedException {
+    @When("I create a subscription with the following data")
+    public void iCreateASubscriptionWithTheFollowingData(DataTable subscriptionTable) throws InterruptedException {
         Thread.sleep(2000);
-        Map<String, String> license = packageTable.asMap(String.class, String.class);
+        Map<String, String> license = subscriptionTable.asMap(String.class, String.class);
         this.startDate = license.get("startDate");
         this.renewalDate = license.get("renewalDate");
         this.description = license.get("description");
-        this.packageType = license.get("packageType");
+        this.subscriptionType = license.get("subscriptionType");
         this.deviceLimit = license.getOrDefault("deviceAccessTekTokens", null);
         this.tokensPurchased = license.getOrDefault("tekTokens", null);
-        this.packages = this.packageForm.createPackage(this.startDate, this.renewalDate, this.packageType, this.description, this.deviceLimit, this.tokensPurchased);
-        this.actualMessage = this.packages.getMessage();
+        this.subscriptions = this.subscriptionForm.createSubscription(this.startDate, this.renewalDate, this.subscriptionType, this.description, this.deviceLimit, this.tokensPurchased);
+        this.actualMessage = this.subscriptions.getMessage();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
-    @Then("I see the {string} package in the table")
-    public void iShouldSeeThePackageInTheTable(String description) {
-        this.packageRow = new PackageRow(description);
-        String actualPackage = this.packageRow.getColumnValue("Description");
+    @Then("I see the {string} subscription in the table")
+    public void iShouldSeeTheSubscriptionInTheTable(String description) {
+        this.subscriptionRow = new SubscriptionRow(description);
+        String actualSubscription = this.subscriptionRow.getColumnValue("Description");
         Assert.assertEquals("Licenses table doesn't have the license: ".concat(description), description,
-                actualPackage);
+                actualSubscription);
     }
 
-    @Then("I delete the {string} package")
-    public void iDeleteAPackage(String packageType) {
-        this.packageRow = new PackageRow(packageType);
-        ActionMenu actionMenu = this.packageRow.openActionMenu();
+    @Then("I delete the {string} subscription")
+    public void iDeleteASubscription(String subscriptionType) {
+        this.subscriptionRow = new SubscriptionRow(subscriptionType);
+        ActionMenu actionMenu = this.subscriptionRow.openActionMenu();
         this.actualMessage = actionMenu.delete("license");
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
-    @And("I edit the package {string} with the following data")
-    public void iEditThePackageWithTheFollowingData(String packageDescription, DataTable dataTable) throws InterruptedException {
-        this.packageRow = new PackageRow(packageDescription);
-        ActionMenu actionMenu = this.packageRow.openActionMenu();
+    @And("I edit the subscription {string} with the following data")
+    public void iEditTheSubscriptionWithTheFollowingData(String subscriptionDescription, DataTable dataTable) throws InterruptedException {
+        this.subscriptionRow = new SubscriptionRow(subscriptionDescription);
+        ActionMenu actionMenu = this.subscriptionRow.openActionMenu();
         actionMenu.edit();
         Thread.sleep(2000);
-        this.packageForm = new PackageForm();
+        this.subscriptionForm = new SubscriptionForm();
         Map<String, String> license = dataTable.asMap(String.class, String.class);
         this.startDate = license.getOrDefault("startDate", "none");
         this.renewalDate = license.getOrDefault("renewalDate", "none");
         this.description = license.getOrDefault("description", "none");
-        this.packageType = license.getOrDefault("packageType", "none");
+        this.subscriptionType = license.getOrDefault("subscriptionType", "none");
         this.deviceLimit = license.getOrDefault("deviceAccessTekTokens", null);
         this.tokensPurchased = license.getOrDefault("tekTokens", null);
-        this.packages = this.packageForm.editPackage(this.startDate, this.renewalDate, this.packageType, this.description, this.deviceLimit, this.tokensPurchased);
-        this.actualMessage = this.packages.getMessage();
+        this.subscriptions = this.subscriptionForm.editSubscription(this.startDate, this.renewalDate, this.subscriptionType, this.description, this.deviceLimit, this.tokensPurchased);
+        this.actualMessage = this.subscriptions.getMessage();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
-    @And("I should see the modified data in Packages table")
-    public void iShouldSeeTheModifiedDataInPackagesTable() throws ParseException {
-        this.packageRow = new PackageRow(this.description);
+    @And("I should see the modified data in Subscriptions table")
+    public void iShouldSeeTheModifiedDataInSubscriptionsTable() throws ParseException {
+        this.subscriptionRow = new SubscriptionRow(this.description);
         if (!this.description.equals("none")){
-            String actualName = this.packageRow.getColumnValue("Description");
+            String actualName = this.subscriptionRow.getColumnValue("Description");
             Assert.assertEquals("License doesn't have this description: ".concat(this.description), this.description, actualName);
         }
-        if (!this.packageType.equals("none")){
-            String actualType = this.packageRow.getColumnValue("Package Type");
-            Assert.assertEquals("License doesn't have this type: ".concat(this.packageType), this.packageType, actualType);
+        if (!this.subscriptionType.equals("none")){
+            String actualType = this.subscriptionRow.getColumnValue("Subscription Type");
+            Assert.assertEquals("License doesn't have this type: ".concat(this.subscriptionType), this.subscriptionType, actualType);
             if (!this.deviceLimit.equals("none")){
-                String actualDeviceLimit = this.packageRow.getColumnValue("Device Limit");
+                String actualDeviceLimit = this.subscriptionRow.getColumnValue("Device Limit");
                 Assert.assertEquals("License doesn't have this device limit: ".concat(this.deviceLimit), this.deviceLimit, actualDeviceLimit);
             }
             if (!this.tokensPurchased.equals("none")){
-                String actualTokens = this.packageRow.getColumnValue("tekTokens");
+                String actualTokens = this.subscriptionRow.getColumnValue("tekTokens");
                 Assert.assertEquals("License doesn't have this tekTokens: ".concat(this.tokensPurchased), this.tokensPurchased, actualTokens);
             }
         }
@@ -131,14 +131,14 @@ public class LicenseSteps {
             Date startDate = formatter.parse(this.startDate);
             formatter = new SimpleDateFormat("yyyy-MM-dd");
             String expectedDate = formatter.format(startDate);
-            String actualStartDate = this.packageRow.getColumnValue("Start Date");
+            String actualStartDate = this.subscriptionRow.getColumnValue("Start Date");
             Assert.assertEquals("License doesn't have this start date: ".concat(expectedDate), expectedDate, actualStartDate);
         }
         if (!this.renewalDate.equals("none")){
             Date renewalDate = formatter.parse(this.renewalDate);
             formatter = new SimpleDateFormat("yyyy-MM-dd");
             String expectedDate = formatter.format(renewalDate);
-            String actualRenewalDate = this.packageRow.getColumnValue("Renewal Date");
+            String actualRenewalDate = this.subscriptionRow.getColumnValue("Renewal Date");
             Assert.assertEquals("License doesn't have this renewal date: ".concat(expectedDate), expectedDate, actualRenewalDate);
         }
     }

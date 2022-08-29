@@ -24,7 +24,7 @@ export class LicensesComponent implements OnInit {
     { name: 'Renewal Date', dataKey: 'renewalDate', position: 'left', isSortable: true },
     { name: 'Description', dataKey: 'description', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
-    { name: 'Package Type', dataKey: 'packageType', position: 'left', isSortable: true },
+    { name: 'Subscription Type', dataKey: 'subscriptionType', position: 'left', isSortable: true },
     { name: 'Device Limit', dataKey: 'deviceLimit', position: 'left', isSortable: true },
     { name: 'tekTokens', dataKey: 'tokensPurchased', position: 'left', isSortable: true }
   ];

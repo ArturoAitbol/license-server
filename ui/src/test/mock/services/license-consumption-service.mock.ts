@@ -133,6 +133,7 @@ const MOCK_CONSUMPTIONS_LIST = [
 ];
 
 const MOCK_WEEKLY_LIST = [
+    { weekId: 'Week 35 (2022-08-28 - 2022-09-03)', tokensConsumed: 0 },
     { weekId: "Week 34 (2022-08-21 - 2022-08-27)", tokensConsumed: 2 },
     { weekId: "Week 33 (2022-08-14 - 2022-08-20)", tokensConsumed: 6 },
     { weekId: "Week 32 (2022-08-07 - 2022-08-13)", tokensConsumed: 36 },

@@ -126,7 +126,7 @@ describe('UI verification test', () => {
         const currentCustomer = licenseConsumptionComponentTestInstance.currentCustomer;
 
         expect(title.textContent).toBe(`${currentCustomer.name} - ${currentCustomer.subaccountName}`);
-        expect(firstSectionTitle.textContent).toBe('tekVizion 360 Package Consumption Summary');
+        expect(firstSectionTitle.textContent).toBe('tekVizion 360 Subscription Consumption Summary');
         expect(secoundSectionTitle.textContent).toBe('tekTokens Consumption');
         expect(thirdSectionTitle.textContent).toBe('Equipment Summary');
         
@@ -135,7 +135,7 @@ describe('UI verification test', () => {
         const addLicenseButton = fixture.nativeElement.querySelector('#add-license-button');
         const addLicenseConsumptionButton = fixture.nativeElement.querySelector('#add-license-consumption');
         const goBackButton = fixture.nativeElement.querySelector('#back-button');
-        expect(addLicenseButton.textContent).toContain('Add tekVizion 360 Package');
+        expect(addLicenseButton.textContent).toContain('Add tekVizion 360 Subscription');
         expect(addLicenseConsumptionButton.textContent).toContain('Add tekToken Consumption');
         expect(goBackButton.textContent).toContain('Back');
 
@@ -153,7 +153,7 @@ describe('UI verification test', () => {
         const projectForm = await loader.getHarness(MatFormFieldHarness.with({selector:"#project-form"}));
         const dateForm = await loader.getHarness(MatFormFieldHarness.with({selector:"#date-form"}));
         expect(await consumptionTypeForm.getLabel()).toContain('Consumption Type');
-        expect(await licensePeriodForm.getLabel()).toContain('tekVizion 360 Package');
+        expect(await licensePeriodForm.getLabel()).toContain('tekVizion 360 Subscription');
         expect(await projectForm.getLabel()).toContain('Project');
         expect(await dateForm.getLabel()).toContain(licenseConsumptionComponentTestInstance.getDatePickerLabel());
         
@@ -346,6 +346,7 @@ describe('Data collection and parsing tests', () => {
     it('should make a call to get licenseConsumptionDetails when calling fetchAggregatedData()',()=>{
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
+        licenseConsumptionComponentTestInstance.setMonthAndYear(moment("2022-08-02"));
         spyOn(ConsumptionServiceMock,'getLicenseConsumptionDetails').and.callThrough();
 
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
