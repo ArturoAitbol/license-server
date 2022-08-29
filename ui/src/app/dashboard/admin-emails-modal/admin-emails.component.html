@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Customer Administrator Emails</h1>
+    <h1 mat-dialig-title id = "modal-title">Customer Administrator Emails</h1>
     <form [formGroup]="adminEmailsForm" (ngSubmit)="submit()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
@@ -7,15 +7,15 @@
             </div>
             <mat-dialog-content>
                 <div>
-                    <label style="font-weight: bold;">{{data.name}}</label>
+                    <label style="font-weight: bold;" id="customer-name">{{data.name}}</label>
                 </div>
                 <div class="email-info" *ngFor="let email of adminEmails; let emailIndex = index">
                     <div class="row">
                         <div class="col-10">
-                            <label class = "col-form-label"><b>Email: </b>{{email}}</label>
+                            <label class = "col-form-label" class = "email"><b>Email: </b>{{email}}</label>
                         </div>
-                        <div class="col-2" id="clearButton">
-                            <button *lcCheckAccessFor="'deleteAdminEmail'" mat-icon-button color="primary" title="Delete email"
+                        <div class="col-2">
+                            <button id="clearButton" *lcCheckAccessFor="'deleteAdminEmail'" mat-icon-button color="primary" title="Delete email"
                                         (click)="deleteExistingEmail(emailIndex)">
                                     <mat-icon>clear</mat-icon>
                             </button>
@@ -28,7 +28,7 @@
                             <div class="form-row" [formGroupName]="i">
                                 <mat-form-field appearance="outline">
                                     <mat-label>Email</mat-label>
-                                    <input type="email" placeholder="Enter a valid email" aria-label="Email" matInput
+                                    <input id="email" type="email" placeholder="Enter a valid email" aria-label="Email" matInput
                                            formControlName="email">
                                 </mat-form-field>
                                 <button style="align-content: right;" mat-icon-button color="primary" title="Delete email"
@@ -46,8 +46,8 @@
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
-            <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
-            <button *lcCheckAccessFor="'addAdminEmail'" mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
+            <button id="cancel-button" mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
+            <button id="submit-button" *lcCheckAccessFor="'addAdminEmail'" mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>
