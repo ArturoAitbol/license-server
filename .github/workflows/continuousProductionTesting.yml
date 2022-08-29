@@ -63,6 +63,11 @@ jobs:
         summary: 'true'
         check_name: 'API Test Report'
 
+    - name: Set Production test credentials
+      run: |
+        echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
+        echo -e "password=${{ secrets.AZURE_TEST_USER_PWD_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
+
     - name: Run UI tests
       run: |
         cd tests/ui

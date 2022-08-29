@@ -154,7 +154,7 @@ public class TekvLSCreateLicenseUsageDetail
 			rs.next();
 			jobj.put("id", rs.getString("id"));
 			jobj.put("userId", userId);
-			context.getLogger().info("License consumption inserted successfully.");
+			context.getLogger().info("tekToken consumption inserted successfully.");
 			return this.createUsageDetail(jobj, connection, request, context);
 		}
 		catch (SQLException e) {
@@ -212,7 +212,7 @@ public class TekvLSCreateLicenseUsageDetail
 				stmt.setString(1, consumptionObj.getString("id"));
 				context.getLogger().info("Execute delete license consumption SQL statement: " + stmt);
 				stmt.executeUpdate();
-				context.getLogger().info("License consumption deleted successfully.");
+				context.getLogger().info("tekToken consumption deleted successfully.");
 			}
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());

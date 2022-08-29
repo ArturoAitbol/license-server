@@ -7,6 +7,7 @@ const PROJECT_LIST = {
             projectName: 'Project-Test1',
             projectNumber: 'test-code',
             subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
+            licenseId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
             openDate: '2022-01-26 05:00:00',
             closeDate: '2022-05-29 05:00:00',
             status: 'Open'
@@ -16,6 +17,7 @@ const PROJECT_LIST = {
             projectName: 'Project-Test2',
             projectNumber: 'test-code2',
             subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
+            licenseId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
             status: 'Open'
@@ -25,6 +27,7 @@ const PROJECT_LIST = {
             projectName: 'Project-Test3',
             projectNumber: 'test-code3',
             subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
+            licenseId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
             status: 'Open'
@@ -34,6 +37,7 @@ const PROJECT_LIST = {
             projectName: 'Project-Test4',
             projectNumber: 'test-code4',
             subaccountId: '9599c5bd-f702-4965-b655-29b0fed00e23',
+            licenseId: '9599c5bd-f702-4965-b655-29b0fed00e23',
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
             status: 'Open'
@@ -44,6 +48,17 @@ const PROJECT_LIST = {
 export const ProjectServiceMock = {
     projectsListValue: PROJECT_LIST,
     getProjectDetailsBySubAccount: (id?:string) => {
+        return new Observable((observer) => {
+            observer.next(
+                PROJECT_LIST
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    getProjectDetailsByLicense: (subaccountId?: string, licenseId?: string) => {
         return new Observable((observer) => {
             observer.next(
                 PROJECT_LIST

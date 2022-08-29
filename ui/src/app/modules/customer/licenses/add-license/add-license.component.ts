@@ -19,6 +19,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
   private currentCustomer: any;
   addLicenseForm = this.formBuilder.group({
     startDate: ['', Validators.required],
+    description: ['', Validators.required],
     packageType: ['', Validators.required],
     tokensPurchased: ['', Validators.required],
     deviceLimit: ['', Validators.required],
@@ -56,6 +57,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     const licenseObject: License | any = {
       subaccountId: this.currentCustomer.subaccountId,
       startDate: this.addLicenseForm.value.startDate,
+      description: this.addLicenseForm.value.description,
       packageType: this.addLicenseForm.value.packageType,
       tokensPurchased: this.addLicenseForm.get("tokensPurchased").value,
       deviceLimit: this.addLicenseForm.get("deviceLimit").value,

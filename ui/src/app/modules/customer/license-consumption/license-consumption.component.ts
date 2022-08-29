@@ -19,6 +19,7 @@ import { permissions } from 'src/app/helpers/role-permissions';
 import { DataTableComponent } from '../../../generics/data-table/data-table.component';
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
 import moment, { Moment } from 'moment';
+import { License } from 'src/app/model/license.model';
 
 @Component({
   selector: 'app-license-consumption',
@@ -35,9 +36,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   selectedProject: string;
   startDate: any;
   endDate: any;
+  pageSize: number = 6;
   aggregation = "period";
-  month: number;
-  year: number;
   licensesList: any = [];
   data: any = [];
   equipmentData = [];
@@ -46,7 +46,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   detailedConsumptionData = [];
   tokenConsumptionData = [];
   licenseForm = this.formBuilder.group({
-    licenseId: ['']
+    selectedLicense: ['']
   });
   range: FormGroup = this.formBuilder.group({
     start: [{ value: '', disabled: true }],
@@ -127,7 +127,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     4: 'Thu',
     5: 'Fri',
     6: 'Sat'
-  }
+  };
 
   constructor(
     private formBuilder: FormBuilder,
@@ -149,12 +149,11 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
-        this.selectedLicense = res.licenses[0];
-        this.licenseForm.patchValue({ licenseId: this.selectedLicense.id });
-        this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
-        this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
+        this.setSelectedLicense(res.licenses[0]);
+        this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
         this.isLicenseListLoaded = true;
         this.fetchDataToDisplay();
+        this.fetchProjectsList();
       } else {
         this.isLicenseSummaryLoadingResults = false;
         this.isLicenseSummaryRequestCompleted = true;
@@ -166,8 +165,15 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         this.isDetailedConsumptionRequestCompleted = true;
       }
     });
-    this.fetchProjectsList();
     this.getActionMenuOptions();
+  }
+
+  private setSelectedLicense(license: License) {
+    this.selectedLicense = license;
+    this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
+    this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
+    this.currentCustomer.licenseId = license.id;
+    this.customerService.setSelectedCustomer(this.currentCustomer);
   }
 
   fetchDataToDisplay() {
@@ -187,9 +193,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
     const requestObject: any = {
       subaccount: this.currentCustomer.subaccountId,
+      licenseId: this.selectedLicense.id,
       view: view,
-      month: this.aggregation === 'month' ? this.month : null,
-      year: this.aggregation === 'month' ? this.year : null,
     };
     if (this.selectedProject) { requestObject.project = this.selectedProject; }
     if (this.selectedType) { requestObject.type = this.selectedType; }
@@ -201,18 +206,15 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       if it is the license consumption division and week filter is selected
       then send the start and end dates as the beginning and end of this week
     */
-    if (view === '' && this.aggregation === 'week') {
+    if (view === '' && (this.aggregation === 'week' || this.aggregation === 'month')) {
       requestObject.startDate = this.range.get('start').value.format('YYYY-MM-DD');
       requestObject.endDate = this.range.get('end').value.format('YYYY-MM-DD');
-    } else {
-      requestObject.startDate = this.selectedLicense.startDate;
-      requestObject.endDate = this.selectedLicense.renewalDate;
     }
     return requestObject;
   }
 
   fetchProjectsList() {
-    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe((res: any) => {
+    this.projectService.getProjectDetailsByLicense(this.currentCustomer.subaccountId, this.selectedLicense.id).subscribe((res: any) => {
       if (!res.error && res.projects) {
         this.projects = res.projects;
       }
@@ -267,7 +269,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  fetchAggregatedData(pageNumber = 0, pageSize = 6) {
+  fetchAggregatedData(pageNumber = 0, pageSize = this.pageSize) {
     this.weeklyConsumptionData = [];
     this.projectConsumptionData = [];
     this.detailedConsumptionData = [];
@@ -279,7 +281,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
       res.usage.forEach(item => {
         if (item.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
-          item.usageDays = item.usageDays.length;
+          item.usageDays = "...";
         } else {
           this.getNameOfDays(item.usageDays);
         }
@@ -343,7 +345,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         weeklyConsumptionDetail[i].tokensConsumed = item.tokensConsumed;
       else
         notFoundWeeks.push(item);
-    })
+    });
 
     return notFoundWeeks.concat(weeklyConsumptionDetail);
   }
@@ -394,11 +396,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   onChangeLicense(newLicenseId: string) {
     if (newLicenseId) {
-      this.selectedLicense = this.licensesList.find(item => item.id === newLicenseId);
-      this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
-      this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
+      this.setSelectedLicense(this.licensesList.find(item => item.id === newLicenseId));
       this.resetPeriodFilter();
       this.fetchDataToDisplay();
+      this.fetchProjectsList();
     }
   }
 
@@ -499,24 +500,14 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   setMonthAndYear(newDateSelection: Moment, datepicker: MatDateRangePicker<any>) {
-    this.month = newDateSelection.month() + 1;
-    this.year = newDateSelection.year();
-    this.setMonthRange(newDateSelection);
+    const startMonth = newDateSelection.startOf('month');
+    const endMonth = newDateSelection.clone().add(1, 'month').startOf('month');
+    this.range.patchValue({
+      start: startMonth < this.startDate ? moment(this.startDate) : startMonth,
+      end: endMonth > this.endDate ? moment(this.endDate) : endMonth
+    });
     datepicker.close();
     this.fetchAggregatedData();
-  }
-
-  setMonthRange(date: Moment) {
-    const startMonth = date;
-    const endMonth = moment(new Date(date.year(), date.month() + 1, 0));
-    this.range.patchValue({
-      start: startMonth,
-      end: endMonth
-    });
-    this.range.patchValue({
-      start: startMonth < this.startDate ? this.startDate : startMonth,
-      end: endMonth > this.endDate ? this.endDate : endMonth
-    });
   }
 
   getProject(projectId: string) {
@@ -550,8 +541,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   resetCalendar() {
     this.range.patchValue({ start: null, end: null });
-    this.month = null;
-    this.year = null;
   }
 
   resetPeriodFilter() {
@@ -561,6 +550,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(event: { pageIndex, pageSize }) {
+    this.pageSize = event.pageSize;
     this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize);
   }
 

@@ -101,7 +101,13 @@ jobs:
     - name: Add Release version file
       run: echo "Released ${{ steps.next_tag.outputs.patch }} Build" > ./ui/dist/license-server/ReleaseVersion.txt
 
-    - name: Upload to blob storagerun
+    - name: Clear blob storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az storage blob delete-batch --account-name lswebappstorage --auth-mode key -s '$web'
+
+    - name: Upload to blob storage
       uses: azure/CLI@v1
       with:
         inlineScript: |
@@ -129,6 +135,11 @@ jobs:
         report_paths: './tests/api/postman/newman-report.xml'
         summary: 'true'
         check_name: 'API Test Report'
+
+    - name: Set Integration test credentials
+      run: |
+        echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
+        echo -e "password=${{ secrets.AZURE_TEST_USER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
 
     - name: Run UI tests
       run: |

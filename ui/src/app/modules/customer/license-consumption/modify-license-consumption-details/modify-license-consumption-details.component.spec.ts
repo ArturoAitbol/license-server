@@ -114,7 +114,7 @@ const beforeEachFunction = () => {
     modifyLicenseConsumptionDetailTestInstance.ngOnInit();
     spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
     spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
-    spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
+    spyOn(ProjectServiceMock, 'getProjectDetailsByLicense').and.callThrough();
     spyOn(CustomerServiceMock, 'getSelectedCustomer').and.callThrough();
     spyOn(UsageDetailServiceMock, 'getUsageDetailsByConsumptionId').and.callThrough();
 
@@ -126,7 +126,7 @@ describe('Data collection and parsing test', () => {
         fixture.detectChanges();
 
         expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
-        expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
+        expect(ProjectServiceMock.getProjectDetailsByLicense).toHaveBeenCalled();
         expect(UsageDetailServiceMock.getUsageDetailsByConsumptionId).toHaveBeenCalled();
 
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue({name: "testA"});
