@@ -18,16 +18,16 @@ import { AddProjectComponent } from "./add-project.component";
 import { of, throwError } from 'rxjs';
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import { LicenseService } from "src/app/services/license.service";
+import moment from "moment";
+
 
 let addPorjectComponentTestInstance: AddProjectComponent;
 let fixture: ComponentFixture<AddProjectComponent>;
 const dialogMock = new DialogServiceMock();
 
-
-
 const beforeEachFunction = () => {
     TestBed.configureTestingModule({
-        declarations: [ProjectsComponent, AddProjectComponent],
+        declarations: [ ProjectsComponent, AddProjectComponent ],
         imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule,  ReactiveFormsModule ],
         providers: [
             {
@@ -73,15 +73,19 @@ describe('UI verification for add project component', () => {
     it('should display essential UI components', () => {
         fixture.detectChanges();
         const h1 = fixture.nativeElement.querySelector('#page-title');
+        const startDate = fixture.nativeElement.querySelector('#start-date-lable');
+        const submitButton = fixture.nativeElement.querySelector('#submit-project-button');
         const  projectNameLabel = fixture.nativeElement.querySelector('#project-name-label');
         const  projectCodeLabel = fixture.nativeElement.querySelector('#project-code-label');
         const  projectLicenseLabel = fixture.nativeElement.querySelector('#project-license-label');
         const  cancelButton = fixture.nativeElement.querySelector('#cancel-button');
         expect(h1.textContent).toBe('Add Project');
+        expect(startDate.textContent).toBe('Start Date');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
         expect(projectLicenseLabel.textContent).toBe('tekVizion 360 Subscription');
         expect(cancelButton.textContent).toBe('Cancel');
+        expect(submitButton.disabled).toBeTrue();
     });
 });
 
@@ -98,6 +102,30 @@ describe('add projects interactions', () => {
         addPorjectComponentTestInstance.onCancel();
         expect(addPorjectComponentTestInstance.onCancel).toHaveBeenCalled();
     });
+
+    it('should enable the submit button on not empty parameters', () => {
+        const addProjectForm = addPorjectComponentTestInstance.addProjectForm;
+        addProjectForm.setValue({
+            projectName: {test: 'test'},
+            projectNumber: { test: 'test' },
+            openDate: moment('16-08-2022', 'DDMMYYYY'),
+            licenseId: { test:'test' }
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submit-project-button').disabled).toBeFalse();
+    });
+
+    it('should disable the submit button with an empty parameter', () => {
+        const addProjectForm = addPorjectComponentTestInstance.addProjectForm;
+        addProjectForm.setValue({
+            projectName: '',
+            projectNumber: { test: 'test' },
+            openDate: moment('16-08-2022', 'DDMMYYYY'),
+            licenseId: { test: 'test' }
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submit-project-button').disabled).toBeTrue();
+    });
 });
 
 describe('Dialog calls and interactions', () => {
@@ -113,6 +141,7 @@ describe('Dialog calls and interactions', () => {
         expect(ProjectServiceMock.createProject).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error adding project!');
     });
+
     it('should show a message if an error was thrown while adding a project after calling submit()', () => {
         const err = { error:"some error"};
         spyOn(ProjectServiceMock, 'createProject').and.returnValue(throwError(err));
@@ -126,5 +155,68 @@ describe('Dialog calls and interactions', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error adding project!');
         expect(console.error).toHaveBeenCalledWith('error adding a new project', err);
         expect(addPorjectComponentTestInstance.isDataLoading).toBeFalse();
-    })
+    });
+
+    it('should show a message if an error ocurred while loading data ngOnInit()', () => {
+        const err = {error: 'some error'};
+        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(throwError(err));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(console, 'error').and.callThrough()
+        fixture.detectChanges();
+
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error requesting packages!');
+        expect(console.error).toHaveBeenCalledWith('error fetching packages', err);
+        expect(addPorjectComponentTestInstance.isDataLoading).toBeFalse();
+    });
+});
+
+describe('obtaining the data od licenses from ngOnInit()', () => {
+    beforeEach(beforeEachFunction);
+    it('should obtain the list of licenses', () => {
+        fixture.detectChanges();
+        const res = {
+            error: false, 
+            licenses: [{subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
+                id: '16f4f014-5bed-4166-b10a-808b2e6655e3',
+                description: 'DescriptionA',
+                status: 'Active',
+                deviceLimit: '',
+                tokensPurchased: 150,
+                startDate: '2022-08-01',
+                renewalDate: '2022-09-30',
+                packageType: ''
+            }]
+        };
+        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(res))
+
+        addPorjectComponentTestInstance.ngOnInit();
+
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
+    });
+});
+
+describe('add-project - FormGroup verification test', () => {
+    beforeEach(beforeEachFunction);
+    it('should create a formGroup with necessary controls', () => {
+        fixture.detectChanges();
+        expect(addPorjectComponentTestInstance.addProjectForm.get('projectName')).toBeTruthy();
+        expect(addPorjectComponentTestInstance.addProjectForm.get('projectNumber')).toBeTruthy();
+        expect(addPorjectComponentTestInstance.addProjectForm.get('openDate')).toBeTruthy();
+        expect(addPorjectComponentTestInstance.addProjectForm.get('licenseId')).toBeTruthy();
+    });
+
+    it('should make all the controls required', () => {
+        const addProjectForm = addPorjectComponentTestInstance.addProjectForm;
+        addProjectForm.setValue({
+            projectName: '',
+            projectNumber: '',
+            openDate: '',
+            licenseId: ''
+        });
+        expect(addProjectForm.get('projectName').valid).toBeFalse();
+        expect(addProjectForm.get('projectNumber').valid).toBeFalse();
+        expect(addProjectForm.get('openDate').valid).toBeFalse();
+        expect(addProjectForm.get('licenseId').valid).toBeFalse();
+    });
 });
