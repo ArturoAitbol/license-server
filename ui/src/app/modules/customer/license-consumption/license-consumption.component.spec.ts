@@ -529,6 +529,7 @@ describe('Dialog calls and interactions', () => {
 
     it('should call to fetchAggregatedData when calling setWeek()',()=>{
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
+        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
         spyOn(licenseConsumptionComponentTestInstance,'fetchAggregatedData').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance,'resetCalendar');
         const date = moment(new Date());

@@ -36,6 +36,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   selectedProject: string;
   startDate: any;
   endDate: any;
+  pageSize: number = 6;
   aggregation = "period";
   licensesList: any = [];
   data: any = [];
@@ -45,7 +46,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   detailedConsumptionData = [];
   tokenConsumptionData = [];
   licenseForm = this.formBuilder.group({
-    licenseId: ['']
+    selectedLicense: ['']
   });
   range: FormGroup = this.formBuilder.group({
     start: [{ value: '', disabled: true }],
@@ -149,7 +150,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         this.setSelectedLicense(res.licenses[0]);
-        this.licenseForm.patchValue({ licenseId: this.selectedLicense.id });
+        this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
         this.isLicenseListLoaded = true;
         this.fetchDataToDisplay();
         this.fetchProjectsList();
@@ -192,9 +193,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
     const requestObject: any = {
       subaccount: this.currentCustomer.subaccountId,
+      licenseId: this.selectedLicense.id,
       view: view,
-      // month: this.aggregation === 'month' ? this.month : null,
-      // year: this.aggregation === 'month' ? this.year : null,
     };
     if (this.selectedProject) { requestObject.project = this.selectedProject; }
     if (this.selectedType) { requestObject.type = this.selectedType; }
@@ -207,12 +207,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       then send the start and end dates as the beginning and end of this week
     */
     if (view === '' && (this.aggregation === 'week' || this.aggregation === 'month')) {
-      console.log(this.range);
       requestObject.startDate = this.range.get('start').value.format('YYYY-MM-DD');
       requestObject.endDate = this.range.get('end').value.format('YYYY-MM-DD');
-    } else {
-      requestObject.startDate = this.selectedLicense.startDate;
-      requestObject.endDate = this.selectedLicense.renewalDate;
     }
     return requestObject;
   }
@@ -273,7 +269,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  fetchAggregatedData(pageNumber = 0, pageSize = 6) {
+  fetchAggregatedData(pageNumber = 0, pageSize = this.pageSize) {
     this.weeklyConsumptionData = [];
     this.projectConsumptionData = [];
     this.detailedConsumptionData = [];
@@ -285,7 +281,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
       res.usage.forEach(item => {
         if (item.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
-          item.usageDays = item.usageDays.length;
+          item.usageDays = "...";
         } else {
           this.getNameOfDays(item.usageDays);
         }
@@ -506,7 +502,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   setMonthAndYear(newDateSelection: Moment, datepicker: MatDateRangePicker<any>) {
     const startMonth = newDateSelection.startOf('month');
     const endMonth = newDateSelection.clone().add(1, 'month').startOf('month');
-    console.log(newDateSelection, endMonth);
     this.range.patchValue({
       start: startMonth < this.startDate ? moment(this.startDate) : startMonth,
       end: endMonth > this.endDate ? moment(this.endDate) : endMonth
@@ -555,6 +550,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(event: { pageIndex, pageSize }) {
+    this.pageSize = event.pageSize;
     this.fetchDetailedConsumptionData(event.pageIndex, event.pageSize);
   }
 

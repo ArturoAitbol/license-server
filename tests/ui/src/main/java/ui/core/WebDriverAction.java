@@ -29,6 +29,12 @@ public class WebDriverAction {
         clickable.click();
     }
 
+    public void forceClick(By locator) {
+        WebElement element = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        JavascriptExecutor executor = (JavascriptExecutor)driver;
+        executor.executeScript("arguments[0].click();", element);
+    }
+
     public String confirmModal(WebElement element) {
         return element.getAttribute("disabled");
     }
@@ -60,6 +66,9 @@ public class WebDriverAction {
     public void replaceOption(WebElement element, By option){
         wait.until(ExpectedConditions.elementToBeClickable(element));
         element.clear();
+        By dateSelector = By.cssSelector("[formcontrolname='consDate']");
+        WebElement clickable = wait.until(ExpectedConditions.presenceOfElementLocated(dateSelector));
+        clickable.click();
         element.click();
         WebElement optionClickable = wait.until(ExpectedConditions.presenceOfElementLocated(option));
         JavascriptExecutor executor = (JavascriptExecutor)this.driver;

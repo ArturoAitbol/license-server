@@ -27,9 +27,9 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Project</mat-label>
                         <input type="text" placeholder="Pick one" aria-label="projectAutoComplete" matInput formControlName="project"
-                            [matAutocomplete]="projects" id="projects-auto-complete">
+                            [matAutocomplete]="projects" id="project-auto-complete">
                         <mat-autocomplete autoActiveFirstOption #projects="matAutocomplete" [displayWith]="displayFnProject">
-                            <mat-option *ngFor="let project of filteredProjects | async" [value]="project">
+                            <mat-option *ngFor="let project of filteredProjects | async" [value]="project" title="{{project.projectName}}">
                                 {{project.projectName}}
                             </mat-option>
                         </mat-autocomplete>

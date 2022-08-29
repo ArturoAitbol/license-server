@@ -30,7 +30,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   filteredProjects: Observable<Project[]>;
   vendors: any = [];
   filteredVendors: Observable<string[]>;
-  models: Device[] = [];
+  models: any[] = [];
   filteredModels: Observable<Device[]>;
   originalDays: any = [];
   days: any = [
@@ -63,6 +63,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   ngOnInit() {
     if (this.data) {
+      this.isDataLoading = true;
       this.data.consDate = new Date(this.data.consumptionDate + " 00:00:00");
       this.enableUsageDays();
       this.currentCustomer = this.customerService.getSelectedCustomer();
@@ -114,9 +115,11 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.devices.forEach((device: any) => {
         if (device.type != "PHONE" && device.vendor == value) {
           const productLabel = device.version ? device.product + " - v." + device.version : device.product;
-          const deviceModel = {...device};
-          deviceModel.product = productLabel;
-          this.models.push(deviceModel);
+          this.models.push({
+            id: device.id,
+            vendor: value,
+            product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
+          });
         }
       });
     }
@@ -144,7 +147,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         return { ...current, ...next };
       }, {});
       if (!resDataObject.error) {
-        this.snackBarService.openSnackBar('License consumption successfully edited!', '');
+        this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
         this.dialogRef.close(res);
       } else
         this.snackBarService.openSnackBar(resDataObject.error, 'Error editing license consumption!');
@@ -189,7 +192,6 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    * fetch data
    */
   fetchData(): void {
-    this.isDataLoading = true;
     const subaccountId = this.currentCustomer.subaccountId;
     forkJoin([
       this.deviceService.getDevicesList(subaccountId),
