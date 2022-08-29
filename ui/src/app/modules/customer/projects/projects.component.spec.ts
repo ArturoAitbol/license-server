@@ -77,6 +77,7 @@ const beforeEachFunction = () => {
     fixture = TestBed.createComponent(ProjectsComponent);
     projectsComponentTestInstance = fixture.componentInstance;
     projectsComponentTestInstance.ngOnInit();
+    projectsComponentTestInstance.currentCustomer.testCustomer = false
     spyOn(console, 'log').and.callThrough();
     spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer' ).and.callThrough();
     spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
