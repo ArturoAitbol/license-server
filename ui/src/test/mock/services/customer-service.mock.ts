@@ -368,11 +368,30 @@ const REAL_CUSTOMER = {
     status:"Active"
 }
 
+const EMAIL_CUSTOMER = {
+    customerType:"MSP",
+    testCustomer:true,
+    name:"Test Customer",
+    id:"0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848",
+    subaccountName:"Default",
+    subaccountId:"ac7a78c2-d0b2-4c81-9538-321562d426c7",
+    adminEmails:["email@email.com"],
+    status:"Active"
+}
+
+const CUSTOMER_ADMIN_EMAIL ={
+    customerAdminEmail: "test@email.com", 
+    customerId: "0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848"
+}
+const MOCK_ADMINEMAILS_CREATED= {};
 export const CustomerServiceMock = {
     customerListValue: CUSTOMER_LIST,
     selectedCustomer: SELECTED_CUSTOMER,
     realCustomer:REAL_CUSTOMER,
     updatedMockCustomer: MOCK_UPDATED_CUSTOMER,
+    emailCustomer: EMAIL_CUSTOMER,
+    customerAdminEmail: CUSTOMER_ADMIN_EMAIL,
+    mockNewAdminEmails:MOCK_ADMINEMAILS_CREATED,
     getCustomerList: () => {
         return new Observable((observer) => {
             observer.next(
@@ -422,6 +441,18 @@ export const CustomerServiceMock = {
     },
     getSelectedCustomer: () => {
         return SELECTED_CUSTOMER;
+    },
+    getEmailList: () => {
+        return EMAIL_CUSTOMER.adminEmails;
+    },
+    createAdminEmail: (data) =>{
+        return new Observable((observer) => {
+            observer.next(MOCK_ADMINEMAILS_CREATED);
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
     }
 }
 

@@ -14,8 +14,8 @@
                         <div class="col-10">
                             <label class = "col-form-label" class = "email"><b>Email: </b>{{email}}</label>
                         </div>
-                        <div class="col-2" id="clearButton">
-                            <button *lcCheckAccessFor="'deleteAdminEmail'" mat-icon-button color="primary" title="Delete email"
+                        <div class="col-2">
+                            <button id="clearButton" *lcCheckAccessFor="'deleteAdminEmail'" mat-icon-button color="primary" title="Delete email"
                                         (click)="deleteExistingEmail(emailIndex)">
                                     <mat-icon>clear</mat-icon>
                             </button>
@@ -46,8 +46,8 @@
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
-            <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
-            <button *lcCheckAccessFor="'addAdminEmail'" mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
+            <button id="cancel-button" mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
+            <button id="submit-button" *lcCheckAccessFor="'addAdminEmail'" mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>
