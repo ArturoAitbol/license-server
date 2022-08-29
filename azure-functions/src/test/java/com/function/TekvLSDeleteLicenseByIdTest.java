@@ -33,7 +33,7 @@ class TekvLSDeleteLicenseByIdTest extends TekvLSTest {
         //Given
         String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
-                "'packageType': 'Basic'," +
+                "'subscriptionType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
                 "'description': 'CICDTest'," +
                 "'tokensPurchased': '55'," +

@@ -273,7 +273,7 @@ describe('.rowAction()', () => {
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_LICENSES;
         selectedTestData.selectedRow.subaccountId = undefined;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Packages view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -430,7 +430,7 @@ describe('.columnAction()', ()  => {
 
         selectedTestData.columnName = 'Subscription Status';
         dashboardComponentTestInstance.columnAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Packages view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
 
         selectedTestData.selectedRow.status = 'not undefined';
         dashboardComponentTestInstance.columnAction(selectedTestData);

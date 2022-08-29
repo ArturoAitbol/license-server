@@ -5,7 +5,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
-import ui.pages.packages.Packages;
+import ui.pages.subscriptions.Subscriptions;
 
 public class ActionMenu extends AbstractPageObject {
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
@@ -17,8 +17,8 @@ public class ActionMenu extends AbstractPageObject {
     WebElement closeButton;
     @FindBy(xpath = "//button[@id='View Projects List']")
     WebElement projectsButton;
-    @FindBy(xpath = "//button[@id='View tekVizion 360 Packages']")
-    WebElement packagesButton;
+    @FindBy(xpath = "//button[@id='View tekVizion 360 Subscriptions']")
+    WebElement subscriptionsButton;
     @FindBy(xpath = "//button[@id='View tekToken Consumption']")
     WebElement consumptionsButton;
 
@@ -56,10 +56,10 @@ public class ActionMenu extends AbstractPageObject {
         return new Projects();
     }
 
-    public Packages goToPackages(){
+    public Subscriptions goToSubscriptions(){
         JavascriptExecutor executor = (JavascriptExecutor)this.driver;
-        executor.executeScript("arguments[0].click();", this.packagesButton);
-        return new Packages();
+        executor.executeScript("arguments[0].click();", this.subscriptionsButton);
+        return new Subscriptions();
     }
 
     public void viewItem(String item) {

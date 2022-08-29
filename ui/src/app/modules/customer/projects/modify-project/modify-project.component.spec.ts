@@ -99,7 +99,7 @@ describe('UI verification test for modify component', () => {
         expect(startDateLabel.textContent).toBe('Start Date');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
-        expect(projectLicenseLable.textContent).toBe('tekVizion 360 Package');
+        expect(projectLicenseLable.textContent).toBe('tekVizion 360 Subscription');
         expect(projectStatusLable.textContent).toBe('Status');
         expect(closeButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
@@ -174,8 +174,8 @@ describe('Dialog calls and interactions', () => {
         fixture.detectChanges();
 
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error requesting packages!');
-        expect(console.error).toHaveBeenCalledWith('error fetching packages', err);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error requesting subscriptions!');
+        expect(console.error).toHaveBeenCalledWith('error fetching subscriptions', err);
         expect(modifyPorjectComponentTestInstance.isDataLoading).toBeFalse();
     });
 }); 
@@ -194,7 +194,7 @@ describe('obtaining the data of licenses in the ngOnInit()', () => {
                 tokensPurchased: 150,
                 startDate: '2022-08-01',
                 renewalDate: '2022-09-30',
-                packageType: ''
+                subscriptionType: ''
             }]
         };
         spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(res));

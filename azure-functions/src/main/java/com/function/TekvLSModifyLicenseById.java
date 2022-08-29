@@ -126,7 +126,7 @@ public class TekvLSModifyLicenseById
 	private enum OPTIONAL_PARAMS {
 		SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
 		START_DATE("startDate", "start_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
-		PACKAGE_TYPE("packageType", "package_type", "package_type_enum"),
+		PACKAGE_TYPE("subscriptionType", "package_type", "package_type_enum"),
 		RENEWAL_DATE("renewalDate", "renewal_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
 		TOKENS("tokensPurchased", "tokens", QueryBuilder.DATA_TYPE.INTEGER),
 		DEVICE_ACCESS_LIMIT("deviceLimit", "device_access_limit", QueryBuilder.DATA_TYPE.INTEGER),

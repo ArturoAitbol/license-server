@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 id="dialog-title" mat-dialig-title>Edit tekVizion 360 Package</h1>
+    <h1 id="dialog-title" mat-dialig-title>Edit tekVizion 360 Subscription</h1>
     <form [formGroup]="updateCustomerForm" (ngSubmit)="submit()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
@@ -31,9 +31,9 @@
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label>Package Type</mat-label>
-                        <mat-select required formControlName="packageType" (valueChange)="onChangeType($event)">
-                            <mat-option *ngFor="let bundle of packageTypes" [value]="bundle.bundleName" title="{{bundle.bundleName}}">
+                        <mat-label>Subscription Type</mat-label>
+                        <mat-select required formControlName="subscriptionType" (valueChange)="onChangeType($event)">
+                            <mat-option *ngFor="let bundle of subscriptionTypes" [value]="bundle.bundleName" title="{{bundle.bundleName}}">
                                 {{bundle.bundleName}}
                             </mat-option>
                         </mat-select>

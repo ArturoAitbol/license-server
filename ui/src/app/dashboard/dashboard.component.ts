@@ -35,7 +35,7 @@ export class DashboardComponent implements OnInit {
     // flag
     isLoadingResults = true;
     isRequestCompleted = false;
-    readonly VIEW_LICENSES: string = 'View tekVizion 360 Packages';
+    readonly VIEW_LICENSES: string = 'View tekVizion 360 Subscriptions';
     readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
@@ -332,7 +332,7 @@ export class DashboardComponent implements OnInit {
                 if (object.selectedRow.subaccountId !== undefined)
                     this.openLicenseDetails(object.selectedRow);
                 else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Packages view', '');
+                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
                 break;
             case this.VIEW_CONSUMPTION:
                 if (object.selectedRow.subaccountId !== undefined)
@@ -377,7 +377,7 @@ export class DashboardComponent implements OnInit {
                 if (object.selectedRow.status !== undefined)
                     this.openLicenseDetails(object.selectedRow);
                 else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Packages view', '');
+                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
                 break;
         }
     }

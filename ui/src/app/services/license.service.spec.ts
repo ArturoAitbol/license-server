@@ -64,7 +64,7 @@ describe('License service http requests test', () => {
             tokensPurchased: 0,
             startDate: "",
             renewalDate: "",
-            packageType: ""
+            subscriptionType: ""
         };
 
         const expectedLicense: License = LicenseServiceMock.updatedMockLicenseD;
@@ -103,7 +103,7 @@ describe('License service http requests test', () => {
             tokensPurchased: 120,
             startDate: "",
             renewalDate: "",
-            packageType: ""
+            subscriptionType: ""
         };
 
         const expectedLicense: License = LicenseServiceMock.mockNewLicense;

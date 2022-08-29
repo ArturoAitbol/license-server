@@ -20,7 +20,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
   addLicenseForm = this.formBuilder.group({
     startDate: ['', Validators.required],
     description: ['', Validators.required],
-    packageType: ['', Validators.required],
+    subscriptionType: ['', Validators.required],
     tokensPurchased: ['', Validators.required],
     deviceLimit: ['', Validators.required],
     renewalDate: ['', Validators.required]
@@ -58,18 +58,18 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
       subaccountId: this.currentCustomer.subaccountId,
       startDate: this.addLicenseForm.value.startDate,
       description: this.addLicenseForm.value.description,
-      packageType: this.addLicenseForm.value.packageType,
+      subscriptionType: this.addLicenseForm.value.subscriptionType,
       tokensPurchased: this.addLicenseForm.get("tokensPurchased").value,
       deviceLimit: this.addLicenseForm.get("deviceLimit").value,
       renewalDate: this.addLicenseForm.value.renewalDate
     };
     this.licenseService.createLicense(licenseObject).subscribe((res: any) => {
       if (!res.error) {
-        this.snackBarService.openSnackBar('Package added successfully!', '');
+        this.snackBarService.openSnackBar('Subscription added successfully!', '');
         this.isDataLoading = false;
         this.dialogRef.close(res);
       } else {
-        this.snackBarService.openSnackBar(res.error, 'Error adding package!');
+        this.snackBarService.openSnackBar(res.error, 'Error adding subscription!');
         this.isDataLoading = false;
       }
     });

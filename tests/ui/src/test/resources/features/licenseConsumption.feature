@@ -18,21 +18,21 @@ Feature: LicensesConsumption
     Then I see the customer "licenseUsageCustomerTest" in the table
 
   @addLicenseForConsumption
-  Scenario: Add a package for the tekToken Consumption
+  Scenario: Add a subscription for the tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
-    And I go to the Package Consumption view of "licenseUsageCustomerTest"
-    And I open the Add Package form from Consumption View
-    When I create a package with the following data
+    And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
+    And I open the Add Subscription form from Consumption View
+    When I create a subscription with the following data
       | startDate     | 8/20/2022 |
       | renewalDate   | 2/20/2023 |
-      | packageType   | Basic     |
+      | subscriptionType   | Basic     |
       | description   | License1  |
-    Then I should see the message "Package added successfully!"
+    Then I should see the message "Subscription added successfully!"
 
   @addLicenseConsumption
   Scenario: Add a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
-    And I go to the Package Consumption view of "licenseUsageCustomerTest"
+    And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     And I open the Add tekToken Consumption form
     And I open the Add Project form from Consumption form
     And I create a project with the following data
@@ -60,7 +60,7 @@ Feature: LicensesConsumption
   @editLicenseConsumption
   Scenario: Edit a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
-    And I go to the Package Consumption view of "licenseUsageCustomerTest"
+    And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     When I edit the consumption of the project "projectTest" with the following data
       | deviceVendor        | Cisco         |
       | deviceModel         | Contact Center Express (UCCX)         |
@@ -78,7 +78,7 @@ Feature: LicensesConsumption
   @deleteLicenseConsumption
   Scenario: Delete a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
-    And I go to the Package Consumption view of "licenseUsageCustomerTest"
+    And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     When I delete the consumption of the project "projectTest"
 
   @deleteCustomerProject

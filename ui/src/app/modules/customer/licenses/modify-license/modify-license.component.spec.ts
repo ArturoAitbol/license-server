@@ -25,7 +25,7 @@ const MatDialogRefMock = {
 const data = {
     deviceLimit: "5000",
     id: "1871a604-4e88-4999-bf20-4403468dfc68",
-    packageType: "Basic",
+    subscriptionType: "Basic",
     description: "Description",
     renewalDate: "2022-06-10",
     startDate: "2022-06-01",
@@ -79,13 +79,13 @@ describe('UI and component verification tests',()=>{
         const submitButton: HTMLElement = fixture.nativeElement.querySelector('#submit-button');
         const labels: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('label'));
 
-        expect(h1.textContent).toBe('Edit tekVizion 360 Package');
+        expect(h1.textContent).toBe('Edit tekVizion 360 Subscription');
         expect(cancelButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
         expect(labels.find(label => label.textContent.includes("Start Date"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Renewal Date"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Description"))).not.toBeUndefined();
-        expect(labels.find(label => label.textContent.includes("Package Type"))).not.toBeUndefined();
+        expect(labels.find(label => label.textContent.includes("Subscription Type"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Device Access tekTokens"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("tekTokens"))).not.toBeUndefined();
 
@@ -99,7 +99,7 @@ describe('FormGroup verification tests',()=>{
     it('should create a formGroup with the necesary controls',()=>{
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('startDate')).toBeTrue();
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('description')).toBeTrue();
-        expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('packageType')).toBeTrue();
+        expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('subscriptionType')).toBeTrue();
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('tokensPurchased')).toBeTrue();
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('deviceLimit')).toBeTrue();
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('renewalDate')).toBeTrue();
@@ -110,7 +110,7 @@ describe('FormGroup verification tests',()=>{
         updateCustomerForm.setValue({
             startDate:'',
             description:'',
-            packageType:'',
+            subscriptionType:'',
             tokensPurchased:'',
             deviceLimit:'',
             renewalDate:''
@@ -118,7 +118,7 @@ describe('FormGroup verification tests',()=>{
 
         expect(updateCustomerForm.get('startDate').valid).toBeFalse();
         expect(updateCustomerForm.get('description').valid).toBeFalse();
-        expect(updateCustomerForm.get('packageType').valid).toBeFalse();
+        expect(updateCustomerForm.get('subscriptionType').valid).toBeFalse();
         expect(updateCustomerForm.get('tokensPurchased').valid).toBeFalse();
         expect(updateCustomerForm.get('deviceLimit').valid).toBeFalse();
         expect(updateCustomerForm.get('renewalDate').valid).toBeFalse();
@@ -143,11 +143,11 @@ describe('Data collection and parsing tests',()=>{
 
     beforeEach(beforeEachFunction);
 
-    it('should make a call to bundles list (packageTypes)',()=>{
+    it('should make a call to bundles list (subscriptionTypes)',()=>{
         spyOn(BundleServiceMock,'getBundleList').and.callThrough();
         fixture.detectChanges();
         expect(BundleServiceMock.getBundleList).toHaveBeenCalled();
-        expect(modifyLicenseComponentTestInstance.packageTypes).toEqual(BundleServiceMock.bundleList.bundles);
+        expect(modifyLicenseComponentTestInstance.subscriptionTypes).toEqual(BundleServiceMock.bundleList.bundles);
     });
 
 });
@@ -161,7 +161,7 @@ describe('Calls and interactions', ()=>{
         expect(modifyLicenseComponentTestInstance.disableSumbitBtn()).toBeTrue();
 
         const updateCustomerForm: FormGroup = modifyLicenseComponentTestInstance.updateCustomerForm; 
-        updateCustomerForm.get('packageType').setValue('Small');
+        updateCustomerForm.get('subscriptionType').setValue('Small');
         expect(modifyLicenseComponentTestInstance.disableSumbitBtn()).toBeFalse();
     });
 
@@ -181,7 +181,7 @@ describe('Calls and interactions', ()=>{
 
         expect(LicenseServiceMock.updateLicenseDetails).toHaveBeenCalled();
         expect(modifyLicenseComponentTestInstance.dialogRef.close).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Package edited successfully!', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subscription edited successfully!', '');
     });
 
     it('should update a license after calling submit() - New Status: Active',()=>{
@@ -196,7 +196,7 @@ describe('Calls and interactions', ()=>{
 
         expect(LicenseServiceMock.updateLicenseDetails).toHaveBeenCalled();
         expect(modifyLicenseComponentTestInstance.dialogRef.close).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Package edited successfully!', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subscription edited successfully!', '');
     });
 
     it('should show an error when updating license failed after calling submit()',()=>{
@@ -207,7 +207,7 @@ describe('Calls and interactions', ()=>{
         modifyLicenseComponentTestInstance.submit();
 
         expect(LicenseServiceMock.updateLicenseDetails).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error message', 'Error updating package!');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error message', 'Error updating subscription!');
 
     });
 
@@ -223,7 +223,7 @@ describe('Calls and interactions', ()=>{
         expect(LicenseServiceMock.updateLicenseDetails).toHaveBeenCalled();
         expect(modifyLicenseComponentTestInstance.isDataLoading).toBeFalse();
         expect(modifyLicenseComponentTestInstance.dialogRef.close).toHaveBeenCalled();
-        expect(console.error).toHaveBeenCalledWith('error while updating package information row', error);
+        expect(console.error).toHaveBeenCalledWith('error while updating subscription information row', error);
     });
 
     it('should set the minimun renewalData value and the maximun startDate value so startDate is always before renewalDate',()=>{
@@ -234,29 +234,29 @@ describe('Calls and interactions', ()=>{
         expect(modifyLicenseComponentTestInstance.startDateMax).toEqual(new Date('2022-01-05 00:00:00'));
     });
 
-    it('should modify tokensPurchased and deviceLimit form controls according to the packageType when calling onChangeType()',()=>{
-        modifyLicenseComponentTestInstance.packageTypes = BundleServiceMock.bundleList.bundles;
+    it('should modify tokensPurchased and deviceLimit form controls according to the subscriptionType when calling onChangeType()',()=>{
+        modifyLicenseComponentTestInstance.subscriptionTypes = BundleServiceMock.bundleList.bundles;
         const updateCustomerForm = modifyLicenseComponentTestInstance.updateCustomerForm;
-        let packageType : {id:string,bundleName:string,defaultTokens?:string,defaultDeviceAccessTokens?:string};
+        let subscriptionType : {id:string,bundleName:string,defaultTokens?:string,defaultDeviceAccessTokens?:string};
         
-        packageType = BundleServiceMock.customBundle;
-        modifyLicenseComponentTestInstance.onChangeType(packageType.bundleName);
+        subscriptionType = BundleServiceMock.customBundle;
+        modifyLicenseComponentTestInstance.onChangeType(subscriptionType.bundleName);
         expect(updateCustomerForm.get('tokensPurchased').enabled).toBeTrue();
         expect(updateCustomerForm.get('deviceLimit').enabled).toBeTrue();
 
-        packageType = BundleServiceMock.addonBundle;
-        modifyLicenseComponentTestInstance.onChangeType(packageType.bundleName);
+        subscriptionType = BundleServiceMock.addonBundle;
+        modifyLicenseComponentTestInstance.onChangeType(subscriptionType.bundleName);
         expect(updateCustomerForm.get('tokensPurchased').enabled).toBeTrue();
         expect(updateCustomerForm.get('deviceLimit').enabled).toBeTrue();
-        expect(updateCustomerForm.get('tokensPurchased').value).toBe(packageType.defaultTokens);
-        expect(updateCustomerForm.get('deviceLimit').value).toBe(packageType.defaultDeviceAccessTokens);
+        expect(updateCustomerForm.get('tokensPurchased').value).toBe(subscriptionType.defaultTokens);
+        expect(updateCustomerForm.get('deviceLimit').value).toBe(subscriptionType.defaultDeviceAccessTokens);
         
-        packageType = BundleServiceMock.basicBundle;
-        modifyLicenseComponentTestInstance.onChangeType(packageType.bundleName);
+        subscriptionType = BundleServiceMock.basicBundle;
+        modifyLicenseComponentTestInstance.onChangeType(subscriptionType.bundleName);
         expect(updateCustomerForm.get('tokensPurchased').disabled).toBeTrue();
         expect(updateCustomerForm.get('deviceLimit').disabled).toBeTrue();
-        expect(updateCustomerForm.get('tokensPurchased').value).toBe(packageType.defaultTokens);
-        expect(updateCustomerForm.get('deviceLimit').value).toBe(packageType.defaultDeviceAccessTokens);
+        expect(updateCustomerForm.get('tokensPurchased').value).toBe(subscriptionType.defaultTokens);
+        expect(updateCustomerForm.get('deviceLimit').value).toBe(subscriptionType.defaultDeviceAccessTokens);
     });
 
 });

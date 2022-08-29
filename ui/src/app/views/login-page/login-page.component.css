@@ -7,9 +7,10 @@
 
 .rsdSignIn {
   text-align: center;
-  color: #5e6977;
+  /* color: #5e6977; */
   font-family: "Open Sans", Semibold;
-  font-size: 20px;
+  font-size: 30px;
+  font-weight: bolder;
 }
 
 .rsdRememberMe {

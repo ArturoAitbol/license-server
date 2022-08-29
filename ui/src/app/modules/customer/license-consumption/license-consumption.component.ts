@@ -499,14 +499,14 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  setMonthAndYear(newDateSelection: Moment, datepicker: MatDateRangePicker<any>) {
+  setMonthAndYear(newDateSelection: Moment, datepicker?: MatDateRangePicker<any>) {
     const startMonth = newDateSelection.startOf('month');
     const endMonth = newDateSelection.clone().add(1, 'month').startOf('month');
     this.range.patchValue({
       start: startMonth < this.startDate ? moment(this.startDate) : startMonth,
       end: endMonth > this.endDate ? moment(this.endDate) : endMonth
     });
-    datepicker.close();
+    if (datepicker) datepicker.close();
     this.fetchAggregatedData();
   }
 

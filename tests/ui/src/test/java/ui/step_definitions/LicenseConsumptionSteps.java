@@ -24,8 +24,8 @@ public class LicenseConsumptionSteps {
         this.customers = customers;
     }
 
-    @And("I go to the Package Consumption view of {string}")
-    public void iGoToThePackageConsumptionViewOf(String customerName) {
+    @And("I go to the tekToken Consumption view of {string}")
+    public void iGoToThetekTokenConsumptionViewOf(String customerName) {
         CustomerRow customerRow = this.customers.getCustomer(customerName);
         ActionMenu actionMenu = customerRow.openActionMenu();
         this.consumptions = actionMenu.goToConsumption();

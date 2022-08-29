@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
+import moment from 'moment';
 import { Constants } from 'src/app/helpers/constants';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { Project } from 'src/app/model/project.model';
@@ -178,7 +179,7 @@ export class ProjectsComponent implements OnInit {
       .subscribe((confirmed) => {
         const projectToUpdate = {
           id: currentProjectData.id,
-          closeDate: new Date().toLocaleString(),
+          closeDate: moment.utc().format("YYYY-MM-DD"),
           status: "Closed"
         };
         if (confirmed) {

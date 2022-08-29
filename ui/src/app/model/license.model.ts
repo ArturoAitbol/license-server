@@ -5,7 +5,7 @@ export interface License {
     tokensPurchased: number;
     startDate: string;
     renewalDate: string;
-    packageType: string;
+    subscriptionType: string;
     description: string;
     status: string;
 }

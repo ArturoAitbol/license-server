@@ -1,19 +1,19 @@
-package ui.pages.packages;
+package ui.pages.subscriptions;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 
-public class PackageForm extends AbstractPageObject {
+public class SubscriptionForm extends AbstractPageObject {
     @FindBy(css = "[formcontrolname='startDate']")
     WebElement startDate;
     @FindBy(css = "[formcontrolname='renewalDate']")
     WebElement renewalDate;
     @FindBy(css = "[formcontrolname='description']")
     WebElement description;
-    @FindBy(css = "[formcontrolname='packageType']")
-    WebElement packageType;
+    @FindBy(css = "[formcontrolname='subscriptionType']")
+    WebElement subscriptionType;
     @FindBy(css = "[formcontrolname='deviceLimit']")
     WebElement deviceLimit;
     @FindBy(css = "[formcontrolname='tokensPurchased']")
@@ -21,37 +21,37 @@ public class PackageForm extends AbstractPageObject {
     @FindBy(css = "button#submit-button")
     WebElement submitButton;
 
-    public Packages createPackage(String startDate, String renewalDate, String type, String description, String deviceLimit,
+    public Subscriptions createSubscription(String startDate, String renewalDate, String type, String description, String deviceLimit,
                                   String tokensPurchased) {
         this.action.sendText(this.startDate, startDate);
         this.action.sendText(this.renewalDate, renewalDate);
         this.action.sendText(this.description, description);
         By optionType = By.cssSelector(String.format("mat-option[title='%s']", type));
-        this.action.selectOption(this.packageType, optionType);
+        this.action.selectOption(this.subscriptionType, optionType);
         if (type.equalsIgnoreCase("AddOn") || type.equalsIgnoreCase("Custom")) {
             this.action.sendText(this.deviceLimit, deviceLimit);
             this.action.sendText(this.tokensPurchased, tokensPurchased);
         }
         this.action.click(this.submitButton);
-        return new Packages();
+        return new Subscriptions();
     }
 
-    public Packages editPackage(String startDate, String renewalDate, String packageType, String description, String deviceLimit, String tokensPurchased) {
+    public Subscriptions editSubscription(String startDate, String renewalDate, String subscriptionType, String description, String deviceLimit, String tokensPurchased) {
         if (!startDate.equals("none"))
             this.action.replaceText(this.startDate, startDate);
         if (!renewalDate.equals("none"))
             this.action.replaceText(this.renewalDate, renewalDate);
         if (!description.equals("none"))
             this.action.replaceText(this.description, description);
-        if (!packageType.equals("none")) {
-            By typeSelector = By.cssSelector(String.format("mat-option[title='%s']", packageType));
-            this.action.selectOption(this.packageType, typeSelector);
-            if (packageType.equals("AddOn") || packageType.equals("Custom")) {
+        if (!subscriptionType.equals("none")) {
+            By typeSelector = By.cssSelector(String.format("mat-option[title='%s']", subscriptionType));
+            this.action.selectOption(this.subscriptionType, typeSelector);
+            if (subscriptionType.equals("AddOn") || subscriptionType.equals("Custom")) {
                 this.action.replaceText(this.deviceLimit, deviceLimit);
                 this.action.replaceText(this.tokensPurchased, tokensPurchased);
             }
         }
         this.action.click(this.submitButton);
-        return new Packages();
+        return new Subscriptions();
     }
 }
