@@ -39,8 +39,15 @@ public class ProjectSteps {
         this.projectForm = this.projects.openProjectForm();
     }
 
+    @And("I open the Add Project form from Consumption form")
+    public void iOpenTheAddProjectFormFromConsumptionForm() {
+        this.projects = new Projects();
+        this.projectForm = this.projects.openProjectForm();
+    }
+
     @When("I create a project with the following data")
-    public void iCreateAProjectWithTheFollowingData(DataTable datatable) {
+    public void iCreateAProjectWithTheFollowingData(DataTable datatable) throws InterruptedException {
+        Thread.sleep(2000);
         Map<String, String> projectTable = datatable.asMap(String.class, String.class);
         this.startDate = projectTable.get("startDate");
         this.name = projectTable.get("name");
@@ -61,10 +68,11 @@ public class ProjectSteps {
 
 
     @When("I edit the project {string} with the following data")
-    public void iEditTheProjectWithTheFollowingData(String projectName, DataTable datatable) {
+    public void iEditTheProjectWithTheFollowingData(String projectName, DataTable datatable) throws InterruptedException {
         this.projectRow = new ProjectRow(projectName);
         ActionMenu actionMenu = this.projectRow.openActionMenu();
         actionMenu.edit();
+        Thread.sleep(2000);
         this.projectForm = new ProjectForm();
         Map<String, String> projectTable = datatable.asMap(String.class, String.class);
         this.startDate = projectTable.getOrDefault("startDate", "none");

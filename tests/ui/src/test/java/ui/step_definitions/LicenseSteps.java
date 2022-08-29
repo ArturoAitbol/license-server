@@ -52,8 +52,15 @@ public class LicenseSteps {
         this.packageForm = this.packages.openPackageForm();
     }
 
+    @Given("I open the Add Package form from Consumption View")
+    public void iOpenTheAddPackageFormFromConsumptionView() throws InterruptedException {
+        this.packages = new Packages();
+        this.packageForm = this.packages.openPackageForm();
+    }
+
     @When("I create a package with the following data")
-    public void iCreateAPackageWithTheFollowingData(DataTable packageTable) {
+    public void iCreateAPackageWithTheFollowingData(DataTable packageTable) throws InterruptedException {
+        Thread.sleep(2000);
         Map<String, String> license = packageTable.asMap(String.class, String.class);
         this.startDate = license.get("startDate");
         this.renewalDate = license.get("renewalDate");
@@ -62,6 +69,8 @@ public class LicenseSteps {
         this.deviceLimit = license.getOrDefault("deviceAccessTekTokens", null);
         this.tokensPurchased = license.getOrDefault("tekTokens", null);
         this.packages = this.packageForm.createPackage(this.startDate, this.renewalDate, this.packageType, this.description, this.deviceLimit, this.tokensPurchased);
+        this.actualMessage = this.packages.getMessage();
+        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @Then("I see the {string} package in the table")
@@ -81,10 +90,11 @@ public class LicenseSteps {
     }
 
     @And("I edit the package {string} with the following data")
-    public void iEditThePackageWithTheFollowingData(String packageDescription, DataTable dataTable) {
+    public void iEditThePackageWithTheFollowingData(String packageDescription, DataTable dataTable) throws InterruptedException {
         this.packageRow = new PackageRow(packageDescription);
         ActionMenu actionMenu = this.packageRow.openActionMenu();
         actionMenu.edit();
+        Thread.sleep(2000);
         this.packageForm = new PackageForm();
         Map<String, String> license = dataTable.asMap(String.class, String.class);
         this.startDate = license.getOrDefault("startDate", "none");

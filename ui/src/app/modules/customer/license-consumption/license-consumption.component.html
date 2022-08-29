@@ -5,11 +5,24 @@
                 <button id="back-button" mat-stroked-button (click)="goToDashboard()">Back</button>
             </div>
             <div class="col">
-                <h1 id="page-title">{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
+                <div class="page-title">
+                    <h1 id="page-title">{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
+                    <!-- license filter -->
+                    <form [formGroup]="licenseForm">
+                        <mat-form-field id="license-period-form" appearance="outline" class="full-width example-form-field">
+                            <mat-label><b>tekVizion 360 Package</b></mat-label>
+                            <mat-select class="bold-field" formControlName="selectedLicense" (valueChange)="onChangeLicense($event)">
+                                <mat-option *ngFor="let license of licensesList" [value]="license.id">
+                                    {{license.description}} ({{license.startDate}} - {{license.renewalDate}})
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </form>
+                </div>
             </div>
             <div class="col">
                 <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-new-license" (change)="onChangeToggle($event)">
+                    <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-license-button" (change)="onChangeToggle($event)">
                         Add tekVizion 360 Package
                     </mat-button-toggle>
                     <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
@@ -19,17 +32,6 @@
             </div>
         </div>
     </main>
-    <!-- license summary section -->
-    <form [formGroup]="licenseForm">
-        <mat-form-field id="license-period-form" appearance="outline" class="example-form-field">
-            <mat-label>License Period</mat-label>
-            <mat-select formControlName="licenseId" (valueChange)="onChangeLicense($event)">
-                <mat-option *ngFor="let item of licensesList" [value]="item.id">
-                    {{item.startDate}} - {{item.renewalDate}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </form>
     <h2 id="first-section-title">tekVizion 360 Package Consumption Summary</h2>
     <section>
         <div class="row">
@@ -94,8 +96,8 @@
                     <mat-label>Project</mat-label>
                     <mat-select [(value)]="selectedProject" (valueChange)="getProject($event)">
                         <mat-option value="">All</mat-option>
-                        <mat-option *ngFor="let item of projects" [value]="item.id">
-                            {{item.name}}
+                        <mat-option *ngFor="let project of projects" [value]="project.id">
+                            {{project.projectName}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>

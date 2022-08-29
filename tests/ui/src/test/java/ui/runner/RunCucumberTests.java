@@ -13,7 +13,8 @@ import org.junit.runner.RunWith;
         "rerun:reports/rerun/rerun.txt"
         },
         features = "src/test/resources/features/",
-        glue = "ui")
+        glue = "ui",
+        tags = "not @ignoreTest") //use this tag when you want to ignore tests by default
 public class RunCucumberTests {
 
     @AfterClass

@@ -69,6 +69,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 		String view = request.getQueryParameters().getOrDefault("view", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
+		String licenseId = request.getQueryParameters().getOrDefault("licenseId", "");
 
 		if (subaccountId.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -77,7 +78,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 		}
 
 		ArrayList<Condition<String, String>> commonConditions = new ArrayList<>();
-		commonConditions.add(new Condition<>("l.subaccount_id = ?::uuid", subaccountId));
+		commonConditions.add(new Condition<>("lc.subaccount_id = ?::uuid", subaccountId));
 		SelectQueryBuilder verificationQueryBuilder = null;
 
 		String whereStatement="";
@@ -87,26 +88,31 @@ public class TekvLSGetAllLicenseUsageDetails {
 			case DISTRIBUTOR_FULL_ADMIN:
 				whereStatement = "s.customer_id = c.id AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
 						"WHERE c.id = ca.customer_id and admin_email = ?)";
-				commonConditions.add(new Condition<>("l.subaccount_id IN (SELECT s.id from subaccount s, customer c WHERE " + whereStatement + ")", email));
+				commonConditions.add(new Condition<>("lc.subaccount_id IN (SELECT s.id from subaccount s, customer c WHERE " + whereStatement + ")", email));
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id from subaccount s, customer c");
 				verificationQueryBuilder.appendCustomCondition(whereStatement, email);
 				break;
 			case CUSTOMER_FULL_ADMIN:
 				whereStatement = "s.customer_id = ca.customer_id AND admin_email = ?";
-				commonConditions.add(new Condition<>("l.subaccount_id IN (SELECT s.id FROM subaccount s, customer_admin ca WHERE " + whereStatement + ")", email));
+				commonConditions.add(new Condition<>("lc.subaccount_id IN (SELECT s.id FROM subaccount s, customer_admin ca WHERE " + whereStatement + ")", email));
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer_admin ca");
 				verificationQueryBuilder.appendCustomCondition(whereStatement, email);
 				break;
 			case SUBACCOUNT_ADMIN:
-				commonConditions.add(new Condition<>("l.subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email));
+				commonConditions.add(new Condition<>("lc.subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email));
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
 				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
 				break;
 		}
+		
+		if (!licenseId.isEmpty()) {
+			commonConditions.add(new Condition<>("project_id IN (SELECT lc.project_id FROM license_consumption lc, project p " + 
+					"WHERE lc.project_id = p.id and p.license_id = ?::uuid)", licenseId));
+		}
 
 		if (!startDate.isEmpty() && !endDate.isEmpty()) {
-			commonConditions.add(new Condition<>("l.consumption_date >= ?::timestamp", startDate));
-			commonConditions.add(new Condition<>("l.consumption_date <= ?::timestamp", endDate));
+			commonConditions.add(new Condition<>("lc.consumption_date >= ?::timestamp", startDate));
+			commonConditions.add(new Condition<>("lc.consumption_date <= ?::timestamp", endDate));
 		}
 
 		if (verificationQueryBuilder != null) {
@@ -142,8 +148,8 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// Get number of connected devices
 
 					//Initialize query builders
-					SelectQueryBuilder connectedDevicesQueryBuilder = new SelectQueryBuilder("SELECT COUNT(distinct device_id) FROM license_consumption l");
-					SelectQueryBuilder tokensConsumedQueryBuilder = new SelectQueryBuilder("SELECT SUM(tokens_consumed) FROM license_consumption l");
+					SelectQueryBuilder connectedDevicesQueryBuilder = new SelectQueryBuilder("SELECT COUNT(distinct device_id) FROM license_consumption lc");
+					SelectQueryBuilder tokensConsumedQueryBuilder = new SelectQueryBuilder("SELECT SUM(tokens_consumed) FROM license_consumption lc");
 
 					//Append common conditions to both builders
 					for (Condition<String, String> commonCondition: commonConditions) {
@@ -151,7 +157,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 						tokensConsumedQueryBuilder.appendCustomCondition(commonCondition.sql, commonCondition.value);
 					}
 
-					connectedDevicesQueryBuilder.appendEqualsCondition("l.usage_type", USAGE_TYPE_ENUM.AUTOMATION_PLATFORM.getValue(), "usage_type_enum");
+					connectedDevicesQueryBuilder.appendEqualsCondition("lc.usage_type", USAGE_TYPE_ENUM.AUTOMATION_PLATFORM.getValue(), "usage_type_enum");
 
 
 					try (PreparedStatement stmt = connectedDevicesQueryBuilder.build(connection)) {
@@ -175,7 +181,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					JSONArray array = new JSONArray();
 
 					//Initialize query builder
-					SelectQueryBuilder queryBuilder = new SelectQueryBuilder("select d.id,d.vendor,d.product,d.version from device d, license_consumption l where d.id=l.device_id", true);
+					SelectQueryBuilder queryBuilder = new SelectQueryBuilder("select d.id,d.vendor,d.product,d.version from device d, license_consumption lc where d.id=lc.device_id", true);
 
 					// Append common conditions to builder
 					for (Condition<String, String> commonCondition: commonConditions) {
@@ -206,27 +212,27 @@ public class TekvLSGetAllLicenseUsageDetails {
 					String limit = request.getQueryParameters().getOrDefault("limit", LIMIT);
 					String offset = request.getQueryParameters().getOrDefault("offset", OFFSET);
 					if (!project.isEmpty()) {
-						commonConditions.add(new Condition<>("l.project_id= ?::uuid", project));
+						commonConditions.add(new Condition<>("lc.project_id= ?::uuid", project));
 					}
 					if (!type.isEmpty()) {
-						commonConditions.add(new Condition<>("l.usage_type = ?::usage_type_enum", type));
+						commonConditions.add(new Condition<>("lc.usage_type = ?::usage_type_enum", type));
 					}
 					// This is the default case (aggregated data)
 					JSONArray array = new JSONArray();
 
 					// Initialize query builders
-					SelectQueryBuilder allQueryBuilder = new SelectQueryBuilder("SELECT l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id," +
+					SelectQueryBuilder allQueryBuilder = new SelectQueryBuilder("SELECT lc.id, lc.consumption_date, lc.usage_type, lc.tokens_consumed, lc.device_id," +
 							" CONCAT('Week ',DATE_PART('week',consumption_date+'1 day'::interval)) AS consumption," +
-							" l.project_id, p.name ,d.vendor, d.product, d.version, d.granularity, json_agg(DISTINCT day_of_week) AS usage_days" +
-							" FROM device d, license_consumption l, usage_detail u, project p " +
-							" WHERE d.id = l.device_id AND u.consumption_id = l.id AND p.id = l.project_id", true);
+							" lc.project_id, p.name ,d.vendor, d.product, d.version, d.granularity, json_agg(DISTINCT day_of_week) AS usage_days" +
+							" FROM device d, license_consumption lc, usage_detail u, project p, license l " +
+							" WHERE d.id = lc.device_id AND u.consumption_id = lc.id AND p.id = lc.project_id", true);
 					SelectQueryBuilder weeklyConfigTokensConsumedQueryBuilder = new SelectQueryBuilder("SELECT consumption_date, CONCAT('Week ', " +
-							"DATE_PART('week',consumption_date+'1 day'::interval)) AS consumption_week, sum(tokens_consumed) FROM license_consumption l");
+							"DATE_PART('week',consumption_date+'1 day'::interval)) AS consumption_week, sum(tokens_consumed) FROM license_consumption lc");
 
-					SelectQueryBuilder tokensConsumedByProjectQueryBuilder = new SelectQueryBuilder("select p.id, p.name, p.status, sum(l.tokens_consumed) AS tokens_consumed " +
-							"FROM license_consumption l, project p where l.project_id = p.id", true);
+					SelectQueryBuilder tokensConsumedByProjectQueryBuilder = new SelectQueryBuilder("select p.id, p.name, p.status, sum(lc.tokens_consumed) AS tokens_consumed " +
+							"FROM license_consumption lc, project p where lc.project_id = p.id", true);
 
-					SelectQueryBuilder tokensConsumedQueryBuilder = new SelectQueryBuilder("SELECT usage_type, sum(tokens_consumed) as consumed_tokens, count(*) from license_consumption l");
+					SelectQueryBuilder tokensConsumedQueryBuilder = new SelectQueryBuilder("SELECT usage_type, sum(tokens_consumed) as consumed_tokens, count(*) from license_consumption lc");
 
 					// Append common conditions to builders
 					for (Condition<String, String> commonCondition: commonConditions) {
@@ -237,7 +243,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					}
 
 					// Conditions for all query
-					allQueryBuilder.appendGroupBy("l.id, l.consumption_date, l.usage_type, l.tokens_consumed, l.device_id,consumption,l.project_id,p.name,d.vendor, d.product, d.version, d.granularity");
+					allQueryBuilder.appendGroupBy("lc.id, lc.consumption_date, lc.usage_type, lc.tokens_consumed, lc.device_id,consumption,lc.project_id,p.name,d.vendor, d.product, d.version, d.granularity");
 					allQueryBuilder.appendOrderBy("consumption_date", SelectQueryBuilder.ORDER_DIRECTION.DESC);
 					allQueryBuilder.appendLimit(limit);
 					allQueryBuilder.appendOffset(offset);

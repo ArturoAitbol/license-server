@@ -101,7 +101,7 @@ describe('add-license-consumption - UI verification tests', () => {
         const h1 = fixture.nativeElement.querySelector('#page-title');
         const cancelButton = fixture.nativeElement.querySelector('#cancel-button');
         const submitButton = fixture.nativeElement.querySelector('#submit-button');
-        const newProjectButton = fixture.nativeElement.querySelector('#new-project-button');
+        const newProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
         const addDeviceButton = fixture.nativeElement.querySelector('#add-device-button');
         const addSupportButton = fixture.nativeElement.querySelector('#add-support-button');
         const h2 = fixture.debugElement.queryAll(By.css("h2"));
@@ -232,10 +232,10 @@ describe('add-license-consumption - Data collection and parsing tests', () => {
 
     it('should make a call to get device list and project list', () => {
         spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
-        spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
+        spyOn(ProjectServiceMock, 'getProjectDetailsByLicense').and.callThrough();
         testInstance.ngOnInit();
         expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
-        expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
+        expect(ProjectServiceMock.getProjectDetailsByLicense).toHaveBeenCalled();
     });
 
 });

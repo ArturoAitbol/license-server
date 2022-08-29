@@ -59,7 +59,9 @@ const defaultTestBedConfig = {
           useValue: MsalServiceMock
       },
       {   provide: MAT_DIALOG_DATA, 
-          useValue: {} 
+          useValue: {
+            id: CustomerServiceMock.emailCustomer.id
+          } 
       },
       {
           provide: HttpClient,
@@ -170,17 +172,29 @@ describe('add admin email flow', () => {
     expect(AdminEmailTestInstance.deleteEmailForm).toHaveBeenCalled();
   });
 
-  // it('should show a message if successfully deleted a email after calling confirmDeleteDialog()', () => {
+  it('should delete a email after calling deleteExistingEmail()', () => {
     
 
-  //   spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.callThrough();
-  //   spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+    spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.callThrough();
+    spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
 
-  //   fixture.detectChanges();
-  //   AdminEmailTestInstance.deleteExistingEmail(0);
+    fixture.detectChanges();
+    AdminEmailTestInstance.deleteExistingEmail(0);
 
-  //   expect(CustomerAdminEmailServiceMock.deleteAdminEmail).toHaveBeenCalled();
-  //   expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Customer administrator email deleted');
-  // });
+    expect(CustomerAdminEmailServiceMock.deleteAdminEmail).toHaveBeenCalled();
+  });
+  it('should show a message if successfully deleted a email after calling deleteExistingEmail()', () => {
+    
+
+    spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(throwError({message: 'error message'}));
+    spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+    spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+
+    fixture.detectChanges();
+    AdminEmailTestInstance.deleteExistingEmail(0);
+
+    expect(CustomerAdminEmailServiceMock.deleteAdminEmail).toHaveBeenCalled();
+    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error deleting administrator email!');
+  });
 
 });

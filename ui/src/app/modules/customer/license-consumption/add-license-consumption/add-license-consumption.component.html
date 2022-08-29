@@ -8,7 +8,7 @@
             <mat-dialog-content>
                 <div class="flex-container" style="align-items: center">
                     <div class="col-7">
-                        <mat-form-field appearance="outline">
+                        <mat-form-field appearance="outline" id="consumption-week">
                             <mat-label>Consumption Week</mat-label>
                             <mat-date-range-input [rangePicker]="picker" [min]="startDate" [max]="endDate">
                               <input formControlName="startWeek" matStartDate placeholder="Start date" [readonly]="true"> 
@@ -24,14 +24,14 @@
                             <input type="text" placeholder="Select a project" aria-label="Project" matInput
                                    formControlName="project" [matAutocomplete]="projectsList" id="project-auto-complete">
                             <mat-autocomplete #projectsList="matAutocomplete" [displayWith]="displayFnProject">
-                                <mat-option *ngFor="let project of filteredProjects | async" [value]="project">
+                                <mat-option *ngFor="let project of filteredProjects | async" [value]="project" title="{{project.projectName}}">
                                     {{project.projectName}}
                                 </mat-option>
                             </mat-autocomplete>
                             <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>
                         </mat-form-field>
                         <div *lcCheckAccessFor="'addProject'" class="col-3 no-padding" style="float: right;">
-                            <button mat-stroked-button type="button" class="plus-button" title="New Project" id="new-project-button"
+                            <button mat-stroked-button type="button" class="plus-button" title="New Project" id="add-new-project-button"
                                     (click)="onAddProject()">
                                 <mat-icon>add</mat-icon>
                             </button>
@@ -69,7 +69,7 @@
                                            formControlName="vendor" [matAutocomplete]="vendorsList" id="vendor-auto-complete">
                                     <mat-autocomplete #vendorsList="matAutocomplete" [displayWith]="displayFnVendor"
                                                       (optionSelected)="onChangeVendor($event.option.value)">
-                                        <mat-option *ngFor="let item of filteredVendors | async" [value]="item">
+                                        <mat-option *ngFor="let item of filteredVendors | async" [value]="item" title="{{item.vendor}}">
                                             {{item.vendor}}
                                         </mat-option>
                                     </mat-autocomplete>
@@ -82,7 +82,7 @@
                                     <input type="text" placeholder="Select a device" aria-label="Device" matInput
                                            formControlName="product" [matAutocomplete]="devicesList" id="device-auto-complete">
                                     <mat-autocomplete #devicesList="matAutocomplete" [displayWith]="displayFnDevice">
-                                        <mat-option *ngFor="let item of filteredModels | async" [value]="item">
+                                        <mat-option *ngFor="let item of filteredModels | async" [value]="item" title="{{item.product}}">
                                             {{item.product}}
                                         </mat-option>
                                     </mat-autocomplete>

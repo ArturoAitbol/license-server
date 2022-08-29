@@ -1,5 +1,6 @@
 import {Observable} from 'rxjs';
 import { Customer } from 'src/app/model/customer.model';
+
 const CUSTOMER_LIST = {
     customers: [
         {
@@ -337,15 +338,20 @@ const CUSTOMER_LIST = {
             testCustomer: true,
             name: 'testV2',
             id: '157fdef0-c28e-4764-9023-75c06daad09d'
-        }
+        },
+
     ]
 };
-const MOCK_UPDATED_CUSTOMER: Customer = {
+
+const MOCK_UPDATED_CUSTOMER = {
     customerType: 'Reseller',
     testCustomer: true,
-    customerName: 'new test customer s updated',
+    name: 'new test customer s updated',
     id: '19660f52-4f35-489d-ae44-80161cbb7bd4',
-    adminEmails: ['samuelvs667@gmail.com']
+    subaccountName:"Default",
+    subaccountId:"ac7a78c2-d0b2-4c81-9538-321562d426c7",
+    adminEmails: ['adminEmail@unit-test.com'],
+    status:"Active",
 };
 
 const SELECTED_CUSTOMER = {
@@ -355,7 +361,8 @@ const SELECTED_CUSTOMER = {
     id:"0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848",
     subaccountName:"Default",
     subaccountId:"ac7a78c2-d0b2-4c81-9538-321562d426c7",
-    status:"Active"
+    status:"Active",
+    adminEmails: ['adminEmail@unit-test.com']
 }
 
 const REAL_CUSTOMER = {
@@ -365,7 +372,8 @@ const REAL_CUSTOMER = {
     id: 'aa85399d-1ce9-425d-9df7-d6e8a8baaec2',
     subaccountName:"360 Custom (No Tokens)",
     subaccountId:"24372e49-5f31-4b38-bc3e-fb6a5c371623",
-    status:"Active"
+    status:"Active",
+    adminEmails: ['adminEmail@unit-test.com']
 }
 
 const EMAIL_CUSTOMER = {
@@ -383,6 +391,13 @@ const CUSTOMER_ADMIN_EMAIL ={
     customerAdminEmail: "test@email.com", 
     customerId: "0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848"
 }
+
+const CUSTOMER_WITH_EMAILS_LIST = {
+    customers: [
+        MOCK_UPDATED_CUSTOMER,SELECTED_CUSTOMER,REAL_CUSTOMER,EMAIL_CUSTOMER
+
+    ]
+};
 const MOCK_ADMINEMAILS_CREATED= {};
 export const CustomerServiceMock = {
     customerListValue: CUSTOMER_LIST,
@@ -415,10 +430,12 @@ export const CustomerServiceMock = {
     setSelectedCustomer: () => {
 
     },
-    getCustomerById: () => {
+    getCustomerById: (customerId?: string) => {
         return new Observable((observer) => {
-            const customer = CUSTOMER_LIST.customers.find((customer) => (customer.id === 'bc632667-705f-441c-9317-5323d906dc73'));
-            observer.next(customer);
+            let customer = EMAIL_CUSTOMER;
+            if(customerId)
+                customer = CUSTOMER_WITH_EMAILS_LIST.customers.find((customer) => (customer.id === customerId));
+            observer.next({customers:[customer]});
             observer.complete();
             return {
                 unsubscribe() { }
@@ -428,11 +445,7 @@ export const CustomerServiceMock = {
 
     updateCustomer: (customer: any) => {
         return new Observable((observer) => {
-            observer.next(
-                {
-                  
-                }
-            );
+            observer.next(MOCK_UPDATED_CUSTOMER);
             observer.complete();
             return {
                 unsubscribe() {}
@@ -451,6 +464,17 @@ export const CustomerServiceMock = {
             observer.complete();
             return {
                 unsubscribe() { }
+            };
+        });
+    },
+    createCustomer: (customer: Customer) => {
+        return new Observable((observer) => {
+            observer.next({
+                id: '12341234-1234-1234-1234-123412341234'
+            });
+            observer.complete();
+            return {
+                unsubscribe() {}
             };
         });
     }

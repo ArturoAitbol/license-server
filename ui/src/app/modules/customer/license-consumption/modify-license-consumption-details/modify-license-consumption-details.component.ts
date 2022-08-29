@@ -30,7 +30,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   filteredProjects: Observable<Project[]>;
   vendors: any = [];
   filteredVendors: Observable<string[]>;
-  models: Device[] = [];
+  models: any[] = [];
   filteredModels: Observable<Device[]>;
   originalDays: any = [];
   days: any = [
@@ -63,6 +63,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   ngOnInit() {
     if (this.data) {
+      this.isDataLoading = true;
       this.data.consDate = new Date(this.data.consumptionDate + " 00:00:00");
       this.enableUsageDays();
       this.currentCustomer = this.customerService.getSelectedCustomer();
@@ -111,9 +112,15 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   private filterVendorDevices(value: string): void {
     this.models = [];
     if (value) {
-      this.models = this.devices.filter(device => device.type != "PHONE" && device.vendor === value);
-      this.models.forEach(device => {
-        device.product = device.version ? device.product + " - v." + device.version : device.product;
+      this.devices.forEach((device: any) => {
+        if (device.type != "PHONE" && device.vendor == value) {
+          const productLabel = device.version ? device.product + " - v." + device.version : device.product;
+          this.models.push({
+            id: device.id,
+            vendor: value,
+            product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
+          });
+        }
       });
     }
   }
@@ -140,7 +147,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         return { ...current, ...next };
       }, {});
       if (!resDataObject.error) {
-        this.snackBarService.openSnackBar('License consumption successfully edited!', '');
+        this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
         this.dialogRef.close(res);
       } else
         this.snackBarService.openSnackBar(resDataObject.error, 'Error editing license consumption!');
@@ -185,13 +192,11 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    * fetch data
    */
   fetchData(): void {
-    this.isDataLoading = true;
     const subaccountId = this.currentCustomer.subaccountId;
-    const { id } = this.data;
     forkJoin([
       this.deviceService.getDevicesList(subaccountId),
-      this.projectService.getProjectDetailsBySubAccount(subaccountId),
-      this.usageDetailService.getUsageDetailsByConsumptionId(id)
+      this.projectService.getProjectDetailsByLicense(subaccountId, this.currentCustomer.licenseId),
+      this.usageDetailService.getUsageDetailsByConsumptionId(this.data.id)
     ]).subscribe(res => {
       const resDataObject: any = res.reduce((current: any, next: any) => {
         return { ...current, ...next };
