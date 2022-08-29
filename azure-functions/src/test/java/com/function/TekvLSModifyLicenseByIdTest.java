@@ -28,7 +28,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
         String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                 "'startDate': '2023-06-01T00:00:00.000Z'," +
-                "'packageType': 'Basic'," +
+                "'subscriptionType': 'Basic'," +
                 "'renewalDate': '2023-06-10T04:00:00.000Z'," +
                 "'description': 'LicenseTest'," +
                 "'tokensPurchased': '55'," +
@@ -53,7 +53,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     @Test
     public void modifyLicenseTest(){
         //Given
-        String bodyRequest = "{'packageType': 'Small'," +
+        String bodyRequest = "{'subscriptionType': 'Small'," +
                 "'tokensPurchased': '150'," +
                 "'deviceLimit': '5000'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -203,7 +203,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     public void invalidSQLTest(){
         //Given
         String invalidId = "invalid-id";
-        String bodyRequest = "{'packageType': 'Small'," +
+        String bodyRequest = "{'subscriptionType': 'Small'," +
                 "'tokensPurchased': '150'," +
                 "'deviceLimit': '5000'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -221,7 +221,7 @@ class TekvLSModifyLicenseByIdTest extends TekvLSTest {
     @Test
     public void genericExceptionTest(){
         //Given
-        String bodyRequest = "{'packageType': 'Small'," +
+        String bodyRequest = "{'subscriptionType': 'Small'," +
                 "'tokensPurchased': '150'," +
                 "'deviceLimit': '5000'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();

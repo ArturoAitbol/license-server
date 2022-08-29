@@ -86,9 +86,9 @@ describe('UI verification tests',()=>{
         const backButton: HTMLElement = fixture.nativeElement.querySelector('#back-button');
         const addLicenseButton: HTMLElement = fixture.nativeElement.querySelector('#add-license-button');
         expect(h1.textContent).toBe(`${CustomerServiceMock.selectedCustomer.name} - ${CustomerServiceMock.selectedCustomer.subaccountName}`);
-        expect(h2.textContent).toBe('tekVizion 360 Packages');
+        expect(h2.textContent).toBe('tekVizion 360 Subscriptions');
         expect(backButton.textContent).toBe('Back');
-        expect(addLicenseButton.textContent).toBe('Add tekVizion 360 Package');
+        expect(addLicenseButton.textContent).toBe('Add tekVizion 360 Subscription');
     });
 
     it('sould load correct data columns for the table', ()=>{
@@ -99,7 +99,7 @@ describe('UI verification tests',()=>{
         expect(headers[1].innerText).toBe('Renewal Date');
         expect(headers[2].innerText).toBe('Description');
         expect(headers[3].innerText).toBe('Status');
-        expect(headers[4].innerText).toBe('Package Type');
+        expect(headers[4].innerText).toBe('Subscription Type');
         expect(headers[5].innerText).toBe('Device Limit');
         expect(headers[6].innerText).toBe('tekTokens');
     });

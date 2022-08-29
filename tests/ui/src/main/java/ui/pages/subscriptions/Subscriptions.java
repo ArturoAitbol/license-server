@@ -1,4 +1,4 @@
-package ui.pages.packages;
+package ui.pages.subscriptions;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -6,7 +6,7 @@ import org.openqa.selenium.support.FindBy;
 
 import ui.core.AbstractPageObject;
 
-public class Packages extends AbstractPageObject {
+public class Subscriptions extends AbstractPageObject {
     @FindBy(id = "#page-title")
     WebElement licensesTitle;
     @FindBy(id = "table-title")
@@ -23,9 +23,9 @@ public class Packages extends AbstractPageObject {
         return title;
     }
 
-    public PackageForm openPackageForm() {
+    public SubscriptionForm openSubscriptionForm() {
         this.action.click(this.addLicenseButton);
-        return new PackageForm();
+        return new SubscriptionForm();
     }
 
     public String getMessage() {

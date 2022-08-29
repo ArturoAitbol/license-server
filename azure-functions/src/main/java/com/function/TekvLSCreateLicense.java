@@ -153,7 +153,7 @@ public class TekvLSCreateLicense
 	private enum MANDATORY_PARAMS {
 		SUBACCOUNT_ID("subaccountId"),
 		START_DATE("startDate"),
-		PACKAGE_TYPE("packageType"),
+		PACKAGE_TYPE("subscriptionType"),
 		RENEWAL_DATE("renewalDate"),
 		TOKENS_PURCHASED("tokensPurchased"),
 		DEVICE_LIMIT("deviceLimit"),

@@ -151,7 +151,7 @@ public class TekvLSGetAllLicenses
 				item.put("description", rs.getString("description"));
 				if (!id.equals("EMPTY") || !subaccountId.isEmpty()){
 					item.put("startDate", rs.getString("start_date").split(" ")[0]);
-					item.put("packageType", rs.getString("package_type"));
+					item.put("subscriptionType", rs.getString("package_type"));
 					item.put("renewalDate", rs.getString("renewal_date").split(" ")[0]);
 					item.put("tokensPurchased", rs.getInt("tokens"));
 					item.put("deviceLimit", rs.getString("device_access_limit"));

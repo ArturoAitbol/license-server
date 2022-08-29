@@ -19,15 +19,15 @@ Feature: Projects
   @addLicense
   Scenario: Add Basic license
     Given I see the customer "projectCustomerTest" in the table
-    And I go to the Packages view of "projectCustomerTest"
-    And I should see the "tekVizion 360 Packages" table
-    And I open the Add Package form
-    When I create a package with the following data
+    And I go to the Subscriptions view of "projectCustomerTest"
+    And I should see the "tekVizion 360 Subscriptions" table
+    And I open the Add Subscription form
+    When I create a subscription with the following data
       | startDate     | 8/20/2022     |
       | renewalDate   | 2/20/2023     |
-      | packageType   | Basic         |
+      | subscriptionType   | Basic         |
       | description   | Description1  |
-    Then I see the "Basic" package in the table
+    Then I see the "Basic" subscription in the table
 
   @createProject
   Scenario: Create a project

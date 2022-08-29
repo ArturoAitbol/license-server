@@ -15,11 +15,12 @@ import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
 import { ProjectsComponent } from "../projects.component";
 import { ModifyProjectComponent } from "./modify-project.component";
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "src/app/services/snack-bar.service";
 import { LicenseService } from "src/app/services/license.service";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
+import moment from "moment";
 
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
@@ -98,7 +99,7 @@ describe('UI verification test for modify component', () => {
         expect(startDateLabel.textContent).toBe('Start Date');
         expect(projectNameLabel.textContent).toBe('Project Name');
         expect(projectCodeLabel.textContent).toBe('Project Code');
-        expect(projectLicenseLable.textContent).toBe('tekVizion 360 Package');
+        expect(projectLicenseLable.textContent).toBe('tekVizion 360 Subscription');
         expect(projectStatusLable.textContent).toBe('Status');
         expect(closeButton.textContent).toBe('Cancel');
         expect(submitButton.textContent).toBe('Submit');
@@ -118,6 +119,16 @@ describe('modify project interactions', () => {
         modifyPorjectComponentTestInstance.onCancel();
         expect(modifyPorjectComponentTestInstance.onCancel).toHaveBeenCalled();
     }); 
+
+    it('should execute submit action with a null respose', () => {
+        const res = undefined;
+        spyOn(modifyPorjectComponentTestInstance, 'submit').and.callThrough();
+        spyOn(ProjectServiceMock, 'updateProject').and.returnValue(of(res));
+
+        modifyPorjectComponentTestInstance.submit();
+
+        expect(ProjectServiceMock.updateProject).toHaveBeenCalled();
+    });
 });
 
 describe('change status of projects', () => {
@@ -154,4 +165,90 @@ describe('Dialog calls and interactions', () => {
         expect(ProjectServiceMock.updateProject).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error updating project!');
     });
+
+    it('should show a message if an error ocurred while loading data', () => {  
+        const err = {error: "some error"};
+        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(throwError(err));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(console, 'error').and.callThrough();
+        fixture.detectChanges();
+
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error requesting subscriptions!');
+        expect(console.error).toHaveBeenCalledWith('error fetching subscriptions', err);
+        expect(modifyPorjectComponentTestInstance.isDataLoading).toBeFalse();
+    });
 }); 
+
+describe('obtaining the data of licenses in the ngOnInit()', () => {
+    beforeEach(beforeEachFunction);
+    it('should load the data of licenses in ngOnInit()', () => {
+        fixture.detectChanges();
+        const res = {
+            error: false, 
+            licenses: [{subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
+                id: '16f4f014-5bed-4166-b10a-808b2e6655e3',
+                description: 'DescriptionA',
+                status: 'Active',
+                deviceLimit: '',
+                tokensPurchased: 150,
+                startDate: '2022-08-01',
+                renewalDate: '2022-09-30',
+                subscriptionType: ''
+            }]
+        };
+        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(res));
+
+        fixture.detectChanges();
+        modifyPorjectComponentTestInstance.ngOnInit();
+
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
+    });
+});
+
+describe('modify-project FormGroup verification', () => {
+    beforeEach(beforeEachFunction);
+    it('should create formGroup with necessary controls', () => {
+        fixture.detectChanges();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('projectName')).toBeTruthy();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('projectNumber')).toBeTruthy();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('openDate')).toBeTruthy();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('closeDate')).toBeTruthy();
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('status')).toBeTruthy();
+    });
+
+    it('should make all the controls required', () => {
+        const modifyProjectForm = modifyPorjectComponentTestInstance.updateProjectForm;
+        modifyProjectForm.setValue({
+            projectName: '',
+            projectNumber: '',
+            openDate: '',
+            closeDate: '',
+            status: '',
+            licenseId: ''
+        });
+
+        expect(modifyProjectForm.get('projectName').valid).toBeFalse();
+        expect(modifyProjectForm.get('projectNumber').valid).toBeFalse();
+        expect(modifyProjectForm.get('openDate').valid).toBeFalse();
+        expect(modifyProjectForm.get('closeDate').valid).toBeFalse();
+        expect(modifyProjectForm.get('status').valid).toBeFalse();
+        expect(modifyProjectForm.get('licenseId').valid).toBeFalse();
+    });
+
+    it('should not show the submit button if there are missing parameters', () => {
+        fixture.detectChanges();
+        const modifyProjectForm = modifyPorjectComponentTestInstance.updateProjectForm;
+        modifyProjectForm.setValue({
+            projectName: '',
+            projectNumber: { test: 'test' },
+            openDate: moment('16-08-2022', 'DDMMYYYY'),
+            closeDate: moment('16-08-2022', 'DDMMYYYY'),
+            status: 'Open',
+            licenseId: { test:'test' }
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submit-project-button').disabled).toBeTrue();
+    });
+
+});

@@ -1,14 +1,14 @@
-package ui.pages.packages;
+package ui.pages.subscriptions;
 
 import org.openqa.selenium.By;
 
 import ui.core.AbstractPageObject;
 import ui.pages.ActionMenu;
 
-public class PackageRow extends AbstractPageObject {
+public class SubscriptionRow extends AbstractPageObject {
     private final String LICENSE_TITLE_XPATH;
 
-    public PackageRow(String description){
+    public SubscriptionRow(String description){
         this.LICENSE_TITLE_XPATH = String.format("//td[@title='%s']", description);    
     }
 

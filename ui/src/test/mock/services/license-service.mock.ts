@@ -10,7 +10,7 @@ const MOCK_LICENSE_A: License = {
     tokensPurchased: 150,
     startDate: '2022-08-01',
     renewalDate: '2022-09-30',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_B: License = {
     subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
@@ -21,7 +21,7 @@ const MOCK_LICENSE_B: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_C: License = {
     subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
@@ -32,7 +32,7 @@ const MOCK_LICENSE_C: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_D: License = {
     subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
@@ -43,7 +43,7 @@ const MOCK_LICENSE_D: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_E: License = {
     subaccountId: '3819dc98-0e34-4237-ad0f-e79895b887e9',
@@ -54,7 +54,7 @@ const MOCK_LICENSE_E: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_F: License = {
     subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
@@ -65,7 +65,7 @@ const MOCK_LICENSE_F: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_G: License = {
     subaccountId: '3819dc98-0e34-4237-ad0f-e79895b887e9',
@@ -76,7 +76,7 @@ const MOCK_LICENSE_G: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_H: License = {
     subaccountId: 'a9f2c313-7d80-4c1f-bda5-91f2767b3716',
@@ -87,7 +87,7 @@ const MOCK_LICENSE_H: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_I: License = {
     subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
@@ -98,7 +98,7 @@ const MOCK_LICENSE_I: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_J: License = {
     subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
@@ -109,7 +109,7 @@ const MOCK_LICENSE_J: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 const MOCK_LICENSE_K: License = {
     subaccountId: '173c00ea-6e5c-462c-9295-ae5e14adc14f',
@@ -120,7 +120,7 @@ const MOCK_LICENSE_K: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 }
 
 const MOCK_LICENSE_L: License = {
@@ -129,7 +129,7 @@ const MOCK_LICENSE_L: License = {
     description: 'DescriptionL',
     id: "6524a6ab-b88b-49a8-aee5-624e86e24dcd",
     renewalDate: "2022-07-18",
-    packageType: "Small",
+    subscriptionType: "Small",
     deviceLimit: "5000",
     startDate: "2022-07-10",
     status: "Expired"
@@ -144,7 +144,7 @@ const MOCK_UPDATED_LICENSE_D: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 
 const MOCK_LICENSES_LIST = {
@@ -217,7 +217,7 @@ const MOCK_DELETED_LICENSE: License = {
     tokensPurchased: 0,
     startDate: '',
     renewalDate: '',
-    packageType: ''
+    subscriptionType: ''
 };
 
 const MOCK_CREATED_LICENSE: License = {
@@ -229,7 +229,7 @@ const MOCK_CREATED_LICENSE: License = {
     tokensPurchased: 120,
     startDate: "",
     renewalDate: "",
-    packageType: ""
+    subscriptionType: ""
 };
 
 export const LicenseServiceMock = {
