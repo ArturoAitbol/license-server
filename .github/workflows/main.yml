@@ -74,6 +74,15 @@ jobs:
       with:
         node-version: '12.20'
     
+      
+    - name: Replace Build Version
+      uses: jacobtomlinson/gha-find-replace@v2
+      with:
+        find: "[build_version]"
+        replace: "${{ steps.next_tag.outputs.patch }}"
+        include: "ui/src/app/generics/about-modal/**"
+        regex: false
+    
     - name: Build Angular Production web app
       run: |
         cd ./ui

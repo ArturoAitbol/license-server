@@ -43,8 +43,8 @@ export class ProjectsComponent implements OnInit {
   projects: Project[] = [];
   projectsBk: Project[] = [];
   // flag
-  isLoadingResults: Boolean;
-  isRequestCompleted: Boolean;
+  isLoadingResults: boolean;
+  isRequestCompleted: boolean;
 
   constructor(
     private customerService: CustomerService,

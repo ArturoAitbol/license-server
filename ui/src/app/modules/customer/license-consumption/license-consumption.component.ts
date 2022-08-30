@@ -36,7 +36,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   selectedProject: string;
   startDate: any;
   endDate: any;
-  pageSize: number = 6;
+  pageSize = 6;
   aggregation = "period";
   licensesList: any = [];
   data: any = [];
