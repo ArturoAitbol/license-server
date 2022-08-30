@@ -13,13 +13,13 @@
                     {{getUserName()}} <mat-icon>arrow_drop_down</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="logout()" id="logout-button">
-                        <mat-icon>logout</mat-icon>
-                        <span>Logout</span>
-                    </button>
                     <button mat-menu-item (click)="about()" id="logout-button">
                         <mat-icon>info</mat-icon>
                         <span>About</span>
+                    </button>
+                    <button mat-menu-item (click)="logout()" id="logout-button">
+                        <mat-icon>logout</mat-icon>
+                        <span>Logout</span>
                     </button>
                 </mat-menu>
 

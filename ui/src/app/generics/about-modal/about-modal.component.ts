@@ -10,7 +10,6 @@ export class AboutModalComponent {
 
   constructor(public dialogRef: MatDialogRef<AboutModalComponent>,) { }
 
-
   /**
    * Close modal
    */
