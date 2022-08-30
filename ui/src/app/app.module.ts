@@ -27,6 +27,7 @@ import { environment } from 'src/environments/environment';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
 import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applicationinsights-angularplugin-js';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
+import { AboutModalComponent } from './generics/about-modal/about-modal.component';
 
 @NgModule({
     declarations: [
@@ -40,7 +41,8 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapte
         ConfirmComponent,
         AdminEmailsComponent,
         SubaccountAdminEmailsComponent,
-        NoPermissionsPageComponent
+        NoPermissionsPageComponent,
+        AboutModalComponent
     ],
     imports: [
         AppRoutingModule,

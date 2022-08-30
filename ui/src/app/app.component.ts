@@ -8,6 +8,8 @@ import { AutoLogoutService } from "./services/auto-logout.service";
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { environment } from 'src/environments/environment';
+import { MatDialog } from '@angular/material/dialog';
+import { AboutModalComponent } from './generics/about-modal/about-modal.component';
 
 
 @Component({
@@ -21,6 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
     currentUser = false;
 
     constructor(private router: Router, private msalService: MsalService,
+        public dialog: MatDialog,
         private broadcastService: MsalBroadcastService, private autoLogoutService: AutoLogoutService) {
         const angularPlugin = new AngularPlugin();
         const appInsights = new ApplicationInsights({
@@ -31,7 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 enableResponseHeaderTracking: true,
                 enableAutoRouteTracking: false,
                 loggingLevelConsole: 2,
-                loggingLevelTelemetry:2,
+                loggingLevelTelemetry: 2,
                 correlationHeaderExcludedDomains: ['*.queue.core.windows.net'],
                 extensions: [angularPlugin],
                 extensionConfig: {
@@ -86,6 +89,19 @@ export class AppComponent implements OnInit, OnDestroy {
         } catch (error) {
             console.error('error while logout: ', error);
         }
+    }
+
+    getUserName(): string {
+        return this.msalService.instance.getActiveAccount().name;
+    }
+    /**
+     * Show About Modal
+     */
+    about() {        
+        const dialogRef = this.dialog.open(AboutModalComponent, {
+            width: '400px',
+            disableClose: false
+        });
     }
 
     ngOnDestroy(): void {
