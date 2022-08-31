@@ -52,7 +52,7 @@ public class ProjectSteps {
         this.startDate = projectTable.get("startDate");
         this.name = projectTable.get("name");
         this.code = projectTable.get("code");
-        this.license = projectTable.get("license");
+        this.license = projectTable.get("subscription");
         this.projects = this.projectForm.createProject(startDate, name, code, license);
         this.actualMessage = this.projects.getMessage();
         DriverManager.getInstance().setMessage(this.actualMessage);
