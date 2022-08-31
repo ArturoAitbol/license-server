@@ -115,9 +115,9 @@ public class TekvLSCreateCustomer
 			ResultSet rsEmails = verifyEmailStmt.executeQuery();
 			rsEmails.next();
 			if (rsEmails.getInt(1) > 0){
-				context.getLogger().severe("Admin email already exists");
+				context.getLogger().severe("Administrator email already exists");
 				JSONObject json = new JSONObject();
-				json.put("error", "Admin email already exists");
+				json.put("error", "Administrator email already exists");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			

@@ -284,7 +284,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         //Given - Arrange
@@ -298,7 +298,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
 
         //Then - Assert
         actualStatus = response.getStatus();
-        expected = HttpStatus.BAD_REQUEST;
+        expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
