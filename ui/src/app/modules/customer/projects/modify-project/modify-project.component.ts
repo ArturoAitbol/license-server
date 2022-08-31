@@ -20,6 +20,11 @@ export class ModifyProjectComponent implements OnInit {
   isDataLoading = false;
   private previousFormValue: any;
   licenses: License[] = [];
+  minDate: Date;
+  maxDate: Date;
+  minCloseDate: Date;
+  maxCloseDate: Date;
+  today: Date;
   
   updateProjectForm = this.formBuilder.group({
     projectName: ['', Validators.required],
@@ -46,8 +51,13 @@ export class ModifyProjectComponent implements OnInit {
       if(this.data.status === 'Open')
         this.updateProjectForm.get('closeDate').disable();
       this.liceseService.getLicenseList(this.projectService.getSelectedSubAccount()).subscribe((res: any) => {
-        if (!res.error && res.licenses.length > 0)
+        if (!res.error && res.licenses.length > 0){
           this.licenses = res.licenses;
+          let license = this.licenses.find(license => license.id === this.data.licenseId);
+          this.today = new Date();
+          this.today.setHours(0,0,0);
+          this.setDateLimits(license,this.data.openDate); 
+        }
         this.isDataLoading = false;
       }, err => {
         this.snackBarService.openSnackBar(err.error, 'Error requesting subscriptions!');
@@ -90,12 +100,32 @@ export class ModifyProjectComponent implements OnInit {
     return mergedProjectDetails;
   }
 
-  onChanginStatus(status: string){
+  onChangingStatus(status: string){
     if(status === 'Open'){
       this.updateProjectForm.get('closeDate').disable();
     }else{
       this.updateProjectForm.get('closeDate').enable();
     } 
+  }
+
+  onChangingStartDate(value) : void{
+    this.minCloseDate = new Date(value);
+  }
+
+  onLicenseChange(licenseId:String) :void {
+    let selectedLicense = this.licenses.find(license => license.id === licenseId);
+    if(selectedLicense!==null){
+      this.updateProjectForm.get('openDate').setValue('');
+      this.updateProjectForm.get('closeDate').setValue('');
+      this.setDateLimits(selectedLicense);
+    }
+  }
+
+  private setDateLimits(license: License, startDate?:String) :void {
+    this.minDate = new Date(license.startDate + " 00:00:00");
+    this.maxDate = new Date(license.renewalDate + " 00:00:00");
+    this.minCloseDate = startDate ? new Date(startDate + " 00:00:00") : this.minDate;
+    this.maxCloseDate = this.maxDate > this.today ? this.maxDate : this.today;
   }
 
 }
