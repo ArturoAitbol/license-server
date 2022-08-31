@@ -44,7 +44,8 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
     public void createCustomerTest() {
         //Given - Arrange
         String name = "customerTest" + LocalDateTime.now();
-        String bodyRequest = "{'customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+        String subAccountname = "customerSubAccountTest" + LocalDateTime.now();
+        String bodyRequest = "{'customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com', 'subaccountAdminEmail':'"+subAccountname+"@hotmail.com', 'test':'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action
@@ -232,7 +233,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
         this.context.getLogger().info(response.getBody().toString());
 
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected , actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
         
         String expectedResponse = "SQL";
@@ -245,7 +246,8 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
     @Test
     public void createCustomerSQLExceptionTest() {
         String name = "customerTest" + LocalDateTime.now();
-        String bodyRequest = "{'customerId':'xxxx','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+        String subAccountname = "customerSubAccountTest" + LocalDateTime.now();
+        String bodyRequest = "{'customerId':'xxxx','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com', 'subaccountAdminEmail':'"+subAccountname+"@hotmail.com', 'test':'true'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
@@ -279,7 +281,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         //Given - Arrange
