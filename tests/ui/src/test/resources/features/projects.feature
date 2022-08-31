@@ -35,7 +35,7 @@ Feature: Projects
     And I go to the Projects List of "projectCustomerTest"
     And I open the Add Project form
     When I create a project with the following data
-      | startDate | 8/17/2022     |
+      | startDate | 8/20/2022    |
       | name      | projectTest   |
       | code      | PRT-01        |
       | license   | Description1  |
