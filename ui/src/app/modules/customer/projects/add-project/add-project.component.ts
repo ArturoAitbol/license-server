@@ -15,12 +15,15 @@ export class AddProjectComponent implements OnInit {
   isDataLoading = false;
   readonly OPEN_STATUS = 'Open';
   licenses: License[] = [];
+  minDate: Date;
+  maxDate: Date;
+  selectedLicense:License = null;
 
   addProjectForm = this.formBuilder.group({
     projectName: ['', Validators.required],
     projectNumber: ['', Validators.required],
     licenseId: ['', Validators.required],
-    openDate: ['', Validators.required],
+    openDate: [{value:'',disabled:true}, Validators.required],
   });
   constructor(
     private formBuilder: FormBuilder,
@@ -67,4 +70,14 @@ export class AddProjectComponent implements OnInit {
     });
   }
 
+  onLicenseChange(licenseId:String) :void {
+    this.selectedLicense = this.licenses.find(license => license.id === licenseId);
+    if(this.selectedLicense!==null){
+      let openDate = this.addProjectForm.get('openDate');
+      openDate.enable();
+      openDate.setValue('');
+      this.minDate = new Date(this.selectedLicense.startDate + " 00:00:00");
+      this.maxDate = new Date(this.selectedLicense.renewalDate + " 00:00:00");
+    }
+  }
 }

@@ -134,21 +134,52 @@ describe('modify project interactions', () => {
 describe('change status of projects', () => {
     beforeEach(beforeEachFunction);
     it('should execute changingStatus()', () => {
-        spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
+        spyOn(modifyPorjectComponentTestInstance, 'onChangingStatus').and.callThrough();
         const status = 'Open'
-        modifyPorjectComponentTestInstance.onChanginStatus(status)
+        modifyPorjectComponentTestInstance.onChangingStatus(status)
         fixture.detectChanges();
 
-        expect(modifyPorjectComponentTestInstance.onChanginStatus).toHaveBeenCalledWith(status);
+        expect(modifyPorjectComponentTestInstance.onChangingStatus).toHaveBeenCalledWith(status);
     });
 
     it('should execute changinStatus() with close status', () => {
-        spyOn(modifyPorjectComponentTestInstance, 'onChanginStatus').and.callThrough();
+        spyOn(modifyPorjectComponentTestInstance, 'onChangingStatus').and.callThrough();
         const status = 'close';
-        modifyPorjectComponentTestInstance.onChanginStatus(status);
+        modifyPorjectComponentTestInstance.onChangingStatus(status);
         fixture.detectChanges();
 
-        expect(modifyPorjectComponentTestInstance.onChanginStatus).toHaveBeenCalledWith(status)
+        expect(modifyPorjectComponentTestInstance.onChangingStatus).toHaveBeenCalledWith(status)
+    });
+});
+
+
+describe('change dates of projects', () => {
+    beforeEach(beforeEachFunction);
+    it('should modify the minimun close date allowed when calling onChangingStartDate()', () => {
+        spyOn(modifyPorjectComponentTestInstance, 'onChangingStartDate').and.callThrough();
+        const newStartDate = '2022-07-01';
+        modifyPorjectComponentTestInstance.onChangingStartDate(newStartDate);
+
+        expect(modifyPorjectComponentTestInstance.minCloseDate).toEqual(new Date(newStartDate));
+    });
+
+    it('should reset the start and close dates and its limits according to the license selected when calling onLicenseChange()', () => {
+        spyOn(modifyPorjectComponentTestInstance, 'onLicenseChange').and.callThrough();
+        modifyPorjectComponentTestInstance.licenses = LicenseServiceMock.licensesList.licenses;
+        const license = LicenseServiceMock.mockLicenseA;
+        const startDate = new Date(license.startDate + " 00:00:00");
+        const renewalDate = new Date(license.renewalDate + " 00:00:00");
+        modifyPorjectComponentTestInstance.today = renewalDate;
+        
+        
+        modifyPorjectComponentTestInstance.onLicenseChange(license.id);
+
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('openDate').value).toBe('');
+        expect(modifyPorjectComponentTestInstance.updateProjectForm.get('closeDate').value).toBe('');
+        expect(modifyPorjectComponentTestInstance.minDate).toEqual(startDate);
+        expect(modifyPorjectComponentTestInstance.maxDate).toEqual(renewalDate);
+        expect(modifyPorjectComponentTestInstance.minCloseDate).toEqual(startDate);
+        expect(modifyPorjectComponentTestInstance.maxCloseDate).toEqual(renewalDate);
     });
 });
 

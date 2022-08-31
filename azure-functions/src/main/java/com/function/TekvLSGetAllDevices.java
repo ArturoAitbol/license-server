@@ -25,6 +25,10 @@ import static com.function.auth.RoleAuthHandler.*;
  * Azure Functions with HTTP Trigger.
  */
 public class TekvLSGetAllDevices {
+
+	private final String DEFAULT_LIMIT = "100";
+	private final String DEFAULT_OFFSET = "0";
+
 	/**
 	 * This function listens at endpoint "/v1.0/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/devices/{vendor}/{product}/{version}
@@ -64,6 +68,8 @@ public class TekvLSGetAllDevices {
 		String version = request.getQueryParameters().getOrDefault("version", "");
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		String licenseStartDate = request.getQueryParameters().getOrDefault("date", "");
+		String limit = request.getQueryParameters().getOrDefault("limit", DEFAULT_LIMIT);
+		String offset = request.getQueryParameters().getOrDefault("offset", DEFAULT_OFFSET);
   
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM device");
@@ -91,6 +97,9 @@ public class TekvLSGetAllDevices {
 		} else {
 			queryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
 		}
+
+		queryBuilder.appendLimit(limit);
+		queryBuilder.appendOffset(offset);
 		
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
