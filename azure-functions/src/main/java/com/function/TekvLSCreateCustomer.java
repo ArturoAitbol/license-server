@@ -92,6 +92,7 @@ public class TekvLSCreateCustomer
 			sql = "INSERT INTO customer (name, type, test_customer, distributor_id) VALUES (?, ?, ?::boolean, ?::uuid) RETURNING id;";
 		}
 		String adminEmailSql = "INSERT INTO customer_admin (admin_email, customer_id) VALUES (?,?::uuid);";
+		String verifyEmailsSql = "SELECT count(*) FROM customer_admin WHERE admin_email = ?;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -100,11 +101,24 @@ public class TekvLSCreateCustomer
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			PreparedStatement statement = connection.prepareStatement(sql);
+			PreparedStatement verifyEmailStmt = connection.prepareStatement(verifyEmailsSql);
 			PreparedStatement emailStatement = connection.prepareStatement(adminEmailSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			// Set statement parameters
+			verifyEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ADMIN_EMAIL.value));
+
+			context.getLogger().info("Execute SQL statement: " + verifyEmailStmt);
+			ResultSet rsEmails = verifyEmailStmt.executeQuery();
+			rsEmails.next();
+			if (rsEmails.getInt(1) > 0){
+				context.getLogger().info("Admin email already exists");
+				JSONObject json = new JSONObject();
+				json.put("error", "Admin email already exists");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
 			statement.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_NAME.value));
 			statement.setString(2, jobj.getString(MANDATORY_PARAMS.CUSTOMER_TYPE.value));
 			statement.setString(3, jobj.getString(MANDATORY_PARAMS.TEST.value));
