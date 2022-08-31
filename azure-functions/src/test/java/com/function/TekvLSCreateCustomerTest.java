@@ -68,7 +68,8 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
     @Test
     public void createCustomerWhitOptionalParamsTest() {
         String name = "customerTest" + LocalDateTime.now();
-        String bodyRequest = "{'distributorId':'f5ac1f7b-d93e-4872-bd5e-133c00d9e2bd','customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+        String subAccountname = "customerSubAccountTest" + LocalDateTime.now();
+        String bodyRequest = "{'distributorId':'f5ac1f7b-d93e-4872-bd5e-133c00d9e2bd','customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','subaccountAdminEmail':'"+subAccountname+"@hotmail.com','test':'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action
@@ -145,7 +146,8 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
     public void createCustomerWithDuplicatedAdminEmailTest() {
         //Given - Arrange
         String name = "customerTest" + LocalDateTime.now();
-        String bodyRequest = "{'customerName':'" + name + "','customerType':'MSP','customerAdminEmail':'test-customer-full-admin@tekvizionlabs.com','test':'true'}";
+        String subAccountname = "customerSubAccountTest" + LocalDateTime.now();
+        String bodyRequest = "{'customerName':'" + name + "','customerType':'MSP','customerAdminEmail':'test-customer-full-admin@tekvizionlabs.com','subaccountAdminEmail':'"+subAccountname+"@hotmail.com', 'test':'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action
@@ -154,7 +156,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
@@ -247,7 +249,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
     public void createCustomerSQLExceptionTest() {
         String name = "customerTest" + LocalDateTime.now();
         String subAccountname = "customerSubAccountTest" + LocalDateTime.now();
-        String bodyRequest = "{'customerId':'xxxx','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com', 'subaccountAdminEmail':'"+subAccountname+"@hotmail.com', 'test':'true'}";
+        String bodyRequest = "{'customerId':'xxxx','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','subaccountAdminEmail':'"+subAccountname+"@hotmail.com', 'test':'true'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
@@ -271,7 +273,8 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
     public void duplicatedCustomerTest() {
         //Given - Arrange
         String name = "customerTest" + LocalDateTime.now();
-        String bodyRequest = "{'customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+        String subAccountname = "customerSubAccountTest" + LocalDateTime.now();
+        String bodyRequest = "{'customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','subaccountAdminEmail':'"+subAccountname+"@hotmail.com', 'test':'true'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -285,7 +288,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         //Given - Arrange
-        String newBodyRequest = "{'customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"1@hotmail.com','test':'true'}";
+        String newBodyRequest = "{'customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"1@hotmail.com','subaccountAdminEmail':'"+subAccountname+"@hotmail.com', 'test':'true'}";
 
         doReturn(Optional.of(newBodyRequest)).when(request).getBody();
 
@@ -295,7 +298,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
 
         //Then - Assert
         actualStatus = response.getStatus();
-        expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
