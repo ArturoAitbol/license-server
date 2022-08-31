@@ -92,7 +92,8 @@ public class TekvLSCreateCustomer
 			sql = "INSERT INTO customer (name, type, test_customer, distributor_id) VALUES (?, ?, ?::boolean, ?::uuid) RETURNING id;";
 		}
 		String adminEmailSql = "INSERT INTO customer_admin (admin_email, customer_id) VALUES (?,?::uuid);";
-		String verifyEmailsSql = "SELECT count(*) FROM customer_admin WHERE admin_email = ?;";
+		String verifyAdminEmailSql = "SELECT count(*) FROM customer_admin WHERE admin_email = ?;";
+		String verifySubAdminEmailSql = "SELECT count(*) FROM subaccount_admin WHERE subaccount_admin_email=?;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -101,7 +102,8 @@ public class TekvLSCreateCustomer
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			PreparedStatement statement = connection.prepareStatement(sql);
-			PreparedStatement verifyEmailStmt = connection.prepareStatement(verifyEmailsSql);
+			PreparedStatement verifyEmailStmt = connection.prepareStatement(verifyAdminEmailSql);
+			PreparedStatement verifySubAdminEmailStmt = connection.prepareStatement(verifySubAdminEmailSql);
 			PreparedStatement emailStatement = connection.prepareStatement(adminEmailSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
@@ -113,9 +115,21 @@ public class TekvLSCreateCustomer
 			ResultSet rsEmails = verifyEmailStmt.executeQuery();
 			rsEmails.next();
 			if (rsEmails.getInt(1) > 0){
-				context.getLogger().info("Admin email already exists");
+				context.getLogger().severe("Admin email already exists");
 				JSONObject json = new JSONObject();
 				json.put("error", "Admin email already exists");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+			
+			verifySubAdminEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+
+			context.getLogger().info("Execute SQL statement: " + verifySubAdminEmailStmt);
+			ResultSet rsSubEmails = verifySubAdminEmailStmt.executeQuery();
+			rsSubEmails.next();
+			if (rsSubEmails.getInt(1) > 0){
+				context.getLogger().severe("Sub Account Admin email already exists");
+				JSONObject json = new JSONObject();
+				json.put("error", "Subaccount email already exists");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 
@@ -176,7 +190,8 @@ public class TekvLSCreateCustomer
 		CUSTOMER_NAME("customerName"),
 		CUSTOMER_TYPE("customerType"),
 		TEST("test"),
-		CUSTOMER_ADMIN_EMAIL("customerAdminEmail");
+		CUSTOMER_ADMIN_EMAIL("customerAdminEmail"),
+		SUBACCOUNT_ADMIN_EMAIL("subaccountAdminEmail");		
 
 		private final String value;
 
@@ -187,7 +202,7 @@ public class TekvLSCreateCustomer
 
 	private enum OPTIONAL_PARAMS {
 		DISTRIBUTOR_ID("distributorId"),
-		CUSTOMER_ID("customerId");
+		CUSTOMER_ID("customerId");		
 
 		private final String value;
 
