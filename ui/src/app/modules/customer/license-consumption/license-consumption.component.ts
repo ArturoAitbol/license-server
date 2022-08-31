@@ -306,18 +306,18 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   private getWeeksDetail(weeklyConsumption: any[]): any[] {
-    let startDate: string | Moment;
-    let endDate: string | Moment;
+    let licenseStartWeek: Moment;
+    let licenseEndWeek:  Moment;
     if (this.aggregation === "month" || this.aggregation === "week") {
-      startDate = this.range.get('start').value;
-      endDate = this.range.get('end').value;
+      licenseStartWeek = this.range.get('start').value;
+      licenseEndWeek = this.range.get('end').value;
     } else {
-      startDate = this.selectedLicense.startDate + " 00:00:00";
-      endDate = moment.utc();
+      licenseStartWeek = moment.utc(this.selectedLicense.startDate + " 00:00:00");
+      const currentDate = moment.utc();
+      const endLicenseDate = moment.utc(this.selectedLicense.renewalDate + " 00:00:00");
+      licenseEndWeek = currentDate.isAfter(endLicenseDate) ? endLicenseDate : currentDate;
     }
-    const licenseStartWeek = moment.utc(startDate);
     licenseStartWeek.subtract(licenseStartWeek.day(), "days");
-    const licenseEndWeek = moment.utc(endDate);
     licenseEndWeek.subtract(licenseEndWeek.day(), "days");
 
     const selectedWeek = licenseEndWeek;
