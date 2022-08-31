@@ -25,11 +25,11 @@ public class ProjectForm extends AbstractPageObject {
     private final String licenseIdSelector = "[formcontrolname='licenseId']";
 
     public Projects createProject(String openDate, String name, String code, String license) {
-        this.action.sendText(this.openDate, openDate);
         this.action.sendText(this.projectName, name);
         this.action.sendText(this.projectCode, code);
         WebElement element = driver.findElement(By.cssSelector(this.licenseIdSelector));
         element.sendKeys(license);
+        this.action.sendText(this.openDate, openDate);
         this.action.click(this.submitButton);
         return new Projects();
     }
