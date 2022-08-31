@@ -6,7 +6,7 @@ import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 
 public class Consumptions extends AbstractPageObject {
-    @FindBy(css = "#add-license-consumption")
+    @FindBy(css = "#add-license-consumption-button")
     WebElement addConsumptionButton;
 
     public ConsumptionForm openConsumptionForm() {
