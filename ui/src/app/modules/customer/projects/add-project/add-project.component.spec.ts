@@ -126,6 +126,20 @@ describe('add projects interactions', () => {
         fixture.detectChanges();
         expect(fixture.nativeElement.querySelector('#submit-project-button').disabled).toBeTrue();
     });
+
+    it('should reset the Start Date and its limist when calling onLicenseChange()',()=>{
+        spyOn(addPorjectComponentTestInstance,'onLicenseChange').and.callThrough();
+        const license = LicenseServiceMock.mockLicenseA;
+        addPorjectComponentTestInstance.licenses = LicenseServiceMock.licensesList.licenses;
+
+        addPorjectComponentTestInstance.onLicenseChange(license.id);
+
+        expect(addPorjectComponentTestInstance.addProjectForm.get('openDate').value).toBe('');
+        expect(addPorjectComponentTestInstance.addProjectForm.get('openDate').enabled).toBeTrue();
+        expect(addPorjectComponentTestInstance.minDate).toEqual(new Date(license.startDate + " 00:00:00"));
+        expect(addPorjectComponentTestInstance.maxDate).toEqual(new Date(license.renewalDate + " 00:00:00"));
+
+    });
 });
 
 describe('Dialog calls and interactions', () => {
