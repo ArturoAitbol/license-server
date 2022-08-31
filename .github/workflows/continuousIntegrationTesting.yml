@@ -40,6 +40,7 @@ jobs:
         cd tests/ui
         gradle uiTests -Denv=integration
     - uses: deblockt/cucumber-report-annotations-action@v1.10
+      if: success() || failure()
       name: Publish Cucumber Report
       with:
           name: UI Test Report
