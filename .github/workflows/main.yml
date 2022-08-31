@@ -153,15 +153,23 @@ jobs:
         echo -e "password=${{ secrets.AZURE_TEST_USER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
 
     - name: Run UI tests
+      id: uiTests
       run: |
         cd tests/ui
         gradle uiTests -Denv=integration
     - uses: deblockt/cucumber-report-annotations-action@v1.7
+      if: success() || failure()
       name: Publish Cucumber Report
       with:
         name: UI Test Report
         access-token: ${{ secrets.GITHUB_TOKEN }}
         path: "**/cucumber.json"
+    - uses: actions/upload-artifact@v3
+      if: ${{ failure() && steps.uiTests.conclusion == 'failure' }}
+      name: Archive UI test results
+      with:
+        name: ui-test-report
+        path: tests/ui/reports/html/
     
     - name: Bump version and push tag
       id: tag_version
