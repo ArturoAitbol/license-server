@@ -14,10 +14,10 @@ import {SubaccountServiceMock} from '../../../test/mock/services/subaccount-serv
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import {Observable} from 'rxjs';
 
 let addCustomerAccountModalComponentInstance: AddCustomerAccountModalComponent;
 let fixture: ComponentFixture<AddCustomerAccountModalComponent>;
-const dialogServiceMock = new DialogServiceMock();
 
 const RouterMock = {
     navigate: (commands: string[]) => {}
@@ -61,9 +61,9 @@ const beforeEachFunction = async () => {
     });
 };
 
-describe('UI verification test', () => {
+describe('UI verification test for add customer account', () => {
     beforeEach(beforeEachFunction);
-    it('should display add customer account modal UI components', () =>{
+    it('should display add customer account modal label text correctly', () =>{
         fixture.detectChanges();
         const modalTitle = fixture.nativeElement.querySelector('#modal-title');
         const customerNameLabel = fixture.nativeElement.querySelector('#customer-name-label');
@@ -89,8 +89,7 @@ describe('UI verification test', () => {
 
 describe('onCancel', () => {
     beforeEach(beforeEachFunction);
-    it('should call dialogRef',  () => {
-        console.log('onClose() test');
+    it('should call dialogRef.close at onCancel()',  () => {
         spyOn(MatDialogRefMock, 'close');
         addCustomerAccountModalComponentInstance.onCancel();
         expect(MatDialogRefMock.close).toHaveBeenCalled();
@@ -98,5 +97,127 @@ describe('onCancel', () => {
 });
 
 describe('addCustomer', () => {
+    beforeEach(beforeEachFunction);
+    it('should make a call to customerService.create customer and display a success message on snackbar',  () => {
+        const addCustomerForm = addCustomerAccountModalComponentInstance.addCustomerForm;
+        const customerToAdd: any = {
+            customerName: 'test customer name',
+            customerType: 'test customer type',
+            customerAdminEmail: 'test customer admin email',
+            subaccountName: 'test subAccount name',
+            testCustomer: true
+        };
+        const customerToCompare: any = {
+            customerName: customerToAdd.customerName,
+            customerType: customerToAdd.customerType,
+            customerAdminEmail: customerToAdd.customerAdminEmail,
+            test: 'true'
+        };
+        addCustomerForm.patchValue({
+            customerName: customerToAdd.customerName,
+            customerType: customerToAdd.customerType,
+            adminEmail: customerToAdd.customerAdminEmail,
+            subaccountName: customerToAdd.subaccountName,
+            testCustomer: customerToAdd.testCustomer,
+        });
+        spyOn(CustomerServiceMock, 'createCustomer').and.callThrough();
+        spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(addCustomerAccountModalComponentInstance, 'createSubAccount');
 
+        addCustomerAccountModalComponentInstance.addCustomer();
+
+        expect(CustomerServiceMock.createCustomer).toHaveBeenCalledWith(customerToCompare);
+        expect(addCustomerAccountModalComponentInstance.createSubAccount).toHaveBeenCalledWith({
+            customerId: '12341234-1234-1234-1234-123412341234',
+            subaccountName: customerToAdd.subaccountName,
+            subaccountAdminEmail: ''
+        });
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Customer added successfully!', '' );
+    });
+
+    it('should make a call to customerService.create customer and display an error message on snackbar',  () => {
+        const customerToAdd: any = {
+            customerName: '',
+            customerType: '',
+            customerAdminEmail: '',
+            subaccountName: '',
+            testCustomer: false
+        };
+        const customerToCompare: any = {
+            customerName: customerToAdd.customerName,
+            customerType: customerToAdd.customerType,
+            customerAdminEmail: customerToAdd.customerAdminEmail,
+            test: 'false'
+        };
+        spyOn(CustomerServiceMock, 'createCustomer').and.returnValue(CustomerServiceMock.errorResponse());
+        spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar');
+        spyOn(addCustomerAccountModalComponentInstance, 'createSubAccount');
+        spyOn(console, 'error');
+        addCustomerAccountModalComponentInstance.addCustomer();
+        expect(CustomerServiceMock.createCustomer).toHaveBeenCalledWith(customerToCompare);
+        expect(addCustomerAccountModalComponentInstance.createSubAccount).toHaveBeenCalledTimes(0);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Expected customer response error', 'Error adding customer!');
+        expect(console.error).toHaveBeenCalledWith('error while adding a new customer', { error: 'Expected customer response error' });
+    });
+
+    it('should make a call to customerService.create customer and display an error message on snackbar',  () => {
+        spyOn(CustomerServiceMock, 'createCustomer').and.returnValue(CustomerServiceMock.createCustomerWithError());
+        spyOn(SnackBarServiceMock, 'openSnackBar');
+        spyOn(addCustomerAccountModalComponentInstance, 'createSubAccount');
+        spyOn(console, 'error');
+        addCustomerAccountModalComponentInstance.addCustomer();
+        expect(CustomerServiceMock.createCustomer).toHaveBeenCalled();
+        expect(addCustomerAccountModalComponentInstance.createSubAccount).toHaveBeenCalledTimes(0);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Expected create customer error', 'Error adding customer!');
+    });
 });
+
+describe('createSubAccount', () => {
+    beforeEach(beforeEachFunction);
+    it('should make a call to subaccountService.create customer and display a success message on snackbar', () => {
+        const subaccountDetails: any = {
+            customerId: 'test customer id',
+            subaccountName: 'test subaccount name',
+            subaccountAdminEmail: 'test subaccount admin email',
+        };
+        spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar');
+        spyOn(MatDialogRefMock, 'close');
+        addCustomerAccountModalComponentInstance.createSubAccount(subaccountDetails);
+        expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount added successfully!', '');
+        expect(MatDialogRefMock.close).toHaveBeenCalled();
+    });
+
+    it('should make a call to subaccountService.create customer and display an error message on snackbar if the service returns an error', () => {
+        const subaccountDetails: any = {
+            customerId: 'test customer id',
+            subaccountName: 'test subaccount name',
+            subaccountAdminEmail: 'test subaccount admin email',
+        };
+        spyOn(SubaccountServiceMock, 'createSubAccount').and.returnValue(SubaccountServiceMock.createSubAccountWithError());
+        spyOn(SnackBarServiceMock, 'openSnackBar');
+        spyOn(MatDialogRefMock, 'close');
+        addCustomerAccountModalComponentInstance.createSubAccount(subaccountDetails);
+        expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Expected create subaccount error', 'Error adding subaccount!');
+        expect(MatDialogRefMock.close).toHaveBeenCalled();
+    });
+
+    it('should make a call to subaccountService.create customer and display an error message on snackbar if an error is thrown', () => {
+        const subaccountDetails: any = {
+            customerId: 'test customer id',
+            subaccountName: 'test subaccount name',
+            subaccountAdminEmail: 'test subaccount admin email',
+        };
+        spyOn(SubaccountServiceMock, 'createSubAccount').and.returnValue(SubaccountServiceMock.errorResponse());
+        spyOn(SnackBarServiceMock, 'openSnackBar');
+        spyOn(MatDialogRefMock, 'close');
+        addCustomerAccountModalComponentInstance.createSubAccount(subaccountDetails);
+        expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Expected subaccount response error', 'Error adding subaccount!');
+        expect(MatDialogRefMock.close).toHaveBeenCalled();
+    });
+})
