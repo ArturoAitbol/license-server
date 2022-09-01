@@ -47,6 +47,7 @@ export class AddCustomerAccountModalComponent {
       customerName: this.addCustomerForm.value.customerName,
       customerType: this.addCustomerForm.value.customerType,
       customerAdminEmail: this.addCustomerForm.value.adminEmail,
+      subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
       test: this.addCustomerForm.value.testCustomer.toString()
     };
     this.customerService.createCustomer(customerObject).subscribe((resp: any) => {
