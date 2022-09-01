@@ -274,43 +274,45 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.projectConsumptionData = [];
     this.detailedConsumptionData = [];
     this.tokenConsumptionData = [];
-    this.isDetailedConsumptionSupplementalLoadingResults = true;
-    this.isDetailedConsumptionSupplementalRequestCompleted = false;
-    this.isDetailedConsumptionLoadingResults = true;
-    this.isDetailedConsumptionRequestCompleted = false;
-    this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
-      res.usage.forEach(item => {
-        if (item.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
-          item.usageDays = "...";
-        } else {
-          this.getNameOfDays(item.usageDays);
-        }
+    if (this.selectedLicense) {
+      this.isDetailedConsumptionSupplementalLoadingResults = true;
+      this.isDetailedConsumptionSupplementalRequestCompleted = false;
+      this.isDetailedConsumptionLoadingResults = true;
+      this.isDetailedConsumptionRequestCompleted = false;
+      this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
+        res.usage.forEach(item => {
+          if (item.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
+            item.usageDays = "...";
+          } else {
+            this.getNameOfDays(item.usageDays);
+          }
+        });
+        this.detailedConsumptionData = res.usage;
+        this.detailedConsumptionDataLength = res.usageTotalCount;
+        this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
+        this.projectConsumptionData = res.projectConsumption;
+        this.tokenConsumptionData = this.formatTokenConsumption(res.tokenConsumption);
+        this.detailsConsumptionTable.setPageIndex(0);
+        this.isDetailedConsumptionSupplementalLoadingResults = false;
+        this.isDetailedConsumptionSupplementalRequestCompleted = true;
+        this.isDetailedConsumptionLoadingResults = false;
+        this.isDetailedConsumptionRequestCompleted = true;
+      }, (err: any) => {
+        console.error('Error fetching detailed license consumption data: ', err);
+        this.isDetailedConsumptionSupplementalLoadingResults = false;
+        this.isDetailedConsumptionSupplementalRequestCompleted = true;
+        this.isDetailedConsumptionLoadingResults = false;
+        this.isDetailedConsumptionRequestCompleted = true;
       });
-      this.detailedConsumptionData = res.usage;
-      this.detailedConsumptionDataLength = res.usageTotalCount;
-      this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
-      this.projectConsumptionData = res.projectConsumption;
-      this.tokenConsumptionData = this.formatTokenConsumption(res.tokenConsumption);
-      this.detailsConsumptionTable.setPageIndex(0);
-      this.isDetailedConsumptionSupplementalLoadingResults = false;
-      this.isDetailedConsumptionSupplementalRequestCompleted = true;
-      this.isDetailedConsumptionLoadingResults = false;
-      this.isDetailedConsumptionRequestCompleted = true;
-    }, (err: any) => {
-      console.error('Error fetching detailed license consumption data: ', err);
-      this.isDetailedConsumptionSupplementalLoadingResults = false;
-      this.isDetailedConsumptionSupplementalRequestCompleted = true;
-      this.isDetailedConsumptionLoadingResults = false;
-      this.isDetailedConsumptionRequestCompleted = true;
-    });
+    }
   }
 
   private getWeeksDetail(weeklyConsumption: any[]): any[] {
     let licenseStartWeek: Moment;
     let licenseEndWeek:  Moment;
     if (this.aggregation === "month" || this.aggregation === "week") {
-      licenseStartWeek = this.range.get('start').value;
-      licenseEndWeek = this.range.get('end').value;
+      licenseStartWeek = moment.utc(this.range.get('start').value);
+      licenseEndWeek = moment.utc(this.range.get('end').value);
     } else {
       licenseStartWeek = moment.utc(this.selectedLicense.startDate + " 00:00:00");
       const currentDate = moment.utc();
