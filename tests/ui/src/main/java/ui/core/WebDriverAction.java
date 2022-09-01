@@ -45,13 +45,11 @@ public class WebDriverAction {
 
     public void sendText(WebElement element, String text) {
         wait.until(ExpectedConditions.elementToBeClickable(element));
-        element.clear();
         element.sendKeys(text);
     }
 
     public void sendText(By locator, String text) {
         WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
-        element.clear();
         element.sendKeys(text);
     }
 

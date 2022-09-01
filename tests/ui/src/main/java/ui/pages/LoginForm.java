@@ -29,7 +29,7 @@ public class LoginForm extends AbstractPageObject {
         this.action.click(acceptButton);
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);
-        this.wait.until(ExpectedConditions.titleIs("tekToken Consumption Portal"));
+        this.wait.until(ExpectedConditions.titleIs("tekVizion 360 Portal"));
         return new Customers();
     }
 
