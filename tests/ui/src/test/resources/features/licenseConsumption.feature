@@ -39,7 +39,7 @@ Feature: LicensesConsumption
       | startDate | 8/20/2022   |
       | name      | projectTest |
       | code      | PRT-001     |
-      | license   | License1    |
+      | subscription   | License1    |
     And I should see the message "Project added successfully!"
     When I add a consumption with the following data
 #      | startWeek           | 8/21/2022     |
