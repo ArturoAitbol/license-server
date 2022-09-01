@@ -49,7 +49,8 @@ class TekvLSDeleteCustomerByIdTest extends TekvLSTest {
 
     private void createTestCustomer() {
         String name = "test_customer" + LocalDateTime.now();
-        String bodyRequest = "{'customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+        String subAccountname = "customerSubAccountTest" + LocalDateTime.now();
+        String bodyRequest = "{'customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com', 'subaccountAdminEmail':'"+subAccountname+"@hotmail.com', 'test':'true'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = this.createCustomerApi.run(this.request, context);

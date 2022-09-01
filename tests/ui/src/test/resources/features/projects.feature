@@ -17,16 +17,16 @@ Feature: Projects
     Then I see the customer "projectCustomerTest" in the table
     
   @addLicense
-  Scenario: Add Basic license
+  Scenario: Add a subscription for projects
     Given I see the customer "projectCustomerTest" in the table
     And I go to the Subscriptions view of "projectCustomerTest"
     And I should see the "tekVizion 360 Subscriptions" table
     And I open the Add Subscription form
     When I create a subscription with the following data
-      | startDate     | 8/20/2022     |
-      | renewalDate   | 2/20/2023     |
-      | subscriptionType   | Basic         |
-      | description   | Description1  |
+      | startDate         | 8/20/2022         |
+      | renewalDate       | 2/20/2023         |
+      | subscriptionType  | Basic             |
+      | description       | SubscriptionTest  |
     Then I see the "Basic" subscription in the table
 
   @createProject
@@ -35,10 +35,10 @@ Feature: Projects
     And I go to the Projects List of "projectCustomerTest"
     And I open the Add Project form
     When I create a project with the following data
-      | startDate | 8/20/2022    |
-      | name      | projectTest   |
-      | code      | PRT-01        |
-      | license   | Description1  |
+      | name          | projectTest       |
+      | code          | PRT-01            |
+      | startDate     | 8/20/2022         |
+      | subscription  | SubscriptionTest  |
     Then I should see the message "Project added successfully!"
     Then I see the project "projectTest" in the table
 
@@ -49,11 +49,11 @@ Feature: Projects
     And I see the project "projectTest" in the table
     When I edit the project "projectTest" with the following data
 #      | startDate | 8/20/2022         |
-      | name      | projectModified   |
-      | code      | PRT-02            |
-      | type      | Closed            |
-      | closeDate | 8/30/2022         |
-#      | license   | Description1      |
+      | name          | projectModified   |
+      | code          | PRT-02            |
+      | type          | Closed            |
+      | closeDate     | 8/30/2022         |
+#      | subscription  | SubscriptionTest  |
     Then I should see the message "Project edited successfully!"
     And I should see the modified data in Projects table
 

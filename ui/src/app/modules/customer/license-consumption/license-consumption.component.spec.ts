@@ -121,13 +121,11 @@ describe('UI verification test', () => {
         //Titles
         const title = fixture.nativeElement.querySelector('#page-title');
         const firstSectionTitle = fixture.nativeElement.querySelector('#first-section-title');
-        const secoundSectionTitle = fixture.nativeElement.querySelector('#second-section-title');
         const thirdSectionTitle = fixture.nativeElement.querySelector('#third-section-title');
         const currentCustomer = licenseConsumptionComponentTestInstance.currentCustomer;
 
         expect(title.textContent).toBe(`${currentCustomer.name} - ${currentCustomer.subaccountName}`);
-        expect(firstSectionTitle.textContent).toBe('tekVizion 360 Subscription Consumption Summary');
-        expect(secoundSectionTitle.textContent).toBe('tekTokens Consumption');
+        expect(firstSectionTitle.textContent).toBe('tekToken Consumption Summary');
         expect(thirdSectionTitle.textContent).toBe('Equipment Summary');
         
         
