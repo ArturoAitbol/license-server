@@ -34,7 +34,9 @@ public class Customers extends AbstractPageObject {
 
     public SubaccountForm openSubaccountForm() {
         this.action.click(this.addSubaccountButton);
-        By modalLocator = By.cssSelector("div.loading-shade");
+//        By modalLocator = By.cssSelector("div.loading-shade");
+//        By modalLocator = By.cssSelector("mat-spinner");
+        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
         this.action.waitModal(modalLocator);
         return new SubaccountForm();
     }
