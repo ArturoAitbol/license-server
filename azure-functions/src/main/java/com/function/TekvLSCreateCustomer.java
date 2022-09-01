@@ -121,16 +121,19 @@ public class TekvLSCreateCustomer
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			
-			verifySubAdminEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+			
+			if (jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value)) {
+				verifySubAdminEmailStmt.setString(1, jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value) ? jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value) : null);
 
-			context.getLogger().info("Execute SQL statement: " + verifySubAdminEmailStmt);
-			ResultSet rsSubEmails = verifySubAdminEmailStmt.executeQuery();
-			rsSubEmails.next();
-			if (rsSubEmails.getInt(1) > 0){
-				context.getLogger().severe("Sub Account Admin email already exists");
-				JSONObject json = new JSONObject();
-				json.put("error", "Subaccount email already exists");
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+				context.getLogger().info("Execute SQL statement: " + verifySubAdminEmailStmt);
+				ResultSet rsSubEmails = verifySubAdminEmailStmt.executeQuery();
+				rsSubEmails.next();
+				if (rsSubEmails.getInt(1) > 0){
+					context.getLogger().severe("Sub Account Admin email already exists");
+					JSONObject json = new JSONObject();
+					json.put("error", "Subaccount email already exists");
+					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+				}
 			}
 
 			statement.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_NAME.value));
@@ -190,8 +193,7 @@ public class TekvLSCreateCustomer
 		CUSTOMER_NAME("customerName"),
 		CUSTOMER_TYPE("customerType"),
 		TEST("test"),
-		CUSTOMER_ADMIN_EMAIL("customerAdminEmail"),
-		SUBACCOUNT_ADMIN_EMAIL("subaccountAdminEmail");		
+		CUSTOMER_ADMIN_EMAIL("customerAdminEmail");				
 
 		private final String value;
 
@@ -202,7 +204,8 @@ public class TekvLSCreateCustomer
 
 	private enum OPTIONAL_PARAMS {
 		DISTRIBUTOR_ID("distributorId"),
-		CUSTOMER_ID("customerId");		
+		CUSTOMER_ID("customerId"),
+		SUBACCOUNT_ADMIN_EMAIL("subaccountAdminEmail");
 
 		private final String value;
 
