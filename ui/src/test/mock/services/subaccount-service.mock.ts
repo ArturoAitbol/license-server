@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 
 const SUBACCOUNT_LIST = {
     subaccounts: [
@@ -334,6 +334,7 @@ const SUBACCOUNT_LIST = {
         }
     ]
 };
+const ERROR_MSG = 'Expected subaccount response error';
 
 export const SubaccountServiceMock = {
     subAccountListValue: SUBACCOUNT_LIST,
@@ -355,6 +356,31 @@ export const SubaccountServiceMock = {
             return {
                 unsubscribe() { }
             };
+        });
+    },
+    createSubAccount: () => {
+        return new Observable((observer) => {
+            observer.next({ res: {} });
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    createSubAccountWithError: () => {
+        return new Observable((observer) => {
+            observer.next({
+                error: 'Expected create subaccount error'
+            });
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
+    },
+    errorResponse: () => {
+        return throwError({
+            error: 'Expected subaccount response error'
         });
     }
 };
