@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import { Customer } from 'src/app/model/customer.model';
 
 const CUSTOMER_LIST = {
@@ -476,6 +476,22 @@ export const CustomerServiceMock = {
             return {
                 unsubscribe() {}
             };
+        });
+    },
+    createCustomerWithError: () => {
+        return new Observable((observer) => {
+            observer.next({
+                error: 'Expected create customer error'
+            });
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
+    },
+    errorResponse: () => {
+        return throwError({
+            error: 'Expected customer response error'
         });
     }
 }
