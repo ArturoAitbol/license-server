@@ -105,12 +105,14 @@ describe('addCustomer', () => {
             customerType: 'test customer type',
             customerAdminEmail: 'test customer admin email',
             subaccountName: 'test subAccount name',
+            subaccountAdminEmail: '',
             testCustomer: true
         };
         const customerToCompare: any = {
             customerName: customerToAdd.customerName,
             customerType: customerToAdd.customerType,
             customerAdminEmail: customerToAdd.customerAdminEmail,
+            subaccountAdminEmail: customerToAdd.subaccountAdminEmail,
             test: 'true'
         };
         addCustomerForm.patchValue({
@@ -142,12 +144,14 @@ describe('addCustomer', () => {
             customerType: '',
             customerAdminEmail: '',
             subaccountName: '',
+            subaccountAdminEmail: '',
             testCustomer: false
         };
         const customerToCompare: any = {
             customerName: customerToAdd.customerName,
             customerType: customerToAdd.customerType,
             customerAdminEmail: customerToAdd.customerAdminEmail,
+            subaccountAdminEmail: customerToAdd.subaccountAdminEmail,
             test: 'false'
         };
         spyOn(CustomerServiceMock, 'createCustomer').and.returnValue(CustomerServiceMock.errorResponse());
