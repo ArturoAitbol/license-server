@@ -125,7 +125,7 @@ describe('UI verification test', () => {
         const currentCustomer = licenseConsumptionComponentTestInstance.currentCustomer;
 
         expect(title.textContent).toBe(`${currentCustomer.name} - ${currentCustomer.subaccountName}`);
-        expect(firstSectionTitle.textContent).toBe('tektoken Consumption Summary');
+        expect(firstSectionTitle.textContent).toBe('tekToken Consumption Summary');
         expect(thirdSectionTitle.textContent).toBe('Equipment Summary');
         
         
