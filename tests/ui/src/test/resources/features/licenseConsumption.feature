@@ -36,7 +36,7 @@ Feature: LicensesConsumption
     And I open the Add tekToken Consumption form
     And I open the Add Project form from Consumption form
     And I create a project with the following data
-      | startDate | 8/17/2022   |
+      | startDate | 8/20/2022   |
       | name      | projectTest |
       | code      | PRT-001     |
       | license   | License1    |
