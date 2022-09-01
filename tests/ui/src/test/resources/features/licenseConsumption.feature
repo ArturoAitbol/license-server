@@ -50,12 +50,12 @@ Feature: LicensesConsumption
       | deviceVersion       | 12.6     |
       | deviceGranularity   | week          |
       | tekTokens           | 7             |
-    Then I should see the following data in the tekTokens Consumption Summary table
+    Then I should see the following data in the tekToken Consumption Summary table
       | tekTokens     | 55      |
     Then I should see the following data in the tekTokens Project Consumption table
 #      | project     | projectTest   |
       | status      | Open          |
-    And I should see the same data in the tekTokens Consumption Events table
+    And I should see the same data in the tekToken Consumption Events table
 
   @editLicenseConsumption
   Scenario: Edit a tekToken Consumption
@@ -68,12 +68,12 @@ Feature: LicensesConsumption
       | deviceGranularity   | week        |
       | tekTokens           | 4           |
     Then I should see the message "tekToken consumption successfully edited!"
-    Then I should see the following data in the tekTokens Consumption Summary table
+    Then I should see the following data in the tekToken Consumption Summary table
       | tekTokens     | 55      |
     Then I should see the following data in the tekTokens Project Consumption table
       | project     | projectTest   |
       | status      | Open          |
-    And I should see the same data in the tekTokens Consumption Events table
+    And I should see the same data in the tekToken Consumption Events table
 
   @deleteLicenseConsumption
   Scenario: Delete a tekToken Consumption
