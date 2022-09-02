@@ -60,7 +60,7 @@ public class LicenseSteps {
 
     @When("I create a subscription with the following data")
     public void iCreateASubscriptionWithTheFollowingData(DataTable subscriptionTable) throws InterruptedException {
-        Thread.sleep(2000);
+//        Thread.sleep(2000);
         Map<String, String> license = subscriptionTable.asMap(String.class, String.class);
         this.startDate = license.get("startDate");
         this.renewalDate = license.get("renewalDate");
@@ -93,8 +93,8 @@ public class LicenseSteps {
     public void iEditTheSubscriptionWithTheFollowingData(String subscriptionDescription, DataTable dataTable) throws InterruptedException {
         this.subscriptionRow = new SubscriptionRow(subscriptionDescription);
         ActionMenu actionMenu = this.subscriptionRow.openActionMenu();
-        actionMenu.edit();
-        Thread.sleep(2000);
+        actionMenu.editForm();
+//        Thread.sleep(2000);
         this.subscriptionForm = new SubscriptionForm();
         Map<String, String> license = dataTable.asMap(String.class, String.class);
         this.startDate = license.getOrDefault("startDate", "none");

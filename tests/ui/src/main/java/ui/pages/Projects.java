@@ -11,7 +11,7 @@ public class Projects extends AbstractPageObject {
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
 
     public ProjectForm openProjectForm(){
-        this.action.click(this.addProjectButton);
+        this.action.openForm(this.addProjectButton);
         return new ProjectForm();
     }
 

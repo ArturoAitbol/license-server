@@ -24,7 +24,7 @@ public class Subscriptions extends AbstractPageObject {
     }
 
     public SubscriptionForm openSubscriptionForm() {
-        this.action.click(this.addLicenseButton);
+        this.action.openForm(this.addLicenseButton);
         return new SubscriptionForm();
     }
 

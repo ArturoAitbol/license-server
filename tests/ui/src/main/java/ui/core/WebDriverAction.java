@@ -35,6 +35,29 @@ public class WebDriverAction {
         executor.executeScript("arguments[0].click();", element);
     }
 
+    public void openForm(WebElement element){
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        element.click();
+//        By modalLocator = By.cssSelector("div.loading-shade");
+//        By modalLocator = By.cssSelector("mat-spinner");
+        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
+        this.waitModal(modalLocator);
+    }
+
+    public void openFormForce(WebElement element){
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", element);
+        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
+        this.waitModal(modalLocator);
+    }
+
+    public void selectToday(WebElement element){
+        this.click(element);
+        By todaySelector = By.cssSelector("div.mat-calendar-body-today");
+        this.click(todaySelector);
+    }
+
     public String confirmModal(WebElement element) {
         return element.getAttribute("disabled");
     }

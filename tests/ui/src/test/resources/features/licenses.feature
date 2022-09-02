@@ -24,10 +24,10 @@ Feature: Licenses
         And I should see the "tekVizion 360 Subscriptions" table
         And I open the Add Subscription form
         When I create a subscription with the following data
-            | startDate     | 8/20/2022     |
-            | renewalDate   | 2/20/2023     |
-            | subscriptionType   | Basic         |
-            | description   | Description1  |
+            | startDate         | 8/20/2022     |
+            | renewalDate       | 2/20/2023     |
+            | subscriptionType  | Basic         |
+            | description       | Description1  |
         Then I see the "Description1" subscription in the table
 
     @editLicense
@@ -39,7 +39,7 @@ Feature: Licenses
 #            | startDate             | 8/20/2022     |
 #            | renewalDate           | 2/20/2023     |
             | description           | Description2  |
-            | subscriptionType           | AddOn         |
+            | subscriptionType      | AddOn         |
             | deviceAccessTekTokens | 10            |
             | tekTokens             | 30            |
         Then I should see the message "Subscription edited successfully!"

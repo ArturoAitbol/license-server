@@ -10,9 +10,7 @@ public class Consumptions extends AbstractPageObject {
     WebElement addConsumptionButton;
 
     public ConsumptionForm openConsumptionForm() {
-        this.action.click(this.addConsumptionButton);
-        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
-        this.action.waitModal(modalLocator);
+        this.action.openForm(this.addConsumptionButton);
         return new ConsumptionForm();
     }
 
