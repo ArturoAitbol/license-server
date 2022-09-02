@@ -52,8 +52,8 @@ public class LicenseConsumptionSteps {
         this.consumptions = this.consumptionForm.addConsumption(startWeek, endWeek, project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens);
     }
 
-    @Then("I should see the following data in the tekTokens Consumption Summary table")
-    public void iShouldSeeTheFollowingDataInTheTekTokensConsumptionSummaryTable(DataTable dataTable) throws InterruptedException {
+    @Then("I should see the following data in the tekToken Consumption Summary table")
+    public void iShouldSeeTheFollowingDataInTheTekTokenConsumptionSummaryTable(DataTable dataTable) throws InterruptedException {
         Thread.sleep(3000);
         Map<String, String> consumption = dataTable.asMap(String.class, String.class);
         String totalTekTokens = consumption.get("tekTokens");
@@ -90,8 +90,8 @@ public class LicenseConsumptionSteps {
         Assert.assertEquals("Consumption doesn't have this amount of tekTokens: ".concat(tekTokens), actualTekTokens, actualTekTokens);
     }
 
-    @And("I should see the same data in the tekTokens Consumption Events table")
-    public void iShouldSeeTheSameDataInTheTekTokensConsumptionEventsTable() {
+    @And("I should see the same data in the tekToken Consumption Events table")
+    public void iShouldSeeTheSameDataInTheTekTokenConsumptionEventsTable() {
         String defaultType = "Configuration";
         String defaultUsageDays = "Sun";
         // String actualConsumptionDate = this.consumptions.getValueXpath(detailedConsumptionTableId,"Consumption Date");

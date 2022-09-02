@@ -13,7 +13,7 @@ const CUSTOMER = {
 export const CurrentCustomerServiceMock = {
     selectedCustomer : CUSTOMER,
     getSelectedCustomer: () =>{
-        return CUSTOMER;
+        return JSON.parse(JSON.stringify(CUSTOMER));
     },
     setSelectedCustomer: (customer: any) => {
     }

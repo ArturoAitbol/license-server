@@ -350,7 +350,10 @@ export class DashboardComponent implements OnInit {
                 this.openDialog(object.selectedOption, object.selectedRow);
                 break;
             case this.VIEW_SUBACC_ADMIN_EMAILS:
-                this.openDialog(object.selectedOption, object.selectedRow);
+                if(object.selectedRow.subaccountId !== undefined ) 
+                    this.openDialog(object.selectedOption, object.selectedRow);
+                else
+                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access Subaccount admin emails view', '');
                 break;
             case this.MODIFY_ACCOUNT:
                 this.openDialog(object.selectedOption, object.selectedRow);

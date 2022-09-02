@@ -354,8 +354,14 @@ describe('.rowAction()', () => {
             subaccountId: 'test-id'
         };
         spyOn(dashboardComponentTestInstance, 'openDialog');
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_SUBACC_ADMIN_EMAILS;
+        selectedTestData.selectedRow.subaccountId = undefined;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access Subaccount admin emails view', '');
+
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.VIEW_SUBACC_ADMIN_EMAILS, selectedTestData.selectedRow);
     });

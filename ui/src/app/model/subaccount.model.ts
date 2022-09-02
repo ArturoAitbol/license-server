@@ -1,5 +1,5 @@
 export interface SubAccount {
-    id: string;
+    id?: string;
     customerId: string;
     name: string;
     subaccountAdminEmails: string[];
