@@ -33,16 +33,17 @@ public class LicenseConsumptionSteps {
 
     @And("I open the Add tekToken Consumption form")
     public void iOpenTheAddTekTokenConsumptionForm() throws InterruptedException {
-        Thread.sleep(3000);
+//        Thread.sleep(3000);
         this.consumptionForm = this.consumptions.openConsumptionForm();
     }
 
     @When("I add a consumption with the following data")
     public void iAddAConsumptionWithTheFollowingData(DataTable dataTable) throws InterruptedException {
-        Thread.sleep(2000);
+//        Thread.sleep(2000);
+        this.consumptionForm.waitSpinner();
         Map<String, String> consumption = dataTable.asMap(String.class, String.class);
-        this.startWeek = consumption.get("startWeek");
-        this.endWeek = consumption.get("endWeek");
+/*        this.startWeek = consumption.get("startWeek");
+        this.endWeek = consumption.get("endWeek");*/
         this.project = consumption.get("project");
         this.deviceVendor = consumption.get("deviceVendor");
         this.deviceModel = consumption.get("deviceModel");
@@ -116,8 +117,8 @@ public class LicenseConsumptionSteps {
     public void iEditTheConsumptionOfTheProjectWithTheFollowingData(String project, DataTable dataTable) throws InterruptedException {
         this.consumptionRow = new ConsumptionRow(project);
         ActionMenu actionMenu = this.consumptionRow.openActionMenu();
-        actionMenu.edit();
-        Thread.sleep(2000);
+        actionMenu.editForm();
+//        Thread.sleep(2000);
         this.consumptionForm = new ConsumptionForm();
         Map<String, String> consumption = dataTable.asMap(String.class, String.class);
         this.project = consumption.getOrDefault("project", "");

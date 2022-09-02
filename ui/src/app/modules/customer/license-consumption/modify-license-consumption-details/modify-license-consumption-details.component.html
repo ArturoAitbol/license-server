@@ -12,7 +12,7 @@
                         <mat-label>Date</mat-label>
                         <input matInput #consDate [matDatepicker]="picker" [min]="startDate" [max]="endDate" required
                             formControlName="consDate">
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker-toggle matSuffix [for]="picker" id="license-consumption-calendar"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
                 </div>
