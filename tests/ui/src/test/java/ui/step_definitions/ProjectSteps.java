@@ -47,7 +47,7 @@ public class ProjectSteps {
 
     @When("I create a project with the following data")
     public void iCreateAProjectWithTheFollowingData(DataTable datatable) throws InterruptedException {
-        Thread.sleep(2000);
+//        Thread.sleep(2000);
         Map<String, String> projectTable = datatable.asMap(String.class, String.class);
         this.startDate = projectTable.get("startDate");
         this.name = projectTable.get("name");
@@ -71,8 +71,8 @@ public class ProjectSteps {
     public void iEditTheProjectWithTheFollowingData(String projectName, DataTable datatable) throws InterruptedException {
         this.projectRow = new ProjectRow(projectName);
         ActionMenu actionMenu = this.projectRow.openActionMenu();
-        actionMenu.edit();
-        Thread.sleep(2000);
+        actionMenu.editForm();
+//        Thread.sleep(2000);
         this.projectForm = new ProjectForm();
         Map<String, String> projectTable = datatable.asMap(String.class, String.class);
         this.startDate = projectTable.getOrDefault("startDate", "none");

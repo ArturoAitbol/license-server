@@ -35,12 +35,28 @@ public class WebDriverAction {
         executor.executeScript("arguments[0].click();", element);
     }
 
+    public void forceClick(WebElement element){
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", element);
+    }
+
+    public void selectToday(WebElement element){
+        this.click(element);
+        By todaySelector = By.cssSelector("div.mat-calendar-body-today");
+        this.click(todaySelector);
+    }
+
     public String confirmModal(WebElement element) {
         return element.getAttribute("disabled");
     }
 
-    public void waitModal(By locator) {
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+    public void waitModal() {
+//        By modalLocator = By.cssSelector("div.loading-shade");
+//        By modalLocator = By.cssSelector("mat-spinner");
+        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(modalLocator));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(modalLocator));
     }
 
     public void sendText(WebElement element, String text) {
@@ -79,14 +95,6 @@ public class WebDriverAction {
         WebElement optionClickable = wait.until(ExpectedConditions.presenceOfElementLocated(option));
         JavascriptExecutor executor = (JavascriptExecutor)this.driver;
         executor.executeScript("arguments[0].click();", optionClickable);
-    }
-
-    public WebElement getElement(By locator) {
-        return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-    }
-
-    public List<WebElement> getElements(By locator) {
-        return wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
     }
 
     public String getText(By locator) {

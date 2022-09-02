@@ -14,7 +14,7 @@
                               <input formControlName="startWeek" matStartDate placeholder="Start date" [readonly]="true"> 
                               <input formControlName="endWeek" matEndDate placeholder="End date" [readonly]="true" (dateChange)="pickStartWeek()">
                             </mat-date-range-input>
-                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker-toggle matSuffix [for]="picker" id="license-consumption-calendar"></mat-datepicker-toggle>
                             <mat-date-range-picker lcDateRange [minDate]="startDate" [maxDate]="endDate" #picker></mat-date-range-picker>
                         </mat-form-field>
                     </div>
