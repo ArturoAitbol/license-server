@@ -143,13 +143,18 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const projectItem: string = localStorage.getItem(Constants.PROJECT);
+    const projectObject = JSON.parse(projectItem);
     if (projectItem)
-      this.selectedProject = JSON.parse(projectItem).id;
+      this.selectedProject = projectObject.id;
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
-        this.setSelectedLicense(res.licenses[0]);
+        if (projectItem) {
+          this.setSelectedLicense(res.licenses.filter(license => license.id === projectObject.licenseId)[0])
+        } else {
+          this.setSelectedLicense(res.licenses[0]);
+        }
         this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
         this.isLicenseListLoaded = true;
         this.fetchDataToDisplay();
@@ -398,6 +403,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   onChangeLicense(newLicenseId: string) {
     if (newLicenseId) {
+      this.selectedProject = "";
       this.setSelectedLicense(this.licensesList.find(item => item.id === newLicenseId));
       this.resetPeriodFilter();
       this.fetchDataToDisplay();
