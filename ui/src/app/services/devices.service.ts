@@ -15,26 +15,33 @@ export class DevicesService {
    * get devices list
    * @returns: Observable 
    */
-  public getDevicesList(subaccountId?: string, object?: { vendor: string, product: string, version: string }): Observable<Device> {
-    let url = this.API_URL;
-    if (object) {
-      if (object.vendor) {
-        url += '/' + object.vendor;
-        if (object.product) {
-          url += '/' + object.product;
-          if (object.version) {
-            url += '/' + object.version;
-          }
-        }
-      }
-    }
+  public getDevicesList(subaccountId?: string, vendor?: string, product?: string, version?: string ): Observable<Device> {
     let params = new HttpParams();
     if (subaccountId){
       params = params.set('subaccountId', subaccountId);
     }
+    if (vendor){
+      params = params.set('vendor', vendor);
+    }
+    if (product){
+      params = params.set('product', product);
+    }
+    if (version){
+      params = params.set('version', version);
+    }
     const headers = this.getHeaders();
-    return this.httpClient.get<Device>(url, { headers, params });
+    return this.httpClient.get<Device>(this.API_URL, { headers, params });
   }
+
+  /**
+   * get device by id
+   * @returns: Observable
+   */
+  public getDeviceById(id: string): Observable<Device> {
+    const headers = this.getHeaders();
+    return this.httpClient.get<Device>(this.API_URL + `/${id}`, { headers });
+  }
+
   /**
    * create device
    * @param device: Device 
@@ -50,6 +57,14 @@ export class DevicesService {
    */
   public updateDevice(device: Device): Observable<any> {
     return this.httpClient.put(`${this.API_URL}/${device.id}`, device);
+  }
+
+  /**
+   * get device vendor list
+   * @returns: Observable<string []>
+   */
+  public getAllDeviceVendors(): Observable<{ vendors: string[], supportVendors: string[] }> {
+    return this.httpClient.get<{ vendors: string[], supportVendors: string[] }>(environment.apiEndpoint + '/vendors')
   }
 
   /**

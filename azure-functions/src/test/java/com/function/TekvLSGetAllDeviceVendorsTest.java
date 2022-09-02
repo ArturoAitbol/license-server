@@ -44,11 +44,15 @@ class TekvLSGetAllDeviceVendorsTest extends TekvLSTest {
         JSONObject jsonBody = new JSONObject(body);
 
         assertTrue(jsonBody.has("vendors"));
+        assertTrue(jsonBody.has("supportVendors"));
 
         List<String> vendors = jsonBody.getJSONArray("vendors").toList().stream().map(object -> (String) object).collect(Collectors.toList());
+        List<String> supportVendors = jsonBody.getJSONArray("supportVendors").toList().stream().map(object -> (String) object).collect(Collectors.toList());
 
         assertTrue(vendors.size() > 0);
-        assertTrue(vendors.contains("TestV"));
+        assertTrue(vendors.contains("tekVizion"));
+        assertTrue(supportVendors.size() > 0);
+        assertTrue(supportVendors.contains("HylaFAX"));
     }
 
     @Tag("security")

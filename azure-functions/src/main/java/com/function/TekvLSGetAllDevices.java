@@ -14,6 +14,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.json.JSONArray;
@@ -25,9 +26,6 @@ import static com.function.auth.RoleAuthHandler.*;
  * Azure Functions with HTTP Trigger.
  */
 public class TekvLSGetAllDevices {
-
-	private final String DEFAULT_LIMIT = "100";
-	private final String DEFAULT_OFFSET = "0";
 
 	/**
 	 * This function listens at endpoint "/v1.0/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
@@ -68,15 +66,15 @@ public class TekvLSGetAllDevices {
 		String version = request.getQueryParameters().getOrDefault("version", "");
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		String licenseStartDate = request.getQueryParameters().getOrDefault("date", "");
-		String limit = request.getQueryParameters().getOrDefault("limit", DEFAULT_LIMIT);
-		String offset = request.getQueryParameters().getOrDefault("offset", DEFAULT_OFFSET);
+		String limit = request.getQueryParameters().getOrDefault("limit", "");
+		String offset = request.getQueryParameters().getOrDefault("offset", "");
   
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM device");
 		if (id.equals("EMPTY")) {
 			if (!vendor.isEmpty() || !subaccountId.isEmpty() || !product.isEmpty() || !version.isEmpty() || !licenseStartDate.isEmpty()) {
 			   if (!subaccountId.isEmpty()) {
-				   queryBuilder.appendCustomCondition("subaccount_id is NULL or subaccount_id = ?::uuid", subaccountId);
+				   queryBuilder.appendCustomCondition("(subaccount_id is NULL or subaccount_id = ?::uuid)", subaccountId);
 			   }
 			   if (!vendor.isEmpty()) {
 				   queryBuilder.appendEqualsCondition("vendor", vendor);
@@ -98,8 +96,10 @@ public class TekvLSGetAllDevices {
 			queryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
 		}
 
-		queryBuilder.appendLimit(limit);
-		queryBuilder.appendOffset(offset);
+		if (!Objects.equals(limit, "") && !Objects.equals(offset, "")) {
+			queryBuilder.appendLimit(limit);
+			queryBuilder.appendOffset(offset);
+		}
 		
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")

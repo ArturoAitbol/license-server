@@ -115,6 +115,8 @@ const beforeEachFunction = () => {
     modifyLicenseConsumptionDetailTestInstance = fixture.componentInstance;
     spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
     spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
+    spyOn(DevicesServiceMock, 'getDeviceById').and.callThrough();
+    spyOn(DevicesServiceMock, 'getAllDeviceVendors').and.callThrough();
     spyOn(ProjectServiceMock, 'getProjectDetailsByLicense').and.callThrough();
     spyOn(CustomerServiceMock, 'getSelectedCustomer').and.callThrough();
     spyOn(UsageDetailServiceMock, 'getUsageDetailsByConsumptionId').and.callThrough();
@@ -124,6 +126,7 @@ const beforeEachFunction = () => {
 describe('UI verification autocomplete', () => {
     beforeEach(beforeEachFunction);
     it('should display correctly the object selected in the mat-autocompletes', async () => {
+        fixture.detectChanges();
         const modifyLicenseConsumptionForm = modifyLicenseConsumptionDetailTestInstance.updateForm;
         const projectInput = fixture.nativeElement.querySelector('#project-auto-complete');
         const vendorInput = fixture.nativeElement.querySelector('#vendor-auto-complete');
@@ -135,8 +138,8 @@ describe('UI verification autocomplete', () => {
         vendorInput.dispatchEvent(new Event('input'));
         deviceInput.dispatchEvent(new Event('focus'));
         deviceInput.dispatchEvent(new Event('input'));
-        modifyLicenseConsumptionForm.get('project').setValue({name: 'Project-Test1'});
-        modifyLicenseConsumptionForm.get('vendor').setValue({vendor: 'Test'});
+        modifyLicenseConsumptionForm.get('project').setValue({projectName: 'Project-Test1'});
+        modifyLicenseConsumptionForm.get('vendor').setValue('Test');
         modifyLicenseConsumptionForm.get('device').setValue({product: 'Test'});
 
         fixture.detectChanges();
@@ -166,12 +169,12 @@ describe('Data collection and parsing test', () => {
     it('should make a call to get license consumption details list after initializing', () => {
         fixture.detectChanges();
 
-        expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
+        expect(DevicesServiceMock.getAllDeviceVendors).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsByLicense).toHaveBeenCalled();
         expect(UsageDetailServiceMock.getUsageDetailsByConsumptionId).toHaveBeenCalled();
 
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue({name: "Project-Test1"});
-        modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor').setValue({vendor: "testB"});
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor').setValue("testB");
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('device').setValue({product: "testC"});
         
     });
@@ -188,7 +191,7 @@ describe('modify license consumption details interactions', () => {
         expect(modifyLicenseConsumptionDetailTestInstance.setChecked).toHaveBeenCalledWith(true, 0);
         
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('project').setValue({name: "Project-Test1"});
-        modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor').setValue({vendor: "testB"});
+        modifyLicenseConsumptionDetailTestInstance.updateForm.get('vendor').setValue("testB");
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('device').setValue({product: "testC"});
         modifyLicenseConsumptionDetailTestInstance.submit();
         expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
@@ -205,13 +208,13 @@ describe('modify functions interactions', () => {
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'getErrorMessage').and.callThrough();
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'onCancel').and.callThrough();
     
-        modifyLicenseConsumptionDetailTestInstance.onChangeVendor({vendor:"Opentext"});
+        modifyLicenseConsumptionDetailTestInstance.onChangeVendor("Opentext");
         modifyLicenseConsumptionDetailTestInstance.disableSumbitBtn();
         modifyLicenseConsumptionDetailTestInstance.getErrorMessage();
         modifyLicenseConsumptionDetailTestInstance.onCancel();
 
         expect(modifyLicenseConsumptionDetailTestInstance.disableSumbitBtn).toHaveBeenCalled();
-        expect(modifyLicenseConsumptionDetailTestInstance.onChangeVendor).toHaveBeenCalledWith({vendor:"Opentext"});
+        expect(modifyLicenseConsumptionDetailTestInstance.onChangeVendor).toHaveBeenCalledWith("Opentext");
         expect(modifyLicenseConsumptionDetailTestInstance.getErrorMessage).toHaveBeenCalled();
         
     });
@@ -220,9 +223,9 @@ describe('modify functions interactions', () => {
         fixture.detectChanges();
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'onChangeVendor').and.callThrough();
 
-        modifyLicenseConsumptionDetailTestInstance.onChangeVendor({vendor:"Test"});
+        modifyLicenseConsumptionDetailTestInstance.onChangeVendor("Test");
         fixture.detectChanges();
-        expect(modifyLicenseConsumptionDetailTestInstance.onChangeVendor).toHaveBeenCalledWith({vendor:"Test"});
+        expect(modifyLicenseConsumptionDetailTestInstance.onChangeVendor).toHaveBeenCalledWith("Test");
     })
 
     it('should call the deleteUsageDetails', () => {
@@ -292,7 +295,7 @@ describe('modify-license-consumption-details FormGroup verification', () => {
         modifyLicenseForm.setValue({
             consDate: moment('16-08-2022', 'DDMMYYYY'),
             project: { test:"test" },
-            vendor: { test:"test" },
+            vendor: "test",
             device: { test:"test" }
         });
         fixture.detectChanges();
@@ -356,6 +359,7 @@ describe('modify-license-consumption - on event methods', () => {
 
     it('should filter device on input change', async () => {
         fixture.detectChanges();
+        modifyLicenseConsumptionDetailTestInstance.onChangeVendor('Opentext');
         const inputElement = fixture.nativeElement.querySelector('#device-auto-complete');
         inputElement.dispatchEvent(new Event('focusin'));
         modifyLicenseConsumptionDetailTestInstance.updateForm.get('device').setValue('OpenText');
@@ -372,12 +376,9 @@ describe('calling displays with undefined parameter', () => {
     it('it should call the displat funcionts with null parameter', () => {
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'displayFnDevice').and.callThrough();
         spyOn(modifyLicenseConsumptionDetailTestInstance,'displayFnProject').and.callThrough();
-        spyOn(modifyLicenseConsumptionDetailTestInstance,'displayFnVendor').and.callThrough();
         modifyLicenseConsumptionDetailTestInstance.displayFnDevice(null)
         modifyLicenseConsumptionDetailTestInstance.displayFnProject(null);
-        modifyLicenseConsumptionDetailTestInstance.displayFnVendor(null);
         expect(modifyLicenseConsumptionDetailTestInstance.displayFnDevice).toHaveBeenCalledWith(null);
         expect(modifyLicenseConsumptionDetailTestInstance.displayFnProject).toHaveBeenCalledWith(null);
-        expect(modifyLicenseConsumptionDetailTestInstance.displayFnVendor).toHaveBeenCalledWith(null);
     });
 }); 
