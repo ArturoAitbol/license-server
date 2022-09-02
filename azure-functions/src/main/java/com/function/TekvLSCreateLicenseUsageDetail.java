@@ -194,8 +194,10 @@ public class TekvLSCreateLicenseUsageDetail
 					insertUsageStmt.addBatch();
 				}
 			} else {
+				int defaultUsageDay = consumptionDate.getDayOfWeek().getValue();
+				if(defaultUsageDay==7) defaultUsageDay = 0;
 				insertUsageStmt.setDate(2, Date.valueOf(consumptionDate));
-				insertUsageStmt.setInt(3, 0);
+				insertUsageStmt.setInt(3, defaultUsageDay);
 				insertUsageStmt.setString(4, consumptionObj.getString(OPTIONAL_PARAMS.MAC_ADDRESS.value));
 				insertUsageStmt.setString(5, consumptionObj.getString(OPTIONAL_PARAMS.SERIAL_NUMBER.value));
 				insertUsageStmt.addBatch();
