@@ -42,8 +42,6 @@ public class ConsumptionForm extends AbstractPageObject {
 
     public Consumptions editConsumption(String project, String deviceVendor, String deviceModel, 
             String deviceVersion, String deviceGranularity, String tekTokens) {
-        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
-        this.action.waitModal(modalLocator);
         if (!project.isEmpty()) {
             By projectSelector = By.cssSelector(String.format("mat-option[title='%s']", project));
             this.action.replaceOption(this.projectInput, projectSelector);
@@ -57,7 +55,8 @@ public class ConsumptionForm extends AbstractPageObject {
             By deviceModelSelector = By.cssSelector(String.format("mat-option[title*='%s']", deviceFieldContent));
             this.action.replaceOption(this.deviceModelInput, deviceModelSelector);
         }
-        this.action.openForm(this.submitButton);
+        this.action.click(this.submitButton);
+//        this.action.waitModal();
         return new Consumptions();
     }
 
@@ -68,5 +67,14 @@ public class ConsumptionForm extends AbstractPageObject {
             deviceFieldContent += " - v." + deviceVersion;
         deviceFieldContent += " (" + deviceGranularity + " - " + tekTokens + ")";
         return deviceFieldContent;
+    }
+
+    public void waitSpinner() {
+        try {
+            this.action.waitModal();
+        } catch (Exception e) {
+            System.out.println("Spinner wasn't displayed");
+            System.out.println(e);
+        }
     }
 }

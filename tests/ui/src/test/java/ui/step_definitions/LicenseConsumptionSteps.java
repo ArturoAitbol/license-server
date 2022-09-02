@@ -40,6 +40,7 @@ public class LicenseConsumptionSteps {
     @When("I add a consumption with the following data")
     public void iAddAConsumptionWithTheFollowingData(DataTable dataTable) throws InterruptedException {
 //        Thread.sleep(2000);
+        this.consumptionForm.waitSpinner();
         Map<String, String> consumption = dataTable.asMap(String.class, String.class);
 /*        this.startWeek = consumption.get("startWeek");
         this.endWeek = consumption.get("endWeek");*/

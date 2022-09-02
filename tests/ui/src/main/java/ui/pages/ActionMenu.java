@@ -49,7 +49,9 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public void editForm(){
-        this.action.openFormForce(this.editButton);
+        this.action.forceClick(this.editButton);
+        this.action.waitModal();
+
     }
 
     public Projects goToProjects(){

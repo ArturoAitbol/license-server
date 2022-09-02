@@ -10,7 +10,8 @@ public class Consumptions extends AbstractPageObject {
     WebElement addConsumptionButton;
 
     public ConsumptionForm openConsumptionForm() {
-        this.action.openForm(this.addConsumptionButton);
+        this.action.click(this.addConsumptionButton);
+        this.action.waitModal();
         return new ConsumptionForm();
     }
 
@@ -25,7 +26,15 @@ public class Consumptions extends AbstractPageObject {
     }
 
     public String getMessage() {
+        String message;
         By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
-        return this.action.getText(messageSelector);
+        try{
+            message = this.action.getText(messageSelector);
+        } catch (Exception e){
+            System.out.println("Message couldn't be retrieved");
+            System.out.println(e.toString());
+            message = "None";
+        }
+        return message;
     }
 }

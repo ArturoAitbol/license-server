@@ -35,7 +35,8 @@ public class ProjectForm extends AbstractPageObject {
         this.action.selectOption(this.subscription, licenseSelector);
         this.action.sendText(this.openDate, openDate);
 //        this.action.selectToday(this.projectCalendar);
-        this.action.openForm(this.submitButton);
+        this.action.click(this.submitButton);
+//        this.action.waitModal();
         return new Projects();
     }
 

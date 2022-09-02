@@ -35,21 +35,10 @@ public class WebDriverAction {
         executor.executeScript("arguments[0].click();", element);
     }
 
-    public void openForm(WebElement element){
-        wait.until(ExpectedConditions.elementToBeClickable(element));
-        element.click();
-//        By modalLocator = By.cssSelector("div.loading-shade");
-//        By modalLocator = By.cssSelector("mat-spinner");
-        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
-        this.waitModal(modalLocator);
-    }
-
-    public void openFormForce(WebElement element){
+    public void forceClick(WebElement element){
         wait.until(ExpectedConditions.elementToBeClickable(element));
         JavascriptExecutor executor = (JavascriptExecutor)this.driver;
         executor.executeScript("arguments[0].click();", element);
-        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
-        this.waitModal(modalLocator);
     }
 
     public void selectToday(WebElement element){
@@ -62,8 +51,12 @@ public class WebDriverAction {
         return element.getAttribute("disabled");
     }
 
-    public void waitModal(By locator) {
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+    public void waitModal() {
+//        By modalLocator = By.cssSelector("div.loading-shade");
+//        By modalLocator = By.cssSelector("mat-spinner");
+        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(modalLocator));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(modalLocator));
     }
 
     public void sendText(WebElement element, String text) {
@@ -102,14 +95,6 @@ public class WebDriverAction {
         WebElement optionClickable = wait.until(ExpectedConditions.presenceOfElementLocated(option));
         JavascriptExecutor executor = (JavascriptExecutor)this.driver;
         executor.executeScript("arguments[0].click();", optionClickable);
-    }
-
-    public WebElement getElement(By locator) {
-        return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-    }
-
-    public List<WebElement> getElements(By locator) {
-        return wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
     }
 
     public String getText(By locator) {

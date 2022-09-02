@@ -15,7 +15,6 @@ public class Subscriptions extends AbstractPageObject {
     WebElement addLicenseButton;
     @FindBy(css = "button#back-button")
     WebElement backButton;
-    By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
 
     public String getTableTitle() {
         String title = "none";
@@ -24,11 +23,21 @@ public class Subscriptions extends AbstractPageObject {
     }
 
     public SubscriptionForm openSubscriptionForm() {
-        this.action.openForm(this.addLicenseButton);
+        this.action.click(this.addLicenseButton);
+        this.action.waitModal();
         return new SubscriptionForm();
     }
 
     public String getMessage() {
-        return this.action.getText(this.messageSelector);
+        String message;
+        By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
+        try{
+            message = this.action.getText(messageSelector);
+        } catch (Exception e){
+            System.out.println("Message couldn't be retrieved");
+            System.out.println(e.toString());
+            message = "None";
+        }
+        return message;
     }
 }
