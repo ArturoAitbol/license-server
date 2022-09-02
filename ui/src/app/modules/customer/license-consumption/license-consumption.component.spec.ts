@@ -680,6 +680,43 @@ describe('Methods Calls', ()=>{
     });
 })
 
+describe('Weekly Table',()=>{
+
+    beforeEach(beforeEachFunction);
+
+    it('should display weeks until the current week when the license renewal date is after',()=>{
+        licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
+        let currentDate = moment.utc().add(1,'days');
+        licenseConsumptionComponentTestInstance.selectedLicense.renewalDate = currentDate.toISOString().split('T')[0];
+
+        licenseConsumptionComponentTestInstance.fetchAggregatedData();
+
+        const weekStart = moment.utc();
+        weekStart.subtract(weekStart.day(), "days")
+        const weekEnd = moment.utc(weekStart).add(6, 'days');
+        expect(licenseConsumptionComponentTestInstance.weeklyConsumptionData[0].weekId).toBe("Week " + moment.utc(weekStart).add(1, 'days').isoWeek() + " (" + weekStart.format("YYYY-MM-DD") + " - " + weekEnd.format("YYYY-MM-DD") + ")");
+
+    });
+
+    it('should display weeks until the last week of the license period when the license renewal date is before the current week',()=>{
+        licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
+        let currentDate = moment.utc().subtract(1,'days');
+        const renewalDate = currentDate.toISOString().split('T')[0]
+        licenseConsumptionComponentTestInstance.selectedLicense.renewalDate = renewalDate;
+
+        licenseConsumptionComponentTestInstance.fetchAggregatedData();
+
+        const weekStart = moment.utc(renewalDate);
+        weekStart.subtract(weekStart.day(), "days")
+        const weekEnd = moment.utc(weekStart).add(6, 'days');
+        expect(licenseConsumptionComponentTestInstance.weeklyConsumptionData[0].weekId).toBe("Week " + moment.utc(weekStart).add(1, 'days').isoWeek() + " (" + weekStart.format("YYYY-MM-DD") + " - " + weekEnd.format("YYYY-MM-DD") + ")");
+
+    });
+
+});
+
 describe('openDialog',()=>{
 
     beforeEach(() => {
