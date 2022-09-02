@@ -47,7 +47,7 @@ jobs:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           path: "**/cucumber.json"
     - uses: actions/upload-artifact@v3
-      if: ${{ steps.uiTests.conclusion == 'failure' }}
+      if: ${{ failure() && steps.uiTests.conclusion == 'failure' }}
       name: Archive test results
       with:
         name: ui-test-report
