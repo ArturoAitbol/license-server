@@ -5,8 +5,10 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.aeonbits.owner.ConfigFactory;
-import org.junit.Assert;
 
 import ui.pages.Customers;
 import ui.pages.Header;
@@ -49,13 +51,13 @@ public class LoginSteps {
     @Then("I should see the {string} page")
     public void iShouldSeeThePage(String expectedTitle) {
         String actualTitle = this.customers.getTitle();
-        Assert.assertEquals("Page doesn't have the title: ".concat(expectedTitle), expectedTitle, actualTitle);
+        assertEquals("Page doesn't have the title: ".concat(expectedTitle), expectedTitle, actualTitle);
     }
 
     @And("I logout")
     public void iLogout() {
         this.header = new Header();
         boolean result = this.header.logout();
-        Assert.assertTrue("Couldn't logout from License Server", result);
+        assertTrue("Couldn't logout from License Server", result);
     }
 }

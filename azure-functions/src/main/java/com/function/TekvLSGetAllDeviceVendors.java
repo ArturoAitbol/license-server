@@ -73,7 +73,7 @@ public class TekvLSGetAllDeviceVendors {
             json.put("vendors", vendorArray);
 
             // Execute sql query.
-            context.getLogger().info("Execute SQL statement: " + vendorStmt);
+            context.getLogger().info("Execute SQL statement: " + supportStmt);
             rs = supportStmt.executeQuery();
 
             JSONArray supportArray = new JSONArray();

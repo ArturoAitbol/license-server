@@ -8,15 +8,18 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.List;
 
 public class WebDriverAction {
     public WebDriver driver;
     public WebDriverWait wait;
+    private int defaultTimeout;
+    private int minTimeout;
 
-    public WebDriverAction(WebDriver driver, WebDriverWait wait) {
+    public WebDriverAction(WebDriver driver, int defaultTimeout, int minTimeout) {
         this.driver = driver;
-        this.wait = wait;
+        this.defaultTimeout = defaultTimeout;
+        this.minTimeout = minTimeout;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
     }
 
     public void click(WebElement element) {
@@ -37,14 +40,14 @@ public class WebDriverAction {
 
     public void forceClick(WebElement element){
         wait.until(ExpectedConditions.elementToBeClickable(element));
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor)driver;
         executor.executeScript("arguments[0].click();", element);
     }
 
     public void selectToday(WebElement element){
-        this.click(element);
+        click(element);
         By todaySelector = By.cssSelector("div.mat-calendar-body-today");
-        this.click(todaySelector);
+        click(todaySelector);
     }
 
     public String confirmModal(WebElement element) {
@@ -52,11 +55,16 @@ public class WebDriverAction {
     }
 
     public void waitModal() {
-//        By modalLocator = By.cssSelector("div.loading-shade");
-//        By modalLocator = By.cssSelector("mat-spinner");
-        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(modalLocator));
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(modalLocator));
+        try {
+            wait = new WebDriverWait(driver, Duration.ofSeconds(minTimeout));
+            By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
+            wait.until(ExpectedConditions.visibilityOfElementLocated(modalLocator));
+            wait = new WebDriverWait(driver, Duration.ofSeconds(defaultTimeout));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(modalLocator));
+        } catch (Exception e) {
+            System.out.println("Spinner wasn't displayed");
+            System.out.println(e);
+        }
     }
 
     public void sendText(WebElement element, String text) {
@@ -85,7 +93,7 @@ public class WebDriverAction {
         clickable.click();
         element.click();
         WebElement optionClickable = wait.until(ExpectedConditions.presenceOfElementLocated(option));
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor)driver;
         executor.executeScript("arguments[0].click();", optionClickable);
     }
 
@@ -93,7 +101,7 @@ public class WebDriverAction {
         wait.until(ExpectedConditions.elementToBeClickable(element));
         element.click();
         WebElement optionClickable = wait.until(ExpectedConditions.presenceOfElementLocated(option));
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor)driver;
         executor.executeScript("arguments[0].click();", optionClickable);
     }
 
@@ -101,48 +109,35 @@ public class WebDriverAction {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getText();
     }
 
-    public String errorPresent(By locator) {
-        String present;
-        try {
-            // WebElement element = this.driver.findElement(locator);
-            present="yes";
-        } catch (Exception e) {
-            System.out.println("No error");
-            present = "no";
-        }
-        return present;
-    }
-
     public String getText(WebElement element) {
         return wait.until(ExpectedConditions.visibilityOf(element)).getText();
     }
 
     public void waitVisibilityElement(WebElement element) {
-        this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOf(element));
-        this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(60));
     }
 
     public WebElement waitVisibilityElement(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    public void checkTitle(String title) {
+    public boolean checkTitle(String title) {
+        boolean response = false;
         try {
-            this.wait.until(ExpectedConditions.titleIs(title));
+            wait.until(ExpectedConditions.titleIs(title));
+            response = true;
         } catch (Exception e) {
             System.out.println("Window didn't get the title:" + title);
         }
+        return response;
     }
     public String checkElement(By locator){
         String output;
         try{
-            this.driver.findElement(locator).click();
+            driver.findElement(locator).click();
             output="ok";
         }
         catch (Exception e){
-//            LOGGER.warn("Element is not present: "+ e.toString());
-//            System.out.println("Element is not present: "+ e.toString());
             output="error";
         }
         return output;

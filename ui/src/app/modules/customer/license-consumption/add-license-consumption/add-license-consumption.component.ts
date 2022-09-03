@@ -169,10 +169,12 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    * @param value: string 
    */
   onChangeVendor(value: any): void {
+    this.isDataLoading = true;
     this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
       this.filterVendorDevices(res['devices']);
       this.addDeviceForm.patchValue({ product: '' });
-      this.addDeviceForm.controls['product'].enable()
+      this.addDeviceForm.controls['product'].enable();
+      this.isDataLoading = false;
     });
   }
 
@@ -181,10 +183,12 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    * @param value: string
    */
   onChangeSupportVendor(value: any): void {
+    this.isDataLoading = true;
     this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
       this.filterSupportVendorDevices(res['devices']);
       this.addSupportForm.patchValue({ product: '' });
-      this.addSupportForm.controls['product'].enable()
+      this.addSupportForm.controls['product'].enable();
+      this.isDataLoading = false;
     });
   }
 

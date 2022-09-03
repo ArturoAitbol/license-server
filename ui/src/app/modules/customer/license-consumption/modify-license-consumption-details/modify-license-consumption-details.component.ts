@@ -88,11 +88,13 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    * @param value: string 
    */
   onChangeVendor(value: any): void {
+    this.isDataLoading = true;
     this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
       this.updateForm.controls.device.disable();
       this.filterVendorDevices(res['devices']);
       this.updateForm.controls.device.enable();
       this.updateForm.controls.device.setValue("");
+      this.isDataLoading = false;
     });
   }
 
@@ -142,7 +144,6 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     if (this.editedForm())
       this.modifyConsumption(requestsArray);
     forkJoin(requestsArray).subscribe(res => {
-      this.isDataLoading = false;
       const resDataObject: any = res.reduce((current: any, next: any) => {
         return { ...current, ...next };
       }, {});
@@ -151,6 +152,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
         this.dialogRef.close(res);
       } else
         this.snackBarService.openSnackBar(resDataObject.error, 'Error editing license consumption!');
+      this.isDataLoading = false;
     });
   }
 
@@ -211,8 +213,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       });
       this.originalDays = JSON.parse(JSON.stringify(this.days));
       const currentProject = this.projects.filter(project => project.id === this.data.projectId)[0];
-      const currentDevice = resDataObject['devices'][0];
       const currentVendor = resDataObject['devices'][0].vendor;
+      const currentDevice = resDataObject['devices'][0];
       const patchValue = {...this.data};
       patchValue.project = currentProject;
       patchValue.device = currentDevice;
