@@ -96,49 +96,6 @@ class TekvLSCreateLicenseUsageDetailTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void noProjectTest() {
-        //Given
-        String bodyRequest = "{ " +
-                "    'subaccountId': '"+subaccountId+"'," +
-                "    'deviceId': '"+ deviceId +"'," +
-                "    'consumptionDate': '"+consumptionDate+"'," +
-                "    'type': '"+type+"'," +
-                "    'usageDays': "+usageDays+" }";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
-        //When
-        HttpResponseMessage response = tekvLSCreateLicenseUsageDetail.run(this.request,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        //Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("id"));
-        this.licenseUsageId = jsonBody.getString("id");
-        assertNotNull(this.licenseUsageId);
-
-        assertTrue(jsonBody.has("consumptionDate"));
-        assertEquals(consumptionDate, jsonBody.getString("consumptionDate"));
-
-        assertTrue(jsonBody.has("subaccountId"));
-        assertEquals(subaccountId,jsonBody.getString("subaccountId"));
-
-        assertTrue(jsonBody.has("usageDays"));
-        assertEquals(usageDays,jsonBody.get("usageDays").toString());
-
-        assertTrue(jsonBody.has("type"));
-        assertEquals(type,jsonBody.getString("type"));
-
-        assertTrue(jsonBody.has("deviceId"));
-        assertEquals(deviceId,jsonBody.getString("deviceId"));
-    }
-
-    @Tag("acceptance")
-    @Test
     public void staticDeviceTest() {
         //Given
         String staticDeviceId ="c49a3148-1e74-4090-9876-d062011d9bcb";
@@ -225,6 +182,7 @@ class TekvLSCreateLicenseUsageDetailTest extends TekvLSTest {
         String staticDeviceId ="c49a3148-1e74-4090-9876-d062011d9bcb";
         String bodyRequest = "{ " +
                 "    'subaccountId': '"+subaccountId+"'," +
+                "    'projectId': '"+projectId+"'," +
                 "    'deviceId': '"+ staticDeviceId +"'," +
                 "    'consumptionDate': '"+consumptionDate+"'," +
                 "    'type': '"+type+"'," +
