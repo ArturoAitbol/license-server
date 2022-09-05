@@ -33,6 +33,7 @@ public class ConsumptionForm extends AbstractPageObject {
         this.action.selectOption(this.projectInput, projectSelector);
         By deviceVendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
         this.action.selectOption(this.deviceVendorInput, deviceVendorSelector);
+        this.waitSpinner();
         String deviceFieldContent = getDeviceFieldContent(deviceModel, deviceVersion, deviceGranularity, tekTokens);
         By deviceModelSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceFieldContent));
         this.action.selectOption(this.deviceModelInput, deviceModelSelector);
@@ -49,8 +50,7 @@ public class ConsumptionForm extends AbstractPageObject {
         if (!deviceVendor.isEmpty()) {
             By deviceVendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
             this.action.replaceOption(this.deviceVendorInput, deviceVendorSelector);
-        }
-        if (!deviceVendor.isEmpty()) {
+            this.waitSpinner();
             String deviceFieldContent = getDeviceFieldContent(deviceModel, deviceVersion, deviceGranularity, tekTokens);
             By deviceModelSelector = By.cssSelector(String.format("mat-option[title*='%s']", deviceFieldContent));
             this.action.replaceOption(this.deviceModelInput, deviceModelSelector);
@@ -70,11 +70,6 @@ public class ConsumptionForm extends AbstractPageObject {
     }
 
     public void waitSpinner() {
-        try {
-            this.action.waitModal();
-        } catch (Exception e) {
-            System.out.println("Spinner wasn't displayed");
-            System.out.println(e);
-        }
+        this.action.waitModal();
     }
 }

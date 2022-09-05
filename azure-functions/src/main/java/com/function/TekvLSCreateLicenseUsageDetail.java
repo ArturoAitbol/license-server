@@ -125,7 +125,7 @@ public class TekvLSCreateLicenseUsageDetail
 
 				// Set statement parameters
 				devicePerProjectStmt.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
-				if (jobj.has("projectId")) devicePerProjectStmt.setString(2, jobj.getString(OPTIONAL_PARAMS.PROJECT_ID.value));
+				if (jobj.has("projectId")) devicePerProjectStmt.setString(2, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
 
 				context.getLogger().info("Execute SQL statement: " + devicePerProjectStmt);
 				rs = devicePerProjectStmt.executeQuery();
@@ -146,7 +146,7 @@ public class TekvLSCreateLicenseUsageDetail
 			insertStmt.setInt(5, tokensToConsume);
 			insertStmt.setString(6, userId);
 			insertStmt.setTimestamp(7, Timestamp.from(Instant.now()));
-			insertStmt.setString(8, jobj.has(OPTIONAL_PARAMS.PROJECT_ID.value) ? jobj.getString(OPTIONAL_PARAMS.PROJECT_ID.value) : null);
+			insertStmt.setString(8, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
 
 			// Insert consumption
 			context.getLogger().info("Execute SQL statement: " + insertStmt);
@@ -226,7 +226,8 @@ public class TekvLSCreateLicenseUsageDetail
 		SUBACCOUNT_ID("subaccountId"),
 		DEVICE_ID("deviceId"),
 		CONSUMPTION_DATE("consumptionDate"),
-		TYPE("type");
+		TYPE("type"),
+		PROJECT_ID("projectId");
 
 		private final String value;
 
@@ -236,7 +237,6 @@ public class TekvLSCreateLicenseUsageDetail
 	}
 
 	private enum OPTIONAL_PARAMS {
-		PROJECT_ID("projectId"),
 		USAGE_DAYS("usageDays"),
 		MAC_ADDRESS("macAddress"),
 		SERIAL_NUMBER("serialNumber");

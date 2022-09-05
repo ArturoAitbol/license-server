@@ -4,9 +4,10 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.Assert;
 import ui.core.DriverManager;
 import ui.pages.*;
+
+import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
@@ -39,7 +40,6 @@ public class LicenseConsumptionSteps {
 
     @When("I add a consumption with the following data")
     public void iAddAConsumptionWithTheFollowingData(DataTable dataTable) throws InterruptedException {
-//        Thread.sleep(2000);
         this.consumptionForm.waitSpinner();
         Map<String, String> consumption = dataTable.asMap(String.class, String.class);
 /*        this.startWeek = consumption.get("startWeek");
@@ -67,9 +67,9 @@ public class LicenseConsumptionSteps {
         String actualTekTokens = this.consumptions.getValue(consumptionSummaryTableId,"tekTokens");
         String actualConsumed = this.consumptions.getValue(consumptionSummaryTableId,"Consumed");
         String actualAvailable = this.consumptions.getValue(consumptionSummaryTableId,"Available");
-        Assert.assertEquals("Consumption doesn't have this amount of total tekTokens: ".concat(totalTekTokens), totalTekTokens, actualTekTokens);
-        Assert.assertEquals("Consumption doesn't have consumed this amount of tekTokens: ".concat(consumed), consumed, actualConsumed);
-        Assert.assertEquals("Consumption doesn't have this amount of available tekTokens: ".concat(available), available, actualAvailable);
+        assertEquals("Consumption doesn't have this amount of total tekTokens: ".concat(totalTekTokens), totalTekTokens, actualTekTokens);
+        assertEquals("Consumption doesn't have consumed this amount of tekTokens: ".concat(consumed), consumed, actualConsumed);
+        assertEquals("Consumption doesn't have this amount of available tekTokens: ".concat(available), available, actualAvailable);
     }
 
     @Then("I should see the following data in the tekTokens Project Consumption table")
@@ -84,11 +84,11 @@ public class LicenseConsumptionSteps {
         String actualStatus = this.consumptions.getValue(projectConsumptionTableId,"Status");
         String actualTekTokens = this.consumptions.getValue(projectConsumptionTableId,"tekTokens");
         if(!project.isEmpty())
-            Assert.assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
+            assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
         if(!status.isEmpty())
-            Assert.assertEquals("Consumption doesn't have this project status: ".concat(status), status, actualStatus);
+            assertEquals("Consumption doesn't have this project status: ".concat(status), status, actualStatus);
         if(!tekTokens.isEmpty())
-        Assert.assertEquals("Consumption doesn't have this amount of tekTokens: ".concat(tekTokens), actualTekTokens, actualTekTokens);
+        assertEquals("Consumption doesn't have this amount of tekTokens: ".concat(tekTokens), actualTekTokens, actualTekTokens);
     }
 
     @And("I should see the same data in the tekToken Consumption Events table")
@@ -103,14 +103,14 @@ public class LicenseConsumptionSteps {
         String actualVersion = this.consumptions.getValue(detailedConsumptionTableId,"Version");
         String actualTekTokens = this.consumptions.getValueXpath(detailedConsumptionTableId,"tekTokens Used");
         String actualUsageDays = this.consumptions.getValueXpath(detailedConsumptionTableId,"Usage Days");
-        // if (this.startWeek.isEmpty()) Assert.assertEquals("Consumption doesn't have consumptionDate: ".concat(startWeek), startWeek, actualConsumptionDate);
-        if (!this.project.isEmpty()) Assert.assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
-        Assert.assertEquals("Consumption doesn't have this type: ".concat(defaultType), defaultType, actualType);
-        if (!this.deviceVendor.isEmpty()) Assert.assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), deviceVendor, actualVendor);
-        if (!this.deviceModel.isEmpty()) Assert.assertEquals("Consumption doesn't have this deviceModel: ".concat(deviceModel), deviceModel, actualModel);
-        if (!this.deviceVersion.isEmpty()) Assert.assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), deviceVersion, actualVersion);
-        Assert.assertEquals("Consumption doesn't have this UsageDays: ".concat(defaultUsageDays), defaultUsageDays, actualUsageDays);
-        if (!this.tekTokens.isEmpty()) Assert.assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), actualTekTokens, actualTekTokens);
+        // if (this.startWeek.isEmpty()) assertEquals("Consumption doesn't have consumptionDate: ".concat(startWeek), startWeek, actualConsumptionDate);
+        if (!this.project.isEmpty()) assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
+        assertEquals("Consumption doesn't have this type: ".concat(defaultType), defaultType, actualType);
+        if (!this.deviceVendor.isEmpty()) assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), deviceVendor, actualVendor);
+        if (!this.deviceModel.isEmpty()) assertEquals("Consumption doesn't have this deviceModel: ".concat(deviceModel), deviceModel, actualModel);
+        if (!this.deviceVersion.isEmpty()) assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), deviceVersion, actualVersion);
+        assertEquals("Consumption doesn't have this UsageDays: ".concat(defaultUsageDays), defaultUsageDays, actualUsageDays);
+        if (!this.tekTokens.isEmpty()) assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), actualTekTokens, actualTekTokens);
     }
 
     @When("I edit the consumption of the project {string} with the following data")
@@ -118,7 +118,6 @@ public class LicenseConsumptionSteps {
         this.consumptionRow = new ConsumptionRow(project);
         ActionMenu actionMenu = this.consumptionRow.openActionMenu();
         actionMenu.editForm();
-//        Thread.sleep(2000);
         this.consumptionForm = new ConsumptionForm();
         Map<String, String> consumption = dataTable.asMap(String.class, String.class);
         this.project = consumption.getOrDefault("project", "");

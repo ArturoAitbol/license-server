@@ -67,10 +67,10 @@
                                     <mat-label>Vendor</mat-label>
                                     <input type="text" placeholder="Select a vendor" aria-label="Vendor" matInput
                                            formControlName="vendor" [matAutocomplete]="vendorsList" id="vendor-auto-complete">
-                                    <mat-autocomplete #vendorsList="matAutocomplete" [displayWith]="displayFnVendor"
+                                    <mat-autocomplete #vendorsList="matAutocomplete"
                                                       (optionSelected)="onChangeVendor($event.option.value)">
-                                        <mat-option *ngFor="let item of filteredVendors | async" [value]="item" title="{{item.vendor}}">
-                                            {{item.vendor}}
+                                        <mat-option *ngFor="let item of filteredVendors | async" [value]="item" title="{{item}}">
+                                            {{item}}
                                         </mat-option>
                                     </mat-autocomplete>
                                     <mat-error *ngIf="isInvalid('vendor')">{{getErrorMessage()}}</mat-error>
@@ -137,10 +137,10 @@
                                     <mat-label>Vendor</mat-label>
                                     <input type="text" placeholder="Select a vendor" aria-label="SupportVendor" matInput
                                            formControlName="vendor" [matAutocomplete]="supportVendorsList" id="support-vendor-auto-complete">
-                                    <mat-autocomplete #supportVendorsList="matAutocomplete" [displayWith]="displayFnVendor"
+                                    <mat-autocomplete #supportVendorsList="matAutocomplete"
                                                       (optionSelected)="onChangeSupportVendor($event.option.value)">
                                         <mat-option *ngFor="let item of filteredSupportVendors | async" [value]="item">
-                                            {{item.vendor}}
+                                            {{item}}
                                         </mat-option>
                                     </mat-autocomplete>
                                     <mat-error *ngIf="isInvalidSupport('vendor')">{{getErrorMessage()}}</mat-error>

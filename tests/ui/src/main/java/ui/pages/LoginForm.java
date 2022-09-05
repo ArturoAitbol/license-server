@@ -1,9 +1,10 @@
 package ui.pages;
 
+import static org.junit.Assert.assertTrue;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import ui.core.AbstractPageObject;
 
 public class LoginForm extends AbstractPageObject {
@@ -29,7 +30,7 @@ public class LoginForm extends AbstractPageObject {
         this.action.click(acceptButton);
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);
-        this.wait.until(ExpectedConditions.titleIs("tekVizion 360 Portal"));
+        assertTrue(this.action.checkTitle("tekVizion 360 Portal"));
         return new Customers();
     }
 
@@ -42,7 +43,7 @@ public class LoginForm extends AbstractPageObject {
 
     public Customers signedIn() {
         driver.switchTo().window(this.originalWindow);
-        this.wait.until(ExpectedConditions.titleIs("tekVizion 360 Portal"));
+        assertTrue(this.action.checkTitle("tekVizion 360 Portal"));
         return new Customers();
     }
 }

@@ -41,9 +41,9 @@
                         <mat-label>Vendor</mat-label>
                         <input type="text" placeholder="Pick one" aria-label="vendorAutoComplete" matInput formControlName="vendor"
                             [matAutocomplete]="vendors" id="vendor-auto-complete">
-                        <mat-autocomplete autoActiveFirstOption #vendors="matAutocomplete" (optionSelected)="onChangeVendor($event.option.value)" [displayWith]="displayFnVendor">
-                            <mat-option *ngFor="let item of filteredVendors | async" [value]="item" title="{{item.vendor}}">
-                                {{item.vendor}}
+                        <mat-autocomplete autoActiveFirstOption #vendors="matAutocomplete" (optionSelected)="onChangeVendor($event.option.value)">
+                            <mat-option *ngFor="let item of filteredVendors | async" [value]="item" title="{{item}}">
+                                {{item}}
                             </mat-option>
                         </mat-autocomplete>
                         <mat-error *ngIf="isInvalid('vendor')">{{getErrorMessage()}}</mat-error>

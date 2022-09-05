@@ -223,7 +223,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					// Initialize query builders
 					SelectQueryBuilder allQueryBuilder = new SelectQueryBuilder("SELECT lc.id, lc.consumption_date, lc.usage_type, lc.tokens_consumed, lc.device_id," +
 							" CONCAT('Week ',DATE_PART('week',consumption_date+'1 day'::interval)) AS consumption," +
-							" lc.project_id, p.name ,d.vendor, d.product, d.version, d.granularity, json_agg(DISTINCT day_of_week) AS usage_days" +
+							" lc.project_id, p.name ,d.vendor, d.product, d.version, d.granularity, d.support_type, json_agg(DISTINCT day_of_week) AS usage_days" +
 							" FROM device d, license_consumption lc, usage_detail u, project p, license l " +
 							" WHERE d.id = lc.device_id AND u.consumption_id = lc.id AND p.id = lc.project_id", true);
 					SelectQueryBuilder weeklyConfigTokensConsumedQueryBuilder = new SelectQueryBuilder("SELECT consumption_date, CONCAT('Week ', " +
@@ -243,7 +243,8 @@ public class TekvLSGetAllLicenseUsageDetails {
 					}
 
 					// Conditions for all query
-					allQueryBuilder.appendGroupBy("lc.id, lc.consumption_date, lc.usage_type, lc.tokens_consumed, lc.device_id,consumption,lc.project_id,p.name,d.vendor, d.product, d.version, d.granularity");
+					allQueryBuilder.appendGroupBy("lc.id, lc.consumption_date, lc.usage_type, lc.tokens_consumed, lc.device_id,consumption,lc.project_id,p.name,d.vendor, d.product, " +
+							"d.version, d.granularity, d.support_type");
 					allQueryBuilder.appendOrderBy("consumption_date", SelectQueryBuilder.ORDER_DIRECTION.DESC);
 					allQueryBuilder.appendLimit(limit);
 					allQueryBuilder.appendOffset(offset);
@@ -275,6 +276,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 							item.put("product", rs.getString("product"));
 							item.put("version", rs.getString("version"));
 							item.put("granularity", rs.getString("granularity"));
+							item.put("supportType", rs.getBoolean("support_type"));
 							item.put("usageType", rs.getString("usage_type"));
 							item.put("tokensConsumed", rs.getInt("tokens_consumed"));
 							item.put("consumption", item.getString("consumptionDate") + " - " + rs.getString("consumption"));

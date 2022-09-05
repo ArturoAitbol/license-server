@@ -2,19 +2,16 @@ package ui.core;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
 
 abstract public class AbstractPageObject {
     protected WebDriver driver;
-    protected WebDriverWait wait;
     protected WebDriverAction action;
+    private final int DEFAULT_TIMEOUT = 30;
+    private final int MINIMUM_TIMEOUT = 5;
 
     public AbstractPageObject(){
         this.driver = DriverManager.getInstance().getDriver();
-        this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(60));
-        this.action = new WebDriverAction(this.driver, this.wait);
+        this.action = new WebDriverAction(this.driver, DEFAULT_TIMEOUT, MINIMUM_TIMEOUT);
         PageFactory.initElements(this.driver, this);
     }
 }

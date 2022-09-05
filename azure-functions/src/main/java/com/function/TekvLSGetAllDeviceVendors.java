@@ -47,19 +47,21 @@ public class TekvLSGetAllDeviceVendors {
 
         context.getLogger().info("Entering TekvLSGetAllVendors Azure function");
 
-        SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT DISTINCT vendor FROM device");
+        SelectQueryBuilder vendorQueryBuilder = new SelectQueryBuilder("SELECT DISTINCT vendor FROM device WHERE support_type = 'false'", true);
+        SelectQueryBuilder supportVendorQueryBuilder = new SelectQueryBuilder("SELECT DISTINCT vendor FROM device WHERE support_type = 'true'", true);
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
 
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-             PreparedStatement statement = queryBuilder.build(connection)) {
+             PreparedStatement vendorStmt = vendorQueryBuilder.build(connection);
+             PreparedStatement supportStmt = supportVendorQueryBuilder.build(connection)) {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Execute sql query.
-            context.getLogger().info("Execute SQL statement: " + statement);
-            ResultSet rs = statement.executeQuery();
+            context.getLogger().info("Execute SQL statement: " + vendorStmt);
+            ResultSet rs = vendorStmt.executeQuery();
 
             JSONObject json = new JSONObject();
             JSONArray vendorArray = new JSONArray();
@@ -69,6 +71,18 @@ public class TekvLSGetAllDeviceVendors {
             }
 
             json.put("vendors", vendorArray);
+
+            // Execute sql query.
+            context.getLogger().info("Execute SQL statement: " + supportStmt);
+            rs = supportStmt.executeQuery();
+
+            JSONArray supportArray = new JSONArray();
+
+            while (rs.next()) {
+                supportArray.put(rs.getString("vendor"));
+            }
+
+            json.put("supportVendors", supportArray);
 
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {
