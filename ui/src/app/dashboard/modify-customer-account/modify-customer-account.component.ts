@@ -50,7 +50,6 @@ export class ModifyCustomerAccountComponent implements OnInit {
   submit() {
     this.isDataLoading = true;
     const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value };
-    console.log('mergedLicenseObject', mergedLicenseObject);
     const customer = {
       id: mergedLicenseObject.id,
       customerName: mergedLicenseObject.name,

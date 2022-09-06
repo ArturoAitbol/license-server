@@ -70,10 +70,10 @@ export class AddProjectComponent implements OnInit {
     });
   }
 
-  onLicenseChange(licenseId:String) :void {
+  onLicenseChange(licenseId:string) :void {
     this.selectedLicense = this.licenses.find(license => license.id === licenseId);
     if(this.selectedLicense!==null){
-      let openDate = this.addProjectForm.get('openDate');
+      const openDate = this.addProjectForm.get('openDate');
       openDate.enable();
       openDate.setValue('');
       this.minDate = new Date(this.selectedLicense.startDate + " 00:00:00");

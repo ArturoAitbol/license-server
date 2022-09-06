@@ -132,7 +132,6 @@ export class ProjectsComponent implements OnInit {
    */
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
-    console.log(sortParameters);
     if (sortParameters.direction === 'asc') {
       this.projects = this.projects.sort((a: any, b: any) => {
         return a[keyName].localeCompare(b[keyName]);
