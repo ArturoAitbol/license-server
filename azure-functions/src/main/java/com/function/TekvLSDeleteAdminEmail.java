@@ -6,6 +6,7 @@ import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
+import io.jsonwebtoken.Claims;
 import org.json.JSONObject;
 
 import java.sql.*;
@@ -26,7 +27,8 @@ public class TekvLSDeleteAdminEmail {
             @BindingName("email") String email,
             final ExecutionContext context) {
 
-        String currentRole = getRoleFromToken(request,context);
+        Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+        String currentRole = getRoleFromToken(tokenClaims,context);
         if(currentRole.isEmpty()){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -54,8 +56,9 @@ public class TekvLSDeleteAdminEmail {
 
             statement.setString(1, email);
 
-            // Delete device
-            context.getLogger().info("Execute SQL statement: " + statement);
+            // Delete admin email
+            String userId = getUserIdFromToken(tokenClaims,context);
+            context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Admin email deleted successfully.");
 

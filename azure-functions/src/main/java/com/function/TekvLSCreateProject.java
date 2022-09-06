@@ -13,6 +13,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import java.sql.*;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -37,7 +38,8 @@ public class TekvLSCreateProject
 				final ExecutionContext context) 
 	{
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -110,7 +112,8 @@ public class TekvLSCreateProject
 
 
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + statement);
+			String userId = getUserIdFromToken(tokenClaims,context);
+			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			ResultSet rs = statement.executeQuery();
 			context.getLogger().info("Project inserted successfully."); 
 			// Return the id in the response

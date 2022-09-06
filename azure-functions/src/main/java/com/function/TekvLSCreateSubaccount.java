@@ -12,6 +12,8 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
 import java.util.Optional;
+
+import io.jsonwebtoken.Claims;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -36,7 +38,8 @@ public class TekvLSCreateSubaccount
 				final ExecutionContext context) 
 	{
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -118,9 +121,10 @@ public class TekvLSCreateSubaccount
 			insertStmt.setString(2, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ID.value));
 
 			// Insert
-			context.getLogger().info("Execute SQL statement: " + insertStmt);
+			String userId = getUserIdFromToken(tokenClaims,context);
+			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertStmt);
 			ResultSet rs = insertStmt.executeQuery();
-			context.getLogger().info("License usage inserted successfully.");
+			context.getLogger().info("Subaccount inserted successfully.");
 
 			// Return the id in the response
 			rs.next();
@@ -132,7 +136,7 @@ public class TekvLSCreateSubaccount
 			insertEmailStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
 			insertEmailStmt.setString(2, subaccountId);
 
-			context.getLogger().info("Execute SQL statement: " + insertEmailStmt);
+			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertEmailStmt);
 			insertEmailStmt.executeUpdate();
 			context.getLogger().info("Subaccount admin email inserted successfully.");
 
