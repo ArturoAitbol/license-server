@@ -1,0 +1,35 @@
+{
+  "dev": {
+    "routes": {
+      "dashboard": true,
+      "customer": true,
+      "consumption": true,
+      "projects": true,
+      "licenses": true
+    },
+    "features": {
+      "testFeature1": false,
+      "testFeature2": true
+    }
+  },
+  "integration" : {
+    "routes": {
+      "dashboard": true,
+      "customer": true,
+      "consumption": true,
+      "projects": true,
+      "licenses": true
+    },
+    "features": {}
+  },
+  "production": {
+    "routes": {
+      "dashboard": true,
+      "customer": true,
+      "consumption": true,
+      "projects": true,
+      "licenses": true
+    },
+    "features": {}
+  }
+}
