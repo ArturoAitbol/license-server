@@ -42,7 +42,7 @@ public class TekvLSModifyLicenseUsageById
 				final ExecutionContext context) 
 	{
 
-		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
 		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -58,7 +58,7 @@ public class TekvLSModifyLicenseUsageById
 		}
 
 		context.getLogger().info("Entering TekvLSModifyLicenseUsageById Azure function");
-		String userId = getUserIdFromToken(tokenClaims, context);
+		String emailId = getEmailFromToken(tokenClaims, context);
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -92,7 +92,7 @@ public class TekvLSModifyLicenseUsageById
 			}
 		}
 		queryBuilder.appendValueModification("modified_date", LocalDate.now().toString(), QueryBuilder.DATA_TYPE.TIMESTAMP);
-		queryBuilder.appendValueModification("modified_by", userId);
+		queryBuilder.appendValueModification("modified_by", emailId);
 		if (optionalParamsFound == 0) {
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
@@ -120,7 +120,8 @@ public class TekvLSModifyLicenseUsageById
 			}
 			queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 			try (PreparedStatement stmt = queryBuilder.build(connection)) {
-				context.getLogger().info("Execute SQL statement: " + stmt);
+				String userId = getUserIdFromToken(tokenClaims,context);
+				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + stmt);
 				stmt.executeUpdate();
 				context.getLogger().info("License updated successfully.");
 				return request.createResponseBuilder(HttpStatus.OK).build();

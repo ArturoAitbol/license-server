@@ -14,6 +14,7 @@ import com.microsoft.azure.functions.annotation.BindingName;
 import java.sql.*;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -39,7 +40,8 @@ public class TekvLSDeleteLicenseUsageById
 				final ExecutionContext context) 
 	{
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -73,11 +75,12 @@ public class TekvLSDeleteLicenseUsageById
 			deleteLicenseStmt.setString(1, id);
 
 			// Delete usage details
-			context.getLogger().info("Execute SQL statement: " + deleteDetailStmt);
+			String userId = getUserIdFromToken(tokenClaims,context);
+			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + deleteDetailStmt);
 			deleteDetailStmt.executeUpdate();
 			
 			// Delete license consumption
-			context.getLogger().info("Execute SQL statement: " + deleteLicenseStmt);
+			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + deleteLicenseStmt);
 			deleteLicenseStmt.executeUpdate();
 			context.getLogger().info("License usage delete successfully."); 
 

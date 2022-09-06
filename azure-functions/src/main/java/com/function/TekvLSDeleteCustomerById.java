@@ -14,6 +14,7 @@ import com.microsoft.azure.functions.annotation.BindingName;
 import java.sql.*;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -39,7 +40,8 @@ public class TekvLSDeleteCustomerById
 				final ExecutionContext context) 
 	{
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -84,14 +86,15 @@ public class TekvLSDeleteCustomerById
 				context.getLogger().info("test_customer is: " + deleteFlag);
 			}
 			// Delete customer
+			String userId = getUserIdFromToken(tokenClaims,context);
 			if (deleteFlag) {
 				deleteStmt.setString(1, id);
-				context.getLogger().info("Execute SQL statement: " + deleteStmt);
+				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + deleteStmt);
 				deleteStmt.executeUpdate();
 			}
 			else {
 				tombstoneStmt.setString(1, id);
-				context.getLogger().info("Execute SQL statement: " + tombstoneStmt);
+				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + tombstoneStmt);
 				tombstoneStmt.executeUpdate();
 			}
 			context.getLogger().info("Customer delete successfully."); 
