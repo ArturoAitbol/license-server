@@ -1,5 +1,4 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {DialogServiceMock} from '../../../test/mock/services/dialog.service.mock';
 import {AddCustomerAccountModalComponent} from './add-customer-account-modal.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {SharedModule} from '../../modules/shared/shared.module';
@@ -14,7 +13,6 @@ import {SubaccountServiceMock} from '../../../test/mock/services/subaccount-serv
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import {Observable} from 'rxjs';
 
 let addCustomerAccountModalComponentInstance: AddCustomerAccountModalComponent;
 let fixture: ComponentFixture<AddCustomerAccountModalComponent>;

@@ -24,7 +24,6 @@ import moment from "moment";
 
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
-let dialogRef: MatDialogRef<ModifyProjectComponent>;
 const dialogMock = new DialogServiceMock();
 
 const RouterMock = {

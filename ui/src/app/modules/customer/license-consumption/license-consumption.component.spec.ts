@@ -687,7 +687,7 @@ describe('Weekly Table',()=>{
     it('should display weeks until the current week when the license renewal date is after',()=>{
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
         licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
-        let currentDate = moment.utc().add(1,'days');
+        const currentDate = moment.utc().add(1,'days');
         licenseConsumptionComponentTestInstance.selectedLicense.renewalDate = currentDate.toISOString().split('T')[0];
 
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
@@ -702,7 +702,7 @@ describe('Weekly Table',()=>{
     it('should display weeks until the last week of the license period when the license renewal date is before the current week',()=>{
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
         licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
-        let currentDate = moment.utc().subtract(1,'days');
+        const currentDate = moment.utc().subtract(1,'days');
         const renewalDate = currentDate.toISOString().split('T')[0]
         licenseConsumptionComponentTestInstance.selectedLicense.renewalDate = renewalDate;
 

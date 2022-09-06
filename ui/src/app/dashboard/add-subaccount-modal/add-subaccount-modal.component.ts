@@ -56,11 +56,9 @@ export class AddSubaccountModalComponent implements OnInit {
     this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
       if (!res.error) {
         this.snackBarService.openSnackBar('Subaccount added successfully!', '');
-        console.log("Subaccount added successfully!");
         this.dialogRef.close(res);
       }else{
         this.dialogRef.close(res);
-        console.log('error adding subaccount: ');
         this.isDataLoading = false;
       } 
     }, err => {
