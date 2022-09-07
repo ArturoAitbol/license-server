@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -81,6 +83,9 @@ public class TekvLSDeleteUsageDetailsById
 		}
 
 		String sql = "DELETE FROM usage_detail WHERE consumption_id= ?::uuid AND id = ANY (?);";
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT count(*) FROM usage_detail");
+		queryBuilder.appendEqualsCondition("consumption_id", id, QueryBuilder.DATA_TYPE.UUID);
+		String deleteLicense = "DELETE  FROM  license_consumption WHERE id = ?::uuid";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -88,7 +93,8 @@ public class TekvLSDeleteUsageDetailsById
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = connection.prepareStatement(sql)) {
+			PreparedStatement statement = connection.prepareStatement(sql);
+			PreparedStatement consumptionId = queryBuilder.build(connection)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
@@ -100,8 +106,28 @@ public class TekvLSDeleteUsageDetailsById
 
 			context.getLogger().info("Execute SQL statement: " + statement);
 			statement.executeUpdate();
-			context.getLogger().info("License usage delete successfully."); 
+			context.getLogger().info("License usage delete successfully.");
 
+			ResultSet rs = consumptionId.executeQuery();
+			rs.next();
+
+			if(rs.getInt("count") == 0 ){
+				try(PreparedStatement deleteLicenseStatement = connection.prepareStatement(deleteLicense)){
+					deleteLicenseStatement.setString(1, id);
+					context.getLogger().info("Execute SQL statement: " + deleteLicenseStatement);
+					deleteLicenseStatement.executeUpdate();
+					context.getLogger().info("License delete successfully.");
+				}catch (SQLException e) {
+					context.getLogger().info("SQL exception: " + e.getMessage());
+					json.put("error", e.getMessage());
+					return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+				}
+				catch (Exception e) {
+					context.getLogger().info("Caught exception: " + e.getMessage());
+					json.put("error", e.getMessage());
+					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+				}
+			}
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {
