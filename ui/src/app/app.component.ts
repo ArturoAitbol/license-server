@@ -10,7 +10,7 @@ import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutModalComponent } from './generics/about-modal/about-modal.component';
-
+import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
 
 @Component({
     selector: 'app-root',
@@ -47,6 +47,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        // example for a feature toggle in typescript logic code
+        if (FeatureToggleHelper.isFeatureEnabled("testFeature1"))
+            console.log("Feature toggle 'testFeature1' enabled");
         if (!this.isLoggedIn()) {
             this.router.navigate(['/login']);
         } else {

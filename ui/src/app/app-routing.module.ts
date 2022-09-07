@@ -6,6 +6,9 @@ import { MsalGuard } from '@azure/msal-angular';
 import { RoleGuard } from './security/role.guard';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
 import { FeatureToggleGuard } from "./modules/shared/feature-toggle.guard";
+import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
+
+const defaultRoute = FeatureToggleHelper.isFeatureEnabled("testFeature2")? 'testFeature1' : 'dashboard';
 
 const config: ExtraOptions = {
   onSameUrlNavigation: 'reload',
@@ -14,15 +17,17 @@ const config: ExtraOptions = {
 };
 
 const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: defaultRoute, pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent },
-  { path: 'no-permissions', component: NoPermissionsPageComponent,canActivate:[MsalGuard]},
+  { path: 'no-permissions', component: NoPermissionsPageComponent,canActivate: [MsalGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
+  // example for a path not added in the feature toggle definition
+  { path: 'testFeature1', component: NoPermissionsPageComponent, canActivate: [MsalGuard, FeatureToggleGuard] },
   {
     path: 'customer', canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard], canActivateChild:[FeatureToggleGuard],
     loadChildren: () => import('./modules/customer/customer.module').then(m => m.CustomerModule)
   },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: defaultRoute }
 ];
 
 @NgModule({

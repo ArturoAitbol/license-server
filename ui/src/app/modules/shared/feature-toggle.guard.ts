@@ -23,7 +23,7 @@ export class FeatureToggleGuard implements CanActivate, CanActivateChild {
         if (this.environmentFeatureToggles.routes[route.url[0].path] || (this.environmentUserFeatureToggles)[this.msalService.instance.getActiveAccount()?.username]?.routes?.[route.url[0].path]) {
             return true;
         } else {
-            this.snackBarService.openSnackBar('Feature not available', 'OK');
+            this.snackBarService.openSnackBar('Feature not available', 'Error');
             return false;
         }
     }
@@ -32,7 +32,7 @@ export class FeatureToggleGuard implements CanActivate, CanActivateChild {
         if (this.environmentFeatureToggles.routes[childRoute.url[0].path] || (this.environmentUserFeatureToggles)[this.msalService.instance.getActiveAccount()?.username]?.routes?.[childRoute.url[0].path]) {
             return true;
         } else {
-            this.snackBarService.openSnackBar('Feature not available', 'OK');
+            this.snackBarService.openSnackBar('Feature not available', 'Error');
             return false;
         }
     }

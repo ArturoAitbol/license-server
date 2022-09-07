@@ -5,11 +5,12 @@
       "customer": true,
       "consumption": true,
       "projects": true,
-      "licenses": true
+      "licenses": true,
+      "testFeature1": true
     },
     "features": {
-      "testFeature1": false,
-      "testFeature2": true
+      "testFeature1": true,
+      "testFeature2": false
     }
   },
   "integration" : {
@@ -18,9 +19,12 @@
       "customer": true,
       "consumption": true,
       "projects": true,
-      "licenses": true
+      "licenses": true,
+      "testFeature1": true
     },
-    "features": {}
+    "features": {
+      "testFeature1": true
+    }
   },
   "production": {
     "routes": {
@@ -28,8 +32,11 @@
       "customer": true,
       "consumption": true,
       "projects": true,
-      "licenses": true
+      "licenses": true,
+      "testFeature1": false
     },
-    "features": {}
+    "features": {
+      "testFeature1": false
+    }
   }
 }
