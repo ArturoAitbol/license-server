@@ -8,5 +8,23 @@
     "http": {
       "routePrefix": "/v1.0"
     }
+  },
+  "logging": {
+    "logLevel": {
+      "default": "Warning",
+      "Function": "Error",
+      "Host.Aggregator": "Error",
+      "Host.Results": "Information", 
+      "Function.TekvLSCreateCustomer": "Information",
+      "Function.TekvLSCreateProject": "Information",
+      "Function.TekvLSCreateLicense": "Information"      
+    },
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "maxTelemetryItemsPerSecond": 20,
+        "excludedTypes": "Exception"
+      }
+    }
   }
 }
