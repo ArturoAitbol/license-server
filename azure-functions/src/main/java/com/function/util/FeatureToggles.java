@@ -4,18 +4,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public enum FeatureToggles {
     INSTANCE;
 
-    final Properties features = new Properties();
+    final private Properties features = new Properties();
+    final private Logger logger = Logger.getLogger(FeatureToggles.class.getName());
 
     FeatureToggles() {
         String environment = Optional.ofNullable(System.getenv("ENVIRONMENT_NAME")).orElse("production");
         try (InputStream input = FeatureToggles.class.getResourceAsStream("/feature-toggles." + environment + ".properties")) {
             features.load(input);
         } catch (IOException ex) {
-            // Ignore the exception, no way to log unless the executionContext is passed on every reference to FeatureToggles
+            logger.warning("Could not load the feature toggles for " + environment);
         }
 
     }
