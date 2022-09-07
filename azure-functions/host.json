@@ -11,13 +11,10 @@
   },
   "logging": {
     "logLevel": {
-      "default": "Warning",
-      "Function": "Error",
+      "default": "Information",
+      "Function": "Information",
       "Host.Aggregator": "Error",
-      "Host.Results": "Information", 
-      "Function.TekvLSCreateCustomer": "Information",
-      "Function.TekvLSCreateProject": "Information",
-      "Function.TekvLSCreateLicense": "Information"      
+      "Host.Results": "Information"     
     },
     "applicationInsights": {
       "samplingSettings": {
