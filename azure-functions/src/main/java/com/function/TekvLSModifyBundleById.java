@@ -8,6 +8,7 @@ import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
+import io.jsonwebtoken.Claims;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -32,7 +33,8 @@ public class TekvLSModifyBundleById {
             @BindingName("id") String id,
             final ExecutionContext context) {
 
-        String currentRole = getRoleFromToken(request,context);
+        Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+        String currentRole = getRoleFromToken(tokenClaims,context);
         if(currentRole.isEmpty()){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -91,7 +93,8 @@ public class TekvLSModifyBundleById {
         try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
             PreparedStatement statement = queryBuilder.build(connection)) {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            context.getLogger().info("Execute SQL statement: " + statement);
+            String userId = getUserIdFromToken(tokenClaims,context);
+            context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Bundle updated successfully");
             return request.createResponseBuilder(HttpStatus.OK).build();

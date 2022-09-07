@@ -49,7 +49,7 @@ public class CustomerSteps {
     @Then("I see the customer {string} in the table")
     public void iShouldSeeTheCustomerInTheTable(String customerName) {
         this.customerRow = this.customers.getCustomer(customerName);
-        String actualCustomerName = this.customerRow.getCostumerColumn("Customer");
+        String actualCustomerName = this.customerRow.getCustomerColumn("Customer");
         assertEquals("Customers table doesn't have the customer: ".concat(customerName), customerName,
                 actualCustomerName);
     }
@@ -90,9 +90,9 @@ public class CustomerSteps {
     @Then("I should see the modified data in Customers table")
     public void iShouldSeeTheModifiedDataInCustomersTable() {
         this.customerRow = new CustomerRow(this.customerName);
-        String actualCustomerName = this.customerRow.getCostumerColumn("Customer");
-        String actualSubaccountName = this.customerRow.getCostumerColumn("Subaccount");
-        String actualType = this.customerRow.getCostumerColumn("Type");
+        String actualCustomerName = this.customerRow.getCustomerColumn("Customer");
+        String actualSubaccountName = this.customerRow.getCustomerColumn("Subaccount");
+        String actualType = this.customerRow.getCustomerColumn("Type");
         assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
                 actualCustomerName);
         assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
@@ -102,9 +102,10 @@ public class CustomerSteps {
 
     @Then("I see in the table the customer {string} and its subaccount {string}")
     public void iSeeInTheTableTheTheCustomerAndItsSubaccount(String customerName, String subaccountName) {
-        this.customerRow = this.customers.getCustomer(subaccountName);
-        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer");
-        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount");
+        this.customerRow = this.customers.getCustomer(customerName);
+        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer",null);
+        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", subaccountName);
+
         assertEquals(
                 String.format("Customer '%s' doesn't have the subaccount '%s'", customerName, subaccountName),
                 subaccountName, actualSubaccountName);
@@ -115,10 +116,10 @@ public class CustomerSteps {
 
     @Then("I should see the modified data in Subaccounts table")
     public void iShouldSeeTheModifiedDataInSubaccountsTable() {
-        this.customerRow = new CustomerRow(this.subaccount);
-        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer");
-        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount");
-        String actualType = this.customerRow.getSubaccountColumn("Type");
+        this.customerRow = new CustomerRow(this.customerName);
+        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer",null);
+        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", this.subaccount);
+        String actualType = this.customerRow.getSubaccountColumn("Type",null);
         assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
                 actualCustomerName);
         assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,

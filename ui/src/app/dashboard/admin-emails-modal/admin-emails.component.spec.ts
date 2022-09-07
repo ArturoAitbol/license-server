@@ -1,14 +1,13 @@
-import { of } from "rxjs";
 // import { instance, mock, verify, when } from "ts-mockito";
 import { HttpClient } from '@angular/common/http';
 import { throwError } from 'rxjs';
-import { ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import { ComponentFixture, TestBed} from '@angular/core/testing';
 import { MatDialog} from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DialogService } from 'src/app/services/dialog.service';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';

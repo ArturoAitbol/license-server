@@ -418,7 +418,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   loadClonedDevices() {
     if (this.data.selectedConsumptions) {
-      console.log(this.data.selectedConsumptions);
       const devices = JSON.parse(JSON.stringify(this.data.selectedConsumptions));
       devices.forEach(device => {
         device.id = device.deviceId;

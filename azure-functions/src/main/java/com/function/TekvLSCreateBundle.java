@@ -6,6 +6,7 @@ import java.util.*;
 import com.function.auth.Permission;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
+import io.jsonwebtoken.Claims;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -29,7 +30,8 @@ public class TekvLSCreateBundle {
             HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
 
-        String currentRole = getRoleFromToken(request,context);
+        Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+        String currentRole = getRoleFromToken(tokenClaims,context);
         if(currentRole.isEmpty()){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -93,7 +95,8 @@ public class TekvLSCreateBundle {
             statement.setString(2, jobj.getString(MANDATORY_PARAMS.TOKENS.value));
             statement.setString(3, jobj.getString(MANDATORY_PARAMS.DEVICE_ACCESS_TOKEN.value));
 
-            context.getLogger().info("Execute SQL statement: " + statement);
+            String userId = getUserIdFromToken(tokenClaims,context);
+            context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             ResultSet bundleRaw = statement.executeQuery();
 
             bundleRaw.next();

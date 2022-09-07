@@ -73,7 +73,7 @@ def run_ui_functional_tests():
         process = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=True, bufsize=0)
         print_output(process)
         if process.returncode != 0:
-            logging.error("Error on Dependency installation: " +
+            logging.error("Error on Unit Tests execution: " +
                           str(process.stdout))
             raise Exception("UI Functional test returned an error")
         os.chdir(root_directory)
@@ -94,6 +94,23 @@ def return_error(e):
                   str(e) + ' Please check log file')
     sys.exit(1)
 
+def clean_log():
+    open('./auto-test.log', 'w').close()
+
+def fix_log():
+    file = open('./auto-test.log','r')
+    to_remove = ["b'","\\n'"]
+    new_data = []
+    for line in file:
+        for word in to_remove:
+            if word in line:
+                line = line.replace(word,'')
+        new_data.append(line)
+    file.close()
+    file = open('./auto-test.log','w')
+    for line in new_data:
+        file.write(line)
+    file.close()
 
 def verify_requirements():
     logging.info("Check requirements")
@@ -134,6 +151,7 @@ def display_requirements():
 
 if __name__ == "__main__":
     try:
+        clean_log()
         logging.info("Start Auto-Test script")
         display_requirements()
         verify_requirements()
@@ -142,6 +160,7 @@ if __name__ == "__main__":
         run_ui_functional_tests()
         logging.info("All tests executed succesfully!")
         logging.info("Thanks for using Auto Test!")
+        fix_log()
         time.sleep(2)
     except Exception as e:
         logging.error('Error running Auto Test: ' +
