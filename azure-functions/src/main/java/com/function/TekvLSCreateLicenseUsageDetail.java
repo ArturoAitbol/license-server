@@ -56,7 +56,7 @@ public class TekvLSCreateLicenseUsageDetail
 		}
 
 		context.getLogger().info("Entering TekvLSCreateLicenseUsageDetail Azure function");
-		String userId = getEmailFromToken(tokenClaims, context);
+		String userEmail = getEmailFromToken(tokenClaims, context);
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -110,6 +110,7 @@ public class TekvLSCreateLicenseUsageDetail
 			 PreparedStatement insertStmt = connection.prepareStatement(insertSql);
 			 PreparedStatement devicePerProjectStmt = connection.prepareStatement(devicePerProjectConsumptionSql)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+			String userId = getUserIdFromToken(tokenClaims,context);
 
 			//Insert parameters to statement
 			deviceTokensStmt.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
@@ -125,7 +126,7 @@ public class TekvLSCreateLicenseUsageDetail
 
 				// Set statement parameters
 				devicePerProjectStmt.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
-				if (jobj.has("projectId")) devicePerProjectStmt.setString(2, jobj.getString(OPTIONAL_PARAMS.PROJECT_ID.value));
+				if (jobj.has("projectId")) devicePerProjectStmt.setString(2, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
 
 				context.getLogger().info("Execute SQL statement: " + devicePerProjectStmt);
 				rs = devicePerProjectStmt.executeQuery();
@@ -133,6 +134,7 @@ public class TekvLSCreateLicenseUsageDetail
 				// if there was a condition only create usage details and not a consumption, otherwise continue the normal flow
 				if (rs.next()) {
 					jobj.put("id", rs.getString("id"));
+					jobj.put("userEmail", userEmail);
 					jobj.put("userId", userId);
 					return this.createUsageDetail(jobj, connection, request, context);
 				}
@@ -144,15 +146,16 @@ public class TekvLSCreateLicenseUsageDetail
 			insertStmt.setString(3, jobj.getString(MANDATORY_PARAMS.CONSUMPTION_DATE.value));
 			insertStmt.setString(4, jobj.getString(MANDATORY_PARAMS.TYPE.value));
 			insertStmt.setInt(5, tokensToConsume);
-			insertStmt.setString(6, userId);
+			insertStmt.setString(6, userEmail);
 			insertStmt.setTimestamp(7, Timestamp.from(Instant.now()));
-			insertStmt.setString(8, jobj.has(OPTIONAL_PARAMS.PROJECT_ID.value) ? jobj.getString(OPTIONAL_PARAMS.PROJECT_ID.value) : null);
+			insertStmt.setString(8, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
 
 			// Insert consumption
-			context.getLogger().info("Execute SQL statement: " + insertStmt);
+			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertStmt);
 			rs = insertStmt.executeQuery();
 			rs.next();
 			jobj.put("id", rs.getString("id"));
+			jobj.put("userEmail", userEmail);
 			jobj.put("userId", userId);
 			context.getLogger().info("tekToken consumption inserted successfully.");
 			return this.createUsageDetail(jobj, connection, request, context);
@@ -179,7 +182,7 @@ public class TekvLSCreateLicenseUsageDetail
 			// Set common parameters to all batches
 			insertUsageStmt.setString(1, consumptionObj.getString("id"));
 			insertUsageStmt.setTimestamp(6, Timestamp.from(Instant.now()));
-			insertUsageStmt.setString(7, consumptionObj.getString("userId"));
+			insertUsageStmt.setString(7, consumptionObj.getString("userEmail"));
 
 			final JSONArray usageDays = consumptionObj.getJSONArray(OPTIONAL_PARAMS.USAGE_DAYS.value);
 			if (usageDays != null && usageDays.length() > 0) {
@@ -194,13 +197,15 @@ public class TekvLSCreateLicenseUsageDetail
 					insertUsageStmt.addBatch();
 				}
 			} else {
+				int defaultUsageDay = consumptionDate.getDayOfWeek().getValue();
+				if(defaultUsageDay==7) defaultUsageDay = 0;
 				insertUsageStmt.setDate(2, Date.valueOf(consumptionDate));
-				insertUsageStmt.setInt(3, 0);
+				insertUsageStmt.setInt(3, defaultUsageDay);
 				insertUsageStmt.setString(4, consumptionObj.getString(OPTIONAL_PARAMS.MAC_ADDRESS.value));
 				insertUsageStmt.setString(5, consumptionObj.getString(OPTIONAL_PARAMS.SERIAL_NUMBER.value));
 				insertUsageStmt.addBatch();
 			}
-			context.getLogger().info("Execute create usages SQL statement: " + insertUsageStmt);
+			context.getLogger().info("Execute create usages SQL statement (User: "+ consumptionObj.getString("userId") + "): " + insertUsageStmt);
 			insertUsageStmt.executeBatch();
 			context.getLogger().info("License usage details inserted successfully.");
 			return request.createResponseBuilder(HttpStatus.OK).body(consumptionObj.toString()).build();
@@ -210,7 +215,7 @@ public class TekvLSCreateLicenseUsageDetail
 			sql = "delete from license_consumption where id = ?::uuid;";
 			try (PreparedStatement stmt = connection.prepareStatement(sql)) {
 				stmt.setString(1, consumptionObj.getString("id"));
-				context.getLogger().info("Execute delete license consumption SQL statement: " + stmt);
+				context.getLogger().info("Execute delete license consumption SQL statement (User: "+ consumptionObj.getString("userId") + "): " + stmt);
 				stmt.executeUpdate();
 				context.getLogger().info("tekToken consumption deleted successfully.");
 			}
@@ -224,7 +229,8 @@ public class TekvLSCreateLicenseUsageDetail
 		SUBACCOUNT_ID("subaccountId"),
 		DEVICE_ID("deviceId"),
 		CONSUMPTION_DATE("consumptionDate"),
-		TYPE("type");
+		TYPE("type"),
+		PROJECT_ID("projectId");
 
 		private final String value;
 
@@ -234,7 +240,6 @@ public class TekvLSCreateLicenseUsageDetail
 	}
 
 	private enum OPTIONAL_PARAMS {
-		PROJECT_ID("projectId"),
 		USAGE_DAYS("usageDays"),
 		MAC_ADDRESS("macAddress"),
 		SERIAL_NUMBER("serialNumber");

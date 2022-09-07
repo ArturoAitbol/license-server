@@ -1,5 +1,7 @@
 package ui.step_definitions;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,7 +13,6 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.Assert;
 import ui.core.DriverManager;
 import ui.pages.ActionMenu;
 import ui.pages.CustomerRow;
@@ -44,7 +45,7 @@ public class LicenseSteps {
     @Then("I should see the {string} table")
     public void iShouldSeeTableTitle(String expectedTitle) {
         String actualTitle = this.subscriptions.getTableTitle();
-        Assert.assertEquals("Page doesn't have the title: ".concat(expectedTitle), expectedTitle, actualTitle);
+        assertEquals("Page doesn't have the title: ".concat(expectedTitle), expectedTitle, actualTitle);
     }
 
     @Given("I open the Add Subscription form")
@@ -60,7 +61,6 @@ public class LicenseSteps {
 
     @When("I create a subscription with the following data")
     public void iCreateASubscriptionWithTheFollowingData(DataTable subscriptionTable) throws InterruptedException {
-        Thread.sleep(2000);
         Map<String, String> license = subscriptionTable.asMap(String.class, String.class);
         this.startDate = license.get("startDate");
         this.renewalDate = license.get("renewalDate");
@@ -77,7 +77,7 @@ public class LicenseSteps {
     public void iShouldSeeTheSubscriptionInTheTable(String description) {
         this.subscriptionRow = new SubscriptionRow(description);
         String actualSubscription = this.subscriptionRow.getColumnValue("Description");
-        Assert.assertEquals("Licenses table doesn't have the license: ".concat(description), description,
+        assertEquals("Licenses table doesn't have the license: ".concat(description), description,
                 actualSubscription);
     }
 
@@ -93,8 +93,7 @@ public class LicenseSteps {
     public void iEditTheSubscriptionWithTheFollowingData(String subscriptionDescription, DataTable dataTable) throws InterruptedException {
         this.subscriptionRow = new SubscriptionRow(subscriptionDescription);
         ActionMenu actionMenu = this.subscriptionRow.openActionMenu();
-        actionMenu.edit();
-        Thread.sleep(2000);
+        actionMenu.editForm();
         this.subscriptionForm = new SubscriptionForm();
         Map<String, String> license = dataTable.asMap(String.class, String.class);
         this.startDate = license.getOrDefault("startDate", "none");
@@ -113,18 +112,18 @@ public class LicenseSteps {
         this.subscriptionRow = new SubscriptionRow(this.description);
         if (!this.description.equals("none")){
             String actualName = this.subscriptionRow.getColumnValue("Description");
-            Assert.assertEquals("License doesn't have this description: ".concat(this.description), this.description, actualName);
+            assertEquals("License doesn't have this description: ".concat(this.description), this.description, actualName);
         }
         if (!this.subscriptionType.equals("none")){
             String actualType = this.subscriptionRow.getColumnValue("Subscription Type");
-            Assert.assertEquals("License doesn't have this type: ".concat(this.subscriptionType), this.subscriptionType, actualType);
+            assertEquals("License doesn't have this type: ".concat(this.subscriptionType), this.subscriptionType, actualType);
             if (!this.deviceLimit.equals("none")){
                 String actualDeviceLimit = this.subscriptionRow.getColumnValue("Device Limit");
-                Assert.assertEquals("License doesn't have this device limit: ".concat(this.deviceLimit), this.deviceLimit, actualDeviceLimit);
+                assertEquals("License doesn't have this device limit: ".concat(this.deviceLimit), this.deviceLimit, actualDeviceLimit);
             }
             if (!this.tokensPurchased.equals("none")){
                 String actualTokens = this.subscriptionRow.getColumnValue("tekTokens");
-                Assert.assertEquals("License doesn't have this tekTokens: ".concat(this.tokensPurchased), this.tokensPurchased, actualTokens);
+                assertEquals("License doesn't have this tekTokens: ".concat(this.tokensPurchased), this.tokensPurchased, actualTokens);
             }
         }
         if (!this.startDate.equals("none")){
@@ -132,14 +131,14 @@ public class LicenseSteps {
             formatter = new SimpleDateFormat("yyyy-MM-dd");
             String expectedDate = formatter.format(startDate);
             String actualStartDate = this.subscriptionRow.getColumnValue("Start Date");
-            Assert.assertEquals("License doesn't have this start date: ".concat(expectedDate), expectedDate, actualStartDate);
+            assertEquals("License doesn't have this start date: ".concat(expectedDate), expectedDate, actualStartDate);
         }
         if (!this.renewalDate.equals("none")){
             Date renewalDate = formatter.parse(this.renewalDate);
             formatter = new SimpleDateFormat("yyyy-MM-dd");
             String expectedDate = formatter.format(renewalDate);
             String actualRenewalDate = this.subscriptionRow.getColumnValue("Renewal Date");
-            Assert.assertEquals("License doesn't have this renewal date: ".concat(expectedDate), expectedDate, actualRenewalDate);
+            assertEquals("License doesn't have this renewal date: ".concat(expectedDate), expectedDate, actualRenewalDate);
         }
     }
 }

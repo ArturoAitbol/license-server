@@ -17,7 +17,7 @@ export class AddCustomerAccountModalComponent {
     customerType: ['', Validators.required],
     adminEmail: ['', [Validators.required, Validators.email]],
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-    testCustomer: [false,Validators.required]
+    testCustomer: [false, Validators.required]
   });
   types: string[] = [
     'MSP',
@@ -47,6 +47,7 @@ export class AddCustomerAccountModalComponent {
       customerName: this.addCustomerForm.value.customerName,
       customerType: this.addCustomerForm.value.customerType,
       customerAdminEmail: this.addCustomerForm.value.adminEmail,
+      subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
       test: this.addCustomerForm.value.testCustomer.toString()
     };
     this.customerService.createCustomer(customerObject).subscribe((resp: any) => {
@@ -57,20 +58,8 @@ export class AddCustomerAccountModalComponent {
           subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
         }
         this.snackBarService.openSnackBar('Customer added successfully!', '');
-        this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
-          if (!res.error)
-            this.snackBarService.openSnackBar('Subaccount added successfully!', '');
-          else
-            this.snackBarService.openSnackBar(res.error, 'Error adding subaccount!');
-          this.dialogRef.close(res);
-          this.isDataLoading = false;
-        },err =>{
-          this.isDataLoading = false;
-          this.snackBarService.openSnackBar(err.error, 'Error adding subaccount!');
-          console.error('error while adding subbacount', err);
-          this.dialogRef.close();
-        });
-      } else{
+        this.createSubAccount(subaccountDetails);
+      } else {
         this.snackBarService.openSnackBar(resp.error, 'Error adding customer!');
         this.isDataLoading = false;
       }
@@ -78,6 +67,22 @@ export class AddCustomerAccountModalComponent {
       this.isDataLoading = false;
       this.snackBarService.openSnackBar(err.error, 'Error adding customer!');
       console.error('error while adding a new customer', err);
+    });
+  }
+
+  createSubAccount(subaccountDetails: any){
+    this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
+      if (!res.error)
+        this.snackBarService.openSnackBar('Subaccount added successfully!', '');
+      else
+        this.snackBarService.openSnackBar(res.error, 'Error adding subaccount!');
+      this.dialogRef.close(res);
+      this.isDataLoading = false;
+    },err => {
+      this.isDataLoading = false;
+      this.snackBarService.openSnackBar(err.error, 'Error adding subaccount!');
+      console.error('error while adding subbacount', err);
+      this.dialogRef.close();
     });
   }
 

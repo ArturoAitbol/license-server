@@ -23,7 +23,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   updateProjects : EventEmitter<any> = new EventEmitter<any>();
 
-  allDevices: Device[] = [];
   projects: Project[] = [];
   vendors: any[] = [];
   supportVendors: any[] = [];
@@ -62,11 +61,11 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     project: ['', [Validators.required, this.RequireMatch]]
   });
   addDeviceForm = this.formBuilder.group({
-    vendor: ['', [this.RequireMatch]],
+    vendor: ['', Validators.required],
     product: ['', [this.RequireMatch]]
   });
   addSupportForm = this.formBuilder.group({
-    vendor: ['', [this.RequireMatch]],
+    vendor: ['', Validators.required],
     product: ['', [this.RequireMatch]]
   });
   currentCustomer: any;
@@ -100,7 +99,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.isDataLoading = true;
     const subaccountId = this.currentCustomer.subaccountId;
     forkJoin([
-      this.deviceService.getDevicesList(subaccountId),
+      this.deviceService.getAllDeviceVendors(),
       this.projectService.getProjectDetailsByLicense(subaccountId, this.currentCustomer.licenseId, 'Open')
     ]).subscribe((res: any) => {
       const resDataObject: any = res.reduce((current: any, next: any) => {
@@ -108,22 +107,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       }, {});
 
       /*Devices list*/
-      this.allDevices = resDataObject['devices'];
-      const vendorsHash: any = {};
-      this.vendors = this.allDevices.filter(device => {
-        if (device.type != "PHONE" && !vendorsHash[device.vendor] && !device.supportType) {
-          vendorsHash[device.vendor] = true;
-          return true;
-        }
-        return false;
-      });
-      this.supportVendors = this.allDevices.filter(device => {
-        if (device.type != "PHONE" && !vendorsHash[device.vendor] && device.supportType) {
-          vendorsHash[device.vendor] = true;
-          return true;
-        }
-        return false;
-      });
+      this.vendors = resDataObject['vendors'];
+      this.supportVendors = resDataObject['supportVendors'];
+
       /*Projects List*/
       this.projects = resDataObject['projects'];
       this.filteredProjects = this.addLicenseConsumptionForm.controls['project'].valueChanges.pipe(
@@ -133,7 +119,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       );
       this.filteredVendors = this.addDeviceForm.controls['vendor'].valueChanges.pipe(
           startWith(''),
-          map(value => (typeof value === 'string' ? value : value ? value.vendor : '')),
           map(vendor => {
             if (vendor === '') {
               this.models = [];
@@ -150,7 +135,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
       );
       this.filteredSupportVendors = this.addSupportForm.controls['vendor'].valueChanges.pipe(
           startWith(''),
-          map(value => (typeof value === 'string' ? value : value ? value.vendor : '')),
           map(vendor => {
             if (vendor === '') {
               this.supportModels = [];
@@ -185,9 +169,13 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    * @param value: string 
    */
   onChangeVendor(value: any): void {
-    this.filterVendorDevices(value.vendor);
-    this.addDeviceForm.patchValue({ product: '' });
-    this.addDeviceForm.controls['product'].enable()
+    this.isDataLoading = true;
+    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
+      this.filterVendorDevices(res['devices']);
+      this.addDeviceForm.patchValue({ product: '' });
+      this.addDeviceForm.controls['product'].enable();
+      this.isDataLoading = false;
+    });
   }
 
   /**
@@ -195,9 +183,13 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
    * @param value: string
    */
   onChangeSupportVendor(value: any): void {
-    this.filterSupportVendorDevices(value.vendor);
-    this.addSupportForm.patchValue({ product: '' });
-    this.addSupportForm.controls['product'].enable()
+    this.isDataLoading = true;
+    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
+      this.filterSupportVendorDevices(res['devices']);
+      this.addSupportForm.patchValue({ product: '' });
+      this.addSupportForm.controls['product'].enable();
+      this.isDataLoading = false;
+    });
   }
 
   onAddProject(): void {
@@ -212,36 +204,32 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private filterVendorDevices(value: string): void {
+  private filterVendorDevices(devices: Device[]): void {
     this.models = [];
-    if (value) {
-      this.allDevices.forEach((device: any) => {
-        if (device.type != "PHONE" && device.vendor == value && !device.supportType) {
-          const productLabel = device.version ? device.product + " - v." + device.version : device.product;
-          this.models.push({
-            id: device.id,
-            vendor: value,
-            product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
-          });
-        }
-      });
-    }
+    devices.forEach((device: any) => {
+      if (device.type != "PHONE" && !device.supportType) {
+        const productLabel = device.version ? device.product + " - v." + device.version : device.product;
+        this.models.push({
+          id: device.id,
+          vendor: device.vendor,
+          product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
+        });
+      }
+    });
   }
 
-  private filterSupportVendorDevices(value: string): void {
+  private filterSupportVendorDevices(devices: Device[]): void {
     this.supportModels = [];
-    if (value) {
-      this.allDevices.forEach((device: any) => {
-        if (device.type != "PHONE" && device.vendor == value && device.supportType) {
-          const productLabel = device.version ? device.product + " - v." + device.version : device.product;
-          this.supportModels.push({
-            id: device.id,
-            vendor: value,
-            product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
-          });
-        }
-      });
-    }
+    devices.forEach((device: any) => {
+      if (device.type != "PHONE" && device.supportType) {
+        const productLabel = device.version ? device.product + " - v." + device.version : device.product;
+        this.supportModels.push({
+          id: device.id,
+          vendor: device.vendor,
+          product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
+        });
+      }
+    });
   }
 
   onCancel(): void {
@@ -374,9 +362,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   private filterVendors(value: string, support = false): any[] {
     const filterValue = value.toLowerCase();
     if (!support) {
-      return this.vendors.filter(option => option.vendor.toLowerCase().includes(filterValue));
+      return this.vendors.filter(option => option.toLowerCase().includes(filterValue));
     } else {
-      return this.supportVendors.filter(option => option.vendor.toLowerCase().includes(filterValue) && option.supportType);
+      return this.supportVendors.filter(option => option.toLowerCase().includes(filterValue) && option.supportType);
     }
   }
 
@@ -394,9 +382,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
   displayFnDevice(device: any): string {
     return device && device.product ? device.product : '';
-  }
-  displayFnVendor(device: any): string {
-    return device && device.vendor ? device.vendor : '';
   }
 
   private RequireMatch(control: AbstractControl) {
@@ -444,7 +429,7 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
             }
           });
         }
-        if (this.vendors.some(vendor => vendor.vendor === device.vendor)) this.devicesUsed.push(device);
+        if (device.supportType === false) this.devicesUsed.push(device);
         else this.supportUsed.push(device);
       });
     }

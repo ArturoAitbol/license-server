@@ -6,6 +6,7 @@ import java.util.*;
 import com.function.auth.Permission;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
+import io.jsonwebtoken.Claims;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -30,7 +31,8 @@ public class TekvLSDeleteBundleById {
             @BindingName("id") String id,
             final ExecutionContext context) {
 
-        String currentRole = getRoleFromToken(request,context);
+        Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+        String currentRole = getRoleFromToken(tokenClaims,context);
         if(currentRole.isEmpty()){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -63,7 +65,8 @@ public class TekvLSDeleteBundleById {
 
             statement.setString(1, id);
 
-            context.getLogger().info("Execute SQL statement: " + statement);
+            String userId = getUserIdFromToken(tokenClaims,context);
+            context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             return request.createResponseBuilder(HttpStatus.OK).build();
         }

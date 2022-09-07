@@ -121,13 +121,11 @@ describe('UI verification test', () => {
         //Titles
         const title = fixture.nativeElement.querySelector('#page-title');
         const firstSectionTitle = fixture.nativeElement.querySelector('#first-section-title');
-        const secoundSectionTitle = fixture.nativeElement.querySelector('#second-section-title');
         const thirdSectionTitle = fixture.nativeElement.querySelector('#third-section-title');
         const currentCustomer = licenseConsumptionComponentTestInstance.currentCustomer;
 
         expect(title.textContent).toBe(`${currentCustomer.name} - ${currentCustomer.subaccountName}`);
-        expect(firstSectionTitle.textContent).toBe('tekVizion 360 Subscription Consumption Summary');
-        expect(secoundSectionTitle.textContent).toBe('tekTokens Consumption');
+        expect(firstSectionTitle.textContent).toBe('tekToken Consumption Summary');
         expect(thirdSectionTitle.textContent).toBe('Equipment Summary');
         
         
@@ -450,6 +448,26 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isDetailedConsumptionLoadingResults).toBeFalse();
         expect(licenseConsumptionComponentTestInstance.isDetailedConsumptionRequestCompleted).toBeTrue();
     });
+
+    it('should call to fetchAggregatedData when calling setWeek()',()=>{
+        licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
+        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        spyOn(licenseConsumptionComponentTestInstance,'fetchAggregatedData').and.callThrough();
+        spyOn(licenseConsumptionComponentTestInstance,'resetCalendar');
+        const date = moment.utc();
+        licenseConsumptionComponentTestInstance.range.setValue({
+            start:date,
+            end:date
+        });
+        licenseConsumptionComponentTestInstance.aggregation = 'week';
+        licenseConsumptionComponentTestInstance.setWeek();
+
+        licenseConsumptionComponentTestInstance.aggregation = 'period';
+        licenseConsumptionComponentTestInstance.setWeek();
+
+        expect(licenseConsumptionComponentTestInstance.resetCalendar).toHaveBeenCalledTimes(1);
+        expect(licenseConsumptionComponentTestInstance.fetchAggregatedData).toHaveBeenCalledTimes(1);
+    });
 });
 
 describe('Dialog calls and interactions', () => {
@@ -467,12 +485,6 @@ describe('Dialog calls and interactions', () => {
         expect(licenseConsumptionComponentTestInstance.openDialog).toHaveBeenCalledWith(AddLicenseConsumptionComponent,licenseConsumptionComponentTestInstance.selectedLicense);
     });
 
-    it('sould toggle the variable detailedConsumptionTableSelectable when calling toggleSelectableConsumptions()',()=>{
-        licenseConsumptionComponentTestInstance.detailedConsumptionTableSelectable = false;
-        licenseConsumptionComponentTestInstance.toggleSelectableConsumptions();
-        expect(licenseConsumptionComponentTestInstance.detailedConsumptionTableSelectable).toBeTrue();
-    });
-
     it('sould openDialog with add-license-consumption component after calling cloneConsumptions()',()=>{
         spyOn(licenseConsumptionComponentTestInstance, 'openDialog');
         fixture.detectChanges();
@@ -480,6 +492,53 @@ describe('Dialog calls and interactions', () => {
         const selectedLicense = licenseConsumptionComponentTestInstance.selectedLicense;
         const  detailsConsumptionTable = licenseConsumptionComponentTestInstance.detailsConsumptionTable;
         expect(licenseConsumptionComponentTestInstance.openDialog).toHaveBeenCalledWith(AddLicenseConsumptionComponent,{...selectedLicense, selectedConsumptions: detailsConsumptionTable.selection.selected});
+    });
+
+    it('should execute licConsumptionRowAction() with expected data given set arguments', () => {
+        licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
+        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        const selectedTestData = { selectedRow: ConsumptionServiceMock.mockConsumptionA, selectedOption: 'selectedTestOption', selectedIndex: '0' };
+        const renewalDate = licenseConsumptionComponentTestInstance.selectedLicense.renewalDate;
+        spyOn(licenseConsumptionComponentTestInstance,'openDialog').and.callThrough();
+        spyOn(licenseConsumptionComponentTestInstance,'fetchDataToDisplay');
+        spyOn(licenseConsumptionComponentTestInstance,'onDelete');
+
+        selectedTestData.selectedOption = licenseConsumptionComponentTestInstance.EDIT;
+        licenseConsumptionComponentTestInstance.licConsumptionRowAction(selectedTestData);
+        let dataObject: any = { ...selectedTestData.selectedRow, ...{ endLicensePeriod: renewalDate } };
+        expect(licenseConsumptionComponentTestInstance.openDialog).toHaveBeenCalledWith(ModifyLicenseConsumptionDetailsComponent,dataObject);
+
+        selectedTestData.selectedRow = ConsumptionServiceMock.mockConsumptionD;
+        licenseConsumptionComponentTestInstance.licConsumptionRowAction(selectedTestData);
+        dataObject = { ...selectedTestData.selectedRow, ...{ endLicensePeriod: renewalDate } };
+        expect(licenseConsumptionComponentTestInstance.openDialog).toHaveBeenCalledWith(StaticConsumptionDetailsComponent,dataObject);
+
+        selectedTestData.selectedOption = licenseConsumptionComponentTestInstance.DELETE;
+        licenseConsumptionComponentTestInstance.licConsumptionRowAction(selectedTestData);
+        expect(licenseConsumptionComponentTestInstance.onDelete).toHaveBeenCalledWith(selectedTestData.selectedRow);
+        
+        expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalledTimes(2);
+    });
+    it('should delete a consumptionDetail after confirmDialog when calling onDelete()',()=>{
+        dialogService.expectedValue = true;
+        const consumption = ConsumptionServiceMock.mockConsumptionA;
+        spyOn(ConsumptionServiceMock,'deleteLicenseConsumptionDetails').and.callThrough();
+        spyOn(licenseConsumptionComponentTestInstance,'fetchDataToDisplay');
+        
+        licenseConsumptionComponentTestInstance.onDelete(consumption);
+
+        expect(ConsumptionServiceMock.deleteLicenseConsumptionDetails).toHaveBeenCalledWith(consumption.id);
+        expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalled();
+    });
+});
+
+describe('Methods Calls', ()=>{
+    beforeEach(beforeEachFunction);
+
+    it('sould toggle the variable detailedConsumptionTableSelectable when calling toggleSelectableConsumptions()',()=>{
+        licenseConsumptionComponentTestInstance.detailedConsumptionTableSelectable = false;
+        licenseConsumptionComponentTestInstance.toggleSelectableConsumptions();
+        expect(licenseConsumptionComponentTestInstance.detailedConsumptionTableSelectable).toBeTrue();
     });
 
     it('should change the selected license, reset period filters and make a call to fetchDataToDisplay() when calling onChangeLicense()',()=>{
@@ -517,6 +576,7 @@ describe('Dialog calls and interactions', () => {
         expect(licenseConsumptionComponentTestInstance.fetchAggregatedData).toHaveBeenCalledTimes(1);
     });
 
+
     it('should display a different text according to the aggregation variable when calling getDatePickerLabel()',()=>{
         licenseConsumptionComponentTestInstance.aggregation = 'period';
         expect(licenseConsumptionComponentTestInstance.getDatePickerLabel()).toBe('Choose a date');
@@ -526,26 +586,6 @@ describe('Dialog calls and interactions', () => {
 
         licenseConsumptionComponentTestInstance.aggregation = 'week';
         expect(licenseConsumptionComponentTestInstance.getDatePickerLabel()).toBe('Choose a week');
-    });
-
-    it('should call to fetchAggregatedData when calling setWeek()',()=>{
-        licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
-        spyOn(licenseConsumptionComponentTestInstance,'fetchAggregatedData').and.callThrough();
-        spyOn(licenseConsumptionComponentTestInstance,'resetCalendar');
-        const date = moment(new Date());
-        licenseConsumptionComponentTestInstance.range.setValue({
-            start:date,
-            end:date
-        });
-        licenseConsumptionComponentTestInstance.aggregation = 'week';
-        licenseConsumptionComponentTestInstance.setWeek();
-
-        licenseConsumptionComponentTestInstance.aggregation = 'period';
-        licenseConsumptionComponentTestInstance.setWeek();
-
-        expect(licenseConsumptionComponentTestInstance.resetCalendar).toHaveBeenCalledTimes(1);
-        expect(licenseConsumptionComponentTestInstance.fetchAggregatedData).toHaveBeenCalledTimes(1);
     });
 
     it('should call to fetchAggregatedData when calling setMonthAndYear()',async()=>{
@@ -638,43 +678,43 @@ describe('Dialog calls and interactions', () => {
         licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray);
         expect(unsortedArray).toEqual(sortedArray);
     });
+})
 
-    it('should execute licConsumptionRowAction() with expected data given set arguments', () => {
+describe('Weekly Table',()=>{
+
+    beforeEach(beforeEachFunction);
+
+    it('should display weeks until the current week when the license renewal date is after',()=>{
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
-        const selectedTestData = { selectedRow: ConsumptionServiceMock.mockConsumptionA, selectedOption: 'selectedTestOption', selectedIndex: '0' };
-        const renewalDate = licenseConsumptionComponentTestInstance.selectedLicense.renewalDate;
-        spyOn(licenseConsumptionComponentTestInstance,'openDialog').and.callThrough();
-        spyOn(licenseConsumptionComponentTestInstance,'fetchDataToDisplay');
-        spyOn(licenseConsumptionComponentTestInstance,'onDelete');
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
+        const currentDate = moment.utc().add(1,'days');
+        licenseConsumptionComponentTestInstance.selectedLicense.renewalDate = currentDate.toISOString().split('T')[0];
 
-        selectedTestData.selectedOption = licenseConsumptionComponentTestInstance.EDIT;
-        licenseConsumptionComponentTestInstance.licConsumptionRowAction(selectedTestData);
-        let dataObject: any = { ...selectedTestData.selectedRow, ...{ endLicensePeriod: renewalDate } };
-        expect(licenseConsumptionComponentTestInstance.openDialog).toHaveBeenCalledWith(ModifyLicenseConsumptionDetailsComponent,dataObject);
+        licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
-        selectedTestData.selectedRow = ConsumptionServiceMock.mockConsumptionD;
-        licenseConsumptionComponentTestInstance.licConsumptionRowAction(selectedTestData);
-        dataObject = { ...selectedTestData.selectedRow, ...{ endLicensePeriod: renewalDate } };
-        expect(licenseConsumptionComponentTestInstance.openDialog).toHaveBeenCalledWith(StaticConsumptionDetailsComponent,dataObject);
+        const weekStart = moment.utc();
+        weekStart.subtract(weekStart.day(), "days")
+        const weekEnd = moment.utc(weekStart).add(6, 'days');
+        expect(licenseConsumptionComponentTestInstance.weeklyConsumptionData[0].weekId).toBe("Week " + moment.utc(weekStart).add(1, 'days').isoWeek() + " (" + weekStart.format("YYYY-MM-DD") + " - " + weekEnd.format("YYYY-MM-DD") + ")");
 
-        selectedTestData.selectedOption = licenseConsumptionComponentTestInstance.DELETE;
-        licenseConsumptionComponentTestInstance.licConsumptionRowAction(selectedTestData);
-        expect(licenseConsumptionComponentTestInstance.onDelete).toHaveBeenCalledWith(selectedTestData.selectedRow);
-        
-        expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalledTimes(2);
     });
-    it('should delete a consumptionDetail after confirmDialog when calling onDelete()',()=>{
-        dialogService.expectedValue = true;
-        const consumption = ConsumptionServiceMock.mockConsumptionA;
-        spyOn(ConsumptionServiceMock,'deleteLicenseConsumptionDetails').and.callThrough();
-        spyOn(licenseConsumptionComponentTestInstance,'fetchDataToDisplay');
-        
-        licenseConsumptionComponentTestInstance.onDelete(consumption);
 
-        expect(ConsumptionServiceMock.deleteLicenseConsumptionDetails).toHaveBeenCalledWith(consumption.id);
-        expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalled();
+    it('should display weeks until the last week of the license period when the license renewal date is before the current week',()=>{
+        licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
+        licenseConsumptionComponentTestInstance.selectedLicense = JSON.parse(JSON.stringify(LicenseServiceMock.mockLicenseA));
+        const currentDate = moment.utc().subtract(1,'days');
+        const renewalDate = currentDate.toISOString().split('T')[0]
+        licenseConsumptionComponentTestInstance.selectedLicense.renewalDate = renewalDate;
+
+        licenseConsumptionComponentTestInstance.fetchAggregatedData();
+
+        const weekStart = moment.utc(renewalDate);
+        weekStart.subtract(weekStart.day(), "days")
+        const weekEnd = moment.utc(weekStart).add(6, 'days');
+        expect(licenseConsumptionComponentTestInstance.weeklyConsumptionData[0].weekId).toBe("Week " + moment.utc(weekStart).add(1, 'days').isoWeek() + " (" + weekStart.format("YYYY-MM-DD") + " - " + weekEnd.format("YYYY-MM-DD") + ")");
+
     });
+
 });
 
 describe('openDialog',()=>{

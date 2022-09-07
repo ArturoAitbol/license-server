@@ -23,10 +23,10 @@ Feature: LicensesConsumption
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     And I open the Add Subscription form from Consumption View
     When I create a subscription with the following data
-      | startDate     | 8/20/2022 |
-      | renewalDate   | 2/20/2023 |
-      | subscriptionType   | Basic     |
-      | description   | License1  |
+      | startDate         | 8/20/2022 |
+      | renewalDate       | 2/20/2023 |
+      | subscriptionType  | Basic     |
+      | description       | License1  |
     Then I should see the message "Subscription added successfully!"
 
   @addLicenseConsumption
@@ -36,44 +36,44 @@ Feature: LicensesConsumption
     And I open the Add tekToken Consumption form
     And I open the Add Project form from Consumption form
     And I create a project with the following data
-      | startDate | 8/20/2022   |
-      | name      | projectTest |
-      | code      | PRT-001     |
-      | license   | License1    |
+      | startDate         | 8/20/2022   |
+      | name              | projectTest |
+      | code              | PRT-001     |
+      | subscription      | License1    |
     And I should see the message "Project added successfully!"
     When I add a consumption with the following data
-#      | startWeek           | 8/21/2022     |
-#      | endWeek             | 8/27/2022     |
-      | project             | projectTest   |
-      | deviceVendor        | Cisco        |
-      | deviceModel         | Contact Center Enterprise (UCCE)          |
-      | deviceVersion       | 12.6     |
-      | deviceGranularity   | week          |
-      | tekTokens           | 7             |
-    Then I should see the following data in the tekTokens Consumption Summary table
-      | tekTokens     | 55      |
+#      | startWeek         | 8/21/2022     |
+#      | endWeek           | 8/27/2022     |
+      | project           | projectTest                       |
+      | deviceVendor      | Cisco                             |
+      | deviceModel       | Contact Center Enterprise (UCCE)  |
+      | deviceVersion     | 12.6                              |
+      | deviceGranularity | week                              |
+      | tekTokens         | 7                                 |
+    Then I should see the following data in the tekToken Consumption Summary table
+      | tekTokens         | 55      |
     Then I should see the following data in the tekTokens Project Consumption table
-#      | project     | projectTest   |
-      | status      | Open          |
-    And I should see the same data in the tekTokens Consumption Events table
+#      | project           | projectTest   |
+      | status            | Open          |
+    And I should see the same data in the tekToken Consumption Events table
 
   @editLicenseConsumption
   Scenario: Edit a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     When I edit the consumption of the project "projectTest" with the following data
-      | deviceVendor        | Cisco         |
-      | deviceModel         | Contact Center Express (UCCX)         |
-      | deviceVersion       | 12.5   |
-      | deviceGranularity   | week        |
-      | tekTokens           | 4           |
+      | deviceVendor      | Cisco                         |
+      | deviceModel       | Contact Center Express (UCCX) |
+      | deviceVersion     | 12.5                          |
+      | deviceGranularity | week                          |
+      | tekTokens         | 4                             |
     Then I should see the message "tekToken consumption successfully edited!"
-    Then I should see the following data in the tekTokens Consumption Summary table
-      | tekTokens     | 55      |
+    Then I should see the following data in the tekToken Consumption Summary table
+      | tekTokens         | 55            |
     Then I should see the following data in the tekTokens Project Consumption table
-      | project     | projectTest   |
-      | status      | Open          |
-    And I should see the same data in the tekTokens Consumption Events table
+      | project           | projectTest   |
+      | status            | Open          |
+    And I should see the same data in the tekToken Consumption Events table
 
   @deleteLicenseConsumption
   Scenario: Delete a tekToken Consumption

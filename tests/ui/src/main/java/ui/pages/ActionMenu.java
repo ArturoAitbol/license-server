@@ -48,6 +48,12 @@ public class ActionMenu extends AbstractPageObject {
         executor.executeScript("arguments[0].click();", this.editButton);
     }
 
+    public void editForm(){
+        this.action.forceClick(this.editButton);
+        this.action.waitModal();
+
+    }
+
     public Projects goToProjects(){
 /*        By projectsSelector = By.xpath("//button[@id='View Projects List']");
         this.action.click(projectsSelector);*/

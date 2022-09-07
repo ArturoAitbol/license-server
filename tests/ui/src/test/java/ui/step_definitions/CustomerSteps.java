@@ -4,7 +4,7 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import ui.core.DriverManager;
 import ui.pages.ActionMenu;
 import ui.pages.CustomerForm;
@@ -49,8 +49,8 @@ public class CustomerSteps {
     @Then("I see the customer {string} in the table")
     public void iShouldSeeTheCustomerInTheTable(String customerName) {
         this.customerRow = this.customers.getCustomer(customerName);
-        String actualCustomerName = this.customerRow.getCostumerColumn("Customer");
-        Assert.assertEquals("Customers table doesn't have the customer: ".concat(customerName), customerName,
+        String actualCustomerName = this.customerRow.getCustomerColumn("Customer");
+        assertEquals("Customers table doesn't have the customer: ".concat(customerName), customerName,
                 actualCustomerName);
     }
 
@@ -71,7 +71,7 @@ public class CustomerSteps {
     @Then("I should see the message {string}")
     public void iShouldSeeTheMessage(String message) {
         this.actualMessage = DriverManager.getInstance().getMessage();
-        Assert.assertEquals("This message was not displayed: ".concat(message), message, this.actualMessage);
+        assertEquals("This message was not displayed: ".concat(message), message, this.actualMessage);
     }
 
     @When("I edit the customer {string} with the following data")
@@ -90,39 +90,40 @@ public class CustomerSteps {
     @Then("I should see the modified data in Customers table")
     public void iShouldSeeTheModifiedDataInCustomersTable() {
         this.customerRow = new CustomerRow(this.customerName);
-        String actualCustomerName = this.customerRow.getCostumerColumn("Customer");
-        String actualSubaccountName = this.customerRow.getCostumerColumn("Subaccount");
-        String actualType = this.customerRow.getCostumerColumn("Type");
-        Assert.assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
+        String actualCustomerName = this.customerRow.getCustomerColumn("Customer");
+        String actualSubaccountName = this.customerRow.getCustomerColumn("Subaccount");
+        String actualType = this.customerRow.getCustomerColumn("Type");
+        assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
                 actualCustomerName);
-        Assert.assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
+        assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
                 actualSubaccountName);
-        Assert.assertEquals("Customer isn't this type: ".concat(this.type), this.type, actualType);
+        assertEquals("Customer isn't this type: ".concat(this.type), this.type, actualType);
     }
 
     @Then("I see in the table the customer {string} and its subaccount {string}")
     public void iSeeInTheTableTheTheCustomerAndItsSubaccount(String customerName, String subaccountName) {
-        this.customerRow = this.customers.getCustomer(subaccountName);
-        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer");
-        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount");
-        Assert.assertEquals(
+        this.customerRow = this.customers.getCustomer(customerName);
+        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer",null);
+        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", subaccountName);
+
+        assertEquals(
                 String.format("Customer '%s' doesn't have the subaccount '%s'", customerName, subaccountName),
                 subaccountName, actualSubaccountName);
-        Assert.assertEquals(
+        assertEquals(
                 String.format("Subaccount '%s' doesn't belong to the customer '%s'", subaccountName, customerName),
                 customerName, actualCustomerName);
     }
 
     @Then("I should see the modified data in Subaccounts table")
     public void iShouldSeeTheModifiedDataInSubaccountsTable() {
-        this.customerRow = new CustomerRow(this.subaccount);
-        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer");
-        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount");
-        String actualType = this.customerRow.getSubaccountColumn("Type");
-        Assert.assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
+        this.customerRow = new CustomerRow(this.customerName);
+        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer",null);
+        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", this.subaccount);
+        String actualType = this.customerRow.getSubaccountColumn("Type",null);
+        assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
                 actualCustomerName);
-        Assert.assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
+        assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
                 actualSubaccountName);
-        Assert.assertEquals("Customer isn't this type: ".concat(this.type), this.type, actualType);
+        assertEquals("Customer isn't this type: ".concat(this.type), this.type, actualType);
     }
 }

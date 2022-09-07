@@ -1,4 +1,3 @@
-import { of } from "rxjs";
 // import { instance, mock, verify, when } from "ts-mockito";
 import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed} from '@angular/core/testing';
@@ -7,9 +6,8 @@ import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { CustomerService } from 'src/app/services/customer.service';
-import { DialogService } from 'src/app/services/dialog.service';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { CustomerServiceMock } from 'src/test/mock/services/customer-service.mock';
@@ -18,10 +16,6 @@ import { ModifyCustomerAccountComponent } from './modify-customer-account.compon
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { ReactiveFormsModule } from '@angular/forms';
 import { CurrentCustomerServiceMock } from "src/test/mock/services/current-customer-service.mock";
-import { Input } from "@angular/core";
-import {By} from "@angular/platform-browser";
-import { FormBuilder } from '@angular/forms';
-import { truncateSync } from "fs";
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
 const dialogMock = new DialogServiceMock();

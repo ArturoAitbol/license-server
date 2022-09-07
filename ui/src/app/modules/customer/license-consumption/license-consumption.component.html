@@ -32,7 +32,7 @@
             </div>
         </div>
     </main>
-    <h2 id="first-section-title">tekVizion 360 Subscription Consumption Summary</h2>
+    <h2 id="first-section-title">tekToken Consumption Summary</h2>
     <section>
         <div class="row">
             <div class="col-6">
@@ -57,7 +57,6 @@
     </section>
     <br>
     <!-- Detailed Consumption for selection -->
-    <h2 id="second-section-title">tekTokens Consumption</h2>
     <section>
         <!-- filters -->
         <div style="display: flex;">
@@ -94,7 +93,7 @@
             <div class="col-4 d-flex justify-content-center">
                 <mat-form-field id="project-form" appearance="outline">
                     <mat-label>Project</mat-label>
-                    <mat-select [(value)]="selectedProject" (valueChange)="getProject($event)">
+                    <mat-select [(value)]="selectedProject" (valueChange)="getProject($event)" [disabled]="!isLicenseListLoaded">
                         <mat-option value="">All</mat-option>
                         <mat-option *ngFor="let project of projects" [value]="project.id">
                             {{project.projectName}}
@@ -105,7 +104,7 @@
             <div class="col-4 d-flex justify-content-center">
                 <mat-form-field id="consumption-type-form" appearance="outline">
                     <mat-label>Consumption Type</mat-label>
-                    <mat-select (valueChange)="getType($event)">
+                    <mat-select (valueChange)="getType($event)" [disabled]="!isLicenseListLoaded">
                         <mat-option value="">All</mat-option>
                         <mat-option value="Configuration">Configuration</mat-option>
                         <mat-option value="AutomationPlatform">Automation Platform</mat-option>

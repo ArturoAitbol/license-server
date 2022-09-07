@@ -9,6 +9,7 @@ public class ConsumptionForm extends AbstractPageObject {
     @FindBy(css = "#new-project-button")
     WebElement addProjectButton;
     @FindBy(css = "mat-form-field#consumption-week mat-datepicker-toggle")
+//    @FindBy(css = "license-consumption-calendar")
     WebElement calendarButton;
     @FindBy(css = "[formcontrolname='startWeek']")
     WebElement startWeekInput;
@@ -23,22 +24,16 @@ public class ConsumptionForm extends AbstractPageObject {
     @FindBy(css = "#submit-button")
     WebElement submitButton;
 
-    public ProjectForm openProjectForm() {
-        this.action.click(this.addProjectButton);
-        return new ProjectForm();
-    }
-
-    public Consumptions addConsumption(String startWeek, String endWeek, String project, String deviceVendor, 
+    public Consumptions addConsumption(String startWeek, String endWeek, String project, String deviceVendor,
                         String deviceModel, String deviceVersion, String deviceGranularity, String tekTokens) {
-        this.action.click(this.calendarButton);
-        By todaySelector = By.cssSelector("div.mat-calendar-body-today");
-        this.action.click(todaySelector);
 /*        this.action.sendText(this.startWeekInput, startWeek);
         this.action.sendText(this.endWeekInput, endWeek);*/
+        this.action.selectToday(this.calendarButton);
         By projectSelector = By.cssSelector(String.format("mat-option[title='%s']", project));
         this.action.selectOption(this.projectInput, projectSelector);
         By deviceVendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
         this.action.selectOption(this.deviceVendorInput, deviceVendorSelector);
+        this.waitSpinner();
         String deviceFieldContent = getDeviceFieldContent(deviceModel, deviceVersion, deviceGranularity, tekTokens);
         By deviceModelSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceFieldContent));
         this.action.selectOption(this.deviceModelInput, deviceModelSelector);
@@ -48,8 +43,6 @@ public class ConsumptionForm extends AbstractPageObject {
 
     public Consumptions editConsumption(String project, String deviceVendor, String deviceModel, 
             String deviceVersion, String deviceGranularity, String tekTokens) {
-        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
-        this.action.waitModal(modalLocator);
         if (!project.isEmpty()) {
             By projectSelector = By.cssSelector(String.format("mat-option[title='%s']", project));
             this.action.replaceOption(this.projectInput, projectSelector);
@@ -57,13 +50,13 @@ public class ConsumptionForm extends AbstractPageObject {
         if (!deviceVendor.isEmpty()) {
             By deviceVendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
             this.action.replaceOption(this.deviceVendorInput, deviceVendorSelector);
-        }
-        if (!deviceVendor.isEmpty()) {
+            this.waitSpinner();
             String deviceFieldContent = getDeviceFieldContent(deviceModel, deviceVersion, deviceGranularity, tekTokens);
             By deviceModelSelector = By.cssSelector(String.format("mat-option[title*='%s']", deviceFieldContent));
             this.action.replaceOption(this.deviceModelInput, deviceModelSelector);
         }
         this.action.click(this.submitButton);
+//        this.action.waitModal();
         return new Consumptions();
     }
 
@@ -74,5 +67,9 @@ public class ConsumptionForm extends AbstractPageObject {
             deviceFieldContent += " - v." + deviceVersion;
         deviceFieldContent += " (" + deviceGranularity + " - " + tekTokens + ")";
         return deviceFieldContent;
+    }
+
+    public void waitSpinner() {
+        this.action.waitModal();
     }
 }

@@ -57,7 +57,7 @@ public class TekvLSCreateUsageDetails
 		}
 
 		context.getLogger().info("Entering TekvLSCreateUsageDetails Azure function");
-		String userId = getEmailFromToken(tokenClaims, context);
+		String emailId = getEmailFromToken(tokenClaims, context);
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
 		context.getLogger().info("Request body: " + requestBody);
@@ -88,7 +88,7 @@ public class TekvLSCreateUsageDetails
 			}
 		}
 
-		String sql = "INSERT INTO usage_detail (consumption_id, usage_date, day_of_week, mac_address, serial_number, modified_date, modified_by) " +
+			String sql = "INSERT INTO usage_detail (consumption_id, usage_date, day_of_week, mac_address, serial_number, modified_date, modified_by) " +
 					 "VALUES (?::uuid, ?::date, ?, ?, ?, ?::timestamp, ?);";
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -102,7 +102,7 @@ public class TekvLSCreateUsageDetails
 			// Set common parameters to all batches
 			statement.setString(1, id);
 			statement.setTimestamp(6, Timestamp.from(Instant.now()));
-			statement.setString(7, userId);
+			statement.setString(7, emailId);
 
 			final JSONArray usageDays = jobj.getJSONArray(MANDATORY_PARAMS.ADDED_DAYS.value);
 			if (usageDays != null && usageDays.length() > 0) {
@@ -123,7 +123,8 @@ public class TekvLSCreateUsageDetails
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 
-			context.getLogger().info("Execute SQL statement: " + statement);
+			String userId = getUserIdFromToken(tokenClaims,context);
+			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeBatch();
 			context.getLogger().info("tekToken consumption inserted successfully.");
 			return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();

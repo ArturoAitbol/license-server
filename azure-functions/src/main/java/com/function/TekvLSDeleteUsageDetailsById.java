@@ -17,6 +17,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -43,7 +44,8 @@ public class TekvLSDeleteUsageDetailsById
 				final ExecutionContext context) 
 	{
 
-		String currentRole = getRoleFromToken(request,context);
+		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+		String currentRole = getRoleFromToken(tokenClaims,context);
 		if(currentRole.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
@@ -104,7 +106,8 @@ public class TekvLSDeleteUsageDetailsById
 			statement.setString(1, id);
 			statement.setArray(2, array);
 
-			context.getLogger().info("Execute SQL statement: " + statement);
+			String userId = getUserIdFromToken(tokenClaims,context);
+			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
 			context.getLogger().info("License usage delete successfully.");
 

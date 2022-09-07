@@ -22,7 +22,7 @@
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label id="project-license-label">tekVizion 360 Subscription</mat-label>
                         <mat-select required formControlName="licenseId" (valueChange)="onLicenseChange($event)">
-                            <mat-option *ngFor="let license of licenses" [value]="license.id">
+                            <mat-option *ngFor="let license of licenses" [value]="license.id" title="{{license.description}}">
                                 {{license.description}}
                             </mat-option>
                         </mat-select>
@@ -32,7 +32,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label id="start-date-lable">Start Date</mat-label>
                         <input [min]="minDate" [max]="maxDate" required matInput [matDatepicker]="picker" formControlName="openDate">
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker-toggle matSuffix [for]="picker" id="project-calendar"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                         <mat-hint *ngIf="selectedLicense===null">Please select a subscription first</mat-hint>
                     </mat-form-field>

@@ -9,7 +9,7 @@ public class CustomerRow extends AbstractPageObject {
         this.CUSTOMER_NAME_XPATH = String.format("//td[@title='%s']", customerName);
     }
 
-    public String getCostumerColumn(String column){
+    public String getCustomerColumn(String column){
         By columnSelector;
         if(column.equals("Customer"))
             columnSelector = By.xpath(this.CUSTOMER_NAME_XPATH);
@@ -24,15 +24,16 @@ public class CustomerRow extends AbstractPageObject {
         return new ActionMenu();
     }
 
-    public String getSubaccountColumn(String column){
+    
+
+    public String getSubaccountColumn(String column, String subaccountName){                       
         By columnSelector;
         if(column.equals("Customer"))
-            columnSelector = By.xpath(String.format(this.CUSTOMER_NAME_XPATH + "/preceding-sibling::td[@id='%s']", column));
-        else if (column.equals("Subaccount"))
             columnSelector = By.xpath(this.CUSTOMER_NAME_XPATH);
+        else if (column.equals("Subaccount"))
+            columnSelector = By.xpath(String.format(this.CUSTOMER_NAME_XPATH + "/following-sibling::td[span[text()='%s']]",subaccountName));
         else
-            columnSelector = By.xpath(String.format(this.CUSTOMER_NAME_XPATH + "/following-sibling::td[@id='%s']", column));
+            columnSelector = By.xpath(String.format(this.CUSTOMER_NAME_XPATH + "/following-sibling::td[@id='%s']/span", column));
         return this.action.getText(columnSelector);
     }
-
 }

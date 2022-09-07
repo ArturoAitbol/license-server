@@ -53,7 +53,7 @@ export class ModifyProjectComponent implements OnInit {
       this.liceseService.getLicenseList(this.projectService.getSelectedSubAccount()).subscribe((res: any) => {
         if (!res.error && res.licenses.length > 0){
           this.licenses = res.licenses;
-          let license = this.licenses.find(license => license.id === this.data.licenseId);
+          const license = this.licenses.find(license => license.id === this.data.licenseId);
           this.today = new Date();
           this.today.setHours(0,0,0);
           this.setDateLimits(license,this.data.openDate); 
@@ -112,8 +112,8 @@ export class ModifyProjectComponent implements OnInit {
     this.minCloseDate = new Date(value);
   }
 
-  onLicenseChange(licenseId:String) :void {
-    let selectedLicense = this.licenses.find(license => license.id === licenseId);
+  onLicenseChange(licenseId:string) :void {
+    const selectedLicense = this.licenses.find(license => license.id === licenseId);
     if(selectedLicense!==null){
       this.updateProjectForm.get('openDate').setValue('');
       this.updateProjectForm.get('closeDate').setValue('');
@@ -121,7 +121,7 @@ export class ModifyProjectComponent implements OnInit {
     }
   }
 
-  private setDateLimits(license: License, startDate?:String) :void {
+  private setDateLimits(license: License, startDate?:string) :void {
     this.minDate = new Date(license.startDate + " 00:00:00");
     this.maxDate = new Date(license.renewalDate + " 00:00:00");
     this.minCloseDate = startDate ? new Date(startDate + " 00:00:00") : this.minDate;

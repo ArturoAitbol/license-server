@@ -140,9 +140,9 @@ describe('add-license-consumption - UI verification tests', () => {
         supportDeviceInput.dispatchEvent(new Event('focus'));
         supportDeviceInput.dispatchEvent(new Event('input'));
         addLicenseConsumptionForm.get('project').setValue({projectName: 'TestProject'});
-        addDeviceForm.get('vendor').setValue({vendor: 'TestVendor'});
+        addDeviceForm.get('vendor').setValue('TestVendor');
         addDeviceForm.get('product').setValue({product: 'TestProduct'});
-        addSupportForm.get('vendor').setValue({vendor: 'TestVendor'});
+        addSupportForm.get('vendor').setValue('TestVendor');
         addSupportForm.get('product').setValue({product: 'TestProduct'});
 
         fixture.detectChanges();
@@ -207,9 +207,12 @@ describe('add-license-consumption - FormGroup verification tests', () => {
 
         addLicenseConsumptionForm.get('project').setValue('test');
         addDeviceForm.get('vendor').setValue('test');
+        addDeviceForm.get('product').enable();
         addDeviceForm.get('product').setValue('test');
         addSupportForm.get('vendor').setValue('test');
+        addSupportForm.get('product').enable();
         addSupportForm.get('product').setValue('test');
+        fixture.detectChanges();
         expect(addLicenseConsumptionForm.valid).toBeFalse();
         expect(addDeviceForm.valid).toBeFalse();
         expect(addSupportForm.valid).toBeFalse();
@@ -217,9 +220,9 @@ describe('add-license-consumption - FormGroup verification tests', () => {
         addLicenseConsumptionForm.get('startWeek').setValue(new Date());
         addLicenseConsumptionForm.get('endWeek').setValue(new Date());
         addLicenseConsumptionForm.get('project').setValue({ test: "test" });
-        addDeviceForm.get('vendor').setValue({ test: "test" });
+        addDeviceForm.get('vendor').setValue("test");
         addDeviceForm.get('product').setValue({ test: "test" });
-        addSupportForm.get('vendor').setValue({ test: "test" });
+        addSupportForm.get('vendor').setValue("test");
         addSupportForm.get('product').setValue({ test: "test" });
         expect(addLicenseConsumptionForm.valid).toBeTrue();
         expect(addDeviceForm.valid).toBeTrue();
@@ -231,10 +234,10 @@ describe('add-license-consumption - Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
 
     it('should make a call to get device list and project list', () => {
-        spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
+        spyOn(DevicesServiceMock, 'getAllDeviceVendors').and.callThrough();
         spyOn(ProjectServiceMock, 'getProjectDetailsByLicense').and.callThrough();
         testInstance.ngOnInit();
-        expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
+        expect(DevicesServiceMock.getAllDeviceVendors).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsByLicense).toHaveBeenCalled();
     });
 
@@ -310,15 +313,7 @@ describe('add-license-consumption - Add device, remove device methods', () => {
     beforeEach(() => {
         const addDeviceForm = testInstance.addDeviceForm;
         addDeviceForm.get('product').enable();
-        addDeviceForm.get('vendor').setValue({
-            "supportType": false,
-            "product": "3CX",
-            "vendor": "3CX",
-            "granularity": "week",
-            "id": "ef7a4bcd-fc3f-4f87-bf87-ae934799690b",
-            "version": "18.0.1880",
-            "tokensToConsume": 2
-        });
+        addDeviceForm.get('vendor').setValue("3CX");
         addDeviceForm.get('product').setValue({
             "id": "ef7a4bcd-fc3f-4f87-bf87-ae934799690b",
             "vendor": "3CX",
@@ -358,15 +353,7 @@ describe('add-license-consumption - Add support, remove support methods', () => 
     beforeEach(() => {
         const addSupportForm = testInstance.addSupportForm;
         addSupportForm.get('product').enable();
-        addSupportForm.get('vendor').setValue({
-            "supportType": false,
-            "product": "3CX",
-            "vendor": "3CX",
-            "granularity": "week",
-            "id": "ef7a4bcd-fc3f-4f87-bf87-ae934799690b",
-            "version": "18.0.1880",
-            "tokensToConsume": 2
-        });
+        addSupportForm.get('vendor').setValue("3CX");
         addSupportForm.get('product').setValue({
             "id": "ef7a4bcd-fc3f-4f87-bf87-ae934799690b",
             "vendor": "3CX",
@@ -413,14 +400,14 @@ describe('add-license-consumption - On event methods', () => {
     });
 
     it('should filter devices on vendor change', () => {
-        testInstance.onChangeVendor({ vendor: '3CX' });
+        testInstance.onChangeVendor('3CX');
         expect(testInstance.models.length).toBe(1);
         expect(testInstance.addDeviceForm.value.product).toBe('');
         expect(testInstance.addDeviceForm.controls.product.enabled).toBeTrue()
     });
 
     it('should filter support devices on vendor change', () => {
-        testInstance.onChangeSupportVendor({ vendor: 'HylaFAX' });
+        testInstance.onChangeSupportVendor('HylaFAX');
         expect(testInstance.supportModels.length).toBe(1);
         expect(testInstance.addSupportForm.value.product).toBe('');
         expect(testInstance.addSupportForm.controls.product.enabled).toBeTrue()
@@ -436,7 +423,7 @@ describe('add-license-consumption - On event methods', () => {
     });
 
     it('should filter devices on form change', async () => {
-        testInstance.onChangeVendor({ vendor: 'Alcatel Lucent' });
+        testInstance.onChangeVendor('Alcatel Lucent');
         fixture.detectChanges();
         const inputElement = fixture.nativeElement.querySelector('#device-auto-complete');
         inputElement.dispatchEvent(new Event('focusin'));
@@ -448,7 +435,7 @@ describe('add-license-consumption - On event methods', () => {
     });
 
     it('should filter devices on form change and display only product name when version is null', async () => {
-        testInstance.onChangeVendor({ vendor: 'Test' });
+        testInstance.onChangeVendor('Test');
         fixture.detectChanges();
         const inputElement = fixture.nativeElement.querySelector('#device-auto-complete');
         inputElement.dispatchEvent(new Event('focusin'));
@@ -461,7 +448,7 @@ describe('add-license-consumption - On event methods', () => {
     });
 
     it('should filter support on form change', async () => {
-        testInstance.onChangeSupportVendor({ vendor: 'HylaFAX' });
+        testInstance.onChangeSupportVendor('HylaFAX');
         fixture.detectChanges();
         const inputElement = fixture.nativeElement.querySelector('#support-device-auto-complete');
         inputElement.dispatchEvent(new Event('focusin'));
@@ -473,7 +460,7 @@ describe('add-license-consumption - On event methods', () => {
     });
 
     it('should filter support on form change and display only product name when version is null', async () => {
-        testInstance.onChangeSupportVendor({ vendor: 'TestSupport' });
+        testInstance.onChangeSupportVendor('TestSupport');
         fixture.detectChanges();
         const inputElement = fixture.nativeElement.querySelector('#support-device-auto-complete');
         inputElement.dispatchEvent(new Event('focusin'));
@@ -571,6 +558,7 @@ describe('add-license-consumption - Cloning consumptions', () => {
                         "version": "v007.00138",
                         "vendor": "Panasonic",
                         "granularity": "week",
+                        "supportType": false,
                         "id": "e7874f3c-2b98-4d87-ba8a-f69216d5b35e",
                         "tokensConsumed": 2,
                         "projectName": "Test",
@@ -590,6 +578,7 @@ describe('add-license-consumption - Cloning consumptions', () => {
                         "version": "6.2",
                         "vendor": "HylaFAX",
                         "granularity": "static",
+                        "supportType": true,
                         "id": "fdf1a727-67bd-430b-824d-07d49064d0e9",
                         "tokensConsumed": 0,
                         "projectName": "Test",
@@ -633,7 +622,7 @@ describe('add-license-consumption - devicesAndSupportInvalid', () => {
             project: { test: 'test' },
         });
         addDeviceForm.setValue({
-            vendor: { test: 'test' },
+            vendor: 'test',
             product: { test: 'test' }
         });
         addSupportForm.setValue({
@@ -656,7 +645,7 @@ describe('add-license-consumption - devicesAndSupportInvalid', () => {
             project: { test: 'test' },
         });
         addSupportForm.setValue({
-            vendor: { test: 'test' },
+            vendor: 'test',
             product: { test: 'test' }
         });
         addDeviceForm.setValue({

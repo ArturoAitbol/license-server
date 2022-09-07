@@ -32,7 +32,8 @@ class TekvLSModifyCustomerByIdTest extends TekvLSTest {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
         String name = "customerTest" + LocalDateTime.now();
-        String bodyRequest = "{'customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','test':'true'}";
+        String subAccountname = "customerSubAccountTest" + LocalDateTime.now();
+        String bodyRequest = "{'customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'"+name+"','customerType':'MSP','customerAdminEmail':'"+name+"@hotmail.com','subaccountAdminEmail':'"+subAccountname+"@hotmail.com', 'test':'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = this.createCustomerApi.run(this.request, context);
         HttpStatusType actualStatus = response.getStatus();

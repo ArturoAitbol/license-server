@@ -6,13 +6,12 @@ import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 
 public class Consumptions extends AbstractPageObject {
-    @FindBy(css = "#add-license-consumption")
+    @FindBy(css = "#add-license-consumption-button")
     WebElement addConsumptionButton;
 
     public ConsumptionForm openConsumptionForm() {
         this.action.click(this.addConsumptionButton);
-        By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
-        this.action.waitModal(modalLocator);
+        this.action.waitModal();
         return new ConsumptionForm();
     }
 
@@ -27,7 +26,15 @@ public class Consumptions extends AbstractPageObject {
     }
 
     public String getMessage() {
+        String message;
         By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
-        return this.action.getText(messageSelector);
+        try{
+            message = this.action.getText(messageSelector);
+        } catch (Exception e){
+            System.out.println("Message couldn't be retrieved");
+            System.out.println(e.toString());
+            message = "None";
+        }
+        return message;
     }
 }

@@ -653,10 +653,58 @@ const DEVICE_LIST = {
     ]
 };
 
+const VENDORS_LIST = {
+    "vendors": [
+        "HylaFAX",
+        "Xmedius",
+        "Genesys",
+        "3CX",
+        "Adtran",
+        "Alcatel Lucent",
+        "Allworx",
+        "Altigen",
+        "Asterisk",
+        "Avaya",
+        "Broadsoft",
+        "Cisco",
+        "Elastix",
+        "Epygi",
+        "Ericcson LG",
+        "ESI",
+        "Fonality",
+        "Fortinet",
+        "FreePBX",
+        "Grandstream",
+        "Innova",
+        "IPC Systems",
+        "Ipitomy",
+        "Microsoft",
+        "Mitel",
+        "NEC",
+        "Panasonic",
+        "Test"
+    ],
+    "supportVendors": [
+        "HylaFAX",
+        "TestSupport",
+        "Multitech",
+        "Opentext",
+        "Genesys"
+    ]
+};
+
 export const DevicesServiceMock = {
     devicesListValue: DEVICE_LIST,
-    getDevicesList: (subaccountId) => {
-        return of(DEVICE_LIST);
+    getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string ) => {
+        return of({ devices: DEVICE_LIST.devices.filter(device => device.vendor === vendor) });
+    },
+
+    getAllDeviceVendors: () => {
+        return of(VENDORS_LIST)
+    },
+
+    getDeviceById: (id: string) => {
+        return of({ devices: [DEVICE_LIST.devices.filter(device => device.id === id)[0]] })
     }
 };
 

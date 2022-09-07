@@ -5,7 +5,6 @@ import { LicenseService } from 'src/app/services/license.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { BundleService } from 'src/app/services/bundle.service';
 import { renewalDateValidator } from "src/app/helpers/renewal-date.validator";
-import { ConsoleLogger } from '@angular/compiler-cli/private/localize';
 
 @Component({
     selector: 'app-modify-license',
@@ -76,8 +75,6 @@ export class ModifyLicenseComponent implements OnInit {
                 this.updateCustomerForm.get('tokensPurchased').disable();
                 this.updateCustomerForm.get('deviceLimit').disable();
             }
-            console.log("tokensPurchased", this.updateCustomerForm.get('tokensPurchased').value);
-            console.log("deviceLimit", this.updateCustomerForm.get('deviceLimit').value);
         }
     }
 
