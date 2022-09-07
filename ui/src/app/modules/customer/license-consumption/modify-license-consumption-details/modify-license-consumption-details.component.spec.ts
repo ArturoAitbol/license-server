@@ -239,16 +239,28 @@ describe('modify functions interactions', () => {
     });
 
     it('should return error message to the user', () => {
-        spyOn(UsageDetailServiceMock, 'deleteUsageDetails').and.returnValue(of({error: "Some error"}));
+        spyOn(UsageDetailServiceMock, 'createUsageDetails').and.returnValue(of({error: "Some error"}));
         spyOn(modifyLicenseConsumptionDetailTestInstance, 'submit').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
 
         modifyLicenseConsumptionDetailTestInstance.setChecked(false, 4);
+        modifyLicenseConsumptionDetailTestInstance.setChecked(true, 2);
         modifyLicenseConsumptionDetailTestInstance.submit();
 
         expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledOnceWith("Some error", 'Error editing license consumption!');
+    });
+
+    it('should call deltedDays when submit es called', () => {
+        spyOn(modifyLicenseConsumptionDetailTestInstance, 'submit').and.callThrough();
+        fixture.detectChanges()
+        
+        modifyLicenseConsumptionDetailTestInstance.setChecked(false, 4);
+        modifyLicenseConsumptionDetailTestInstance.setChecked(true, 1);
+        modifyLicenseConsumptionDetailTestInstance.submit();
+
+        expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
     });
 });
 
