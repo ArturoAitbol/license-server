@@ -42,7 +42,7 @@ export class LoginPageComponent implements OnInit {
                 console.debug('login res: ', res);
                 this.msalService.instance.setActiveAccount(res.account);
                 if (this.isLoggedIn)
-                    this.router.navigate(['/dashboard']);
+                    this.router.navigate(['/']);
             });
         } catch (error) {
             console.error('error while logging with Azure AD: ', error);
