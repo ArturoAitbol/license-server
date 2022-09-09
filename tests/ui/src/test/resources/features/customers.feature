@@ -17,6 +17,20 @@ Feature: Customers
       | testCustomer  | yes                               |
     Then I see the customer "customerTest" in the table
 
+  @addCustomerAdmin
+  Scenario: Add a customer administrator
+    Given I see the customer "customerTest" in the table
+    And I open the Customer Administrator Emails of "customerTest"
+    When I add an administrator with email "admintest@tekvizionlabs.com"
+    Then I should see the message "Customer admin emails edited successfully!"
+
+  @deleteCustomerAdmin
+  Scenario: Delete a customer administrator
+    Given I see the customer "customerTest" in the table
+    And I open the Customer Administrator Emails of "customerTest"
+    When I delete the administrator with email "admintest@tekvizionlabs.com"
+    Then I should see the message "Customer administrator email deleted"
+
   @editCustomer
   Scenario: Edit a test customer
     Given I see the customer "customerTest" in the table
