@@ -140,10 +140,11 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     this.isDataLoading = true;
     const requestsArray: any[] = [];
     let modifiedDays : any;
+    let modifiedConsumption: any;
     if (this.edited)
       modifiedDays = this.modifyUsageDays(requestsArray);
     if (this.editedForm())
-      this.modifyConsumption(requestsArray);
+      modifiedConsumption = this.modifyConsumption(requestsArray);
     if(requestsArray.length > 0){
       forkJoin(requestsArray).subscribe(res => {
         this.isDataLoading = false;
@@ -151,11 +152,12 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
           return { ...current, ...next };
         }, {});
         if (!resDataObject.error) {
-          this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
-          this.dialogRef.close(res);
-          if (modifiedDays.deletedDays.length > 0){
-            this.deleteDays(modifiedDays);
+          if(!modifiedConsumption || (modifiedDays.addedDays.length > 0 && modifiedDays.deletedDays.length == 0)){
+            this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
+            this.dialogRef.close(res);
           }
+          if (modifiedDays.deletedDays.length > 0)
+            this.deleteDays(modifiedDays);
         } else
           this.snackBarService.openSnackBar(resDataObject.error, 'Error editing license consumption!');
       });
@@ -166,7 +168,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     }
   }
 
-  private modifyConsumption(requestsArray: any[]): void {
+  private modifyConsumption(requestsArray: any[]): any {
     const licenseConsumptionObject: any = {
       consumptionId: this.data.id,
       projectId: this.updateForm.value.project.id,
@@ -177,6 +179,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       serialNumber: this.data.serialNumber
     };
     requestsArray.push(this.licenseConsumptionService.updateLicenseConsumptionDetails(licenseConsumptionObject));
+    return licenseConsumptionObject;
   }
 
   private modifyUsageDays(requestsArray: any[]): any {
@@ -202,7 +205,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   deleteDays(modifiedDays: any): void {
     this.usageDetailService.deleteUsageDetails(modifiedDays).subscribe(res => {
-      if(res == null){
+      if(!res){
         this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
         this.dialogRef.close([]);
       }
