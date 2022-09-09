@@ -25,7 +25,7 @@ export class ProjectsComponent implements OnInit {
   readonly displayedColumns: TableColumn[] = [
     { name: 'Project Code', dataKey: 'projectNumber', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'projectName', position: 'left', isSortable: true },
-    { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true },
+    { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true, isClickable: true },
     { name: 'Start Date', dataKey: 'openDate', position: 'left', isSortable: true },
     { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
   ];
@@ -162,6 +162,18 @@ export class ProjectsComponent implements OnInit {
         break;
       case this.VIEW_CONSUMPTION:
         this.openConsumptionView(object.selectedRow);
+    }
+  }
+
+  /**
+     * action row click event
+     * @param object: { selectedRow: any, selectedIndex: string, tableColumn: string }
+     */
+  columnAction(object: { selectedRow: any, selectedIndex: string, columnName: string }) {
+    switch (object.columnName) {
+      case 'Status':
+        this.openDialog(ModifyProjectComponent, object.selectedRow);
+      break;
     }
   }
 
