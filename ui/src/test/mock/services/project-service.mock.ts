@@ -10,7 +10,8 @@ const PROJECT_LIST = {
             licenseId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
             openDate: '2022-01-26 05:00:00',
             closeDate: '2022-05-29 05:00:00',
-            status: 'Open'
+            status: 'Open',
+            licenseDescription:''
         },
         {
             id: '6eb1f15b-168d-4ef0-adb1-fec73b65af25',
@@ -20,7 +21,8 @@ const PROJECT_LIST = {
             licenseId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
-            status: 'Open'
+            status: 'Open',
+            licenseDescription:''
         },
         {
             id: '234d6482-4004-44ca-a846-f9ec9a7ae1dd',
@@ -30,7 +32,8 @@ const PROJECT_LIST = {
             licenseId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
-            status: 'Open'
+            status: 'Open',
+            licenseDescription:''
         },
         {
             id: '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d',
@@ -40,7 +43,8 @@ const PROJECT_LIST = {
             licenseId: '9599c5bd-f702-4965-b655-29b0fed00e23',
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
-            status: 'Open'
+            status: 'Open',
+            licenseDescription:''
         }
     ]
 };

@@ -22,6 +22,8 @@ import { ProjectsComponent } from './projects.component';
 import { Sort } from '@angular/material/sort';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { SnackBarService } from "../../../services/snack-bar.service";
+import { LicenseService } from 'src/app/services/license.service';
+import { LicenseServiceMock } from 'src/test/mock/services/license-service.mock';
 
 let projectsComponentTestInstance: ProjectsComponent;
 let fixture: ComponentFixture<ProjectsComponent>;
@@ -51,6 +53,10 @@ const beforeEachFunction = () => {
             {
                 provide: ProjectService,
                 useValue: ProjectServiceMock
+            },
+            {
+                provide: LicenseService,
+                useValue: LicenseServiceMock
             },
             {
                 provide: DialogService,
@@ -106,9 +112,11 @@ describe('UI verification test', () => {
         const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
         expect(headers[0].innerText).toBe('Project Code');
         expect(headers[1].innerText).toBe('Project Name');
-        expect(headers[2].innerText).toBe('Status');
-        expect(headers[3].innerText).toBe('Start Date');
-        expect(headers[4].innerText).toBe('Close Date');
+        expect(headers[2].innerText).toBe('License Name');
+        expect(headers[3].innerText).toBe('License Description');
+        expect(headers[4].innerText).toBe('Status');
+        expect(headers[5].innerText).toBe('Start Date');
+        expect(headers[6].innerText).toBe('Close Date');
     });
 
     it('should execute sortData()', () => {

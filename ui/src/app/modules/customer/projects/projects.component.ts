@@ -126,16 +126,23 @@ export class ProjectsComponent implements OnInit {
       res['projects'].forEach((project: Project) => {
         calls.push(this.licenseService.getLicenseDetails(project.licenseId));
       });
+      if (calls.length) {
+        forkJoin(calls).subscribe(responses => {
+          responses.forEach((response, index) => {
+            res['projects'][index].licenseDescription = response['licenses'].length ? response['licenses'][0].description : null;
+          });
+          this.isLoadingResults = false;
+          this.isRequestCompleted = true;
 
-      forkJoin(calls).subscribe(responses => {
-        responses.forEach((response, index) => {
-          res['projects'][index].licenseDescription = response['licenses'][0].description;
+          this.projectsBk = this.projects = res['projects'];
         });
+      }
+      else {
         this.isLoadingResults = false;
         this.isRequestCompleted = true;
 
         this.projectsBk = this.projects = res['projects'];
-      });
+      }
     }, () => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
