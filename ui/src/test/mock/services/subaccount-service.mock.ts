@@ -358,7 +358,7 @@ export const SubaccountServiceMock = {
             };
         });
     },
-    createSubAccount: () => {
+    createSubAccount: (details: any) => {
         return new Observable((observer) => {
             observer.next({ res: {} });
             observer.complete();
