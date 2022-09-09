@@ -1,15 +1,13 @@
 package ui.step_definitions;
 
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import static org.junit.Assert.assertEquals;
 import ui.core.DriverManager;
-import ui.pages.ActionMenu;
-import ui.pages.CustomerForm;
-import ui.pages.CustomerRow;
-import ui.pages.Customers;
+import ui.pages.*;
 
 import java.util.Map;
 
@@ -20,6 +18,7 @@ public class CustomerSteps {
     private ActionMenu actionMenu;
     private String actualMessage = "none";
     private String customerName, type, subaccount;
+    private AdminstratorEmails adminEmails;
 
     public CustomerSteps(Customers customers) {
         this.customers = customers;
@@ -125,5 +124,32 @@ public class CustomerSteps {
         assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
                 actualSubaccountName);
         assertEquals("Customer isn't this type: ".concat(this.type), this.type, actualType);
+    }
+
+    @And("I open the Customer Administrator Emails of {string}")
+    public void iOpenTheCustomerAdministratorEmailsOf(String customerName) {
+        this.customerRow = this.customers.getCustomer(customerName);
+        this.actionMenu = this.customerRow.openActionMenu();
+        this.adminEmails = this.actionMenu.goToCustomerAdmins();
+    }
+
+    @When("I add an administrator with email {string}")
+    public void iAddAnAdministratorWithEmail(String adminEmail) {
+        this.actualMessage = this.adminEmails.addAdministrator(adminEmail);
+        DriverManager.getInstance().setMessage(this.actualMessage);
+    }
+
+
+    @When("I delete the administrator with email {string}")
+    public void iDeleteTheAdministratorWithEmail(String adminEmail) {
+        this.actualMessage = this.adminEmails.deleteAdministrator(adminEmail);
+        DriverManager.getInstance().setMessage(this.actualMessage);
+    }
+
+    @And("I open the Subaccount Administrator Emails of {string}")
+    public void iOpenTheSubaccountAdministratorEmailsOf(String customerName) {
+        this.customerRow = this.customers.getCustomer(customerName);
+        this.actionMenu = this.customerRow.openActionMenu();
+        this.adminEmails = this.actionMenu.goToSubaccountAdmins();
     }
 }

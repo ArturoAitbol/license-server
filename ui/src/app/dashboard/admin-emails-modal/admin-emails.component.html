@@ -10,7 +10,7 @@
                     <label style="font-weight: bold;" id="customer-name">{{data.name}}</label>
                 </div>
                 <div class="email-info" *ngFor="let email of adminEmails; let emailIndex = index">
-                    <div class="row">
+                    <div class="row" title="{{email}}">
                         <div class="col-10">
                             <label class = "col-form-label" class = "email"><b>Email: </b>{{email}}</label>
                         </div>

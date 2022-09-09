@@ -27,6 +27,20 @@ Feature: Subaccounts
     Then I should see the message "Subaccount added successfully!"
     Then I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
 
+  @addSubaccountAdmin
+  Scenario: Add a subaccount administrator
+    Given I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
+    And I open the Subaccount Administrator Emails of "subaccountCustomerTest"
+    When I add an administrator with email "admintest@tekvizionlabs.com"
+    Then I should see the message "Customer admin emails edited successfully!"
+
+  @deleteSubaccountAdmin
+  Scenario: Delete a subaccount administrator
+    Given I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
+    And I open the Subaccount Administrator Emails of "subaccountCustomerTest"
+    When I delete the administrator with email "admintest@tekvizionlabs.com"
+    Then I should see the message "Subaccount administrator email deleted"
+
   @editSubaccount
   Scenario: Edit a subaccount
     Given I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
