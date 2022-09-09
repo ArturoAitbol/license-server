@@ -1,0 +1,42 @@
+{
+  "dev": {
+    "routes": {
+      "dashboard": true,
+      "customer": true,
+      "consumption": true,
+      "projects": true,
+      "licenses": true,
+      "testFeature1": true
+    },
+    "features": {
+      "testFeature1": true,
+      "testFeature2": false
+    }
+  },
+  "integration" : {
+    "routes": {
+      "dashboard": true,
+      "customer": true,
+      "consumption": true,
+      "projects": true,
+      "licenses": true,
+      "testFeature1": true
+    },
+    "features": {
+      "testFeature1": true
+    }
+  },
+  "production": {
+    "routes": {
+      "dashboard": true,
+      "customer": true,
+      "consumption": true,
+      "projects": true,
+      "licenses": true,
+      "testFeature1": false
+    },
+    "features": {
+      "testFeature1": false
+    }
+  }
+}

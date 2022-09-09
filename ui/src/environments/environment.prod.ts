@@ -9,5 +9,6 @@ export const environment = {
     API_SCOPE: 'tekvizion.access',
     INSTRUMENTATION_CONN_STRING: 'InstrumentationKey=f7b20352-0555-4fe7-a991-c2f6fc587a94;IngestionEndpoint=https://southcentralus-3.in.applicationinsights.azure.com/;LiveEndpoint=https://southcentralus.livediagnostics.monitor.azure.com/',
     // BASE URL
-    REDIRECT_URL_AFTER_LOGIN: window.location.origin + '/index.html'
+    REDIRECT_URL_AFTER_LOGIN: window.location.origin + '/index.html',
+    ENVIRONMENT_NAME: "production"
 };

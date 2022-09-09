@@ -8,5 +8,20 @@
     "http": {
       "routePrefix": "/v1.0"
     }
+  },
+  "logging": {
+    "logLevel": {
+      "default": "Information",
+      "Function": "Information",
+      "Host.Aggregator": "Error",
+      "Host.Results": "Information"     
+    },
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "maxTelemetryItemsPerSecond": 20,
+        "excludedTypes": "Exception"
+      }
+    }
   }
 }
