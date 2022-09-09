@@ -21,6 +21,10 @@ public class ActionMenu extends AbstractPageObject {
     WebElement subscriptionsButton;
     @FindBy(xpath = "//button[@id='View tekToken Consumption']")
     WebElement consumptionsButton;
+    @FindBy(xpath = "//button[@id='View Customer Admin Emails']")
+    WebElement customerAdminButton;
+    @FindBy(xpath = "//button[@id='View Subaccount Admin Emails']")
+    WebElement subaccountAdminButton;
 
     public String delete(String type) {
 /*        By deleteSelector = By.cssSelector("button#Delete");
@@ -87,5 +91,19 @@ public class ActionMenu extends AbstractPageObject {
         JavascriptExecutor executor = (JavascriptExecutor)this.driver;
         executor.executeScript("arguments[0].click();", this.consumptionsButton);
         return new Consumptions();
+    }
+
+    public AdminstratorEmails goToCustomerAdmins() {
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", this.customerAdminButton);
+        this.action.waitModal();
+        return new AdminstratorEmails();
+    }
+
+    public AdminstratorEmails goToSubaccountAdmins() {
+        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        executor.executeScript("arguments[0].click();", this.subaccountAdminButton);
+        this.action.waitModal();
+        return new AdminstratorEmails();
     }
 }
