@@ -4,12 +4,14 @@ import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import moment from 'moment';
+import { forkJoin } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { Project } from 'src/app/model/project.model';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
+import { LicenseService } from 'src/app/services/license.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from './add-project/add-project.component';
@@ -25,6 +27,8 @@ export class ProjectsComponent implements OnInit {
   readonly displayedColumns: TableColumn[] = [
     { name: 'Project Code', dataKey: 'projectNumber', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'projectName', position: 'left', isSortable: true, isClickable: true },
+    { name: 'License Name', dataKey: 'licenseId', position: 'left', isSortable: true },
+    { name: 'License Description', dataKey: 'licenseDescription', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true, isClickable: true },
     { name: 'Start Date', dataKey: 'openDate', position: 'left', isSortable: true },
     { name: 'Close Date', dataKey: 'closeDate', position: 'left', isSortable: true }
@@ -50,6 +54,7 @@ export class ProjectsComponent implements OnInit {
     private customerService: CustomerService,
     private projectService: ProjectService,
     private dialogService: DialogService,
+    private licenseService: LicenseService,
     private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog,
@@ -117,9 +122,20 @@ export class ProjectsComponent implements OnInit {
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
     this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
-      this.isLoadingResults = false;
-      this.isRequestCompleted = true;
-      this.projectsBk = this.projects = res['projects'];
+      const calls = [];
+      res['projects'].forEach((project: Project) => {
+        calls.push(this.licenseService.getLicenseDetails(project.licenseId));
+      });
+
+      forkJoin(calls).subscribe(responses => {
+        responses.forEach((response, index) => {
+          res['projects'][index].licenseDescription = response['licenses'][0].description;
+        });
+        this.isLoadingResults = false;
+        this.isRequestCompleted = true;
+
+        this.projectsBk = this.projects = res['projects'];
+      });
     }, () => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
