@@ -146,18 +146,20 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.modifyConsumption(requestsArray);
     if(requestsArray.length > 0){
       forkJoin(requestsArray).subscribe(res => {
-        this.isDataLoading = false;
         const resDataObject: any = res.reduce((current: any, next: any) => {
           return { ...current, ...next };
         }, {});
         if (!resDataObject.error) {
-          this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
-          this.dialogRef.close(res);
-          if (modifiedDays.deletedDays.length > 0){
+          if (modifiedDays && modifiedDays.deletedDays.length > 0)
             this.deleteDays(modifiedDays);
+          else {
+            this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
+            this.dialogRef.close(res);
           }
-        } else
-          this.snackBarService.openSnackBar(resDataObject.error, 'Error editing license consumption!');
+        } else {
+          this.snackBarService.openSnackBar(resDataObject.error, 'Error editing tekToken consumption!');
+          this.isDataLoading = false;
+        }
       });
     } else {
       if (modifiedDays.deletedDays.length > 0){
@@ -202,7 +204,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
 
   deleteDays(modifiedDays: any): void {
     this.usageDetailService.deleteUsageDetails(modifiedDays).subscribe(res => {
-      if(res == null){
+      if(!res){
         this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
         this.dialogRef.close([]);
       }
