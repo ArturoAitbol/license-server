@@ -34,6 +34,7 @@ COPY public.customer (id, name, type, tombstone, distributor_id, test_customer) 
 cb1b268a-850a-4459-8033-09854d9ac015	Test NoDistributor	MSP	f	\N	t
 9f6ff46a-5f19-4bcf-9f66-c5f29b800205	Test Distributor	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
 f1b695b5-b7d9-4245-86ca-9a2a9ccbe460	Test Subaccount	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
+b995ecaa-d64e-4067-90e5-cbc80935d1e0	Test Subaccount2 MSP f	6826a94e-c4da-46e9-8001-668df24877ec	t
 \.
 
 
@@ -47,6 +48,7 @@ test-distributor-full-admin@tekvizionlabs.com	9f6ff46a-5f19-4bcf-9f66-c5f29b8002
 test-subaccount@hotmail.com	f1b695b5-b7d9-4245-86ca-9a2a9ccbe460
 test1@tekvizion.com	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848
 test2@tekvizion.com	0856df81-8d32-4adb-941a-c0d9187f36a7
+test-customer-subaccount-stakeholder@tekvizionlabs.com b995ecaa-d64e-4067-90e5-cbc80935d1e0
 \.
 
 
@@ -60,6 +62,7 @@ cebe6542-2032-4398-882e-ffb44ade169d	Test Subaccount2	9f6ff46a-5f19-4bcf-9f66-c5
 96234b32-32d3-45a4-af26-4c912c0d6a06	Test Subaccount	f1b695b5-b7d9-4245-86ca-9a2a9ccbe460
 ac7a78c2-d0b2-4c81-9538-321562d426c7	Default	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848
 069dc3aa-dcb1-45e6-886f-be8f2345080f	Default	0856df81-8d32-4adb-941a-c0d9187f36a7
+8acb6997-4d6a-4427-ba2c-7bf463fa08ec	Test Subaccount3	b995ecaa-d64e-4067-90e5-cbc80935d1e0
 \.
 
 
@@ -81,6 +84,7 @@ test-customer-full-admin@tekvizionlabs.com	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
 test-customer-subaccount-admin@tekvizionlabs.com	96234b32-32d3-45a4-af26-4c912c0d6a06
 test1@tekvizion.com	ac7a78c2-d0b2-4c81-9538-321562d426c7
 test2@tekvizion.com	069dc3aa-dcb1-45e6-886f-be8f2345080f
+test-customer-subaccount-stakeholder@tekvizionlabs.com 8acb6997-4d6a-4427-ba2c-7bf463fa08ec
 \.
 
 
