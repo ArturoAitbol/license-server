@@ -246,12 +246,16 @@ export const LicenseServiceMock = {
     sortedAscLicensesList: MOCK_SORTED_ASC_STATUS_LICENSES_LIST,
     sortedDescLicensesList: MOCK_SORTED_DESC_STATUS_LICENSES_LIST,
     getLicenseList: (subaccountId?: string) => {
+        console.log("-------")
+        console.log(subaccountId)
+        console.log("-------")
         return new Observable((observer) => {
             let licenseList;
             if (subaccountId)
                 licenseList = { licenses: MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.subaccountId === subaccountId)) };
             else
                 licenseList = MOCK_LICENSES_LIST;
+            console.log(licenseList.licenses.length);
             observer.next(licenseList);
             observer.complete();
             return {
@@ -315,6 +319,9 @@ export const LicenseServiceMock = {
                 unsubscribe() { }
             };
         });
-    }
+    },
+    setSelectedSubAccount: (value: string) => {
+        // TODO
+    },
 
 };

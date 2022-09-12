@@ -1,12 +1,13 @@
 import { Component, HostListener, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import moment from 'moment';
-import { forkJoin } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { permissions } from 'src/app/helpers/role-permissions';
+import { License } from 'src/app/model/license.model';
 import { Project } from 'src/app/model/project.model';
 import { TableColumn } from 'src/app/model/table-column.model';
 import { CustomerService } from 'src/app/services/customer.service';
@@ -41,16 +42,21 @@ export class ProjectsComponent implements OnInit {
 
   actionMenuOptions: any = [];
 
-
   tableMaxHeight: number;
   currentCustomer: any;
+  licensesList: [any];
   projects: Project[] = [];
   projectsBk: Project[] = [];
   // flag
   isLoadingResults: boolean;
   isRequestCompleted: boolean;
+  selectedLicense: any;
+  licenseForm = this.formBuilder.group({
+    selectedLicense: ['']
+  });
 
   constructor(
+    private formBuilder: FormBuilder,
     private customerService: CustomerService,
     private projectService: ProjectService,
     private dialogService: DialogService,
@@ -92,7 +98,16 @@ export class ProjectsComponent implements OnInit {
     this.calculateTableHeight();
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
-    this.fetchProjects();
+
+    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
+      if (!res.error && res.licenses.length > 0) {
+        this.licensesList = res.licenses;
+        res.licenses.unshift({ id: 'all', description: 'All' })
+        this.setSelectedLicense(res.licenses[0]);
+        this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
+        this.fetchProjects();
+      }
+    });
     this.getActionMenuOptions();
   }
 
@@ -122,27 +137,19 @@ export class ProjectsComponent implements OnInit {
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
     this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
+      console.log("**********");
+      console.log(this.licensesList);
+      console.log("**********");
       const calls = [];
       res['projects'].forEach((project: Project) => {
-        calls.push(this.licenseService.getLicenseDetails(project.licenseId));
+        project.licenseDescription = this.licensesList.find((license: License) => license.id === project.licenseId)['description'];
       });
-      if (calls.length) {
-        forkJoin(calls).subscribe(responses => {
-          responses.forEach((response, index) => {
-            res['projects'][index].licenseDescription = response['licenses'].length ? response['licenses'][0].description : null;
-          });
-          this.isLoadingResults = false;
-          this.isRequestCompleted = true;
-
-          this.projectsBk = this.projects = res['projects'];
-        });
+      if (this.selectedLicense.id !== 'all') {
+        res['projects'] = res['projects'].filter((project: Project) => project.licenseId === this.selectedLicense.id);
       }
-      else {
-        this.isLoadingResults = false;
-        this.isRequestCompleted = true;
-
-        this.projectsBk = this.projects = res['projects'];
-      }
+      this.isLoadingResults = false;
+      this.isRequestCompleted = true;
+      this.projectsBk = this.projects = res['projects'];
     }, () => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
@@ -207,6 +214,9 @@ export class ProjectsComponent implements OnInit {
   confirmCloseDialog(index: string) {
     const currentProjectData = this.projects[index];
     const projectToClose = currentProjectData.projectNumber + '-' + currentProjectData.projectName;
+    console.log("^^^^^^^^^^^")
+    console.log(projectToClose);
+    console.log("^^^^^^^^^^^")
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
@@ -262,5 +272,16 @@ export class ProjectsComponent implements OnInit {
   openConsumptionView(row: any): void {
     localStorage.setItem(Constants.PROJECT, JSON.stringify(row));
     this.router.navigate(['/customer/consumption']);
+  }
+
+  onChangeLicense(newLicenseId: string) {
+    if (newLicenseId) {
+      this.setSelectedLicense(this.licensesList.find(item => item.id === newLicenseId));
+      this.fetchProjects();
+    }
+  }
+
+  private setSelectedLicense(license: License) {
+    this.selectedLicense = license;
   }
 }
