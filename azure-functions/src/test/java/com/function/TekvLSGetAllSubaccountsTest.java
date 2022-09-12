@@ -160,11 +160,11 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         assertTrue(jsonBody.has("subaccounts"));
 
         JSONArray subaccounts = jsonBody.getJSONArray("subaccounts");
-        assertEquals(2, subaccounts.length());
+        assertEquals(3, subaccounts.length());
 
         String subaccountId;
         List<String> expectedSubaccounts = Arrays.asList("cebe6542-2032-4398-882e-ffb44ade169d",
-                                                        "96234b32-32d3-45a4-af26-4c912c0d6a06");
+                                                        "96234b32-32d3-45a4-af26-4c912c0d6a06","8acb6997-4d6a-4427-ba2c-7bf463fa08ec");
         for (int i = 0; i < subaccounts.length();i++){
             subaccountId = subaccounts.getJSONObject(i).getString("id");
             assertTrue(expectedSubaccounts.contains(subaccountId),
@@ -450,4 +450,6 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
         assertEquals(expectedMessage,jsonBody.getString("error"));
     }
+
+    
 }

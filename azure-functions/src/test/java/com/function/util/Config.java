@@ -105,8 +105,8 @@ public class Config {
                 password = "subaccountAdmin_password";
                 break;
             case "subaccountStakeholder":
-                roleId = "subaccountStakeholderId";
-                roleSecret = "subaccountStakeholderSecret";
+            	roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
                 username = "subaccountStakeholder_user";
                 password = "subaccountStakeholder_password";
                 break;
