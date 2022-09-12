@@ -104,6 +104,12 @@ public class Config {
                 username = "subaccountAdmin_user";
                 password = "subaccountAdmin_password";
                 break;
+            case "subaccountStakeholder":
+                roleId = "subaccountStakeholderId";
+                roleSecret = "subaccountStakeholderSecret";
+                username = "subaccountStakeholder_user";
+                password = "subaccountStakeholder_password";
+                break;
             case "crm":
                 roleId = "crmId";
                 roleSecret = "crmSecret";
