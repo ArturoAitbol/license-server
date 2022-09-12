@@ -324,7 +324,7 @@ CREATE TABLE public.ctaas_run_instance
     completion_date timestamp without time zone 
 );
 
-CREATE TABLE public.ctaas_setup_detail
+CREATE TABLE public.ctaas_setup
 (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     azure_resource_group character varying,
@@ -764,8 +764,8 @@ ALTER TABLE ONLY public.ctaas_run_instance
 ALTER TABLE ONLY public.ctaas_run_instance
     ADD CONSTRAINT ctaas_run_instance_unique UNIQUE (ctaas_project_id, run_no);
 
-ALTER TABLE ONLY public.ctaas_setup_detail
-    ADD CONSTRAINT ctaas_setup_detail_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.ctaas_setup
+    ADD CONSTRAINT ctaas_setup_pkey PRIMARY KEY (id);
 
 
 --
@@ -866,7 +866,7 @@ ALTER TABLE ONLY public.device
 ALTER TABLE ONLY public.ctaas_project
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY public.ctaas_setup_detail
+ALTER TABLE ONLY public.ctaas_setup
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
 	
 ALTER TABLE ONLY public.ctaas_run_instance
