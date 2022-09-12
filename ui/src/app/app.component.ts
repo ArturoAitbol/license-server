@@ -10,7 +10,9 @@ import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutModalComponent } from './generics/about-modal/about-modal.component';
+import { HeaderService } from './services/header.service';
 import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
+import { Features } from './model/features';
 
 @Component({
     selector: 'app-root',
@@ -21,10 +23,19 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly _destroying$ = new Subject<void>();
     title = 'license-server';
     currentUser = false;
-
-    constructor(private router: Router, private msalService: MsalService,
+    // added as part of ctaas feature
+    hideToolbar: boolean = false;
+    isTransparentToolbar: boolean = false;
+    tabName: string = 'tekVizion 360 Portal';
+    readonly APPS_ROUTE_PATH: string = '/apps';
+    constructor(
+        private router: Router,
+        private msalService: MsalService,
         public dialog: MatDialog,
-        private broadcastService: MsalBroadcastService, private autoLogoutService: AutoLogoutService) {
+        private broadcastService: MsalBroadcastService,
+        private autoLogoutService: AutoLogoutService,
+        private headerService: HeaderService
+    ) {
         const angularPlugin = new AngularPlugin();
         const appInsights = new ApplicationInsights({
             config: {
@@ -69,6 +80,29 @@ export class AppComponent implements OnInit, OnDestroy {
             this.currentUser = true;
             this.autoLogoutService.restartTimer();
         });
+        // check for CTaaS Feature toggle
+        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)) {
+            this.performChangeOnToolbar();
+            this.headerService.getOnChangeServiceEvent().subscribe((res: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }) => {
+                if (res) {
+                    const { tabName, hideToolbar, transparentToolbar } = res;
+                    this.tabName = tabName;
+                    this.hideToolbar = hideToolbar;
+                    this.isTransparentToolbar = transparentToolbar;
+                }
+            });
+        }
+    }
+    /**
+     * perform changes on Toolbar on refresh
+     */
+    private performChangeOnToolbar(): void {
+        const { location: { href } } = window;
+        if (href) {
+            const currentRoute = (href.split('/#').length > 0) ? href.split('/#')[1] : '';
+            this.hideToolbar = (currentRoute !== this.APPS_ROUTE_PATH);
+            this.isTransparentToolbar = (currentRoute === this.APPS_ROUTE_PATH);
+        }
     }
     /**
      * check whether user logged in
@@ -100,7 +134,7 @@ export class AppComponent implements OnInit, OnDestroy {
     /**
      * Show About Modal
      */
-    about() {        
+    about() {
         const dialogRef = this.dialog.open(AboutModalComponent, {
             width: '400px',
             disableClose: false

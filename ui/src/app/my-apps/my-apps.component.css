@@ -1,0 +1,15 @@
+.content {
+  background-image: url("../../assets/images/bg.png");
+  height: fit-content;
+  margin-top: -60px !important;
+  background-size: 100%;
+}
+img {
+  height: 100px;
+  width: 100px;
+  padding: 5px;
+}
+h3 {
+  padding: 10px;
+  cursor: pointer;
+}

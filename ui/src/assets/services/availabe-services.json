@@ -1,0 +1,20 @@
+{
+  "availabeServices": [
+    {
+      "label": "tekToken Usage",
+      "value": "tekToken",
+      "enabled": true,
+      "access": false,
+      "routePath": "/dashboard",
+      "tabName": "tekVizion 360 Portal"
+    },
+    {
+      "label": "CTaaS",
+      "value": "ctaas",
+      "enabled": true,
+      "access": false,
+      "routePath": "/ctaas",
+      "tabName": "CTaaS"
+    }
+  ]
+}

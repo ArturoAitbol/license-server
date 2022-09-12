@@ -6,14 +6,18 @@
       "consumption": true,
       "projects": true,
       "licenses": true,
-      "testFeature1": true
+      "testFeature1": true,
+      "redirect": true,
+      "apps": true,
+      "ctaas": true
     },
     "features": {
       "testFeature1": true,
-      "testFeature2": false
+      "testFeature2": false,
+      "ctaasFeature": false
     }
   },
-  "integration" : {
+  "integration": {
     "routes": {
       "dashboard": true,
       "customer": true,

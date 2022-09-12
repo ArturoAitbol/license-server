@@ -3,10 +3,16 @@
 </div>
 
 <ng-template #loggedIn>
-    <section>
+    <section *ngIf="!hideToolbar">
         <div>
-            <mat-toolbar color="primary" class="position-fixed">
-                <span style="cursor: pointer;" (click)="navigateToMainView()">tekVizion 360 Portal</span>
+            <mat-toolbar color="primary" class="position-fixed"
+                [ngClass]="{'toolbar-transparent':(isTransparentToolbar)}">
+                <span *ngIf="!isTransparentToolbar" style="cursor: pointer;" (click)="navigateToMainView()">
+                    {{tabName}}
+                </span>
+                <span *ngIf="isTransparentToolbar" style="cursor: pointer;" (click)="navigateToMainView()">
+                    <img src="assets/images/logo_1.png" alt="" srcset="">
+                </span>
                 <span class="example-spacer"></span>
                 <button mat-button [matMenuTriggerFor]="menu" id="settings-button"
                     aria-label="Example icon-button with a menu">
@@ -22,13 +28,12 @@
                         <span>Logout</span>
                     </button>
                 </mat-menu>
-
             </mat-toolbar>
         </div>
     </section>
     <main>
-        <div class="main-container">
-            <div class="route-content">
+        <div [ngClass]="{'main-container':(!hideToolbar && !isTransparentToolbar )}">
+            <div [ngClass]="{'route-content':(!hideToolbar)}">
                 <router-outlet> </router-outlet>
             </div>
         </div>

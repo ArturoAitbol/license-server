@@ -22,3 +22,8 @@
 .example-spacer {
   flex: 1 1 auto;
 }
+
+.toolbar-transparent {
+  position: absolute !important;
+  background-color: transparent !important;
+}
