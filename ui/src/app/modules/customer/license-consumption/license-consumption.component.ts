@@ -45,6 +45,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   projectConsumptionData = [];
   detailedConsumptionData = [];
   tokenConsumptionData = [];
+  listDetailedConsumptionBK: any[] = [];
+  weeklyConsumptionDataBK: any[] = [];
+  projectConsumptionDataBK: any[] = [];
+  equipmentDataBK: any[] = [];
   licenseForm = this.formBuilder.group({
     selectedLicense: ['']
   });
@@ -267,6 +271,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.equipmentData = res.equipmentSummary;
       this.isEquipmentSummaryLoadingResults = false;
       this.isEquipmentSummaryRequestCompleted = true;
+      this.equipmentDataBK = [...res['equipmentSummary']];
     }, (err: any) => {
       console.error('Error fetching equipment data: ', err);
       this.isEquipmentSummaryLoadingResults = false;
@@ -302,6 +307,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         this.isDetailedConsumptionSupplementalRequestCompleted = true;
         this.isDetailedConsumptionLoadingResults = false;
         this.isDetailedConsumptionRequestCompleted = true;
+        this.listDetailedConsumptionBK = [...res['usage']];
+        this.weeklyConsumptionDataBK = [...res['weeklyConsumption']];
+        this.projectConsumptionDataBK = [...res['projectConsumption']];
       }, (err: any) => {
         console.error('Error fetching detailed license consumption data: ', err);
         this.isDetailedConsumptionSupplementalLoadingResults = false;
@@ -468,12 +476,32 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
  * @param sortParameters: Sort
  * @param data: any[]
  */
-  sortData(sortParameters: Sort, data: any[]) {
+  sortData(sortParameters: Sort, data: any[], listName: string): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      data = data.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      data = data.sort((a: any, b: any) =>{
+        if(typeof a[keyName] === 'number')
+          return +a[keyName] > +b[keyName] ? 1 : (+a[keyName] < +b[keyName] ? -1 : 0);
+        return a[keyName].localeCompare(b[keyName]);
+      });
     } else if (sortParameters.direction === 'desc') {
-      data = data.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+      data = data.sort((a: any, b: any) => {
+        if(typeof a[keyName] === 'number')
+          return +a[keyName] < +b[keyName] ? 1 : (+a[keyName] > +b[keyName] ? -1 : 0);
+        return b[keyName].localeCompare(a[keyName]);
+      });
+    } else {
+      switch(listName){
+        case 'detailedList':
+          return this.detailedConsumptionData = [...this.listDetailedConsumptionBK];
+        case 'projectList':
+          return this.projectConsumptionData = [...this.projectConsumptionDataBK];
+        case 'weeklyList':
+          return this.weeklyConsumptionData = [...this.weeklyConsumptionDataBK];
+        case 'equipmentList':
+          return this.equipmentData = [...this.equipmentDataBK];
+        default:
+      }
     }
   }
   /**

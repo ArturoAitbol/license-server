@@ -666,16 +666,28 @@ describe('Methods Calls', ()=>{
         const unsortedArray = [{name:"c"},{name:"a"},{name:"b"}];
         let sortedArray = [{name:"a"},{name:"b"},{name:"c"}];
 
-        licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray);
+        licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray,'detailedList');
         expect(unsortedArray).toEqual(sortedArray);
 
         sort.direction = 'desc';
         sortedArray = [{name:"c"},{name:"b"},{name:"a"}];
-        licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray);
+        licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray,'detailedList');
         expect(unsortedArray).toEqual(sortedArray);
 
         sort.direction = '';
-        licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray);
+        licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray,'detailedList');
+        expect(unsortedArray).toEqual(sortedArray);
+
+        sort.direction = '';
+        licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray,'projectList');
+        expect(unsortedArray).toEqual(sortedArray);
+
+        sort.direction = '';
+        licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray,'weeklyList');
+        expect(unsortedArray).toEqual(sortedArray);
+
+        sort.direction = '';
+        licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray,'equipmentList');
         expect(unsortedArray).toEqual(sortedArray);
     });
 })

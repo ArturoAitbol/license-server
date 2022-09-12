@@ -129,7 +129,7 @@
             <div class="col-4">
                 <div id="weekly-consumption-table" class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="weeklyConsumptionColumns"
-                                    [isFilterable]="false" [isPageable]="false" (sort)="sortData($event, weeklyConsumptionData)" 
+                                    [isFilterable]="false" [isPageable]="false" (sort)="sortData($event, weeklyConsumptionData,'weeklyList')" 
                                     [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
                                     [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted" [paginationSizes]="[5,10,20]"
                                     [defaultPageSize]="5">
@@ -139,7 +139,7 @@
             <div class="col-8">
                 <div id="project-consumption-table" class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="projectConsumptionData" [tableColumns]="projectConsumptionColumns"
-                                    [isFilterable]="false" [isPageable]="false" (sort)="sortData($event, projectConsumptionData)" 
+                                    [isFilterable]="false" [isPageable]="false" (sort)="sortData($event, projectConsumptionData,'projectList')" 
                                     [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
                                     [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted" [paginationSizes]="[5,10,20]"
                                     [defaultPageSize]="5">
@@ -170,7 +170,7 @@
                                     [tableColumns]="detailedConsumptionColumns" [isFilterable]="false" [isPageable]="true"
                                     [isLoadingResults]="isDetailedConsumptionLoadingResults"
                                     [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[6, 10, 20, 50]"
-                                    [defaultPageSize]="6" (sort)="sortData($event, detailedConsumptionData)" [rowActionIcon]="'more_vert'"
+                                    [defaultPageSize]="6" (sort)="sortData($event, detailedConsumptionData,'detailedList')" [rowActionIcon]="'more_vert'"
                                     (rowAction)="licConsumptionRowAction($event)"
                                     [actionMenuList]="licConsumptionActionMenuOptions" [serverSidePagination]="true"
                                     (pageChanged)="onPageChange($event)" [length]="detailedConsumptionDataLength" [isSelectable]="detailedConsumptionTableSelectable"
@@ -188,7 +188,7 @@
             <app-data-table [tableData]="equipmentData" [tableColumns]="equipmentSummaryColumns" [isFilterable]="false"
                 [isPageable]="false" [isLoadingResults]="isEquipmentSummaryLoadingResults"
                 [isRequestCompleted]="isEquipmentSummaryRequestCompleted" [paginationSizes]="[5,10,20]"
-                [defaultPageSize]="5" (sort)="sortData($event, equipmentData)">
+                [defaultPageSize]="5" (sort)="sortData($event, equipmentData,'equipmentList')">
             </app-data-table>
         </div>
     </section>
