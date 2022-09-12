@@ -184,11 +184,11 @@ class TekvLSGetAllCustomersTest extends TekvLSTest {
         assertTrue(jsonBody.has("customers"));
 
         JSONArray customers = jsonBody.getJSONArray("customers");
-        assertEquals(2, customers.length());
+        assertEquals(3, customers.length());
 
         String customerId;
         List<String> expectedCustomers = Arrays.asList("9f6ff46a-5f19-4bcf-9f66-c5f29b800205",
-                                                        "f1b695b5-b7d9-4245-86ca-9a2a9ccbe460");
+                                                        "f1b695b5-b7d9-4245-86ca-9a2a9ccbe460", "b995ecaa-d64e-4067-90e5-cbc80935d1e0");
         for (int i = 0; i < customers.length();i++){
             customerId = customers.getJSONObject(i).getString("id");
             assertTrue(expectedCustomers.contains(customerId),

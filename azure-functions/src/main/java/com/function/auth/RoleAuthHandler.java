@@ -163,6 +163,13 @@ public class RoleAuthHandler {
             GET_ALL_DEVICES,
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES);
+    
+    private static final EnumSet<Permission> SubAccountStakeholderPermissions = EnumSet.of(
+            //READ
+            GET_ALL_CUSTOMERS,
+            GET_ALL_SUBACCOUNTS);
+            
+
 
 
     public static final String FULL_ADMIN = "tekvizion.FullAdmin";
@@ -174,6 +181,7 @@ public class RoleAuthHandler {
     public static final String DISTRIBUTOR_FULL_ADMIN = "distributor.FullAdmin";
     public static final String CUSTOMER_FULL_ADMIN = "customer.FullAdmin";
     public static final String SUBACCOUNT_ADMIN = "customer.SubaccountAdmin";
+    public static final String SUBACCOUNT_STAKEHOLDER = "customer.SubaccountStakeholder";
 
     public static final String LOG_MESSAGE_FOR_UNAUTHORIZED = "Unauthorized error: Access denied due to missing or invalid credentials.";
     public static final String MESSAGE_FOR_UNAUTHORIZED = "UNAUTHORIZED: Access denied due to missing or invalid credentials";
@@ -214,6 +222,9 @@ public class RoleAuthHandler {
                 break;
             case SUBACCOUNT_ADMIN:
                 rolePermissions = SubAccountAdminPermissions;
+                break;
+            case SUBACCOUNT_STAKEHOLDER:
+                rolePermissions = SubAccountStakeholderPermissions;
                 break;
             default:
                 return false;
