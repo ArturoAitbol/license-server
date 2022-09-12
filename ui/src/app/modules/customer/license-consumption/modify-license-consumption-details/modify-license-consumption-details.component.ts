@@ -140,26 +140,26 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     this.isDataLoading = true;
     const requestsArray: any[] = [];
     let modifiedDays : any;
-    let modifiedConsumption: any;
     if (this.edited)
       modifiedDays = this.modifyUsageDays(requestsArray);
     if (this.editedForm())
-      modifiedConsumption = this.modifyConsumption(requestsArray);
+      this.modifyConsumption(requestsArray);
     if(requestsArray.length > 0){
       forkJoin(requestsArray).subscribe(res => {
-        this.isDataLoading = false;
         const resDataObject: any = res.reduce((current: any, next: any) => {
           return { ...current, ...next };
         }, {});
         if (!resDataObject.error) {
-          if(!modifiedConsumption || (modifiedDays.addedDays.length > 0 && modifiedDays.deletedDays.length == 0)){
+          if (modifiedDays && modifiedDays.deletedDays.length > 0)
+            this.deleteDays(modifiedDays);
+          else {
             this.snackBarService.openSnackBar('tekToken consumption successfully edited!', '');
             this.dialogRef.close(res);
           }
-          if (modifiedDays.deletedDays.length > 0)
-            this.deleteDays(modifiedDays);
-        } else
-          this.snackBarService.openSnackBar(resDataObject.error, 'Error editing license consumption!');
+        } else {
+          this.snackBarService.openSnackBar(resDataObject.error, 'Error editing tekToken consumption!');
+          this.isDataLoading = false;
+        }
       });
     } else {
       if (modifiedDays.deletedDays.length > 0){
@@ -168,7 +168,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     }
   }
 
-  private modifyConsumption(requestsArray: any[]): any {
+  private modifyConsumption(requestsArray: any[]): void {
     const licenseConsumptionObject: any = {
       consumptionId: this.data.id,
       projectId: this.updateForm.value.project.id,
@@ -179,7 +179,6 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       serialNumber: this.data.serialNumber
     };
     requestsArray.push(this.licenseConsumptionService.updateLicenseConsumptionDetails(licenseConsumptionObject));
-    return licenseConsumptionObject;
   }
 
   private modifyUsageDays(requestsArray: any[]): any {

@@ -249,7 +249,7 @@ describe('modify functions interactions', () => {
         modifyLicenseConsumptionDetailTestInstance.submit();
 
         expect(modifyLicenseConsumptionDetailTestInstance.submit).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledOnceWith("Some error", 'Error editing license consumption!');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledOnceWith("Some error", 'Error editing tekToken consumption!');
     });
 
     it('should call deltedDays when submit es called', () => {
