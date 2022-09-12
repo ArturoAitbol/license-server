@@ -139,7 +139,7 @@
                                            formControlName="vendor" [matAutocomplete]="supportVendorsList" id="support-vendor-auto-complete">
                                     <mat-autocomplete #supportVendorsList="matAutocomplete"
                                                       (optionSelected)="onChangeSupportVendor($event.option.value)">
-                                        <mat-option *ngFor="let item of filteredSupportVendors | async" [value]="item">
+                                        <mat-option *ngFor="let item of filteredSupportVendors | async" [value]="item" title="{{item}}">
                                             {{item}}
                                         </mat-option>
                                     </mat-autocomplete>
@@ -152,7 +152,7 @@
                                     <input type="text" placeholder="Select a device" aria-label="SupportDevice" matInput
                                            formControlName="product" [matAutocomplete]="supportDevicesList" id="support-device-auto-complete">
                                     <mat-autocomplete #supportDevicesList="matAutocomplete" [displayWith]="displayFnDevice">
-                                        <mat-option *ngFor="let item of filteredSupportModels | async" [value]="item">
+                                        <mat-option *ngFor="let item of filteredSupportModels | async" [value]="item" title="{{item.product}}">
                                             {{item.product}}
                                         </mat-option>
                                     </mat-autocomplete>

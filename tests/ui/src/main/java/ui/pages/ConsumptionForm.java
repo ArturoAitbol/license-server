@@ -21,22 +21,36 @@ public class ConsumptionForm extends AbstractPageObject {
     WebElement deviceVendorInput;
     @FindBy(css = "#device-auto-complete")
     WebElement deviceModelInput;
+    @FindBy(css = "#support-vendor-auto-complete")
+    WebElement supportVendorInput;
+    @FindBy(css = "#support-device-auto-complete")
+    WebElement supportModelInput;
     @FindBy(css = "#submit-button")
     WebElement submitButton;
 
     public Consumptions addConsumption(String startWeek, String endWeek, String project, String deviceVendor,
-                        String deviceModel, String deviceVersion, String deviceGranularity, String tekTokens) {
+                        String deviceModel, String supportVendor, String supportModel, String deviceVersion, String deviceGranularity, String tekTokens) {
 /*        this.action.sendText(this.startWeekInput, startWeek);
         this.action.sendText(this.endWeekInput, endWeek);*/
         this.action.selectToday(this.calendarButton);
         By projectSelector = By.cssSelector(String.format("mat-option[title='%s']", project));
         this.action.selectOption(this.projectInput, projectSelector);
-        By deviceVendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
-        this.action.selectOption(this.deviceVendorInput, deviceVendorSelector);
-        this.waitSpinner();
-        String deviceFieldContent = getDeviceFieldContent(deviceModel, deviceVersion, deviceGranularity, tekTokens);
-        By deviceModelSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceFieldContent));
-        this.action.selectOption(this.deviceModelInput, deviceModelSelector);
+        if (!deviceVendor.isEmpty()){
+            By vendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
+            this.action.selectOption(this.deviceVendorInput, vendorSelector);
+            this.waitSpinner();
+        }
+        if (!supportVendor.isEmpty()){
+            By vendorSelector = By.cssSelector(String.format("mat-option[title='%s']", supportVendor));
+            this.action.selectOption(this.supportVendorInput, vendorSelector);
+            this.waitSpinner();
+        }
+        String deviceFieldContent = getDeviceFieldContent(deviceModel, supportModel, deviceVersion, deviceGranularity, tekTokens);
+        By modelSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceFieldContent));
+        if (!deviceModel.isEmpty())
+            this.action.selectOption(this.deviceModelInput, modelSelector);
+        if (!supportModel.isEmpty())
+            this.action.selectOption(this.supportModelInput, modelSelector);
         this.action.click(this.submitButton);
         return new Consumptions();
     }
@@ -51,7 +65,7 @@ public class ConsumptionForm extends AbstractPageObject {
             By deviceVendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
             this.action.replaceOption(this.deviceVendorInput, deviceVendorSelector);
             this.waitSpinner();
-            String deviceFieldContent = getDeviceFieldContent(deviceModel, deviceVersion, deviceGranularity, tekTokens);
+            String deviceFieldContent = getDeviceFieldContent(deviceModel, "", deviceVersion, deviceGranularity, tekTokens);
             By deviceModelSelector = By.cssSelector(String.format("mat-option[title*='%s']", deviceFieldContent));
             this.action.replaceOption(this.deviceModelInput, deviceModelSelector);
         }
@@ -60,9 +74,13 @@ public class ConsumptionForm extends AbstractPageObject {
         return new Consumptions();
     }
 
-    private String getDeviceFieldContent(String deviceModel, String deviceVersion, String deviceGranularity, String tekTokens) {
+    private String getDeviceFieldContent(String deviceModel, String supportModel, String deviceVersion, String deviceGranularity, String tekTokens) {
         // logic got from add-license-consumption.component.ts in the UI Application
-        String deviceFieldContent = deviceModel;
+        String deviceFieldContent = "";
+        if (!deviceModel.isEmpty())
+            deviceFieldContent = deviceModel;
+        else if (!supportModel.isEmpty())
+            deviceFieldContent = supportModel;
         if (!deviceVersion.isEmpty())
             deviceFieldContent += " - v." + deviceVersion;
         deviceFieldContent += " (" + deviceGranularity + " - " + tekTokens + ")";
