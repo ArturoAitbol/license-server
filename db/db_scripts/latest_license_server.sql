@@ -306,7 +306,7 @@ CREATE TABLE public.usage_detail (
 
 CREATE TABLE public.ctaas_project
 (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     subaccount_id uuid NOT NULL,
     total_executions integer NOT NULL DEFAULT 0,
     next_execution_ts timestamp without time zone,
@@ -317,7 +317,7 @@ CREATE TABLE public.ctaas_project
 
 CREATE TABLE public.ctaas_run_instance
 (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     ctaas_project_id uuid NOT NULL,
     run_no integer NOT NULL DEFAULT 0,
     start_date timestamp without time zone,
@@ -326,7 +326,7 @@ CREATE TABLE public.ctaas_run_instance
 
 CREATE TABLE public.ctaas_setup
 (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     azure_resource_group character varying,
     tap_url character varying,
     status character varying,
