@@ -268,7 +268,6 @@ CREATE TABLE public.project (
     project_owner character varying
 );
 
-
 --
 -- Name: subaccount; Type: TABLE; Schema: public; Owner: -
 --
@@ -305,6 +304,35 @@ CREATE TABLE public.usage_detail (
     modified_by character varying
 );
 
+CREATE TABLE public.ctaas_project
+(
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    subaccount_id uuid NOT NULL,
+    total_executions integer NOT NULL DEFAULT 0,
+    next_execution_ts timestamp without time zone,
+    frequency character varying,
+    device_type character varying,
+    name character varying NOT NULL    
+);
+
+CREATE TABLE public.ctaas_run_instance
+(
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    ctaas_project_id uuid NOT NULL,
+    run_no integer NOT NULL DEFAULT 0,
+    start_date timestamp without time zone,
+    completion_date timestamp without time zone 
+);
+
+CREATE TABLE public.ctaas_setup
+(
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    azure_resource_group character varying,
+    tap_url character varying,
+    status character varying,
+    on_boarding_complete boolean,
+    subaccount_id uuid NOT NULL
+);
 
 --
 -- Data for Name: bundle; Type: TABLE DATA; Schema: public; Owner: -
@@ -723,6 +751,21 @@ ALTER TABLE ONLY public.device
 
 ALTER TABLE ONLY public.usage_detail
     ADD CONSTRAINT usage_detail_pkey PRIMARY KEY (id);
+	
+ALTER TABLE ONLY public.ctaas_project
+    ADD CONSTRAINT ctaas_project_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.ctaas_project
+    ADD CONSTRAINT ctaas_project_unique UNIQUE (subaccount_id, name);
+	
+ALTER TABLE ONLY public.ctaas_run_instance
+    ADD CONSTRAINT ctaas_run_instance_pkey PRIMARY KEY (id);
+	
+ALTER TABLE ONLY public.ctaas_run_instance
+    ADD CONSTRAINT ctaas_run_instance_unique UNIQUE (ctaas_project_id, run_no);
+
+ALTER TABLE ONLY public.ctaas_setup
+    ADD CONSTRAINT ctaas_setup_pkey PRIMARY KEY (id);
 
 
 --
@@ -820,7 +863,23 @@ ALTER TABLE ONLY public.subaccount_admin
 ALTER TABLE ONLY public.device
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.ctaas_project
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY public.ctaas_setup
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+	
+ALTER TABLE ONLY public.ctaas_run_instance
+	ADD CONSTRAINT fk_ctaas_project FOREIGN KEY (ctaas_project_id) REFERENCES public.ctaas_project(id) ON DELETE CASCADE;
+
+ALTER TABLE IF EXISTS public.subaccount
+    ADD COLUMN IF NOT EXISTS services character varying;
+	
+ALTER TABLE IF EXISTS public.subaccount_admin
+    ADD COLUMN IF NOT EXISTS notifications character varying;
+
+ALTER TYPE public.usage_type_enum
+    ADD VALUE 'Ctaas' AFTER 'AutomationPlatform';
 --
 -- PostgreSQL database dump complete
 --
