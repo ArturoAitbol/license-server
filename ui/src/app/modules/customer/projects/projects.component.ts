@@ -99,16 +99,6 @@ export class ProjectsComponent implements OnInit {
     this.calculateTableHeight();
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
-    // this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
-    //   if (!res.error && res.licenses.length > 0) {
-    //     this.licensesList = res.licenses;
-    //     res.licenses.unshift({ id: 'all', description: 'All' })
-    //     this.setSelectedLicense(res.licenses[0]);
-    //     this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
-    //     this.fetchProjects();
-    //   }
-    // });
-
     this.fetchProjects(true);
     this.getActionMenuOptions();
   }
@@ -167,25 +157,6 @@ export class ProjectsComponent implements OnInit {
         this.isLoadingResults = false;
         this.isRequestCompleted = true;
       });
-
-
-
-
-
-    // this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
-    //   res['projects'].forEach((project: Project) => {
-    //     project.licenseDescription = this.licensesList.find((license: License) => license.id === project.licenseId)['description'];
-    //   });
-    //   if (this.selectedLicense.id !== 'all') {
-    //     res['projects'] = res['projects'].filter((project: Project) => project.licenseId === this.selectedLicense.id);
-    //   }
-    //   this.isLoadingResults = false;
-    //   this.isRequestCompleted = true;
-    //   this.projectsBk = this.projects = res['projects'];
-    // }, () => {
-    //   this.isLoadingResults = false;
-    //   this.isRequestCompleted = true;
-    // });
   }
   /**
    * sort table
@@ -263,7 +234,7 @@ export class ProjectsComponent implements OnInit {
           console.debug('The user confirmed the action: ', this.projects[index]);
           this.projectService.closeProject(projectToUpdate).subscribe(res => {
             if (res.body === null) {
-              this.fetchProjects();
+              this.fetchProjects(true);
               this.snackBarService.openSnackBar('Project closed successfully!');
             } else {
               console.debug(res.body.error);
@@ -291,7 +262,7 @@ export class ProjectsComponent implements OnInit {
           this.projectService.deleteProject(id).subscribe(res => {
             if (res && res.status == 200) {
               this.snackBarService.openSnackBar('Project deleted successfully!');
-              this.fetchProjects();
+              this.fetchProjects(true);
             }
           });
         }
