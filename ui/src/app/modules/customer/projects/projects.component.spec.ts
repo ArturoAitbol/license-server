@@ -96,7 +96,6 @@ const beforeEachFunction = () => {
     spyOn(console, 'log').and.callThrough();
     spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
     spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
-    spyOn(LicenseServiceMock, 'setSelectedSubAccount').and.callThrough();
 };
 
 describe('UI verification test', () => {
@@ -105,7 +104,7 @@ describe('UI verification test', () => {
         fixture.detectChanges();
         spyOn(projectsComponentTestInstance, 'sizeChange').and.callThrough();
 
-        const h2 = fixture.nativeElement.querySelector('#page-title');
+        const h2 = fixture.nativeElement.querySelector('#page-subtitle');
         const addProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
         const goBackButton = fixture.nativeElement.querySelector('#go-back-button');
 
@@ -115,7 +114,7 @@ describe('UI verification test', () => {
         expect(addProjectButton.textContent).toBe('Add New Project ');
         expect(goBackButton.textContent).toBe('Back');
 
-        //Filters
+        // Filters
         const licenseFilterForm = await loader.getHarness(MatFormFieldHarness.with({ selector: "#license-filter-form" }));
         expect(await licenseFilterForm.getLabel()).toContain('tekVizion 360 Subscription');
     });
@@ -159,12 +158,6 @@ describe('Data collection and parsing tests', () => {
         projectsComponentTestInstance.currentCustomer = null;
         expect(CurrentCustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(ProjectServiceMock.setSelectedSubAccount).toHaveBeenCalled();
-        console.log("*************");
-        console.log(CurrentCustomerServiceMock.selectedCustomer.subaccountId)
-        console.log("*************");
-        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalledWith(CurrentCustomerServiceMock.selectedCustomer.subaccountId);
-        expect(projectsComponentTestInstance.licensesList).toEqual([LicenseServiceMock.mockLicenseA,LicenseServiceMock.mockLicenseL]);
-        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled()
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
         expect(projectsComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects);
     });

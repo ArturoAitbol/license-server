@@ -137,10 +137,6 @@ export class ProjectsComponent implements OnInit {
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
     this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
-      console.log("**********");
-      console.log(this.licensesList);
-      console.log("**********");
-      const calls = [];
       res['projects'].forEach((project: Project) => {
         project.licenseDescription = this.licensesList.find((license: License) => license.id === project.licenseId)['description'];
       });
@@ -214,9 +210,6 @@ export class ProjectsComponent implements OnInit {
   confirmCloseDialog(index: string) {
     const currentProjectData = this.projects[index];
     const projectToClose = currentProjectData.projectNumber + '-' + currentProjectData.projectName;
-    console.log("^^^^^^^^^^^")
-    console.log(projectToClose);
-    console.log("^^^^^^^^^^^")
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
