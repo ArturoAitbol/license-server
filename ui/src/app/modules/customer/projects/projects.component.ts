@@ -29,7 +29,6 @@ export class ProjectsComponent implements OnInit {
   readonly displayedColumns: TableColumn[] = [
     { name: 'Project Code', dataKey: 'projectNumber', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'projectName', position: 'left', isSortable: true, isClickable: true },
-    { name: 'License Name', dataKey: 'licenseId', position: 'left', isSortable: true },
     { name: 'License Description', dataKey: 'licenseDescription', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true, isClickable: true },
     { name: 'Start Date', dataKey: 'openDate', position: 'left', isSortable: true },
