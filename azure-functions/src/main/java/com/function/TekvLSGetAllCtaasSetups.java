@@ -151,7 +151,7 @@ public class TekvLSGetAllCtaasSetups {
 				item.put("subaccountId", rs.getString("subaccount_id"));
 				item.put("status", rs.getString("status"));
 				item.put("azureResourceGroup", rs.getString("azure_resource_group"));
-				item.put("tapUrl", rs.getString("tapUrl"));
+				item.put("tapUrl", rs.getString("tap_url"));
 				item.put("onBoardingComplete", rs.getString("on_boarding_complete"));
 				array.put(item);
 			}

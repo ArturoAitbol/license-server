@@ -21,6 +21,7 @@ import java.util.Optional;
 import org.json.JSONObject;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -116,9 +117,9 @@ public class TekvLSCreateCtaasSetup {
 			statement.setString(2, jobj.getString(MANDATORY_PARAMS.STATUS.value));
 
 			if (jobj.has(OPTIONAL_PARAMS.ON_BOARDING_COMPLETE.value))
-				statement.setString(3,jobj.getString(OPTIONAL_PARAMS.ON_BOARDING_COMPLETE.value));
+				statement.setBoolean(3,Boolean.valueOf(jobj.getString(OPTIONAL_PARAMS.ON_BOARDING_COMPLETE.value)));
 			else
-				statement.setString(3, "false");
+				statement.setBoolean(3, false);
 			// Insert
 			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
