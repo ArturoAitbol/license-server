@@ -5,6 +5,7 @@ import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import moment from 'moment';
+import { forkJoin } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { License } from 'src/app/model/license.model';
@@ -98,16 +99,17 @@ export class ProjectsComponent implements OnInit {
     this.calculateTableHeight();
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
+    // this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
+    //   if (!res.error && res.licenses.length > 0) {
+    //     this.licensesList = res.licenses;
+    //     res.licenses.unshift({ id: 'all', description: 'All' })
+    //     this.setSelectedLicense(res.licenses[0]);
+    //     this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
+    //     this.fetchProjects();
+    //   }
+    // });
 
-    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
-      if (!res.error && res.licenses.length > 0) {
-        this.licensesList = res.licenses;
-        res.licenses.unshift({ id: 'all', description: 'All' })
-        this.setSelectedLicense(res.licenses[0]);
-        this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
-        this.fetchProjects();
-      }
-    });
+    this.fetchProjects(true);
     this.getActionMenuOptions();
   }
 
@@ -132,24 +134,58 @@ export class ProjectsComponent implements OnInit {
     this.openDialog(AddProjectComponent);
   }
 
-  fetchProjects(): void {
+  fetchProjects(updateLicenses?: boolean): void {
     this.projects = [];
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
-    this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
-      res['projects'].forEach((project: Project) => {
-        project.licenseDescription = this.licensesList.find((license: License) => license.id === project.licenseId)['description'];
+    forkJoin([
+      this.licenseService.getLicenseList(this.currentCustomer.subaccountId),
+      this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId)]).subscribe((responses: any) => {
+        const resDataObject: any = responses.reduce((current: any, next: any) => {
+          return { ...current, ...next };
+        }, {});
+        this.licensesList = resDataObject['licenses'];
+
+        this.licensesList.unshift({ id: 'all', description: 'All' })
+        if (updateLicenses)
+          this.setSelectedLicense(this.licensesList[0]);
+
+        this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
+
+        this.projects = resDataObject['projects'];
+        this.projects.forEach((project: Project) => {
+          project.licenseDescription = this.licensesList.find((license: License) => license.id === project.licenseId)['description'];
+        });
+
+        if (this.selectedLicense.id !== 'all')
+          this.projects = this.projects.filter((project: Project) => project.licenseId === this.selectedLicense.id);
+        this.isLoadingResults = false;
+        this.isRequestCompleted = true;
+        this.projectsBk = this.projects;
+
+      }, () => {
+        this.isLoadingResults = false;
+        this.isRequestCompleted = true;
       });
-      if (this.selectedLicense.id !== 'all') {
-        res['projects'] = res['projects'].filter((project: Project) => project.licenseId === this.selectedLicense.id);
-      }
-      this.isLoadingResults = false;
-      this.isRequestCompleted = true;
-      this.projectsBk = this.projects = res['projects'];
-    }, () => {
-      this.isLoadingResults = false;
-      this.isRequestCompleted = true;
-    });
+
+
+
+
+
+    // this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId).subscribe(res => {
+    //   res['projects'].forEach((project: Project) => {
+    //     project.licenseDescription = this.licensesList.find((license: License) => license.id === project.licenseId)['description'];
+    //   });
+    //   if (this.selectedLicense.id !== 'all') {
+    //     res['projects'] = res['projects'].filter((project: Project) => project.licenseId === this.selectedLicense.id);
+    //   }
+    //   this.isLoadingResults = false;
+    //   this.isRequestCompleted = true;
+    //   this.projectsBk = this.projects = res['projects'];
+    // }, () => {
+    //   this.isLoadingResults = false;
+    //   this.isRequestCompleted = true;
+    // });
   }
   /**
    * sort table
