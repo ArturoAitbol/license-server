@@ -12,6 +12,7 @@ public enum Permission {
         CREATE_SUBACCOUNT_ADMIN_MAIL("TekvLSCreateSubaccountAdminEmail"),
         CREATE_USAGE_DETAILS("TekvLSCreateUsageDetails"),
         CREATE_BUNDLE("TekvLSCreateBundle"),
+        CREATE_CTAAS_SETUP("TekvLSCreateCtaasSetup"),
 
         //DELETE
         DELETE_ADMIN_EMAIL("TekvLSDeleteAdminEmail"),
@@ -24,6 +25,7 @@ public enum Permission {
         DELETE_SUB_ACCOUNT("TekvLSDeleteSubaccountById"),
         DELETE_USAGE_DETAILS("TekvLSDeleteUsageDetailsById"),
         DELETE_BUNDLE("TekvLSDeleteBundleById"),
+        DELETE_CTAAS_SETUP("TekvLSDeleteCtaasSetupById"),
 
         //READ
         GET_ALL_BUNDLES("TekvLSGetAllBundles"),
@@ -35,6 +37,7 @@ public enum Permission {
         GET_ALL_SUBACCOUNTS("TekvLSGetAllSubaccounts"),
         GET_CONSUMPTION_USAGE_DETAILS("TekvLSGetConsumptionUsageDetails"),
         GET_USER_EMAIL_INFO("TekvLSGetUserEmailsInfo"),
+        GET_ALL_CTAAS_SETUPS("TekvLSGetAllCtaasSetups"),
 
         //UPDATE
         MODIFY_CUSTOMER("TekvLSModifyCustomerById"),
@@ -43,8 +46,10 @@ public enum Permission {
         MODIFY_LICENSE_USAGE("TekvLSModifyLicenseUsageById"),
         MODIFY_PROJECT("TekvLSModifyProjectById"),
         MODIFY_SUBACCOUNT("TekvLSModifySubaccountById"),
-        MODIFY_BUNDLE("TekvLSModifyBundleById");
-
+        MODIFY_BUNDLE("TekvLSModifyBundleById"),
+		MODIFY_CTAAS_SETUP("TekvLSModifyCtaasSetupById");
+	
+	
         private final String value;
 
         Permission(String value){
