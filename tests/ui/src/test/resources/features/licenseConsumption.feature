@@ -29,7 +29,7 @@ Feature: LicensesConsumption
       | description       | License1  |
     Then I should see the message "Subscription added successfully!"
 
-  @addLicenseConsumption
+  @addLicenseConsumption @test
   Scenario: Add a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
@@ -50,6 +50,7 @@ Feature: LicensesConsumption
       | deviceVersion     | 12.6                              |
       | deviceGranularity | week                              |
       | tekTokens         | 7                                 |
+      | usageDays         | Sun, Mon, Tue                     |
     Then I should see the following data in the tekToken Consumption Summary table
       | tekTokens         | 55      |
     Then I should see the following data in the tekTokens Project Consumption table
@@ -57,11 +58,12 @@ Feature: LicensesConsumption
       | status            | Open          |
     And I should see the same data in the tekToken Consumption Events table
 
-  @editLicenseConsumption
+  @editLicenseConsumption @test
   Scenario: Edit a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     When I edit the consumption of the project "projectTest" with the following data
+      | usageDays         | Mon                           |
       | deviceVendor      | Cisco                         |
       | deviceModel       | Contact Center Express (UCCX) |
       | deviceVersion     | 12.5                          |
@@ -75,7 +77,7 @@ Feature: LicensesConsumption
       | status            | Open          |
     And I should see the same data in the tekToken Consumption Events table
 
-  @addLicenseConsumptionForSupport @test
+  @addLicenseConsumptionForSupport
   Scenario: Add a tekToken Consumption for a support device
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"

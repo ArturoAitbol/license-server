@@ -15,7 +15,7 @@ public class LicenseConsumptionSteps {
     Customers customers;
     Consumptions consumptions;
     ConsumptionForm consumptionForm;
-    String startWeek, endWeek, project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens, supportVendor, supportModel;
+    String startWeek, endWeek, project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens, supportVendor, supportModel, usageDays;
     ConsumptionRow consumptionRow;
     private final String consumptionSummaryTableId = "tektokens-summary-table";
     private final String projectConsumptionTableId = "project-consumption-table";
@@ -52,7 +52,27 @@ public class LicenseConsumptionSteps {
         this.deviceVersion = consumption.get("deviceVersion");
         this.deviceGranularity = consumption.get("deviceGranularity");
         this.tekTokens = consumption.get("tekTokens");
-        this.consumptions = this.consumptionForm.addConsumption(startWeek, endWeek, project, deviceVendor, deviceModel, supportVendor, supportModel, deviceVersion, deviceGranularity, tekTokens);
+        this.usageDays = consumption.getOrDefault("usageDays","");
+        this.consumptions = this.consumptionForm.addConsumption(startWeek, endWeek, project, deviceVendor, deviceModel, supportVendor, supportModel, deviceVersion, deviceGranularity, tekTokens, usageDays);
+    }
+
+    @When("I edit the consumption of the project {string} with the following data")
+    public void iEditTheConsumptionOfTheProjectWithTheFollowingData(String project, DataTable dataTable) throws InterruptedException {
+        this.consumptionRow = new ConsumptionRow(project);
+        ActionMenu actionMenu = this.consumptionRow.openActionMenu();
+        actionMenu.editForm();
+        this.consumptionForm = new ConsumptionForm();
+        Map<String, String> consumption = dataTable.asMap(String.class, String.class);
+        this.project = consumption.getOrDefault("project", "");
+        this.deviceVendor = consumption.getOrDefault("deviceVendor", "");
+        this.deviceModel = consumption.getOrDefault("deviceModel", "");
+        this.deviceVersion = consumption.getOrDefault("deviceVersion", "");
+        this.deviceGranularity = consumption.getOrDefault("deviceGranularity", "");
+        this.tekTokens = consumption.getOrDefault("tekTokens", "");
+        this.usageDays = consumption.getOrDefault("usageDays","");
+        this.consumptions = this.consumptionForm.editConsumption(this.project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens, usageDays);
+        String actualMessage = this.consumptions.getMessage();
+        DriverManager.getInstance().setMessage(actualMessage);
     }
 
     @Then("I should see the following data in the tekToken Consumption Summary table")
@@ -113,24 +133,6 @@ public class LicenseConsumptionSteps {
         if (!this.deviceVersion.isEmpty()) assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), deviceVersion, actualVersion);
 //        assertEquals("Consumption doesn't have this UsageDays: ".concat(defaultUsageDays), defaultUsageDays, actualUsageDays);
         if (!this.tekTokens.isEmpty()) assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), actualTekTokens, actualTekTokens);
-    }
-
-    @When("I edit the consumption of the project {string} with the following data")
-    public void iEditTheConsumptionOfTheProjectWithTheFollowingData(String project, DataTable dataTable) throws InterruptedException {
-        this.consumptionRow = new ConsumptionRow(project);
-        ActionMenu actionMenu = this.consumptionRow.openActionMenu();
-        actionMenu.editForm();
-        this.consumptionForm = new ConsumptionForm();
-        Map<String, String> consumption = dataTable.asMap(String.class, String.class);
-        this.project = consumption.getOrDefault("project", "");
-        this.deviceVendor = consumption.getOrDefault("deviceVendor", "");
-        this.deviceModel = consumption.getOrDefault("deviceModel", "");
-        this.deviceVersion = consumption.getOrDefault("deviceVersion", "");
-        this.deviceGranularity = consumption.getOrDefault("deviceGranularity", "");
-        this.tekTokens = consumption.getOrDefault("tekTokens", "");
-        this.consumptions = this.consumptionForm.editConsumption(this.project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens);
-        String actualMessage = this.consumptions.getMessage();
-        DriverManager.getInstance().setMessage(actualMessage);
     }
 
     @When("I delete the consumption of the project {string}")

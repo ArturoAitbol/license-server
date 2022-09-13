@@ -94,7 +94,7 @@
                                 <section class="mt-3">
                                     <mat-checkbox class="checkbox-margin" *ngFor="let day of deviceDays; let i = index"
                                                   [color]="'primary'" [checked]="day.used" [disabled]="day.disabled"
-                                                  (change)="setChecked($event.checked, i)">
+                                                  (change)="setChecked($event.checked, i)" title="{{day.name}}">
                                         {{day.name}} </mat-checkbox>
                                     <mat-hint class="d-flex justify-content-start hint mb-1" *ngIf="!isWeekDefined()">Please select a Consumption Week first</mat-hint>  
                                 </section>

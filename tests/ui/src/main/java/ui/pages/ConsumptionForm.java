@@ -1,9 +1,12 @@
 package ui.pages;
 
+import com.google.common.collect.Sets;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
+
+import java.util.*;
 
 public class ConsumptionForm extends AbstractPageObject {
     @FindBy(css = "#new-project-button")
@@ -27,9 +30,10 @@ public class ConsumptionForm extends AbstractPageObject {
     WebElement supportModelInput;
     @FindBy(css = "#submit-button")
     WebElement submitButton;
+    private String[] daysArray;
 
     public Consumptions addConsumption(String startWeek, String endWeek, String project, String deviceVendor,
-                        String deviceModel, String supportVendor, String supportModel, String deviceVersion, String deviceGranularity, String tekTokens) {
+                        String deviceModel, String supportVendor, String supportModel, String deviceVersion, String deviceGranularity, String tekTokens, String usageDays) {
 /*        this.action.sendText(this.startWeekInput, startWeek);
         this.action.sendText(this.endWeekInput, endWeek);*/
         this.action.selectToday(this.calendarButton);
@@ -51,12 +55,35 @@ public class ConsumptionForm extends AbstractPageObject {
             this.action.selectOption(this.deviceModelInput, modelSelector);
         if (!supportModel.isEmpty())
             this.action.selectOption(this.supportModelInput, modelSelector);
+        if (!usageDays.isEmpty()){
+            this.daysArray = usageDays.split("[ ,]+");
+            By daySelector;
+            for (String day: daysArray){
+                daySelector = By.cssSelector(String.format("mat-checkbox[title='%s']", day));
+                this.action.click(daySelector);
+            }
+        }
         this.action.click(this.submitButton);
         return new Consumptions();
     }
 
     public Consumptions editConsumption(String project, String deviceVendor, String deviceModel, 
-            String deviceVersion, String deviceGranularity, String tekTokens) {
+            String deviceVersion, String deviceGranularity, String tekTokens, String usageDays) {
+        if (!usageDays.isEmpty()){
+            String[] daysSelected = usageDays.split("[ ,]+");
+            By currentDaysSelector = By.xpath("//div[@id='detailed-consumption-table']/descendant::td[@id='Usage Days']");
+            String currentDays = this.action.getText(currentDaysSelector);
+            String[] currentDaysArrays = currentDays.split("[ ,]+");
+            Set<String> set1 = new HashSet<>(Arrays.asList(currentDaysArrays));
+            Set<String> set2 = new HashSet<>(Arrays.asList(daysSelected));
+            Set<String> diffDays = Sets.symmetricDifference(set1, set2);
+            System.out.println(diffDays.toString());
+            By daySelector;
+            for (String day: diffDays){
+                daySelector = By.cssSelector(String.format("mat-checkbox[title='%s']", day));
+                this.action.click(daySelector);
+            }
+        }
         if (!project.isEmpty()) {
             By projectSelector = By.cssSelector(String.format("mat-option[title='%s']", project));
             this.action.replaceOption(this.projectInput, projectSelector);
@@ -70,7 +97,6 @@ public class ConsumptionForm extends AbstractPageObject {
             this.action.replaceOption(this.deviceModelInput, deviceModelSelector);
         }
         this.action.click(this.submitButton);
-//        this.action.waitModal();
         return new Consumptions();
     }
 
@@ -85,6 +111,15 @@ public class ConsumptionForm extends AbstractPageObject {
             deviceFieldContent += " - v." + deviceVersion;
         deviceFieldContent += " (" + deviceGranularity + " - " + tekTokens + ")";
         return deviceFieldContent;
+    }
+
+    private String[] getUsageDays(String usageDays){
+        String[] daysArray = usageDays.split("[ ,]+");
+//        List<String> usageDaysList = new ArrayList();
+        for (String day: daysArray){
+            System.out.println(day);
+        }
+        return daysArray;
     }
 
     public void waitSpinner() {
