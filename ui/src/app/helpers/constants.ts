@@ -4,6 +4,8 @@ export class Constants {
     public static readonly SELECTED_SUBACCOUNT: string = 'selectedSubAccount';
     public static readonly PROJECT: string = 'project';
     public static readonly CURRENT_SUBACCOUNT: string = 'currentSubAccountDetails';
+    public static readonly CURRENT_ENABLED_SERVICES: string = 'currentEnabledServices';
+    public static readonly TOOLBAR_DETAILS: string = 'toolbarDetails';
 
     // Session Storage Keys
     public static readonly ACCESS_TOKEN: string = 'access_token';

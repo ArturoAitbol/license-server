@@ -6,11 +6,13 @@ import { CtaasDashboardComponent } from './ctaas-dashboard/ctaas-dashboard.compo
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
+import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.component';
 
 
 @NgModule({
   declarations: [
-    CtaasDashboardComponent
+    CtaasDashboardComponent,
+    OnboardWizardComponent,
   ],
   imports: [
     CommonModule,
@@ -18,6 +20,9 @@ import { SharedModule } from '../shared/shared.module';
     ReactiveFormsModule,
     MaterialModule,
     SharedModule
+  ],
+  entryComponents: [
+    OnboardWizardComponent
   ]
 })
 export class CtaasModule { }

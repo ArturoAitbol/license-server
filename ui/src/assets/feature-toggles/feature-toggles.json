@@ -14,7 +14,8 @@
     "features": {
       "testFeature1": true,
       "testFeature2": false,
-      "ctaasFeature": false
+      "ctaasFeature": true,
+      "enableAllServiceFeature": true
     }
   },
   "integration": {
@@ -27,7 +28,9 @@
       "testFeature1": true
     },
     "features": {
-      "testFeature1": true
+      "testFeature1": true,
+      "ctaasFeature": false,
+      "enableAllServiceFeature": false
     }
   },
   "production": {
@@ -40,7 +43,9 @@
       "testFeature1": false
     },
     "features": {
-      "testFeature1": false
+      "testFeature1": false,
+      "ctaasFeature": false,
+      "enableAllServiceFeature": false
     }
   }
 }

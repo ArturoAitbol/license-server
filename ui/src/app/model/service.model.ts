@@ -4,5 +4,7 @@ export interface IService {
     enabled: boolean;
     access: boolean;
     routePath: string;
+    imagePath: string;
     tabName: string;
+    featureName: string;
 }

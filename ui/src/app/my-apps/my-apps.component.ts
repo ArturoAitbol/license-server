@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Constants } from '../helpers/constants';
 import { IService } from '../model/service.model';
 import { AvailableServicesService } from '../services/available-services.service';
 import { HeaderService } from '../services/header.service';
@@ -14,7 +15,7 @@ export class MyAppsComponent implements OnInit {
   constructor(
     private router: Router,
     private availabeService: AvailableServicesService,
-    private headerService: HeaderService,
+    private headerService: HeaderService
   ) { }
   ngOnInit(): void {
     this.getAvailableServices();
@@ -23,11 +24,21 @@ export class MyAppsComponent implements OnInit {
    * get available services
    */
   private getAvailableServices() {
-    this.availabeService.fetchAllAvailabeServices().subscribe((response: { availabeServices: [] }) => {
-      if (response && response['availabeServices']) {
-        this.availableServices = response['availabeServices'].filter((x: IService) => x.enabled === true);
+    const response = this.availabeService.fetchAllAvailabeServices();
+    if (response.length > 0) {
+      this.availableServices = response.filter((x: IService) => x.enabled === true);
+      // get the current logged in subaccount details
+      const currentSubaccountDetails = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
+      if (currentSubaccountDetails) {
+        const { services } = currentSubaccountDetails;
+        // enable respective access to activated service here
+        this.availableServices = this.availableServices.map(e => {
+          if (services.includes(e.value))
+            e.access = true;
+          return e;
+        });
       }
-    });
+    }
   }
   /**
    * navigate to service which is enabled to user

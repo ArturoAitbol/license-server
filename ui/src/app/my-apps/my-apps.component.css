@@ -12,4 +12,12 @@ img {
 h3 {
   padding: 10px;
   cursor: pointer;
+  color: white;
+}
+.btn-bg {
+  background: none;
+  border: hidden;
+}
+.not-allowed {
+  cursor: not-allowed;
 }

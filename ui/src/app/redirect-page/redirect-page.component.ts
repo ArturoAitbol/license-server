@@ -8,6 +8,8 @@ import { SubAccount } from '../model/subaccount.model';
 import { HeaderService } from '../services/header.service';
 import { SubAccountService } from '../services/sub-account.service';
 import { AvailableServicesService } from '../services/available-services.service';
+import { Features } from '../model/features';
+import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 @Component({
   selector: 'app-redirect-page',
   templateUrl: './redirect-page.component.html',
@@ -20,8 +22,6 @@ export class RedirectPageComponent implements OnInit {
   loggedInUserRoles: string[] = [];
   currentSubaccountDetails: SubAccount;
   availableServices: IService[] = [];
-  readonly redirectingMsg: string = 'Please wait while redirecting ...';
-
   constructor(
     private router: Router,
     private msalService: MsalService,
@@ -35,7 +35,6 @@ export class RedirectPageComponent implements OnInit {
     // hide toolbar on load this redirect page
     this.emitOnPageChangeEvent({ hideToolbar: true, tabName: '', transparentToolbar: true });
     const accountDetails = this.getAccountDetails();
-    // console.debug('active account details | ', accountDetails);
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
     this.getSubAccountDetails();
@@ -45,22 +44,27 @@ export class RedirectPageComponent implements OnInit {
    * @returns: IService[] 
    */
   private getAvailableServices() {
-    this.availabeService.fetchAllAvailabeServices().subscribe((response: { availabeServices: [] }) => {
-      if (response && response['availabeServices']) {
-        this.availableServices = response['availabeServices'].filter((x: IService) => x.enabled === true);
-      }
-    });
+    const response = this.availabeService.fetchAllAvailabeServices();
+    if (response.length > 0) {
+      this.availableServices = response.filter((x: IService) => x.enabled === true);
+    }
   }
   /**
    * get logged in sub account details
    */
   private getSubAccountDetails(): void {
     this.subaccountService.getSubAccountList()
-      .pipe( // Hard coding services in subaccounts for now
-        map(val => {
-          val['subaccounts'][0]['services'] = ['ctaas', 'tekToken'];
-          // val['subaccounts'][0]['services'] = ['ctaas'];
-          return val;
+      .pipe(
+        map((e: SubAccount) => {
+          const { services } = e['subaccounts'][0];
+          if (services) {
+            e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
+          } else if (this.isAllServicesFeatureEnabled()) {
+            e['subaccounts'][0]['services'] = ['ctaas', 'tokenConsumption'];
+          } else {
+            e['subaccounts'][0]['services'] = [];
+          }
+          return e;
         })
       )
       .subscribe((res: any) => {
@@ -92,7 +96,8 @@ export class RedirectPageComponent implements OnInit {
    * check point where based on roles, it will redirect to apps/tekToken Consumption portal
    */
   private navigationCheckPoint(): void {
-    if (this.loggedInUserRoles.includes('customer.SubaccountAdmin' || 'customer.SubaccountStakeholder')) {
+    const check: boolean = this.loggedInUserRoles.some(e => e === 'customer.SubaccountAdmin' || e === 'customer.SubaccountStakeholder');
+    if (check) {
       this.navigateToMyApps();
     } else {
       this.emitOnPageChangeEvent({ hideToolbar: false, tabName: 'tekVizion 360 Portal', transparentToolbar: false });
@@ -103,7 +108,7 @@ export class RedirectPageComponent implements OnInit {
    * navigate to my apps page
    */
   private navigateToMyApps(): void {
-    const { services } = this.currentSubaccountDetails; 
+    const { services } = this.currentSubaccountDetails;
     if (services.length > 1) {
       this.emitOnPageChangeEvent({ hideToolbar: false, tabName: '', transparentToolbar: true });
       this.router.navigate([this.APPS_ROUTE_PATH]);
@@ -122,5 +127,9 @@ export class RedirectPageComponent implements OnInit {
   emitOnPageChangeEvent(value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }): void {
     this.headerService.onChangeService(value);
   }
-
+  /**
+   * check whether Enable_All_Service_Feature toggle feature is enabled or not
+   * @returns: boolean 
+   */
+  isAllServicesFeatureEnabled(): boolean { return FeatureToggleHelper.isFeatureEnabled(Features.Enable_All_Service_Feature, this.msalService); }
 }
