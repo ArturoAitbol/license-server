@@ -1,5 +1,5 @@
 --
--- PostgreSQL database data dump
+-- PostgreSQL database data dump 
 --
 
 SET statement_timeout = 0;
@@ -56,7 +56,7 @@ test-customer-subaccount-stakeholder@tekvizionlabs.com	b995ecaa-d64e-4067-90e5-c
 -- Data for Name: subaccount; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.subaccount (id, name, customer_id, services) FROM stdin;
+COPY public.subaccount (id, name, customer_id) FROM stdin;
 f5a609c0-8b70-4a10-9dc8-9536bdb5652c	Test RealCustomer - 360 Small	7d133fd2-8228-44ff-9636-1881f58f2dbb
 cebe6542-2032-4398-882e-ffb44ade169d	Test Subaccount2	9f6ff46a-5f19-4bcf-9f66-c5f29b800205
 96234b32-32d3-45a4-af26-4c912c0d6a06	Test Subaccount	f1b695b5-b7d9-4245-86ca-9a2a9ccbe460
@@ -87,12 +87,6 @@ test2@tekvizion.com	069dc3aa-dcb1-45e6-886f-be8f2345080f
 test-customer-subaccount-stakeholder@tekvizionlabs.com	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
 \.
 
-COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_complete, subaccount_id) FROM stdin;
-836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
-fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	96234b32-32d3-45a4-af26-4c912c0d6a06
-2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7
-39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
-\.
 
 --
 -- Data for Name: license; Type: TABLE DATA; Schema: public; Owner: -
