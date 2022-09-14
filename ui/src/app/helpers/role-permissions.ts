@@ -5,7 +5,8 @@ export const permissions = {
             'customer',
             'consumption',
             'projects',
-            'licenses'
+            'licenses',
+            'redirect'
         ],
         elements: [
             'addCustomer',
@@ -40,15 +41,17 @@ export const permissions = {
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT',
                 'DELETE_PROJECT'
-            ]}
-        },
+            ]
+        }
+    },
     'tekvizion.SalesAdmin': {
         paths: [
             'dashboard',
             'customer',
             'consumption',
             'projects',
-            'licenses'
+            'licenses',
+            'redirect'
         ],
         elements: [
             'addCustomer',
@@ -73,15 +76,17 @@ export const permissions = {
             ],
             projectOptions: [
                 'VIEW_CONSUMPTION'
-            ]}
-        },
+            ]
+        }
+    },
     'tekvizion.ConfigTester': {
         paths: [
             'dashboard',
             'customer',
             'consumption',
             'projects',
-            'licenses'
+            'licenses',
+            'redirect'
         ],
         elements: [
             'addProject',
@@ -103,15 +108,17 @@ export const permissions = {
                 'VIEW_CONSUMPTION',
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT'
-            ]}
-        },
+            ]
+        }
+    },
     'distributor.FullAdmin': {
         paths: [
             'dashboard',
             'customer',
             'consumption',
             'projects',
-            'licenses'
+            'licenses',
+            'redirect'
         ],
         elements: [],
         tables: {
@@ -125,15 +132,17 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [
                 'VIEW_CONSUMPTION'
-            ]}
-        },
+            ]
+        }
+    },
     'customer.FullAdmin': {
         paths: [
             'dashboard',
             'customer',
             'consumption',
             'projects',
-            'licenses'
+            'licenses',
+            'redirect'
         ],
         elements: [],
         tables: {
@@ -147,15 +156,19 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [
                 'VIEW_CONSUMPTION'
-            ]}
-        },
+            ]
+        }
+    },
     'customer.SubaccountAdmin': {
         paths: [
             'dashboard',
             'customer',
             'consumption',
             'projects',
-            'licenses'
+            'licenses',
+            'redirect',
+            'apps',
+            'ctaas'
         ],
         elements: [],
         tables: {
@@ -164,12 +177,30 @@ export const permissions = {
                 'VIEW_CONSUMPTION',
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
-                'VIEW_SUBACC_ADMIN_EMAILS'],
+                'VIEW_SUBACC_ADMIN_EMAILS',
+                'VIEW_CTAAS_DASHBOARD'
+            ],
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [
                 'VIEW_CONSUMPTION'
-            ]}
+            ]
         }
+    },
+    'customer.SubaccountStakeholder': {
+        paths: [
+            'redirect',
+            'apps',
+            'ctaas',
+            'dashboard'
+        ],
+        elements: [],
+        tables: {
+            customerOptions: [],
+            licenseOptions: [],
+            licConsumptionOptions: [],
+            projectOptions: []
+        }
+    }
 };
 
