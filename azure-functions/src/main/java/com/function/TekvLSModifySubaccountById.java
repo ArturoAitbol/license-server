@@ -128,7 +128,8 @@ public class TekvLSModifySubaccountById
 
 	private enum OPTIONAL_PARAMS {
 		NAME("subaccountName", "name", QueryBuilder.DATA_TYPE.VARCHAR),
-		customer_id("customerId", "customer_id", QueryBuilder.DATA_TYPE.UUID);
+		customer_id("customerId", "customer_id", QueryBuilder.DATA_TYPE.UUID),
+		SERVICES("services", "services", QueryBuilder.DATA_TYPE.VARCHAR);
 
 		private final String jsonAttrib;
 		private final String columnName;
