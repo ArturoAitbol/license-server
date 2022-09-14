@@ -35,6 +35,7 @@ cb1b268a-850a-4459-8033-09854d9ac015	Test NoDistributor	MSP	f	\N	t
 9f6ff46a-5f19-4bcf-9f66-c5f29b800205	Test Distributor	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
 f1b695b5-b7d9-4245-86ca-9a2a9ccbe460	Test Subaccount	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
 b995ecaa-d64e-4067-90e5-cbc80935d1e0	Test_Subaccount2	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
+950f47c7-a477-455b-b65b-331ecacc88dd	Test_Ctaas_Setup	MSP	f	\N	f
 \.
 
 
@@ -49,6 +50,7 @@ test-subaccount@hotmail.com	f1b695b5-b7d9-4245-86ca-9a2a9ccbe460
 test1@tekvizion.com	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848
 test2@tekvizion.com	0856df81-8d32-4adb-941a-c0d9187f36a7
 test-customer-subaccount-stakeholder@tekvizionlabs.com	b995ecaa-d64e-4067-90e5-cbc80935d1e0
+test-customer-full-admin2@tekvizionlabs.com	950f47c7-a477-455b-b65b-331ecacc88dd
 \.
 
 
@@ -63,6 +65,7 @@ cebe6542-2032-4398-882e-ffb44ade169d	Test Subaccount2	9f6ff46a-5f19-4bcf-9f66-c5
 ac7a78c2-d0b2-4c81-9538-321562d426c7	Default	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848
 069dc3aa-dcb1-45e6-886f-be8f2345080f	Default	0856df81-8d32-4adb-941a-c0d9187f36a7
 8acb6997-4d6a-4427-ba2c-7bf463fa08ec	Test_Subaccount3	b995ecaa-d64e-4067-90e5-cbc80935d1e0
+b5b91753-4c2b-43f5-afa0-feb00cefa981	Test_Ctaas_Setup	950f47c7-a477-455b-b65b-331ecacc88dd
 \.
 
 
@@ -149,4 +152,5 @@ fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	http://tekvizionTap.com	SETUP_INP
 2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7
 39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
 78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d
+b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981
 \.
