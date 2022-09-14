@@ -266,7 +266,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     @Test
     public void genericExceptionTest(){
         //Given
-    	 String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
+    	 String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
                  "'status': 'SETUP_INPROGRESS'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
