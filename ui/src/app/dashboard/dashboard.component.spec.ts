@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -25,6 +25,7 @@ import { MsalServiceMock } from '../../test/mock/services/msal-service.mock';
 import { SnackBarServiceMock } from "../../test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "../services/snack-bar.service";
 import { DialogServiceMock } from '../../test/mock/services/dialog.service.mock';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
@@ -37,7 +38,7 @@ const RouterMock = {
 const beforeEachFunction = async () => {
     TestBed.configureTestingModule({
         declarations: [DashboardComponent, DataTableComponent, AddCustomerAccountModalComponent, AddSubaccountModalComponent, ModifyCustomerAccountComponent, AdminEmailsComponent, SubaccountAdminEmailsComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule],
+        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
         providers: [
             {
                 provide: Router,
@@ -161,6 +162,7 @@ describe('Dialog calls and interactions', () => {
         tick();
         expect(dashboardComponentTestInstance.addCustomerAccount).toHaveBeenCalled();
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith('add-customer');
+        discardPeriodicTasks();
     }));
 
     it('should call openDialog when calling the #add-customer-button function', fakeAsync(() => {
@@ -172,6 +174,7 @@ describe('Dialog calls and interactions', () => {
         tick();
         expect(dashboardComponentTestInstance.addSubaccount).toHaveBeenCalled();
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith('add-subaccount');
+        discardPeriodicTasks();
     }));
 
     it('should delete customer if resultAllData is true', () => {
@@ -443,4 +446,15 @@ describe('.columnAction()', ()  => {
         expect(dashboardComponentTestInstance.openLicenseDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 
+});
+
+describe('Filtering table rows', ()  => {
+    beforeEach(beforeEachFunction);
+    it('should filter the rows in the table based on the name, type and status filters', async () => {
+        dashboardComponentTestInstance.filterForm.patchValue({customerFilterControl: "Amazon", typeFilterControl: "MSP", subStatusFilterControl: "Inactive"});
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
+        expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual({"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive"});
+    });
 });
