@@ -1,6 +1,7 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -88,7 +89,9 @@ public class TekvLSCreateSubaccount
 		}
 
 		// Build the sql queries
-		String insertSql = "INSERT INTO subaccount (name, customer_id, services) VALUES (?, ?::uuid, ?) RETURNING id;";
+		String insertValuesClause = FeatureToggles.INSTANCE.isFeatureActive("services-feature")? 
+			"(name, customer_id, services) VALUES (?, ?::uuid, ?)" : "(name, customer_id) VALUES (?, ?::uuid)";
+		String insertSql = "INSERT INTO subaccount " + insertValuesClause + " RETURNING id;";
 		String verifyEmailsSql = "SELECT count(*) FROM subaccount_admin WHERE subaccount_admin_email=?;";
 		String adminEmailSql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid);";
 
@@ -119,13 +122,15 @@ public class TekvLSCreateSubaccount
 			//Insert parameters to statement
 			insertStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value));
 			insertStmt.setString(2, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ID.value));
-			if (jobj.has(OPTIONAL_PARAMS.SERVICES.value)){
-				String subServices = jobj.getString(OPTIONAL_PARAMS.SERVICES.value);
-				subServices = !subServices.equals("") ? subServices : "tokenConsumption";
-				insertStmt.setString(3,subServices);
-			}else {
-				String defaultService = "tokenConsumption";
-				insertStmt.setString(3, defaultService);
+			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+				if (jobj.has(OPTIONAL_PARAMS.SERVICES.value)) {
+					String subaccountServices = jobj.getString(OPTIONAL_PARAMS.SERVICES.value);
+					subaccountServices = !subaccountServices.equals("") ? subaccountServices : "tokenConsumption";
+					insertStmt.setString(3,subaccountServices);
+				} else {
+					String defaultService = "tokenConsumption";
+					insertStmt.setString(3, defaultService);
+				}
 			}
 
 			// Insert

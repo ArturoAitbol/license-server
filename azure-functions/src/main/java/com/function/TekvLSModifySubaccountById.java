@@ -3,6 +3,7 @@ package com.function;
 import com.function.auth.Permission;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -84,10 +85,11 @@ public class TekvLSModifySubaccountById
 		int optionalParamsFound = 0;
 		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
 			try {
-				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
-				optionalParamsFound++;
-			}
-			catch (Exception e) {
+				if (!param.columnName.equals("services") || FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+					queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
+					optionalParamsFound++;
+				}
+			} catch (Exception e) {
 				context.getLogger().info("Ignoring exception: " + e);
 			}
 		}
