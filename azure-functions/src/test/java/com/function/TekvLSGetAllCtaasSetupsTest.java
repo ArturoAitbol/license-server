@@ -225,7 +225,7 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
         assertTrue(jsonBody.has("ctaasSetups"));
 
         JSONArray ctaasSetups = jsonBody.getJSONArray("ctaasSetups");
-        assertEquals(2, ctaasSetups.length());
+        assertEquals(1, ctaasSetups.length());
 
         JSONObject ctaasSetup = ctaasSetups.getJSONObject(0);
         assertTrue(ctaasSetup.has("id"));
