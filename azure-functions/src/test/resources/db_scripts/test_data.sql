@@ -148,4 +148,5 @@ COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_
 fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	96234b32-32d3-45a4-af26-4c912c0d6a06
 2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7
 39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
+78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d
 \.

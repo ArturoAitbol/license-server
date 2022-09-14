@@ -134,7 +134,7 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
         assertTrue(jsonBody.has("ctaasSetups"));
 
         JSONArray ctaasSetups = jsonBody.getJSONArray("ctaasSetups");
-        assertEquals(2, ctaasSetups.length());
+        assertEquals(3, ctaasSetups.length());
 
         JSONObject ctaasSetup = ctaasSetups.getJSONObject(0);
         assertTrue(ctaasSetup.has("id"));
@@ -146,7 +146,7 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
 
         String ctaasSetupId;
         List<String> expectedCtaasSetups = Arrays.asList("fee9374f-2c18-4feb-9dc2-fa1280651802",
-                "39b5ed3f-9ab2-4feb-a2ac-9c450db181a0");
+                "39b5ed3f-9ab2-4feb-a2ac-9c450db181a0", "78346e8a-b4bf-41f4-a7cf-47e7020bcbd0");
         for (int i = 0; i < ctaasSetups.length();i++){
             ctaasSetupId = ctaasSetups.getJSONObject(i).getString("id");
             assertTrue(expectedCtaasSetups.contains(ctaasSetupId), "Ctaas Setup not expected in response (id:" + ctaasSetupId + ")");
