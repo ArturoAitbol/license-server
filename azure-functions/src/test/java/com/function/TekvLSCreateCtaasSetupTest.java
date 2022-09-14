@@ -51,7 +51,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     @Test
     void createCtaasSetup() {
         //Given
-        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+        String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
                 "'status': 'SETUP_INPROGRESS'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -79,7 +79,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     	
     	 this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("crm"));
         //Given
-        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+        String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
                 "'status': 'SETUP_INPROGRESS'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -129,7 +129,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     @Test
     void incompleteBodyTest() {
         //Given
-    	String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'}";
+    	String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -266,7 +266,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     @Test
     public void genericExceptionTest(){
         //Given
-    	 String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+    	 String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
                  "'status': 'SETUP_INPROGRESS'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -283,9 +283,8 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
-        //assertTrue(jsonBody.has("id"));
-       // this.ctaasSetupId = jsonBody.getString("id");
         assertTrue(jsonBody.has("error"));
+        
         String actualResponse = jsonBody.getString("error");
         String expectedResponse = "Error message";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
