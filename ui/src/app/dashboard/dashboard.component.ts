@@ -44,6 +44,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
     readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
+    readonly VIEW_CTAAS_DASHBOARD: string = 'View CTaaS Dashboard';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
 
@@ -381,10 +382,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.openDialog(object.selectedOption, object.selectedRow);
                 break;
             case this.VIEW_SUBACC_ADMIN_EMAILS:
-                if(object.selectedRow.subaccountId !== undefined ) 
+                if (object.selectedRow.subaccountId !== undefined)
                     this.openDialog(object.selectedOption, object.selectedRow);
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access Subaccount admin emails view', '');
+                break;
+            case this.VIEW_CTAAS_DASHBOARD:
+                this.router.navigate(['/ctaas/dashboard']);
                 break;
             case this.MODIFY_ACCOUNT:
                 this.openDialog(object.selectedOption, object.selectedRow);

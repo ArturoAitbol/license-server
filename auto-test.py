@@ -48,7 +48,7 @@ def run_ui_unit_tests():
         if process.returncode != 0:
             logging.error("Error on Dependency installation: " +
                           str(process.stdout))
-            raise Exception("API Unit test returned an error")
+            raise Exception("UI Unit test returned an error")
         else:
             cmd = "npm run test -- --no-watch --no-progress"
             process = Popen(cmd, stdout=PIPE, stderr=STDOUT,
@@ -57,9 +57,9 @@ def run_ui_unit_tests():
             if process.returncode != 0:
                 logging.error("Error running UI unit tests: " +
                               str(process.stdout))
-                raise Exception("API Unit test returned an error")
+                raise Exception("UI Unit test returned an error")
         os.chdir(root_directory)
-        logging.info("API Test Completed Succesfully")
+        logging.info("UI Unit test Completed Succesfully")
         time.sleep(5)
     except Exception as e:
         return_error(e)
