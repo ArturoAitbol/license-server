@@ -5,7 +5,7 @@ table {
   width: 100%;
 }
 .table-section {
-  margin-top: 5%;
+  margin-top: 2em;
 }
 th.mat-sort-header-sorted {
   color: black;

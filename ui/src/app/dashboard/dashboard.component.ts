@@ -20,6 +20,8 @@ import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from '../helpers/role-permissions';
 import { SubAccount } from '../model/subaccount.model';
+import { FormBuilder } from "@angular/forms";
+import { debounceTime } from "rxjs/operators";
 
 @Component({
     selector: 'app-dashboard',
@@ -32,6 +34,7 @@ export class DashboardComponent implements OnInit {
     displayedColumns: any[] = [];
     data: CustomerLicense[] = [];
     customerList: any = [];
+    filteredCustomerList: any = [];
     // flag
     isLoadingResults = true;
     isRequestCompleted = false;
@@ -43,7 +46,16 @@ export class DashboardComponent implements OnInit {
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
 
+    readonly subaccountTypes = ['MSP', 'Reseller'];
+    readonly subscriptionStatus = ['Active', 'Inactive', 'Expired'];
+
     actionMenuOptions: any = [];
+
+    filterForm = this.fb.group({
+        customerFilterControl: [''],
+        typeFilterControl: [''],
+        subStatusFilterControl: ['']
+    });
 
     constructor(
         private customerService: CustomerService,
@@ -53,7 +65,8 @@ export class DashboardComponent implements OnInit {
         public dialog: MatDialog,
         private snackBarService: SnackBarService,
         private router: Router,
-        private msalService: MsalService
+        private msalService: MsalService,
+        private fb: FormBuilder
     ) {
     }
 
@@ -80,11 +93,27 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.filterForm.disable();
         this.calculateTableHeight();
         this.initColumns();
         this.fetchDataToDisplay();
         localStorage.removeItem(Constants.PROJECT);
         this.getActionMenuOptions();
+        this.filterForm.valueChanges.pipe(
+            debounceTime(300)
+        ).subscribe(value => {
+            console.log(value);
+            const filters = [];
+            if (value.customerFilterControl != '') filters.push(customer => customer.name.includes(value.customerFilterControl) || customer.subaccountName?.includes(value.customerFilterControl));
+            if (value.typeFilterControl != '' && value.typeFilterControl != undefined) filters.push(customer => customer.customerType === value.typeFilterControl);
+            if (value.subStatusFilterControl != '' && value.subStatusFilterControl != undefined) filters.push(customer => customer.status && customer.status === value.subStatusFilterControl);
+            console.log(filters);
+            console.log(this.customerList);
+            this.isLoadingResults = true;
+            this.filteredCustomerList = this.customerList.filter(customer => filters.every(filter => filter(customer)));
+            this.isLoadingResults = false;
+            console.log(this.filteredCustomerList);
+        })
     }
 
     /**
@@ -118,6 +147,8 @@ export class DashboardComponent implements OnInit {
             this.customerList = newDataObject['customers'];
             this.assignSubAccountData(newDataObject['subaccounts'], newDataObject['licenses']);
             this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            this.filteredCustomerList = this.customerList;
+            this.filterForm.enable();
             this.isLoadingResults = false;
         }, err => {
             console.debug('error', err);
