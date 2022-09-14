@@ -28,6 +28,8 @@ import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permi
 import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applicationinsights-angularplugin-js';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { AboutModalComponent } from './generics/about-modal/about-modal.component';
+import { MyAppsComponent } from './my-apps/my-apps.component';
+import { RedirectPageComponent } from './redirect-page/redirect-page.component';
 
 @NgModule({
     declarations: [
@@ -42,7 +44,9 @@ import { AboutModalComponent } from './generics/about-modal/about-modal.componen
         AdminEmailsComponent,
         SubaccountAdminEmailsComponent,
         NoPermissionsPageComponent,
-        AboutModalComponent
+        AboutModalComponent,
+        MyAppsComponent,
+        RedirectPageComponent,
     ],
     imports: [
         AppRoutingModule,
@@ -78,7 +82,7 @@ import { AboutModalComponent } from './generics/about-modal/about-modal.componen
         { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
         { provide: ErrorHandler, useClass: ApplicationinsightsAngularpluginErrorService },
-        { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true, strict: true} }
+        { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true, strict: true } }
     ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -241,7 +241,7 @@ export const LicenseServiceMock = {
     mockLicenseL: MOCK_LICENSE_L,
     updatedMockLicenseD: MOCK_UPDATED_LICENSE_D,
     mockDeletedLicense: MOCK_DELETED_LICENSE,
-    mockNewLicense:MOCK_CREATED_LICENSE,
+    mockNewLicense: MOCK_CREATED_LICENSE,
     unsortedLicensesList: MOCK_UNSORTED_STATUS_LICENSES_LIST,
     sortedAscLicensesList: MOCK_SORTED_ASC_STATUS_LICENSES_LIST,
     sortedDescLicensesList: MOCK_SORTED_DESC_STATUS_LICENSES_LIST,
@@ -249,7 +249,7 @@ export const LicenseServiceMock = {
         return new Observable((observer) => {
             let licenseList;
             if (subaccountId)
-                licenseList = {licenses: MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.subaccountId === subaccountId))};
+                licenseList = { licenses: MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.subaccountId === subaccountId)) };
             else
                 licenseList = MOCK_LICENSES_LIST;
             observer.next(licenseList);
@@ -263,6 +263,16 @@ export const LicenseServiceMock = {
         return new Observable((observer) => {
             const license = MOCK_LICENSES_LIST.licenses.find((license: License) => (license.id === id));
             observer.next(license);
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    getLicenseDetails: (id) => {
+        return new Observable((observer) => {
+            const licenses = MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.id === id));
+            observer.next({ licenses: licenses });
             observer.complete();
             return {
                 unsubscribe() { }
@@ -288,7 +298,7 @@ export const LicenseServiceMock = {
             };
         });
     },
-    createLicense: (license) =>{
+    createLicense: (license) => {
         return new Observable((observer) => {
             observer.next(MOCK_CREATED_LICENSE);
             observer.complete();
@@ -297,7 +307,7 @@ export const LicenseServiceMock = {
             };
         });
     },
-    updateLicenseDetails: (license) =>{
+    updateLicenseDetails: (license) => {
         return new Observable((observer) => {
             observer.next();
             observer.complete();
@@ -305,6 +315,9 @@ export const LicenseServiceMock = {
                 unsubscribe() { }
             };
         });
-    }
+    },
+    setSelectedSubAccount: (value: string) => {
+        // TODO
+    },
 
 };
