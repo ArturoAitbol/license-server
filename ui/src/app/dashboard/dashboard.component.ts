@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
@@ -21,7 +21,8 @@ import { MsalService } from '@azure/msal-angular';
 import { permissions } from '../helpers/role-permissions';
 import { SubAccount } from '../model/subaccount.model';
 import { FormBuilder } from "@angular/forms";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, takeUntil } from "rxjs/operators";
+import { Subject } from "rxjs/internal/Subject";
 
 @Component({
     selector: 'app-dashboard',
@@ -29,7 +30,7 @@ import { debounceTime } from "rxjs/operators";
     styleUrls: ['./dashboard.component.css']
 })
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
     tableMaxHeight: number;
     displayedColumns: any[] = [];
     data: CustomerLicense[] = [];
@@ -56,6 +57,8 @@ export class DashboardComponent implements OnInit {
         typeFilterControl: [''],
         subStatusFilterControl: ['']
     });
+
+    private unsubscribe: Subject<void> = new Subject<void>();
 
     constructor(
         private customerService: CustomerService,
@@ -100,19 +103,16 @@ export class DashboardComponent implements OnInit {
         localStorage.removeItem(Constants.PROJECT);
         this.getActionMenuOptions();
         this.filterForm.valueChanges.pipe(
-            debounceTime(300)
+            debounceTime(300),
+            takeUntil(this.unsubscribe)
         ).subscribe(value => {
-            console.log(value);
             const filters = [];
             if (value.customerFilterControl != '') filters.push(customer => customer.name.includes(value.customerFilterControl) || customer.subaccountName?.includes(value.customerFilterControl));
             if (value.typeFilterControl != '' && value.typeFilterControl != undefined) filters.push(customer => customer.customerType === value.typeFilterControl);
             if (value.subStatusFilterControl != '' && value.subStatusFilterControl != undefined) filters.push(customer => customer.status && customer.status === value.subStatusFilterControl);
-            console.log(filters);
-            console.log(this.customerList);
             this.isLoadingResults = true;
             this.filteredCustomerList = this.customerList.filter(customer => filters.every(filter => filter(customer)));
             this.isLoadingResults = false;
-            console.log(this.filteredCustomerList);
         })
     }
 
@@ -414,5 +414,10 @@ export class DashboardComponent implements OnInit {
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
                 break;
         }
+    }
+
+    ngOnDestroy() {
+        this.unsubscribe.next();
+        this.unsubscribe.complete();
     }
 }
