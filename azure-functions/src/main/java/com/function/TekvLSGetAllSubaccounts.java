@@ -3,6 +3,7 @@ package com.function;
 import com.function.auth.Permission;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -85,6 +86,10 @@ public class TekvLSGetAllSubaccounts
 			case SUBACCOUNT_ADMIN:
 				queryBuilder.appendCustomCondition("id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
 				break;
+			case SUBACCOUNT_STAKEHOLDER:
+				//subaccount stakeholders are stored in subaccount_admin_email table itself
+				queryBuilder.appendCustomCondition("id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
+				break;
 		}
 
 		if (id.equals("EMPTY")) {
@@ -113,6 +118,8 @@ public class TekvLSGetAllSubaccounts
 				JSONObject item = new JSONObject();
 				item.put("name", rs.getString("name"));
 				item.put("customerId", rs.getString("customer_id"));
+				if (FeatureToggles.INSTANCE.isFeatureActive("services-feature"))
+					item.put("services", rs.getString("services"));
 				if (!id.equals("EMPTY"))
 					item.put("subaccountAdminEmails", adminEmailsMap.get(rs.getString("id")));
 				else
@@ -122,7 +129,7 @@ public class TekvLSGetAllSubaccounts
 
 			if(!id.equals("EMPTY") && array.isEmpty()){
 				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
-				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN, SUBACCOUNT_STAKEHOLDER);
 				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
