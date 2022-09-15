@@ -28,8 +28,8 @@ public class Landing extends AbstractPageObject {
         return new LoginForm(originalWindow);
     }
 
-    public String checkLogin() {
-        By copyrightSelector = By.cssSelector("p#copyright");
+    public String checkIfLoggedIn() {
+        By copyrightSelector = By.cssSelector("#settings-button");
         String res = this.action.checkElement(copyrightSelector);
         return res;
     }

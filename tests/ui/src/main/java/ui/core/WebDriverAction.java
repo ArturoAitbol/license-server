@@ -138,13 +138,15 @@ public class WebDriverAction {
     }
     public String checkElement(By locator){
         String output;
-        try{
-            driver.findElement(locator).click();
+        try {
+            wait = new WebDriverWait(driver, Duration.ofSeconds(minTimeout));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
             output="ok";
         }
         catch (Exception e){
             output="error";
         }
+        wait = new WebDriverWait(driver, Duration.ofSeconds(defaultTimeout));
         return output;
     }
 }

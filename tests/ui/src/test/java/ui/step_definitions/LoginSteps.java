@@ -31,18 +31,18 @@ public class LoginSteps {
 
     @Given("I am on the landing page")
     public void iAmOnTheLandingPage() {
-        this.logged = this.landing.checkLogin();
+        this.logged = this.landing.checkIfLoggedIn();
     }
 
     @When("I try to login with email and password")
     public void iTryToLoginWithEmailAndPassword() {
-        if (this.logged.equals("ok")){
+        if (this.logged.equals("error")){
             this.loginForm = this.landing.openLoginForm();
             String email = environment.username();
             String password = environment.password();
             this.customers = this.loginForm.SignIn(email, password);
         }
-        if (this.logged.equals("error")){
+        if (this.logged.equals("ok")){
 //            System.out.println("User has already been logged on");
             this.customers = new Customers();
         }

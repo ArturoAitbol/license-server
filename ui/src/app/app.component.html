@@ -3,15 +3,58 @@
 </div>
 
 <ng-template #loggedIn>
-    <section>
+    <section *ngIf="!hideToolbar">
         <div>
-            <mat-toolbar color="primary" class="position-fixed">
-                <span style="cursor: pointer;" (click)="navigateToMainView()">tekVizion 360 Portal</span>
-                <span class="example-spacer"></span>
-                <button mat-button [matMenuTriggerFor]="menu" id="settings-button"
+            <mat-toolbar class="position-fixed" [ngClass]="{'toolbar-transparent':(isTransparentToolbar)}">
+                <!-- logo -->
+                <div *lcFeatureToggle="'ctaasFeature'">
+                    <span class="logo-changes" (click)="navigateToMainView()">
+                        <img src="assets/images/logo_1.png" alt="" srcset="">
+                    </span>
+                </div>
+                <!-- divider and service name -->
+                <div *lcFeatureToggle="'ctaasFeature'">
+                    <span *ngIf="!isTransparentToolbar">
+                        <div class="row">
+                            <div class="col-1">
+                                <mat-divider vertical style="height:40px;width:2px;background: white;"></mat-divider>
+                            </div>
+                            <div class="col-9" style="margin: auto;">
+                                <span style="color: white;">{{tabName}}</span>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+                <div *ngIf="!isCtaasFeatureEnabled()" (click)="navigateToMainView()" style="cursor: pointer;">
+                    <span class="tab-name">{{tabName}}</span>
+                </div>
+                <span class="spacer"></span>
+                <!-- notification icon -->
+                <div *lcFeatureToggle="'ctaasFeature'">
+                    <button mat-icon-button [matMenuTriggerFor]="notificationMenu">
+                        <mat-icon class="icon" style="color: white;">notifications</mat-icon>
+                        <a class="notify-dot"></a>
+                    </button>
+                </div>
+                <!-- notifications menu -->
+                <mat-menu #notificationMenu="matMenu">
+                    <mat-list>
+                        <mat-list-item>
+                            <span>
+                                <mat-icon>message</mat-icon>
+                            </span>
+                            <span style="font-size: 13px;padding-left:20px">
+                                Please complete your onboarding process!
+                            </span>
+                        </mat-list-item>
+                    </mat-list>
+                </mat-menu>
+                <!-- user name -->
+                <button mat-button [matMenuTriggerFor]="menu" id="settings-button" style="color: white;"
                     aria-label="Example icon-button with a menu">
                     {{getUserName()}} <mat-icon>arrow_drop_down</mat-icon>
                 </button>
+                <!-- user settings menu -->
                 <mat-menu #menu="matMenu">
                     <button mat-menu-item (click)="about()" id="logout-button">
                         <mat-icon>info</mat-icon>
@@ -22,14 +65,16 @@
                         <span>Logout</span>
                     </button>
                 </mat-menu>
-
             </mat-toolbar>
+            <main *ngIf="!isTransparentToolbar">
+                <ng-container *ngIf="enableSidebar(); then ctaasService; else otherService"></ng-container>
+            </main>
         </div>
     </section>
-    <main>
-        <div class="main-container">
-            <div class="route-content">
-                <router-outlet> </router-outlet>
+    <main *ngIf="isTransparentToolbar || hideToolbar">
+        <div [ngClass]="{'main-container':(!hideToolbar && !isTransparentToolbar )}">
+            <div [ngClass]="{'route-content':(!hideToolbar)}">
+                <router-outlet></router-outlet>
             </div>
         </div>
     </main>
@@ -38,5 +83,36 @@
 <ng-template #loggedOut>
     <div class="login-container" *ngIf="!currentUser">
         <router-outlet> </router-outlet>
+    </div>
+</ng-template>
+<!-- ctaas page -->
+<ng-template #ctaasService>
+    <mat-sidenav-container class="sidenav-container">
+        <mat-sidenav #sidenav mode="side" opened class="sidenav">
+            <mat-nav-list>
+                <mat-list-item (click)="onSelectedNavItem(item)" [ngClass]="{'selected':(item.selected)}" class="parent"
+                    *ngFor="let item of sideBarItems">
+                    <mat-icon mat-list-icon>{{item.iconName}}</mat-icon>
+                    <span class="full-width">{{item.name}}</span>
+                </mat-list-item>
+
+            </mat-nav-list>
+        </mat-sidenav>
+        <!-- side nav content here -->
+        <mat-sidenav-content>
+            <div [ngClass]="{'main-container':(!hideToolbar && !isTransparentToolbar )}">
+                <div [ngClass]="{'route-content':(!hideToolbar)}">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</ng-template>
+<!-- other services -->
+<ng-template #otherService>
+    <div [ngClass]="{'main-container':(!hideToolbar && !isTransparentToolbar )}">
+        <div [ngClass]="{'route-content':(!hideToolbar)}">
+            <router-outlet></router-outlet>
+        </div>
     </div>
 </ng-template>

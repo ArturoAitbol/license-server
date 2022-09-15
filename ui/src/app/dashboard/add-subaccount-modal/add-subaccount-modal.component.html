@@ -1,5 +1,5 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title>Add Customer Subaccount</h1>
+    <h1 mat-dialig-title id="modal-title">Add Customer Subaccount</h1>
     <form [formGroup]="addSubaccountForm" (ngSubmit)="addSubaccount()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
@@ -8,7 +8,7 @@
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label>Customer Name</mat-label>
+                        <mat-label id="customer-name-label">Customer Name</mat-label>
                         <mat-select required formControlName="customer">
                             <mat-option *ngFor="let item of customers" [value]="item.id" title="{{item.name}}">
                                 {{item.name}}
@@ -18,13 +18,13 @@
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label>Subaccount</mat-label>
+                        <mat-label id="subaccount-name-label">Subaccount</mat-label>
                         <input matInput required formControlName="subaccountName">
                     </mat-form-field>
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label>Subaccount Administrator Email</mat-label>
+                        <mat-label id="subaccount-admin-email-label">Subaccount Administrator Email</mat-label>
                         <input matInput type="email" required formControlName="subaccountAdminEmail">
                     </mat-form-field>
                 </div>

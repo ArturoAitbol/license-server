@@ -59,7 +59,7 @@ def run_ui_unit_tests():
                               str(process.stdout))
                 raise Exception("UI Unit test returned an error")
         os.chdir(root_directory)
-        logging.info("UI Test Completed Succesfully")
+        logging.info("UI Unit test Completed Succesfully")
         time.sleep(5)
     except Exception as e:
         return_error(e)
