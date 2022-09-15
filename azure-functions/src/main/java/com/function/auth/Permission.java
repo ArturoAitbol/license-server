@@ -47,7 +47,8 @@ public enum Permission {
         MODIFY_PROJECT("TekvLSModifyProjectById"),
         MODIFY_SUBACCOUNT("TekvLSModifySubaccountById"),
         MODIFY_BUNDLE("TekvLSModifyBundleById"),
-		MODIFY_CTAAS_SETUP("TekvLSModifyCtaasSetupById");
+		MODIFY_CTAAS_SETUP("TekvLSModifyCtaasSetupById"),
+		MODIFY_CTAAS_ONBOARDING("TekvLSModifyCtaasOnBoardingById");
 	
 	
         private final String value;

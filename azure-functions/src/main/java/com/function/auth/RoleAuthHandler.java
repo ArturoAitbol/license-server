@@ -162,7 +162,7 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
-            MODIFY_CTAAS_SETUP);
+            MODIFY_CTAAS_ONBOARDING);
 
     private static final EnumSet<Permission> SubAccountAdminPermissions = EnumSet.of(
             //READ
@@ -176,7 +176,7 @@ public class RoleAuthHandler {
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
             //MODIFY
-            MODIFY_CTAAS_SETUP);
+            MODIFY_CTAAS_ONBOARDING);
     
     private static final EnumSet<Permission> SubAccountStakeholderPermissions = EnumSet.of(
             //READ
