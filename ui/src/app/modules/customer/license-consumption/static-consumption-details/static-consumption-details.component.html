@@ -9,7 +9,7 @@
                 <label style="font-weight: bold;">{{data.name}}</label>
             </div>
             <div class="usage-info" *ngFor="let usage of usageDetailsList; let i = index">
-                <div class="row">
+                <div class="row" id="usage-detail" title="{{ usage.usageDate | date:'ccc' }}">
                     <div class="col-10 usage-data">
                         <label class="subtitle">Date:</label>
                         <label>{{ usage.usageDate | date:'fullDate' }}</label>

@@ -69,11 +69,11 @@ def run_ui_functional_tests():
     logging.info("Starting to run UI Functional tests")
     try:
         os.chdir('./tests/ui')
-        cmd = "gradle uiTests -Denv=local"
+        cmd = 'gradle uiTests -Denv=local -D"cucumber.filter.tags="'
         process = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=True, bufsize=0)
         print_output(process)
         if process.returncode != 0:
-            logging.error("Error on Unit Tests execution: " +
+            logging.error("Error on UI Functional Test execution: " +
                           str(process.stdout))
             raise Exception("UI Functional test returned an error")
         os.chdir(root_directory)
