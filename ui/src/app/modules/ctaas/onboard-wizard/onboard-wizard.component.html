@@ -1,0 +1,251 @@
+<div class="container" style="padding: 4%;" *ngIf="!userInteraction && !configuredReports">
+    <div class="container mt-5">
+        <section>
+            <h1>You’ve signed up for the following CTaaS services:​</h1>
+            <p class="m-5 fs-4">CTaaS for Microsoft Teams​</p>
+            <h1>We’ll help you set up your service in just a few minutes.​​</h1>
+        </section>
+        <div class="row mt-5">
+            <div class="col-6">
+
+                <button class="btn btn-custom btn-sm px-5" data-bs-toggle="button" (click)="onClickBtn('confirm')">
+                    <p>
+                        Sure. Let's do it!
+                    </p>
+                </button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-secondary btn-sm px-5" data-bs-toggle="button" mat-dialog-close (click)="onClickBtn('cancel')">
+                    <p>
+                        Not right now
+                    </p>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- configure reports -->
+<div class="container" *ngIf="userInteraction">
+    <!-- <form class=""> -->
+    <h2>Let's set what reports you receive.​</h2>
+    <br>
+    <div class="row">
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="Your Name" aria-label="Your Name">
+        </div>
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="Your Title" aria-label="Your title">
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="E-mail" aria-label="Email">
+        </div>
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="Your Company" aria-label="Your Company">
+        </div>
+    </div>
+    <br>
+    <div class="row ">
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="Phone" aria-label="Phone">
+        </div>
+        <!-- <div class="col-6">
+            <div class="row">
+                <div class="col-10">
+                    <label class="form-check-label" for="gridCheck">
+                        Text me notifications
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input border float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+        </div> -->
+    </div>
+    <br>
+    <div>
+        <h2>What information do you want to receive?​</h2>
+        <div class="">
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Reports each time a test suite runs​
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Daily reports​
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Weekly reports​
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Monthly Summaries
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Event Notifications
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-custom btn-sm float-end mt-4 px-3" (click)="onConfigureReports()">Save</button>
+    <!-- </form> -->
+</div>
+<!-- add another stakeholder confirmation -->
+<div *ngIf="configuredReports && !addAnotherStakeHolder" class="container">
+    <div style="margin: 25%;">
+        <div>
+            <div class="row">
+                <div class="col-12">
+                    <h2>Want to add another stakeholder?</h2>
+                </div>
+            </div>
+            <br>
+            <div class="row" style="text-align: center;">
+                <div class="col-6">
+                    <button class="btn btn-secondary btn-sm px-3" mat-dialog-close (click)="addStakeholdersConfirmation('no')">
+                        <p>
+                            No, I'm done
+                        </p>
+                    </button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-custom btn-sm px-3" (click)="addStakeholdersConfirmation('yes')">
+                        <p>Yes</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- add another stakeholder -->
+<div class="container" *ngIf="addAnotherStakeHolder">
+    <h2>Add another stakeholder​</h2>
+    <p>Enter their information here.</p>
+    <br>
+    <div class="row">
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="Your Name" aria-label="Your Name">
+        </div>
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="Your Title" aria-label="Your title">
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="E-mail" aria-label="Email">
+        </div>
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="Your Company" aria-label="Your Company">
+        </div>
+    </div>
+    <br>
+    <div class="row ">
+        <div class="col-6">
+            <input type="text" class="form-control" placeholder="Phone" aria-label="Phone">
+        </div>
+        <!-- <div class="col-6">
+            <div class="row">
+                <div class="col-10">
+                    <label class="form-check-label" for="gridCheck">
+                        Text me notifications
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input border float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+        </div> -->
+    </div>
+    <br>
+    <div>
+        <h2>What information do you want this person to receive?​</h2>
+        <div class="">
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Reports each time a test suite runs​
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Daily reports​
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Weekly reports​
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Monthly Summaries
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-11">
+                    <label class="form-check-label" for="gridCheck">
+                        Event Notifications
+                    </label>
+                </div>
+                <div class="col">
+                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-custom btn-sm float-end mt-4 px-3" (click)="addStakeholder()">Save</button>
+</div>
