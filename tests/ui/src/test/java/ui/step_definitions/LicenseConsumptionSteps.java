@@ -57,8 +57,8 @@ public class LicenseConsumptionSteps {
     }
 
     @When("I edit the consumption of the project {string} with the following data")
-    public void iEditTheConsumptionOfTheProjectWithTheFollowingData(String project, DataTable dataTable) throws InterruptedException {
-        this.consumptionRow = new ConsumptionRow(project);
+    public void iEditTheConsumptionOfTheProjectWithTheFollowingData(String currentProject, DataTable dataTable) throws InterruptedException {
+        this.consumptionRow = new ConsumptionRow(currentProject);
         ActionMenu actionMenu = this.consumptionRow.openActionMenu();
         actionMenu.editForm();
         this.consumptionForm = new ConsumptionForm();
@@ -66,13 +66,16 @@ public class LicenseConsumptionSteps {
         this.project = consumption.getOrDefault("project", "");
         this.deviceVendor = consumption.getOrDefault("deviceVendor", "");
         this.deviceModel = consumption.getOrDefault("deviceModel", "");
+        this.supportModel = consumption.getOrDefault("supportModel", "");
         this.deviceVersion = consumption.getOrDefault("deviceVersion", "");
         this.deviceGranularity = consumption.getOrDefault("deviceGranularity", "");
         this.tekTokens = consumption.getOrDefault("tekTokens", "");
         this.usageDays = consumption.getOrDefault("usageDays","");
-        this.consumptions = this.consumptionForm.editConsumption(this.project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens, usageDays);
+        this.consumptions = this.consumptionForm.editConsumption(currentProject, this.project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens, usageDays);
         String actualMessage = this.consumptions.getMessage();
         DriverManager.getInstance().setMessage(actualMessage);
+        if (this.project.isEmpty())
+            this.project = currentProject;
     }
 
     @Then("I should see the following data in the tekToken Consumption Summary table")
@@ -85,7 +88,8 @@ public class LicenseConsumptionSteps {
         String consumed = consumption.getOrDefault("consumed", this.tekTokens);
         // in case there are more consumptions than just one then get from table
         int defaultAvailable = Integer.parseInt(totalTekTokens) - Integer.parseInt(consumed);
-        String available = String.valueOf(defaultAvailable);
+        String estimatedAvailable = String.valueOf(defaultAvailable);
+        String available = consumption.getOrDefault("available", estimatedAvailable);
         String actualTekTokens = this.consumptions.getValue(consumptionSummaryTableId,"tekTokens");
         String actualConsumed = this.consumptions.getValue(consumptionSummaryTableId,"Consumed");
         String actualAvailable = this.consumptions.getValue(consumptionSummaryTableId,"Available");
@@ -102,37 +106,42 @@ public class LicenseConsumptionSteps {
         String status = consumption.getOrDefault("status", "Open");
         // in case there are more consumptions than just one then get from table
         String tekTokens = consumption.getOrDefault("tekTokens", this.tekTokens);
-        String actualProject = this.consumptions.getValueXpath(projectConsumptionTableId,"Project Name");
-        String actualStatus = this.consumptions.getValue(projectConsumptionTableId,"Status");
-        String actualTekTokens = this.consumptions.getValue(projectConsumptionTableId,"tekTokens");
+        this.consumptionRow = new ConsumptionRow(project);
+        String actualProject = this.consumptionRow.getColumnValue("Project Name");
+        String actualStatus = this.consumptionRow.getColumnValue("Status");
+        String actualTekTokens = this.consumptionRow.getColumnValue("tekTokens");
         if(!project.isEmpty())
             assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
         if(!status.isEmpty())
             assertEquals("Consumption doesn't have this project status: ".concat(status), status, actualStatus);
         if(!tekTokens.isEmpty())
-        assertEquals("Consumption doesn't have this amount of tekTokens: ".concat(tekTokens), actualTekTokens, actualTekTokens);
+        assertEquals("Consumption doesn't have this amount of tekTokens: ".concat(tekTokens), tekTokens, actualTekTokens);
     }
 
     @And("I should see the same data in the tekToken Consumption Events table")
     public void iShouldSeeTheSameDataInTheTekTokenConsumptionEventsTable() {
         String defaultType = "Configuration";
-        String defaultUsageDays = "Sun";
-        // String actualConsumptionDate = this.consumptions.getValueXpath(detailedConsumptionTableId,"Consumption Date");
-        String actualProject = this.consumptions.getValue(detailedConsumptionTableId,"Project");
-        String actualType = this.consumptions.getValue(detailedConsumptionTableId,"Type");
-        String actualVendor = this.consumptions.getValue(detailedConsumptionTableId,"Vendor");
-        String actualModel = this.consumptions.getValue(detailedConsumptionTableId,"Model");
-        String actualVersion = this.consumptions.getValue(detailedConsumptionTableId,"Version");
-        String actualTekTokens = this.consumptions.getValueXpath(detailedConsumptionTableId,"tekTokens Used");
-        String actualUsageDays = this.consumptions.getValueXpath(detailedConsumptionTableId,"Usage Days");
+        this.consumptionRow = new ConsumptionRow(this.project);
+        String actualProject = this.consumptionRow.getColumnValue("Project");
+        String actualType = this.consumptionRow.getColumnValue("Type");
+        String actualVendor = this.consumptionRow.getColumnValue("Vendor");
+        String actualModel = this.consumptionRow.getColumnValue("Model");
+        String actualVersion = this.consumptionRow.getColumnValue("Version");
+        String actualTekTokens = this.consumptionRow.getColumnValue("tekTokens Used");
+        String actualUsageDays = this.consumptionRow.getColumnValue("Usage Days");
         // if (this.startWeek.isEmpty()) assertEquals("Consumption doesn't have consumptionDate: ".concat(startWeek), startWeek, actualConsumptionDate);
-        if (!this.project.isEmpty()) assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
+        if (!this.project.isEmpty()) assertEquals("Consumption doesn't have this project name: ".concat(project), this.project, actualProject);
         assertEquals("Consumption doesn't have this type: ".concat(defaultType), defaultType, actualType);
-        if (!this.deviceVendor.isEmpty()) assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), deviceVendor, actualVendor);
-        if (!this.deviceModel.isEmpty()) assertEquals("Consumption doesn't have this deviceModel: ".concat(deviceModel), deviceModel, actualModel);
-        if (!this.deviceVersion.isEmpty()) assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), deviceVersion, actualVersion);
-//        assertEquals("Consumption doesn't have this UsageDays: ".concat(defaultUsageDays), defaultUsageDays, actualUsageDays);
+        if (!this.deviceVendor.isEmpty()) assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), this.deviceVendor, actualVendor);
+        if (!this.deviceModel.isEmpty()) assertEquals("Consumption doesn't have this deviceModel: ".concat(deviceModel), this.deviceModel, actualModel);
+        if (!this.deviceVersion.isEmpty()) assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), this.deviceVersion, actualVersion);
         if (!this.tekTokens.isEmpty()) assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), actualTekTokens, actualTekTokens);
+        if (!this.usageDays.isEmpty()) {
+            if (actualTekTokens.equals("0"))
+                assertEquals("Consumption doesn't have this UsageDays: ".concat("..."), "...", actualUsageDays);
+            else
+                assertEquals("Consumption doesn't have this UsageDays: ".concat(usageDays), this.usageDays, actualUsageDays);
+        }
     }
 
     @When("I delete the consumption of the project {string}")
