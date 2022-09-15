@@ -20,7 +20,7 @@ import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
 
-public class TekvLSModifyCtaasProjectTest extends TekvLSTest {
+public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
 
     private final TekvLSModifyCtaasSetupById tekvLSModifyCtaasSetupById = new TekvLSModifyCtaasSetupById();
     private final TekvLSCreateCtaasSetup tekvLSCreateCtaasSetup = new TekvLSCreateCtaasSetup();

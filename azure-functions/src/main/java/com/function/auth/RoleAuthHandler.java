@@ -69,6 +69,7 @@ public class RoleAuthHandler {
             GET_ALL_DEVICES,
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
+            GET_ALL_CTAAS_SETUPS,
             //UPDATE
             MODIFY_CUSTOMER,
             MODIFY_SUBACCOUNT,
@@ -148,9 +149,7 @@ public class RoleAuthHandler {
             GET_CONSUMPTION_USAGE_DETAILS,
             GET_ALL_DEVICES,
             GET_ALL_PROJECTS,
-            GET_ALL_BUNDLES,
-            GET_ALL_CTAAS_SETUPS,
-            MODIFY_CTAAS_SETUP);
+            GET_ALL_BUNDLES);
 
     private static final EnumSet<Permission> customerAdminPermissions = EnumSet.of(
             //READ

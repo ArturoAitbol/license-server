@@ -116,76 +116,9 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
     @Tag("acceptance")
     @Test
     public void getForDistributorRoleTest(){
-        //Given
-        String id = "EMPTY";
+        
+        String id="EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
-
-        // When
-        HttpResponseMessage response = tekvLSGetAllCtaasSetups.run(this.request,id,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        // Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.OK;
-        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("ctaasSetups"));
-
-        JSONArray ctaasSetups = jsonBody.getJSONArray("ctaasSetups");
-        assertEquals(3, ctaasSetups.length());
-
-        JSONObject ctaasSetup = ctaasSetups.getJSONObject(0);
-        assertTrue(ctaasSetup.has("id"));
-        assertTrue(ctaasSetup.has("subaccountId"));
-        assertTrue(ctaasSetup.has("status"));
-        assertTrue(ctaasSetup.has("azureResourceGroup"));
-        assertTrue(ctaasSetup.has("tapUrl"));
-        assertTrue(ctaasSetup.has("onBoardingComplete"));
-
-        String ctaasSetupId;
-        List<String> expectedCtaasSetups = Arrays.asList("fee9374f-2c18-4feb-9dc2-fa1280651802",
-                "39b5ed3f-9ab2-4feb-a2ac-9c450db181a0", "78346e8a-b4bf-41f4-a7cf-47e7020bcbd0");
-        for (int i = 0; i < ctaasSetups.length();i++){
-            ctaasSetupId = ctaasSetups.getJSONObject(i).getString("id");
-            assertTrue(expectedCtaasSetups.contains(ctaasSetupId), "Ctaas Setup not expected in response (id:" + ctaasSetupId + ")");
-        }
-
-    }
-
-    @Tag("security")
-    @Test
-    public void getForDistributorRoleIncorrectIdTest(){
-        //Given
-        String id = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
-
-        // When
-        HttpResponseMessage response = tekvLSGetAllCtaasSetups.run(this.request,id,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        // Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
-        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("error"));
-
-        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
-        assertEquals(expectedMessage,jsonBody.getString("error"));
-    }
-
-    @Tag("security")
-    @Test
-    public void getForDistributorRoleIncorrectSubaccountIdTest() {
-        //Given
-        String id = "EMPTY";
-        String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
-        this.queryParams.put("subaccountId",subaccountId);
 
         //When
         HttpResponseMessage response = tekvLSGetAllCtaasSetups.run(this.request, id, this.context);
@@ -193,15 +126,17 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
 
         //Then
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
-        assertEquals(expectedStatus, actualStatus, "HTTP Status doesn't match with: ".concat(expectedStatus.toString()));
+        HttpStatus expectedStatus = HttpStatus.FORBIDDEN;
+        assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
         assertTrue(jsonBody.has("error"));
 
-        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
-        assertEquals(expectedMessage,jsonBody.getString("error"));
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+
     }
 
     @Tag("acceptance")
@@ -323,7 +258,7 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
         String expectedCtaasSetupId = "fee9374f-2c18-4feb-9dc2-fa1280651802";
         assertEquals(expectedCtaasSetupId,ctaasSetup.getString("id"));
     }
-
+    
     @Tag("security")
     @Test
     public void getForSubaccountRoleIncorrectIdTest(){
@@ -492,4 +427,126 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
         String expectedResponse = "Error message";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
+    
+    @Tag("acceptance")
+    @Test
+    public void getForSalesAdminRoleTest(){
+        //Given
+        String id = "EMPTY";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("salesAdmin"));
+        // When
+        HttpResponseMessage response = tekvLSGetAllCtaasSetups.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("ctaasSetups"));
+
+        JSONArray ctaasSetups = jsonBody.getJSONArray("ctaasSetups");
+        assertTrue(ctaasSetups.length()>0);
+
+        JSONObject ctaasSetup = ctaasSetups.getJSONObject(0);
+        assertTrue(ctaasSetup.has("id"));
+        assertTrue(ctaasSetup.has("subaccountId"));
+        assertTrue(ctaasSetup.has("status"));
+        assertTrue(ctaasSetup.has("azureResourceGroup"));
+        assertTrue(ctaasSetup.has("tapUrl"));
+        assertTrue(ctaasSetup.has("onBoardingComplete"));
+    }
+    
+    @Tag("acceptance")
+    @Test
+    public void getForConfigTesterRoleTest(){
+        //Given
+        String id = "EMPTY";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("configTester"));
+        // When
+        HttpResponseMessage response = tekvLSGetAllCtaasSetups.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("ctaasSetups"));
+
+        JSONArray ctaasSetups = jsonBody.getJSONArray("ctaasSetups");
+        assertTrue(ctaasSetups.length()>0);
+
+        JSONObject ctaasSetup = ctaasSetups.getJSONObject(0);
+        assertTrue(ctaasSetup.has("id"));
+        assertTrue(ctaasSetup.has("subaccountId"));
+        assertTrue(ctaasSetup.has("status"));
+        assertTrue(ctaasSetup.has("azureResourceGroup"));
+        assertTrue(ctaasSetup.has("tapUrl"));
+        assertTrue(ctaasSetup.has("onBoardingComplete"));
+    }
+    
+    @Tag("acceptance")
+    @Test
+    public void getForSubaccountStakeholderRoleTest(){
+        //Given
+        String id = "EMPTY";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllCtaasSetups.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("ctaasSetups"));
+
+        JSONArray ctaasSetups = jsonBody.getJSONArray("ctaasSetups");
+        assertEquals(1, ctaasSetups.length());
+
+        JSONObject ctaasSetup = ctaasSetups.getJSONObject(0);
+        assertTrue(ctaasSetup.has("id"));
+        assertTrue(ctaasSetup.has("subaccountId"));
+        assertTrue(ctaasSetup.has("status"));
+        assertTrue(ctaasSetup.has("azureResourceGroup"));
+        assertTrue(ctaasSetup.has("tapUrl"));
+        assertTrue(ctaasSetup.has("onBoardingComplete"));
+
+        String expectedCtaasSetupId = "39b5ed3f-9ab2-4feb-a2ac-9c450db181a0";
+        assertEquals(expectedCtaasSetupId,ctaasSetup.getString("id"));
+    }
+    
+    @Tag("security")
+    @Test
+    public void getForSubaccountStakeholderRoleIncorrectIdTest(){
+        //Given
+        String id = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllCtaasSetups.run(this.request,id,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+    
 }
