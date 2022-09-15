@@ -110,6 +110,18 @@ public class Config {
                 username = "subaccountStakeholder_user";
                 password = "subaccountStakeholder_password";
                 break;
+            case "salesAdmin":
+            	roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
+                username = "salesAdmin_user";
+                password = "salesAdmin_password";
+                break;
+            case "configTester":
+            	roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
+                username = "configTester_user";
+                password = "configTester_password";
+                break;
             case "crm":
                 roleId = "crmId";
                 roleSecret = "crmSecret";
