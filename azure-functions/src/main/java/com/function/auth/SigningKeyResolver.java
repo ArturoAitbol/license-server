@@ -1,17 +1,13 @@
 package com.function.auth;
 
+import com.function.clients.HttpClient;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.SigningKeyResolverAdapter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -88,20 +84,10 @@ public class SigningKeyResolver extends SigningKeyResolverAdapter {
 
      private JSONArray getKeysFromAzure() throws Exception {
         String openIdConfigURL = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration";
-        JSONObject openIdConfiguration = httpGet(openIdConfigURL);
+        JSONObject openIdConfiguration = HttpClient.get(openIdConfigURL);
         String jwksUri = openIdConfiguration.getString("jwks_uri");
-        JSONObject keysSet = httpGet(jwksUri);
+        JSONObject keysSet = HttpClient.get(jwksUri);
         return keysSet.getJSONArray("keys");
     }
 
-    private JSONObject httpGet(String endpoint) throws Exception {
-        URL url = new URL(endpoint);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Content-Type", "application/json");
-        InputStream responseStream = connection.getInputStream();
-        BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
-        String inputLine = in.readLine();
-        return new JSONObject(inputLine);
-    }
 }

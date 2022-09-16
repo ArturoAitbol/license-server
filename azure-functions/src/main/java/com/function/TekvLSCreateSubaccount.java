@@ -1,6 +1,9 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.clients.GraphAPIClient;
+import com.function.exceptions.ADException;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -14,6 +17,7 @@ import java.sql.*;
 import java.util.Optional;
 
 import io.jsonwebtoken.Claims;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -39,16 +43,16 @@ public class TekvLSCreateSubaccount
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
-		String currentRole = getRoleFromToken(tokenClaims,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.CREATE_SUBACCOUNT)){
+		if(!hasPermission(roles, Permission.CREATE_SUBACCOUNT)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
@@ -140,7 +144,20 @@ public class TekvLSCreateSubaccount
 			insertEmailStmt.executeUpdate();
 			context.getLogger().info("Subaccount admin email inserted successfully.");
 
+			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+				String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
+				String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
+				GraphAPIClient.createGuestUserWithProperRole(subaccountName,subaccountEmail,SUBACCOUNT_ADMIN,context);
+				context.getLogger().info("Guest user created successfully (AD).");
+			}
+
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+		}
+		catch (ADException e){
+			context.getLogger().info("AD exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());

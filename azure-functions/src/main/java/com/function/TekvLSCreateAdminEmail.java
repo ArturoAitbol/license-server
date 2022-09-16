@@ -1,17 +1,17 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.clients.GraphAPIClient;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import io.jsonwebtoken.Claims;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -32,16 +32,16 @@ public class TekvLSCreateAdminEmail {
             final ExecutionContext context) {
 
         Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-        String currentRole = getRoleFromToken(tokenClaims,context);
-        if(currentRole.isEmpty()){
+        JSONArray roles = getRolesFromToken(tokenClaims,context);
+        if(roles.isEmpty()){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if(!hasPermission(currentRole, Permission.CREATE_ADMIN_EMAIL)){
+        if(!hasPermission(roles, Permission.CREATE_ADMIN_EMAIL)){
             JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
@@ -81,7 +81,17 @@ public class TekvLSCreateAdminEmail {
             String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
-            context.getLogger().info("License usage inserted successfully.");
+            context.getLogger().info("Admin email inserted successfully.");
+
+            if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+                final String customerNameSql = "SELECT name FROM customer WHERE id = ?::uuid;";
+                try(PreparedStatement customerNameStmt = connection.prepareStatement(customerNameSql)){
+                    customerNameStmt.setString(1,createAdminRequest.customerId);
+                    ResultSet rs = customerNameStmt.executeQuery();
+                    if(rs.next())
+                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),createAdminRequest.customerAdminEmail,CUSTOMER_FULL_ADMIN,context);
+                }
+            }
 
             return request.createResponseBuilder(HttpStatus.OK).build();
 
