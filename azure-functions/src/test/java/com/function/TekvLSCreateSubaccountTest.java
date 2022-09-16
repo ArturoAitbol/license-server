@@ -80,8 +80,8 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
                 "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
-                "    \"subaccountAdminEmail\": \"" + name + "@test.com\"\n" +
-                "    \"services\": \"Ctass,tokenConsumption\n" +
+                "    \"subaccountAdminEmail\": \"" + name + "@test.com\",\n" +
+                "    \"services\": \"Ctass,tokenConsumption\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
