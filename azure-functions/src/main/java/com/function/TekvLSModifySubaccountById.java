@@ -31,6 +31,10 @@ public class TekvLSModifySubaccountById
 	 * This function listens at endpoint "/v1.0/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccounts/{id}
 	 */
+	
+	String DEFAULT_CTAAS_STATUS = "setup_inprogress";
+	Boolean DEFAULT_CTAAS_ON_BOARDING_COMPLETE = false;
+
 	@FunctionName("TekvLSModifySubaccountById")
 	public HttpResponseMessage run(
 			@HttpTrigger(
@@ -99,18 +103,42 @@ public class TekvLSModifySubaccountById
 
 		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
+		String verifyCtassSetupSql = "SELECT count(*) FROM ctaas_setup WHERE subaccount_id=?::uuid;";
+		String adminCtassSetupSql = "INSERT INTO ctaas_setup (subaccount_id, status, on_boarding_complete) VALUES (?::uuid, ?, ?::boolean);";
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = queryBuilder.build(connection)) {
+			PreparedStatement statement = queryBuilder.build(connection);
+			PreparedStatement verifyCtassSetupStmt = connection.prepareStatement(verifyCtassSetupSql);
+			PreparedStatement insertCtassSetupStmt = connection.prepareStatement(adminCtassSetupSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
 			context.getLogger().info("Subaccount updated successfully."); 
+
+			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+				if (jobj.has("services") && jobj.getString("services").contains("Ctaas")) {
+					verifyCtassSetupStmt.setString(1, id);
+		
+					context.getLogger().info("Execute SQL statement: " + verifyCtassSetupStmt);
+					ResultSet rsCtassSetup = verifyCtassSetupStmt.executeQuery();
+					rsCtassSetup.next();
+					if (rsCtassSetup.getInt(1) == 0) {
+						insertCtassSetupStmt.setString(1, id);
+						insertCtassSetupStmt.setString(2, DEFAULT_CTAAS_STATUS);
+						insertCtassSetupStmt.setBoolean(3, DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
+			
+						context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
+						insertCtassSetupStmt.executeUpdate();
+						context.getLogger().info("CTaaS setup default values inserted successfully.");
+					}
+				}
+			}
 
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
