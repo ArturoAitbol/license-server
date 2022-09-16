@@ -8,7 +8,7 @@
             <mat-toolbar class="position-fixed" [ngClass]="{'toolbar-transparent':(isTransparentToolbar)}">
                 <!-- logo -->
                 <div *lcFeatureToggle="'ctaasFeature'">
-                    <span class="logo-changes" (click)="navigateToMainView()">
+                    <span class="logo-changes" (click)="navigateToMainView()" title="tekVizion">
                         <img src="assets/images/logo_1.png" alt="" srcset="">
                     </span>
                 </div>
@@ -19,7 +19,7 @@
                             <div class="col-1">
                                 <mat-divider vertical style="height:40px;width:2px;background: white;"></mat-divider>
                             </div>
-                            <div class="col-9" style="margin: auto;">
+                            <div class="col-9" style="margin: auto;" id="header-title">
                                 <span style="color: white;">{{tabName}}</span>
                             </div>
                         </div>
@@ -44,7 +44,7 @@
                                 <mat-icon>message</mat-icon>
                             </span>
                             <span style="font-size: 13px;padding-left:20px">
-                                Please complete your onboarding process!
+                                Please Complete your onboarding process!
                             </span>
                         </mat-list-item>
                     </mat-list>

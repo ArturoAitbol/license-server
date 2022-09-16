@@ -8,7 +8,7 @@
                             <img [src]="service.imagePath" alt="{{service.label +'-icon'}}">
                             <br>
                             <button class="btn-bg" (click)="onClickService(service)"
-                                [ngClass]="{'not-allowed':!(service.access)}" [disabled]="!(service.access)">
+                                [ngClass]="{'not-allowed':!(service.access)}" [disabled]="!(service.access)" id="{{service.value +'-button'}}" title="{{service.label}}">
                                 <h3 [ngClass]="{'not-allowed':!(service.access)}">
                                     {{service.label}}
                                 </h3>

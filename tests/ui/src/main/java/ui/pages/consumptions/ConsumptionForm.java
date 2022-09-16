@@ -1,4 +1,4 @@
-package ui.pages;
+package ui.pages.consumptions;
 
 import com.google.common.collect.Sets;
 import org.openqa.selenium.By;

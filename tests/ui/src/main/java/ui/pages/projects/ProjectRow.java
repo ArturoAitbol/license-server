@@ -1,7 +1,8 @@
-package ui.pages;
+package ui.pages.projects;
 
 import org.openqa.selenium.By;
 import ui.core.AbstractPageObject;
+import ui.pages.ActionMenu;
 
 public class ProjectRow extends AbstractPageObject {
     private final String PROJECT_NAME_XPATH;

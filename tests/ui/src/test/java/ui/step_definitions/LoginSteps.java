@@ -10,7 +10,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.aeonbits.owner.ConfigFactory;
 
-import ui.pages.Customers;
+import ui.pages.Apps;
+import ui.pages.customer.Customers;
 import ui.pages.Header;
 import ui.pages.Landing;
 import ui.pages.LoginForm;
@@ -21,6 +22,7 @@ public class LoginSteps {
     LoginForm loginForm;
     Customers customers;
     Header header;
+    Apps apps;
     Environment environment = ConfigFactory.create(Environment.class);
     String logged;
     // private String logged;
@@ -59,5 +61,24 @@ public class LoginSteps {
         this.header = new Header();
         boolean result = this.header.logout();
         assertTrue("Couldn't logout from License Server", result);
+    }
+
+    @When("I try to login with a subaccount administrator")
+    public void iTryToLoginWithASubaccountAdministrator() {
+        if (this.logged.equals("error")){
+            this.loginForm = this.landing.openLoginForm();
+            String email = environment.subaccountAdminUser();
+            String password = environment.subaccountAdminPassword();
+            this.customers = this.loginForm.SignIn(email, password);
+        }
+        if (this.logged.equals("ok")){
+//            System.out.println("User has already been logged on");
+            this.apps = new Apps();
+        }
+    }
+
+    @Then("I should see the CTaaS and tekTokenUsage buttons")
+    public void iShouldSeeTheCTaaSAndTekTokenUsageButtons() {
+
     }
 }
