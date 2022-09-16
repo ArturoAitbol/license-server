@@ -11,9 +11,9 @@ Feature: LicensesConsumption
     When I create a customer with the following data
       | name          | licenseUsageCustomerTest              |
       | type          | MSP                                   |
-      | adminEmail    | test-usage@tekvizionlabs.com          |
+      | adminEmail    | test-usage@tekvizion.com              |
       | subaccount    | Default                               |
-      | subAdminEmail | usage-subaccount@tekvizionlabs.com    |
+      | subAdminEmail | test-usage@tekvizion.com              |
       | testCustomer  | yes                                   |
     Then I see the customer "licenseUsageCustomerTest" in the table
 
