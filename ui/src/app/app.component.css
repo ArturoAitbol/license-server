@@ -17,8 +17,51 @@
 .position-fixed {
   z-index: 998;
   position: fixed;
+  background: #203c66;
 }
-
+.spacer,
 .example-spacer {
   flex: 1 1 auto;
+}
+
+.toolbar-transparent {
+  position: absolute !important;
+  background-color: transparent !important;
+}
+
+.sidenav-container {
+  position: absolute;
+  top: 60px;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+}
+
+.sidenav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+}
+.logo-changes {
+  margin-top: -10px;
+  padding: 0px 20px;
+  cursor: pointer;
+}
+.tab-name {
+  color: white;
+}
+.selected {
+  background: lightgray;
+}
+.notify-dot {
+  background-color: #1e81b0;
+  position: relative;
+  top: -8px;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--color-primer-border-contrast);
+  border-radius: 50%;
+  left: -14px;
 }

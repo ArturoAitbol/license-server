@@ -19,7 +19,7 @@
                 <div>
                     <section>
                         <mat-checkbox class="checkbox-margin" *ngFor="let day of days; let i = index"
-                            [color]="'primary'" [checked]="day.used" [disabled]="day.disabled" (change)="setChecked($event.checked, i)">
+                            [color]="'primary'" [checked]="day.used" [disabled]="day.disabled" (change)="setChecked($event.checked, i)" title="{{day.name}}">
                             {{day.name}} </mat-checkbox>
                     </section>
                 </div>

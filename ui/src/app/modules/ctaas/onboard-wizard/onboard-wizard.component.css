@@ -1,0 +1,10 @@
+h1 {
+  font-weight: 500 !important;
+}
+p {
+  margin: 2px 0px;
+}
+.btn-custom{
+  background: rgb(32, 60, 102);
+  color: white;
+}

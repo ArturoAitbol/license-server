@@ -3,6 +3,7 @@ package com.function;
 import com.function.auth.Permission;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -118,7 +119,8 @@ public class TekvLSGetAllSubaccounts
 				JSONObject item = new JSONObject();
 				item.put("name", rs.getString("name"));
 				item.put("customerId", rs.getString("customer_id"));
-				item.put("services", rs.getString("services"));
+				if (FeatureToggles.INSTANCE.isFeatureActive("services-feature"))
+					item.put("services", rs.getString("services"));
 				if (!id.equals("EMPTY"))
 					item.put("subaccountAdminEmails", adminEmailsMap.get(rs.getString("id")));
 				else

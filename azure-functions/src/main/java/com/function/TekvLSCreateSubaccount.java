@@ -31,6 +31,11 @@ public class TekvLSCreateSubaccount
 	 * This function listens at endpoint "/v1.0/subaccounts". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccounts
 	 */
+
+	String DEFAULT_SERVICES = "tokenConsumption";
+	String DEFAULT_CTAAS_STATUS = "setup_inprogress";
+	Boolean DEFAULT_CTAAS_ON_BOARDING_COMPLETE = false;
+
 	@FunctionName("TekvLSCreateSubaccount")
 	public HttpResponseMessage run(
 			@HttpTrigger(
@@ -92,9 +97,12 @@ public class TekvLSCreateSubaccount
 		}
 
 		// Build the sql queries
-		String insertSql = "INSERT INTO subaccount (name, customer_id) VALUES (?, ?::uuid) RETURNING id;";
+		String insertValuesClause = FeatureToggles.INSTANCE.isFeatureActive("services-feature")? 
+			"(name, customer_id, services) VALUES (?, ?::uuid, ?)" : "(name, customer_id) VALUES (?, ?::uuid)";
+		String insertSql = "INSERT INTO subaccount " + insertValuesClause + " RETURNING id;";
 		String verifyEmailsSql = "SELECT count(*) FROM subaccount_admin WHERE subaccount_admin_email=?;";
 		String adminEmailSql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid);";
+		String adminCtassSetupSql = "INSERT INTO ctaas_setup (subaccount_id, status, on_boarding_complete) VALUES (?::uuid, ?, ?::boolean);";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -104,7 +112,8 @@ public class TekvLSCreateSubaccount
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			PreparedStatement insertStmt = connection.prepareStatement(insertSql);
 			PreparedStatement verifyEmailStmt = connection.prepareStatement(verifyEmailsSql);
-			PreparedStatement insertEmailStmt = connection.prepareStatement(adminEmailSql)) {
+			PreparedStatement insertEmailStmt = connection.prepareStatement(adminEmailSql);
+			PreparedStatement insertCtassSetupStmt = connection.prepareStatement(adminCtassSetupSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
@@ -123,6 +132,16 @@ public class TekvLSCreateSubaccount
 			//Insert parameters to statement
 			insertStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value));
 			insertStmt.setString(2, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ID.value));
+
+			//services information
+			String subaccountServices = "";
+			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+				if (jobj.has(OPTIONAL_PARAMS.SERVICES.value))
+					subaccountServices = jobj.getString(OPTIONAL_PARAMS.SERVICES.value);
+				if (subaccountServices.equals(""))
+					subaccountServices = DEFAULT_SERVICES;
+				insertStmt.setString(3, subaccountServices);
+			}
 
 			// Insert
 			String userId = getUserIdFromToken(tokenClaims,context);
@@ -149,6 +168,18 @@ public class TekvLSCreateSubaccount
 				String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
 				GraphAPIClient.createGuestUserWithProperRole(subaccountName,subaccountEmail,SUBACCOUNT_ADMIN,context);
 				context.getLogger().info("Guest user created successfully (AD).");
+			}
+			
+			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+				if (subaccountServices.contains("Ctaas")) {
+					insertCtassSetupStmt.setString(1, subaccountId);
+					insertCtassSetupStmt.setString(2, DEFAULT_CTAAS_STATUS);
+					insertCtassSetupStmt.setBoolean(3, DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
+		
+					context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
+					insertCtassSetupStmt.executeUpdate();
+					context.getLogger().info("CTaaS setup default values inserted successfully.");
+				}
 			}
 
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
@@ -192,6 +223,16 @@ public class TekvLSCreateSubaccount
 
 		MANDATORY_PARAMS(String value) {
 			this.value = value;
+		}
+	}
+
+	private enum OPTIONAL_PARAMS {
+		SERVICES("services");
+
+		private final String value; 
+
+		OPTIONAL_PARAMS(String value) {
+			this.value = value; 
 		}
 	}
 }
