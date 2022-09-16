@@ -1,3 +1,5 @@
+import { permissions } from "./role-permissions";
+
 export class Utility {
 
     /**
@@ -88,6 +90,21 @@ export class Utility {
                 return 'red';
             }
         }
+    }
+
+    /**
+     * to get the available options for a given table based on the user role(s)
+     * @param roles: string[]
+     * @param optionType: string
+     * @param options: Object
+     * @return: string[]
+     */
+    public static getTableOptions(roles: string[], options: Object, optionType : string) : string[]{
+        const set = new Set([]);
+        roles.forEach(accountRole => {
+            permissions[accountRole].tables[optionType].forEach(item =>set.add(options[item]));
+        });
+        return [...set];
     }
 
 }

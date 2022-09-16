@@ -18,7 +18,6 @@ import { ModifyCustomerAccountComponent } from './modify-customer-account/modify
 import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.component";
 import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
 import { MsalService } from '@azure/msal-angular';
-import { permissions } from '../helpers/role-permissions';
 import { SubAccount } from '../model/subaccount.model';
 
 @Component({
@@ -43,7 +42,17 @@ export class DashboardComponent implements OnInit {
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
 
-    actionMenuOptions: any = [];
+    readonly options = {
+        VIEW_LICENSES : this.VIEW_LICENSES,
+        VIEW_CONSUMPTION : this.VIEW_CONSUMPTION,
+        VIEW_PROJECTS : this.VIEW_PROJECTS,
+        VIEW_ADMIN_EMAILS : this.VIEW_ADMIN_EMAILS,
+        VIEW_SUBACC_ADMIN_EMAILS : this.VIEW_SUBACC_ADMIN_EMAILS,
+        MODIFY_ACCOUNT : this.MODIFY_ACCOUNT,
+        DELETE_ACCOUNT : this.DELETE_ACCOUNT
+    }
+
+    actionMenuOptions: string[] = [];
 
     constructor(
         private customerService: CustomerService,
@@ -63,10 +72,8 @@ export class DashboardComponent implements OnInit {
     }
 
     private getActionMenuOptions() {
-        const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-        accountRoles.forEach(accountRole => {
-            permissions[accountRole].tables.customerOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
-        });
+        const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
+        this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"customerOptions");
     }
 
     private calculateTableHeight() {

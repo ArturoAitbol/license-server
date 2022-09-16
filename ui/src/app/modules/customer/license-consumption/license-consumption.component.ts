@@ -15,11 +15,11 @@ import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consu
 import { ProjectService } from 'src/app/services/project.service';
 import { Constants } from 'src/app/helpers/constants';
 import { MsalService } from '@azure/msal-angular';
-import { permissions } from 'src/app/helpers/role-permissions';
 import { DataTableComponent } from '../../../generics/data-table/data-table.component';
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
 import moment, { Moment } from 'moment';
 import { License } from 'src/app/model/license.model';
+import { Utility } from 'src/app/helpers/utils';
 
 @Component({
   selector: 'app-license-consumption',
@@ -121,6 +121,11 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
+  readonly options = {
+    EDIT: this.EDIT,
+    DELETE: this.DELETE
+  }
+
   licConsumptionActionMenuOptions: any = [];
 
   daysOfWeek = {
@@ -193,10 +198,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   private getActionMenuOptions() {
     this.licConsumptionActionMenuOptions = [];
-    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    accountRoles.forEach(accountRole => {
-      permissions[accountRole].tables.licConsumptionOptions.forEach(item => this.licConsumptionActionMenuOptions.push(this[item]));
-    })
+    const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    this.licConsumptionActionMenuOptions = Utility.getTableOptions(roles,this.options,"licConsumptionOptions");
   }
 
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
