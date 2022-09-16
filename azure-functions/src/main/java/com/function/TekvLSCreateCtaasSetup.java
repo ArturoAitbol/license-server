@@ -4,7 +4,7 @@ import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_FORBIDDEN;
 import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_UNAUTHORIZED;
 import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
 import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
-import static com.function.auth.RoleAuthHandler.getRoleFromToken;
+import static com.function.auth.RoleAuthHandler.getRolesFromToken;
 import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
 import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 import static com.function.auth.RoleAuthHandler.hasPermission;
@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.function.auth.Permission;
@@ -49,16 +50,16 @@ public class TekvLSCreateCtaasSetup {
 				final ExecutionContext context) 
 	{
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-		String currentRole = getRoleFromToken(tokenClaims,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.CREATE_CTAAS_SETUP)){
+		if(!hasPermission(roles, Permission.CREATE_CTAAS_SETUP)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
