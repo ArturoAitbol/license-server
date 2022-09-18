@@ -1,0 +1,25 @@
+<div>
+    <h2>Stakeholders</h2>
+</div>
+<div style="margin: 10px 0px;display: flex;">
+    <button style="margin-left: auto;" mat-raised-button id="add-customer-button">Add Stakeholder</button>
+</div>
+
+<section class="table-section">
+    <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
+        <app-data-table 
+        [tableData]="stakeholdersData" 
+        [tableColumns]="displayedColumns" 
+        [isFilterable]="false"
+        [isPageable]="false" 
+        [isLoadingResults]="isLoadingResults" 
+        [isRequestCompleted]="isRequestCompleted"
+        [paginationSizes]="[5,10,20]" 
+        [defaultPageSize]="5"
+        (sort)="sortData($event)"
+        [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"
+        [actionMenuList]="actionMenuOptions"
+        >
+        </app-data-table>
+    </div>
+</section>

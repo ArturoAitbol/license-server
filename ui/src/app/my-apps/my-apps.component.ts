@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MsalService } from '@azure/msal-angular';
 import { Constants } from '../helpers/constants';
 import { IService } from '../model/service.model';
 import { AvailableServicesService } from '../services/available-services.service';
@@ -15,22 +16,39 @@ export class MyAppsComponent implements OnInit {
   constructor(
     private router: Router,
     private availabeService: AvailableServicesService,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private msalService: MsalService
   ) { }
   ngOnInit(): void {
-    this.getAvailableServices();
+    console.debug('my apps')
+    const accountDetails = this.getAccountDetails();
+    const { idTokenClaims: { roles } } = accountDetails;
+    this.getAvailableServices(roles);
+    // hide toolbar on load this redirect page
+    this.emitOnPageChangeEvent({ hideToolbar: false, tabName: '', transparentToolbar: true });
+  }
+  /**
+   * get logged in account details 
+   * @returns: any | null 
+   */
+  private getAccountDetails(): any | null {
+    return this.msalService.instance.getActiveAccount() || null;
   }
   /**
    * get available services
    */
-  private getAvailableServices() {
+  private getAvailableServices(roles?: string) {
+    console.debug('roles | ', roles);
     const response = this.availabeService.fetchAllAvailabeServices();
     if (response.length > 0) {
       this.availableServices = response.filter((x: IService) => x.enabled === true);
       // get the current logged in subaccount details
       const currentSubaccountDetails = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
       if (currentSubaccountDetails) {
-        const { services } = currentSubaccountDetails;
+        let { services } = currentSubaccountDetails;
+        if (services === undefined || services === null && roles) {
+          services = roles.includes('customer.SubaccountStakeholder') ? ['ctaas'] : [];
+        }
         // enable respective access to activated service here
         this.availableServices = this.availableServices.map(e => {
           if (services.includes(e.value))
@@ -48,7 +66,7 @@ export class MyAppsComponent implements OnInit {
     const { tabName, enabled, routePath } = value;
     if (enabled) {
       this.emitOnPageChangeEvent({ hideToolbar: false, tabName: tabName, transparentToolbar: false });
-      this.router.navigate([routePath]);
+      this.router.navigate([routePath]); //, { skipLocationChange: true }
     }
   }
   /**
@@ -58,5 +76,7 @@ export class MyAppsComponent implements OnInit {
   emitOnPageChangeEvent(value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }): void {
     this.headerService.onChangeService(value);
   }
-
+  ngOnDestory(): void {
+    // this.headerService.unSubForEvents();
+  }
 }

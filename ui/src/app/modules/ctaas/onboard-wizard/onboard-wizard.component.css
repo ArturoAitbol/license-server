@@ -4,7 +4,13 @@ h1 {
 p {
   margin: 2px 0px;
 }
-.btn-custom{
+.btn-custom {
   background: rgb(32, 60, 102);
   color: white;
+}
+.form-control.ng-touched.ng-invalid {
+  border-left: 5px solid #CC0000;
+}
+.form-control.ng-touched.ng-valid {
+  border-left: 5px solid green;
 }

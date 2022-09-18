@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CtaasRoutingModule } from './ctaas-routing.module';
@@ -7,12 +7,16 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
 import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.component';
+import { CtaasProjectComponent } from './ctaas-project/ctaas-project.component';
+import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component'; 
 
 
 @NgModule({
   declarations: [
     CtaasDashboardComponent,
     OnboardWizardComponent,
+    CtaasProjectComponent,
+    CtaasStakeholderComponent,
   ],
   imports: [
     CommonModule,
@@ -23,6 +27,7 @@ import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.componen
   ],
   entryComponents: [
     OnboardWizardComponent
-  ]
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class CtaasModule { }

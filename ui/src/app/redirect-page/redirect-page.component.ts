@@ -8,7 +8,7 @@ import { SubAccount } from '../model/subaccount.model';
 import { HeaderService } from '../services/header.service';
 import { SubAccountService } from '../services/sub-account.service';
 import { AvailableServicesService } from '../services/available-services.service';
-import { Features } from '../model/features';
+import { Features } from '../helpers/features';
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 @Component({
   selector: 'app-redirect-page',
@@ -31,13 +31,16 @@ export class RedirectPageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.getAvailableServices();
-    // hide toolbar on load this redirect page
-    this.emitOnPageChangeEvent({ hideToolbar: true, tabName: '', transparentToolbar: true });
-    const accountDetails = this.getAccountDetails();
-    const { idTokenClaims: { roles } } = accountDetails;
-    this.loggedInUserRoles = roles;
-    this.getSubAccountDetails();
+    try {
+      console.debug('redirect page');
+      this.getAvailableServices();
+      // hide toolbar on load this redirect page
+      this.emitOnPageChangeEvent({ hideToolbar: true, tabName: '', transparentToolbar: false });
+      const accountDetails = this.getAccountDetails();
+      const { idTokenClaims: { roles } } = accountDetails;
+      this.loggedInUserRoles = roles;
+      this.getSubAccountDetails();
+    } catch (e) { console.error('error at redirect page'); }
   }
   /**
    * get all available tekVizion services
@@ -59,8 +62,14 @@ export class RedirectPageComponent implements OnInit {
           const { services } = e['subaccounts'][0];
           if (services) {
             e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
-          } else if (this.isAllServicesFeatureEnabled()) {
-            e['subaccounts'][0]['services'] = ['ctaas', 'tokenConsumption'];
+          } else if (this.isAllServicesFeatureEnabled() && this.loggedInUserRoles.length > 0) {
+            // check if logged in user is stakeholder
+            // hard-coded this values for dev
+            // future we're going to remove this
+            if (this.loggedInUserRoles.includes("customer.SubaccountStakeholder")) {
+              e['subaccounts'][0]['services'] = ['ctaas'];
+            } else
+              e['subaccounts'][0]['services'] = ['ctaas', 'tokenConsumption'];
           } else {
             e['subaccounts'][0]['services'] = [];
           }
@@ -100,7 +109,7 @@ export class RedirectPageComponent implements OnInit {
     if (check) {
       this.navigateToMyApps();
     } else {
-      this.emitOnPageChangeEvent({ hideToolbar: false, tabName: 'tekVizion 360 Portal', transparentToolbar: false });
+      // this.emitOnPageChangeEvent({ hideToolbar: false, tabName: Constants.TEK_TOKEN_TOOL_BAR, transparentToolbar: false });
       this.navigateToDashboard();
     }
   }

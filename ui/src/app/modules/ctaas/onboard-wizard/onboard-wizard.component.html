@@ -1,251 +1,251 @@
-<div class="container" style="padding: 4%;" *ngIf="!userInteraction && !configuredReports">
-    <div class="container mt-5">
-        <section>
-            <h1>You’ve signed up for the following CTaaS services:​</h1>
-            <p class="m-5 fs-4">CTaaS for Microsoft Teams​</p>
-            <h1>We’ll help you set up your service in just a few minutes.​​</h1>
-        </section>
-        <div class="row mt-5">
-            <div class="col-6">
+<div class="container">
+    <!-- *ngIf="!userInteraction && !configuredReports" -->
+    <ng-container [ngSwitch]="interaction">
+        <ng-container *ngSwitchCase="'1'" [ngTemplateOutlet]="template1"></ng-container>
+        <ng-container *ngSwitchCase="'2'" [ngTemplateOutlet]="template2"></ng-container>
+        <ng-container *ngSwitchCase="'3'" [ngTemplateOutlet]="template3"></ng-container>
+        <ng-container *ngSwitchCase="'4'" [ngTemplateOutlet]="template4"></ng-container>
+    </ng-container>
+</div>
 
-                <button class="btn btn-custom btn-sm px-5" data-bs-toggle="button" (click)="onClickBtn('confirm')">
-                    <p>
-                        Sure. Let's do it!
-                    </p>
-                </button>
-            </div>
-            <div class="col-6">
-                <button class="btn btn-secondary btn-sm px-5" data-bs-toggle="button" mat-dialog-close (click)="onClickBtn('cancel')">
-                    <p>
-                        Not right now
-                    </p>
-                </button>
-            </div>
+<!-- start screen | '1' -->
+<ng-template #template1>
+    <div style="padding: 4%;">
+        <div class="row">
+            <div class="col-12"><img height="40" src="assets/images/tekVizion.png" alt=""></div>
         </div>
-    </div>
-</div>
-<!-- configure reports -->
-<div class="container" *ngIf="userInteraction">
-    <!-- <form class=""> -->
-    <h2>Let's set what reports you receive.​</h2>
-    <br>
-    <div class="row">
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="Your Name" aria-label="Your Name">
-        </div>
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="Your Title" aria-label="Your title">
-        </div>
-    </div>
-    <br>
-    <div class="row">
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="E-mail" aria-label="Email">
-        </div>
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="Your Company" aria-label="Your Company">
-        </div>
-    </div>
-    <br>
-    <div class="row ">
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="Phone" aria-label="Phone">
-        </div>
-        <!-- <div class="col-6">
-            <div class="row">
-                <div class="col-10">
-                    <label class="form-check-label" for="gridCheck">
-                        Text me notifications
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input border float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-        </div> -->
-    </div>
-    <br>
-    <div>
-        <h2>What information do you want to receive?​</h2>
-        <div class="">
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Reports each time a test suite runs​
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Daily reports​
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Weekly reports​
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Monthly Summaries
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Event Notifications
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-        </div>
-    </div>
-    <button class="btn btn-custom btn-sm float-end mt-4 px-3" (click)="onConfigureReports()">Save</button>
-    <!-- </form> -->
-</div>
-<!-- add another stakeholder confirmation -->
-<div *ngIf="configuredReports && !addAnotherStakeHolder" class="container">
-    <div style="margin: 25%;">
-        <div>
-            <div class="row">
-                <div class="col-12">
-                    <h2>Want to add another stakeholder?</h2>
-                </div>
-            </div>
-            <br>
-            <div class="row" style="text-align: center;">
+        <div class="container mt-5">
+            <section>
+                <h1>You’ve signed up for the following CTaaS services:​</h1>
+                <p class="m-5 fs-4">CTaaS for Microsoft Teams</p>
+                <h1>We’ll help you set up your service in just a few minutes.</h1>
+            </section>
+            <div class="row mt-5">
                 <div class="col-6">
-                    <button class="btn btn-secondary btn-sm px-3" mat-dialog-close (click)="addStakeholdersConfirmation('no')">
+                    <button class="btn btn-custom btn-sm px-5" data-bs-toggle="button" (click)="onClickBtn('confirm')">
                         <p>
-                            No, I'm done
+                            Sure. Let's do it!
                         </p>
                     </button>
                 </div>
                 <div class="col-6">
-                    <button class="btn btn-custom btn-sm px-3" (click)="addStakeholdersConfirmation('yes')">
-                        <p>Yes</p>
+                    <button class="btn btn-secondary btn-sm px-5" data-bs-toggle="button" mat-dialog-close
+                        (click)="onClickBtn('cancel')">
+                        <p>
+                            Not right now
+                        </p>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-
-</div>
-<!-- add another stakeholder -->
-<div class="container" *ngIf="addAnotherStakeHolder">
-    <h2>Add another stakeholder​</h2>
-    <p>Enter their information here.</p>
-    <br>
-    <div class="row">
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="Your Name" aria-label="Your Name">
+</ng-template>
+<!-- configure reports | '2' -->
+<ng-template #template2>
+    <!--class="container" *ngIf="userInteraction" -->
+    <form [formGroup]="reportsForm" (ngSubmit)="onConfigureReports()">
+        <h2>Let's set what reports you receive.</h2>
+        <br>
+        <div class="row">
+            <div class="col-6">
+                <input id="first-name" type="text" formControlName="firstName" class="form-control"
+                    placeholder="First Name" aria-label="First Name">
+                <span *ngIf="reportsForm.get('firstName').touched && reportsForm.get('firstName').invalid"></span>
+            </div>
+            <div class="col-6">
+                <input id="last-name" type="text" formControlName="lastName" class="form-control"
+                    placeholder="Last Name" aria-label="Last Name">
+                <span *ngIf="reportsForm.get('lastName').touched && reportsForm.get('lastName').invalid"></span>
+            </div>
         </div>
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="Your Title" aria-label="Your title">
+        <br>
+        <div class="row">
+            <div class="col-6">
+                <input id="job-title" type="text" formControlName="jobTitle" class="form-control"
+                    placeholder="Job Title" aria-label="Job Title">
+                <span *ngIf="reportsForm.get('jobTitle').touched && reportsForm.get('jobTitle').invalid"></span>
+            </div>
+            <div class="col-6">
+                <input id="company-name" type="text" formControlName="companyName" class="form-control"
+                    placeholder="Your Company" aria-label="Your Company">
+                <span *ngIf="reportsForm.get('companyName').touched && reportsForm.get('companyName').invalid"></span>
+            </div>
         </div>
-    </div>
-    <br>
-    <div class="row">
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="E-mail" aria-label="Email">
+        <br>
+        <div class="row ">
+            <div class="col-6">
+                <input id="email" type="email" formControlName="email" class="form-control" placeholder="E-mail"
+                    aria-label="Email">
+                <span *ngIf="reportsForm.get('email').touched && reportsForm.get('email').invalid"></span>
+            </div>
+            <div class="col-6">
+                <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
+                    class="form-control" />
+                <span
+                    *ngIf="reportsForm.get('phoneNumber').dirty && reportsForm.get('phoneNumber').hasError('required')"></span>
+                <span
+                    *ngIf="reportsForm.get('phoneNumber').touched && reportsForm.get('phoneNumber').hasError('pattern')"></span>
+            </div>
         </div>
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="Your Company" aria-label="Your Company">
-        </div>
-    </div>
-    <br>
-    <div class="row ">
-        <div class="col-6">
-            <input type="text" class="form-control" placeholder="Phone" aria-label="Phone">
-        </div>
-        <!-- <div class="col-6">
-            <div class="row">
-                <div class="col-10">
-                    <label class="form-check-label" for="gridCheck">
-                        Text me notifications
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input border float-end" type="checkbox" id="gridCheck">
+        <br>
+        <div>
+            <h2>What information do you want to receive?</h2>
+            <div *ngFor="let item of reportsNotificationsList;">
+                <div class="row">
+                    <div class="col-11">
+                        <label class="form-check-label" [for]="item.value">{{item.label}}</label>
+                    </div>
+                    <div class="col-1">
+                        <input class="form-check-input float-end" type="checkbox" [value]="item.checked"
+                            [id]="item.value" (change)="onFormCheckboxChange($event,item)">
+                    </div>
                 </div>
             </div>
-        </div> -->
-    </div>
-    <br>
+        </div>
+        <button class="btn btn-custom btn-sm float-end mt-4 px-3" type="submit"
+            [disabled]="!reportsForm.valid">Save</button>
+    </form>
+</ng-template>
+<!-- add another stakeholder confirmation | '3' -->
+<ng-template #template3>
+    <!-- *ngIf="configuredReports && !addAnotherStakeHolder" class="container" -->
     <div>
-        <h2>What information do you want this person to receive?​</h2>
-        <div class="">
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Reports each time a test suite runs​
-                    </label>
+        <div style="margin: 25%;">
+            <div>
+                <div class="row">
+                    <div class="col-12">
+                        <h2>Want to add another stakeholder?</h2>
+                    </div>
                 </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Daily reports​
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Weekly reports​
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Monthly Summaries
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-11">
-                    <label class="form-check-label" for="gridCheck">
-                        Event Notifications
-                    </label>
-                </div>
-                <div class="col">
-                    <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                <br>
+                <div class="row" style="text-align: center;">
+                    <div class="col-6">
+                        <button class="btn btn-secondary btn-sm px-3" mat-dialog-close
+                            (click)="addStakeholdersConfirmation('no')">
+                            <p>
+                                No, I'm done
+                            </p>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-custom btn-sm px-3" (click)="addStakeholdersConfirmation('yes')">
+                            <p>Yes</p>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
-    <button class="btn btn-custom btn-sm float-end mt-4 px-3" (click)="addStakeholder()">Save</button>
-</div>
+</ng-template>
+<!-- add another stakeholder | '4' -->
+<ng-template #template4>
+    <!-- class="container" *ngIf="addAnotherStakeHolder" -->
+    <div>
+        <h2>Add another stakeholder</h2>
+        <p>Enter their information here.</p>
+        <br>
+        <form [formGroup]="stakeholderForm" (ngSubmit)="addStakeholder()">
+            <div class="row">
+                <div class="col-6">
+                    <input id="first-name" type="text" formControlName="firstName" class="form-control"
+                        placeholder="First Name" aria-label="First Name">
+                </div>
+                <div class="col-6">
+                    <input id="last-name" type="text" formControlName="lastName" class="form-control"
+                        placeholder="Last Name" aria-label="Last Name">
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-6">
+                    <input id="job-title" type="text" formControlName="jobTitle" class="form-control"
+                        placeholder="Job Title" aria-label="Job Title">
+                </div>
+                <div class="col-6">
+                    <input id="company-name" type="text" formControlName="companyName" class="form-control"
+                        placeholder="Your Company" aria-label="Your Company">
+                </div>
+            </div>
+            <br>
+            <div class="row ">
+                <div class="col-6">
+                    <input id="email" type="email" formControlName="email" class="form-control" placeholder="E-mail"
+                        aria-label="Email">
+                </div>
+                <div class="col-6">
+                    <input id="phone-number" type="text" formControlName="phoneNumber" class="form-control"
+                        placeholder="Phone" aria-label="Phone">
+                </div>
+            </div>
+            <br>
+            <div>
+                <h2>What information do you want this person to receive?</h2>
+                <!-- <div class="">
+                    <div class="row">
+                        <div class="col-11">
+                            <label class="form-check-label" for="gridCheck">
+                                Reports each time a test suite runs
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-11">
+                            <label class="form-check-label" for="gridCheck">
+                                Daily reports
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-11">
+                            <label class="form-check-label" for="gridCheck">
+                                Weekly reports </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-11">
+                            <label class="form-check-label" for="gridCheck">
+                                Monthly Summaries
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-11">
+                            <label class="form-check-label" for="gridCheck">
+                                Event Notifications
+                            </label>
+                        </div>
+                        <div class="col">
+                            <input class="form-check-input float-end" type="checkbox" id="gridCheck">
+                        </div>
+                    </div>
+                </div> -->
+                <div *ngFor="let item of reportsNotificationsList;">
+                    <div class="row">
+                        <div class="col-11">
+                            <label class="form-check-label" [for]="item.value">{{item.label}}</label>
+                        </div>
+                        <div class="col-1">
+                            <input class="form-check-input float-end" type="checkbox" [value]="item.checked"
+                                [id]="item.value" (change)="onFormCheckboxChange($event,item)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-custom btn-sm float-end mt-4 px-3" type="submit"
+                [disabled]="!stakeholderForm.valid">Save</button>
+        </form>
+    </div>
+</ng-template>
