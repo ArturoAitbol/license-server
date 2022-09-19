@@ -1,8 +1,10 @@
 <div>
     <h2>Stakeholders</h2>
 </div>
-<div style="margin: 10px 0px;display: flex;">
-    <button style="margin-left: auto;" mat-raised-button id="add-customer-button">Add Stakeholder</button>
+<div class="btn-container">
+    <button style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addStakeholder()">
+        Add Stakeholder
+    </button>
 </div>
 
 <section class="table-section">
@@ -17,9 +19,9 @@
         [paginationSizes]="[5,10,20]" 
         [defaultPageSize]="5"
         (sort)="sortData($event)"
+        (rowAction)="rowAction($event)"
         [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"
-        [actionMenuList]="actionMenuOptions"
-        >
+        [actionMenuList]="actionMenuOptions">
         </app-data-table>
     </div>
 </section>

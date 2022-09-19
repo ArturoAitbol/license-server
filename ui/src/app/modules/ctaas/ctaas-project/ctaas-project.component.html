@@ -1,6 +1,11 @@
 <div>
     <h2>Projects</h2>
 </div>
+<div class="btn-container" *lcCheckAccessFor="'addCTaaSProject'" >
+    <button class="ml-auto" mat-raised-button id="add-ctaas-project-button" (click)="addProject()">
+        Add Project
+    </button>
+</div>
 <section class="table-section">
     <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
         <app-data-table

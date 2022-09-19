@@ -8,7 +8,9 @@ import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
 import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.component';
 import { CtaasProjectComponent } from './ctaas-project/ctaas-project.component';
-import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component'; 
+import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component';
+import { AddStakeHolderComponent } from './ctaas-stakeholder/add-stake-holder/add-stake-holder.component';
+import { UpdateStakeHolderComponent } from './ctaas-stakeholder/update-stake-holder/update-stake-holder.component'; 
 
 
 @NgModule({
@@ -17,6 +19,8 @@ import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder
     OnboardWizardComponent,
     CtaasProjectComponent,
     CtaasStakeholderComponent,
+    AddStakeHolderComponent,
+    UpdateStakeHolderComponent,
   ],
   imports: [
     CommonModule,
@@ -26,7 +30,9 @@ import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder
     SharedModule
   ],
   entryComponents: [
-    OnboardWizardComponent
+    OnboardWizardComponent,
+    AddStakeHolderComponent,
+    UpdateStakeHolderComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

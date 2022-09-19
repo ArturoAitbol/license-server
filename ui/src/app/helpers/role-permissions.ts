@@ -22,7 +22,8 @@ export const permissions = {
             'deleteAdminEmail',
             'addSubAccAdminEmail',
             'deleteSubAccAdminEmail',
-            'auditInfo'
+            'auditInfo',
+            'addCTaaSProject',
         ],
         tables: {
             customerOptions: [
@@ -46,6 +47,10 @@ export const permissions = {
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT',
                 'DELETE_PROJECT'
+            ],
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
             ]
         }
     },
@@ -85,7 +90,8 @@ export const permissions = {
             ],
             projectOptions: [
                 'VIEW_CONSUMPTION'
-            ]
+            ],
+            stakeholderOptions: []
         }
     },
     'tekvizion.ConfigTester': {
@@ -102,7 +108,8 @@ export const permissions = {
         ],
         elements: [
             'addProject',
-            'addLicenseConsumption'
+            'addLicenseConsumption',
+            'addCTaaSProject'
         ],
         tables: {
             customerOptions: [
@@ -122,6 +129,10 @@ export const permissions = {
                 'VIEW_CONSUMPTION',
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT'
+            ],
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
             ]
         }
     },
@@ -151,7 +162,8 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [
                 'VIEW_CONSUMPTION'
-            ]
+            ],
+            stakeholderOptions: []
         }
     },
     'customer.FullAdmin': {
@@ -180,7 +192,8 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [
                 'VIEW_CONSUMPTION'
-            ]
+            ],
+            stakeholderOptions: []
         }
     },
     'customer.SubaccountAdmin': {
@@ -213,8 +226,8 @@ export const permissions = {
                 'VIEW_CONSUMPTION'
             ],
             stakeholderOptions: [
-                'MODIFY_ACCOUNT',
-                'DELETE_ACCOUNT'
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
             ]
         }
     },

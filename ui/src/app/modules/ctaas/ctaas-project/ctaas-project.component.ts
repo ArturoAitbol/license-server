@@ -73,7 +73,5 @@ export class CtaasProjectComponent implements OnInit {
       return this.projectsData = this.projectsData;
     }
   }
-
-
-
+  addProject(): void { }
 }
