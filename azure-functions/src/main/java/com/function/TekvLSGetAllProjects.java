@@ -41,16 +41,16 @@ public class TekvLSGetAllProjects {
    {
 
 	   Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-	   String currentRole = getRoleFromToken(tokenClaims,context);
-	   if(currentRole.isEmpty()){
+	   JSONArray roles = getRolesFromToken(tokenClaims,context);
+	   if(roles.isEmpty()){
 		   JSONObject json = new JSONObject();
 		   context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 		   json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 		   return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 	   }
-	   if(!hasPermission(currentRole, Permission.GET_ALL_PROJECTS)){
+	   if(!hasPermission(roles, Permission.GET_ALL_PROJECTS)){
 		   JSONObject json = new JSONObject();
-		   context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+		   context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 		   json.put("error", MESSAGE_FOR_FORBIDDEN);
 		   return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 	   }
@@ -69,6 +69,7 @@ public class TekvLSGetAllProjects {
 		SelectQueryBuilder verificationQueryBuilder = null;
 	   	String email = getEmailFromToken(tokenClaims,context);
 	   	// adding conditions according to the role
+	   String currentRole = evaluateRoles(roles);
 	   	switch (currentRole){
 		   case DISTRIBUTOR_FULL_ADMIN:
 			   queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id FROM subaccount s, customer c " +
@@ -152,7 +153,7 @@ public class TekvLSGetAllProjects {
 				item.put("openDate", rs.getString("open_date").split(" ")[0]);
 				closeDate = rs.getString("close_date");
 				item.put("closeDate", closeDate != null ? closeDate.split(" ")[0] : JSONObject.NULL);
-				if (hasPermission(currentRole, Permission.GET_USER_EMAIL_INFO))
+				if (hasPermission(roles, Permission.GET_USER_EMAIL_INFO))
 					item.put("projectOwner", rs.getString("project_owner"));
 				array.put(item);
 			}

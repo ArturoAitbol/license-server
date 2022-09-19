@@ -43,16 +43,16 @@ public class TekvLSGetAllDevices {
 	  @BindingName("id") String id,
 		final ExecutionContext context) {
 
-		String currentRole = getRoleFromToken(request,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(request,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.GET_ALL_DEVICES)){
+		if(!hasPermission(roles, Permission.GET_ALL_DEVICES)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}

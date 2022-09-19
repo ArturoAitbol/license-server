@@ -1,11 +1,14 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.clients.GraphAPIClient;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import io.jsonwebtoken.Claims;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
@@ -29,16 +32,16 @@ public class TekvLSCreateSubaccountAdminEmail {
             final ExecutionContext context) {
 
         Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-        String currentRole = getRoleFromToken(tokenClaims,context);
-        if(currentRole.isEmpty()){
+        JSONArray roles = getRolesFromToken(tokenClaims,context);
+        if(roles.isEmpty()){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if(!hasPermission(currentRole, Permission.CREATE_SUBACCOUNT_ADMIN_MAIL)){
+        if(!hasPermission(roles,Permission.CREATE_SUBACCOUNT_ADMIN_MAIL)){
             JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
@@ -77,6 +80,16 @@ public class TekvLSCreateSubaccountAdminEmail {
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Subaccount Admin email inserted successfully.");
+
+            if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+                final String subaccountNameSql = "SELECT name FROM subaccount WHERE id = ?::uuid;";
+                try(PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)){
+                    subaccountNameStmt.setString(1,createSubaccountAdminRequest.getSubaccountId());
+                    ResultSet rs = subaccountNameStmt.executeQuery();
+                    if(rs.next())
+                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),createSubaccountAdminRequest.getAdminEmail(),SUBACCOUNT_ADMIN,context);
+                }
+            }
 
             return request.createResponseBuilder(HttpStatus.OK).build();
 

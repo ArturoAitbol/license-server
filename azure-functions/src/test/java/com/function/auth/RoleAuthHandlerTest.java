@@ -4,6 +4,7 @@ import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.impl.DefaultClaims;
+import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -603,9 +604,9 @@ class RoleAuthHandlerTest extends TekvLSTest {
         //Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
         //When
-        String role = getRoleFromToken(this.request, this.context);
+        JSONArray roles = getRolesFromToken(this.request, this.context);
         //Then
-        assertEquals(FULL_ADMIN, role);
+        assertEquals(FULL_ADMIN, roles.getString(0));
     }
 
     @Tag("security")
@@ -689,9 +690,9 @@ class RoleAuthHandlerTest extends TekvLSTest {
         //Given
         Claims claims = new DefaultClaims();
         //When
-        String role = getRoleFromToken(claims, this.context);
+        JSONArray roles = getRolesFromToken(claims, this.context);
         //Then
-        assertTrue(role.isEmpty());
+        assertEquals(roles.length(),0);
     }
 
     @Tag("security")
