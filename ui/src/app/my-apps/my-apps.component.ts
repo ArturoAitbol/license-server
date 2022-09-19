@@ -74,7 +74,7 @@ export class MyAppsComponent implements OnInit {
    * @param value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }
    */
   emitOnPageChangeEvent(value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }): void {
-    this.headerService.onChangeService(value);
+    // this.headerService.onChangeService(value);
   }
   ngOnDestory(): void {
     // this.headerService.unSubForEvents();

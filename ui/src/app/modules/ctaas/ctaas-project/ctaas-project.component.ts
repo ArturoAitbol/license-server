@@ -55,7 +55,7 @@ export class CtaasProjectComponent implements OnInit {
     this.calculateTableHeight();
     this.initColumns();
     this.fetchDataToDisplay();
-    this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
+    // this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
   }
 
   /**

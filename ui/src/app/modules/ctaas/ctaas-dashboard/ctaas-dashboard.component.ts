@@ -72,7 +72,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     // if ((this.isOnboardingComplete == undefined || this.isOnboardingComplete == null) && !roles.includes('customer.SubaccountStakeholder')) {
     //   localStorage.setItem('onboardingFlag', JSON.stringify(true));
     // }
-    this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
+    // this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
   }
   /**
    * fetch Ctaas Setup details by subaccount id

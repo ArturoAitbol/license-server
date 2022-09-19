@@ -134,7 +134,7 @@ export class RedirectPageComponent implements OnInit {
    * @param value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean } 
    */
   emitOnPageChangeEvent(value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }): void {
-    this.headerService.onChangeService(value);
+    // this.headerService.onChangeService(value);
   }
   /**
    * check whether Enable_All_Service_Feature toggle feature is enabled or not
