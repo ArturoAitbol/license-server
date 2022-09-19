@@ -7,4 +7,5 @@ export interface Project {
     openDate: string;
     closeDate: string;
     status: string;
+    licenseDescription?: string;
 }

@@ -22,6 +22,7 @@ public class RoleAuthHandler {
            CREATE_LICENSE_USAGE_DETAIL,
            CREATE_USAGE_DETAILS,
            CREATE_PROJECT,
+           CREATE_CTAAS_SETUP,
            //DELETE
            DELETE_CUSTOMER,
            DELETE_SUB_ACCOUNT,
@@ -31,6 +32,7 @@ public class RoleAuthHandler {
            DELETE_PROJECT,
            DELETE_LICENSE_USAGE,
            DELETE_USAGE_DETAILS,
+           DELETE_CTAAS_SETUP,
            //READ
            GET_ALL_CUSTOMERS,
            GET_ALL_SUBACCOUNTS,
@@ -41,12 +43,14 @@ public class RoleAuthHandler {
            GET_ALL_LICENSE_USAGE_DETAILS,
            GET_CONSUMPTION_USAGE_DETAILS,
            GET_USER_EMAIL_INFO,
+           GET_ALL_CTAAS_SETUPS,
            //UPDATE
            MODIFY_CUSTOMER,
            MODIFY_SUBACCOUNT,
            MODIFY_LICENSE,
            MODIFY_PROJECT,
-           MODIFY_LICENSE_USAGE);
+           MODIFY_LICENSE_USAGE,
+           MODIFY_CTAAS_SETUP);
 
 
     private static final EnumSet<Permission> SaleAdminPermissions = EnumSet.of(
@@ -65,6 +69,7 @@ public class RoleAuthHandler {
             GET_ALL_DEVICES,
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
+            GET_ALL_CTAAS_SETUPS,
             //UPDATE
             MODIFY_CUSTOMER,
             MODIFY_SUBACCOUNT,
@@ -75,6 +80,7 @@ public class RoleAuthHandler {
             CREATE_LICENSE_USAGE_DETAIL,
             CREATE_PROJECT,
             CREATE_USAGE_DETAILS,
+            CREATE_CTAAS_SETUP,
             //DELETE
             DELETE_LICENSE_USAGE,
             DELETE_USAGE_DETAILS,
@@ -87,9 +93,11 @@ public class RoleAuthHandler {
             GET_ALL_DEVICES,
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
+            GET_ALL_CTAAS_SETUPS,
             //UPDATE
             MODIFY_PROJECT,
-            MODIFY_LICENSE_USAGE);
+            MODIFY_LICENSE_USAGE,
+            MODIFY_CTAAS_SETUP);
 
     private static final EnumSet<Permission> devicesAdminPermissions = EnumSet.of(
             //CREATE
@@ -119,6 +127,7 @@ public class RoleAuthHandler {
             CREATE_ADMIN_EMAIL,
             CREATE_SUBACCOUNT_ADMIN_MAIL,
             CREATE_LICENSE,
+            CREATE_CTAAS_SETUP,
             //READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -151,7 +160,9 @@ public class RoleAuthHandler {
             GET_CONSUMPTION_USAGE_DETAILS,
             GET_ALL_DEVICES,
             GET_ALL_PROJECTS,
-            GET_ALL_BUNDLES);
+            GET_ALL_BUNDLES,
+            GET_ALL_CTAAS_SETUPS,
+            MODIFY_CTAAS_ONBOARDING);
 
     private static final EnumSet<Permission> SubAccountAdminPermissions = EnumSet.of(
             //READ
@@ -162,12 +173,16 @@ public class RoleAuthHandler {
             GET_CONSUMPTION_USAGE_DETAILS,
             GET_ALL_DEVICES,
             GET_ALL_PROJECTS,
-            GET_ALL_BUNDLES);
+            GET_ALL_BUNDLES,
+            GET_ALL_CTAAS_SETUPS,
+            //MODIFY
+            MODIFY_CTAAS_ONBOARDING);
     
     private static final EnumSet<Permission> SubAccountStakeholderPermissions = EnumSet.of(
             //READ
             GET_ALL_CUSTOMERS,
-            GET_ALL_SUBACCOUNTS);
+            GET_ALL_SUBACCOUNTS,
+            GET_ALL_CTAAS_SETUPS);
             
 
 

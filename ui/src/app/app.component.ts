@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { Subject } from 'rxjs/internal/Subject';
@@ -10,7 +10,11 @@ import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutModalComponent } from './generics/about-modal/about-modal.component';
+import { HeaderService } from './services/header.service';
 import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
+import { Features } from './model/features';
+import { MatSidenav } from '@angular/material/sidenav';
+import { Constants } from './helpers/constants';
 
 @Component({
     selector: 'app-root',
@@ -21,10 +25,21 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly _destroying$ = new Subject<void>();
     title = 'license-server';
     currentUser = false;
-
-    constructor(private router: Router, private msalService: MsalService,
+    // added as part of ctaas feature
+    hideToolbar: boolean = false;
+    isTransparentToolbar: boolean = false;
+    tabName: string = 'tekVizion 360 Portal';
+    readonly APPS_ROUTE_PATH: string = '/apps';
+    @ViewChild('sidenav') sidenav: MatSidenav;
+    sideBarItems: any = [];
+    constructor(
+        private router: Router,
+        private msalService: MsalService,
         public dialog: MatDialog,
-        private broadcastService: MsalBroadcastService, private autoLogoutService: AutoLogoutService) {
+        private broadcastService: MsalBroadcastService,
+        private autoLogoutService: AutoLogoutService,
+        private headerService: HeaderService
+    ) {
         const angularPlugin = new AngularPlugin();
         const appInsights = new ApplicationInsights({
             config: {
@@ -69,6 +84,60 @@ export class AppComponent implements OnInit, OnDestroy {
             this.currentUser = true;
             this.autoLogoutService.restartTimer();
         });
+        // check for CTaaS Feature toggle
+        if (this.isCtaasFeatureEnabled()) {
+            this.initalizeSidebarItems();
+            this.performChangeOnToolbar();
+            this.headerService.getOnChangeServiceEvent().subscribe((res: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }) => {
+                if (res) {
+                    localStorage.setItem(Constants.TOOLBAR_DETAILS, JSON.stringify(res));
+                    const { tabName, hideToolbar, transparentToolbar } = res;
+                    this.tabName = tabName;
+                    this.hideToolbar = hideToolbar;
+                    this.isTransparentToolbar = transparentToolbar;
+                }
+            });
+        }
+    }
+    /**
+     * initalize the items required for side nav bar
+     */
+    initalizeSidebarItems(): void {
+        this.sideBarItems = [
+            {
+                name: 'Dashboard',
+                iconName: 'dashboard',
+                selected: true
+            },
+            {
+                name: 'Project',
+                iconName: 'auto_awesome_motion',
+                selected: false
+            },
+            {
+                name: 'Stakeholders',
+                iconName: 'settings',
+                selected: false
+            }
+        ];
+    }
+    /**
+     * perform changes on Toolbar on refresh
+     */
+    private performChangeOnToolbar(): void {
+        // const { location: { href } } = window;
+        // if (href) {
+        //     const currentRoute = (href.split('/#').length > 0) ? href.split('/#')[1] : '';
+        //     this.hideToolbar = (currentRoute !== this.APPS_ROUTE_PATH);
+        //     this.isTransparentToolbar = (currentRoute === this.APPS_ROUTE_PATH);
+        // }
+        const value = JSON.parse(localStorage.getItem('check'));
+        if (value) {
+            const { tabName, hideToolbar, transparentToolbar } = value;
+            this.tabName = tabName;
+            this.hideToolbar = hideToolbar;
+            this.isTransparentToolbar = transparentToolbar;
+        }
     }
     /**
      * check whether user logged in
@@ -93,18 +162,57 @@ export class AppComponent implements OnInit, OnDestroy {
             console.error('error while logout: ', error);
         }
     }
-
+    /**
+     * get logged in user name
+     * @returns: string 
+     */
     getUserName(): string {
         return this.msalService.instance.getActiveAccount().name;
     }
     /**
      * Show About Modal
      */
-    about() {        
+    about() {
         const dialogRef = this.dialog.open(AboutModalComponent, {
             width: '400px',
             disableClose: false
         });
+    }
+    /**
+     * mark the selected nav item here
+     * @param item: any 
+     */
+    onSelectedNavItem(item: any): void {
+        this.sideBarItems.forEach((e: any) => {
+            if (e.name === item.name)
+                e.selected = true;
+            else
+                e.selected = false;
+
+        });
+    }
+    /**
+     * enable side bar based on the service and this feature is enabled only when CTaaS_Feature is enabled
+     * @returns: boolean 
+     */
+    enableSidebar(): boolean {
+        if (this.isCtaasFeatureEnabled()) {
+            switch (this.tabName) {
+                case 'CTaaS':
+                    return true;
+                default:
+                    return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    /**
+     * check whether 
+     * @returns: boolean CTaaS_Feature is enabled or not
+     */
+    isCtaasFeatureEnabled(): boolean {
+        return FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService);
     }
 
     ngOnDestroy(): void {
