@@ -15,7 +15,7 @@ import static com.function.auth.RoleAuthHandler.*;
 
 public class GraphAPIClient {
 
-    static private final String baseURL = "https://graph.microsoft.com/v1.0/";
+    static public final String baseURL = "https://graph.microsoft.com/v1.0/";
 
     static public void createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
             String token = getAccessToken(context);
@@ -94,7 +94,7 @@ public class GraphAPIClient {
             appRoleAssignment.put("appRoleId",app.get("roleId"));
             //Assign-role request
             response = HttpClient.post(url,appRoleAssignment.toString(),headers);
-            if(response.has("error")){
+            if(response.has("error") && !response.getJSONObject("error").getString("message").contains("Permission being assigned already exists")) {
                 context.getLogger().severe("Request url: " + url + "Request params: " + appRoleAssignment);
                 context.getLogger().severe("Error response: " + response);
                 throw new ADException("Assign role to guest user failed (AD): " + response.getJSONObject("error").getString("message"));
@@ -201,6 +201,10 @@ public class GraphAPIClient {
             case SUBACCOUNT_ADMIN:
                 licenseServer.put("roleId",ActiveDirectory.INSTANCE.getLicenseAPIProperty("subaccount-role-id"));
                 licensePortal.put("roleId",ActiveDirectory.INSTANCE.getLicensePortalProperty("subaccount-role-id"));
+                break;
+            case SUBACCOUNT_STAKEHOLDER:
+                licenseServer.put("roleId",ActiveDirectory.INSTANCE.getLicenseAPIProperty("subaccount-stakeholder-role-id"));
+                licensePortal.put("roleId",ActiveDirectory.INSTANCE.getLicensePortalProperty("subaccount-stakeholder-role-id"));
                 break;
             default:
                 throw new ADException("Invalid role provided");

@@ -30,6 +30,8 @@ public enum ActiveDirectory {
                 return properties.getProperty("licenseAPI_CustomerRoleID");
             case "subaccount-role-id":
                 return properties.getProperty("licenseAPI_SubaccountRoleID");
+            case "subaccount-stakeholder-role-id":
+                return properties.getProperty("licenseAPI_SubaccountStakeholderRoleID");
             default:
                 return null;
         }
@@ -43,6 +45,8 @@ public enum ActiveDirectory {
                 return properties.getProperty("licensePortal_CustomerRoleID");
             case "subaccount-role-id":
                 return properties.getProperty("licensePortal_SubaccountRoleID");
+            case "subaccount-stakeholder-role-id":
+                return properties.getProperty("licensePortal_SubaccountStakeholderRoleID");
             default:
                 return null;
         }
