@@ -175,6 +175,7 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
+            GET_ALL_CTAAS_PROJECTS,
             //MODIFY
             MODIFY_CTAAS_ONBOARDING);
     

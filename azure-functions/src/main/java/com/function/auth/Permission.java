@@ -38,6 +38,7 @@ public enum Permission {
         GET_CONSUMPTION_USAGE_DETAILS("TekvLSGetConsumptionUsageDetails"),
         GET_USER_EMAIL_INFO("TekvLSGetUserEmailsInfo"),
         GET_ALL_CTAAS_SETUPS("TekvLSGetAllCtaasSetups"),
+        GET_ALL_CTAAS_PROJECTS("TekvLSGetAllCtaasProjects"),
 
         //UPDATE
         MODIFY_CUSTOMER("TekvLSModifyCustomerById"),

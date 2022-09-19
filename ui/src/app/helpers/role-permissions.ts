@@ -184,6 +184,10 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [
                 'VIEW_CONSUMPTION'
+            ],
+            ctaasProjectOptions:[
+                'EXECUTE_ON_DEMAND',
+                'MODIFY_PROJECT'
             ]
         }
     },
