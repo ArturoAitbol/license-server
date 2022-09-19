@@ -16,6 +16,7 @@ import { Features } from './model/features';
 import { MatSidenav } from '@angular/material/sidenav';
 import { Constants } from './helpers/constants';
 
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -26,12 +27,12 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'license-server';
     currentUser = false;
     // added as part of ctaas feature
-    hideToolbar: boolean = false;
-    isTransparentToolbar: boolean = false;
-    tabName: string = 'tekVizion 360 Portal';
+    hideToolbar = false;
+    isTransparentToolbar = false;
+    tabName = 'tekVizion 360 Portal';
     readonly APPS_ROUTE_PATH: string = '/apps';
     @ViewChild('sidenav') sidenav: MatSidenav;
-    sideBarItems: any = [];
+    sideBarItems = [];
     constructor(
         private router: Router,
         private msalService: MsalService,
@@ -107,17 +108,20 @@ export class AppComponent implements OnInit, OnDestroy {
             {
                 name: 'Dashboard',
                 iconName: 'dashboard',
-                selected: true
+                selected: true,
+                path: 'dashboard'
             },
             {
                 name: 'Project',
                 iconName: 'auto_awesome_motion',
-                selected: false
+                selected: false,
+                path: 'projects'
             },
             {
                 name: 'Stakeholders',
                 iconName: 'settings',
-                selected: false
+                selected: false,
+                path: 'stakeholders'
             }
         ];
     }
@@ -188,7 +192,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 e.selected = true;
             else
                 e.selected = false;
-
         });
     }
     /**

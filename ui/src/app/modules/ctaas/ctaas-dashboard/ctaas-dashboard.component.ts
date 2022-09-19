@@ -12,7 +12,7 @@ import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.compone
 })
 export class CtaasDashboardComponent implements OnInit {
 
-  onboardStatus: string = '';
+  onboardStatus = '';
   constructor(
     private headerService: HeaderService,
     private customerOnboardService: CustomerOnboardService,

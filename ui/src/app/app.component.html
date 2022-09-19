@@ -91,11 +91,10 @@
         <mat-sidenav #sidenav mode="side" opened class="sidenav">
             <mat-nav-list>
                 <mat-list-item (click)="onSelectedNavItem(item)" [ngClass]="{'selected':(item.selected)}" class="parent"
-                    *ngFor="let item of sideBarItems">
+                    *ngFor="let item of sideBarItems" [routerLink]="'ctaas/'+item.path">
                     <mat-icon mat-list-icon>{{item.iconName}}</mat-icon>
                     <span class="full-width">{{item.name}}</span>
                 </mat-list-item>
-
             </mat-nav-list>
         </mat-sidenav>
         <!-- side nav content here -->

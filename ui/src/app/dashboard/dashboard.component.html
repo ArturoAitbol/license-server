@@ -4,60 +4,49 @@
         <!-- example for a feature toggle in html -->
         <h3 *lcFeatureToggle="'testFeature1'">Subscription Details By Customer</h3>
     </main>
-        <div class="row align-items-center">
-            <div [formGroup]="filterForm" class="row align-items-center col-auto">
-                <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                    <mat-label>Name Filter</mat-label>
-                    <input matInput type="text" formControlName="customerFilterControl">
-                    <button *ngIf="filterForm.get('customerFilterControl').value" matSuffix mat-icon-button
-                            aria-label="Clear"
-                            (click)="filterForm.get('customerFilterControl').setValue('')">
-                        <mat-icon>close</mat-icon>
-                    </button>
-                </mat-form-field>
-                <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                    <mat-label>Type Filter</mat-label>
-                    <mat-select formControlName="typeFilterControl">
-                        <mat-option>None</mat-option>
-                        <mat-option *ngFor="let type of subaccountTypes" [value]="type">
-                            {{type}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                    <mat-label>Subscription Status Filter</mat-label>
-                    <mat-select formControlName="subStatusFilterControl">
-                        <mat-option>None</mat-option>
-                        <mat-option *ngFor="let subStatus of subscriptionStatus" [value]="subStatus">
-                            {{subStatus}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div class="col-auto ms-auto justify-content-end">
-                <button *lcCheckAccessFor="'addCustomer'" mat-raised-button (click)="addCustomerAccount()"
-                        id="add-customer-button">Add Customer</button>
-                <button *lcCheckAccessFor="'addSubaccount'" mat-raised-button (click)="addSubaccount()"
-                        id="add-subaccount-button">Add Subaccount</button>
-            </div>
+    <div class="row align-items-center">
+        <div [formGroup]="filterForm" class="row align-items-center col-auto">
+            <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                <mat-label>Name Filter</mat-label>
+                <input matInput type="text" formControlName="customerFilterControl">
+                <button *ngIf="filterForm.get('customerFilterControl').value" matSuffix mat-icon-button
+                    aria-label="Clear" (click)="filterForm.get('customerFilterControl').setValue('')">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                <mat-label>Type Filter</mat-label>
+                <mat-select formControlName="typeFilterControl">
+                    <mat-option>None</mat-option>
+                    <mat-option *ngFor="let type of subaccountTypes" [value]="type">
+                        {{type}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                <mat-label>Subscription Status Filter</mat-label>
+                <mat-select formControlName="subStatusFilterControl">
+                    <mat-option>None</mat-option>
+                    <mat-option *ngFor="let subStatus of subscriptionStatus" [value]="subStatus">
+                        {{subStatus}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
         </div>
+        <div class="col-auto ms-auto justify-content-end">
+            <button *lcCheckAccessFor="'addCustomer'" mat-raised-button (click)="addCustomerAccount()"
+                id="add-customer-button">Add Customer</button>
+            <button *lcCheckAccessFor="'addSubaccount'" mat-raised-button (click)="addSubaccount()"
+                id="add-subaccount-button">Add Subaccount</button>
+        </div>
+    </div>
     <section class="table-section">
         <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
-            <app-data-table
-                [tableData]="filteredCustomerList"
-                [tableColumns]="displayedColumns"
-                [isFilterable]="false"
-                [isPageable]="false"
-                [isLoadingResults]="isLoadingResults"
-                [isRequestCompleted]="isRequestCompleted"
-                [paginationSizes]="[5,10,20]"
-                [defaultPageSize]="5"
-                (sort)="sortData($event)"
-                [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"
-                (rowAction)="rowAction($event)"
-                [actionMenuList]="actionMenuOptions"
-                (clickableRow)="columnAction($event)"
-                >
+            <app-data-table [tableData]="filteredCustomerList" [tableColumns]="displayedColumns" [isFilterable]="false"
+                [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
+                [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
+                [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'" (rowAction)="rowAction($event)"
+                [actionMenuList]="actionMenuOptions" (clickableRow)="columnAction($event)">
             </app-data-table>
         </div>
     </section>
