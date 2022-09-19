@@ -35,8 +35,8 @@ import io.jsonwebtoken.Claims;
 
 public class TekvLSModifyCtaasSetupById {
 	/**
-	 * This function listens at endpoint "/v1.0/ctaasSetup/{id}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasSetup/{id}
+	 * This function listens at endpoint "/v1.0/ctaasSetups/{id}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasSetups/{id}
 	 */
 	@FunctionName("TekvLSModifyCtaasSetupById")
 	public HttpResponseMessage run(
@@ -44,7 +44,7 @@ public class TekvLSModifyCtaasSetupById {
 				name = "req",
 				methods = {HttpMethod.PUT},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "ctaasSetup/{id}")
+				route = "ctaasSetups/{id}")
 				HttpRequestMessage<Optional<String>> request,
 				@BindingName("id") String id,
 				final ExecutionContext context) 

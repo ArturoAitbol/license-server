@@ -33,8 +33,8 @@ import io.jsonwebtoken.Claims;
 
 public class TekvLSDeleteCtaasSetupById {
 	/**
-	 * This function listens at endpoint "/v1.0/ctaasSetup". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasSetup
+	 * This function listens at endpoint "/v1.0/ctaasSetups". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasSetups
 	 */
 	@FunctionName("TekvLSDeleteCtaasSetupById")
 	public HttpResponseMessage run(
@@ -42,7 +42,7 @@ public class TekvLSDeleteCtaasSetupById {
 				name = "req",
 				methods = {HttpMethod.DELETE},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "ctaasSetup/{id}")
+				route = "ctaasSetups/{id}")
 				HttpRequestMessage<Optional<String>> request,
 				@BindingName("id") String id,
 				final ExecutionContext context) 
