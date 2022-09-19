@@ -5,8 +5,8 @@ import com.microsoft.azure.functions.HttpRequestMessage;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SecurityException;
 import org.json.JSONArray;
-import java.util.EnumSet;
-import java.util.Map;
+
+import java.util.*;
 
 import static com.function.auth.Permission.*;
 
@@ -208,6 +208,14 @@ public class RoleAuthHandler {
     public static final String MESSAGE_ID_NOT_FOUND = "Id provided does not exist.";
     private static final String ISSUER = System.getenv("ISSUER");
 
+    public static boolean hasPermission(JSONArray roles, Permission permission){
+        for (int i=0; i < roles.length(); i++) {
+            if(hasPermission(roles.getString(i),permission))
+                return true;
+        }
+        return false;
+    }
+
     public static boolean hasPermission(String role,Permission permission){
         EnumSet<Permission> rolePermissions;
         switch (role){
@@ -244,7 +252,23 @@ public class RoleAuthHandler {
             default:
                 return false;
         }
-       return rolePermissions.contains(permission);
+        return rolePermissions.contains(permission);
+    }
+
+    public static String evaluateRoles(JSONArray roles){
+        if(roles.length()==1){
+            return roles.getString(0);
+        }
+        List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+        String role;
+        for(String customerRole : customerRoles){
+            for(int i=0;i<roles.length();i++){
+                role = roles.getString(i);
+                if(role.equals(customerRole))
+                    return role;
+            }
+        }
+        return roles.getString(0);
     }
 
 
@@ -300,21 +324,20 @@ public class RoleAuthHandler {
         }
     }
 
-    public static String getRoleFromToken(HttpRequestMessage<?> request,ExecutionContext context){
+    public static JSONArray getRolesFromToken(HttpRequestMessage<?> request,ExecutionContext context){
         Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-        return getRoleFromToken(tokenClaims,context);
+        return getRolesFromToken(tokenClaims,context);
     }
 
-    public static String getRoleFromToken(Claims tokenClaims,ExecutionContext context){
+    public static JSONArray getRolesFromToken(Claims tokenClaims,ExecutionContext context){
         if(tokenClaims!=null) {
             try {
-                JSONArray roles = new JSONArray(tokenClaims.get("roles").toString());
-                return roles.getString(0);
+                return new JSONArray(tokenClaims.get("roles").toString());
             } catch (Exception e) {
                 context.getLogger().info("Caught exception: Getting roles claim failed.");
             }
         }
-        return "";
+        return new JSONArray();
     }
 
     public static String getEmailFromToken(Claims tokenClaims,ExecutionContext context){
