@@ -29,9 +29,9 @@ export class RoleGuard implements CanActivate {
     return true;
   }
   
-  private isAuthorized(route: ActivatedRouteSnapshot, accountRoles: string[]): boolean{
+  private isAuthorized(route: ActivatedRouteSnapshot, roles: string[]): boolean{
     const path = route.url[0].path;
-    const pathsMatch = accountRoles.findIndex(accountRole => permissions[accountRole].paths.indexOf(path)!==-1);
+    const pathsMatch = roles.findIndex(role => permissions[role].paths.indexOf(path)!==-1);
     return (pathsMatch >= 0);
   }
 }

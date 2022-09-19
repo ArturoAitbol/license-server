@@ -10,8 +10,8 @@ import { DialogService } from 'src/app/services/dialog.service';
 import { AddLicenseComponent } from './add-license/add-license.component';
 import { ModifyLicenseComponent } from './modify-license/modify-license.component';
 import { MsalService } from '@azure/msal-angular';
-import { permissions } from 'src/app/helpers/role-permissions';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { Utility } from 'src/app/helpers/utils';
 
 @Component({
   selector: 'app-licenses',
@@ -38,6 +38,12 @@ export class LicensesComponent implements OnInit {
 
   readonly MODIFY_LICENSE: string = 'Edit';
   readonly DELETE_LICENSE: string = 'Delete';
+
+  readonly options = {
+    MODIFY_LICENSE: this.MODIFY_LICENSE,
+    DELETE_LICENSE: this.DELETE_LICENSE
+  }
+
   actionMenuOptions: any = [];
 
   constructor(
@@ -56,15 +62,13 @@ export class LicensesComponent implements OnInit {
   }
 
   private getActionMenuOptions(){
-    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    accountRoles.forEach(accountRole =>{
-      permissions[accountRole].tables.licenseOptions?.forEach(item=>this.actionMenuOptions.push(this[item]));
-      if(this.currentCustomer.testCustomer === false){
-        const action = (action) => action === 'Delete';
-        const index = this.actionMenuOptions.findIndex(action);
-        this.actionMenuOptions.splice(index, );
-      }
-    })
+    const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"licenseOptions");
+    if(this.currentCustomer.testCustomer === false){
+      const action = (action) => action === 'Delete';
+      const index = this.actionMenuOptions.findIndex(action);
+      this.actionMenuOptions.splice(index,1);
+    }
   }
 
   private calculateTableHeight() {

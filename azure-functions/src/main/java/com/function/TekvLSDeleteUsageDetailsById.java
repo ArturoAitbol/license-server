@@ -45,16 +45,16 @@ public class TekvLSDeleteUsageDetailsById
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-		String currentRole = getRoleFromToken(tokenClaims,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.DELETE_USAGE_DETAILS)){
+		if(!hasPermission(roles, Permission.DELETE_USAGE_DETAILS)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
@@ -128,7 +128,7 @@ public class TekvLSDeleteUsageDetailsById
 				catch (Exception e) {
 					context.getLogger().info("Caught exception: " + e.getMessage());
 					json.put("error", e.getMessage());
-					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+					return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 				}
 			}
 			return request.createResponseBuilder(HttpStatus.OK).build();
@@ -141,7 +141,7 @@ public class TekvLSDeleteUsageDetailsById
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 
