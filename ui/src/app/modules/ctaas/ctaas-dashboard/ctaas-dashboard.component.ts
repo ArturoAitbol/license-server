@@ -86,26 +86,25 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const { onBoardingComplete, status } = setupDetails;
         this.isOnboardingComplete = (onBoardingComplete === 'f'); // t- true | f - false
         this.onboardSetupStatus = status;
-        this.getCustomerOnboardDetails();
+        this.setupCustomerOnboardDetails();
       });
   }
   /**
-   * get customer onboarding details,
+   * setup customer onboarding details,
    * status is hard-coded as 'pending'
    */
-  getCustomerOnboardDetails(): void {
+  setupCustomerOnboardDetails(): void {
     // this.onboardSetupStatus = this.customerOnboardService.fetchCustomerOnboardingDetails('');
     // this.isOnboardingComplete = JSON.parse(localStorage.getItem('onboardingFlag'));
-    // if (this.isOnboardingComplete === 'true' || this.isOnboardingComplete === true)
-    console.debug('isOnboardingComplete | ', this.isOnboardingComplete);
+    // if (this.isOnboardingComplete === 'true' || this.isOnboardingComplete === true) 
     const index = this.loggedInUserRoles.findIndex(e => e.includes('customer.SubaccountAdmin'));
     // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
-    if (this.isOnboardingComplete && index !== -1)
+    if (this.isOnboardingComplete && index !== -1) {
       setTimeout(() => {
         this.dialog.open(OnboardWizardComponent, { width: '700px', height: '500px', disableClose: true });
       }, 0);
+    }
   }
   ngOnDestroy(): void {
-    this.dialog.closeAll();
   }
 }

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { IStakeholder } from 'src/app/model/stakeholder.model';
 
 @Component({
@@ -14,24 +13,24 @@ export class OnboardWizardComponent implements OnInit {
   addAnotherStakeHolder: boolean = false;
   interaction: string;
   readonly pattern = "((\\+?)?|0)?[0-9]{10}$";
-  readonly reportsNotificationsList: any = [
-    { label: "Reports each time a test suite runs", value: 'every_time' },
-    { label: "Daily reports", value: 'daily_reports' },
-    { label: "Weekly reports", value: 'weekly_reports' },
-    { label: "Monthly Summaries", value: 'monthly_reports' },
-    { label: "Event Notifications", value: 'event_notifications' }
-  ];
+  reportsNotificationsList: any = [];
   stakeholderList: IStakeholder[] = [];
   // form group
   reportsForm: FormGroup;
   stakeholderForm: FormGroup;
 
   constructor(
-    private router: Router,
     private formbuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
+    this.reportsNotificationsList = [
+      { label: "Reports each time a test suite runs", value: 'every_time' },
+      { label: "Daily reports", value: 'daily_reports' },
+      { label: "Weekly reports", value: 'weekly_reports' },
+      { label: "Monthly Summaries", value: 'monthly_reports' },
+      { label: "Event Notifications", value: 'event_notifications' }
+    ];
     this.interaction = '1';
     // initialize report form
     this.initFormModel();
@@ -40,18 +39,18 @@ export class OnboardWizardComponent implements OnInit {
    * initialize reactive forms model
    */
   initFormModel(): void {
+    // report form
     this.reportsForm = this.formbuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      name: ['', Validators.required],
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.pattern(this.pattern), Validators.required]],
       notifications: new FormArray([]),
     });
+    // add stake holder form
     this.stakeholderForm = this.formbuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      name: ['', Validators.required],
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -59,7 +58,10 @@ export class OnboardWizardComponent implements OnInit {
       notifications: new FormArray([]),
     });
   }
-
+  /**
+   * on accept onboarding flow
+   * @param value: string 
+   */
   onClickBtn(value: string): void {
     switch (value) {
       case 'confirm':
@@ -78,14 +80,17 @@ export class OnboardWizardComponent implements OnInit {
     this.userInteraction = false;
     this.configuredReports = true;
     this.interaction = '3';
-    console.debug('reports submit | ', this.reportsForm.value);
   }
-
+  /**
+   * add stake holder confirmation
+   * @param value: string 
+   */
   addStakeholdersConfirmation(value: string): void {
     switch (value) {
       case 'yes':
         this.addAnotherStakeHolder = true;
         this.interaction = '4';
+        this.stakeholderForm.reset();
         break;
       default:
         this.addAnotherStakeHolder = false;
@@ -94,11 +99,13 @@ export class OnboardWizardComponent implements OnInit {
         break;
     }
   }
+  /**
+   * add stake holder details to a list
+   */
   addStakeholder(): void {
     this.addAnotherStakeHolder = false;
     this.configuredReports = true;
     this.interaction = '3';
-    console.debug(' add stake holder ', this.stakeholderForm.value);
     this.stakeholderList.push(this.stakeholderForm.value);
   }
   /**
@@ -125,8 +132,4 @@ export class OnboardWizardComponent implements OnInit {
       });
     }
   }
-  hasError(event): void { }
-  getNumber(value: any): void { }
-  telInputObject(event: any): void { }
-  onCountryChange(event: any): void { }
 }

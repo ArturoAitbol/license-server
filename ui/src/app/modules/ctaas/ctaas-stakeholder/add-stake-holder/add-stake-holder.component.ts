@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { StakeHolderService } from 'src/app/services/stake-holder.service';
 
 @Component({
   selector: 'app-add-stake-holder',
@@ -16,17 +17,19 @@ export class AddStakeHolderComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
+    private stakeholderService: StakeHolderService,
     public dialogRef: MatDialogRef<AddStakeHolderComponent>
   ) { }
-
+  /**
+   * initialize update stake holder form
+   */
   initializeForm(): void {
     this.addStakeholderForm = this.formBuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      name: ['', Validators.required],
       jobTitle: ['', Validators.required],
       email: ['', Validators.required],
       mobilePhone: ['', Validators.required],
-      notifications:new FormArray([])
+      notifications: new FormArray([])
     });
   }
 
@@ -40,26 +43,55 @@ export class AddStakeHolderComponent implements OnInit {
    */
   getReports(): any[] {
     return [
-      { name: 'Daily Reports', completed: false },
-      { name: 'Weekly Reports', completed: false },
-      { name: 'Monthly Reports', completed: false },
+      { name: "Reports each time a test suite runs", value: 'every_time' },
+      { name: "Daily reports", value: 'daily_reports' },
+      { name: "Weekly reports", value: 'weekly_reports' },
+      { name: "Monthly Summaries", value: 'monthly_reports' },
+      { name: "Event Notifications", value: 'event_notifications' }
     ];
   }
-
-
+  /**
+   * on cancel dialog
+   */
   onCancel(): void {
     this.dialogRef.close();
   }
-
-  submit() {
+  /**
+   * on click Submit button
+   */
+  addStakeholder() {
     this.isDataLoading = true;
+    console.log('addStakeholderForm | ', this.addStakeholderForm.value);
+    const stakeholderDetails = { ... this.addStakeholderForm.value };
+    this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => { });
   }
-  onChangeReportCheckbox(): void {
-    this.reports.forEach(() => this.reportsFormArray.push(new FormControl(false)));
+  /**
+   * receive events when any change in reports checkboxes
+   * @param event: any 
+   * @param item: any 
+   */
+  onChangeReportCheckbox(event: any, item: any): void {
+    const { checked } = event;
+    const { value: selectedItemValue } = item;
+    const formArray: FormArray = this.addStakeholderForm.get('notifications') as FormArray;
+    /* Selected */
+    if (checked) {
+      // Add a new control in the arrayForm
+      formArray.push(new FormControl(selectedItemValue));
+    } else { /* unselected */
+      // find the unselected element
+      formArray.controls.forEach((ctrl: FormControl, index: number) => {
+        if (ctrl.value == selectedItemValue) {
+          // Remove the unselected element from the arrayForm
+          formArray.removeAt(index);
+          return;
+        }
+      });
+    }
   }
-  
-  get reportsFormArray() {
-    return this.addStakeholderForm.controls.orders as FormArray;
-  }
+
+  // get reportsFormArray() {
+  //   return this.addStakeholderForm.controls.orders as FormArray;
+  // }
 
 }

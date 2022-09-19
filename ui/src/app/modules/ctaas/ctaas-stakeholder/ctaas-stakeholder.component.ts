@@ -7,6 +7,8 @@ import { permissions } from 'src/app/helpers/role-permissions';
 import { HeaderService } from 'src/app/services/header.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { AddStakeHolderComponent } from './add-stake-holder/add-stake-holder.component';
+import { UpdateStakeHolderComponent } from './update-stake-holder/update-stake-holder.component';
+import { StakeHolderService } from 'src/app/services/stake-holder.service';
 
 @Component({
   selector: 'app-ctaas-stakeholder',
@@ -20,13 +22,15 @@ export class CtaasStakeholderComponent implements OnInit {
   actionMenuOptions: any = [];
   isLoadingResults: boolean = false;
   isRequestCompleted: boolean = false;
+  private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
   constructor(
     private headerService: HeaderService,
     private msalService: MsalService,
     public dialog: MatDialog,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private stakeholderService: StakeHolderService
   ) { }
   /**
    * calculate table height based on the window height
@@ -45,10 +49,10 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   initColumns(): void {
     this.displayedColumns = [
-      { name: 'User', dataKey: 'userName', position: 'left', isSortable: true },
+      { name: 'User', dataKey: 'name', position: 'left', isSortable: true },
       { name: 'Role', dataKey: 'role', position: 'left', isSortable: true },
       { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
-      { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
+      { name: 'Phone Number', dataKey: 'mobilePhone', position: 'left', isSortable: true },
       { name: 'Notifications', dataKey: 'notifications', position: 'left', isSortable: true }
     ];
   }
@@ -69,25 +73,31 @@ export class CtaasStakeholderComponent implements OnInit {
     this.isRequestCompleted = true;
     this.stakeholdersData = [
       {
-        userName: 'Kaushik',
+        name: 'Kaushik',
         role: 'Admin',
         email: 'knalla@tekvizion.com',
-        phoneNumber: '+91-9012345678',
-        notifications: 'All reports'
+        mobilePhone: '+91-9012345678',
+        notifications: ['All reports'],
+        jobTitle: 'Staff Engineer',
+
       },
       {
-        userName: 'Jonathan Sieg',
+        name: 'Jonathan Sieg',
         role: 'Engineer',
         email: 'jonathan@tekvizion.com',
-        phoneNumber: '+1 214-522-1690',
-        notifications: 'Per project report'
+        mobilePhone: '+1 214-522-1690',
+        notifications: ['Per project report'],
+        jobTitle: 'Vice President of product',
+
       },
       {
-        userName: 'Sai',
+        name: 'Sai',
         role: 'Engineer',
         email: 'snare@tekvizion.com',
-        phoneNumber: '+1 469-626-0207',
-        notifications: 'Weekly reports'
+        mobilePhone: '+1 469-626-0207',
+        notifications: ['Weekly reports'],
+        jobTitle: 'Lead Engineer',
+
       }
     ];
     this.isLoadingResults = false;
@@ -98,7 +108,7 @@ export class CtaasStakeholderComponent implements OnInit {
     this.getActionMenuOptions();
     this.initColumns();
     this.fetchDataToDisplay();
-    this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
+    // this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
   }
 
   /**
@@ -120,19 +130,32 @@ export class CtaasStakeholderComponent implements OnInit {
    * open add stake holder component in dialog
    */
   addStakeholder(): void {
-    this.openDialog(AddStakeHolderComponent);
+    this.openDialog(this.ADD_STAKEHOLDER);
   }
   /**
    * open dialog
-   * @param component: any 
+   * @param type: any 
    * @param data: any 
    */
-  openDialog(component: any, data?: any): void {
-    const dialogRef = this.dialog.open(component, {
-      width: '400px',
-      data: data,
-      disableClose: true
-    });
+  openDialog(type: string, data?: any): void {
+    let dialogRef;
+    switch (type) {
+      case this.ADD_STAKEHOLDER:
+        dialogRef = this.dialog.open(AddStakeHolderComponent, {
+          width: '400px',
+          disableClose: true
+        });
+        break;
+      case this.MODIFY_STAKEHOLDER:
+        dialogRef = this.dialog.open(UpdateStakeHolderComponent, {
+          width: '400px',
+          data: data,
+          disableClose: true
+        });
+        break;
+      case this.DELETE_STAKEHOLDER:
+        break;
+    }
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.fetchDataToDisplay();
@@ -144,20 +167,39 @@ export class CtaasStakeholderComponent implements OnInit {
    * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
    */
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
-    switch (object.selectedOption) {
+    const { selectedRow, selectedOption, selectedIndex } = object;
+    switch (selectedOption) {
       case this.MODIFY_STAKEHOLDER:
-        this.openDialog(object.selectedOption, object.selectedRow);
+        this.openDialog(selectedOption, selectedRow);
         break;
       case this.DELETE_STAKEHOLDER:
-        this.onDeleteStakeholderAccount(object.selectedIndex);
+        this.onDeleteStakeholderAccount(selectedRow);
         break;
     }
   }
   /**
    * on click delete stakeholder account
-   * @param index: string
+   * @param selectedRow: any
    */
-  onDeleteStakeholderAccount(index: string): void {
+  onDeleteStakeholderAccount(selectedRow: any): void {
+    this.dialogService.confirmDialog({
+      title: 'Confirm Action',
+      message: 'Do you want to confirm this action?',
+      confirmCaption: 'Confirm',
+      cancelCaption: 'Cancel',
+    }).subscribe((confirmed) => {
+      if (confirmed) {
+        const { id } = selectedRow;
+        this.deleteStakeholder(id);
+      }
+    });
+  }
+  /**
+   * delete selected stakeholder details by id
+   * @param id: 
+   */
+  deleteStakeholder(id: string): void {
+    this.stakeholderService.deleteStakeholder(id).subscribe((response: any) => { })
   }
 
 }

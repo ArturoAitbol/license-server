@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { AddStakeHolderComponent } from '../add-stake-holder/add-stake-holder.component';
+import { StakeHolderService } from 'src/app/services/stake-holder.service';
 
 @Component({
   selector: 'app-update-stake-holder',
@@ -13,22 +13,29 @@ export class UpdateStakeHolderComponent implements OnInit {
 
   reports: any = [];
   isDataLoading = false;
-  addStakeholderForm: FormGroup;
+  updateStakeholderForm: FormGroup;
+  private previousFormValue: any;
+
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
-    public dialogRef: MatDialogRef<AddStakeHolderComponent>
+    private stakeholderService: StakeHolderService,
+    public dialogRef: MatDialogRef<UpdateStakeHolderComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
-
+  /**
+   * initialize update stake holder form
+   */
   initializeForm(): void {
-    this.addStakeholderForm = this.formBuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+    this.updateStakeholderForm = this.formBuilder.group({
+      name: ['', Validators.required],
       jobTitle: ['', Validators.required],
-      email: ['', Validators.required],
+      email: [{ value: '', disabled: true }, [Validators.required]],
       mobilePhone: ['', Validators.required],
       notifications: new FormArray([])
     });
+    this.updateStakeholderForm.patchValue(this.data);
+    this.previousFormValue = { ...this.updateStakeholderForm };
   }
 
   ngOnInit(): void {
@@ -41,9 +48,11 @@ export class UpdateStakeHolderComponent implements OnInit {
    */
   getReports(): any[] {
     return [
-      { name: 'Daily Reports', completed: false },
-      { name: 'Weekly Reports', completed: false },
-      { name: 'Monthly Reports', completed: false },
+      { name: "Reports each time a test suite runs", value: 'every_time' },
+      { name: "Daily reports", value: 'daily_reports' },
+      { name: "Weekly reports", value: 'weekly_reports' },
+      { name: "Monthly Summaries", value: 'monthly_reports' },
+      { name: "Event Notifications", value: 'event_notifications' }
     ];
   }
 
@@ -52,15 +61,57 @@ export class UpdateStakeHolderComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  submit() {
+  updateStakeholderDetails() {
     this.isDataLoading = true;
+    this.stakeholderService.updateStakeholderDetails(this.preparePaylod()).subscribe((response: any) => {
+
+    });
   }
-  onChangeReportCheckbox(): void {
-    this.reports.forEach(() => this.reportsFormArray.push(new FormControl(false)));
+  /**
+   * prepare an object with update values only
+   * @returns: any 
+   */
+  preparePaylod(): any {
+    const { id } = this.data;
+    const mergedProjectDetails: any = { id };
+    for (const key in this.updateStakeholderForm.controls) {
+      if (this.updateStakeholderForm.controls.hasOwnProperty(key)) {
+        const fieldValue = this.updateStakeholderForm.get(key).value;
+        const oldValue = this.previousFormValue.value[key];
+        /* if value has changed */
+        if (fieldValue != oldValue)
+          mergedProjectDetails[key] = fieldValue;
+      }
+    }
+    return mergedProjectDetails;
+  }
+  /**
+   * on change checkbox
+   * @param event : any
+   * @param item : any
+   */
+  onChangeReportCheckbox(event: any, item: any): void {
+    const { checked } = event;
+    const { value: selectedItemValue } = item;
+    const formArray: FormArray = this.updateStakeholderForm.get('notifications') as FormArray;
+    /* Selected */
+    if (checked) {
+      // Add a new control in the arrayForm
+      formArray.push(new FormControl(selectedItemValue));
+    } else { /* unselected */
+      // find the unselected element
+      formArray.controls.forEach((ctrl: FormControl, index: number) => {
+        if (ctrl.value == selectedItemValue) {
+          // Remove the unselected element from the arrayForm
+          formArray.removeAt(index);
+          return;
+        }
+      });
+    }
   }
 
-  get reportsFormArray() {
-    return this.addStakeholderForm.controls.orders as FormArray;
-  }
+  // get reportsFormArray() {
+  //   return this.updateStakeholderForm.controls.orders as FormArray;
+  // }
 
 }
