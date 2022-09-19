@@ -20,7 +20,8 @@ const SUBACCOUNT_LIST = {
         {
             name: '360 Custom (No Tokens)',
             customerId: 'aa85399d-1ce9-425d-9df7-d6e8a8baaec2',
-            id: '24372e49-5f31-4b38-bc3e-fb6a5c371623'
+            id: '24372e49-5f31-4b38-bc3e-fb6a5c371623',
+            services: 'tokenConsumption'
         },
         {
             name: 'Default',

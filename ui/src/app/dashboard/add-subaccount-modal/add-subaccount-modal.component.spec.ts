@@ -104,6 +104,7 @@ describe('createSubAccount', () => {
             customerId: 'test customer id',
             subaccountName: 'test subaccount name',
             subaccountAdminEmail: 'test subaccount admin email',
+            services: 'tokenConsumption'
         };
         spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar');
@@ -111,7 +112,7 @@ describe('createSubAccount', () => {
         addSubaccountModalComponentInstance.addSubaccountForm.patchValue({
             customer: subaccountDetails.customerId,
             subaccountName: subaccountDetails.subaccountName,
-            subaccountAdminEmail: subaccountDetails.subaccountAdminEmail
+            subaccountAdminEmail: subaccountDetails.subaccountAdminEmail,
         });
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalledWith(subaccountDetails);
@@ -128,6 +129,14 @@ describe('createSubAccount', () => {
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Expected create subaccount error', 'Error adding subaccount!');
         expect(MatDialogRefMock.close).toHaveBeenCalled();
+    });
+
+    it('should call setChecked creating a subaccount with services', () => {
+        spyOn(addSubaccountModalComponentInstance, 'setChecked').and.callThrough();
+
+        addSubaccountModalComponentInstance.setChecked(true, 1);
+
+        expect(addSubaccountModalComponentInstance.setChecked).toHaveBeenCalled();
     });
 
     it('should make a call to subaccountService.createSubAccount customer and display an error message on snackbar if an error is thrown', () => {

@@ -14,8 +14,12 @@ export class AddSubaccountModalComponent implements OnInit {
   addSubaccountForm = this.formBuilder.group({
     customer: ['', Validators.required],
     subaccountName: ['', Validators.required],
-    subaccountAdminEmail: ['', [Validators.required, Validators.email]]
+    subaccountAdminEmail: ['', [Validators.required, Validators.email]],
   });
+  services: any = [
+    {name: "ctaas", used: false},
+    {name: "tokenConsumption", used: true}
+  ];
   isDataLoading = false;
   customers: any[];
   constructor(
@@ -43,15 +47,33 @@ export class AddSubaccountModalComponent implements OnInit {
   onCancel(): void {
     this.dialogRef.close();
   }
+
+  setChecked(value: boolean, index: number){
+    this.services[index].used = value
+  }
+
+  getServices(actualServices: String): any{
+    for(let i = 0; i < this.services.length; i++){
+      if(this.services[i].used){
+        actualServices = actualServices + this.services[i].name + ',';
+      }
+    }
+    actualServices = actualServices.slice(0, -1);
+    return actualServices
+  }
   /**
    * on add customer account
    */
   addSubaccount() {
     this.isDataLoading = true;
+    let actualServices = "";
+    let services ; 
+    services = this.getServices(actualServices);
     const subaccountDetails: any = {
       subaccountName: this.addSubaccountForm.value.subaccountName,
       customerId: this.addSubaccountForm.value.customer,
       subaccountAdminEmail: this.addSubaccountForm.value.subaccountAdminEmail,
+      services: services
     };
     this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
       if (!res.error) {

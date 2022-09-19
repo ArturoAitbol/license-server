@@ -16,10 +16,16 @@ export class ModifyCustomerAccountComponent implements OnInit {
     name: ['', Validators.required],
     customerType: ['', Validators.required],
     subaccountName: [''],
-    testCustomer: [{value:false,disabled:true}]
+    testCustomer: [{value:false,disabled:true}],
+    services: this.formBuilder.group({
+      tokenConsumption: [false], 
+      ctaas: [false]
+    }) 
   });
+
   types: string[] = ['MSP', 'Reseller'];
   private previousFormValue: any;
+  edited = false;
   // flag
   isDataLoading = false;
   //  @Inject(MAT_DIALOG_DATA) public data: ModalData
@@ -34,6 +40,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
   ngOnInit() {
     if (this.data) {
       this.updateCustomerForm.patchValue(this.data);
+      this.data.services?.split(",").forEach( service => this.updateCustomerForm.get("services").get(service)?.setValue(true));
       this.previousFormValue = { ...this.updateCustomerForm };
     }
   }
@@ -44,12 +51,23 @@ export class ModifyCustomerAccountComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  modifiedServices(services: String): any {
+   for(let service in this.updateCustomerForm.get("services").controls){
+      if(this.updateCustomerForm.get("services").controls[service].value === true)
+        services = services + service + ',';
+    }
+    services = services.slice(0, -1);
+    return services;
+  } 
   /**
    * to submit the form
    */
   submit() {
     this.isDataLoading = true;
+    let actualServices = "";
+    let modifiedServices;
     const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value };
+    modifiedServices = this.modifiedServices(actualServices);
     const customer = {
       id: mergedLicenseObject.id,
       customerName: mergedLicenseObject.name,
@@ -61,7 +79,8 @@ export class ModifyCustomerAccountComponent implements OnInit {
     if (this.data.subaccountId){
       const subaccount = {
         id: mergedLicenseObject.subaccountId,
-        subaccountName: mergedLicenseObject.subaccountName
+        subaccountName: mergedLicenseObject.subaccountName,
+        services: modifiedServices
       };
       requestsArray.push(this.subaccountService.updateSubAccount(subaccount)); 
     }

@@ -167,6 +167,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     const customerWithDetails = { ...customer };
                     customerWithDetails.subaccountName = subaccount.name;
                     customerWithDetails.subaccountId = subaccount.id;
+                    customerWithDetails.services = subaccount.services;
                     const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccount.id));
                     customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
                     fullCustomerList.push(customerWithDetails);

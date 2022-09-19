@@ -28,6 +28,13 @@
                         <input matInput type="email" required formControlName="subaccountAdminEmail">
                     </mat-form-field>
                 </div>
+                <div>
+                    <section>
+                        <mat-checkbox class="checkbox-margin" *ngFor="let service of services; let i = index"
+                            [color]="'primary'" [checked]="service.used" (change)="setChecked($event.checked, i)">
+                            {{service.name}} </mat-checkbox>
+                    </section>
+                </div>
             </mat-dialog-content>
         </div>
         <!-- <div class="btn-flex-container"> -->
