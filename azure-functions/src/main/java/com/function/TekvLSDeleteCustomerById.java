@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.clients.GraphAPIClient;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -15,6 +17,7 @@ import java.sql.*;
 import java.util.Optional;
 
 import io.jsonwebtoken.Claims;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -41,16 +44,16 @@ public class TekvLSDeleteCustomerById
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-		String currentRole = getRoleFromToken(tokenClaims,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.DELETE_CUSTOMER)){
+		if(!hasPermission(roles, Permission.DELETE_CUSTOMER)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
@@ -75,6 +78,20 @@ public class TekvLSDeleteCustomerById
 			PreparedStatement tombstoneStmt = connection.prepareStatement(tombstoneSql);
 			PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+
+			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
+				String getAdminEmailSql = "SELECT admin_email FROM customer_admin WHERE customer_id = ?::uuid;";
+				try(PreparedStatement getAdminEmailStmt = connection.prepareStatement(getAdminEmailSql)){
+					getAdminEmailStmt.setString(1, id);
+					ResultSet result = getAdminEmailStmt.executeQuery();
+					if (result.next()) {
+						// Delete Guest user from active Directory
+						GraphAPIClient.deleteGuestUser(result.getString("admin_email"), context);
+						context.getLogger().info("Guest User deleted successfully from Active Directory.");
+					}
+				}
+			}
+
 			// Get test_customer by id if not force delete
 			if (!deleteFlag) {
 				isTestCustomerStmt.setString(1, id);
