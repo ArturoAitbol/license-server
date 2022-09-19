@@ -455,6 +455,6 @@ describe('Filtering table rows', ()  => {
         fixture.detectChanges();
         await fixture.whenStable();
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
-        expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual({"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive","services":"tokenConsumption"});
+        expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual({"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive","services":"tokenConsumption,ctaas"});
     });
 });

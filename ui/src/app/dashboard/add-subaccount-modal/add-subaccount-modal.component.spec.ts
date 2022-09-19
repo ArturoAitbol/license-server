@@ -113,6 +113,7 @@ describe('createSubAccount', () => {
             customer: subaccountDetails.customerId,
             subaccountName: subaccountDetails.subaccountName,
             subaccountAdminEmail: subaccountDetails.subaccountAdminEmail,
+            services: subaccountDetails.services
         });
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalledWith(subaccountDetails);
@@ -144,6 +145,7 @@ describe('createSubAccount', () => {
             customerId: 'test customer id',
             subaccountName: 'test subaccount name',
             subaccountAdminEmail: 'test subaccount admin email',
+            services: 'tokenConsumption,ctaas'
         };
         spyOn(SubaccountServiceMock, 'createSubAccount').and.returnValue(SubaccountServiceMock.errorResponse());
         spyOn(SnackBarServiceMock, 'openSnackBar');
@@ -151,7 +153,8 @@ describe('createSubAccount', () => {
         addSubaccountModalComponentInstance.addSubaccountForm.patchValue({
             customer: subaccountDetails.customerId,
             subaccountName: subaccountDetails.subaccountName,
-            subaccountAdminEmail: subaccountDetails.subaccountAdminEmail
+            subaccountAdminEmail: subaccountDetails.subaccountAdminEmail,
+            services: subaccountDetails.services
         });
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();

@@ -88,11 +88,14 @@ describe('UI verification test', () => {
 
   it('should enable submit button when fields are correct',()=>{
     const updateCustomerForm = CustomerComponentTestInstance.updateCustomerForm;
-
+    
     updateCustomerForm.get('name').setValue('customerName');
     updateCustomerForm.get('customerType').setValue('Reseller');
     updateCustomerForm.get('subaccountName').setValue('subaccountName');
     updateCustomerForm.get('testCustomer').setValue(true);
+    updateCustomerForm.get('services').get('ctaas').setValue(true);
+    updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+
     expect(updateCustomerForm.errors).toBeNull();
     expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
   });
@@ -104,6 +107,7 @@ describe('UI verification test', () => {
 
   });
 });
+
 describe('modify customers flow', () => {
   beforeEach(beforeEachFunction);
   it('should execute submit action', () => {
@@ -132,6 +136,21 @@ describe('modify customers flow', () => {
     expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
     expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
   });
+
+  it('should edit services of a subaccount', () => {
+    const updateCustomerForm = CustomerComponentTestInstance.updateCustomerForm;
+    CustomerComponentTestInstance.data = CurrentCustomerServiceMock;
+    updateCustomerForm.patchValue(CustomerComponentTestInstance.data);
+    updateCustomerForm.get('services').get('ctaas').setValue(true);
+    updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+    expect(updateCustomerForm.errors).toBeNull();
+    CustomerComponentTestInstance.ngOnInit();
+    updateCustomerForm.get('subaccountName').setValue('subaccountNameModified');
+    spyOn(CustomerComponentTestInstance, 'submit').and.callThrough();
+    CustomerComponentTestInstance.submit();
+    expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
+    expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
+  })
 });
 
 
