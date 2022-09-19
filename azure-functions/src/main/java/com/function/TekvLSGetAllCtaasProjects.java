@@ -48,19 +48,19 @@ public class TekvLSGetAllCtaasProjects {
             final ExecutionContext context) {
 
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
-        String currentRole = getRoleFromToken(tokenClaims, context);
-        if (currentRole.isEmpty()) {
-            JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
-            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
-            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
-        }
-        if (!hasPermission(currentRole, Permission.GET_ALL_CTAAS_PROJECTS)) {
-            JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
-            json.put("error", MESSAGE_FOR_FORBIDDEN);
-            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
-        }
+        JSONArray roles = getRolesFromToken(tokenClaims,context);
+        if(roles.isEmpty()){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+		}
+        if(!hasPermission(roles, Permission.GET_ALL_CTAAS_SETUPS)){
+			JSONObject json = new JSONObject();
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
+			json.put("error", MESSAGE_FOR_FORBIDDEN);
+			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+		}
 
         context.getLogger().info("Entering TekvLSGetAllCtaasProjects Azure function");
         // Get query parameters
@@ -73,6 +73,7 @@ public class TekvLSGetAllCtaasProjects {
         String email = getEmailFromToken(tokenClaims, context);
 
         // adding conditions according to the role
+		String currentRole = evaluateRoles(roles);
         switch (currentRole) {
             case DISTRIBUTOR_FULL_ADMIN:
                 queryBuilder.appendCustomCondition(
