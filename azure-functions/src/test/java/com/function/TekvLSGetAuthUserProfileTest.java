@@ -48,7 +48,7 @@ public class TekvLSGetAuthUserProfileTest extends TekvLSTest {
         assertTrue(userProfileBody.has("name"));
         assertTrue(userProfileBody.has("jobTitle"));
         assertTrue(userProfileBody.has("companyName"));
-        assertTrue(userProfileBody.has("mobilePhone"));
+        assertTrue(userProfileBody.has("phoneNumber"));
     }
 	
 	@Tag("acceptance")
@@ -74,7 +74,7 @@ public class TekvLSGetAuthUserProfileTest extends TekvLSTest {
         assertTrue(userProfileBody.has("name"));
         assertTrue(userProfileBody.has("jobTitle"));
         assertTrue(userProfileBody.has("companyName"));
-        assertTrue(userProfileBody.has("mobilePhone"));
+        assertTrue(userProfileBody.has("phoneNumber"));
     }
 	
 	@Tag("acceptance")
