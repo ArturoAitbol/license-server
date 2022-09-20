@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
+import { Constants } from 'src/app/helpers/constants';
+import { Report } from 'src/app/helpers/report';
 import { IStakeholder } from 'src/app/model/stakeholder.model';
+import { StakeHolderService } from 'src/app/services/stake-holder.service';
+import { UserProfileService } from 'src/app/services/user-profile.service';
 
 @Component({
   selector: 'app-onboard-wizard',
@@ -14,38 +19,52 @@ export class OnboardWizardComponent implements OnInit {
   interaction: string;
   readonly pattern = "((\\+?)?|0)?[0-9]{10}$";
   reportsNotificationsList: any = [];
-  stakeholderList: IStakeholder[] = [];
+  errorCreatingStakeholder: boolean = false;
+  isDataLoading: boolean = false;
+  errorMsg: string = '';
   // form group
-  reportsForm: FormGroup;
+  userProfileForm: FormGroup;
   stakeholderForm: FormGroup;
-
+  subaccountUserProfileDetails: any = {};
   constructor(
-    private formbuilder: FormBuilder
+    private userprofileService: UserProfileService,
+    private stakeholderService: StakeHolderService,
+    private formbuilder: FormBuilder,
+    public dialogRef: MatDialogRef<OnboardWizardComponent>
   ) { }
-
+  /**
+   * fetch user profile details
+   */
+  fetchUserProfileDetails(): void {
+    const subaccountUserProfileDetails = JSON.parse(localStorage.getItem(Constants.SUBACCOUNT_USER_PROJECT));
+    // const { userProfile } = subaccountUserProfileDetails;
+    const { companyName, email, jobTitle, mobilePhone, name, subaccountId } = subaccountUserProfileDetails;
+    const parsedObj = { companyName, email, jobTitle, phoneNumber: mobilePhone, name, subaccountId };
+    this.userProfileForm.patchValue(parsedObj);
+    this.subaccountUserProfileDetails = parsedObj;
+  }
   ngOnInit(): void {
     this.reportsNotificationsList = [
-      { label: "Reports each time a test suite runs", value: 'every_time' },
-      { label: "Daily reports", value: 'daily_reports' },
-      { label: "Weekly reports", value: 'weekly_reports' },
-      { label: "Monthly Summaries", value: 'monthly_reports' },
-      { label: "Event Notifications", value: 'event_notifications' }
+      { label: "Daily reports", value: Report.DAILY_REPORTS },
+      { label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
     this.interaction = '1';
     // initialize report form
     this.initFormModel();
+    this.fetchUserProfileDetails();
   }
   /**
    * initialize reactive forms model
    */
   initFormModel(): void {
     // report form
-    this.reportsForm = this.formbuilder.group({
+    this.userProfileForm = this.formbuilder.group({
       name: ['', Validators.required],
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.pattern(this.pattern), Validators.required]],
+      phoneNumber: ['', [, Validators.required]],
       notifications: new FormArray([]),
     });
     // add stake holder form
@@ -53,7 +72,7 @@ export class OnboardWizardComponent implements OnInit {
       name: ['', Validators.required],
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      subaccountAdminEmail: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', Validators.required],
       notifications: new FormArray([]),
     });
@@ -75,11 +94,20 @@ export class OnboardWizardComponent implements OnInit {
         break;
     }
   }
-
-  onConfigureReports(): void {
+  /**
+   * configure user profile details
+   */
+  onConfigureUserprofile(): void {
     this.userInteraction = false;
     this.configuredReports = true;
     this.interaction = '3';
+    const userProfileObj = this.userProfileForm.value;
+    const { notifications } = userProfileObj;
+    userProfileObj.notifications = notifications.join(',');
+    this.userprofileService.updateUserProfile(userProfileObj)
+      .subscribe((response: any) => {
+        console.debug('update profile response | ', response);
+      });
   }
   /**
    * add stake holder confirmation
@@ -95,7 +123,7 @@ export class OnboardWizardComponent implements OnInit {
       default:
         this.addAnotherStakeHolder = false;
         this.interaction = '-1';
-        console.debug('stake holder list | ', this.stakeholderList);
+        this.onCancel();
         break;
     }
   }
@@ -103,10 +131,28 @@ export class OnboardWizardComponent implements OnInit {
    * add stake holder details to a list
    */
   addStakeholder(): void {
+    this.errorCreatingStakeholder = false;
     this.addAnotherStakeHolder = false;
     this.configuredReports = true;
-    this.interaction = '3';
-    this.stakeholderList.push(this.stakeholderForm.value);
+    this.isDataLoading = true;
+    const requestPayload = this.stakeholderForm.value;
+    const { notifications } = requestPayload;
+    const { subaccountId } = this.subaccountUserProfileDetails;
+    requestPayload.subaccountId = subaccountId;
+    requestPayload.notifications = notifications.join(',');
+    this.stakeholderService.createStakeholder(requestPayload).subscribe((response: any) => {
+      this.isDataLoading = false;
+      if (response) {
+        const { error } = response;
+        if (error) {
+          this.errorCreatingStakeholder = true;
+        } else {
+          this.interaction = '3';
+        }
+      } else {
+        this.interaction = '3';
+      }
+    });
   }
   /**
    * 
@@ -116,7 +162,7 @@ export class OnboardWizardComponent implements OnInit {
   onFormCheckboxChange(event: any, item: any): void {
     const { target: { checked } } = event;
     const { value: selectedItemValue } = item;
-    const formArray: FormArray = ((this.interaction === '2') ? this.reportsForm.get('notifications') : this.stakeholderForm.get('notifications')) as FormArray;
+    const formArray: FormArray = ((this.interaction === '2') ? this.userProfileForm.get('notifications') : this.stakeholderForm.get('notifications')) as FormArray;
     /* Selected */
     if (checked) {
       // Add a new control in the arrayForm
@@ -132,4 +178,11 @@ export class OnboardWizardComponent implements OnInit {
       });
     }
   }
+  /**
+   * on cancel dialog
+   */
+  onCancel(): void {
+    this.dialogRef.close();
+  }
+
 }

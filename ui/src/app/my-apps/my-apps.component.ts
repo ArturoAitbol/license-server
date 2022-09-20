@@ -46,7 +46,7 @@ export class MyAppsComponent implements OnInit {
       const currentSubaccountDetails = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
       if (currentSubaccountDetails) {
         let { services } = currentSubaccountDetails;
-        if (services === undefined || services === null && roles) {
+        if ((services === undefined || services === null) && roles) {
           services = roles.includes('customer.SubaccountStakeholder') ? ['ctaas'] : [];
         }
         // enable respective access to activated service here

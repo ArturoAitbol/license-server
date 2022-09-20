@@ -18,37 +18,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
   onboardSetupStatus: string = '';
   isOnboardingComplete: boolean;
   loggedInUserRoles: string[] = [];
-  // charts
-  runSample: any[];
-  testCaseSample: any[];
-  view: any[] = [600, 400];
-
-  // options for bar chart
-
-  showXAxis = true;
-  showYAxis = true;
-  gradient1 = false;
-  showLegend1 = true;
-  showXAxisLabel = true;
-  xAxisLabel = 'Date';
-  xAxisLabelForTestCases = 'Test Cases';
-  showYAxisLabel = true;
-  yAxisLabel = 'Failure Rate';
-
-  // options for pie chart
-  gradient: boolean = true;
-  showLegend: boolean = true;
-  showLabels: boolean = true;
-  isDoughnut: boolean = false;
-  legendPosition: string = 'below';
-
-  barColorScheme = {
-    domain: ['#061F4F']
-  };
+  ctaasSetupDetails: any = {};
   constructor(
-    private headerService: HeaderService,
-    private customerOnboardService: CustomerOnboardService,
-    private router: Router,
     private dialog: MatDialog,
     private msalService: MsalService,
     private ctaasSetupService: CtaasSetupService
@@ -68,11 +39,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
-    // this.isOnboardingComplete = localStorage.getItem('onboardingFlag');
-    // if ((this.isOnboardingComplete == undefined || this.isOnboardingComplete == null) && !roles.includes('customer.SubaccountStakeholder')) {
-    //   localStorage.setItem('onboardingFlag', JSON.stringify(true));
-    // }
-    // this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
   }
   /**
    * fetch Ctaas Setup details by subaccount id
@@ -82,29 +48,41 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     const { id } = currentSubaccountDetails;
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(id)
       .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
-        const setupDetails: ICtaasSetup = response['ctaasSetups'][0];
-        const { onBoardingComplete, status } = setupDetails;
+        // const setupDetails: ICtaasSetup = response['ctaasSetups'][0];
+        this.ctaasSetupDetails = response['ctaasSetups'][0];
+        const { onBoardingComplete, status } = this.ctaasSetupDetails;
         this.isOnboardingComplete = (onBoardingComplete === 'f'); // t- true | f - false
         this.onboardSetupStatus = status;
         this.setupCustomerOnboardDetails();
       });
   }
   /**
-   * setup customer onboarding details,
-   * status is hard-coded as 'pending'
+   * setup customer onboarding details
    */
   setupCustomerOnboardDetails(): void {
-    // this.onboardSetupStatus = this.customerOnboardService.fetchCustomerOnboardingDetails('');
-    // this.isOnboardingComplete = JSON.parse(localStorage.getItem('onboardingFlag'));
-    // if (this.isOnboardingComplete === 'true' || this.isOnboardingComplete === true) 
+    let dialogRef;
     const index = this.loggedInUserRoles.findIndex(e => e.includes('customer.SubaccountAdmin'));
     // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
-    if (this.isOnboardingComplete && index !== -1) {
+    if ((this.isOnboardingComplete && index !== -1)) {
       setTimeout(() => {
-        this.dialog.open(OnboardWizardComponent, { width: '700px', height: '500px', disableClose: true });
+        dialogRef = this.dialog.open(OnboardWizardComponent, { width: '700px', height: '500px', disableClose: true });
       }, 0);
     }
+    dialogRef.afterClosed().subscribe((res: any) => {
+      this.updateOnboardingStatus();
+    });
   }
+  /**
+   * update ctaas onboarding details
+   */
+  updateOnboardingStatus(): void {
+    const { id } = this.ctaasSetupDetails;
+    const requestPayload = { onBoardingComplete: 't', ctaasSetupId: id };
+    this.ctaasSetupService.updateSubaccountCtaasDetails(requestPayload).subscribe((response: any) => {
+      console.debug('response | ', response);
+    });
+  }
+
   ngOnDestroy(): void {
   }
 }

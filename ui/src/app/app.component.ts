@@ -156,22 +156,6 @@ export class AppComponent implements OnInit, OnDestroy {
             this.initalizeSidebarItems();
             this.onRouteChanges();
         });
-        // check for CTaaS Feature toggle
-        // if (this.isCtaasFeatureEnabled()) {
-        //     this.initalizeSidebarItems();
-        //     this.performChangeOnToolbar();
-        //     this.headerService.getOnChangeServiceEvent().subscribe((res: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }) => {
-        //         console.log('response | ', res);
-        //         if (res) {
-        //             localStorage.setItem(Constants.TOOLBAR_DETAILS, JSON.stringify(res));
-        //             const { tabName, hideToolbar, transparentToolbar } = res;
-        //             console.log('tab name | ', tabName);
-        //             this.tabName = tabName;
-        //             this.hideToolbar = hideToolbar;
-        //             this.isTransparentToolbar = transparentToolbar;
-        //         }
-        //     });
-        // }
     }
     /**
      * initalize the items required for side nav bar

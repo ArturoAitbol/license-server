@@ -2,14 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { MsalService } from '@azure/msal-angular';
-import { Constants } from 'src/app/helpers/constants';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { HeaderService } from 'src/app/services/header.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { AddStakeHolderComponent } from './add-stake-holder/add-stake-holder.component';
 import { UpdateStakeHolderComponent } from './update-stake-holder/update-stake-holder.component';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
-
+import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { map } from 'rxjs/operators';
+import { IStakeholder } from 'src/app/model/stakeholder.model';
+import { Report } from 'src/app/helpers/report';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -29,6 +31,7 @@ export class CtaasStakeholderComponent implements OnInit {
     private headerService: HeaderService,
     private msalService: MsalService,
     public dialog: MatDialog,
+    private snackBarService: SnackBarService,
     private dialogService: DialogService,
     private stakeholderService: StakeHolderService
   ) { }
@@ -50,10 +53,11 @@ export class CtaasStakeholderComponent implements OnInit {
   initColumns(): void {
     this.displayedColumns = [
       { name: 'User', dataKey: 'name', position: 'left', isSortable: true },
-      { name: 'Role', dataKey: 'role', position: 'left', isSortable: true },
+      { name: 'Company Name', dataKey: 'companyName', position: 'left', isSortable: true },
+      { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
       { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
-      { name: 'Phone Number', dataKey: 'mobilePhone', position: 'left', isSortable: true },
-      { name: 'Notifications', dataKey: 'notifications', position: 'left', isSortable: true }
+      { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
+      { name: 'Notifications', dataKey: 'notifications', position: 'left', isSortable: false }
     ];
   }
   /**
@@ -61,7 +65,6 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   private getActionMenuOptions() {
     const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-    // console.debug('account roles | ', accountRoles);
     accountRoles.forEach(accountRole => {
       permissions[accountRole].tables.stakeholderOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
     });
@@ -69,45 +72,46 @@ export class CtaasStakeholderComponent implements OnInit {
   /**
    * fetch stakeholder data
    */
-  private fetchDataToDisplay(): void {
-    this.isRequestCompleted = true;
-    this.stakeholdersData = [
-      {
-        name: 'Kaushik',
-        role: 'Admin',
-        email: 'knalla@tekvizion.com',
-        mobilePhone: '+91-9012345678',
-        notifications: ['All reports'],
-        jobTitle: 'Staff Engineer',
-
-      },
-      {
-        name: 'Jonathan Sieg',
-        role: 'Engineer',
-        email: 'jonathan@tekvizion.com',
-        mobilePhone: '+1 214-522-1690',
-        notifications: ['Per project report'],
-        jobTitle: 'Vice President of product',
-
-      },
-      {
-        name: 'Sai',
-        role: 'Engineer',
-        email: 'snare@tekvizion.com',
-        mobilePhone: '+1 469-626-0207',
-        notifications: ['Weekly reports'],
-        jobTitle: 'Lead Engineer',
-
-      }
-    ];
-    this.isLoadingResults = false;
+  private fetchStakeholderList(): void {
+    this.isRequestCompleted = false;
+    this.isLoadingResults = true;
+    this.stakeholderService.getStakeholderList()
+      .pipe(
+        map((e: { stakeHolders: IStakeholder[] }) => {
+          const { stakeHolders } = e;
+          stakeHolders.forEach((x: IStakeholder) => {
+            if (x.notifications) {
+              const reports = this.getReports();
+              if (x.notifications.includes(',')) {
+                const mappedNotificationsList = x.notifications.split(',').map(e => reports.find(z => z.value === e)['label']);
+                if (mappedNotificationsList.length > 0)
+                  x.notifications = mappedNotificationsList.join(',');
+              } else {
+                const result = reports.find(z => z.value === x.notifications)['label'];
+                x.notifications = result;
+              }
+            }
+          });
+          return e;
+        })
+      )
+      .subscribe((response: any) => {
+        this.isRequestCompleted = true;
+        this.isLoadingResults = false;
+        const { stakeHolders } = response;
+        if (stakeHolders) {
+          this.stakeholdersData = stakeHolders;
+        } else {
+          this.snackBarService.openSnackBar(response.error, 'Error while loading stake holders');
+        }
+      });
   }
 
   ngOnInit(): void {
     this.calculateTableHeight();
     this.getActionMenuOptions();
     this.initColumns();
-    this.fetchDataToDisplay();
+    this.fetchStakeholderList();
     // this.headerService.onChangeService({ hideToolbar: false, tabName: Constants.CTAAS_TOOL_BAR, transparentToolbar: false });
   }
 
@@ -156,9 +160,10 @@ export class CtaasStakeholderComponent implements OnInit {
       case this.DELETE_STAKEHOLDER:
         break;
     }
-    dialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        this.fetchDataToDisplay();
+    dialogRef.afterClosed().subscribe((res: any) => {
+      if (res === 'closed') {
+        this.stakeholdersData = [];
+        this.fetchStakeholderList();
       }
     });
   }
@@ -189,17 +194,42 @@ export class CtaasStakeholderComponent implements OnInit {
       cancelCaption: 'Cancel',
     }).subscribe((confirmed) => {
       if (confirmed) {
-        const { id } = selectedRow;
-        this.deleteStakeholder(id);
+        const { email } = selectedRow;
+        this.deleteStakeholder(email);
       }
     });
   }
   /**
    * delete selected stakeholder details by id
-   * @param id: 
+   * @param email: string 
    */
-  deleteStakeholder(id: string): void {
-    this.stakeholderService.deleteStakeholder(id).subscribe((response: any) => { })
+  deleteStakeholder(email: string): void {
+    this.stakeholderService.deleteStakeholder(email).subscribe((response: any) => {
+      if (response) {
+        const { error } = response;
+        if (error) {
+          this.snackBarService.openSnackBar(response.error, 'Error while deleting Stakeholder');
+        } else {
+          this.stakeholdersData = [];
+          this.fetchStakeholderList();
+        }
+      } else {
+        this.snackBarService.openSnackBar('Deleted Stakeholder successfully', '');
+        this.stakeholdersData = [];
+        this.fetchStakeholderList();
+      }
+    });
+  }
+  /**
+   * get reports
+   * @returns: any[]
+   */
+  getReports(): any[] {
+    return [
+      { label: "Daily reports", value: Report.DAILY_REPORTS },
+      { label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
+    ];
   }
 
 }

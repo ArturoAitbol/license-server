@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Report } from 'src/app/helpers/report';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
 
@@ -14,8 +15,9 @@ export class UpdateStakeHolderComponent implements OnInit {
   reports: any = [];
   isDataLoading = false;
   updateStakeholderForm: FormGroup;
-  private previousFormValue: any;
-
+  previousFormValue: any;
+  notificationsList: any;
+  mappedNotificationsList: string[] = [];
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
@@ -30,17 +32,45 @@ export class UpdateStakeHolderComponent implements OnInit {
     this.updateStakeholderForm = this.formBuilder.group({
       name: ['', Validators.required],
       jobTitle: ['', Validators.required],
-      email: [{ value: '', disabled: true }, [Validators.required]],
-      mobilePhone: ['', Validators.required],
+      companyName: [{ value: '' }, Validators.required],
+      subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
+      phoneNumber: ['', Validators.required],
       notifications: new FormArray([])
     });
-    this.updateStakeholderForm.patchValue(this.data);
-    this.previousFormValue = { ...this.updateStakeholderForm };
+    try {
+      const { mobilePhone, email } = this.data;
+      this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
+      let { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, notifications } = this.data;
+      if (notifications) {
+        const mappedNotifications = notifications.split(',').map(e => {
+          const obj = this.reports.find(x => x.label === e);
+          if (obj) {
+            return obj.value;
+          }
+        });
+        this.mappedNotificationsList = mappedNotifications;
+      }
+      const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber };
+      this.updateStakeholderForm.patchValue(payload);
+      this.previousFormValue = { ...this.updateStakeholderForm };
+    } catch (e) {
+      console.error('some error | ', e);
+    }
+  }
+  /**
+   * initialize checkboxes
+   */
+  private initializeCheckboxes() {
+    this.reports.map((e: { label: string, value: string }) => {
+      const control = new FormControl(this.mappedNotificationsList.includes(e.value));
+      (this.updateStakeholderForm.controls.notifications as FormArray).push(control);
+    });
   }
 
   ngOnInit(): void {
     this.reports = this.getReports();
     this.initializeForm();
+    this.initializeCheckboxes();
   }
   /**
    * get reports
@@ -48,42 +78,49 @@ export class UpdateStakeHolderComponent implements OnInit {
    */
   getReports(): any[] {
     return [
-      { name: "Reports each time a test suite runs", value: 'every_time' },
-      { name: "Daily reports", value: 'daily_reports' },
-      { name: "Weekly reports", value: 'weekly_reports' },
-      { name: "Monthly Summaries", value: 'monthly_reports' },
-      { name: "Event Notifications", value: 'event_notifications' }
+      { id: 1, label: "Daily reports", value: Report.DAILY_REPORTS },
+      { id: 2, label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { id: 3, label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
   }
-
-
-  onCancel(): void {
-    this.dialogRef.close();
+  /**
+   * close opened dialog
+   * @param type: string [optional] 
+   */
+  onCancel(type?: string): void {
+    this.dialogRef.close(type);
   }
-
+  /**
+   * update stake holder details here
+   */
   updateStakeholderDetails() {
     this.isDataLoading = true;
-    this.stakeholderService.updateStakeholderDetails(this.preparePaylod()).subscribe((response: any) => {
-
+    this.stakeholderService.updateStakeholderDetails(this.preparePayload()).subscribe((response: any) => {
+      if (response) {
+        const { error } = response;
+        if (error) {
+          this.isDataLoading = false;
+          this.snackBarService.openSnackBar(response.error, 'Error while updating stake holder');
+          this.onCancel('closed');
+        }
+      } else {
+        this.isDataLoading = false;
+        this.snackBarService.openSnackBar('Updated stake holder details successfully', '');
+        this.onCancel('closed');
+      }
     });
   }
   /**
    * prepare an object with update values only
    * @returns: any 
    */
-  preparePaylod(): any {
-    const { id } = this.data;
-    const mergedProjectDetails: any = { id };
-    for (const key in this.updateStakeholderForm.controls) {
-      if (this.updateStakeholderForm.controls.hasOwnProperty(key)) {
-        const fieldValue = this.updateStakeholderForm.get(key).value;
-        const oldValue = this.previousFormValue.value[key];
-        /* if value has changed */
-        if (fieldValue != oldValue)
-          mergedProjectDetails[key] = fieldValue;
-      }
-    }
-    return mergedProjectDetails;
+  preparePayload(): any {
+    const selectedNotifications = this.updateStakeholderForm.value.notifications
+      .map((v, i) => v ? this.reports[i].value : null)
+      .filter(v => v !== null);
+    this.updateStakeholderForm.get('subaccountAdminEmail').enable();
+    this.updateStakeholderForm.value.notifications = selectedNotifications.join(',');
+    return this.updateStakeholderForm.value;
   }
   /**
    * on change checkbox
@@ -109,9 +146,5 @@ export class UpdateStakeHolderComponent implements OnInit {
       });
     }
   }
-
-  // get reportsFormArray() {
-  //   return this.updateStakeholderForm.controls.orders as FormArray;
-  // }
 
 }

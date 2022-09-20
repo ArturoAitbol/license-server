@@ -1,4 +1,8 @@
 <div class="container">
+    <div class="loading-shade" *ngIf="isDataLoading">
+        <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+    </div>
+
     <ng-container [ngSwitch]="interaction">
         <ng-container *ngSwitchCase="'1'" [ngTemplateOutlet]="template1"></ng-container>
         <ng-container *ngSwitchCase="'2'" [ngTemplateOutlet]="template2"></ng-container>
@@ -41,19 +45,19 @@
 </ng-template>
 <!-- configure reports | '2' -->
 <ng-template #template2>
-    <form [formGroup]="reportsForm" (ngSubmit)="onConfigureReports()">
+    <form [formGroup]="userProfileForm" (ngSubmit)="onConfigureUserprofile()">
         <h2>Let's set what reports you receive.</h2>
         <br>
         <div class="row">
             <div class="col-6">
                 <input id="name" type="text" formControlName="name" class="form-control" placeholder="Name"
                     aria-label="Name">
-                <span *ngIf="reportsForm.get('name').touched && reportsForm.get('name').invalid"></span>
+                <span *ngIf="userProfileForm.get('name').touched && userProfileForm.get('name').invalid"></span>
             </div>
             <div class="col-6">
                 <input id="job-title" type="text" formControlName="jobTitle" class="form-control"
                     placeholder="Job Title" aria-label="Job Title">
-                <span *ngIf="reportsForm.get('jobTitle').touched && reportsForm.get('jobTitle').invalid"></span>
+                <span *ngIf="userProfileForm.get('jobTitle').touched && userProfileForm.get('jobTitle').invalid"></span>
             </div>
         </div>
         <br>
@@ -61,12 +65,13 @@
             <div class="col-6">
                 <input id="email" type="email" formControlName="email" class="form-control" placeholder="E-mail"
                     aria-label="Email">
-                <span *ngIf="reportsForm.get('email').touched && reportsForm.get('email').invalid"></span>
+                <span *ngIf="userProfileForm.get('email').touched && userProfileForm.get('email').invalid"></span>
             </div>
             <div class="col-6">
                 <input id="company-name" type="text" formControlName="companyName" class="form-control"
                     placeholder="Your Company" aria-label="Your Company">
-                <span *ngIf="reportsForm.get('companyName').touched && reportsForm.get('companyName').invalid"></span>
+                <span
+                    *ngIf="userProfileForm.get('companyName').touched && userProfileForm.get('companyName').invalid"></span>
             </div>
         </div>
         <br>
@@ -75,9 +80,9 @@
                 <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
                     class="form-control" />
                 <span
-                    *ngIf="reportsForm.get('phoneNumber').dirty && reportsForm.get('phoneNumber').hasError('required')"></span>
+                    *ngIf="userProfileForm.get('phoneNumber').dirty && userProfileForm.get('phoneNumber').hasError('required')"></span>
                 <span
-                    *ngIf="reportsForm.get('phoneNumber').touched && reportsForm.get('phoneNumber').hasError('pattern')"></span>
+                    *ngIf="userProfileForm.get('phoneNumber').touched && userProfileForm.get('phoneNumber').hasError('pattern')"></span>
             </div>
         </div>
         <br>
@@ -96,7 +101,7 @@
             </div>
         </div>
         <button class="btn btn-custom btn-sm float-end mt-4 px-3" type="submit"
-            [disabled]="!reportsForm.valid">Save</button>
+            [disabled]="!userProfileForm.valid">Save</button>
     </form>
 </ng-template>
 <!-- add another stakeholder confirmation | '3' -->
@@ -112,8 +117,7 @@
                 <br>
                 <div class="row" style="text-align: center;">
                     <div class="col-6">
-                        <button class="btn btn-secondary btn-sm px-3" mat-dialog-close
-                            (click)="addStakeholdersConfirmation('no')">
+                        <button class="btn btn-secondary btn-sm px-3" (click)="addStakeholdersConfirmation('no')">
                             <p>
                                 No, I'm done
                             </p>
@@ -141,26 +145,28 @@
                 <div class="col-6">
                     <input id="name" type="text" formControlName="name" class="form-control" placeholder="Name"
                         aria-label="Name">
-                    <span *ngIf="reportsForm.get('name').touched && reportsForm.get('name').invalid"></span>
+                    <span *ngIf="stakeholderForm.get('name').touched && stakeholderForm.get('name').invalid"></span>
                 </div>
                 <div class="col-6">
                     <input id="job-title" type="text" formControlName="jobTitle" class="form-control"
                         placeholder="Job Title" aria-label="Job Title">
-                    <span *ngIf="reportsForm.get('jobTitle').touched && reportsForm.get('jobTitle').invalid"></span>
+                    <span
+                        *ngIf="stakeholderForm.get('jobTitle').touched && stakeholderForm.get('jobTitle').invalid"></span>
                 </div>
             </div>
             <br>
             <div class="row">
                 <div class="col-6">
-                    <input id="email" type="email" formControlName="email" class="form-control" placeholder="E-mail"
-                        aria-label="Email">
-                    <span *ngIf="reportsForm.get('email').touched && reportsForm.get('email').invalid"></span>
+                    <input id="email" type="email" formControlName="subaccountAdminEmail" class="form-control"
+                        placeholder="E-mail" aria-label="Email">
+                    <span
+                        *ngIf="stakeholderForm.get('subaccountAdminEmail').touched && stakeholderForm.get('subaccountAdminEmail').invalid"></span>
                 </div>
                 <div class="col-6">
                     <input id="company-name" type="text" formControlName="companyName" class="form-control"
                         placeholder="Your Company" aria-label="Your Company">
                     <span
-                        *ngIf="reportsForm.get('companyName').touched && reportsForm.get('companyName').invalid"></span>
+                        *ngIf="stakeholderForm.get('companyName').touched && stakeholderForm.get('companyName').invalid"></span>
                 </div>
             </div>
             <br>
@@ -169,9 +175,9 @@
                     <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
                         class="form-control" />
                     <span
-                        *ngIf="reportsForm.get('phoneNumber').dirty && reportsForm.get('phoneNumber').hasError('required')"></span>
+                        *ngIf="stakeholderForm.get('phoneNumber').dirty && stakeholderForm.get('phoneNumber').hasError('required')"></span>
                     <span
-                        *ngIf="reportsForm.get('phoneNumber').touched && reportsForm.get('phoneNumber').hasError('pattern')"></span>
+                        *ngIf="stakeholderForm.get('phoneNumber').touched && stakeholderForm.get('phoneNumber').hasError('pattern')"></span>
                 </div>
             </div>
             <br>
@@ -189,8 +195,11 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-custom btn-sm float-end mt-4 px-3" type="submit"
-                [disabled]="!stakeholderForm.valid">Save</button>
+            <div>
+                <span *ngIf="errorMsg!==''">{{errorMsg}}</span>
+                <button class="btn btn-custom btn-sm float-end mt-4 px-3" type="submit"
+                    [disabled]="!stakeholderForm.valid || errorCreatingStakeholder">Save</button>
+            </div>
         </form>
     </div>
 </ng-template>

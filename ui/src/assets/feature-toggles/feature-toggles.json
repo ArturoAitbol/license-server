@@ -32,7 +32,7 @@
     },
     "features": {
       "testFeature1": true,
-      "ctaasFeature": false,
+      "ctaasFeature": true,
       "enableAllServiceFeature": false
     }
   },

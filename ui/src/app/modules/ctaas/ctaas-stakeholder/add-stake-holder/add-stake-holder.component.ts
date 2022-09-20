@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { Constants } from 'src/app/helpers/constants';
+import { Report } from 'src/app/helpers/report';
+import { IUserProfile } from 'src/app/model/user-profile.model';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
+import { UserProfileService } from 'src/app/services/user-profile.service';
 
 @Component({
   selector: 'app-add-stake-holder',
@@ -14,10 +18,12 @@ export class AddStakeHolderComponent implements OnInit {
   reports: any = [];
   isDataLoading = false;
   addStakeholderForm: FormGroup;
+  userprofileDetails: IUserProfile;
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
     private stakeholderService: StakeHolderService,
+    private userprofileService: UserProfileService,
     public dialogRef: MatDialogRef<AddStakeHolderComponent>
   ) { }
   /**
@@ -27,15 +33,28 @@ export class AddStakeHolderComponent implements OnInit {
     this.addStakeholderForm = this.formBuilder.group({
       name: ['', Validators.required],
       jobTitle: ['', Validators.required],
-      email: ['', Validators.required],
-      mobilePhone: ['', Validators.required],
+      subaccountAdminEmail: ['', [Validators.required, Validators.email]],
+      companyName: [{ value: '' }, Validators.required],
+      phoneNumber: ['', Validators.required],
       notifications: new FormArray([])
     });
+  }
+  /**
+   * fetch user profile details
+   */
+  private fetchUserProfileDetails(): void {
+    const subaccountUserProfileDetails = JSON.parse(localStorage.getItem(Constants.SUBACCOUNT_USER_PROJECT));
+    if (subaccountUserProfileDetails) {
+      this.userprofileDetails = subaccountUserProfileDetails;
+      const { companyName } = this.userprofileDetails;
+      this.addStakeholderForm.patchValue({ companyName });
+    }
   }
 
   ngOnInit(): void {
     this.reports = this.getReports();
     this.initializeForm();
+    this.fetchUserProfileDetails();
   }
   /**
    * get reports
@@ -43,27 +62,43 @@ export class AddStakeHolderComponent implements OnInit {
    */
   getReports(): any[] {
     return [
-      { name: "Reports each time a test suite runs", value: 'every_time' },
-      { name: "Daily reports", value: 'daily_reports' },
-      { name: "Weekly reports", value: 'weekly_reports' },
-      { name: "Monthly Summaries", value: 'monthly_reports' },
-      { name: "Event Notifications", value: 'event_notifications' }
+      { label: "Daily reports", value: Report.DAILY_REPORTS },
+      { label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
   }
   /**
-   * on cancel dialog
+   * close the open dialog 
+   * @param type: string [optional] 
    */
-  onCancel(): void {
-    this.dialogRef.close();
+  onCancel(type?: string): void {
+    this.dialogRef.close(type);
   }
   /**
    * on click Submit button
    */
   addStakeholder() {
     this.isDataLoading = true;
-    console.log('addStakeholderForm | ', this.addStakeholderForm.value);
+    const { subaccountId } = this.userprofileDetails;
     const stakeholderDetails = { ... this.addStakeholderForm.value };
-    this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => { });
+    stakeholderDetails.subaccountId = subaccountId;
+    stakeholderDetails.notifications = stakeholderDetails.notifications.join(',');
+    this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => {
+      const { error } = response;
+      if (error) {
+        this.snackBarService.openSnackBar(response.error, 'Error adding stakeholder');
+        this.dialogRef.close(response);
+        this.isDataLoading = false;
+      } else {
+        this.isDataLoading = false;
+        this.snackBarService.openSnackBar('Created Stakeholder successfully', '');
+        this.onCancel('closed');
+      }
+    }, (err) => {
+      this.isDataLoading = false;
+      this.snackBarService.openSnackBar(err.error, 'Error adding stakeholder');
+      this.onCancel('closed');
+    });
   }
   /**
    * receive events when any change in reports checkboxes
@@ -89,9 +124,4 @@ export class AddStakeHolderComponent implements OnInit {
       });
     }
   }
-
-  // get reportsFormArray() {
-  //   return this.addStakeholderForm.controls.orders as FormArray;
-  // }
-
 }

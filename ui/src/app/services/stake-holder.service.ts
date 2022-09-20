@@ -8,10 +8,11 @@ import { IStakeholder } from '../model/stakeholder.model';
   providedIn: 'root'
 })
 export class StakeHolderService {
-  private readonly API_URL: string = environment.apiEndpoint + '/stakeholders';
-  private readonly CREATE_STAKE_HOLDER_API = this.API_URL;
-  private readonly UPDATE_STAKE_HOLDER_API = this.API_URL + '/update';
-  private readonly DELETE_STAKE_HOLDER_API = this.API_URL + '/delete';
+  private readonly API_URL: string = environment.apiEndpoint + '/subaccountStakeHolders';
+  private readonly GET_STAKE_HOLDER_LIST: string = this.API_URL;
+  private readonly CREATE_STAKE_HOLDER_API: string = this.API_URL;
+  private readonly UPDATE_STAKE_HOLDER_API: string = this.API_URL + '/{email}';
+  private readonly DELETE_STAKE_HOLDER_API: string = this.API_URL + '/{email}';
 
   constructor(private httpClient: HttpClient) { }
   /**
@@ -19,7 +20,7 @@ export class StakeHolderService {
    * @returns: Observable<any>
    */
   public getStakeholderList(): Observable<any> {
-    return this.httpClient.get(this.CREATE_STAKE_HOLDER_API);
+    return this.httpClient.get(this.GET_STAKE_HOLDER_LIST);
   }
   /**
    * create stake holder
@@ -35,15 +36,18 @@ export class StakeHolderService {
    * @returns: Observable<any>  
    */
   public updateStakeholderDetails(stakeholder: IStakeholder): Observable<any> {
-    return this.httpClient.put(this.UPDATE_STAKE_HOLDER_API, stakeholder);
+    const { subaccountAdminEmail } = stakeholder;
+    const url = (this.UPDATE_STAKE_HOLDER_API.replace(/{email}/g, subaccountAdminEmail));
+    return this.httpClient.put(url, stakeholder);
   }
   /**
-   * delete stake holder by id
-   * @param id: string 
+   * delete stake holder by email
+   * @param email: string 
    * @returns: Observable<any>  
    */
-  public deleteStakeholder(id: string): Observable<any> {
-    return this.httpClient.delete(this.DELETE_STAKE_HOLDER_API + '/' + id);
+  public deleteStakeholder(email: string): Observable<any> {
+    const url = (this.DELETE_STAKE_HOLDER_API.replace(/{email}/g, email));
+    return this.httpClient.delete(url);
   }
   /**
    * set the header for the request

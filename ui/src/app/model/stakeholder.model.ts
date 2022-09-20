@@ -1,9 +1,9 @@
 export interface IStakeholder {
-    firstName: string;
-    lastName: string;
+    name: string;
     jobTitle: string;
     companyName: string;
-    email: string;
+    subaccountAdminEmail: string;
     phoneNumber: string;
-    notifications: string[]
+    notifications: string;
+    subaccountId?: string;
 }

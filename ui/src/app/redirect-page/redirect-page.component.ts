@@ -5,11 +5,11 @@ import { map } from 'rxjs/operators';
 import { Constants } from '../helpers/constants';
 import { IService } from '../model/service.model';
 import { SubAccount } from '../model/subaccount.model';
-import { HeaderService } from '../services/header.service';
 import { SubAccountService } from '../services/sub-account.service';
 import { AvailableServicesService } from '../services/available-services.service';
 import { Features } from '../helpers/features';
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
+import { UserProfileService } from '../services/user-profile.service';
 @Component({
   selector: 'app-redirect-page',
   templateUrl: './redirect-page.component.html',
@@ -26,7 +26,7 @@ export class RedirectPageComponent implements OnInit {
     private router: Router,
     private msalService: MsalService,
     private subaccountService: SubAccountService,
-    private headerService: HeaderService,
+    private userProfileService: UserProfileService,
     private availabeService: AvailableServicesService
   ) { }
 
@@ -35,7 +35,6 @@ export class RedirectPageComponent implements OnInit {
       console.debug('redirect page');
       this.getAvailableServices();
       // hide toolbar on load this redirect page
-      this.emitOnPageChangeEvent({ hideToolbar: true, tabName: '', transparentToolbar: false });
       const accountDetails = this.getAccountDetails();
       const { idTokenClaims: { roles } } = accountDetails;
       this.loggedInUserRoles = roles;
@@ -62,6 +61,9 @@ export class RedirectPageComponent implements OnInit {
           const { services } = e['subaccounts'][0];
           if (services) {
             e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
+            if (this.loggedInUserRoles.includes("customer.SubaccountAdmin")) {
+              this.fetchUserProfileDetails();
+            }
           } else if (this.isAllServicesFeatureEnabled() && this.loggedInUserRoles.length > 0) {
             // check if logged in user is stakeholder
             // hard-coded this values for dev
@@ -109,7 +111,6 @@ export class RedirectPageComponent implements OnInit {
     if (check) {
       this.navigateToMyApps();
     } else {
-      // this.emitOnPageChangeEvent({ hideToolbar: false, tabName: Constants.TEK_TOKEN_TOOL_BAR, transparentToolbar: false });
       this.navigateToDashboard();
     }
   }
@@ -119,22 +120,23 @@ export class RedirectPageComponent implements OnInit {
   private navigateToMyApps(): void {
     const { services } = this.currentSubaccountDetails;
     if (services.length > 1) {
-      this.emitOnPageChangeEvent({ hideToolbar: false, tabName: '', transparentToolbar: true });
       this.router.navigate([this.APPS_ROUTE_PATH]);
     } else if (services.length === 1) {
       const serviceObj: IService = this.availableServices.find((e: any) => e.value === services[0]);
       const { routePath, tabName } = serviceObj;
-      this.emitOnPageChangeEvent({ hideToolbar: false, tabName: tabName, transparentToolbar: false });
       this.router.navigate([routePath]);
     }
   }
-
   /**
-   * emit an event on page navigate to perform some action on toolbar
-   * @param value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean } 
+   * fetch user profile details
    */
-  emitOnPageChangeEvent(value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }): void {
-    // this.headerService.onChangeService(value);
+  fetchUserProfileDetails(): void {
+    this.userProfileService.getUserProfileDetails().subscribe((res: any) => {
+      const { userProfile } = res;
+      const { companyName, email, jobTitle, mobilePhone, name, subaccountId } = userProfile;
+      const parsedObj = { companyName, email, jobTitle, phoneNumber: mobilePhone, name, subaccountId };
+      localStorage.setItem(Constants.SUBACCOUNT_USER_PROJECT, JSON.stringify(parsedObj));
+    });
   }
   /**
    * check whether Enable_All_Service_Feature toggle feature is enabled or not

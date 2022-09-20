@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 })
 export class CtaasSetupService {
   private readonly API_URL: string = environment.apiEndpoint + '/ctaasSetups';
+  private readonly UPDATE_ONBOARD_DETAILS: string = this.API_URL + '/onBoarding/{setupId}';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -27,14 +28,18 @@ export class CtaasSetupService {
   public getSubaccountCtaasSetupDetails(subaccountId: string) {
     const headers = this.getHeaders();
     const params = new HttpParams();
-    console.debug('subbaccount id | ', subaccountId);
     params.append('subaccountId', subaccountId);
     return this.httpClient.get<any>(this.API_URL, { headers, params });
   }
-
-  public updateSubaccountCtaasDetails(setupDetails: { onBoardingComplete: boolean, ctaasSetupId: string }) {
+  /**
+   * update subaccount onboarding setup details
+   * @param setupDetails: { onBoardingComplete: string, ctaasSetupId: string }
+   * @returns: Observable<any> 
+   */
+  public updateSubaccountCtaasDetails(setupDetails: { onBoardingComplete: string, ctaasSetupId: string }) {
     const { ctaasSetupId } = setupDetails;
-    return this.httpClient.put(this.API_URL + '/onBoarding/' + ctaasSetupId, setupDetails);
+    const url = this.UPDATE_ONBOARD_DETAILS.replace(/{setupId}/g, ctaasSetupId);
+    return this.httpClient.put(url, setupDetails);
   }
 
 
