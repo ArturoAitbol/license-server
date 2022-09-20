@@ -148,7 +148,7 @@ public class TekvLSGetAuthUserProfile {
 					 item.put("name", "");
 					 item.put("jobTitle", "");
 					 item.put("companyName", "");
-					 item.put("mobilePhone", "");
+					 item.put("phoneNumber", "");
 					 return item;
 				 }
 				userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(item.getString("email"),context);
