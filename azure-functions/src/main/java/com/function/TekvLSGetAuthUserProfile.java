@@ -16,7 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.function.auth.Permission;
-import com.function.clients.GraphAPIClientForUserProfile;
+import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.util.FeatureToggles;
@@ -151,7 +151,7 @@ public class TekvLSGetAuthUserProfile {
 					 item.put("mobilePhone", "");
 					 return item;
 				 }
-				userProfile = GraphAPIClientForUserProfile.getUserProfileWithRoleByEmail(item.getString("email"),context);
+				userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(item.getString("email"),context);
 				item.put("name",userProfile.get("displayName"));
 				item.put("jobTitle",userProfile.get("jobTitle"));
 				item.put("companyName",userProfile.get("companyName"));

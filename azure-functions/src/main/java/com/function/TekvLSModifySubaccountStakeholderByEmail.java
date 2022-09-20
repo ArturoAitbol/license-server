@@ -19,7 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.function.auth.Permission;
-import com.function.clients.GraphAPIClientForUserProfile;
+import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.FeatureToggles;
@@ -156,7 +156,7 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 		 }
 		try {
 			context.getLogger().info("Updating user profile at Azure AD : "+email);
-			GraphAPIClientForUserProfile.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"),getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
+			GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"),getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
 			context.getLogger().info("Updated user profile at Azure AD : "+jobj);
 		} catch(Exception e) {
 			context.getLogger().info("Failed to update user profile at Azure AD. Exception: " + e.getMessage());

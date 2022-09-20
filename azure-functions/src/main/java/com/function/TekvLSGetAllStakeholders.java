@@ -31,7 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.function.auth.Permission;
-import com.function.clients.GraphAPIClientForUserProfile;
+import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.util.FeatureToggles;
@@ -210,7 +210,7 @@ public class TekvLSGetAllStakeholders {
 						stakeHolders.put(json);
 						continue;
 				 }
-				userProfile = GraphAPIClientForUserProfile.getUserProfileWithRoleByEmail(json.getString("email"),context);
+				userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"),context);
 				if(userProfile.getString("role").equals(SUBACCOUNT_STAKEHOLDER)) {
 					json.put("name",userProfile.get("displayName"));
 					json.put("jobTitle",userProfile.get("jobTitle"));

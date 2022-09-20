@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import com.function.auth.Permission;
 import com.function.clients.GraphAPIClient;
-import com.function.clients.GraphAPIClientForUserProfile;
 import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
@@ -118,7 +117,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 		    		context.getLogger().info("Adding user to Azure AD : "+jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
 		    		GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context);
 		    		context.getLogger().info("Updating user profile at Azure AD : "+jobj);
-		    		GraphAPIClientForUserProfile.updateUserProfile(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), jobj.getString(MANDATORY_PARAMS.NAME.value), 
+		    		GraphAPIClient.updateUserProfile(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), jobj.getString(MANDATORY_PARAMS.NAME.value), 
 		    				jobj.getString(MANDATORY_PARAMS.JOB_TITLE.value), jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value), jobj.getString(MANDATORY_PARAMS.PHONE_NUMBER.value), context);
 		    		context.getLogger().info("Updated user profile at Azure AD : "+jobj);
 		    	}catch(Exception e) {
