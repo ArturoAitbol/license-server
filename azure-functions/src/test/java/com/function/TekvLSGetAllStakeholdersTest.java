@@ -93,7 +93,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(stakeHolder.has("name"));
         assertTrue(stakeHolder.has("jobTitle"));
         assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("mobilePhone"));
+        assertTrue(stakeHolder.has("phoneNumber"));
     }
 
     @Tag("acceptance")
@@ -151,7 +151,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(stakeHolder.has("name"));
         assertTrue(stakeHolder.has("jobTitle"));
         assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("mobilePhone"));
+        assertTrue(stakeHolder.has("phoneNumber"));
     }
 
     @Tag("acceptance")
@@ -208,7 +208,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(stakeHolder.has("name"));
         assertTrue(stakeHolder.has("jobTitle"));
         assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("mobilePhone"));
+        assertTrue(stakeHolder.has("phoneNumber"));
     }
 
     @Tag("security")
@@ -290,7 +290,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(stakeHolder.has("name"));
         assertTrue(stakeHolder.has("jobTitle"));
         assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("mobilePhone"));
+        assertTrue(stakeHolder.has("phoneNumber"));
     }
     
     @Tag("security")
@@ -449,7 +449,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(stakeHolder.has("name"));
         assertTrue(stakeHolder.has("jobTitle"));
         assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("mobilePhone"));
+        assertTrue(stakeHolder.has("phoneNumber"));
     }
     
     @Tag("acceptance")
@@ -480,7 +480,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(stakeHolder.has("name"));
         assertTrue(stakeHolder.has("jobTitle"));
         assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("mobilePhone"));
+        assertTrue(stakeHolder.has("phoneNumber"));
     }
     
     @Tag("acceptance")
@@ -512,7 +512,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(stakeHolder.has("name"));
         assertTrue(stakeHolder.has("jobTitle"));
         assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("mobilePhone"));
+        assertTrue(stakeHolder.has("phoneNumber"));
     }
     
     @Tag("security")
