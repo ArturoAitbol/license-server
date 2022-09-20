@@ -94,7 +94,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private getActionMenuOptions() {
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "customerOptions");
         roles.forEach(accountRole => {
             permissions[accountRole].tables.customerOptions?.forEach(item => {
                 // check for CTaas Toggle feature, if true then only add VIEW_CTAAS_DASHBOARD option in action menu
@@ -190,7 +189,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     customerWithDetails.subaccountId = id;
                     const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === id));
                     customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
-                    customerWithDetails.services = (services) ? services : null;
+                    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService))
+                        customerWithDetails.services = (services) ? services : null;
                     fullCustomerList.push(customerWithDetails);
                 })
             } else {

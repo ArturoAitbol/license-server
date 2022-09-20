@@ -23,7 +23,7 @@ export const permissions = {
             'addSubAccAdminEmail',
             'deleteSubAccAdminEmail',
             'auditInfo',
-            'addCTaaSProject',
+            'addCTaaSProject'
         ],
         tables: {
             customerOptions: [
@@ -104,7 +104,9 @@ export const permissions = {
             'redirect',
             'apps',
             'ctaas',
-            'dashboards'
+            'dashboards',
+            'project',
+            'stakeholders'
         ],
         elements: [
             'addProject',
@@ -176,7 +178,9 @@ export const permissions = {
             'redirect',
             'apps',
             'ctaas',
-            'dashboards'
+            'dashboards',
+            'project',
+            'stakeholders'
         ],
         elements: [],
         tables: {
@@ -193,7 +197,10 @@ export const permissions = {
             projectOptions: [
                 'VIEW_CONSUMPTION'
             ],
-            stakeholderOptions: []
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
+            ]
         }
     },
     'customer.SubaccountAdmin': {
