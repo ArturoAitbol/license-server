@@ -1,45 +1,55 @@
 package com.function;
 
+import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_FORBIDDEN;
+import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_UNAUTHORIZED;
+import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
+import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
+import static com.function.auth.RoleAuthHandler.getRolesFromToken;
+import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
+import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
+import static com.function.auth.RoleAuthHandler.hasPermission;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Optional;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.function.auth.Permission;
+import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
-import com.microsoft.azure.functions.annotation.BindingName;
-
-import java.sql.*;
-import java.util.Optional;
 
 import io.jsonwebtoken.Claims;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import static com.function.auth.RoleAuthHandler.*;
-
-/**
- * Azure Functions with HTTP Trigger.
- */
-public class TekvLSModifyLicenseById 
-{
+public class TekvLSModifySubaccountStakeholderByEmail {
 	/**
-	 * This function listens at endpoint "/v1.0/licenses/{id}". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/v1.0/licenses/{id}
+	 * This function listens at endpoint "/v1.0/subaccountStakeHolders/{id}". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccountStakeHolders/{id}
 	 */
-	@FunctionName("TekvLSModifyLicenseById")
+	
+	@FunctionName("TekvLSModifySubaccountStakeholderByEmail")
 	public HttpResponseMessage run(
 			@HttpTrigger(
 				name = "req",
 				methods = {HttpMethod.PUT},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "licenses/{id}")
+				route = "subaccountStakeHolders/{email}")
 				HttpRequestMessage<Optional<String>> request,
-				@BindingName("id") String id,
+				@BindingName("email") String email,
 				final ExecutionContext context) 
 	{
 
@@ -51,14 +61,14 @@ public class TekvLSModifyLicenseById
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.MODIFY_LICENSE)){
+		if(!hasPermission(roles, Permission.MODIFY_SUBACCOUNT_STAKEHOLDER)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSModifyLicenseById Azure function");
+		context.getLogger().info("Entering TekvLSModifySubaccountStakeholderByEmail Azure function");
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -81,36 +91,34 @@ public class TekvLSModifyLicenseById
 		}
 
 		// Build the sql query
-		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("license");
+		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("subaccount_admin");
 		int optionalParamsFound = 0;
 		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
 			try {
-				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
-				optionalParamsFound++;
-			}
-			catch (Exception e) {
+					queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
+					optionalParamsFound++;
+			} catch (Exception e) {
 				context.getLogger().info("Ignoring exception: " + e);
 			}
 		}
 		if (optionalParamsFound == 0) {
+			updateADUser(email, jobj, context);
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
-		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
+		queryBuilder.appendWhereStatement("subaccount_admin_email", email, QueryBuilder.DATA_TYPE.VARCHAR);
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = queryBuilder.build(connection)) {
-			
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);){
+			PreparedStatement statement = queryBuilder.build(connection);
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
-			context.getLogger().info("License updated successfully."); 
-
+			context.getLogger().info("Subaccount Admin email (stakeholder) updated successfully."); 
+			updateADUser(email, jobj, context);
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {
@@ -128,30 +136,34 @@ public class TekvLSModifyLicenseById
 	}
 
 	private enum OPTIONAL_PARAMS {
-		SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
-		START_DATE("startDate", "start_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
-		PACKAGE_TYPE("subscriptionType", "package_type", "package_type_enum"),
-		RENEWAL_DATE("renewalDate", "renewal_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
-		TOKENS("tokensPurchased", "tokens", QueryBuilder.DATA_TYPE.INTEGER),
-		DEVICE_ACCESS_LIMIT("deviceLimit", "device_access_limit", QueryBuilder.DATA_TYPE.INTEGER),
-		STATUS("status", "status", "status_type_enum"),
-		DESCRIPTION("description", "description", QueryBuilder.DATA_TYPE.VARCHAR);
+		NOTIFICATIONS("notifications", "notifications", QueryBuilder.DATA_TYPE.VARCHAR);
 
 		private final String jsonAttrib;
 		private final String columnName;
-
 		private final String dataType;
-
-		OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
-			this.jsonAttrib = jsonAttrib;
-			this.columnName = columnName;
-			this.dataType = dataType;
-		}
 
 		OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
 			this.jsonAttrib = jsonAttrib;
 			this.columnName = columnName;
 			this.dataType = dataType.getValue();
 		}
+	}
+	
+	private void updateADUser(String email, JSONObject jobj, ExecutionContext context) {
+		 if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
+			 context.getLogger().info("ad-user-creation toggle is not active. Nothing to do at Azure AD");
+			 return;
+		 }
+		try {
+			context.getLogger().info("Updating user profile at Azure AD : "+email);
+			GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"),getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
+			context.getLogger().info("Updated user profile at Azure AD : "+jobj);
+		} catch(Exception e) {
+			context.getLogger().info("Failed to update user profile at Azure AD. Exception: " + e.getMessage());
+		}
+	}
+	
+	private String getValue(JSONObject jobj, String key) {
+		return jobj.has(key)?jobj.getString(key):null;
 	}
 }

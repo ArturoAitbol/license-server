@@ -20,51 +20,57 @@ import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
 
-public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
+public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
 
-    private final TekvLSModifyCtaasSetupById tekvLSModifyCtaasSetupById = new TekvLSModifyCtaasSetupById();
-    private final TekvLSCreateCtaasSetup tekvLSCreateCtaasSetup = new TekvLSCreateCtaasSetup();
-    private final TekvLSDeleteCtaasSetupById tekvLSDeleteCtaasSetupById = new TekvLSDeleteCtaasSetupById();
-    private String ctaasSetupId = "31d82e5c-b911-460d-edbe-6860f8464233";
+    private final TekvLSModifySubaccountStakeholderByEmail tekvLSModifySubaccountStakeholderByEmail = new TekvLSModifySubaccountStakeholderByEmail();
+    private final TekvLSCreateSubaccountStakeHolder tekvLSCreateSubaccountStakeHolder = new TekvLSCreateSubaccountStakeHolder();
+    private final TekvLSDeleteSubaccountStakeHolderByEmail tekvLSDeleteSubaccountStakeHolderByEmail = new TekvLSDeleteSubaccountStakeHolderByEmail();
+    private String stakeHolderEmail = "test-customer-subaccount-stakeholder1@tekvizion.com";
 
     @BeforeEach
     void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
         String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'status': 'SETUP_INPROGRESS'}";
+                "'subaccountAdminEmail': '"+this.stakeHolderEmail+"'," +
+                "'notifications': 'email,text'," +
+                "'name': 'test-customer-subaccount-stakeholder'," +
+                "'jobTitle': 'Software Engineer'," +
+                "'companyName': 'tekVizion'," +
+                "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        HttpResponseMessage response = tekvLSCreateCtaasSetup.run(this.request,this.context);
+      //When
+        HttpResponseMessage response = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
         this.context.getLogger().info(response.getBody().toString());
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("id"));
-        this.ctaasSetupId = jsonBody.getString("id");
-        assertEquals(HttpStatus.OK, response.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
     @AfterEach
     void tearDown(){
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        HttpResponseMessage response = tekvLSDeleteCtaasSetupById.run(this.request,this.ctaasSetupId, this.context);
+        HttpResponseMessage response = tekvLSDeleteSubaccountStakeHolderByEmail.run(this.request,this.stakeHolderEmail, this.context);
         this.context.getLogger().info(response.getStatus().toString());
         assertEquals(HttpStatus.OK, response.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
     }
 
     @Tag("acceptance")
     @Test
-    public void modifyCtaasSetupTest(){
+    public void modifyStakeHolderTest(){
         //Given
-        String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'READY'," +
-                "'tapUrl': 'http://tekvizionTAP.com',"+ 
-                "'onBoardingComplete': 'true'}";
+        String bodyRequest = "{'notifications': 'email,text'," +
+        		 "'name': 'test-customer-subaccount-stakeholder'," +
+                 "'jobTitle': 'Software Engineer'," +
+                 "'companyName': 'tekVizion'," +
+                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
         this.context.getLogger().info(response.getStatus().toString());
-
         //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
@@ -73,15 +79,14 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     
     @Tag("acceptance")
     @Test
-    public void modifyOnBoardingTest(){
-        //Given
-        String bodyRequest = "{'onBoardingComplete': 'true'}";
+    public void modifyNotificationTest(){
+    	  //Given
+        String bodyRequest = "{'notifications': 'email,text'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
         this.context.getLogger().info(response.getStatus().toString());
-
         //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
@@ -90,39 +95,22 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     
     @Tag("acceptance")
     @Test
-    public void modifyStatusTest(){
-        //Given
-    	  String bodyRequest = "{'status': 'READY'}";
+    public void modifyUserProfileTest(){
+    	  //Given
+        String bodyRequest = "{'name': 'test-customer-subaccount-stakeholder'," +
+                 "'jobTitle': 'Software Engineer'," +
+                 "'companyName': 'tekVizion'," +
+                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
         //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
         this.context.getLogger().info(response.getStatus().toString());
-
         //Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
     }
     
-    @Tag("acceptance")
-    @Test
-    public void modifyTapDetailsTest(){
-        //Given
-    	  String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                  "'tapUrl': 'http://tekvizionTAP.com'}";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
-        //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
-        this.context.getLogger().info(response.getStatus().toString());
-
-        //Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
-    }
-
     @Tag("acceptance")
     @Test
     public void emptyBodyTest(){
@@ -131,7 +119,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
         this.context.getLogger().info(response.getStatus().toString());
 
         //Then
@@ -147,7 +135,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -172,7 +160,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then - Assert
@@ -196,7 +184,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         this.headers.remove("authorization");
 
         //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId, this.context);
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -220,7 +208,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId, this.context);
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -238,37 +226,18 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     }
 
     @Test
-    public void invalidSQLTest(){
-        //Given
-        String invalidId = "invalid-id";
-        String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'READY'," +
-                "'tapUrl': 'http://tekvizionTAP.com',"+ 
-                "'onBoardingComplete': 'true'}";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
-        //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,invalidId,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        //Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
-    }
-
-    @Test
     public void genericExceptionTest(){
         //Given
-    	String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'READY'," +
-                "'tapUrl': 'http://tekvizionTAP.com',"+ 
-                "'onBoardingComplete': 'true'}";
+    	String bodyRequest = "{'notifications': 'email,text'," +
+       		 "'name': 'test-customer-subaccount-stakeholder'," +
+                "'jobTitle': 'Software Engineer'," +
+                "'companyName': 'tekVizion'," +
+                "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 
         //When
-        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId, this.context);
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then

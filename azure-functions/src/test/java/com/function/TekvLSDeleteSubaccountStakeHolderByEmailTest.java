@@ -19,12 +19,12 @@ import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
 
-public class TekvLSDeleteCtaasSetupByIdTest extends TekvLSTest {
+public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
 
-    private final TekvLSDeleteCtaasSetupById tekvLSDeleteCtaasSetupById = new TekvLSDeleteCtaasSetupById();
-    private final TekvLSCreateCtaasSetup tekvLSCreateCtaasSetup = new TekvLSCreateCtaasSetup();
+    private final TekvLSDeleteSubaccountStakeHolderByEmail tekvLSDeleteSubaccountStakeHolderByEmail = new TekvLSDeleteSubaccountStakeHolderByEmail();
+    private final TekvLSCreateSubaccountStakeHolder tekvLSCreateSubaccountStakeHolder = new TekvLSCreateSubaccountStakeHolder();
 
-    private String ctaasSetupId ="31d82e5c-b911-460d-edbe-6860f8464233";
+    private String stakeHolderEmail ="test-customer-subaccount-stakeholder1@tekvizion.com";
 
     @BeforeEach
     void setup() {
@@ -33,20 +33,24 @@ public class TekvLSDeleteCtaasSetupByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void deleteCtaasSetupTest(){
+    public void deleteStakeHolderTest(){
         //Given
-    	String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'status': 'SETUP_INPROGRESS'}";
+    	 String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
+                 "'subaccountAdminEmail': '"+this.stakeHolderEmail +"'," +
+                 "'name': 'test-customer-subaccount-stakeholder'," +
+                 "'jobTitle': 'Software Engineer'," +
+                 "'companyName': 'tekVizion'," +
+                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        HttpResponseMessage createResponse = tekvLSCreateCtaasSetup.run(this.request,this.context);
+        HttpResponseMessage createResponse = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
         this.context.getLogger().info(createResponse.getBody().toString());
         assertEquals(HttpStatus.OK, createResponse.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
         JSONObject jsonBody = new JSONObject(createResponse.getBody().toString());
-        assertTrue(jsonBody.has("id"));
-        this.ctaasSetupId = jsonBody.getString("id");
+        assertTrue(jsonBody.has("subaccountAdminEmail"));
+        this.stakeHolderEmail = jsonBody.getString("subaccountAdminEmail");
 
         //When
-        HttpResponseMessage response = tekvLSDeleteCtaasSetupById.run(this.request,this.ctaasSetupId, this.context);
+        HttpResponseMessage response = tekvLSDeleteSubaccountStakeHolderByEmail.run(this.request,this.stakeHolderEmail, this.context);
         this.context.getLogger().info(response.getStatus().toString());
 
         HttpStatusType actualStatus = response.getStatus();
@@ -61,7 +65,7 @@ public class TekvLSDeleteCtaasSetupByIdTest extends TekvLSTest {
         this.headers.remove("authorization");
 
         //When
-        HttpResponseMessage response = tekvLSDeleteCtaasSetupById.run(this.request,this.ctaasSetupId, this.context);
+        HttpResponseMessage response = tekvLSDeleteSubaccountStakeHolderByEmail.run(this.request,this.stakeHolderEmail, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -85,7 +89,7 @@ public class TekvLSDeleteCtaasSetupByIdTest extends TekvLSTest {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
-        HttpResponseMessage response = tekvLSDeleteCtaasSetupById.run(this.request,this.ctaasSetupId, this.context);
+        HttpResponseMessage response = tekvLSDeleteSubaccountStakeHolderByEmail.run(this.request,this.stakeHolderEmail, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -104,29 +108,13 @@ public class TekvLSDeleteCtaasSetupByIdTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void invalidSQLTest(){
-        //Given
-        this.ctaasSetupId = "invalid-id";
-
-        //When
-        HttpResponseMessage response = tekvLSDeleteCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        //Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
-    }
-
-    @Tag("acceptance")
-    @Test
     public void genericExceptionTest(){
         //Given
-        this.ctaasSetupId = "31d82e5c-b911-460d-edbe-6860f8464233";
+        this.stakeHolderEmail = "test-customer-subaccount-stakeholder1@tekvizion.com";
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 
         //When
-        HttpResponseMessage response = tekvLSDeleteCtaasSetupById.run(this.request,this.ctaasSetupId, this.context);
+        HttpResponseMessage response = tekvLSDeleteSubaccountStakeHolderByEmail.run(this.request,this.stakeHolderEmail, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then

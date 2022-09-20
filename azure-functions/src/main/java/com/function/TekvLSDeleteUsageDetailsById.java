@@ -128,7 +128,7 @@ public class TekvLSDeleteUsageDetailsById
 				catch (Exception e) {
 					context.getLogger().info("Caught exception: " + e.getMessage());
 					json.put("error", e.getMessage());
-					return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+					return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 				}
 			}
 			return request.createResponseBuilder(HttpStatus.OK).build();
@@ -141,7 +141,7 @@ public class TekvLSDeleteUsageDetailsById
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 
