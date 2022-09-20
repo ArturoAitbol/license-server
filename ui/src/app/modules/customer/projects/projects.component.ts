@@ -7,7 +7,7 @@ import { MsalService } from '@azure/msal-angular';
 import moment from 'moment';
 import { forkJoin } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
-import { permissions } from 'src/app/helpers/role-permissions';
+import { Utility } from 'src/app/helpers/utils';
 import { License } from 'src/app/model/license.model';
 import { Project } from 'src/app/model/project.model';
 import { TableColumn } from 'src/app/model/table-column.model';
@@ -39,6 +39,13 @@ export class ProjectsComponent implements OnInit {
   readonly CLOSE_PROJECT: string = 'Close';
   readonly DELETE_PROJECT: string = 'Delete';
   readonly VIEW_CONSUMPTION: string = 'View tekToken Consumption';
+
+  readonly options = {
+    MODIFY_PROJECT : this.MODIFY_PROJECT,
+    CLOSE_PROJECT : this.CLOSE_PROJECT,
+    DELETE_PROJECT : this.DELETE_PROJECT,
+    VIEW_CONSUMPTION : this.VIEW_CONSUMPTION,
+  }
 
   actionMenuOptions: any = [];
 
@@ -73,15 +80,13 @@ export class ProjectsComponent implements OnInit {
   }
 
   private getActionMenuOptions() {
-    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    accountRoles.forEach(accountRole => {
-      permissions[accountRole].tables.projectOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
-      if (this.currentCustomer.testCustomer === false) {
-        const action = (action) => action === 'Delete';
-        const index = this.actionMenuOptions.findIndex(action);
-        this.actionMenuOptions.splice(index,);
-      }
-    })
+    const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"projectOptions");
+    if (this.currentCustomer.testCustomer === false) {
+      const action = (action) => action === 'Delete';
+      const index = this.actionMenuOptions.findIndex(action);
+      this.actionMenuOptions.splice(index,1);
+    }
   }
 
   private calculateTableHeight() {

@@ -14,7 +14,7 @@ public enum FeatureToggles {
 
     FeatureToggles() {
         String environment = Optional.ofNullable(System.getenv("ENVIRONMENT_NAME")).orElse("production");
-        try (InputStream input = FeatureToggles.class.getResourceAsStream("/feature-toggles." + environment + ".properties")) {
+        try (InputStream input = FeatureToggles.class.getResourceAsStream("/feature-toggles/feature-toggles." + environment + ".properties")) {
             features.load(input);
         } catch (IOException ex) {
             logger.warning("Could not load the feature toggles for " + environment);

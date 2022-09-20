@@ -10,9 +10,9 @@ Feature: Subaccounts
     When I create a customer with the following data
       | name          | subaccountCustomerTest              |
       | type          | MSP                                 |
-      | adminEmail    | test-sub-custom@tekvizionlabs.com   |
+      | adminEmail    | test-sub-custom@tekvizion.com       |
       | subaccount    | Default                             |
-      | subAdminEmail | test-subaccount+1@tekvizionlabs.com |
+      | subAdminEmail | test-sub-custom@tekvizion.com       |
       | testCustomer  | yes                                 |
     Then I see the customer "subaccountCustomerTest" in the table
 
@@ -23,7 +23,7 @@ Feature: Subaccounts
     When I create a subaccount with the following data
       | customer      | subaccountCustomerTest              |
       | name          | subaccountTest                      |
-      | subAdminEmail | test-subaccount+2@tekvizionlabs.com |
+      | subAdminEmail | test-sub-custom_2@tekvizion.com     |
     Then I should see the message "Subaccount added successfully!"
     Then I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
 
@@ -31,14 +31,14 @@ Feature: Subaccounts
   Scenario: Add a subaccount administrator
     Given I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
     And I open the Subaccount Administrator Emails of "subaccountCustomerTest"
-    When I add an administrator with email "admintest@tekvizionlabs.com"
+    When I add an administrator with email "admintest@tekvizion.com"
     Then I should see the message "Customer admin emails edited successfully!"
 
   @deleteSubaccountAdmin
   Scenario: Delete a subaccount administrator
     Given I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
     And I open the Subaccount Administrator Emails of "subaccountCustomerTest"
-    When I delete the administrator with email "admintest@tekvizionlabs.com"
+    When I delete the administrator with email "admintest@tekvizion.com"
     Then I should see the message "Subaccount administrator email deleted"
 
   @editSubaccount

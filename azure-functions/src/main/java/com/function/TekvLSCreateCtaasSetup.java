@@ -4,7 +4,7 @@ import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_FORBIDDEN;
 import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_UNAUTHORIZED;
 import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
 import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
-import static com.function.auth.RoleAuthHandler.getRoleFromToken;
+import static com.function.auth.RoleAuthHandler.getRolesFromToken;
 import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
 import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 import static com.function.auth.RoleAuthHandler.hasPermission;
@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.function.auth.Permission;
@@ -35,8 +36,8 @@ import io.jsonwebtoken.Claims;
 
 public class TekvLSCreateCtaasSetup {
 	/**
-	 * This function listens at endpoint "/v1.0/ctaasSetup". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasSetup
+	 * This function listens at endpoint "/v1.0/ctaasSetups". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasSetups
 	 */
 	@FunctionName("TekvLSCreateCtaasSetup")
 	public HttpResponseMessage run(
@@ -44,21 +45,21 @@ public class TekvLSCreateCtaasSetup {
 				name = "req",
 				methods = {HttpMethod.POST},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "ctaasSetup")
+				route = "ctaasSetups")
 				HttpRequestMessage<Optional<String>> request,
 				final ExecutionContext context) 
 	{
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-		String currentRole = getRoleFromToken(tokenClaims,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.CREATE_CTAAS_SETUP)){
+		if(!hasPermission(roles, Permission.CREATE_CTAAS_SETUP)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}

@@ -3,12 +3,15 @@
   "Values": {
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "java",
+    "TENANT_ID":"e3a46007-31cb-4529-b8cc-1e59b97ebdbd",
     "ISSUER": "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/v2.0",
     "POSTGRESQL_SERVER": "localhost:5432",
     "POSTGRESQL_USER": "postgres",
     "POSTGRESQL_PWD": "postgres",
     "POSTGRESQL_SECURITY_MODE": "?ssl=false&sslmode=disable",
-    "ENVIRONMENT_NAME": "dev"
+    "ENVIRONMENT_NAME": "dev",
+    "EMAIL_INVITE_CLIENT_ID": "353f505a-d4be-442f-bc22-c016c59132c9",
+    "EMAIL_INVITE_CLIENT_SECRET": "atz8Q~ulS1qtMGUeOM-RLpjg7o-gTWrK5LLiVau5"
   },
   "Host": {
     "LocalHttpPort": 7071,
