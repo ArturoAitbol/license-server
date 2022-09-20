@@ -140,6 +140,7 @@ describe('modify customers flow', () => {
   it('should edit services of a subaccount', () => {
     const updateCustomerForm = CustomerComponentTestInstance.updateCustomerForm;
     CustomerComponentTestInstance.data = CurrentCustomerServiceMock;
+    CustomerComponentTestInstance.data.services = "tokenConsumption,ctaas";
     updateCustomerForm.patchValue(CustomerComponentTestInstance.data);
     updateCustomerForm.get('services').get('ctaas').setValue(true);
     updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
