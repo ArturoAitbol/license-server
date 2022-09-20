@@ -30,19 +30,19 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import io.jsonwebtoken.Claims;
 
-public class TekvLSGetAllCtaasProjects {
+public class TekvLSGetAllCtaasTestSuites {
     /**
-     * This function listens at endpoint "/v1.0/ctaasProjects". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasProjects
-     * 2. curl "{your host}/v1.0/ctaasProjects"
+     * This function listens at endpoint "/v1.0/ctaasTestSuites". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasTestSuites
+     * 2. curl "{your host}/v1.0/ctaasTestSuites"
      */
-    @FunctionName("TekvLSGetAllCtaasProjects")
+    @FunctionName("TekvLSGetAllCtaasTestSuites")
     public HttpResponseMessage run(
             @HttpTrigger(
                 name = "req", 
                 methods = { HttpMethod.GET },
                 authLevel = AuthorizationLevel.ANONYMOUS,
-                route = "ctaasProjects/{id=EMPTY}")
+                route = "ctaasTestSuites/{id=EMPTY}")
             HttpRequestMessage<Optional<String>> request,
             @BindingName("id") String id,
             final ExecutionContext context) {
@@ -62,13 +62,13 @@ public class TekvLSGetAllCtaasProjects {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-        context.getLogger().info("Entering TekvLSGetAllCtaasProjects Azure function");
+        context.getLogger().info("Entering TekvLSGetAllCtaasTestSuites Azure function");
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 
         // Build SQL statement
-        SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_project");
+        SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_test_suite");
         SelectQueryBuilder verificationQueryBuilder = null;
         String email = getEmailFromToken(tokenClaims, context);
 
@@ -151,11 +151,11 @@ public class TekvLSGetAllCtaasProjects {
                 }
             }
 
-            // Retrieve ctaas projects.
+            // Retrieve ctaas test suites.
             context.getLogger().info("Execute SQL statement: " + selectStmt);
             rs = selectStmt.executeQuery();
 
-            // Return a JSON array of ctaas_projects
+            // Return a JSON array of ctaas_test_suite
             JSONArray array = new JSONArray();
             while (rs.next()) {
                 JSONObject item = new JSONObject();
@@ -177,7 +177,7 @@ public class TekvLSGetAllCtaasProjects {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
-            json.put("ctaasProjects", array);
+            json.put("ctaasTestSuites", array);
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
                     .body(json.toString()).build();
         } catch (SQLException e) {

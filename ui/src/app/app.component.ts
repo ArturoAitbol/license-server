@@ -112,10 +112,10 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'dashboard'
             },
             {
-                name: 'Project',
+                name: 'Test Suites',
                 iconName: 'auto_awesome_motion',
                 selected: false,
-                path: 'projects'
+                path: 'test-suites'
             },
             {
                 name: 'Stakeholders',

@@ -9,7 +9,8 @@
       "testFeature1": true,
       "redirect": true,
       "apps": true,
-      "ctaas": true
+      "ctaas": true,
+      "test-suites":true
     },
     "features": {
       "testFeature1": true,

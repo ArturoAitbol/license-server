@@ -6,8 +6,8 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class CtaasProjectService {
-  private readonly API_URL: string = environment.apiEndpoint + '/ctaasProjects';
+export class CtaasTestSuiteService {
+  private readonly API_URL: string = environment.apiEndpoint + '/ctaasTestSuites';
   private selectedSubAccount: string;
   constructor(private httpClient: HttpClient) { }
 
@@ -19,7 +19,7 @@ export class CtaasProjectService {
     return this.selectedSubAccount;
   }
 
-  public getProjectDetailsBySubAccount(subaccountId: string): Observable<any[]> {
+  public getTestSuitesBySubAccount(subaccountId: string): Observable<any[]> {
     const headers = this.getHeaders();
     let params = new HttpParams();
     params = params.set('subaccountId', subaccountId);

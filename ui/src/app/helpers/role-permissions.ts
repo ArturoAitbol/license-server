@@ -185,9 +185,9 @@ export const permissions = {
             projectOptions: [
                 'VIEW_CONSUMPTION'
             ],
-            ctaasProjectOptions:[
-                'EXECUTE_ON_DEMAND',
-                'MODIFY_PROJECT'
+            ctaasTestSuiteOptions: [
+                // 'EXECUTE_ON_DEMAND',
+                'MODIFY_TEST_SUITE'
             ]
         }
     },

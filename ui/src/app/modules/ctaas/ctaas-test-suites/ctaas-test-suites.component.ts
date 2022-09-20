@@ -5,23 +5,23 @@ import { MsalService } from '@azure/msal-angular';
 import { Subject } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { permissions } from 'src/app/helpers/role-permissions';
-import { CtaasProjectService } from 'src/app/services/ctaas-project.service';
+import { CtaasTestSuiteService } from 'src/app/services/ctaas-test-suite.service';
 import { CustomerService } from 'src/app/services/customer.service';
 
 @Component({
-  selector: 'app-ctaas-projects',
-  templateUrl: './ctaas-projects.component.html',
-  styleUrls: ['./ctaas-projects.component.css']
+  selector: 'app-ctaas-test-suites',
+  templateUrl: './ctaas-test-suites.component.html',
+  styleUrls: ['./ctaas-test-suites.component.css']
 })
-export class CtaasProjectsComponent implements OnInit, OnDestroy {
+export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   tableMaxHeight: number;
   currentCustomer: any;
   displayedColumns: any[] = [];
-  projects: any = [];
+  testSuites: any = [];
   isLoadingResults = true;
   isRequestCompleted = false;
-  readonly EXECUTE_ON_DEMAND: string = 'Execute OnDemand';
-  readonly MODIFY_PROJECT: string = 'Edit';
+  // readonly EXECUTE_ON_DEMAND: string = 'Execute OnDemand';
+  readonly MODIFY_TEST_SUITE: string = 'Edit';
 
   actionMenuOptions: any = [];
   private unsubscribe: Subject<void> = new Subject<void>();
@@ -30,7 +30,7 @@ export class CtaasProjectsComponent implements OnInit, OnDestroy {
     private customerService: CustomerService,
     public dialog: MatDialog,
     private msalService: MsalService,
-    private ctaasProjectService: CtaasProjectService) { }
+    private ctaasTestSuiteService: CtaasTestSuiteService) { }
 
   @HostListener('window:resize')
   sizeChange() {
@@ -40,7 +40,7 @@ export class CtaasProjectsComponent implements OnInit, OnDestroy {
   private getActionMenuOptions() {
     const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     accountRoles.forEach(accountRole => {
-      permissions[accountRole].tables.ctaasProjectOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
+      permissions[accountRole].tables.ctaasTestSuiteOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
       if (this.currentCustomer.testCustomer === false) {
         const action = (action) => action === 'Delete';
         const index = this.actionMenuOptions.findIndex(action);
@@ -69,7 +69,7 @@ export class CtaasProjectsComponent implements OnInit, OnDestroy {
 
   initColumns(): void {
     this.displayedColumns = [
-      { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Suite Name', dataKey: 'name', position: 'left', isSortable: true },
       { name: 'Service Under Test', dataKey: 'deviceType', position: 'left', isSortable: true },
       { name: 'Total Executions', dataKey: 'totalExecutions', position: 'left', isSortable: true },
       { name: 'Next Execution', dataKey: 'nextExecution', position: 'left', isSortable: true },
@@ -78,9 +78,8 @@ export class CtaasProjectsComponent implements OnInit, OnDestroy {
   }
 
   private fetchDataToDisplay(): void {
-
-    this.ctaasProjectService.getProjectDetailsBySubAccount(this.currentCustomer.id).subscribe((response: any) => {
-      this.projects = response.ctaasProjects;
+    this.ctaasTestSuiteService.getTestSuitesBySubAccount(this.currentCustomer.id).subscribe((response: any) => {
+      this.testSuites = response.ctaasTestSuites;
       this.isRequestCompleted = false;
       this.isLoadingResults = true;
     }, () => {
@@ -92,11 +91,11 @@ export class CtaasProjectsComponent implements OnInit, OnDestroy {
   sortData(sortParameters: Sort): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc')
-      this.projects = this.projects.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      this.testSuites = this.testSuites.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
     else if (sortParameters.direction === 'desc')
-      this.projects = this.projects.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+      this.testSuites = this.testSuites.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
     else
-      return this.projects = this.projects;
+      return this.testSuites = this.testSuites;
   }
 
   /**
@@ -107,15 +106,12 @@ export class CtaasProjectsComponent implements OnInit, OnDestroy {
   openDialog(type: string, selectedItemData?: any): void {
     let dialogRef;
     switch (type) {
-      case this.EXECUTE_ON_DEMAND:
-        break;
-      case this.MODIFY_PROJECT:
-      // dialogRef = this.dialog.open(ModifyCustomerAccountComponent, {
-      //   width: 'auto',
-      //   data: selectedItemData,
-      //   disableClose: true
-      // });
+      // case this.EXECUTE_ON_DEMAND:
+      // TO DO
       // break;
+      case this.MODIFY_TEST_SUITE:
+        // TO DO
+        break;
     }
     dialogRef.afterClosed().subscribe(res => {
       try {
@@ -131,12 +127,12 @@ export class CtaasProjectsComponent implements OnInit, OnDestroy {
 
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
-      case this.MODIFY_PROJECT:
+      case this.MODIFY_TEST_SUITE:
         this.openDialog(object.selectedOption, object.selectedRow);
         break;
-      case this.EXECUTE_ON_DEMAND:
-        this.openDialog(object.selectedOption, object.selectedRow);
-        break;
+      // case this.EXECUTE_ON_DEMAND:
+      //   this.openDialog(object.selectedOption, object.selectedRow);
+      //   break;
     }
   }
 

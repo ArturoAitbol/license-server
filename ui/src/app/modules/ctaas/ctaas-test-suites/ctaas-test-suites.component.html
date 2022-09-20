@@ -1,10 +1,10 @@
 <div class="container-fluid content">
     <main>
-        <h1 id="page-title">Projects</h1>
+        <h1 id="page-title">Test Suites</h1>
     </main>
     <section class="table-section">
         <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
-            <app-data-table [tableData]="projects" [tableColumns]="displayedColumns" [isFilterable]="false"
+            <app-data-table [tableData]="testSuites" [tableColumns]="displayedColumns" [isFilterable]="false"
                 [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                 [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
                 [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'" (rowAction)="rowAction($event)"

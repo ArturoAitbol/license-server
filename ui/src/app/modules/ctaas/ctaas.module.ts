@@ -7,14 +7,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
 import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.component';
-import { CtaasProjectsComponent } from './ctaas-projects/ctaas-projects.component';
+import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.component';
 
 
 @NgModule({
   declarations: [
     CtaasDashboardComponent,
     OnboardWizardComponent,
-    CtaasProjectsComponent,
+    CtaasTestSuitesComponent,
   ],
   imports: [
     CommonModule,

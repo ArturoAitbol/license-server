@@ -23,6 +23,7 @@ public class RoleAuthHandler {
            CREATE_USAGE_DETAILS,
            CREATE_PROJECT,
            CREATE_CTAAS_SETUP,
+           CREATE_SUBACCOUNT_STAKEHOLDER,
            //DELETE
            DELETE_CUSTOMER,
            DELETE_SUB_ACCOUNT,
@@ -33,6 +34,7 @@ public class RoleAuthHandler {
            DELETE_LICENSE_USAGE,
            DELETE_USAGE_DETAILS,
            DELETE_CTAAS_SETUP,
+           DELETE_SUBACCOUNT_STAKEHOLDER,
            //READ
            GET_ALL_CUSTOMERS,
            GET_ALL_SUBACCOUNTS,
@@ -44,13 +46,15 @@ public class RoleAuthHandler {
            GET_CONSUMPTION_USAGE_DETAILS,
            GET_USER_EMAIL_INFO,
            GET_ALL_CTAAS_SETUPS,
+           GET_ALL_SUBACCOUNT_STAKEHOLDER,
            //UPDATE
            MODIFY_CUSTOMER,
            MODIFY_SUBACCOUNT,
            MODIFY_LICENSE,
            MODIFY_PROJECT,
            MODIFY_LICENSE_USAGE,
-           MODIFY_CTAAS_SETUP);
+           MODIFY_CTAAS_SETUP,
+           MODIFY_SUBACCOUNT_STAKEHOLDER);
 
 
     private static final EnumSet<Permission> SaleAdminPermissions = EnumSet.of(
@@ -70,6 +74,7 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
+            GET_ALL_SUBACCOUNT_STAKEHOLDER,
             //UPDATE
             MODIFY_CUSTOMER,
             MODIFY_SUBACCOUNT,
@@ -81,9 +86,12 @@ public class RoleAuthHandler {
             CREATE_PROJECT,
             CREATE_USAGE_DETAILS,
             CREATE_CTAAS_SETUP,
+          //CREATE
+    		CREATE_SUBACCOUNT_STAKEHOLDER,
             //DELETE
             DELETE_LICENSE_USAGE,
             DELETE_USAGE_DETAILS,
+            DELETE_SUBACCOUNT_STAKEHOLDER,
             //READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -94,10 +102,12 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
+            GET_ALL_SUBACCOUNT_STAKEHOLDER,
             //UPDATE
             MODIFY_PROJECT,
             MODIFY_LICENSE_USAGE,
-            MODIFY_CTAAS_SETUP);
+            MODIFY_CTAAS_SETUP,
+            MODIFY_SUBACCOUNT_STAKEHOLDER);
 
     private static final EnumSet<Permission> devicesAdminPermissions = EnumSet.of(
             //CREATE
@@ -152,7 +162,11 @@ public class RoleAuthHandler {
             GET_ALL_BUNDLES);
 
     private static final EnumSet<Permission> customerAdminPermissions = EnumSet.of(
-            //READ
+    		//CREATE
+    		CREATE_SUBACCOUNT_STAKEHOLDER,
+    		//DELETE
+    		DELETE_SUBACCOUNT_STAKEHOLDER,
+    		//READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
             GET_ALL_LICENSES,
@@ -162,9 +176,16 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
-            MODIFY_CTAAS_ONBOARDING);
+            GET_ALL_SUBACCOUNT_STAKEHOLDER,
+            //MODIFY
+            MODIFY_CTAAS_ONBOARDING,
+            MODIFY_SUBACCOUNT_STAKEHOLDER);
 
     private static final EnumSet<Permission> SubAccountAdminPermissions = EnumSet.of(
+    		//CREATE
+    		CREATE_SUBACCOUNT_STAKEHOLDER,
+    		//DELETE
+    		DELETE_SUBACCOUNT_STAKEHOLDER,
             //READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -175,15 +196,23 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
-            GET_ALL_CTAAS_PROJECTS,
+            GET_ALL_CTAAS_TEST_SUITES,
+            GET_ALL_SUBACCOUNT_STAKEHOLDER,
+            GET_AUTH_USER_PROFILE,
             //MODIFY
-            MODIFY_CTAAS_ONBOARDING);
+            MODIFY_CTAAS_ONBOARDING,
+            MODIFY_SUBACCOUNT_STAKEHOLDER,
+            MODIFY_AUTH_USER_PROFILE);
     
     private static final EnumSet<Permission> SubAccountStakeholderPermissions = EnumSet.of(
             //READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
-            GET_ALL_CTAAS_SETUPS);
+            GET_ALL_CTAAS_SETUPS,
+            GET_ALL_SUBACCOUNT_STAKEHOLDER,
+            GET_AUTH_USER_PROFILE,
+            //MODIFY
+            MODIFY_AUTH_USER_PROFILE);
             
 
 
@@ -207,6 +236,10 @@ public class RoleAuthHandler {
     public static final String LOG_MESSAGE_FOR_INVALID_ID = "Invalid Request Error: Id provided does not belong to the account of: ";
     public static final String MESSAGE_FOR_INVALID_ID = "The id provided does not exist in your account.";
     public static final String MESSAGE_ID_NOT_FOUND = "Id provided does not exist.";
+    
+    public static final String LOG_MESSAGE_FOR_INVALID_EMAIL = "Invalid Request Error: The authenticated user provided does not belong to the account of: ";
+    public static final String MESSAGE_FOR_INVALID_AUTH_EMAIL = "The authenticated user does not exist in your account.";
+    public static final String MESSAGE_EMAIL_NOT_FOUND = "Authenticated user does not exist.";
     private static final String ISSUER = System.getenv("ISSUER");
 
     public static boolean hasPermission(JSONArray roles, Permission permission){
