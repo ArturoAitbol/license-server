@@ -206,7 +206,7 @@ public class TekvLSGetAllStakeholders {
 					 	json.put("name", "");
 						json.put("jobTitle", "");
 						json.put("companyName", "");
-						json.put("mobilePhone", "");
+						json.put("phoneNumber", "");
 						stakeHolders.put(json);
 						continue;
 				 }
@@ -215,7 +215,7 @@ public class TekvLSGetAllStakeholders {
 					json.put("name",userProfile.get("displayName"));
 					json.put("jobTitle",userProfile.get("jobTitle"));
 					json.put("companyName",userProfile.get("companyName"));
-					json.put("mobilePhone",userProfile.get("mobilePhone"));
+					json.put("phoneNumber",userProfile.get("mobilePhone"));
 					stakeHolders.put(json);
 				}
 			} catch (Exception e) {
