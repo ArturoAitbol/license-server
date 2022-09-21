@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import com.function.auth.Permission;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
+import com.function.util.Constants;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -87,6 +88,14 @@ public class TekvLSModifyCtaasSetupById {
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
+		// validate ctaas setup completion
+		Boolean isSetupReady = jobj.has("status") && jobj.getString("status").equalsIgnoreCase(Constants.CTaaSSetupStatus.READY.value());
+		if (isSetupReady && !jobj.has("licenseId")) {
+			context.getLogger().info("error: licenseId is missing.");
+			JSONObject json = new JSONObject();
+			json.put("error", "error: licenseId is missing.");
+			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		}
 		// Build the sql query
 		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
 		int optionalParamsFound = 0;
@@ -116,7 +125,11 @@ public class TekvLSModifyCtaasSetupById {
 			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
-			context.getLogger().info("Ctaas_setup updated successfully."); 
+			context.getLogger().info("Ctaas_setup updated successfully.");
+
+			if (isSetupReady) {
+				//here we add project and support license usage
+			}
 
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
