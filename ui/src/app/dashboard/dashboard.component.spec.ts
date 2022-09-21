@@ -25,7 +25,9 @@ import { MsalServiceMock } from '../../test/mock/services/msal-service.mock';
 import { SnackBarServiceMock } from "../../test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "../services/snack-bar.service";
 import { DialogServiceMock } from '../../test/mock/services/dialog.service.mock';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
+import { Features } from '../helpers/features';
 
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
@@ -455,6 +457,9 @@ describe('Filtering table rows', ()  => {
         fixture.detectChanges();
         await fixture.whenStable();
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
-        expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual({"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive"});
+        let objectToCompare: any = {"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive"};
+        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature))
+            objectToCompare.services = null;
+        expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);
     });
 });

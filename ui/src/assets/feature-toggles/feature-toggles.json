@@ -9,7 +9,10 @@
       "testFeature1": true,
       "redirect": true,
       "apps": true,
-      "ctaas": true
+      "ctaas": true,
+      "dashboards": true,
+      "project": true,
+      "stakeholders": true
     },
     "features": {
       "testFeature1": true,
@@ -29,7 +32,7 @@
     },
     "features": {
       "testFeature1": true,
-      "ctaasFeature": false,
+      "ctaasFeature": true,
       "enableAllServiceFeature": false
     }
   },

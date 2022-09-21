@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
-import { Features } from '../model/features';
+import { Features } from '../helpers/features';
 import { IService } from '../model/service.model';
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class AvailableServicesService {
       "access": false,
       "routePath": "/dashboard",
       "imagePath": "assets/images/tokens.png",
-      "tabName": "tekVizion 360 Portal",
+      "tabName": "tekToken Usage",
       "featureName": "Test_Feature_1"
     },
     {
@@ -23,7 +23,7 @@ export class AvailableServicesService {
       "value": "ctaas",
       "enabled": false,
       "access": false,
-      "routePath": "/ctaas",
+      "routePath": "/ctaas/dashboards",
       "imagePath": "assets/images/dashboard.png",
       "tabName": "CTaaS",
       "featureName": "CTaaS_Feature"
