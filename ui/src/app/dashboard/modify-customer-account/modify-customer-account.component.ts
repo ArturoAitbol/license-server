@@ -85,16 +85,13 @@ export class ModifyCustomerAccountComponent implements OnInit {
       requestsArray.push(this.subaccountService.updateSubAccount(subaccount)); 
     }
     forkJoin(requestsArray).subscribe((res: any) => {
-      if (!res.error) {
-        this.isDataLoading = false;
-        this.snackBarService.openSnackBar('Customer and subaccount edited successfully!', '');
-        this.dialogRef.close(res);
-      } else
-        this.snackBarService.openSnackBar(res.error, 'Error adding customer!');
+      this.isDataLoading = false;
+      this.snackBarService.openSnackBar('Customer and subaccount edited successfully!', '');
+      this.dialogRef.close(res);
     }, err => {
       this.isDataLoading = false;
       this.dialogRef.close(false);
-      console.error('error while updating license information row', err);
+      console.error('error while updating customer information row', err);
     });
   }
   /**

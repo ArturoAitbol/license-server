@@ -459,7 +459,7 @@ describe('Filtering table rows', ()  => {
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
         let objectToCompare: any = {"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive","services":"tokenConsumption,ctaas"};
         if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature))
-            objectToCompare.services = null;
+            objectToCompare.services = "tokenConsumption,ctaas";
         expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);
     });
 });

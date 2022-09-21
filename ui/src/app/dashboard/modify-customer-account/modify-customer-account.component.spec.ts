@@ -16,10 +16,14 @@ import { ModifyCustomerAccountComponent } from './modify-customer-account.compon
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { ReactiveFormsModule } from '@angular/forms';
 import { CurrentCustomerServiceMock } from "src/test/mock/services/current-customer-service.mock";
+import { throwError } from 'rxjs';
+import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
 const dialogMock = new DialogServiceMock();
 let fixture: ComponentFixture<ModifyCustomerAccountComponent>;
+const data = CurrentCustomerServiceMock.getSelectedCustomer()
 const RouterMock = {
   navigate: (commands: string[]) => {}
 };
@@ -58,9 +62,13 @@ const beforeEachFunction = () => {
       },
       {
           provide: MAT_DIALOG_DATA,
-          useValue: CurrentCustomerServiceMock
+          useValue: data
+      },
+      {
+        provide: SubAccountService,
+        useValue: SubaccountServiceMock
       }
-      ]
+    ]
   });
   fixture = TestBed.createComponent(ModifyCustomerAccountComponent);
   CustomerComponentTestInstance = fixture.componentInstance;
@@ -120,6 +128,7 @@ describe('modify customers flow', () => {
     CustomerComponentTestInstance.onCancel();
     expect(CustomerComponentTestInstance.onCancel).toHaveBeenCalled();
   });
+
   it('should edit subaccount name',()=>{
     const updateCustomerForm = CustomerComponentTestInstance.updateCustomerForm;
     CustomerComponentTestInstance.data = CurrentCustomerServiceMock;
@@ -151,7 +160,33 @@ describe('modify customers flow', () => {
     CustomerComponentTestInstance.submit();
     expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
     expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
+  });
+
+  it('should execute with a empty service on ngOnInit()', () => {
+    CustomerComponentTestInstance.updateCustomerForm.get("services").get('tokenConsumption').setValue(null);
+    CustomerComponentTestInstance.updateCustomerForm.get("services").get('ctaas').setValue(null);
+    fixture.detectChanges();
+  });
+
+  it('should execute with a empty services on ngOnInit()', () =>{
+    CustomerComponentTestInstance.data.services = undefined;
+    fixture.detectChanges();
   })
 });
 
+describe('display of error messages', () => {
+  beforeEach(beforeEachFunction);
+  it('should display error messages if submit fails', () =>{
+    fixture.detectChanges();
+    spyOn(CustomerServiceMock, 'updateCustomer').and.returnValue(throwError('some error'));
+    spyOn(console, 'error').and.callThrough();
 
+    fixture.detectChanges();
+
+    CustomerComponentTestInstance.submit();
+
+    expect(CustomerServiceMock.updateCustomer).toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledWith('error while updating customer information row', 'some error')
+    expect(CustomerComponentTestInstance.isDataLoading).toBeFalse();
+  });
+});
