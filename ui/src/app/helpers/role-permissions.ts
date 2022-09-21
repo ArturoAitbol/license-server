@@ -9,7 +9,7 @@ export const permissions = {
             'redirect',
             'ctaas',
             'dashboards',
-            'project',
+            'test-suites',
             'stakeholders'
         ],
         elements: [
@@ -47,6 +47,9 @@ export const permissions = {
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT',
                 'DELETE_PROJECT'
+            ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE'
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
@@ -105,7 +108,7 @@ export const permissions = {
             'apps',
             'ctaas',
             'dashboards',
-            'project',
+            'test-suites',
             'stakeholders'
         ],
         elements: [
@@ -131,6 +134,9 @@ export const permissions = {
                 'VIEW_CONSUMPTION',
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT'
+            ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE'
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
@@ -179,7 +185,6 @@ export const permissions = {
             'apps',
             'ctaas',
             'dashboards',
-            'project',
             'stakeholders'
         ],
         elements: [],
@@ -214,7 +219,6 @@ export const permissions = {
             'apps',
             'ctaas',
             'dashboards',
-            'project',
             'stakeholders'
         ],
         elements: [],
@@ -243,8 +247,7 @@ export const permissions = {
             'redirect',
             'apps',
             'ctaas',
-            'dashboards',
-            'project'
+            'dashboards'
         ],
         elements: [],
         tables: {
