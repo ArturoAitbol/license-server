@@ -185,7 +185,6 @@ export const permissions = {
             'apps',
             'ctaas',
             'dashboards',
-            'test-suites',
             'stakeholders'
         ],
         elements: [],
@@ -248,8 +247,7 @@ export const permissions = {
             'redirect',
             'apps',
             'ctaas',
-            'dashboards',
-            'test-suites'
+            'dashboards'
         ],
         elements: [],
         tables: {

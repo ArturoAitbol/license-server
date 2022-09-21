@@ -46,6 +46,7 @@ public class RoleAuthHandler {
            GET_CONSUMPTION_USAGE_DETAILS,
            GET_USER_EMAIL_INFO,
            GET_ALL_CTAAS_SETUPS,
+           GET_ALL_CTAAS_TEST_SUITES,
            GET_ALL_SUBACCOUNT_STAKEHOLDER,
            //UPDATE
            MODIFY_CUSTOMER,
@@ -102,6 +103,7 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
+            GET_ALL_CTAAS_TEST_SUITES,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             //UPDATE
             MODIFY_PROJECT,
@@ -196,7 +198,7 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
-            GET_ALL_CTAAS_TEST_SUITES,
+            
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_AUTH_USER_PROFILE,
             //MODIFY
