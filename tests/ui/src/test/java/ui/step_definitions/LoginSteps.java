@@ -25,7 +25,6 @@ public class LoginSteps {
     Apps apps;
     Environment environment = ConfigFactory.create(Environment.class);
     String logged;
-    // private String logged;
 
     public LoginSteps(Landing landing) {
         this.landing = landing;
