@@ -78,7 +78,7 @@
         <div class="row ">
             <div class="col-6">
                 <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
-                    class="form-control" />
+                    class="form-control"/>
                 <span
                     *ngIf="userProfileForm.get('phoneNumber').dirty && userProfileForm.get('phoneNumber').hasError('required')"></span>
                 <span
@@ -88,6 +88,15 @@
         <br>
         <div>
             <h2>What information do you want to receive?</h2>
+            <div>
+                <mat-form-field appearance="outline">
+                    <mat-label>Select Type</mat-label>
+                    <mat-select formControlName="type" id = "type">
+                        <mat-option value="TYPE:HIGH_TIER"> HIGH TIER </mat-option>
+                        <mat-option value="TYPE:LOW_TIER"> LOW TIER </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
             <div *ngFor="let item of reportsNotificationsList;">
                 <div class="row">
                     <div class="col-11">
@@ -183,6 +192,15 @@
             <br>
             <div>
                 <h2>What information do you want this person to receive?</h2>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Select Type</mat-label>
+                        <mat-select formControlName="type" id = "type">
+                            <mat-option value="TYPE:HIGH_TIER"> HIGH TIER </mat-option>
+                            <mat-option value="TYPE:LOW_TIER"> LOW TIER </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
                 <div *ngFor="let item of reportsNotificationsList;">
                     <div class="row">
                         <div class="col-11">
