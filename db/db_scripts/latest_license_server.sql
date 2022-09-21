@@ -304,7 +304,7 @@ CREATE TABLE public.usage_detail (
     modified_by character varying
 );
 
-CREATE TABLE public.ctaas_project
+CREATE TABLE public.ctaas_test_suite
 (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     subaccount_id uuid NOT NULL,
@@ -318,7 +318,7 @@ CREATE TABLE public.ctaas_project
 CREATE TABLE public.ctaas_run_instance
 (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    ctaas_project_id uuid NOT NULL,
+    ctaas_test_suite_id uuid NOT NULL,
     run_no integer NOT NULL DEFAULT 0,
     start_date timestamp without time zone,
     completion_date timestamp without time zone 
@@ -752,17 +752,17 @@ ALTER TABLE ONLY public.device
 ALTER TABLE ONLY public.usage_detail
     ADD CONSTRAINT usage_detail_pkey PRIMARY KEY (id);
 	
-ALTER TABLE ONLY public.ctaas_project
-    ADD CONSTRAINT ctaas_project_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.ctaas_test_suite
+    ADD CONSTRAINT ctaas_test_suite_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY public.ctaas_project
-    ADD CONSTRAINT ctaas_project_unique UNIQUE (subaccount_id, name);
+ALTER TABLE ONLY public.ctaas_test_suite
+    ADD CONSTRAINT ctaas_test_suite_unique UNIQUE (subaccount_id, name);
 	
 ALTER TABLE ONLY public.ctaas_run_instance
     ADD CONSTRAINT ctaas_run_instance_pkey PRIMARY KEY (id);
 	
 ALTER TABLE ONLY public.ctaas_run_instance
-    ADD CONSTRAINT ctaas_run_instance_unique UNIQUE (ctaas_project_id, run_no);
+    ADD CONSTRAINT ctaas_run_instance_unique UNIQUE (ctaas_test_suite_id, run_no);
 
 ALTER TABLE ONLY public.ctaas_setup
     ADD CONSTRAINT ctaas_setup_pkey PRIMARY KEY (id);
@@ -863,14 +863,14 @@ ALTER TABLE ONLY public.subaccount_admin
 ALTER TABLE ONLY public.device
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
-ALTER TABLE ONLY public.ctaas_project
+ALTER TABLE ONLY public.ctaas_test_suite
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.ctaas_setup
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
 	
 ALTER TABLE ONLY public.ctaas_run_instance
-	ADD CONSTRAINT fk_ctaas_project FOREIGN KEY (ctaas_project_id) REFERENCES public.ctaas_project(id) ON DELETE CASCADE;
+	ADD CONSTRAINT fk_ctaas_test_suite FOREIGN KEY (ctaas_test_suite_id) REFERENCES public.ctaas_test_suite(id) ON DELETE CASCADE;
 
 ALTER TABLE IF EXISTS public.subaccount
     ADD COLUMN IF NOT EXISTS services character varying;

@@ -11,9 +11,9 @@ Feature: Licenses
         When I create a customer with the following data
             | name          | licenseCustomerTest                   |
             | type          | MSP                                   |
-            | adminEmail    | test-license@tekvizionlabs.com        |
+            | adminEmail    | test-license@tekvizion.com            |
             | subaccount    | Default                               |
-            | subAdminEmail | license-subaccount@tekvizionlabs.com  |
+            | subAdminEmail | test-license@tekvizion.com            |
             | testCustomer  | yes                                   |
         Then I see the customer "licenseCustomerTest" in the table
     

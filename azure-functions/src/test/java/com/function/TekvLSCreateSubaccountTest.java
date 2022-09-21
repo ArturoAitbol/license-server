@@ -74,6 +74,35 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
     }
 
     @Test
+    public void createSubaccountWithCtaasTest() {
+        //Given - Arrange
+        String name = "unitTest" + LocalDateTime.now();
+        String bodyRequest = "{\n" +
+                "    \"subaccountName\": \"" + name + "\",\n" +
+                "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
+                "    \"subaccountAdminEmail\": \"" + name + "@test.com\",\n" +
+                "    \"services\": \"Ctass,tokenConsumption\"\n" +
+                "}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When - Action
+        HttpResponseMessage response = createSubaccountApi.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("id"));
+        this.subaccountId = jsonBody.getString("id");
+        assertNotNull(this.subaccountId);
+    }
+
+    @Test
     public void duplicatedEmailTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
@@ -328,7 +357,7 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();

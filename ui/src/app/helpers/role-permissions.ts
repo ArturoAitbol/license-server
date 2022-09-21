@@ -6,7 +6,11 @@ export const permissions = {
             'consumption',
             'projects',
             'licenses',
-            'redirect'
+            'redirect',
+            'ctaas',
+            'dashboards',
+            'test-suites',
+            'stakeholders'
         ],
         elements: [
             'addCustomer',
@@ -18,7 +22,8 @@ export const permissions = {
             'deleteAdminEmail',
             'addSubAccAdminEmail',
             'deleteSubAccAdminEmail',
-            'auditInfo'
+            'auditInfo',
+            'addCTaaSProject'
         ],
         tables: {
             customerOptions: [
@@ -27,6 +32,7 @@ export const permissions = {
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS',
+                'VIEW_CTAAS_DASHBOARD',
                 'MODIFY_ACCOUNT',
                 'DELETE_ACCOUNT'],
             licenseOptions: [
@@ -41,6 +47,13 @@ export const permissions = {
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT',
                 'DELETE_PROJECT'
+            ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE'
+            ],
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
             ]
         }
     },
@@ -51,7 +64,10 @@ export const permissions = {
             'consumption',
             'projects',
             'licenses',
-            'redirect'
+            'redirect',
+            'apps',
+            'ctaas',
+            'dashboards'
         ],
         elements: [
             'addCustomer',
@@ -68,6 +84,7 @@ export const permissions = {
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS',
+                'VIEW_CTAAS_DASHBOARD',
                 'MODIFY_ACCOUNT'],
             licenseOptions: [
                 'MODIFY_LICENSE'
@@ -76,7 +93,8 @@ export const permissions = {
             ],
             projectOptions: [
                 'VIEW_CONSUMPTION'
-            ]
+            ],
+            stakeholderOptions: []
         }
     },
     'tekvizion.ConfigTester': {
@@ -86,11 +104,17 @@ export const permissions = {
             'consumption',
             'projects',
             'licenses',
-            'redirect'
+            'redirect',
+            'apps',
+            'ctaas',
+            'dashboards',
+            'test-suites',
+            'stakeholders'
         ],
         elements: [
             'addProject',
-            'addLicenseConsumption'
+            'addLicenseConsumption',
+            'addCTaaSProject'
         ],
         tables: {
             customerOptions: [
@@ -98,7 +122,9 @@ export const permissions = {
                 'VIEW_CONSUMPTION',
                 'VIEW_PROJECTS',
                 'VIEW_ADMIN_EMAILS',
-                'VIEW_SUBACC_ADMIN_EMAILS'],
+                'VIEW_SUBACC_ADMIN_EMAILS',
+                'VIEW_CTAAS_DASHBOARD'
+            ],
             licenseOptions: [],
             licConsumptionOptions: [
                 'EDIT',
@@ -108,6 +134,13 @@ export const permissions = {
                 'VIEW_CONSUMPTION',
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT'
+            ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE'
+            ],
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
             ]
         }
     },
@@ -118,57 +151,10 @@ export const permissions = {
             'consumption',
             'projects',
             'licenses',
-            'redirect'
-        ],
-        elements: [],
-        tables: {
-            customerOptions: [
-                'VIEW_LICENSES',
-                'VIEW_CONSUMPTION',
-                'VIEW_PROJECTS',
-                'VIEW_ADMIN_EMAILS',
-                'VIEW_SUBACC_ADMIN_EMAILS'],
-            licenseOptions: [],
-            licConsumptionOptions: [],
-            projectOptions: [
-                'VIEW_CONSUMPTION'
-            ]
-        }
-    },
-    'customer.FullAdmin': {
-        paths: [
-            'dashboard',
-            'customer',
-            'consumption',
-            'projects',
-            'licenses',
-            'redirect'
-        ],
-        elements: [],
-        tables: {
-            customerOptions: [
-                'VIEW_LICENSES',
-                'VIEW_CONSUMPTION',
-                'VIEW_PROJECTS',
-                'VIEW_ADMIN_EMAILS',
-                'VIEW_SUBACC_ADMIN_EMAILS'],
-            licenseOptions: [],
-            licConsumptionOptions: [],
-            projectOptions: [
-                'VIEW_CONSUMPTION'
-            ]
-        }
-    },
-    'customer.SubaccountAdmin': {
-        paths: [
-            'dashboard',
-            'customer',
-            'consumption',
-            'projects',
-            'licenses',
             'redirect',
             'apps',
-            'ctaas'
+            'ctaas',
+            'dashboards'
         ],
         elements: [],
         tables: {
@@ -184,6 +170,75 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [
                 'VIEW_CONSUMPTION'
+            ],
+            stakeholderOptions: []
+        }
+    },
+    'customer.FullAdmin': {
+        paths: [
+            'dashboard',
+            'customer',
+            'consumption',
+            'projects',
+            'licenses',
+            'redirect',
+            'apps',
+            'ctaas',
+            'dashboards',
+            'stakeholders'
+        ],
+        elements: [],
+        tables: {
+            customerOptions: [
+                'VIEW_LICENSES',
+                'VIEW_CONSUMPTION',
+                'VIEW_PROJECTS',
+                'VIEW_ADMIN_EMAILS',
+                'VIEW_SUBACC_ADMIN_EMAILS',
+                'VIEW_CTAAS_DASHBOARD'
+            ],
+            licenseOptions: [],
+            licConsumptionOptions: [],
+            projectOptions: [
+                'VIEW_CONSUMPTION'
+            ],
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
+            ]
+        }
+    },
+    'customer.SubaccountAdmin': {
+        paths: [
+            'dashboard',
+            'customer',
+            'consumption',
+            'projects',
+            'licenses',
+            'redirect',
+            'apps',
+            'ctaas',
+            'dashboards',
+            'stakeholders'
+        ],
+        elements: [],
+        tables: {
+            customerOptions: [
+                'VIEW_LICENSES',
+                'VIEW_CONSUMPTION',
+                'VIEW_PROJECTS',
+                'VIEW_ADMIN_EMAILS',
+                'VIEW_SUBACC_ADMIN_EMAILS',
+                'VIEW_CTAAS_DASHBOARD'
+            ],
+            licenseOptions: [],
+            licConsumptionOptions: [],
+            projectOptions: [
+                'VIEW_CONSUMPTION'
+            ],
+            stakeholderOptions: [
+                'MODIFY_STAKEHOLDER',
+                'DELETE_STAKEHOLDER'
             ]
         }
     },
@@ -192,14 +247,15 @@ export const permissions = {
             'redirect',
             'apps',
             'ctaas',
-            'dashboard'
+            'dashboards'
         ],
         elements: [],
         tables: {
             customerOptions: [],
             licenseOptions: [],
             licConsumptionOptions: [],
-            projectOptions: []
+            projectOptions: [],
+            stakeholderOptions: []
         }
     }
 };

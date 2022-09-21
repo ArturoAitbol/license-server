@@ -1,4 +1,16 @@
-<div class="container" style="height:70vh;">
-    <h2>Dashboard</h2>
-    <h3 style="text-align: center;font-weight: 500;">CTaaS setup is in progress ...</h3>
+<div>
+  <h2>Dashboard</h2>
 </div>
+<ng-container *ngIf="isOnboardingComplete; then dashboardScreen; else blankScreen"> </ng-container>
+<!-- blank screen -->
+<ng-template #blankScreen>
+  <div class="container-fluid">
+      <h2>
+        Setup is in progress ...
+      </h2>
+  </div>
+</ng-template>
+<!-- dashboard screen -->
+<ng-template #dashboardScreen>
+  
+</ng-template>
