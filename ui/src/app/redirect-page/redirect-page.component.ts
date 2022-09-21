@@ -32,7 +32,6 @@ export class RedirectPageComponent implements OnInit {
 
   ngOnInit(): void {
     try {
-      console.debug('redirect page');
       this.getAvailableServices();
       // hide toolbar on load this redirect page
       const accountDetails = this.getAccountDetails();
@@ -133,9 +132,7 @@ export class RedirectPageComponent implements OnInit {
   fetchUserProfileDetails(): void {
     this.userProfileService.getUserProfileDetails().subscribe((res: any) => {
       const { userProfile } = res;
-      const { companyName, email, jobTitle, mobilePhone, name, subaccountId } = userProfile;
-      const parsedObj = { companyName, email, jobTitle, phoneNumber: mobilePhone, name, subaccountId };
-      localStorage.setItem(Constants.SUBACCOUNT_USER_PROJECT, JSON.stringify(parsedObj));
+      localStorage.setItem(Constants.SUBACCOUNT_USER_PROJECT, JSON.stringify(userProfile));
     });
   }
   /**

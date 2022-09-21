@@ -6,4 +6,5 @@ export interface IStakeholder {
     phoneNumber: string;
     notifications: string;
     subaccountId?: string;
+    type:string;
 }

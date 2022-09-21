@@ -57,6 +57,7 @@ export class CtaasStakeholderComponent implements OnInit {
       { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
       { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
       { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
+      { name: 'Type', dataKey: 'type', position: 'left', isSortable: true },
       { name: 'Notifications', dataKey: 'notifications', position: 'left', isSortable: false }
     ];
   }
@@ -83,7 +84,11 @@ export class CtaasStakeholderComponent implements OnInit {
             if (x.notifications) {
               const reports = this.getReports();
               if (x.notifications.includes(',')) {
-                const mappedNotificationsList = x.notifications.split(',').map(e => reports.find(z => z.value === e)['label']);
+                const splittingData = x.notifications.split(',');
+                if (splittingData[0].includes('TYPE:')) {
+                  x.type = splittingData[0].replace('TYPE:', '');
+                  splittingData.splice(0, 1);
+                } const mappedNotificationsList = splittingData.map(e => reports.find(z => z.value === e)['label']);
                 if (mappedNotificationsList.length > 0)
                   x.notifications = mappedNotificationsList.join(',');
               } else {
