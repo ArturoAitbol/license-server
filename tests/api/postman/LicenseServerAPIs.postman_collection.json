@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "b5855f37-afc2-44ba-8b7c-6eb9345d06b9",
+		"_postman_id": "632babdd-c8d9-42e3-89c5-ef80af5d4c87",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8624003"
+		"_exporter_id": "8463466"
 	},
 	"item": [
 		{
@@ -248,7 +248,14 @@
 							"\r",
 							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
 							"  pm.collectionVariables.set('access_token', response.json().access_token);\r",
-							"});"
+							"\r",
+							"});\r",
+							"\r",
+							"var currentDateTime = new Date().getTime();\r",
+							"pm.collectionVariables.set('name', 'CICDTest'+currentDateTime);\r",
+							"\r",
+							"\r",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -1373,7 +1380,7 @@
 	"variable": [
 		{
 			"key": "name",
-			"value": "CICDTest{{$timestamp}}",
+			"value": "",
 			"type": "string"
 		},
 		{
