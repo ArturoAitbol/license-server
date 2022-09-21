@@ -94,6 +94,12 @@ public class GraphAPIClient {
             appRoleAssignment.put("appRoleId",app.get("roleId"));
             //Assign-role request
             response = HttpClient.post(url,appRoleAssignment.toString(),headers);
+            if(response.has("error") && response.getJSONObject("error").getString("code").equals("Request_ResourceNotFound")){
+                context.getLogger().info("Request_ResourceNotFound Error: Retrying... ("+url+")");
+                Thread.sleep(2000);
+                response = HttpClient.post(url,appRoleAssignment.toString(),headers);
+            }
+
             if(response.has("error") && !response.getJSONObject("error").getString("message").contains("Permission being assigned already exists")) {
                 context.getLogger().severe("Request url: " + url + "Request params: " + appRoleAssignment);
                 context.getLogger().severe("Error response: " + response);

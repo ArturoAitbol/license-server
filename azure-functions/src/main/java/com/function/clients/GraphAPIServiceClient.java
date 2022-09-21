@@ -26,10 +26,14 @@ public class GraphAPIServiceClient {
 		final TokenCredentialAuthProvider tokenCredAuthProvider = new TokenCredentialAuthProvider(SCOPES, clientSecretCredential);
 		
 		User user = new User();
-		user.displayName = displayName;
-		user.jobTitle = jobTitle;
-		user.companyName = companyName;
-		user.mobilePhone = mobilePhone;
+		if(displayName!=null)
+			user.displayName = displayName;
+		if(jobTitle!=null)
+			user.jobTitle = jobTitle;
+		if(companyName!=null)
+			user.companyName = companyName;
+		if(mobilePhone!=null)
+			user.mobilePhone = mobilePhone;
 		GraphServiceClient graphClient = GraphServiceClient.builder().authenticationProvider( tokenCredAuthProvider ).buildClient();
 		graphClient.users(id).buildRequest().patch(user);
 	}

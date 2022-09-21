@@ -1,0 +1,57 @@
+<div class="container" style="text-align: center;">
+    <h1 id="page-title" mat-dialig-title>Update Stakeholder</h1>
+    <form [formGroup]="updateStakeholderForm" (ngSubmit)="updateStakeholderDetails()">
+        <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
+            <mat-dialog-content>
+                <div>
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label id="name-label"> Name</mat-label>
+                        <input required matInput value="" formControlName="name" id="name">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label id="job-title-label">Job Title</mat-label>
+                        <input required matInput value="" formControlName="jobTitle" id="jobTitle">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label id="company-name-label">Company Name</mat-label>
+                        <input required matInput value="" formControlName="companyName" id="companyName">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label id="email-label">Email</mat-label>
+                        <input required matInput value="" formControlName="subaccountAdminEmail" id="email">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label id="mobile-number-label">Mobile Number</mat-label>
+                        <input required matInput value="" formControlName="phoneNumber" id="phoneNumber">
+                    </mat-form-field>
+                </div>
+                <h2 style="text-align: left;">Report preferences</h2>
+                <div formArrayName="notifications"
+                    *ngFor="let item of updateStakeholderForm.get('notifications')['controls']; let i = index">
+                    <div class="list-container">
+                        <span class="item">
+                            {{reports[i]['label']}}
+                        </span>
+                        <mat-checkbox color="primary" [formControlName]="i"> </mat-checkbox>
+                    </div>
+                </div>
+            </mat-dialog-content>
+        </div>
+        <mat-dialog-actions>
+            <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Cancel</button>
+            <button mat-raised-button color="primary" [disabled]="!updateStakeholderForm.valid" type="submit"
+                id="submit-project-button" title="project-form">Submit</button>
+        </mat-dialog-actions>
+    </form>
+</div>
