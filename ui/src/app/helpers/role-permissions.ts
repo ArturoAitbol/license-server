@@ -48,6 +48,9 @@ export const permissions = {
                 'CLOSE_PROJECT',
                 'DELETE_PROJECT'
             ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE'
+            ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
@@ -132,6 +135,9 @@ export const permissions = {
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT'
             ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE'
+            ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
@@ -214,7 +220,6 @@ export const permissions = {
             'apps',
             'ctaas',
             'dashboards',
-            'test-suites',
             'stakeholders'
         ],
         elements: [],
@@ -231,9 +236,6 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [
                 'VIEW_CONSUMPTION'
-            ],
-            ctaasTestSuiteOptions: [
-                'MODIFY_TEST_SUITE'
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
