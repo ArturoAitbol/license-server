@@ -22,6 +22,9 @@ import { SubAccount } from '../model/subaccount.model';
 import { FormBuilder } from "@angular/forms";
 import { debounceTime, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs/internal/Subject";
+import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
+import { Features } from '../helpers/features';
+import { permissions } from '../helpers/role-permissions';
 
 @Component({
     selector: 'app-dashboard',
@@ -48,13 +51,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     readonly DELETE_ACCOUNT: string = 'Delete';
 
     readonly options = {
-        VIEW_LICENSES : this.VIEW_LICENSES,
-        VIEW_CONSUMPTION : this.VIEW_CONSUMPTION,
-        VIEW_PROJECTS : this.VIEW_PROJECTS,
-        VIEW_ADMIN_EMAILS : this.VIEW_ADMIN_EMAILS,
-        VIEW_SUBACC_ADMIN_EMAILS : this.VIEW_SUBACC_ADMIN_EMAILS,
-        MODIFY_ACCOUNT : this.MODIFY_ACCOUNT,
-        DELETE_ACCOUNT : this.DELETE_ACCOUNT
+        VIEW_LICENSES: this.VIEW_LICENSES,
+        VIEW_CONSUMPTION: this.VIEW_CONSUMPTION,
+        VIEW_PROJECTS: this.VIEW_PROJECTS,
+        VIEW_ADMIN_EMAILS: this.VIEW_ADMIN_EMAILS,
+        VIEW_SUBACC_ADMIN_EMAILS: this.VIEW_SUBACC_ADMIN_EMAILS,
+        VIEW_CTAAS_DASHBOARD: this.VIEW_CTAAS_DASHBOARD,
+        MODIFY_ACCOUNT: this.MODIFY_ACCOUNT,
+        DELETE_ACCOUNT: this.DELETE_ACCOUNT
     }
 
     readonly subaccountTypes = ['MSP', 'Reseller'];
@@ -90,7 +94,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private getActionMenuOptions() {
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-        this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"customerOptions");
+        roles.forEach(accountRole => {
+            permissions[accountRole].tables.customerOptions?.forEach(item => {
+                // check for CTaas Toggle feature, if true then only add VIEW_CTAAS_DASHBOARD option in action menu
+                if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService))
+                    this.actionMenuOptions.push(this[item]);
+                else if (item !== 'VIEW_CTAAS_DASHBOARD')
+                    this.actionMenuOptions.push(this[item]);
+            });
+        });
     }
 
     private calculateTableHeight() {
@@ -171,11 +183,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
             const subaccounts = subaccountsList.filter(s => s.customerId === customer.id);
             if (subaccounts.length > 0) {
                 subaccounts.forEach(subaccount => {
+                    const { id, name, services } = subaccount;
                     const customerWithDetails = { ...customer };
-                    customerWithDetails.subaccountName = subaccount.name;
-                    customerWithDetails.subaccountId = subaccount.id;
-                    const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccount.id));
+                    customerWithDetails.subaccountName = name;
+                    customerWithDetails.subaccountId = id;
+                    const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === id));
                     customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
+                    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService))
+                        customerWithDetails.services = (services) ? services : null;
                     fullCustomerList.push(customerWithDetails);
                 })
             } else {
@@ -395,7 +410,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access Subaccount admin emails view', '');
                 break;
             case this.VIEW_CTAAS_DASHBOARD:
-                this.router.navigate(['/ctaas/dashboard']);
+                const { selectedRow: { services } } = object;
+                const hasCtaasService = services && services.includes('ctaas');
+                if (hasCtaasService)
+                    this.router.navigate(['/ctaas/dashboards']);
+                else
+                    this.snackBarService.openSnackBar('CTaaS service is not available for this Subaccount', '');
+
                 break;
             case this.MODIFY_ACCOUNT:
                 this.openDialog(object.selectedOption, object.selectedRow);

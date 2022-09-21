@@ -1,0 +1,17 @@
+.d-heading {
+  line-height: 28px;
+  font-weight: 600;
+  margin-top: 5rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+.card-width {
+  width: max-content;
+}
+.card-size {
+  width: 100px;
+  border-radius: 5px;
+}
+p {
+  font-size: 14px;
+  font-weight: 500;
+}
