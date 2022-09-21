@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class CustomerOnboardService {
 
-  private onboardingSetupStatus: string = 'pending';
+  private onboardingSetupStatus = 'pending';
   constructor(private httpClient: HttpClient) { }
 
   public updateCustomerOnboardingStatus() {

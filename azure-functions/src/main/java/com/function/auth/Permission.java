@@ -40,6 +40,7 @@ public enum Permission {
         GET_CONSUMPTION_USAGE_DETAILS("TekvLSGetConsumptionUsageDetails"),
         GET_USER_EMAIL_INFO("TekvLSGetUserEmailsInfo"),
         GET_ALL_CTAAS_SETUPS("TekvLSGetAllCtaasSetups"),
+        GET_ALL_CTAAS_TEST_SUITES("TekvLSGetAllCtaasTestSuites"),
         GET_ALL_SUBACCOUNT_STAKEHOLDER("TekvLSGetAllStakeholders"),
         GET_AUTH_USER_PROFILE("TekvLSGetAuthUserProfile"),
         

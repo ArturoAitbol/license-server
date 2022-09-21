@@ -16,6 +16,7 @@ import { Features } from './helpers/features';
 import { MatSidenav } from '@angular/material/sidenav';
 import { Constants } from './helpers/constants';
 
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -40,9 +41,9 @@ export class AppComponent implements OnInit, OnDestroy {
             materialIcon: 'dashboard'
         },
         {
-            name: 'Projects',
+            name: 'Test Suites',
             iconName: "assets\\images\\project_3.png",
-            routePath: '/ctaas/project',
+            routePath: '/ctaas/test-suites',
             active: false,
             materialIcon: 'folder_open'
         },
@@ -59,7 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
     readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/ctaas/dashboards';
-    readonly CTAAS_PROJECTS_ROUTE_PATH: string = '/ctaas/project';
+    readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/ctaas/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/ctaas/stakeholders';
 
     constructor(
@@ -113,7 +114,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.enableSidebar();
                         break;
                     case this.CTAAS_DASHBOARD_ROUTE_PATH:
-                    case this.CTAAS_PROJECTS_ROUTE_PATH:
+                    case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
                         this.tabName = Constants.CTAAS_TOOL_BAR;
                         this.hideToolbar = false;
@@ -175,9 +176,9 @@ export class AppComponent implements OnInit, OnDestroy {
                     materialIcon: 'dashboard'
                 },
                 {
-                    name: 'Projects',
+                    name: 'Test Suites',
                     iconName: "assets\\images\\project_3.png",
-                    routePath: '/ctaas/project',
+                    routePath: '/ctaas/test-suites',
                     active: false,
                     materialIcon: 'folder_open'
                 }

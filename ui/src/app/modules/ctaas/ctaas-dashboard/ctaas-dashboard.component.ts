@@ -1,9 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { Constants } from 'src/app/helpers/constants';
-import { CustomerOnboardService } from 'src/app/services/customer-onboard.service';
-import { HeaderService } from 'src/app/services/header.service';
 import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
