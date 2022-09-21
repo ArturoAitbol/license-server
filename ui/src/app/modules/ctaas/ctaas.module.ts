@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CtaasRoutingModule } from './ctaas-routing.module';
@@ -8,6 +8,9 @@ import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
 import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.component';
 import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.component';
+import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component';
+import { AddStakeHolderComponent } from './ctaas-stakeholder/add-stake-holder/add-stake-holder.component';
+import { UpdateStakeHolderComponent } from './ctaas-stakeholder/update-stake-holder/update-stake-holder.component';
 
 
 @NgModule({
@@ -15,6 +18,10 @@ import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.
     CtaasDashboardComponent,
     OnboardWizardComponent,
     CtaasTestSuitesComponent,
+    CtaasStakeholderComponent,
+    AddStakeHolderComponent,
+    UpdateStakeHolderComponent,
+
   ],
   imports: [
     CommonModule,
@@ -24,7 +31,10 @@ import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.
     SharedModule
   ],
   entryComponents: [
-    OnboardWizardComponent
-  ]
+    OnboardWizardComponent,
+    AddStakeHolderComponent,
+    UpdateStakeHolderComponent
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class CtaasModule { }

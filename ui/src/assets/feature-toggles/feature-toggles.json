@@ -10,7 +10,9 @@
       "redirect": true,
       "apps": true,
       "ctaas": true,
-      "test-suites":true
+      "dashboards": true,
+      "test-suites": true,
+      "stakeholders": true
     },
     "features": {
       "testFeature1": true,
@@ -26,11 +28,17 @@
       "consumption": true,
       "projects": true,
       "licenses": true,
-      "testFeature1": true
+      "testFeature1": true,
+      "redirect": true,
+      "apps": true,
+      "ctaas": true,
+      "dashboards": true,
+      "project": true,
+      "stakeholders": true
     },
     "features": {
       "testFeature1": true,
-      "ctaasFeature": false,
+      "ctaasFeature": true,
       "enableAllServiceFeature": false
     }
   },
@@ -41,7 +49,13 @@
       "consumption": true,
       "projects": true,
       "licenses": true,
-      "testFeature1": false
+      "testFeature1": false,
+      "redirect": false,
+      "apps": false,
+      "ctaas": false,
+      "dashboards": false,
+      "project": false,
+      "stakeholders": false
     },
     "features": {
       "testFeature1": false,
