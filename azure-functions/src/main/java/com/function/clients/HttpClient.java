@@ -32,13 +32,44 @@ public class HttpClient {
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "*/*");
         connection.setRequestProperty("Content-Type", "application/json");
-
+        
         if(headers!=null){
             for (String headerKey : headers.keySet()) {
                 connection.setRequestProperty(headerKey,headers.get(headerKey));
             }
         }
 
+        InputStream responseStream = connection.getResponseCode() == HttpURLConnection.HTTP_OK ?
+                                    connection.getInputStream() :
+                                    connection.getErrorStream();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+        String responseLine;
+        StringBuilder response = new StringBuilder();
+        while ((responseLine = in.readLine()) != null) {
+            response.append(responseLine.trim());
+        }
+        return new JSONObject(response.toString());
+    }
+    
+    static public JSONObject get(String endpoint, String body, HashMap<String,String> headers) throws Exception {
+        URL url = new URL(endpoint);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Accept", "*/*");
+        connection.setRequestProperty("Content-Type", "application/json");
+        if(headers!=null){
+            for (String headerKey : headers.keySet()) {
+                connection.setRequestProperty(headerKey,headers.get(headerKey));
+            }
+        }
+
+        byte[] input = body.getBytes(StandardCharsets.UTF_8);
+        connection.setRequestProperty("Content-Length", Integer.toString(input.length));
+        DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+        wr.write(input);
+        
         InputStream responseStream = connection.getResponseCode() == HttpURLConnection.HTTP_OK ?
                                     connection.getInputStream() :
                                     connection.getErrorStream();
