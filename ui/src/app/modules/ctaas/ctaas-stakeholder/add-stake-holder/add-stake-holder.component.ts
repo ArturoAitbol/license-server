@@ -35,7 +35,7 @@ export class AddStakeHolderComponent implements OnInit {
       jobTitle: ['', Validators.required],
       subaccountAdminEmail: ['', [Validators.required, Validators.email]],
       companyName: [{ value: '' }, Validators.required],
-      phoneNumber: ['', Validators.required, Validators.minLength(10), Validators.maxLength(10)],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       type: ['', Validators.required],
       notifications: new FormArray([])
     });
@@ -84,9 +84,12 @@ export class AddStakeHolderComponent implements OnInit {
     const stakeholderDetails = { ... this.addStakeholderForm.value };
     const { type, notifications } = stakeholderDetails;
     stakeholderDetails.subaccountId = subaccountId;
-    stakeholderDetails.notifications = type;
-    if (notifications) {
-      stakeholderDetails.notifications += ',' + notifications.join(',');
+    // stakeholderDetails.notifications = type;
+    if (notifications.length > 0) {
+      stakeholderDetails.notifications = type + ',' + notifications.join(',');
+    }
+    else {
+      stakeholderDetails.notifications = type;
     }
 
     this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => {
@@ -131,4 +134,9 @@ export class AddStakeHolderComponent implements OnInit {
       });
     }
   }
+
+  // onCountryChange(event) {}
+  // hasError(event) {}
+  // getNumber(event) {}
+  // telInputObject(event) {}
 }

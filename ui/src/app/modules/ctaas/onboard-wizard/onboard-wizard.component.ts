@@ -64,7 +64,7 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [, Validators.required, Validators.minLength(10), Validators.maxLength(10)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       type: ['', Validators.required],
       notifications: new FormArray([]),
     });
@@ -74,7 +74,7 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', Validators.required, Validators.minLength(10), Validators.maxLength(10)],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       type: ['', Validators.required],
       notifications: new FormArray([]),
     });
@@ -105,9 +105,12 @@ export class OnboardWizardComponent implements OnInit {
     this.interaction = '3';
     const userProfileObj = this.userProfileForm.value;
     const { type, notifications } = userProfileObj;
-    userProfileObj.notifications = type;
-    if (notifications) {
-      userProfileObj.notifications += ',' + notifications.join(',');
+    // userProfileObj.notifications = type;
+    if (notifications.length > 0) {
+      userProfileObj.notifications = type + ',' + notifications.join(',');
+    }
+    else {
+      userProfileObj.notifications = type;
     }
     this.userprofileService.updateUserProfile(userProfileObj)
       .subscribe((response: any) => {
@@ -144,9 +147,12 @@ export class OnboardWizardComponent implements OnInit {
     const { type, notifications } = requestPayload;
     const { subaccountId } = this.subaccountUserProfileDetails;
     requestPayload.subaccountId = subaccountId;
-    requestPayload.notifications = type
-    if (notifications) {
-      requestPayload.notifications += ',' + notifications.join(',');
+    // requestPayload.notifications = type
+    if (notifications.length > 0) {
+      requestPayload.notifications = type + ',' + notifications.join(',');
+    }
+    else {
+      requestPayload.notifications = type;
     }
     this.stakeholderService.createStakeholder(requestPayload).subscribe((response: any) => {
       this.isDataLoading = false;
