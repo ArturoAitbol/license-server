@@ -5,6 +5,9 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { Features } from 'src/app/helpers/features';
+import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
+import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-modify-customer-account',
@@ -16,10 +19,16 @@ export class ModifyCustomerAccountComponent implements OnInit {
     name: ['', Validators.required],
     customerType: ['', Validators.required],
     subaccountName: [''],
-    testCustomer: [{value:false,disabled:true}]
+    testCustomer: [{value:false,disabled:true}],
+    services: this.formBuilder.group({
+      tokenConsumption: [false], 
+      ctaas: [false]
+    }) 
   });
+
   types: string[] = ['MSP', 'Reseller'];
   private previousFormValue: any;
+  edited = false;
   // flag
   isDataLoading = false;
   //  @Inject(MAT_DIALOG_DATA) public data: ModalData
@@ -29,11 +38,13 @@ export class ModifyCustomerAccountComponent implements OnInit {
     private subaccountService: SubAccountService,
     private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
+    private msalService: MsalService,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
     if (this.data) {
       this.updateCustomerForm.patchValue(this.data);
+      this.data.services?.split(",").forEach( service => this.updateCustomerForm.get("services").get(service)?.setValue(true));
       this.previousFormValue = { ...this.updateCustomerForm };
     }
   }
@@ -44,12 +55,21 @@ export class ModifyCustomerAccountComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  modifiedServices(): any {
+    let services = "";
+   for(let service in this.updateCustomerForm.get("services").controls){
+      if(this.updateCustomerForm.get("services").controls[service].value === true)
+        services = services + service + ',';
+    }
+    services = services.slice(0, -1);
+    return services;
+  } 
   /**
    * to submit the form
    */
   submit() {
     this.isDataLoading = true;
-    const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value };
+    const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value }; 
     const customer = {
       id: mergedLicenseObject.id,
       customerName: mergedLicenseObject.name,
@@ -59,23 +79,25 @@ export class ModifyCustomerAccountComponent implements OnInit {
       this.customerService.updateCustomer(customer)
     ];
     if (this.data.subaccountId){
-      const subaccount = {
+      const subaccount: any = {
         id: mergedLicenseObject.subaccountId,
-        subaccountName: mergedLicenseObject.subaccountName
+        subaccountName: mergedLicenseObject.subaccountName,
       };
+      if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
+        let modifiedServices;
+        modifiedServices = this.modifiedServices();
+        subaccount.services = modifiedServices;
+      }
       requestsArray.push(this.subaccountService.updateSubAccount(subaccount)); 
     }
     forkJoin(requestsArray).subscribe((res: any) => {
-      if (!res.error) {
-        this.isDataLoading = false;
-        this.snackBarService.openSnackBar('Customer and subaccount edited successfully!', '');
-        this.dialogRef.close(res);
-      } else
-        this.snackBarService.openSnackBar(res.error, 'Error adding customer!');
+      this.isDataLoading = false;
+      this.snackBarService.openSnackBar('Customer and subaccount edited successfully!', '');
+      this.dialogRef.close(res);
     }, err => {
       this.isDataLoading = false;
       this.dialogRef.close(false);
-      console.error('error while updating license information row', err);
+      console.error('error while updating customer information row', err);
     });
   }
   /**
