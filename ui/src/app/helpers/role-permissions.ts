@@ -23,7 +23,7 @@ export const permissions = {
             'addSubAccAdminEmail',
             'deleteSubAccAdminEmail',
             'auditInfo',
-            'addCTaaSProject'
+            'addTestSuite'
         ],
         tables: {
             customerOptions: [
@@ -114,7 +114,7 @@ export const permissions = {
         elements: [
             'addProject',
             'addLicenseConsumption',
-            'addCTaaSProject'
+            'addTestSuite'
         ],
         tables: {
             customerOptions: [
