@@ -4,7 +4,7 @@ import {Observable, throwError} from 'rxjs';
 export const SubaccountAdminEmailServiceMock = {
     createAdminEmail:(details: any) => {
         return new Observable((observer) => {
-            observer.next({ res: {} });
+            observer.next(null);
             observer.complete();
             return {
                 unsubscribe() { }
