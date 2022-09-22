@@ -10,7 +10,8 @@ export const permissions = {
             'ctaas',
             'dashboards',
             'test-suites',
-            'stakeholders'
+            'stakeholders',
+            "setup"
         ],
         elements: [
             'addCustomer',
@@ -109,7 +110,8 @@ export const permissions = {
             'ctaas',
             'dashboards',
             'test-suites',
-            'stakeholders'
+            'stakeholders',
+            'setup',
         ],
         elements: [
             'addProject',

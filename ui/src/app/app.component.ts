@@ -52,6 +52,13 @@ export class AppComponent implements OnInit, OnDestroy {
             routePath: '/ctaas/stakeholders',
             active: false,
             materialIcon: 'groups'
+        },
+        {
+            name: 'Configuration',
+            iconName: "assets\\images\\tune.png",
+            routePath: '/ctaas/setup',
+            active: false,
+            materialIcon: 'tune'
         }
     ];
     currentRoutePath: string = '';
@@ -61,6 +68,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/ctaas/dashboards';
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/ctaas/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/ctaas/stakeholders';
+    readonly CTAAS_SETUP_PATH: string = '/ctaas/setup';
 
     constructor(
         private router: Router,
@@ -115,6 +123,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.CTAAS_DASHBOARD_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
+                    case this.CTAAS_SETUP_PATH:
                         this.tabName = Constants.CTAAS_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
@@ -183,6 +192,11 @@ export class AppComponent implements OnInit, OnDestroy {
                 }
             ];
         }
+        // Check if user has role Config Tester of Full Admin, if not filter out the configuration tab of the nav bar
+        if (!roles.some(role => role === 'tekvizion.FullAdmin' || role === 'tekvizion.ConfigTester')) {
+            this.sideBarItems = this.sideBarItems.filter(item => item.name != 'Configuration');
+        }
+
     }
     /**
      * perform changes on Toolbar on refresh
@@ -268,6 +282,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 case '/ctaas/project':
                 case '/ctaas/stakeholders':
                 case '/ctaas/test-suites':
+                case '/ctaas/setup':
                     this.sideBarItems.forEach((e: any) => {
                         if (e.routePath === this.currentRoutePath)
                             e.active = true;
