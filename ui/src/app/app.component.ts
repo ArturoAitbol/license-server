@@ -113,6 +113,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.isTransparentToolbar = true;
                         this.enableSidebar();
                         break;
+                    
                     case this.CTAAS_DASHBOARD_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
@@ -268,6 +269,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 case '/ctaas/dashboards':
                 case '/ctaas/project':
                 case '/ctaas/stakeholders':
+                case '/ctaas/test-suites':
                     this.sideBarItems.forEach((e: any) => {
                         if (e.routePath === this.currentRoutePath)
                             e.active = true;
