@@ -135,8 +135,4 @@ export class AddStakeHolderComponent implements OnInit {
     }
   }
 
-  // onCountryChange(event) {}
-  // hasError(event) {}
-  // getNumber(event) {}
-  // telInputObject(event) {}
 }
