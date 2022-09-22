@@ -162,14 +162,6 @@ public class TekvLSCreateSubaccount
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertEmailStmt);
 			insertEmailStmt.executeUpdate();
 			context.getLogger().info("Subaccount admin email inserted successfully.");
-
-			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
-				String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
-				String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
-				GraphAPIClient.createGuestUserWithProperRole(subaccountName,subaccountEmail,SUBACCOUNT_ADMIN,context);
-				context.getLogger().info("Guest user created successfully (AD).");
-			}
-			
 			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
 				if (subaccountServices.contains("Ctaas")) {
 					insertCtassSetupStmt.setString(1, subaccountId);
@@ -179,7 +171,14 @@ public class TekvLSCreateSubaccount
 					context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
 					insertCtassSetupStmt.executeUpdate();
 					context.getLogger().info("CTaaS setup default values inserted successfully.");
+
+					if(!FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
+						this.ADUserCreation(jobj,context);
+				}else{
+					this.ADUserCreation(jobj,context);
 				}
+			} else {
+				this.ADUserCreation(jobj,context);
 			}
 
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
@@ -211,6 +210,15 @@ public class TekvLSCreateSubaccount
 		if(errorMessage.contains("subaccount_unique") && errorMessage.contains("already exists"))
 			response = "Subaccount already exists";
 		return response;
+	}
+
+	private void ADUserCreation(JSONObject jobj, ExecutionContext context) throws Exception {
+		if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
+			String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
+			String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
+			GraphAPIClient.createGuestUserWithProperRole(subaccountName, subaccountEmail, SUBACCOUNT_ADMIN, context);
+			context.getLogger().info("Guest user created successfully (AD).");
+		}
 	}
 
 	private enum MANDATORY_PARAMS {

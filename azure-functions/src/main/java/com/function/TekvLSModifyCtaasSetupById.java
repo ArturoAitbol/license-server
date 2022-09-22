@@ -1,20 +1,13 @@
 package com.function;
 
-import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_FORBIDDEN;
-import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_UNAUTHORIZED;
-import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
-import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
-import static com.function.auth.RoleAuthHandler.getRolesFromToken;
-import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
-import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
-import static com.function.auth.RoleAuthHandler.hasPermission;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import com.function.clients.GraphAPIClient;
+import com.function.util.FeatureToggles;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,6 +25,8 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import io.jsonwebtoken.Claims;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSModifyCtaasSetupById {
 	/**
@@ -116,7 +111,10 @@ public class TekvLSModifyCtaasSetupById {
 			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
-			context.getLogger().info("Ctaas_setup updated successfully."); 
+			context.getLogger().info("Ctaas_setup updated successfully.");
+
+			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation") && FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
+					this.ADUserCreation(jobj,context,connection);
 
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
@@ -131,6 +129,24 @@ public class TekvLSModifyCtaasSetupById {
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+		}
+	}
+
+	private void ADUserCreation(JSONObject jobj,ExecutionContext context, Connection connection) throws Exception {
+		String statusParam = OPTIONAL_PARAMS.STATUS.jsonAttrib;
+		if(jobj.has(statusParam) && jobj.getString(statusParam).equals("SETUP_READY")){
+			String subaccountIdParam = OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib;
+			String subaccountId = jobj.getString(subaccountIdParam);
+			final String subaccountEmailsSql = "SELECT s.name, sa.subaccount_admin_email " +
+					"FROM subaccount s, subaccount_admin sa WHERE sa.subaccount_id = s.id AND s.id = ?::uuid;";
+			try(PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountEmailsSql)){
+				subaccountEmailsStmt.setString(1,subaccountId);
+				ResultSet rs = subaccountEmailsStmt.executeQuery();
+				while(rs.next()){
+					GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
+							rs.getString("subaccount_admin_email"),SUBACCOUNT_ADMIN,context);
+				}
+			}
 		}
 	}
 

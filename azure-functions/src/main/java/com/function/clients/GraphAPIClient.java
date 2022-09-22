@@ -74,6 +74,7 @@ public class GraphAPIClient {
                 throw new ADException("Create a guest user failed (AD): " + response.getJSONObject("error").getString("message"));
             }
             JSONObject invitedUser = response.getJSONObject("invitedUser");
+            context.getLogger().info("Guest user created successfully: " + response);
             return invitedUser.getString("id");
     }
 
@@ -100,10 +101,13 @@ public class GraphAPIClient {
                 response = HttpClient.post(url,appRoleAssignment.toString(),headers);
             }
 
-            if(response.has("error") && !response.getJSONObject("error").getString("message").contains("Permission being assigned already exists")) {
-                context.getLogger().severe("Request url: " + url + "Request params: " + appRoleAssignment);
-                context.getLogger().severe("Error response: " + response);
-                throw new ADException("Assign role to guest user failed (AD): " + response.getJSONObject("error").getString("message"));
+            if(response.has("error")) {
+                if(!response.getJSONObject("error").getString("message").contains("Permission being assigned already exists")){
+                    context.getLogger().severe("Request url: " + url + "Request params: " + appRoleAssignment);
+                    context.getLogger().severe("Error response: " + response);
+                    throw new ADException("Assign role to guest user failed (AD): " + response.getJSONObject("error").getString("message"));
+                }
+                context.getLogger().info("App role is already assigned: " + appRoleAssignment);
             }else{
                 context.getLogger().info("App role assigned successfully: " + appRoleAssignment);
             }
