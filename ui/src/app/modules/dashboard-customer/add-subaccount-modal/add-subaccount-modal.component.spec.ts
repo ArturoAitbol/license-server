@@ -1,17 +1,17 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AddSubaccountModalComponent} from './add-subaccount-modal.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {SharedModule} from '../../modules/shared/shared.module';
+import {SharedModule} from '../../shared/shared.module';
 import {Router} from '@angular/router';
 import {MatDialogRef} from '@angular/material/dialog';
-import {SnackBarService} from '../../services/snack-bar.service';
-import {SnackBarServiceMock} from '../../../test/mock/services/snack-bar-service.mock';
-import {SubAccountService} from '../../services/sub-account.service';
-import {SubaccountServiceMock} from '../../../test/mock/services/subaccount-service.mock';
+import {SnackBarService} from '../../../services/snack-bar.service';
+import {SnackBarServiceMock} from '../../../../test/mock/services/snack-bar-service.mock';
+import {SubAccountService} from '../../../services/sub-account.service';
+import {SubaccountServiceMock} from '../../../../test/mock/services/subaccount-service.mock';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {CustomerService} from '../../services/customer.service';
-import {CustomerServiceMock} from '../../../test/mock/services/customer-service.mock';
+import {CustomerService} from '../../../services/customer.service';
+import {CustomerServiceMock} from '../../../../test/mock/services/customer-service.mock';
 
 let addSubaccountModalComponentInstance: AddSubaccountModalComponent;
 let fixture: ComponentFixture<AddSubaccountModalComponent>;
@@ -148,4 +148,4 @@ describe('createSubAccount', () => {
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Expected subaccount response error', 'Error adding subaccount!');
     });
-})
+});
