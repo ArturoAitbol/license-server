@@ -10,8 +10,11 @@
 }
 .flex-container > div {
   margin: 10px;
-  text-align: center;
+  /* text-align: center; */
 }
 mat-form-field {
   width: 100%;
+}
+.checkbox-margin{
+  margin-right: 9%;
 }

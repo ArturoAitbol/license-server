@@ -11,15 +11,21 @@ import { CustomerService } from 'src/app/services/customer.service';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { CustomerServiceMock } from 'src/test/mock/services/customer-service.mock';
-import { SharedModule } from '../../modules/shared/shared.module';
+import { SharedModule } from '../../shared/shared.module';
 import { ModifyCustomerAccountComponent } from './modify-customer-account.component';
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { ReactiveFormsModule } from '@angular/forms';
 import { CurrentCustomerServiceMock } from "src/test/mock/services/current-customer-service.mock";
+import { throwError } from 'rxjs';
+import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
+import { SubAccountService } from 'src/app/services/sub-account.service';
+import { Features } from 'src/app/helpers/features';
+import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
 const dialogMock = new DialogServiceMock();
 let fixture: ComponentFixture<ModifyCustomerAccountComponent>;
+const data = CurrentCustomerServiceMock.getSelectedCustomer()
 const RouterMock = {
   navigate: (commands: string[]) => {}
 };
@@ -58,9 +64,13 @@ const beforeEachFunction = () => {
       },
       {
           provide: MAT_DIALOG_DATA,
-          useValue: CurrentCustomerServiceMock
+          useValue: data
+      },
+      {
+        provide: SubAccountService,
+        useValue: SubaccountServiceMock
       }
-      ]
+    ]
   });
   fixture = TestBed.createComponent(ModifyCustomerAccountComponent);
   CustomerComponentTestInstance = fixture.componentInstance;
@@ -88,11 +98,16 @@ describe('UI verification test', () => {
 
   it('should enable submit button when fields are correct',()=>{
     const updateCustomerForm = CustomerComponentTestInstance.updateCustomerForm;
-
+    
     updateCustomerForm.get('name').setValue('customerName');
     updateCustomerForm.get('customerType').setValue('Reseller');
     updateCustomerForm.get('subaccountName').setValue('subaccountName');
     updateCustomerForm.get('testCustomer').setValue(true);
+    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
+      updateCustomerForm.get('services').get('ctaas').setValue(true);
+      updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+    }
+
     expect(updateCustomerForm.errors).toBeNull();
     expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
   });
@@ -104,6 +119,7 @@ describe('UI verification test', () => {
 
   });
 });
+
 describe('modify customers flow', () => {
   beforeEach(beforeEachFunction);
   it('should execute submit action', () => {
@@ -116,6 +132,7 @@ describe('modify customers flow', () => {
     CustomerComponentTestInstance.onCancel();
     expect(CustomerComponentTestInstance.onCancel).toHaveBeenCalled();
   });
+
   it('should edit subaccount name',()=>{
     const updateCustomerForm = CustomerComponentTestInstance.updateCustomerForm;
     CustomerComponentTestInstance.data = CurrentCustomerServiceMock;
@@ -132,6 +149,38 @@ describe('modify customers flow', () => {
     expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
     expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
   });
+
+  it('should edit services of a subaccount', () => {
+    const updateCustomerForm = CustomerComponentTestInstance.updateCustomerForm;
+    CustomerComponentTestInstance.data = CurrentCustomerServiceMock;
+    updateCustomerForm.patchValue(CustomerComponentTestInstance.data);
+    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
+      updateCustomerForm.get('services').get('ctaas').setValue(true);
+      updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+    }
+    expect(updateCustomerForm.errors).toBeNull();
+    CustomerComponentTestInstance.ngOnInit();
+    updateCustomerForm.get('subaccountName').setValue('subaccountNameModified');
+    spyOn(CustomerComponentTestInstance, 'submit').and.callThrough();
+    CustomerComponentTestInstance.submit();
+    expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
+    expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
+  });
 });
 
+describe('display of error messages', () => {
+  beforeEach(beforeEachFunction);
+  it('should display error messages if submit fails', () =>{
+    fixture.detectChanges();
+    spyOn(CustomerServiceMock, 'updateCustomer').and.returnValue(throwError('some error'));
+    spyOn(console, 'error').and.callThrough();
 
+    fixture.detectChanges();
+
+    CustomerComponentTestInstance.submit();
+
+    expect(CustomerServiceMock.updateCustomer).toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledWith('error while updating customer information row', 'some error')
+    expect(CustomerComponentTestInstance.isDataLoading).toBeFalse();
+  });
+});
