@@ -1,17 +1,21 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AddSubaccountModalComponent} from './add-subaccount-modal.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {SharedModule} from '../../modules/shared/shared.module';
+import {SharedModule} from '../../shared/shared.module';
 import {Router} from '@angular/router';
 import {MatDialogRef} from '@angular/material/dialog';
-import {SnackBarService} from '../../services/snack-bar.service';
-import {SnackBarServiceMock} from '../../../test/mock/services/snack-bar-service.mock';
-import {SubAccountService} from '../../services/sub-account.service';
-import {SubaccountServiceMock} from '../../../test/mock/services/subaccount-service.mock';
+import {SnackBarService} from '../../../services/snack-bar.service';
+import {SnackBarServiceMock} from '../../../../test/mock/services/snack-bar-service.mock';
+import {SubAccountService} from '../../../services/sub-account.service';
+import {SubaccountServiceMock} from '../../../../test/mock/services/subaccount-service.mock';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {CustomerService} from '../../services/customer.service';
-import {CustomerServiceMock} from '../../../test/mock/services/customer-service.mock';
+import {CustomerService} from '../../../services/customer.service';
+import {CustomerServiceMock} from '../../../../test/mock/services/customer-service.mock';
+import { MsalService } from '@azure/msal-angular';
+import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
+import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
+import { Features } from 'src/app/helpers/features';
 
 let addSubaccountModalComponentInstance: AddSubaccountModalComponent;
 let fixture: ComponentFixture<AddSubaccountModalComponent>;
@@ -47,7 +51,11 @@ const beforeEachFunction = async () => {
             {
                 provide: MatDialogRef,
                 useValue: MatDialogRefMock
-            }
+            },
+            {
+                provide: MsalService,
+                useValue: MsalServiceMock
+            },
         ]
     }).compileComponents().then(() => {
         fixture = TestBed.createComponent(AddSubaccountModalComponent);
@@ -103,7 +111,7 @@ describe('createSubAccount', () => {
         const subaccountDetails: any = {
             customerId: 'test customer id',
             subaccountName: 'test subaccount name',
-            subaccountAdminEmail: 'test subaccount admin email',
+            subaccountAdminEmail: 'test subaccount admin email'
         };
         spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar');
@@ -113,6 +121,10 @@ describe('createSubAccount', () => {
             subaccountName: subaccountDetails.subaccountName,
             subaccountAdminEmail: subaccountDetails.subaccountAdminEmail
         });
+        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
+            subaccountDetails.services = 'tokenConsumption';
+            addSubaccountModalComponentInstance.addSubaccountForm['services'] = subaccountDetails.services;
+        }
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalledWith(subaccountDetails);
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount added successfully!', '');
@@ -130,22 +142,35 @@ describe('createSubAccount', () => {
         expect(MatDialogRefMock.close).toHaveBeenCalled();
     });
 
-    it('should make a call to subaccountService.createSubAccount customer and display an error message on snackbar if an error is thrown', () => {
+    it('should call setChecked creating a subaccount with services', () => {
+        spyOn(addSubaccountModalComponentInstance, 'setChecked').and.callThrough();
+
+        addSubaccountModalComponentInstance.setChecked(true, 1);
+
+        expect(addSubaccountModalComponentInstance.setChecked).toHaveBeenCalled();
+    });
+
+    it('should make a call to subaccountService.createSubAccount customer and display an error message on snackbar if an error is thrown', () => {  
         const subaccountDetails: any = {
             customerId: 'test customer id',
             subaccountName: 'test subaccount name',
-            subaccountAdminEmail: 'test subaccount admin email',
-        };
+            subaccountAdminEmail: 'test subaccount admin email'
+        };  
         spyOn(SubaccountServiceMock, 'createSubAccount').and.returnValue(SubaccountServiceMock.errorResponse());
         spyOn(SnackBarServiceMock, 'openSnackBar');
         spyOn(MatDialogRefMock, 'close');
+        spyOn(FeatureToggleHelper, 'isFeatureEnabled').and.callFake((featureToggle: string, msalService: MsalService) => {
+            return true;
+        });
         addSubaccountModalComponentInstance.addSubaccountForm.patchValue({
             customer: subaccountDetails.customerId,
             subaccountName: subaccountDetails.subaccountName,
-            subaccountAdminEmail: subaccountDetails.subaccountAdminEmail
+            subaccountAdminEmail: subaccountDetails.subaccountAdminEmail,
         });
+        subaccountDetails.services =  'tokenConsumption,Ctaas';
+        addSubaccountModalComponentInstance.addSubaccountForm['services'] = subaccountDetails.services
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Expected subaccount response error', 'Error adding subaccount!');
     });
-})
+});

@@ -11,11 +11,11 @@ import { SubAccountService } from '../services/sub-account.service';
 import { DashboardComponent } from './dashboard.component';
 import { SharedModule } from '../modules/shared/shared.module';
 import { DataTableComponent } from '../generics/data-table/data-table.component';
-import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
-import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
-import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
-import { AdminEmailsComponent } from './admin-emails-modal/admin-emails.component';
-import { SubaccountAdminEmailsComponent } from './subaccount-admin-emails-modal/subaccount-admin-emails.component';
+import { AddCustomerAccountModalComponent } from '../modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
+import { AddSubaccountModalComponent } from '../modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
+import { ModifyCustomerAccountComponent } from '../modules/dashboard-customer/modify-customer-account/modify-customer-account.component';
+import { AdminEmailsComponent } from '../modules/dashboard-customer/admin-emails-modal/admin-emails.component';
+import { SubaccountAdminEmailsComponent } from '../modules/dashboard-customer/subaccount-admin-emails-modal/subaccount-admin-emails.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LicenseServiceMock } from '../../test/mock/services/license-service.mock';
 import { CustomerServiceMock } from '../../test/mock/services/customer-service.mock';
@@ -459,7 +459,7 @@ describe('Filtering table rows', ()  => {
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
         let objectToCompare: any = {"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive"};
         if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature))
-            objectToCompare.services = null;
+            objectToCompare.services = "tokenConsumption,Ctaas";
         expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);
     });
 });

@@ -11,7 +11,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DialogService } from 'src/app/services/dialog.service';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
-import { SharedModule } from '../../modules/shared/shared.module';
+import { SharedModule } from '../../shared/shared.module';
 import { AdminEmailsComponent } from './admin-emails.component';
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { ReactiveFormsModule } from '@angular/forms';

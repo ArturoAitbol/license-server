@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { TestSuite } from '../model/test-suite.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,15 @@ export class CtaasTestSuiteService {
 
   public getSelectedSubAccount(): string {
     return this.selectedSubAccount;
+  }
+
+  /**
+     * create new test suite
+     * @param newTestSuite: Test Suite
+     * @returns: Observable
+     */
+  public createTestSuite(newTestSuite: TestSuite) {
+    return this.httpClient.post(this.API_URL, newTestSuite);
   }
 
   public getTestSuitesBySubAccount(subaccountId: string): Observable<any[]> {

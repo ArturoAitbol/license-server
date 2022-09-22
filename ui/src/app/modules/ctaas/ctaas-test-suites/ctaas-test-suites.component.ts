@@ -7,6 +7,7 @@ import { Constants } from 'src/app/helpers/constants';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { CtaasTestSuiteService } from 'src/app/services/ctaas-test-suite.service';
 import { CustomerService } from 'src/app/services/customer.service';
+import { AddTestSuiteComponent } from './add-test-suite/add-test-suite.component';
 
 @Component({
   selector: 'app-ctaas-test-suites',
@@ -80,8 +81,8 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   private fetchDataToDisplay(): void {
     this.ctaasTestSuiteService.getTestSuitesBySubAccount(this.currentCustomer.id).subscribe((response: any) => {
       this.testSuites = response.ctaasTestSuites;
-      this.isRequestCompleted = false;
-      this.isLoadingResults = true;
+      this.isRequestCompleted = true;
+      this.isLoadingResults = false;
     }, () => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
@@ -98,6 +99,10 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
       return this.testSuites = this.testSuites;
   }
 
+  addTestSuite(): void {
+    this.openDialog('add-test-suite');
+  }
+
   /**
     * open dialog
     * @param type: string
@@ -106,6 +111,12 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   openDialog(type: string, selectedItemData?: any): void {
     let dialogRef;
     switch (type) {
+      case 'add-test-suite':
+        dialogRef = this.dialog.open(AddTestSuiteComponent, {
+          width: '400px',
+          disableClose: true
+      });
+        break;
       // case this.EXECUTE_ON_DEMAND:
       // TO DO
       // break;
