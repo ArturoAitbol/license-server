@@ -1,7 +1,7 @@
 package com.function.auth;
 
 public enum Permission {
-        //CREATE
+        // CREATE
         CREATE_ADMIN_EMAIL("TekvLSCreateAdminEmail"),
         CREATE_CUSTOMER("TekvLSCreateCustomer"),
         CREATE_DEVICE("TekvLSCreateDevice"),
@@ -13,9 +13,10 @@ public enum Permission {
         CREATE_USAGE_DETAILS("TekvLSCreateUsageDetails"),
         CREATE_BUNDLE("TekvLSCreateBundle"),
         CREATE_CTAAS_SETUP("TekvLSCreateCtaasSetup"),
+        CREATE_CTAAS_TEST_SUITE("TekvLSCreateCtaasTestSuite"),
         CREATE_SUBACCOUNT_STAKEHOLDER("TekvLSCreateSubaccountStakeHolder"),
 
-        //DELETE
+        // DELETE
         DELETE_ADMIN_EMAIL("TekvLSDeleteAdminEmail"),
         DELETE_CUSTOMER("TekvLSDeleteCustomerById"),
         DELETE_DEVICE("TekvLSDeleteDeviceById"),
@@ -29,10 +30,10 @@ public enum Permission {
         DELETE_CTAAS_SETUP("TekvLSDeleteCtaasSetupById"),
         DELETE_SUBACCOUNT_STAKEHOLDER("TekvLSDeleteSubaccountStakeHolder"),
 
-        //READ
+        // READ
         GET_ALL_BUNDLES("TekvLSGetAllBundles"),
         GET_ALL_CUSTOMERS("TekvLSGetAllCustomers"),
-        GET_ALL_DEVICES ("TekvLSGetAllDevices"),
+        GET_ALL_DEVICES("TekvLSGetAllDevices"),
         GET_ALL_LICENSES("TekvLSGetAllLicenses"),
         GET_ALL_LICENSE_USAGE_DETAILS("TekvLSGetAllLicenseUsageDetails"),
         GET_ALL_PROJECTS("TekvLSGetAllProjects"),
@@ -53,18 +54,18 @@ public enum Permission {
         MODIFY_PROJECT("TekvLSModifyProjectById"),
         MODIFY_SUBACCOUNT("TekvLSModifySubaccountById"),
         MODIFY_BUNDLE("TekvLSModifyBundleById"),
-		MODIFY_CTAAS_SETUP("TekvLSModifyCtaasSetupById"),
-		MODIFY_CTAAS_ONBOARDING("TekvLSModifyCtaasOnBoardingById"),
-		MODIFY_SUBACCOUNT_STAKEHOLDER("TekvLSModifySubaccountStakeholder"),
-		MODIFY_AUTH_USER_PROFILE("TekvLSModifyAuthUserProfile");
-	
+        MODIFY_CTAAS_SETUP("TekvLSModifyCtaasSetupById"),
+        MODIFY_CTAAS_ONBOARDING("TekvLSModifyCtaasOnBoardingById"),
+        MODIFY_SUBACCOUNT_STAKEHOLDER("TekvLSModifySubaccountStakeholder"),
+        MODIFY_AUTH_USER_PROFILE("TekvLSModifyAuthUserProfile");
+
         private final String value;
 
-        Permission(String value){
+        Permission(String value) {
                 this.value = value;
         }
+
         public String value() {
                 return this.value;
         }
 }
-
