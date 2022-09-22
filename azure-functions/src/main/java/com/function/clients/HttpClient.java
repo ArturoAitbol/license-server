@@ -55,6 +55,7 @@ public class HttpClient {
     static public JSONObject get(String endpoint, String body, HashMap<String,String> headers) throws Exception {
         URL url = new URL(endpoint);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "*/*");
         connection.setRequestProperty("Content-Type", "application/json");

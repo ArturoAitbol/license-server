@@ -65,7 +65,7 @@ public class TekvLSGetCtaasDashboard {
 
 		context.getLogger().info("Entering TekvLSGetCtaasDashboard Azure function");
 		
-		if (subaccountId.equals("EMPTY")){
+		if (subaccountId.equals("EMPTY") || subaccountId.isEmpty()){
 			context.getLogger().info( MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
 			JSONObject json = new JSONObject();
 			json.put("error",MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
@@ -150,17 +150,20 @@ public class TekvLSGetCtaasDashboard {
 				json.put("error",MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
+			
 			JSONObject powerBiInfo = new JSONObject();
 			if(!FeatureToggles.INSTANCE.isFeatureActive("powerBi-dashboard")){
-				json.put("error", "powerBi Feature is disabled");
-				return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+				json.put("powerBiInfo", powerBiInfo);
+				return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 			}
+			
 			try {
 				powerBiInfo = PowerBIClient.getPowerBiDetails(item.getString("powerBiWorkspaceId"), item.getString("powerBiReportId"), context);
 			}catch(Exception e) {
 				json.put("error", e.getMessage());
 				return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 			}
+			
 			json.put("powerBiInfo", powerBiInfo);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
