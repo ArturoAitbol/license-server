@@ -14,8 +14,8 @@ import {CustomerService} from '../../../services/customer.service';
 import {CustomerServiceMock} from '../../../../test/mock/services/customer-service.mock';
 import { MsalService } from '@azure/msal-angular';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
-import {FeatureToggleHelper} from '../../../helpers/feature-toggle.helper';
-import {Features} from '../../../helpers/features';
+import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
+import { Features } from 'src/app/helpers/features';
 
 let addSubaccountModalComponentInstance: AddSubaccountModalComponent;
 let fixture: ComponentFixture<AddSubaccountModalComponent>;

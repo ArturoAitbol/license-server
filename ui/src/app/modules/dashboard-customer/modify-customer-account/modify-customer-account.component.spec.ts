@@ -19,8 +19,8 @@ import { CurrentCustomerServiceMock } from "src/test/mock/services/current-custo
 import { throwError } from 'rxjs';
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { FeatureToggleHelper } from '../../helpers/feature-toggle.helper';
-import { Features } from '../../helpers/features';
+import { Features } from 'src/app/helpers/features';
+import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
 const dialogMock = new DialogServiceMock();
