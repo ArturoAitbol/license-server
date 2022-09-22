@@ -20,7 +20,8 @@ const SUBACCOUNT_LIST = {
         {
             name: '360 Custom (No Tokens)',
             customerId: 'aa85399d-1ce9-425d-9df7-d6e8a8baaec2',
-            id: '24372e49-5f31-4b38-bc3e-fb6a5c371623'
+            id: '24372e49-5f31-4b38-bc3e-fb6a5c371623',
+            services: 'tokenConsumption,Ctaas'
         },
         {
             name: 'Default',
@@ -270,7 +271,8 @@ const SUBACCOUNT_LIST = {
         {
             name: 'Default',
             customerId: '0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848',
-            id: 'ac7a78c2-d0b2-4c81-9538-321562d426c7'
+            id: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
+            services: 'tokenConsumption,Ctaas'
         },
         {
             name: 'Bigger Better 360 Small',
@@ -381,6 +383,15 @@ export const SubaccountServiceMock = {
     errorResponse: () => {
         return throwError({
             error: 'Expected subaccount response error'
+        });
+    },
+    updateSubAccount: (subaccount: any) => {
+        return new Observable((observer) => {
+            observer.next();
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
         });
     }
 };
