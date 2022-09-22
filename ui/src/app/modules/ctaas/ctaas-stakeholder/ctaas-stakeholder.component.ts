@@ -80,24 +80,31 @@ export class CtaasStakeholderComponent implements OnInit {
       .pipe(
         map((e: { stakeHolders: IStakeholder[] }) => {
           const { stakeHolders } = e;
-          stakeHolders.forEach((x: IStakeholder) => {
-            if (x.notifications) {
-              const reports = this.getReports();
-              if (x.notifications.includes(',')) {
-                const splittingData = x.notifications.split(',');
-                if (splittingData[0].includes('TYPE:')) {
-                  x.type = splittingData[0].replace('TYPE:', '');
-                  splittingData.splice(0, 1);
-                } const mappedNotificationsList = splittingData.map(e => reports.find(z => z.value === e)['label']);
-                if (mappedNotificationsList.length > 0)
-                  x.notifications = mappedNotificationsList.join(',');
-              } else {
-                const result = reports.find(z => z.value === x.notifications)['label'];
-                x.notifications = result;
+          try {
+            stakeHolders.forEach((x: IStakeholder) => {
+              if (x.notifications) {
+                const reports = this.getReports();
+                if (x.notifications.includes(',')) {
+                  const splittingData = x.notifications.split(',');
+                  if (splittingData[0].includes('TYPE:')) {
+                    x.type = splittingData[0].replace('TYPE:', '');
+                    splittingData.splice(0, 1);
+                  }
+                  const mappedNotificationsList = splittingData.map(e => reports.find(z => z.value === e)['label']);
+                  if (mappedNotificationsList.length > 0)
+                    x.notifications = mappedNotificationsList.join(',');
+                } else {
+                  const result = x.notifications;
+                  x.notifications = '';
+                  x.type = result.replace('TYPE:', '');
+                }
               }
-            }
-          });
-          return e;
+            });
+            return e;
+          }
+          catch (e) {
+            console.error('some error |', e)
+          }
         })
       )
       .subscribe((response: any) => {
