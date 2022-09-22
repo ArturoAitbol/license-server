@@ -35,6 +35,7 @@ public class RoleAuthHandler {
             DELETE_LICENSE_USAGE,
             DELETE_USAGE_DETAILS,
             DELETE_CTAAS_SETUP,
+            DELETE_CTAAS_TEST_SUITE,
             DELETE_SUBACCOUNT_STAKEHOLDER,
             // READ
             GET_ALL_CUSTOMERS,
@@ -96,6 +97,7 @@ public class RoleAuthHandler {
             DELETE_LICENSE_USAGE,
             DELETE_USAGE_DETAILS,
             DELETE_SUBACCOUNT_STAKEHOLDER,
+            DELETE_CTAAS_TEST_SUITE,
             // READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,

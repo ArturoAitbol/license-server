@@ -41,4 +41,13 @@ export class CtaasTestSuiteService {
     headers.append('Content-Type', 'application/json');
     return headers;
   }
+
+  /**
+   * delete selected TestSuite by testSuiteId
+   * @param testSuiteId: string 
+   * @returns: Observable 
+   */
+  public deleteTestSuite(testSuiteId: string) {
+    return this.httpClient.delete(`${this.API_URL}/${testSuiteId}`);
+  }
 }
