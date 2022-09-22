@@ -10,7 +10,6 @@ import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutModalComponent } from './generics/about-modal/about-modal.component';
-import { HeaderService } from './services/header.service';
 import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
 import { Features } from './helpers/features';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -68,8 +67,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private msalService: MsalService,
         public dialog: MatDialog,
         private broadcastService: MsalBroadcastService,
-        private autoLogoutService: AutoLogoutService,
-        private headerService: HeaderService
+        private autoLogoutService: AutoLogoutService
     ) {
         const angularPlugin = new AngularPlugin();
         const appInsights = new ApplicationInsights({
@@ -113,6 +111,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.isTransparentToolbar = true;
                         this.enableSidebar();
                         break;
+
                     case this.CTAAS_DASHBOARD_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
@@ -268,6 +267,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 case '/ctaas/dashboards':
                 case '/ctaas/project':
                 case '/ctaas/stakeholders':
+                case '/ctaas/test-suites':
                     this.sideBarItems.forEach((e: any) => {
                         if (e.routePath === this.currentRoutePath)
                             e.active = true;
