@@ -19,6 +19,8 @@ import { CurrentCustomerServiceMock } from "src/test/mock/services/current-custo
 import { throwError } from 'rxjs';
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+import { FeatureToggleHelper } from '../../helpers/feature-toggle.helper';
+import { Features } from '../../helpers/features';
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
 const dialogMock = new DialogServiceMock();
@@ -101,8 +103,10 @@ describe('UI verification test', () => {
     updateCustomerForm.get('customerType').setValue('Reseller');
     updateCustomerForm.get('subaccountName').setValue('subaccountName');
     updateCustomerForm.get('testCustomer').setValue(true);
-    updateCustomerForm.get('services').get('ctaas').setValue(true);
-    updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
+      updateCustomerForm.get('services').get('ctaas').setValue(true);
+      updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+    }
 
     expect(updateCustomerForm.errors).toBeNull();
     expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
@@ -149,10 +153,11 @@ describe('modify customers flow', () => {
   it('should edit services of a subaccount', () => {
     const updateCustomerForm = CustomerComponentTestInstance.updateCustomerForm;
     CustomerComponentTestInstance.data = CurrentCustomerServiceMock;
-    CustomerComponentTestInstance.data.services = "tokenConsumption,ctaas";
     updateCustomerForm.patchValue(CustomerComponentTestInstance.data);
-    updateCustomerForm.get('services').get('ctaas').setValue(true);
-    updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
+      updateCustomerForm.get('services').get('ctaas').setValue(true);
+      updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+    }
     expect(updateCustomerForm.errors).toBeNull();
     CustomerComponentTestInstance.ngOnInit();
     updateCustomerForm.get('subaccountName').setValue('subaccountNameModified');
@@ -161,17 +166,6 @@ describe('modify customers flow', () => {
     expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
     expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
   });
-
-  it('should execute with a empty service on ngOnInit()', () => {
-    CustomerComponentTestInstance.updateCustomerForm.get("services").get('tokenConsumption').setValue(null);
-    CustomerComponentTestInstance.updateCustomerForm.get("services").get('ctaas').setValue(null);
-    fixture.detectChanges();
-  });
-
-  it('should execute with a empty services on ngOnInit()', () =>{
-    CustomerComponentTestInstance.data.services = undefined;
-    fixture.detectChanges();
-  })
 });
 
 describe('display of error messages', () => {

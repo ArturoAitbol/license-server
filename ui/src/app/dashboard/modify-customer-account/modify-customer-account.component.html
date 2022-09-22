@@ -28,7 +28,7 @@
                         <input matInput required formControlName="subaccountName">
                     </mat-form-field>
                 </div>
-                <div>
+                <div *lcFeatureToggle="'ctaasFeature'">
                     <section>
                         <ng-container formGroupName="services" *ngFor="let service of updateCustomerForm.get('services').controls | keyvalue">
                             <mat-checkbox formControlName="{{service.key}}" class="checkbox-margin" [color]="'primary'">

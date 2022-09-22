@@ -187,7 +187,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     const customerWithDetails = { ...customer };
                     customerWithDetails.subaccountName = name;
                     customerWithDetails.subaccountId = id;
-                    customerWithDetails.services = services;
                     const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === id));
                     customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
                     if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService))

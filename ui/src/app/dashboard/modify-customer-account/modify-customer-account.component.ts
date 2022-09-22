@@ -5,6 +5,9 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { Features } from 'src/app/helpers/features';
+import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
+import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-modify-customer-account',
@@ -35,6 +38,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
     private subaccountService: SubAccountService,
     private snackBarService: SnackBarService,
     public dialogRef: MatDialogRef<ModifyCustomerAccountComponent>,
+    private msalService: MsalService,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
@@ -51,7 +55,8 @@ export class ModifyCustomerAccountComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  modifiedServices(services: String): any {
+  modifiedServices(): any {
+    let services = "";
    for(let service in this.updateCustomerForm.get("services").controls){
       if(this.updateCustomerForm.get("services").controls[service].value === true)
         services = services + service + ',';
@@ -64,10 +69,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
    */
   submit() {
     this.isDataLoading = true;
-    let actualServices = "";
-    let modifiedServices;
-    const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value };
-    modifiedServices = this.modifiedServices(actualServices);
+    const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value }; 
     const customer = {
       id: mergedLicenseObject.id,
       customerName: mergedLicenseObject.name,
@@ -77,11 +79,15 @@ export class ModifyCustomerAccountComponent implements OnInit {
       this.customerService.updateCustomer(customer)
     ];
     if (this.data.subaccountId){
-      const subaccount = {
+      const subaccount: any = {
         id: mergedLicenseObject.subaccountId,
         subaccountName: mergedLicenseObject.subaccountName,
-        services: modifiedServices
       };
+      if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
+        let modifiedServices;
+        modifiedServices = this.modifiedServices();
+        subaccount.services = modifiedServices;
+      }
       requestsArray.push(this.subaccountService.updateSubAccount(subaccount)); 
     }
     forkJoin(requestsArray).subscribe((res: any) => {

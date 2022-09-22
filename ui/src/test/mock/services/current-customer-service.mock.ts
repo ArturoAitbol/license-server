@@ -7,7 +7,7 @@ const CUSTOMER = {
     licenseId: '16f4f014-5bed-4166-b10a-808b2e6655e3',
     subaccountName: 'Default',
     testCustomer: true,
-    services: 'tokenConsumption,ctaas'
+    services: 'tokenConsumption,Ctaas'
 }
 
 
