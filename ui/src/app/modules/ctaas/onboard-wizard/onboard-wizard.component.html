@@ -78,7 +78,7 @@
         <div class="row ">
             <div class="col-6">
                 <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
-                    class="form-control"/>
+                    class="form-control" maxlength="10"/>
                 <span
                     *ngIf="userProfileForm.get('phoneNumber').dirty && userProfileForm.get('phoneNumber').hasError('required')"></span>
                 <span
@@ -92,8 +92,8 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Select Type</mat-label>
                     <mat-select formControlName="type" id = "type">
-                        <mat-option value="TYPE:HIGH_TIER"> HIGH TIER </mat-option>
-                        <mat-option value="TYPE:LOW_TIER"> LOW TIER </mat-option>
+                        <mat-option value="TYPE:HIGH TIER"> HIGH TIER </mat-option>
+                        <mat-option value="TYPE:LOW TIER"> LOW TIER </mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -182,7 +182,7 @@
             <div class="row ">
                 <div class="col-6">
                     <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
-                        class="form-control" />
+                        class="form-control" maxlength="10"/>
                     <span
                         *ngIf="stakeholderForm.get('phoneNumber').dirty && stakeholderForm.get('phoneNumber').hasError('required')"></span>
                     <span
@@ -196,8 +196,8 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Select Type</mat-label>
                         <mat-select formControlName="type" id = "type">
-                            <mat-option value="TYPE:HIGH_TIER"> HIGH TIER </mat-option>
-                            <mat-option value="TYPE:LOW_TIER"> LOW TIER </mat-option>
+                            <mat-option value="TYPE:HIGH TIER"> HIGH TIER </mat-option>
+                            <mat-option value="TYPE:LOW TIER"> LOW TIER </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
