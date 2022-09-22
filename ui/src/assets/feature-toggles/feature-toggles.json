@@ -12,7 +12,8 @@
       "ctaas": true,
       "dashboards": true,
       "test-suites": true,
-      "stakeholders": true
+      "stakeholders": true,
+      "setup": true
     },
     "features": {
       "testFeature1": true,
@@ -35,7 +36,8 @@
       "ctaas": true,
       "dashboards": true,
       "project": true,
-      "stakeholders": true
+      "stakeholders": true,
+      "setup": true
     },
     "features": {
       "testFeature1": true,
@@ -57,7 +59,8 @@
       "ctaas": false,
       "dashboards": false,
       "project": false,
-      "stakeholders": false
+      "stakeholders": false,
+      "setup": false
     },
     "features": {
       "testFeature1": false,

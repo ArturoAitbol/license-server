@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { ICtaasSetup } from "../model/ctaas-setup.model";
 
 @Injectable({
   providedIn: 'root'
@@ -27,10 +28,15 @@ export class CtaasSetupService {
    */
   public getSubaccountCtaasSetupDetails(subaccountId: string) {
     const headers = this.getHeaders();
-    const params = new HttpParams();
-    params.append('subaccountId', subaccountId);
+    const params = new HttpParams().append('subaccountId', subaccountId);
     return this.httpClient.get<any>(this.API_URL, { headers, params });
   }
+
+  public updateCtaasSetupDetailsById(id: string, ctaasSetup: ICtaasSetup) {
+    const headers = this.getHeaders();
+    return this.httpClient.put(this.API_URL + `/${id}`,ctaasSetup, { headers });
+  }
+
   /**
    * update subaccount onboarding setup details
    * @param setupDetails: { onBoardingComplete: string, ctaasSetupId: string }
