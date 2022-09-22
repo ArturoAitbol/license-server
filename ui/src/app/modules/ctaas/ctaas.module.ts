@@ -11,6 +11,7 @@ import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.
 import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component';
 import { AddStakeHolderComponent } from './ctaas-stakeholder/add-stake-holder/add-stake-holder.component';
 import { UpdateStakeHolderComponent } from './ctaas-stakeholder/update-stake-holder/update-stake-holder.component';
+import { AddTestSuiteComponent } from './ctaas-test-suites/add-test-suite/add-test-suite.component';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { UpdateStakeHolderComponent } from './ctaas-stakeholder/update-stake-hol
     CtaasStakeholderComponent,
     AddStakeHolderComponent,
     UpdateStakeHolderComponent,
+    AddTestSuiteComponent,
 
   ],
   imports: [
