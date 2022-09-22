@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
-import { HeaderService } from 'src/app/services/header.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { AddStakeHolderComponent } from './add-stake-holder/add-stake-holder.component';
 import { UpdateStakeHolderComponent } from './update-stake-holder/update-stake-holder.component';
@@ -28,7 +27,6 @@ export class CtaasStakeholderComponent implements OnInit {
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
   constructor(
-    private headerService: HeaderService,
     private msalService: MsalService,
     public dialog: MatDialog,
     private snackBarService: SnackBarService,
