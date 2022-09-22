@@ -1,13 +1,27 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { Constants } from 'src/app/helpers/constants';
-import { CustomerOnboardService } from 'src/app/services/customer-onboard.service';
-import { HeaderService } from 'src/app/services/header.service';
 import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { ICtaasSetup } from 'src/app/model/ctaas-setup.model';
+import { IReportEmbedConfiguration, models, service } from 'powerbi-client';
+import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
+import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
+
+// Handles the embed config response for embedding
+export interface ConfigResponse {
+  Id: string;
+  EmbedUrl: string;
+  EmbedToken: {
+    Token: string;
+  };
+}
+export interface IPowerBiReponse {
+  embedUrl: string;
+  embedToken: string;
+}
 @Component({
   selector: 'app-ctaas-dashboard',
   templateUrl: './ctaas-dashboard.component.html',
@@ -19,12 +33,53 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
   isOnboardingComplete: boolean;
   loggedInUserRoles: string[] = [];
   ctaasSetupDetails: any = {};
+  subaccountId: string = '';
+  hasDashboardDetails: boolean = false;
+  isLoadingResults: boolean = false;
+  // CSS Class to be passed to the wrapper
+  // Hide the report container initially
+  reportClass = 'report-container-hidden';
+
+  // Flag which specify the type of embedding
+  phasedEmbeddingFlag = false;
+  reportConfig: IReportEmbedConfiguration;
+  /**
+   * Map of event handlers to be applied to the embedded report
+   */
+  // Update event handlers for the report by redefining the map using this.eventHandlersMap
+  // Set event handler to null if event needs to be removed
+  // More events can be provided from here
+  // https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/handle-events#report-events
+  eventHandlersMap = new Map<string, (event?: service.ICustomEvent<any>) => void>([
+    ['loaded', () => console.log('Report has loaded')],
+    [
+      'rendered',
+      () => {
+        console.log('Report has rendered');
+      },
+    ],
+    [
+      'error',
+      (event?: service.ICustomEvent<any>) => {
+        if (event) {
+          console.error(event.detail);
+          const { detail: { message, errorCode } } = event;
+          if (message && errorCode && message === 'TokenExpired' && errorCode === '403') {
+            this.fetchCtaasDashboardDetailsBySubaccount();
+          }
+        }
+      },
+    ],
+    ['visualClicked', () => console.log('visual clicked')],
+    ['pageChanged', (event) => console.log(event)],
+  ]);
   constructor(
     private dialog: MatDialog,
     private msalService: MsalService,
-    private ctaasSetupService: CtaasSetupService
-  ) {
-  }
+    private ctaasSetupService: CtaasSetupService,
+    private ctaasDashboardService: CtaasDashboardService,
+    private snackBarService: SnackBarService
+  ) { }
 
   /**
    * get logged in account details 
@@ -39,6 +94,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
+    this.fetchCtaasDashboardDetailsBySubaccount();
   }
   /**
    * fetch Ctaas Setup details by subaccount id
@@ -46,6 +102,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
   fetchCtaasSetupDetails(): void {
     const currentSubaccountDetails = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
     const { id } = currentSubaccountDetails;
+    this.subaccountId = id;
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(id)
       .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
         // const setupDetails: ICtaasSetup = response['ctaasSetups'][0];
@@ -82,7 +139,34 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
       console.debug('response | ', response);
     });
   }
-
+  /**
+   * fetch CTaaS Power BI dashboard required details
+   */
+  fetchCtaasDashboardDetailsBySubaccount(): void {
+    this.isLoadingResults = true;
+    this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId).subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
+      this.isLoadingResults = false;
+      const { powerBiInfo } = response;
+      if (powerBiInfo) {
+        const { embedUrl, embedToken } = powerBiInfo;
+        this.reportConfig = {
+          type: 'report',
+          embedUrl,
+          tokenType: models.TokenType.Embed,
+          accessToken: embedToken,
+          settings: undefined
+        };
+        this.hasDashboardDetails = true;
+      } else {
+        this.hasDashboardDetails = false;
+      }
+    }, (err) => {
+      this.hasDashboardDetails = false;
+      this.isLoadingResults = false;
+      console.error('Error | ', err);
+      this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+    });
+  }
   ngOnDestroy(): void {
   }
 }

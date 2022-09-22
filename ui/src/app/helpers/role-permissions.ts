@@ -9,8 +9,9 @@ export const permissions = {
             'redirect',
             'ctaas',
             'dashboards',
-            'project',
-            'stakeholders'
+            'test-suites',
+            'stakeholders',
+            "setup"
         ],
         elements: [
             'addCustomer',
@@ -23,7 +24,7 @@ export const permissions = {
             'addSubAccAdminEmail',
             'deleteSubAccAdminEmail',
             'auditInfo',
-            'addCTaaSProject'
+            'addTestSuite'
         ],
         tables: {
             customerOptions: [
@@ -47,6 +48,9 @@ export const permissions = {
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT',
                 'DELETE_PROJECT'
+            ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE'
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
@@ -105,13 +109,14 @@ export const permissions = {
             'apps',
             'ctaas',
             'dashboards',
-            'project',
-            'stakeholders'
+            'test-suites',
+            'stakeholders',
+            'setup',
         ],
         elements: [
             'addProject',
             'addLicenseConsumption',
-            'addCTaaSProject'
+            'addTestSuite'
         ],
         tables: {
             customerOptions: [
@@ -131,6 +136,9 @@ export const permissions = {
                 'VIEW_CONSUMPTION',
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT'
+            ],
+            ctaasTestSuiteOptions: [
+                'MODIFY_TEST_SUITE'
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
@@ -179,7 +187,6 @@ export const permissions = {
             'apps',
             'ctaas',
             'dashboards',
-            'project',
             'stakeholders'
         ],
         elements: [],
@@ -214,7 +221,6 @@ export const permissions = {
             'apps',
             'ctaas',
             'dashboards',
-            'project',
             'stakeholders'
         ],
         elements: [],
@@ -243,8 +249,7 @@ export const permissions = {
             'redirect',
             'apps',
             'ctaas',
-            'dashboards',
-            'project'
+            'dashboards'
         ],
         elements: [],
         tables: {

@@ -12,11 +12,11 @@ import { DialogService } from '../services/dialog.service';
 import { LicenseService } from '../services/license.service';
 import { SnackBarService } from '../services/snack-bar.service';
 import { SubAccountService } from '../services/sub-account.service';
-import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
-import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
-import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
-import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.component";
-import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
+import { AddCustomerAccountModalComponent } from '../modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
+import { AddSubaccountModalComponent } from '../modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
+import { ModifyCustomerAccountComponent } from '../modules/dashboard-customer/modify-customer-account/modify-customer-account.component';
+import { AdminEmailsComponent } from "../modules/dashboard-customer/admin-emails-modal/admin-emails.component";
+import { SubaccountAdminEmailsComponent } from "../modules/dashboard-customer/subaccount-admin-emails-modal/subaccount-admin-emails.component";
 import { MsalService } from '@azure/msal-angular';
 import { SubAccount } from '../model/subaccount.model';
 import { FormBuilder } from "@angular/forms";
@@ -408,6 +408,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 break;
             case this.VIEW_CTAAS_DASHBOARD:
                 const { selectedRow: { services } } = object;
+                const selectedSubaccount = {
+                    id: object.selectedRow.subaccountId,
+                    name: object.selectedRow.subaccountName,
+                    customerId: object.selectedRow.id,
+                    services: object.selectedRow.services
+                };
+                this.subaccountService.setSelectedSubAccount(selectedSubaccount);
                 const hasCtaasService = services && services.includes('ctaas');
                 if (hasCtaasService)
                     this.router.navigate(['/ctaas/dashboards']);

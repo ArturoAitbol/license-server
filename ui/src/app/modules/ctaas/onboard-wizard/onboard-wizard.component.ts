@@ -17,7 +17,7 @@ export class OnboardWizardComponent implements OnInit {
   configuredReports: boolean = false;
   addAnotherStakeHolder: boolean = false;
   interaction: string;
-  readonly pattern = "((\\+?)?|0)?[0-9]{10}$";
+  readonly pattern = "/[0-9]{3}-[0-9]{3}-[0-9]{4}$/";
   reportsNotificationsList: any = [];
   errorCreatingStakeholder: boolean = false;
   isDataLoading: boolean = false;
@@ -38,8 +38,8 @@ export class OnboardWizardComponent implements OnInit {
   fetchUserProfileDetails(): void {
     const subaccountUserProfileDetails = JSON.parse(localStorage.getItem(Constants.SUBACCOUNT_USER_PROJECT));
     // const { userProfile } = subaccountUserProfileDetails;
-    const { companyName, email, jobTitle, mobilePhone, name, subaccountId } = subaccountUserProfileDetails;
-    const parsedObj = { companyName, email, jobTitle, phoneNumber: mobilePhone, name, subaccountId };
+    const { companyName, email, jobTitle, phoneNumber, name, subaccountId } = subaccountUserProfileDetails;
+    const parsedObj = { companyName, email, jobTitle, phoneNumber, name, subaccountId };
     this.userProfileForm.patchValue(parsedObj);
     this.subaccountUserProfileDetails = parsedObj;
   }
@@ -64,7 +64,8 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [, Validators.required]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      type: ['', Validators.required],
       notifications: new FormArray([]),
     });
     // add stake holder form
@@ -73,7 +74,8 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', Validators.required],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      type: ['', Validators.required],
       notifications: new FormArray([]),
     });
   }
@@ -102,8 +104,14 @@ export class OnboardWizardComponent implements OnInit {
     this.configuredReports = true;
     this.interaction = '3';
     const userProfileObj = this.userProfileForm.value;
-    const { notifications } = userProfileObj;
-    userProfileObj.notifications = notifications.join(',');
+    const { type, notifications } = userProfileObj;
+    // userProfileObj.notifications = type;
+    if (notifications.length > 0) {
+      userProfileObj.notifications = type + ',' + notifications.join(',');
+    }
+    else {
+      userProfileObj.notifications = type;
+    }
     this.userprofileService.updateUserProfile(userProfileObj)
       .subscribe((response: any) => {
         console.debug('update profile response | ', response);
@@ -136,10 +144,16 @@ export class OnboardWizardComponent implements OnInit {
     this.configuredReports = true;
     this.isDataLoading = true;
     const requestPayload = this.stakeholderForm.value;
-    const { notifications } = requestPayload;
+    const { type, notifications } = requestPayload;
     const { subaccountId } = this.subaccountUserProfileDetails;
     requestPayload.subaccountId = subaccountId;
-    requestPayload.notifications = notifications.join(',');
+    // requestPayload.notifications = type
+    if (notifications.length > 0) {
+      requestPayload.notifications = type + ',' + notifications.join(',');
+    }
+    else {
+      requestPayload.notifications = type;
+    }
     this.stakeholderService.createStakeholder(requestPayload).subscribe((response: any) => {
       this.isDataLoading = false;
       if (response) {

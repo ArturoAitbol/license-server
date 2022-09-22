@@ -34,13 +34,14 @@ export class UpdateStakeHolderComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: [{ value: '' }, Validators.required],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', Validators.required],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      type: ['', Validators.required],
       notifications: new FormArray([])
     });
     try {
       const { mobilePhone, email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
-      let { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, notifications } = this.data;
+      let { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
       if (notifications) {
         const mappedNotifications = notifications.split(',').map(e => {
           const obj = this.reports.find(x => x.label === e);
@@ -50,7 +51,7 @@ export class UpdateStakeHolderComponent implements OnInit {
         });
         this.mappedNotificationsList = mappedNotifications;
       }
-      const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber };
+      const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type };
       this.updateStakeholderForm.patchValue(payload);
       this.previousFormValue = { ...this.updateStakeholderForm };
     } catch (e) {
@@ -119,7 +120,11 @@ export class UpdateStakeHolderComponent implements OnInit {
       .map((v, i) => v ? this.reports[i].value : null)
       .filter(v => v !== null);
     this.updateStakeholderForm.get('subaccountAdminEmail').enable();
-    this.updateStakeholderForm.value.notifications = selectedNotifications.join(',');
+    if (selectedNotifications.length > 0) {
+      this.updateStakeholderForm.value.notifications = 'TYPE:' + this.updateStakeholderForm.value.type + ',' + selectedNotifications.join(',');
+    } else {
+      this.updateStakeholderForm.value.notifications = 'TYPE:' + this.updateStakeholderForm.value.type;
+    }
     return this.updateStakeholderForm.value;
   }
   /**

@@ -7,20 +7,27 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
 import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.component';
-import { CtaasProjectComponent } from './ctaas-project/ctaas-project.component';
+import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.component';
 import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component';
 import { AddStakeHolderComponent } from './ctaas-stakeholder/add-stake-holder/add-stake-holder.component';
-import { UpdateStakeHolderComponent } from './ctaas-stakeholder/update-stake-holder/update-stake-holder.component'; 
+import { UpdateStakeHolderComponent } from './ctaas-stakeholder/update-stake-holder/update-stake-holder.component';
+import { AddTestSuiteComponent } from './ctaas-test-suites/add-test-suite/add-test-suite.component';
+import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
+import { LicenseConfirmationModalComponent } from './ctaas-setup/license-confirmation-modal/license-confirmation-modal.component';
 
 
 @NgModule({
   declarations: [
     CtaasDashboardComponent,
     OnboardWizardComponent,
-    CtaasProjectComponent,
+    CtaasTestSuitesComponent,
     CtaasStakeholderComponent,
     AddStakeHolderComponent,
     UpdateStakeHolderComponent,
+    AddTestSuiteComponent,
+    CtaasSetupComponent,
+    LicenseConfirmationModalComponent
+
   ],
   imports: [
     CommonModule,

@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { MsalService } from '@azure/msal-angular';
 import { permissions } from 'src/app/helpers/role-permissions';
-import { HeaderService } from 'src/app/services/header.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { AddStakeHolderComponent } from './add-stake-holder/add-stake-holder.component';
 import { UpdateStakeHolderComponent } from './update-stake-holder/update-stake-holder.component';
@@ -28,7 +27,6 @@ export class CtaasStakeholderComponent implements OnInit {
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
   constructor(
-    private headerService: HeaderService,
     private msalService: MsalService,
     public dialog: MatDialog,
     private snackBarService: SnackBarService,
@@ -57,6 +55,7 @@ export class CtaasStakeholderComponent implements OnInit {
       { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
       { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
       { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
+      { name: 'Type', dataKey: 'type', position: 'left', isSortable: true },
       { name: 'Notifications', dataKey: 'notifications', position: 'left', isSortable: false }
     ];
   }
@@ -79,20 +78,31 @@ export class CtaasStakeholderComponent implements OnInit {
       .pipe(
         map((e: { stakeHolders: IStakeholder[] }) => {
           const { stakeHolders } = e;
-          stakeHolders.forEach((x: IStakeholder) => {
-            if (x.notifications) {
-              const reports = this.getReports();
-              if (x.notifications.includes(',')) {
-                const mappedNotificationsList = x.notifications.split(',').map(e => reports.find(z => z.value === e)['label']);
-                if (mappedNotificationsList.length > 0)
-                  x.notifications = mappedNotificationsList.join(',');
-              } else {
-                const result = reports.find(z => z.value === x.notifications)['label'];
-                x.notifications = result;
+          try {
+            stakeHolders.forEach((x: IStakeholder) => {
+              if (x.notifications) {
+                const reports = this.getReports();
+                if (x.notifications.includes(',')) {
+                  const splittingData = x.notifications.split(',');
+                  if (splittingData[0].includes('TYPE:')) {
+                    x.type = splittingData[0].replace('TYPE:', '');
+                    splittingData.splice(0, 1);
+                  }
+                  const mappedNotificationsList = splittingData.map(e => reports.find(z => z.value === e)['label']);
+                  if (mappedNotificationsList.length > 0)
+                    x.notifications = mappedNotificationsList.join(',');
+                } else {
+                  const result = x.notifications;
+                  x.notifications = '';
+                  x.type = result.replace('TYPE:', '');
+                }
               }
-            }
-          });
-          return e;
+            });
+            return e;
+          }
+          catch (e) {
+            console.error('some error |', e)
+          }
         })
       )
       .subscribe((response: any) => {

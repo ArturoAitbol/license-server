@@ -1,0 +1,53 @@
+<div class="container" style="text-align: center;">
+    <h1 mat-dialig-title id="modal-title">Edit Customer Account</h1>
+    <form [formGroup]="updateCustomerForm" (ngSubmit)="submit()">
+        <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
+            <mat-dialog-content>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label id="customer-name">Customer Name</mat-label>
+                        <input matInput required formControlName="name" id="customerName">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label id="customer-type">Customer Type</mat-label>
+                        <mat-select required formControlName="customerType">
+                            <mat-option *ngFor="let item of types" [value]="item" title="{{item}}">
+                                {{item}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field *ngIf="data.subaccountId !== undefined" appearance="outline">
+                        <mat-label id="customer-subaccount">Subaccount</mat-label>
+                        <input matInput required formControlName="subaccountName">
+                    </mat-form-field>
+                </div>
+                <div *lcFeatureToggle="'ctaasFeature'">
+                    <section>
+                        <ng-container formGroupName="services" *ngFor="let service of updateCustomerForm.get('services').controls | keyvalue">
+                            <mat-checkbox formControlName="{{service.key}}" class="checkbox-margin" [color]="'primary'">
+                                {{service.key}} </mat-checkbox>
+                        </ng-container>
+                    </section>
+                </div>
+                <div *ngIf="data.testCustomer===true">
+                    <section class="text-left">
+                        <mat-checkbox color="primary" formControlName="testCustomer">Test Customer</mat-checkbox>
+                        <small class="text-muted d-block">(For development and testing)</small>
+                    </section>
+                </div>
+            </mat-dialog-content>
+        </div>
+        <mat-dialog-actions>
+            <button mat-stroked-button type="button" (click)="onCancel()" id="cancel-button">Cancel</button>
+            <button mat-raised-button color="primary" [disabled]="!(updateCustomerForm.valid ) || disableSumbitBtn()"
+                type="submit" id="submitBtn">Submit</button>
+        </mat-dialog-actions>
+    </form>
+</div>

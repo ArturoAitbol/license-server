@@ -35,7 +35,8 @@ export class AddStakeHolderComponent implements OnInit {
       jobTitle: ['', Validators.required],
       subaccountAdminEmail: ['', [Validators.required, Validators.email]],
       companyName: [{ value: '' }, Validators.required],
-      phoneNumber: ['', Validators.required],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      type: ['', Validators.required],
       notifications: new FormArray([])
     });
   }
@@ -81,8 +82,16 @@ export class AddStakeHolderComponent implements OnInit {
     this.isDataLoading = true;
     const { subaccountId } = this.userprofileDetails;
     const stakeholderDetails = { ... this.addStakeholderForm.value };
+    const { type, notifications } = stakeholderDetails;
     stakeholderDetails.subaccountId = subaccountId;
-    stakeholderDetails.notifications = stakeholderDetails.notifications.join(',');
+    // stakeholderDetails.notifications = type;
+    if (notifications.length > 0) {
+      stakeholderDetails.notifications = type + ',' + notifications.join(',');
+    }
+    else {
+      stakeholderDetails.notifications = type;
+    }
+
     this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => {
       const { error } = response;
       if (error) {
@@ -100,6 +109,7 @@ export class AddStakeHolderComponent implements OnInit {
       this.onCancel('closed');
     });
   }
+  
   /**
    * receive events when any change in reports checkboxes
    * @param event: any 
@@ -124,4 +134,5 @@ export class AddStakeHolderComponent implements OnInit {
       });
     }
   }
+
 }
