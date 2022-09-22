@@ -159,15 +159,16 @@ describe('createSubAccount', () => {
         spyOn(SubaccountServiceMock, 'createSubAccount').and.returnValue(SubaccountServiceMock.errorResponse());
         spyOn(SnackBarServiceMock, 'openSnackBar');
         spyOn(MatDialogRefMock, 'close');
+        spyOn(FeatureToggleHelper, 'isFeatureEnabled').and.callFake((featureToggle: string, msalService: MsalService) => {
+            return true;
+        });
         addSubaccountModalComponentInstance.addSubaccountForm.patchValue({
             customer: subaccountDetails.customerId,
             subaccountName: subaccountDetails.subaccountName,
             subaccountAdminEmail: subaccountDetails.subaccountAdminEmail,
         });
-        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-            subaccountDetails.services =  'tokenConsumption,Ctaas';
-            addSubaccountModalComponentInstance.addSubaccountForm['services'] = subaccountDetails.services
-        }
+        subaccountDetails.services =  'tokenConsumption,Ctaas';
+        addSubaccountModalComponentInstance.addSubaccountForm['services'] = subaccountDetails.services
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Expected subaccount response error', 'Error adding subaccount!');
