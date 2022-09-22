@@ -12,18 +12,25 @@ public class Header extends AbstractPageObject {
 
     public boolean logout(){
         try{
-            JavascriptExecutor executor = (JavascriptExecutor)this.driver;
-            executor.executeScript("arguments[0].click();", this.settingsButton);
-//            this.action.click(this.settingsButton);
+            this.action.forceClick(this.settingsButton);
+
+/*            this.driver.manage().deleteCookieNamed("ESTSAUTH");
+            this.driver.manage().deleteCookieNamed("ESTSAUTHPERSISTENT");
+            this.driver.manage().deleteCookieNamed("ESTSAUTHLIGHT");*/
+//            driver.manage().deleteAllCookies();
+
             By logoutSelector = By.cssSelector("#logout-button");
-            WebElement logoutButton = this.action.waitVisibilityElement(logoutSelector);
-            executor.executeScript("arguments[0].click();", logoutButton);
-//            this.action.click(logoutSelector);
-            By logoutMessage = By.cssSelector("div[role='heading']");
-            this.action.waitVisibilityElement(logoutMessage);
+            this.action.forceClick(logoutSelector);
+
+            By accountSelector = By.cssSelector("div[role='heading']");
+            this.action.waitVisibilityElement(accountSelector);
+//            By accountSelector = By.cssSelector("div.table");
+//            this.action.click(accountSelector);
+
             driver.manage().deleteAllCookies();
             return true;
-        }catch (Exception e) {
+
+        } catch (Exception e) {
             System.out.println("Couldn't execute the logout process: Some buttons/messages weren't available");
             System.out.println(e.toString());
             return false;

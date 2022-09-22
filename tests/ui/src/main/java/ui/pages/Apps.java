@@ -23,7 +23,6 @@ public class Apps extends AbstractPageObject {
         } catch (Exception e){
             System.out.println("Apps view wasn't available");
             System.out.println(e.toString());
-            response = false;
         }
         return response;
     }
@@ -35,14 +34,25 @@ public class Apps extends AbstractPageObject {
             this.action.click(buttonSelector);
             response = true;
         } catch (Exception e){
-            System.out.println("Apps view wasn't available");
+            System.out.println("Button wasn't available: " + button);
             System.out.println(e.toString());
-            response = false;
         }
         return response;
     }
 
     public String getTitle(){
         return this.action.getText(this.headerTitle);
+    }
+
+    public String checkButton(String button) {
+        String response = "none";
+        try {
+            By buttonSelector = By.cssSelector(String.format("[title='%s']",button));
+            response = this.action.getText(buttonSelector);
+        } catch (Exception e){
+            System.out.println("Button wasn't displayed: " + button);
+            System.out.println(e.toString());
+        }
+        return response;
     }
 }
