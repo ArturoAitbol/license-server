@@ -10,6 +10,7 @@ import { DeleteCustomerModalComponent } from "../../dialogs/delete-customer/dele
 import { FeatureToggleDirective } from "../../directives/feature-toggle.directive";
 import { DateRangeDirective } from 'src/app/directives/date-range-directive';
 
+import { PowerBIEmbedModule } from 'powerbi-client-angular';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { DateRangeDirective } from 'src/app/directives/date-range-directive';
   ],
   imports: [
     CommonModule,
-    MaterialModule
+    MaterialModule,
+    PowerBIEmbedModule
   ],
   exports: [
     NaPipe,
@@ -34,7 +36,8 @@ import { DateRangeDirective } from 'src/app/directives/date-range-directive';
     MaterialModule,
     CheckAccessForDirective,
     FeatureToggleDirective,
-    DateRangeDirective
+    DateRangeDirective,
+    PowerBIEmbedModule
   ]
 })
 export class SharedModule { }

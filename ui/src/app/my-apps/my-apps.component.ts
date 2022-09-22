@@ -4,7 +4,6 @@ import { MsalService } from '@azure/msal-angular';
 import { Constants } from '../helpers/constants';
 import { IService } from '../model/service.model';
 import { AvailableServicesService } from '../services/available-services.service';
-import { HeaderService } from '../services/header.service';
 
 @Component({
   selector: 'app-my-apps',
@@ -16,7 +15,6 @@ export class MyAppsComponent implements OnInit {
   constructor(
     private router: Router,
     private availabeService: AvailableServicesService,
-    private headerService: HeaderService,
     private msalService: MsalService
   ) { }
   ngOnInit(): void {
@@ -24,8 +22,6 @@ export class MyAppsComponent implements OnInit {
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.getAvailableServices(roles);
-    // hide toolbar on load this redirect page
-    this.emitOnPageChangeEvent({ hideToolbar: false, tabName: '', transparentToolbar: true });
   }
   /**
    * get logged in account details 
@@ -65,18 +61,9 @@ export class MyAppsComponent implements OnInit {
   onClickService(value: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }): void {
     const { tabName, enabled, routePath } = value;
     if (enabled) {
-      this.emitOnPageChangeEvent({ hideToolbar: false, tabName: tabName, transparentToolbar: false });
       this.router.navigate([routePath]); //, { skipLocationChange: true }
     }
   }
-  /**
-   * emit an event on page change
-   * @param value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }
-   */
-  emitOnPageChangeEvent(value: { hideToolbar: boolean, tabName: string, transparentToolbar: boolean }): void {
-    // this.headerService.onChangeService(value);
-  }
   ngOnDestory(): void {
-    // this.headerService.unSubForEvents();
   }
 }
