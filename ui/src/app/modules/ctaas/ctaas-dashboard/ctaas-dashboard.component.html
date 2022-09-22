@@ -1,16 +1,21 @@
-<div>
-  <h2>Dashboard</h2>
+<div class="container-fluid controls" id="reportContainer">
+  <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
 </div>
-<ng-container *ngIf="isOnboardingComplete; then dashboardScreen; else blankScreen"> </ng-container>
-<!-- blank screen -->
-<ng-template #blankScreen>
-  <div class="container-fluid">
-      <h2>
-        Setup is in progress ...
+<!-- blank view -->
+<ng-template #blankView>
+  <div class="jumbotron d-flex align-items-center bg-transparent">
+    <div class="container">
+      <img *ngIf="isLoadingResults" height="80" width="80" src="assets/images/spinner.gif" alt="loading spinner gif">
+      <h2 *ngIf="!isLoadingResults">
+        Failed to load the dashboard. Please reach out to tekVizion support.
       </h2>
+    </div>
   </div>
 </ng-template>
-<!-- dashboard screen -->
-<ng-template #dashboardScreen>
-  
+
+<!-- power bi report view -->
+<ng-template #reportView>
+  <powerbi-report [embedConfig]="reportConfig" [cssClassName]="reportClass" [phasedEmbedding]="phasedEmbeddingFlag"
+    [eventHandlers]="eventHandlersMap">
+  </powerbi-report>
 </ng-template>
