@@ -1,4 +1,4 @@
-@loginTest @demo
+@loginTest
 Feature: Login
 
   @validCredentials

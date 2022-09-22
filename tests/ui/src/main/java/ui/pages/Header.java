@@ -19,6 +19,7 @@ public class Header extends AbstractPageObject {
             this.driver.manage().deleteCookieNamed("ESTSAUTHLIGHT");*/
 //            driver.manage().deleteAllCookies();
 
+            driver.manage().deleteAllCookies();
             By logoutSelector = By.cssSelector("#logout-button");
             this.action.forceClick(logoutSelector);
 
