@@ -80,8 +80,8 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   private fetchDataToDisplay(): void {
     this.ctaasTestSuiteService.getTestSuitesBySubAccount(this.currentCustomer.id).subscribe((response: any) => {
       this.testSuites = response.ctaasTestSuites;
-      this.isRequestCompleted = false;
-      this.isLoadingResults = true;
+      this.isRequestCompleted = true;
+      this.isLoadingResults = false;
     }, () => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
