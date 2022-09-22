@@ -9,10 +9,8 @@ import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
 import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 import static com.function.auth.RoleAuthHandler.hasPermission;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.json.JSONArray;
@@ -90,13 +88,21 @@ public class TekvLSModifyCtaasSetupById {
 
 		// validate ctaas setup completion
 		Boolean isSetupReady = jobj.has("status") && jobj.getString("status").equalsIgnoreCase(Constants.CTaaSSetupStatus.READY.value());
-		if (isSetupReady && !jobj.has("licenseId")) {
-			context.getLogger().info("error: licenseId is missing.");
-			JSONObject json = new JSONObject();
-			json.put("error", "error: licenseId is missing.");
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+		if (isSetupReady) {
+			if (!jobj.has("licenseId")) {
+				context.getLogger().info("error: licenseId is missing.");
+				JSONObject json = new JSONObject();
+				json.put("error", "error: licenseId is missing.");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+			if (!jobj.has("subaccountId")) {
+				context.getLogger().info("error: subaccountId is missing.");
+				JSONObject json = new JSONObject();
+				json.put("error", "error: subaccountId is missing.");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 		}
-		// Build the sql query
+		// Build the sql query for ctaas setup
 		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
 		int optionalParamsFound = 0;
 		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
@@ -113,14 +119,23 @@ public class TekvLSModifyCtaasSetupById {
 		}
 		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
+		// build the sql query for project
+		String sql = "INSERT INTO project (subaccount_id, code, name, status, open_date, project_owner, license_id) " +
+					 "VALUES (?::uuid, ?, ?, ?::project_status_type_enum, ?::timestamp, ?, ?::uuid) RETURNING id;";
+		// build the sql for getting the deviceId
+		String deviceSql = "SELECT id FROM device WHERE product=?;";
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = queryBuilder.build(connection)) {
+			PreparedStatement statement = queryBuilder.build(connection);
+			PreparedStatement projectStatement = connection.prepareStatement(sql);
+			PreparedStatement ctaasDeviceStatement = connection.prepareStatement(deviceSql)) {
 			
+			JSONObject json = new JSONObject();
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			String userId = getUserIdFromToken(tokenClaims,context);
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
@@ -128,7 +143,46 @@ public class TekvLSModifyCtaasSetupById {
 			context.getLogger().info("Ctaas_setup updated successfully.");
 
 			if (isSetupReady) {
-				//here we add project and support license usage
+				String today = LocalDate.now().toString();
+				/**
+				 * Add CTaaS project
+				 * */
+				// Set statement parameters
+				projectStatement.setString(1, jobj.getString("subaccountId"));
+				projectStatement.setString(2, Constants.DEFAULT_CTAAS_PROJECT_NUMBER + " - " + id);
+				projectStatement.setString(3, Constants.DEFAULT_CTAAS_PROJECT_NAME + " - " + today);
+				projectStatement.setString(4, Constants.DEFAULT_CTAAS_PROJECT_STATUS);
+				projectStatement.setString(5, today);
+				projectStatement.setString(6, Constants.DEFAULT_CTAAS_PROJECT_OWNER);
+				projectStatement.setString(7, jobj.getString("licenseId"));
+				// Insert
+				context.getLogger().info("Execute SQL projectStatement (User: "+ userId + "): " + projectStatement);
+				ResultSet rs = projectStatement.executeQuery();
+				context.getLogger().info("Project inserted successfully."); 
+				// Return the id in the response
+				rs.next();
+				json.put("projectId", rs.getString("id"));
+
+				/**
+				 * Add License consumption for CTaaS project
+				 * */
+				JSONObject ctaasDevice = new JSONObject();
+				ctaasDevice.put("subaccountId", jobj.getString("subaccountId"));
+				ctaasDevice.put("projectId", rs.getString("id"));
+				ctaasDevice.put("consumptionDate", today);
+				ctaasDevice.put("type", Constants.DEFAULT_CONSUMPTION_TYPE);
+				//Insert parameters to statement
+				ctaasDeviceStatement.setString(1, Constants.DEFAULT_CTAAS_DEVICE);
+				// get deviceId
+				context.getLogger().info("Execute SQL statement: " + ctaasDeviceStatement);
+				rs = ctaasDeviceStatement.executeQuery();
+				rs.next();
+				ctaasDevice.put("deviceId", rs.getString("id"));
+				json.put("deviceId", rs.getString("id"));
+				TekvLSCreateLicenseUsageDetail licenseUsageDetailCreator = new TekvLSCreateLicenseUsageDetail();
+				licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
+
+				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 			}
 
 			return request.createResponseBuilder(HttpStatus.OK).build();

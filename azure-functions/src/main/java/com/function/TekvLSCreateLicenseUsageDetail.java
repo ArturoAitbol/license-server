@@ -56,7 +56,6 @@ public class TekvLSCreateLicenseUsageDetail
 		}
 
 		context.getLogger().info("Entering TekvLSCreateLicenseUsageDetail Azure function");
-		String userEmail = getEmailFromToken(tokenClaims, context);
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -89,6 +88,12 @@ public class TekvLSCreateLicenseUsageDetail
 			}
 		}
 
+		return createLicenseConsumptionEvent(tokenClaims, jobj, request, context);
+	}
+
+	public HttpResponseMessage createLicenseConsumptionEvent(Claims tokenClaims, JSONObject jobj, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) {
+		String userEmail = getEmailFromToken(tokenClaims, context);
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -97,7 +102,7 @@ public class TekvLSCreateLicenseUsageDetail
 		// Build the sql query to get tokens consumption and granularity from device table
 		String deviceTokensSql = "SELECT tokens_to_consume, granularity FROM device WHERE id=?::uuid;";
 		String insertSql = "INSERT INTO license_consumption (subaccount_id, device_id, consumption_date, usage_type, tokens_consumed, modified_by, modified_date, project_id) " +
-						   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid) RETURNING ID;";
+						   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid) RETURNING id;";
 		String devicePerProjectConsumptionSql;
 		if (jobj.has("projectId")) {
 			devicePerProjectConsumptionSql = "SELECT id FROM license_consumption WHERE device_id=?::uuid and project_id=?::uuid LIMIT 1;";
