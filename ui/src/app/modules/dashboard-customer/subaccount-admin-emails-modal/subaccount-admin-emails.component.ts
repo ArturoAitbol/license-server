@@ -5,7 +5,7 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Observable } from "rxjs";
-import { SubaccountAdminEmailService } from "../../services/subaccount-admin-email.service";
+import { SubaccountAdminEmailService } from "../../../services/subaccount-admin-email.service";
 
 @Component({
   selector: 'app-subaccount-admin-emails-modal',
@@ -41,7 +41,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
       this.subaccountService.getSubAccountDetails(this.data.subaccountId).subscribe((res: any) => {
         this.adminEmails = res.subaccounts[0]?.subaccountAdminEmails;
         this.isDataLoading = false
-      })
+      });
     }
   }
 
@@ -57,12 +57,16 @@ export class SubaccountAdminEmailsComponent implements OnInit {
         subaccountId: this.data.subaccountId,
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
-        if (!res.error) {
+        const responseErrors = res.filter(response => response['error']);
+        if (responseErrors.length === 0) {
           this.isDataLoading = false;
           this.snackBarService.openSnackBar('Customer admin emails edited successfully! ', '');
           this.dialogRef.close(true);
-        } else
-          this.snackBarService.openSnackBar(res.error, 'Error while editing administrator emails!');
+        } else {
+          responseErrors.forEach((response) => {
+            this.snackBarService.openSnackBar(response.error, 'Error while editing administrator emails!');
+          })
+        }
       }, err => {
         this.isDataLoading = false;
         this.dialogRef.close(false);

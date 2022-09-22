@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { CustomerAdminEmailService } from "../../services/customer-admin-email.service";
+import { CustomerAdminEmailService } from "../../../services/customer-admin-email.service";
 import { Observable } from "rxjs";
 
 @Component({

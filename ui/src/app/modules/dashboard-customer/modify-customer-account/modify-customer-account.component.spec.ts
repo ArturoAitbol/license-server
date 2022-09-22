@@ -11,7 +11,7 @@ import { CustomerService } from 'src/app/services/customer.service';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { CustomerServiceMock } from 'src/test/mock/services/customer-service.mock';
-import { SharedModule } from '../../modules/shared/shared.module';
+import { SharedModule } from '../../shared/shared.module';
 import { ModifyCustomerAccountComponent } from './modify-customer-account.component';
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { ReactiveFormsModule } from '@angular/forms';
@@ -19,8 +19,8 @@ import { CurrentCustomerServiceMock } from "src/test/mock/services/current-custo
 import { throwError } from 'rxjs';
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { FeatureToggleHelper } from '../../helpers/feature-toggle.helper';
-import { Features } from '../../helpers/features';
+import { Features } from 'src/app/helpers/features';
+import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
 const dialogMock = new DialogServiceMock();
