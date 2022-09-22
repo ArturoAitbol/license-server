@@ -1,0 +1,80 @@
+<div class="container" style="text-align: center;">
+    <h1 mat-dialig-title>Ctaas Setup Details</h1>
+    <div class="flex-container">
+        <div class="loading-shade" *ngIf="isDataLoading">
+            <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+        </div>
+        <div class="d-flex justify-content-end row">
+            <ng-container *ngIf="!isEditing">
+                <div class="col-auto">
+                    <button class="col-auto" mat-raised-button id="edit-details-button" (click)="editForm()">
+                        Edit Setup Details
+                    </button>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="isEditing">
+                <div class="col-auto">
+                    <button color="primary" mat-raised-button id="update-button" (click)="submit()">
+                        Update
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <button color="warn" mat-raised-button id="cancel-button" (click)="cancelEdit()">
+                        Cancel
+                    </button>
+                </div>
+            </ng-container>
+        </div>
+        <br>
+        <div *ngIf="!isDataLoading">
+            <form [formGroup]="setupForm" (ngSubmit)="submit()">
+                <div class="row">
+                    <div class="col-md-6 d-flex">
+                        <mat-checkbox class="example-margin" labelPosition="before" formControlName="onBoardingComplete">On Boarding Complete</mat-checkbox>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-6">
+                        <mat-form-field appearance="outline">
+                            <mat-label id="azure-resource-group-label">Azure Resource Group</mat-label>
+                            <input matInput required formControlName="azureResourceGroup" id="azure-resource-group">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                        <mat-form-field appearance="outline">
+                            <mat-label id="tap-url-label">TAP URL</mat-label>
+                            <input matInput required formControlName="tapUrl" id="tap-url">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <mat-form-field appearance="outline">
+                            <mat-label id="status-label">Status</mat-label>
+                            <mat-select required formControlName="status">
+                                <mat-option *ngFor="let status of statusOptions | keyvalue" [value]="status.key">
+                                    {{status.value.label}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                        <mat-form-field appearance="outline">
+                            <mat-label id="powerbi-workspace-label">Power BI Workspace ID</mat-label>
+                            <input matInput formControlName="powerbiWorkspaceId" id="powerbi-workspace">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <mat-form-field appearance="outline">
+                            <mat-label id="powerbi-report-label">Power BI Report ID</mat-label>
+                            <input matInput formControlName="powerbiReportId" id="powerbi-report">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
