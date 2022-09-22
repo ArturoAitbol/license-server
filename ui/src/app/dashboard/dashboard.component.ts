@@ -94,15 +94,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private getActionMenuOptions() {
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-        roles.forEach(accountRole => {
-            permissions[accountRole].tables.customerOptions?.forEach(item => {
-                // check for CTaas Toggle feature, if true then only add VIEW_CTAAS_DASHBOARD option in action menu
-                if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService))
-                    this.actionMenuOptions.push(this[item]);
-                else if (item !== 'VIEW_CTAAS_DASHBOARD')
-                    this.actionMenuOptions.push(this[item]);
-            });
-        });
+        this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"customerOptions");
+        // check for CTaas Toggle feature, if false then remove VIEW_CTAAS_DASHBOARD option in action menu
+        if (!FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
+            const index = this.actionMenuOptions.findIndex(option=>option===this.VIEW_CTAAS_DASHBOARD);
+            this.actionMenuOptions.splice(index,1);
+        }
     }
 
     private calculateTableHeight() {

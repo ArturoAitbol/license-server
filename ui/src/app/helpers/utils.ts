@@ -100,6 +100,7 @@ export class Utility {
      * @return: string[]
      */
     public static getTableOptions(roles: string[], options: Object, optionType : string) : string[]{
+        //new Set([]) is used to avoid repeated options when a user has multiple roles
         const set = new Set([]);
         roles.forEach(accountRole => {
             permissions[accountRole].tables[optionType].forEach(item =>set.add(options[item]));
