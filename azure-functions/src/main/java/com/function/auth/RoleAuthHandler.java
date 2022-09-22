@@ -48,6 +48,7 @@ public class RoleAuthHandler {
            GET_ALL_CTAAS_SETUPS,
            GET_ALL_CTAAS_TEST_SUITES,
            GET_ALL_SUBACCOUNT_STAKEHOLDER,
+           GET_CTAAS_DASHBOARD,
            //UPDATE
            MODIFY_CUSTOMER,
            MODIFY_SUBACCOUNT,
@@ -76,6 +77,7 @@ public class RoleAuthHandler {
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
+            GET_CTAAS_DASHBOARD,
             //UPDATE
             MODIFY_CUSTOMER,
             MODIFY_SUBACCOUNT,
@@ -105,6 +107,7 @@ public class RoleAuthHandler {
             GET_ALL_CTAAS_SETUPS,
             GET_ALL_CTAAS_TEST_SUITES,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
+            GET_CTAAS_DASHBOARD,
             //UPDATE
             MODIFY_PROJECT,
             MODIFY_LICENSE_USAGE,
@@ -179,6 +182,7 @@ public class RoleAuthHandler {
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
+            GET_CTAAS_DASHBOARD,
             //MODIFY
             MODIFY_CTAAS_ONBOARDING,
             MODIFY_SUBACCOUNT_STAKEHOLDER);
@@ -198,9 +202,9 @@ public class RoleAuthHandler {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
-            
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_AUTH_USER_PROFILE,
+            GET_CTAAS_DASHBOARD,
             //MODIFY
             MODIFY_CTAAS_ONBOARDING,
             MODIFY_SUBACCOUNT_STAKEHOLDER,
@@ -213,6 +217,7 @@ public class RoleAuthHandler {
             GET_ALL_CTAAS_SETUPS,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_AUTH_USER_PROFILE,
+            GET_CTAAS_DASHBOARD,
             //MODIFY
             MODIFY_AUTH_USER_PROFILE);
             
@@ -243,6 +248,9 @@ public class RoleAuthHandler {
     public static final String MESSAGE_FOR_INVALID_AUTH_EMAIL = "The authenticated user does not exist in your account.";
     public static final String MESSAGE_EMAIL_NOT_FOUND = "Authenticated user does not exist.";
     private static final String ISSUER = System.getenv("ISSUER");
+    
+    public static final String MESSAGE_SUBACCOUNT_ID_NOT_FOUND = "Subaccount id provided does not exist. ";
+    public static final String LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID = "Invalid Request Error: Subaccount id provided does not belong to the account of: ";
 
     public static boolean hasPermission(JSONArray roles, Permission permission){
         for (int i=0; i < roles.length(); i++) {
