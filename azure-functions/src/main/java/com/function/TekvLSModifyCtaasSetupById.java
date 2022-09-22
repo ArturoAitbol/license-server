@@ -139,7 +139,9 @@ public class TekvLSModifyCtaasSetupById {
 		AZURE_RESOURCE_GROUP("azureResourceGroup", "azure_resource_group", QueryBuilder.DATA_TYPE.VARCHAR),
 		TAP_URL("tapUrl", "tap_url", QueryBuilder.DATA_TYPE.VARCHAR),
 		STATUS("status", "status", QueryBuilder.DATA_TYPE.VARCHAR),
-		ON_BOARDING_COMPLETE("onBoardingComplete", "on_boarding_complete", QueryBuilder.DATA_TYPE.BOOLEAN);
+		ON_BOARDING_COMPLETE("onBoardingComplete", "on_boarding_complete", QueryBuilder.DATA_TYPE.BOOLEAN),
+		POWERBI_WORKSPACE_ID("powerbiWorkspaceId", "powerbi_workspace_id", QueryBuilder.DATA_TYPE.VARCHAR),
+		POWERBI_REPORT_ID("powerbiReportId", "powerbi_report_id", QueryBuilder.DATA_TYPE.VARCHAR);
 
 		private final String jsonAttrib;
 		private final String columnName;
