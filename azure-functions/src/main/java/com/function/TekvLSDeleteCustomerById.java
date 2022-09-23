@@ -84,10 +84,36 @@ public class TekvLSDeleteCustomerById
 				try(PreparedStatement getAdminEmailStmt = connection.prepareStatement(getAdminEmailSql)){
 					getAdminEmailStmt.setString(1, id);
 					ResultSet result = getAdminEmailStmt.executeQuery();
-					if (result.next()) {
-						// Delete Guest user from active Directory
-						GraphAPIClient.deleteGuestUser(result.getString("admin_email"), context);
-						context.getLogger().info("Guest User deleted successfully from Active Directory.");
+					String adminEmail = result.next() ? result.getString("admin_email") : "";
+
+					//Get all subaccounts emails related to the given customer except for those being used by another customer
+					String getSubaccountEmailsSql = "SELECT subaccount_admin_email " +
+							"FROM subaccount s,subaccount_admin sa " +
+							"WHERE s.id = sa.subaccount_id " +
+							"AND s.customer_id = ?::uuid " +
+							"AND sa.subaccount_admin_email NOT IN (SELECT ca.admin_email " +
+																"FROM subaccount s,customer_admin ca " +
+																"WHERE s.customer_id = ca.customer_id " +
+																"AND s.customer_id <> ?::uuid);";
+					try(PreparedStatement getSubaccountEmailsStmt = connection.prepareStatement(getSubaccountEmailsSql)){
+						getSubaccountEmailsStmt.setString(1, id);
+						getSubaccountEmailsStmt.setString(2, id);
+						ResultSet rs = getSubaccountEmailsStmt.executeQuery();
+						while(rs.next()){
+							String subaccountAdminEmail = rs.getString("subaccount_admin_email");
+							//If ad-customer-user-creation is enabled verify that a subaccount email is not equal to the given customer email.
+							if(!FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation") || !subaccountAdminEmail.equals(adminEmail)){
+								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, context);
+								context.getLogger().info("Guest User of subaccount admin email "+ subaccountAdminEmail +" deleted successfully from Active Directory.");
+							}
+						}
+					}
+
+					if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
+						if(!adminEmail.isEmpty()){
+							GraphAPIClient.deleteGuestUser(result.getString("admin_email"), context);
+							context.getLogger().info("Guest User deleted successfully from Active Directory.");
+						}
 					}
 				}
 			}

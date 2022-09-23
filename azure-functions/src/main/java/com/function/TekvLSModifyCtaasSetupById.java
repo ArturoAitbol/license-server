@@ -13,6 +13,8 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.function.clients.GraphAPIClient;
+import com.function.util.FeatureToggles;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,6 +33,8 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import io.jsonwebtoken.Claims;
+
+import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSModifyCtaasSetupById {
 	/**
@@ -87,7 +91,8 @@ public class TekvLSModifyCtaasSetupById {
 		}
 
 		// validate ctaas setup completion
-		Boolean isSetupReady = jobj.has("status") && jobj.getString("status").equalsIgnoreCase(Constants.CTaaSSetupStatus.READY.value());
+		Boolean isSetupReady = jobj.has(OPTIONAL_PARAMS.STATUS.jsonAttrib) 
+					&& jobj.getString(OPTIONAL_PARAMS.STATUS.jsonAttrib).equalsIgnoreCase(Constants.CTaaSSetupStatus.READY.value());
 		if (isSetupReady) {
 			if (!jobj.has("licenseId")) {
 				context.getLogger().info("error: licenseId is missing.");
@@ -141,7 +146,6 @@ public class TekvLSModifyCtaasSetupById {
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
 			context.getLogger().info("Ctaas_setup updated successfully.");
-
 			if (isSetupReady) {
 				String today = LocalDate.now().toString();
 				/**
@@ -182,6 +186,10 @@ public class TekvLSModifyCtaasSetupById {
 				TekvLSCreateLicenseUsageDetail licenseUsageDetailCreator = new TekvLSCreateLicenseUsageDetail();
 				licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
 
+				// adding users if feature toggle 'ad-ctaas-user-creation-after-setup-ready' enabled
+				if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation") && FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
+					this.ADUserCreation(jobj,context,connection);
+
 				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 			}
 
@@ -198,6 +206,21 @@ public class TekvLSModifyCtaasSetupById {
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+		}
+	}
+
+	private void ADUserCreation(JSONObject jobj,ExecutionContext context, Connection connection) throws Exception {
+		String subaccountIdParam = OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib;
+		String subaccountId = jobj.getString(subaccountIdParam);
+		final String subaccountEmailsSql = "SELECT s.name, sa.subaccount_admin_email " +
+				"FROM subaccount s, subaccount_admin sa WHERE sa.subaccount_id = s.id AND s.id = ?::uuid;";
+		try(PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountEmailsSql)){
+			subaccountEmailsStmt.setString(1,subaccountId);
+			ResultSet rs = subaccountEmailsStmt.executeQuery();
+			while(rs.next()){
+				GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
+						rs.getString("subaccount_admin_email"),SUBACCOUNT_ADMIN,context);
+			}
 		}
 	}
 

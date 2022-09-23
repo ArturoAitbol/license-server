@@ -48,7 +48,7 @@ public class TekvLSDeleteAdminEmail {
 
         context.getLogger().info("Entering TekvLSDeleteAdminEmail Azure function");
 
-        if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+        if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation") && FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
             try{
                 GraphAPIClient.removeRole(email,CUSTOMER_FULL_ADMIN,context);
                 context.getLogger().info("Guest User Role removed successfully from Active Directory.");
