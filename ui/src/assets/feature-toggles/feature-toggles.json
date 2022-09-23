@@ -35,7 +35,7 @@
       "apps": true,
       "spotlight": true,
       "dashboards": true,
-      "project": true,
+      "test-suites": true,
       "stakeholders": true,
       "setup": true
     },
@@ -58,7 +58,7 @@
       "apps": false,
       "spotlight": false,
       "dashboards": false,
-      "project": false,
+      "test-suites": false,
       "stakeholders": false,
       "setup": false
     },
