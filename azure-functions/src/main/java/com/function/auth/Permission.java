@@ -56,6 +56,7 @@ public enum Permission {
         MODIFY_SUBACCOUNT("TekvLSModifySubaccountById"),
         MODIFY_BUNDLE("TekvLSModifyBundleById"),
         MODIFY_CTAAS_SETUP("TekvLSModifyCtaasSetupById"),
+        MODIFY_CTAAS_TEST_SUITE("TekvLSModifyCtaasTestSuiteById"),
         MODIFY_CTAAS_ONBOARDING("TekvLSModifyCtaasOnBoardingById"),
         MODIFY_SUBACCOUNT_STAKEHOLDER("TekvLSModifySubaccountStakeholder"),
         MODIFY_AUTH_USER_PROFILE("TekvLSModifyAuthUserProfile");

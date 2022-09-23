@@ -1,6 +1,6 @@
 <div class="container" style="text-align: center;">
-    <h1 mat-dialig-title id="modal-title">Add Test Suite</h1>
-    <form [formGroup]="addTestSuiteForm" (ngSubmit)="addTestSuite()">
+    <h1 mat-dialig-title id="modal-title">Modify Test Suite</h1>
+    <form [formGroup]="updateTestSuiteForm" (ngSubmit)="modifyTestSuite()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
                 <mat-spinner *ngIf="isDataLoading"></mat-spinner>
@@ -47,7 +47,7 @@
         </div>
         <mat-dialog-actions>
             <button id="cancelBtn" type="button" mat-stroked-button (click)="onCancel()">Cancel</button>
-            <button id="submitBtn" mat-raised-button color="primary" [disabled]="addTestSuiteForm.invalid"
+            <button id="submitBtn" mat-raised-button color="primary" [disabled]="updateTestSuiteForm.invalid"
                 type="submit">Submit</button>
         </mat-dialog-actions>
     </form>

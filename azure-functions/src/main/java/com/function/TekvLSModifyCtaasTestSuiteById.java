@@ -11,12 +11,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.function.auth.Permission;
+import com.function.db.QueryBuilder;
+import com.function.db.UpdateQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
@@ -24,16 +27,18 @@ import io.jsonwebtoken.Claims;
 
 import static com.function.auth.RoleAuthHandler.*;
 
-public class TekvLSCreateCtaasTestSuite {
+public class TekvLSModifyCtaasTestSuiteById {
+
     /**
-     * This function listens at endpoint "/v1.0/ctaasTestSuites". Invoke it using
-     * "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasTestSuites
+     * This function listens at endpoint "/v1.0/ctaasTestSuites/{id}". To invoke it
+     * using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasTestSuites/{id}
      */
-    @FunctionName("TekvLSCreateCtaasTestSuite")
+    @FunctionName("TekvLSModifyCtaasTestSuiteById")
     public HttpResponseMessage run(
             @HttpTrigger(name = "req", methods = {
-                    HttpMethod.POST }, authLevel = AuthorizationLevel.ANONYMOUS, route = "ctaasTestSuites") HttpRequestMessage<Optional<String>> request,
+                    HttpMethod.PUT }, authLevel = AuthorizationLevel.ANONYMOUS, route = "ctaasTestSuites/{id}") HttpRequestMessage<Optional<String>> request,
+            @BindingName("id") String id,
             final ExecutionContext context) {
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
         JSONArray roles = getRolesFromToken(tokenClaims, context);
@@ -43,16 +48,14 @@ public class TekvLSCreateCtaasTestSuite {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-
-        if (!hasPermission(roles, Permission.CREATE_CTAAS_TEST_SUITE)) {
+        if (!hasPermission(roles, Permission.MODIFY_CTAAS_TEST_SUITE)) {
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSCreateCtaasTestSuite Azure function");
-        String userEmail = getEmailFromToken(tokenClaims, context);
+        context.getLogger().info("Entering TekvLSModifyCtaasTestSuiteById Azure function");
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -64,7 +67,6 @@ public class TekvLSCreateCtaasTestSuite {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         JSONObject jobj;
-
         try {
             jobj = new JSONObject(requestBody);
         } catch (Exception e) {
@@ -74,48 +76,44 @@ public class TekvLSCreateCtaasTestSuite {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
-        // Check mandatory params to be present
-        for (MANDATORY_PARAMS mandatoryParam : MANDATORY_PARAMS.values()) {
-            if (!jobj.has(mandatoryParam.value)) {
-                // Parameter not found
-                context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
-                JSONObject json = new JSONObject();
-                json.put("error", "Missing mandatory parameter: " + mandatoryParam.value);
-                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-            }
+        if (!jobj.has("subaccountId")) {
+            context.getLogger().info("error: subaccountId is missing.");
+            JSONObject json = new JSONObject();
+            json.put("error", "error: subaccountId is missing.");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
-        // Connect to the database
+        // Build the sql query for ctaas test suite
+        UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_test_suite");
+        int optionalParamsFound = 0;
+        for (OPTIONAL_PARAMS param : OPTIONAL_PARAMS.values()) {
+            try {
+                queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib),
+                        param.dataType);
+                optionalParamsFound++;
+            } catch (Exception e) {
+                context.getLogger().info("Ignoring exception: " + e);
+            }
+        }
+        if (optionalParamsFound == 0) {
+            return request.createResponseBuilder(HttpStatus.OK).build();
+        }
+        queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
+
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"
                 + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
-
-        String insertSql = "INSERT INTO ctaas_test_suite (subaccount_id, total_executions, next_execution_ts, frequency, device_type, name) "
-                +
-                "VALUES (?::uuid, ?::integer, ?::timestamp, ?, ?, ?) RETURNING ID;";
-
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
+                PreparedStatement statement = queryBuilder.build(connection)) {
+
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            String userId = getUserIdFromToken(tokenClaims,context);
+            String userId = getUserIdFromToken(tokenClaims, context);
 
-            // Set statement parameters
-            insertStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
-            insertStmt.setString(2, jobj.getString(MANDATORY_PARAMS.TOTAL_EXECUTIONS.value));
-            insertStmt.setString(3, jobj.getString(MANDATORY_PARAMS.NEXT_EXECUTION.value));
-            insertStmt.setString(4, jobj.getString(MANDATORY_PARAMS.FREQUENCY.value));
-            insertStmt.setString(5, jobj.getString(MANDATORY_PARAMS.SERVICE.value));
-            insertStmt.setString(6, jobj.getString(MANDATORY_PARAMS.SUITE_NAME.value));
-            
-            // Insert consumption
-			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertStmt);
-			ResultSet rs = insertStmt.executeQuery();
-            rs.next();
-			jobj.put("id", rs.getString("id"));
-            context.getLogger().info("CtaaS Test Suite inserted successfully.");
+            context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
+            statement.executeUpdate();
+            context.getLogger().info("Test Suite updated successfully.");
             return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
-
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
@@ -127,21 +125,32 @@ public class TekvLSCreateCtaasTestSuite {
             json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
-
     }
 
-    private enum MANDATORY_PARAMS {
-        SUBACCOUNT_ID("subaccountId"),
-        TOTAL_EXECUTIONS("totalExecutions"),
-        NEXT_EXECUTION("nextExecution"),
-        FREQUENCY("frequency"),
-        SERVICE("deviceType"),
-        SUITE_NAME("name");
+    private enum OPTIONAL_PARAMS {
+        SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
+        TOTAL_EXECUTIONS("totalExecutions", "total_executions", QueryBuilder.DATA_TYPE.INTEGER),
+        NEXT_EXECUTION("nextExecution", "next_execution_ts", QueryBuilder.DATA_TYPE.TIMESTAMP),
+        FREQUENCY("frequency", "frequency", QueryBuilder.DATA_TYPE.VARCHAR),
+        SERVICE("deviceType", "device_type", QueryBuilder.DATA_TYPE.VARCHAR),
+        SUITE_NAME("name", "name", QueryBuilder.DATA_TYPE.VARCHAR);
 
-        private final String value;
+        private final String jsonAttrib;
+        private final String columnName;
 
-        MANDATORY_PARAMS(String value) {
-            this.value = value;
+        private final String dataType;
+
+        OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
+            this.jsonAttrib = jsonAttrib;
+            this.columnName = columnName;
+            this.dataType = dataType;
+        }
+
+        OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
+            this.jsonAttrib = jsonAttrib;
+            this.columnName = columnName;
+            this.dataType = dataType.getValue();
         }
     }
+
 }
