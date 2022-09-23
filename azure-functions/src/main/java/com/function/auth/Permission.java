@@ -28,6 +28,7 @@ public enum Permission {
         DELETE_USAGE_DETAILS("TekvLSDeleteUsageDetailsById"),
         DELETE_BUNDLE("TekvLSDeleteBundleById"),
         DELETE_CTAAS_SETUP("TekvLSDeleteCtaasSetupById"),
+        DELETE_CTAAS_TEST_SUITE("TekvLSDeleteCtaasTestSuiteById"),
         DELETE_SUBACCOUNT_STAKEHOLDER("TekvLSDeleteSubaccountStakeHolder"),
 
         // READ

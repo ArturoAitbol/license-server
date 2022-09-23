@@ -5,8 +5,10 @@ import { MsalService } from '@azure/msal-angular';
 import { Subject } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { permissions } from 'src/app/helpers/role-permissions';
+import { TestSuite } from 'src/app/model/test-suite.model';
 import { CtaasTestSuiteService } from 'src/app/services/ctaas-test-suite.service';
-import { CustomerService } from 'src/app/services/customer.service';
+import { DialogService } from 'src/app/services/dialog.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddTestSuiteComponent } from './add-test-suite/add-test-suite.component';
 
 @Component({
@@ -23,13 +25,15 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   isRequestCompleted = false;
   // readonly EXECUTE_ON_DEMAND: string = 'Execute OnDemand';
   readonly MODIFY_TEST_SUITE: string = 'Edit';
+  readonly DELETE_TEST_SUITE: string = 'Delete';
 
   actionMenuOptions: any = [];
   private unsubscribe: Subject<void> = new Subject<void>();
 
   constructor(
-    private customerService: CustomerService,
+    private dialogService: DialogService,
     public dialog: MatDialog,
+    private snackBarService: SnackBarService,
     private msalService: MsalService,
     private ctaasTestSuiteService: CtaasTestSuiteService) { }
 
@@ -115,7 +119,7 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
         dialogRef = this.dialog.open(AddTestSuiteComponent, {
           width: '400px',
           disableClose: true
-      });
+        });
         break;
       // case this.EXECUTE_ON_DEMAND:
       // TO DO
@@ -141,10 +145,31 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
       case this.MODIFY_TEST_SUITE:
         this.openDialog(object.selectedOption, object.selectedRow);
         break;
+      case this.DELETE_TEST_SUITE:
+        this.onDelete(object.selectedRow);
+        break;
       // case this.EXECUTE_ON_DEMAND:
       //   this.openDialog(object.selectedOption, object.selectedRow);
       //   break;
     }
+  }
+
+  onDelete(testSuite: TestSuite): void {
+    this.dialogService
+      .confirmDialog({
+        title: 'Confirm Action',
+        message: 'Do you want to confirm this action?',
+        confirmCaption: 'Confirm',
+        cancelCaption: 'Cancel',
+      })
+      .subscribe((confirmed) => {
+        if (confirmed) {
+          this.ctaasTestSuiteService.deleteTestSuite(testSuite.id).subscribe((res: any) => {
+            this.snackBarService.openSnackBar('Test suite deleted successfully!', '');
+            this.fetchDataToDisplay();
+          });
+        }
+      });
   }
 
   ngOnDestroy() {

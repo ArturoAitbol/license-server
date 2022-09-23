@@ -1,4 +1,5 @@
 export interface TestSuite {
+    id:string;
     subaccountId: string;
     suiteName: string;
     service: string;

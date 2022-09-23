@@ -25,7 +25,7 @@ export class AddTestSuiteComponent implements OnInit {
     'Weekly',
     'Monthly',
   ];
-  currentCustomer:any;
+  currentCustomer: any;
 
   constructor(private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddTestSuiteComponent>,
@@ -48,11 +48,13 @@ export class AddTestSuiteComponent implements OnInit {
       nextExecution: this.addTestSuiteForm.value.nextExecution.format("YYYY-MM-DD"),
       frequency: this.addTestSuiteForm.value.frequency,
     };
-    console.log(suiteObject);
-    this.testSuiteService.createTestSuite(suiteObject).subscribe((res:any)=>{
+    this.testSuiteService.createTestSuite(suiteObject).subscribe((res: any) => {
       if (!res.error) {
+        this.snackBarService.openSnackBar('Test Suite added successfully!', '');
+        this.dialogRef.close(res);
       } else {
         this.snackBarService.openSnackBar(res.error, 'Error adding test suite!');
+        this.dialogRef.close(res);
         this.isDataLoading = false;
       }
     }, err => {
