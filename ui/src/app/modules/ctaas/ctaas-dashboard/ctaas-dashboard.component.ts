@@ -1,14 +1,13 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Constants } from 'src/app/helpers/constants';
 import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { ICtaasSetup } from 'src/app/model/ctaas-setup.model';
 import { IReportEmbedConfiguration, models, service } from 'powerbi-client';
-import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 // Handles the embed config response for embedding
 export interface ConfigResponse {
@@ -78,6 +77,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     private msalService: MsalService,
     private ctaasSetupService: CtaasSetupService,
     private ctaasDashboardService: CtaasDashboardService,
+    private subaccountService: SubAccountService,
     private snackBarService: SnackBarService
   ) { }
 
@@ -100,7 +100,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
    * fetch SpotLight Setup details by subaccount id
    */
   fetchCtaasSetupDetails(): void {
-    const currentSubaccountDetails = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
+    const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     const { id } = currentSubaccountDetails;
     this.subaccountId = id;
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(id)
