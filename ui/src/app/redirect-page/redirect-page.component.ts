@@ -106,8 +106,8 @@ export class RedirectPageComponent implements OnInit {
    * check point where based on roles, it will redirect to apps/tekToken Consumption portal
    */
   private navigationCheckPoint(): void {
-    const check: boolean = this.loggedInUserRoles.some(e => e === 'customer.SubaccountAdmin' || e === 'customer.SubaccountStakeholder');
-    if (check) {
+    const subaccountCheck: boolean = this.loggedInUserRoles.some(e => e === 'customer.SubaccountAdmin' || e === 'customer.SubaccountStakeholder');
+    if (subaccountCheck) {
       this.navigateToMyApps();
     } else {
       this.navigateToDashboard();
@@ -118,12 +118,20 @@ export class RedirectPageComponent implements OnInit {
    */
   private navigateToMyApps(): void {
     const { services } = this.currentSubaccountDetails;
-    if (services.length > 1) {
-      this.router.navigate([this.APPS_ROUTE_PATH]);
-    } else if (services.length === 1) {
-      const serviceObj: IService = this.availableServices.find((e: any) => e.value === services[0]);
-      const { routePath, tabName } = serviceObj;
+    const stakeholderCheck: number = this.loggedInUserRoles.findIndex(e => e === 'customer.SubaccountStakeholder');
+    // checkpoint for stake holder, navigate to ctaas dashboard
+    if (stakeholderCheck !== -1 && services.length > 0) {
+      const serviceObj: IService = this.availableServices.find((e: any) => e.value === 'ctaas');
+      const { routePath } = serviceObj;
       this.router.navigate([routePath]);
+    } else {
+      if (services.length > 1) {
+        this.router.navigate([this.APPS_ROUTE_PATH]);
+      } else if (services.length === 1) {
+        const serviceObj: IService = this.availableServices.find((e: any) => e.value === services[0]);
+        const { routePath } = serviceObj;
+        this.router.navigate([routePath]);
+      }
     }
   }
   /**
