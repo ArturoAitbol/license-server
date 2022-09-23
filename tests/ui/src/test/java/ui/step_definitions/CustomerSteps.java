@@ -8,6 +8,10 @@ import io.cucumber.java.en.When;
 import static org.junit.Assert.assertEquals;
 import ui.core.DriverManager;
 import ui.pages.*;
+import ui.pages.customer.AdminstratorEmails;
+import ui.pages.customer.CustomerForm;
+import ui.pages.customer.CustomerRow;
+import ui.pages.customer.Customers;
 
 import java.util.Map;
 

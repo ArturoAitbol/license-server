@@ -6,6 +6,11 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import ui.core.DriverManager;
 import ui.pages.*;
+import ui.pages.consumptions.ConsumptionForm;
+import ui.pages.consumptions.ConsumptionRow;
+import ui.pages.consumptions.Consumptions;
+import ui.pages.customer.CustomerRow;
+import ui.pages.customer.Customers;
 
 import static org.junit.Assert.assertEquals;
 
@@ -107,6 +112,7 @@ public class LicenseConsumptionSteps {
         // in case there are more consumptions than just one then get from table
         String tekTokens = consumption.getOrDefault("tekTokens", this.tekTokens);
         this.consumptionRow = new ConsumptionRow(project);
+
         String actualProject = this.consumptionRow.getColumnValue("Project Name");
         String actualStatus = this.consumptionRow.getColumnValue("Status");
         String actualTekTokens = this.consumptionRow.getColumnValue("tekTokens");

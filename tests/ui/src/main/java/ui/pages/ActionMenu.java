@@ -5,6 +5,9 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
+import ui.pages.consumptions.Consumptions;
+import ui.pages.customer.AdminstratorEmails;
+import ui.pages.projects.Projects;
 import ui.pages.subscriptions.Subscriptions;
 
 public class ActionMenu extends AbstractPageObject {
