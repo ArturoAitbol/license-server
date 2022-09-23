@@ -20,8 +20,8 @@ export class AddSubaccountModalComponent implements OnInit {
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
   });
   services: any = [
-    {name: "ctaas", used: false},
-    {name: "tokenConsumption", used: true}
+    {name: "Ctaas", value: "CTaaS", used: false},
+    {name: "tokenConsumption", value: "Token Consumption", used: true}
   ];
   isDataLoading = false;
   customers: any[];
