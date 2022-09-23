@@ -56,7 +56,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     public void modifyCtaasSetupTest(){
         //Given
         String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'READY'," +
+                "'status': 'SETUP_READY'," +
+                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -69,6 +71,10 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        
+        JSONObject jsonBody = new JSONObject(response.getBody().toString());
+        assertTrue(jsonBody.has("projectId"));
+        assertTrue(jsonBody.has("deviceId"));
     }
     
     @Tag("acceptance")
@@ -92,7 +98,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     @Test
     public void modifyStatusTest(){
         //Given
-    	  String bodyRequest = "{'status': 'READY'}";
+    	String bodyRequest = "{'status': 'SETUP_READY'," +
+        "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+        "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -103,6 +111,10 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        
+        JSONObject jsonBody = new JSONObject(response.getBody().toString());
+        assertTrue(jsonBody.has("projectId"));
+        assertTrue(jsonBody.has("deviceId"));
     }
     
     @Tag("acceptance")
@@ -242,7 +254,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         //Given
         String invalidId = "invalid-id";
         String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'READY'," +
+                "'status': 'SETUP_READY'," +
+                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -261,7 +275,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     public void genericExceptionTest(){
         //Given
     	String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'READY'," +
+                "'status': 'SETUP_READY'," +
+                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();

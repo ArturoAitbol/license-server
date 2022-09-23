@@ -3,6 +3,7 @@ package com.function;
 import com.function.auth.Permission;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
+import com.function.util.Constants;
 import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
@@ -32,9 +33,6 @@ public class TekvLSModifySubaccountById
 	 * This function listens at endpoint "/v1.0/subaccounts/{id}". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccounts/{id}
 	 */
-	
-	String DEFAULT_CTAAS_STATUS = "setup_inprogress";
-	Boolean DEFAULT_CTAAS_ON_BOARDING_COMPLETE = false;
 
 	@FunctionName("TekvLSModifySubaccountById")
 	public HttpResponseMessage run(
@@ -123,7 +121,7 @@ public class TekvLSModifySubaccountById
 			context.getLogger().info("Subaccount updated successfully."); 
 
 			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
-				if (jobj.has("services") && jobj.getString("services").contains("Ctaas")) {
+				if (jobj.has("services") && jobj.getString("services").contains(Constants.SubaccountServices.CTAAS.value())) {
 					verifyCtassSetupStmt.setString(1, id);
 		
 					context.getLogger().info("Execute SQL statement: " + verifyCtassSetupStmt);
@@ -131,8 +129,8 @@ public class TekvLSModifySubaccountById
 					rsCtassSetup.next();
 					if (rsCtassSetup.getInt(1) == 0) {
 						insertCtassSetupStmt.setString(1, id);
-						insertCtassSetupStmt.setString(2, DEFAULT_CTAAS_STATUS);
-						insertCtassSetupStmt.setBoolean(3, DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
+						insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());
+						insertCtassSetupStmt.setBoolean(3, Constants.DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
 			
 						context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
 						insertCtassSetupStmt.executeUpdate();

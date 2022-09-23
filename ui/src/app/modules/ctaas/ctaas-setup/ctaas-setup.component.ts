@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from "@angular/forms";
-import { CtaasSetupService } from "../../../services/ctaas-setup.service";
-import { SubAccountService } from "../../../services/sub-account.service";
+import { CtaasSetupService } from "src/app/services/ctaas-setup.service";
+import { SubAccountService } from "src/app/services/sub-account.service";
 import { map } from "rxjs/operators";
-import { SnackBarService } from "../../../services/snack-bar.service";
-import { ICtaasSetup } from "../../../model/ctaas-setup.model";
-import { LicenseService } from "../../../services/license.service";
+import { SnackBarService } from "src/app/services/snack-bar.service";
+import { ICtaasSetup } from "src/app/model/ctaas-setup.model";
+import { LicenseService } from "src/app/services/license.service";
 import { MatDialog } from "@angular/material/dialog";
-import { SubaccountAdminEmailsComponent } from "../../../dashboard/subaccount-admin-emails-modal/subaccount-admin-emails.component";
 import { LicenseConfirmationModalComponent } from "./license-confirmation-modal/license-confirmation-modal.component";
 
 @Component({
@@ -67,6 +66,7 @@ export class CtaasSetupComponent implements OnInit {
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
           if (activeLicenses.length === 0) {
             this.snackBarService.openSnackBar("No active licenses found", "Error selecting a license");
+            return;
           }
           if (activeLicenses.length === 1) {
             selectedLicenseId = activeLicenses[0].id;
