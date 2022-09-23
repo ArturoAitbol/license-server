@@ -31,7 +31,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+        String bodyRequest = "{'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
                 "'status': 'SETUP_INPROGRESS'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = tekvLSCreateCtaasSetup.run(this.request,this.context);
@@ -57,8 +57,8 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         //Given
         String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
                 "'status': 'SETUP_READY'," +
-                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -99,8 +99,8 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     public void modifyStatusTest(){
         //Given
     	String bodyRequest = "{'status': 'SETUP_READY'," +
-        "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-        "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'}";
+        "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+        "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -255,8 +255,8 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         String invalidId = "invalid-id";
         String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
                 "'status': 'SETUP_READY'," +
-                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -276,8 +276,8 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         //Given
     	String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
                 "'status': 'SETUP_READY'," +
-                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
