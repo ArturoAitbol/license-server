@@ -160,14 +160,14 @@ public class TekvLSCreateSubaccount
 			insertEmailStmt.executeUpdate();
 			context.getLogger().info("Subaccount admin email inserted successfully.");
 			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
-				if (subaccountServices.contains(Constants.SubaccountServices.CTAAS.value())) {
+				if (subaccountServices.contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
 					insertCtassSetupStmt.setString(1, subaccountId);
 					insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());
 					insertCtassSetupStmt.setBoolean(3, Constants.DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
 		
 					context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
 					insertCtassSetupStmt.executeUpdate();
-					context.getLogger().info("CTaaS setup default values inserted successfully.");
+					context.getLogger().info("SpotLight setup default values inserted successfully.");
 
 					if(!FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
 						this.ADUserCreation(jobj,context);

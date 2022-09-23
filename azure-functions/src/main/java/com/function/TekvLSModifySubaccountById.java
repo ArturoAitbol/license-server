@@ -121,7 +121,7 @@ public class TekvLSModifySubaccountById
 			context.getLogger().info("Subaccount updated successfully."); 
 
 			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
-				if (jobj.has("services") && jobj.getString("services").contains(Constants.SubaccountServices.CTAAS.value())) {
+				if (jobj.has("services") && jobj.getString("services").contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
 					verifyCtassSetupStmt.setString(1, id);
 		
 					context.getLogger().info("Execute SQL statement: " + verifyCtassSetupStmt);
@@ -134,7 +134,7 @@ public class TekvLSModifySubaccountById
 			
 						context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
 						insertCtassSetupStmt.executeUpdate();
-						context.getLogger().info("CTaaS setup default values inserted successfully.");
+						context.getLogger().info("SpotLight setup default values inserted successfully.");
 					}
 				}
 			}

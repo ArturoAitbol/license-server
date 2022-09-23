@@ -32,7 +32,7 @@ const routes: Routes = [
     loadChildren: () => import('./modules/customer/customer.module').then(m => m.CustomerModule)
   },
   {
-    path: 'ctaas', canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard], canActivateChild: [FeatureToggleGuard],
+    path: 'spotlight', canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard], canActivateChild: [FeatureToggleGuard],
     loadChildren: () => import('./modules/ctaas/ctaas.module').then(m => m.CtaasModule)
   },
   { path: '**', redirectTo: defaultRoute }

@@ -141,7 +141,7 @@ public class TekvLSGetAllCtaasSetups {
 				}
 			}
 
-			// Retrieve ctaas setup.
+			// Retrieve SpotLight setup.
 			context.getLogger().info("Execute SQL statement: " + selectStmt);
 			rs = selectStmt.executeQuery();
 			// Return a JSON array of ctaas_setups
