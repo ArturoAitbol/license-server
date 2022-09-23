@@ -15,8 +15,8 @@ export class Constants {
     public static readonly LOGOUT_TIME_MS = 1 * 60 * 60 * 1000;
 
     // Tool bar constants
-    public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekToken Usage';
-    public static readonly CTAAS_TOOL_BAR: string = 'CTaaS';
+    public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekVizion 360 Portal';
+    public static readonly CTAAS_TOOL_BAR: string = 'SpotLight';
 
 }
 
