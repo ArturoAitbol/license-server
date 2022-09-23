@@ -49,7 +49,7 @@ export const permissions = {
                 'CLOSE_PROJECT',
                 'DELETE_PROJECT'
             ],
-            spotlightTestSuiteOptions: [
+            ctaasTestSuiteOptions: [
                 'MODIFY_TEST_SUITE',
                 'DELETE_TEST_SUITE'
             ],
