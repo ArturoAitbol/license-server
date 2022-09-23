@@ -10,7 +10,7 @@
       "redirect": true,
       "apps": true,
       "spotlight": true,
-      "dashboards": true,
+      "report-dashboards": true,
       "test-suites": true,
       "stakeholders": true,
       "setup": true
@@ -34,7 +34,7 @@
       "redirect": true,
       "apps": true,
       "spotlight": true,
-      "dashboards": true,
+      "report-dashboards": true,
       "test-suites": true,
       "stakeholders": true,
       "setup": true
@@ -57,7 +57,7 @@
       "redirect": false,
       "apps": false,
       "spotlight": false,
-      "dashboards": false,
+      "report-dashboards": false,
       "test-suites": false,
       "stakeholders": false,
       "setup": false

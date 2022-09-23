@@ -418,7 +418,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.subaccountService.setSelectedSubAccount(selectedSubaccount);
                 const hasCtaasService = services && services.includes(tekVizionServices.SpotLight);
                 if (hasCtaasService)
-                    this.router.navigate(['/spotlight/dashboards']);
+                    this.router.navigate(['/spotlight/report-dashboards']);
                 else
                     this.snackBarService.openSnackBar('SpotLight service is not available for this Subaccount', '');
 

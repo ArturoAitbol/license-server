@@ -4,7 +4,6 @@ public abstract class Constants {
     // SpotLight constants
     public static Boolean DEFAULT_CTAAS_ON_BOARDING_COMPLETE = false;
     public static String DEFAULT_CTAAS_PROJECT_NAME = "SpotLight Project";
-    public static String DEFAULT_CTAAS_PROJECT_NUMBER = "SpotLight";
     public static String DEFAULT_CTAAS_PROJECT_STATUS = "Open";
     public static String DEFAULT_CTAAS_PROJECT_OWNER = null;
     public static String DEFAULT_CTAAS_DEVICE = "Base SpotLight platform ready";

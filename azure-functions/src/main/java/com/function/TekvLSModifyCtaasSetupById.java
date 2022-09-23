@@ -153,8 +153,8 @@ public class TekvLSModifyCtaasSetupById {
 				 * */
 				// Set statement parameters
 				projectStatement.setString(1, jobj.getString("subaccountId"));
-				projectStatement.setString(2, Constants.DEFAULT_CTAAS_PROJECT_NUMBER + " - " + id);
-				projectStatement.setString(3, Constants.DEFAULT_CTAAS_PROJECT_NAME + " - " + today);
+				projectStatement.setString(2, today + " - " + id);
+				projectStatement.setString(3, Constants.DEFAULT_CTAAS_PROJECT_NAME);
 				projectStatement.setString(4, Constants.DEFAULT_CTAAS_PROJECT_STATUS);
 				projectStatement.setString(5, today);
 				projectStatement.setString(6, Constants.DEFAULT_CTAAS_PROJECT_OWNER);

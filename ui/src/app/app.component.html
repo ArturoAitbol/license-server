@@ -15,7 +15,7 @@
     <mat-drawer-container class="mat-drawer-container">
         <mat-drawer class="text-center sidenav-color" mode="side" opened>
             <div class="sidebar-content">
-                <div class="d-flex flex-column mt-3" *ngFor="let item of sideBarItems">
+                <div class="d-flex flex-column mt-3" *ngFor="let item of displayedSideBarItems">
                     <div class="logo-hvr">
                         <div class="p-1 mt-1">
                             <button (click)="onSelectedNavItem(item)">

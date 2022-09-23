@@ -16,7 +16,7 @@ export class AvailableServicesService {
       "access": false,
       "routePath": "/dashboard",
       "imagePath": "assets/images/tokens.png",
-      "tabName": "tekToken Usage",
+      "tabName": "tekVizion 360 Portal",
       "featureName": "Test_Feature_1"
     },
     {
@@ -24,7 +24,7 @@ export class AvailableServicesService {
       "value": tekVizionServices.SpotLight,
       "enabled": false,
       "access": false,
-      "routePath": "/spotlight/dashboards",
+      "routePath": "/spotlight/report-dashboards",
       "imagePath": "assets/images/dashboard.png",
       "tabName": "SpotLight",
       "featureName": "CTaaS_Feature"

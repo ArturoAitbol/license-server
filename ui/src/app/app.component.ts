@@ -14,6 +14,7 @@ import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
 import { Features } from './helpers/features';
 import { MatSidenav } from '@angular/material/sidenav';
 import { Constants } from './helpers/constants';
+import { Utility } from './helpers/utils';
 
 
 @Component({
@@ -28,44 +29,54 @@ export class AppComponent implements OnInit, OnDestroy {
     // added as part of spotlight feature
     hideToolbar: boolean = false;
     isTransparentToolbar: boolean = false;
+    baseCtaasURL = "/spotlight/";
     // tabName: string = 'tekVizion 360 Portal';
     tabName: string = Constants.TEK_TOKEN_TOOL_BAR;
     @ViewChild('sidenav') sidenav: MatSidenav;
-    sideBarItems: any = [
+    fullSideBarItems: any = [
         {
             name: 'Dashboard',
             iconName: "assets\\images\\dashboard_3.png",
-            routePath: '/spotlight/dashboards',
+            path: 'report-dashboards',
             active: true,
             materialIcon: 'dashboard'
         },
         {
             name: 'Test Suites',
             iconName: "assets\\images\\project_3.png",
-            routePath: '/spotlight/test-suites',
+            path: 'test-suites',
             active: false,
             materialIcon: 'folder_open'
         },
         {
             name: 'Stakeholders',
             iconName: "assets\\images\\multiple-users.png",
-            routePath: '/spotlight/stakeholders',
+            path: 'stakeholders',
             active: false,
             materialIcon: 'groups'
         },
         {
             name: 'Configuration',
             iconName: "assets\\images\\tune.png",
-            routePath: '/spotlight/setup',
+            path: 'setup',
             active: false,
             materialIcon: 'tune'
+        }
+    ];
+    displayedSideBarItems: any[] = [
+        {
+            name: 'Dashboard',
+            iconName: "assets\\images\\dashboard_3.png",
+            path: 'report-dashboards',
+            active: true,
+            materialIcon: 'dashboard'
         }
     ];
     currentRoutePath: string = '';
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
-    readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/dashboards';
+    readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/report-dashboards';
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
@@ -104,9 +115,8 @@ export class AppComponent implements OnInit, OnDestroy {
     onRouteChanges(): void {
         this.router.events.subscribe((val) => {
             if (val instanceof NavigationEnd) {
-                const { urlAfterRedirects } = val;
-                this.currentRoutePath = urlAfterRedirects;
-                switch (urlAfterRedirects) {
+                this.currentRoutePath = val.urlAfterRedirects;
+                switch (this.currentRoutePath) {
                     case this.REDIRECT_ROUTE_PATH:
                         this.tabName = '';
                         this.hideToolbar = true;
@@ -171,32 +181,8 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     initalizeSidebarItems(): void {
         const accountDetails = this.getAccountDetails();
-        const { idTokenClaims: { roles } } = accountDetails;
-        const index = roles.findIndex(e => e.includes('customer.SubaccountStakeholder'));
-        // remove stakeholders tab from side bar , if logged in user is a stakeholder
-        if (index !== -1) {
-            this.sideBarItems = [
-                {
-                    name: 'Dashboard',
-                    iconName: "assets\\images\\dashboard_3.png",
-                    routePath: '/spotlight/dashboards',
-                    active: true,
-                    materialIcon: 'dashboard'
-                },
-                {
-                    name: 'Test Suites',
-                    iconName: "assets\\images\\project_3.png",
-                    routePath: '/spotlight/test-suites',
-                    active: false,
-                    materialIcon: 'folder_open'
-                }
-            ];
-        }
-        // Check if user has role Config Tester of Full Admin, if not filter out the configuration tab of the nav bar
-        if (!roles.some(role => role === 'tekvizion.FullAdmin' || role === 'tekvizion.ConfigTester')) {
-            this.sideBarItems = this.sideBarItems.filter(item => item.name != 'Configuration');
-        }
-
+        const { roles }  = accountDetails.idTokenClaims;
+        this.displayedSideBarItems = Utility.getNavbarOptions(roles, this.fullSideBarItems);
     }
     /**
      * perform changes on Toolbar on refresh
@@ -261,14 +247,14 @@ export class AppComponent implements OnInit, OnDestroy {
      * @param item: any 
      */
     onSelectedNavItem(item: any): void {
-        this.sideBarItems.forEach((e: any) => {
+        this.displayedSideBarItems.forEach((e: any) => {
             if (e.name === item.name)
                 e.active = true;
             else
                 e.active = false;
         });
-        const { routePath } = item;
-        const componentRoute = routePath;
+        const { path } = item;
+        const componentRoute = this.baseCtaasURL + path;
         this.router.navigate([componentRoute]);
     }
     /**
@@ -276,24 +262,14 @@ export class AppComponent implements OnInit, OnDestroy {
      * @returns: boolean 
      */
     enableSidebar(): boolean {
-        if (this.isCtaasFeatureEnabled()) {
-            switch (this.currentRoutePath) {
-                case '/spotlight/dashboards':
-                case '/spotlight/project':
-                case '/spotlight/stakeholders':
-                case '/spotlight/test-suites':
-                case '/spotlight/setup':
-                    this.sideBarItems.forEach((e: any) => {
-                        if (e.routePath === this.currentRoutePath)
-                            e.active = true;
-                        else
-                            e.active = false;
-
-                    });
-                    return true;
-                default:
-                    return false;
-            }
+        if (this.isCtaasFeatureEnabled() && this.currentRoutePath.includes(this.baseCtaasURL)) {
+            this.fullSideBarItems.forEach((e: any) => {
+                if (this.baseCtaasURL + e.path === this.currentRoutePath)
+                    e.active = true;
+                else
+                    e.active = false;
+            });
+            return true;
         } else {
             return false;
         }

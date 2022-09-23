@@ -7,9 +7,9 @@ import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder
 import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
 
 const routes: Routes = [
-  { path: '', redirectTo: 'dashboards', pathMatch: 'full' },
+  { path: '', redirectTo: 'report-dashboards', pathMatch: 'full' },
   {
-    path: 'dashboards',
+    path: 'report-dashboards',
     component: CtaasDashboardComponent,
     canActivate:[RoleGuard]
   },

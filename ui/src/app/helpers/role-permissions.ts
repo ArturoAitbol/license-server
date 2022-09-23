@@ -8,7 +8,7 @@ export const permissions = {
             'licenses',
             'redirect',
             'spotlight',
-            'dashboards',
+            'report-dashboards',
             'test-suites',
             'stakeholders',
             "setup"
@@ -69,7 +69,7 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'dashboards'
+            'report-dashboards'
         ],
         elements: [
             'addCustomer',
@@ -109,7 +109,7 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'dashboards',
+            'report-dashboards',
             'test-suites',
             'stakeholders',
             'setup',
@@ -138,7 +138,7 @@ export const permissions = {
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT'
             ],
-            spotlightTestSuiteOptions: [
+            ctaasTestSuiteOptions: [
                 'MODIFY_TEST_SUITE',
                 'DELETE_TEST_SUITE'
             ],
@@ -158,7 +158,7 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'dashboards'
+            'report-dashboards'
         ],
         elements: [],
         tables: {
@@ -188,7 +188,7 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'dashboards',
+            'report-dashboards',
             'stakeholders'
         ],
         elements: [],
@@ -222,7 +222,7 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'dashboards',
+            'report-dashboards',
             'stakeholders'
         ],
         elements: [],
@@ -251,7 +251,7 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'dashboards'
+            'report-dashboards'
         ],
         elements: [],
         tables: {
