@@ -155,7 +155,7 @@ describe('modify customers flow', () => {
     CustomerComponentTestInstance.data = CurrentCustomerServiceMock;
     updateCustomerForm.patchValue(CustomerComponentTestInstance.data);
     if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-      updateCustomerForm.get('services').get('ctaas').setValue(true);
+      updateCustomerForm.get('services').get('Ctaas').setValue(true);
       updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
     }
     expect(updateCustomerForm.errors).toBeNull();
