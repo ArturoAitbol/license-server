@@ -21,15 +21,15 @@ export class ModifyCustomerAccountComponent implements OnInit {
     subaccountName: [''],
     testCustomer: [{ value: false, disabled: true }],
     services: this.formBuilder.group({
-      tokenConsumption: [false],
-      Ctaas: [false]
-    })
+      tokenConsumption: [false], 
+      spotlight: [false]
+    }) 
   });
 
   types: string[] = ['MSP', 'Reseller'];
   servicesList = {
-    Ctaas: "CTaaS",
-    tokenConsumption: "Token Consumption"
+    spotlight: "SpotLight",
+    tokenConsumption: "tekToken Consumption"
   };
   private previousFormValue: any;
   edited = false;

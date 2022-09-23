@@ -13,8 +13,9 @@ public class ProjectRow extends AbstractPageObject {
         By columnSelector;
         if(column.equals("Project Name"))
             columnSelector = By.xpath(this.PROJECT_NAME_XPATH);
-        else if(column.equals("Project Code"))
-            columnSelector = By.xpath(String.format(this.PROJECT_NAME_XPATH + "/preceding-sibling::td[@id='%s']", column));
+        // this has been temporarily disabled
+        // else if(column.equals("Project Code"))
+        //     columnSelector = By.xpath(String.format(this.PROJECT_NAME_XPATH + "/preceding-sibling::td[@id='%s']", column));
         else
             columnSelector = By.xpath(String.format(this.PROJECT_NAME_XPATH + "/following-sibling::td[@id='%s']", column));
         return this.action.getText(columnSelector);

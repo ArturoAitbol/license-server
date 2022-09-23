@@ -7,8 +7,8 @@ export const permissions = {
             'projects',
             'licenses',
             'redirect',
-            'ctaas',
-            'dashboards',
+            'spotlight',
+            'report-dashboards',
             'test-suites',
             'stakeholders',
             "setup"
@@ -68,8 +68,8 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards'
+            'spotlight',
+            'report-dashboards'
         ],
         elements: [
             'addCustomer',
@@ -108,8 +108,8 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards',
+            'spotlight',
+            'report-dashboards',
             'test-suites',
             'stakeholders',
             'setup',
@@ -157,8 +157,8 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards'
+            'spotlight',
+            'report-dashboards'
         ],
         elements: [],
         tables: {
@@ -187,8 +187,8 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards',
+            'spotlight',
+            'report-dashboards',
             'stakeholders'
         ],
         elements: [],
@@ -221,8 +221,8 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards',
+            'spotlight',
+            'report-dashboards',
             'stakeholders'
         ],
         elements: [],
@@ -250,8 +250,8 @@ export const permissions = {
         paths: [
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards'
+            'spotlight',
+            'report-dashboards'
         ],
         elements: [],
         tables: {

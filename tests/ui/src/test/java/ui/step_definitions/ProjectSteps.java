@@ -99,10 +99,11 @@ public class ProjectSteps {
             String actualStartDate = this.projectRow.getColumnValue("Start Date");
             assertEquals("Project doesn't have this start date: ".concat(expectedDate), expectedDate, actualStartDate);
         }
-        if (!this.code.equals("none")){
-            String actualCode = this.projectRow.getColumnValue("Project Code");
-            assertEquals("Project doesn't have this code: ".concat(this.code), this.code, actualCode);
-        }
+        // this has been temporarily disabled
+        // if (!this.code.equals("none")){
+        //     String actualCode = this.projectRow.getColumnValue("Project Code");
+        //     assertEquals("Project doesn't have this code: ".concat(this.code), this.code, actualCode);
+        // }
         if (!this.status.equals("none")){
             String actualStatus = this.projectRow.getColumnValue("Status");
             assertEquals("Project doesn't have this status: ".concat(this.status), this.status, actualStatus);

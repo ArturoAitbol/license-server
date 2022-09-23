@@ -97,7 +97,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     this.fetchCtaasDashboardDetailsBySubaccount();
   }
   /**
-   * fetch Ctaas Setup details by subaccount id
+   * fetch SpotLight Setup details by subaccount id
    */
   fetchCtaasSetupDetails(): void {
     const currentSubaccountDetails = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
@@ -130,7 +130,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     });
   }
   /**
-   * update ctaas onboarding details
+   * update spotlight onboarding details
    */
   updateOnboardingStatus(): void {
     const { id } = this.ctaasSetupDetails;
@@ -140,7 +140,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     });
   }
   /**
-   * fetch CTaaS Power BI dashboard required details
+   * fetch SpotLight Power BI dashboard required details
    */
   fetchCtaasDashboardDetailsBySubaccount(): void {
     this.isLoadingResults = true;

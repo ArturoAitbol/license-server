@@ -16,6 +16,7 @@ import { MsalService } from '@azure/msal-angular';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
 import { Features } from 'src/app/helpers/features';
+import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 
 let addSubaccountModalComponentInstance: AddSubaccountModalComponent;
 let fixture: ComponentFixture<AddSubaccountModalComponent>;
@@ -122,7 +123,7 @@ describe('createSubAccount', () => {
             subaccountAdminEmail: subaccountDetails.subaccountAdminEmail
         });
         if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-            subaccountDetails.services = 'tokenConsumption';
+            subaccountDetails.services = tekVizionServices.tekTokenConstumption;
             addSubaccountModalComponentInstance.addSubaccountForm['services'] = subaccountDetails.services;
         }
         addSubaccountModalComponentInstance.addSubaccount();
@@ -167,7 +168,7 @@ describe('createSubAccount', () => {
             subaccountName: subaccountDetails.subaccountName,
             subaccountAdminEmail: subaccountDetails.subaccountAdminEmail,
         });
-        subaccountDetails.services =  'tokenConsumption,Ctaas';
+        subaccountDetails.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
         addSubaccountModalComponentInstance.addSubaccountForm['services'] = subaccountDetails.services
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();
