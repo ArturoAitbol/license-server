@@ -5,7 +5,7 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Observable } from "rxjs";
-import { SubaccountAdminEmailService } from "../../../services/subaccount-admin-email.service";
+import { SubaccountAdminEmailService } from 'src/app/services/subaccount-admin-email.service';
 
 @Component({
   selector: 'app-subaccount-admin-emails-modal',
@@ -55,9 +55,9 @@ export class SubaccountAdminEmailsComponent implements OnInit {
       const requestsArray: Observable<any>[] = this.emailForms.value.map(value => this.subaccountAdminEmailService.createAdminEmail({
         subaccountAdminEmail: value.email,
         subaccountId: this.data.subaccountId,
-      }))
+      }));
       forkJoin(requestsArray).subscribe((res: any) => {
-        const responseErrors = res.filter(response => response['error']);
+        const responseErrors = res.filter(response => response !== null);
         if (responseErrors.length === 0) {
           this.isDataLoading = false;
           this.snackBarService.openSnackBar('Customer admin emails edited successfully! ', '');
@@ -65,7 +65,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
         } else {
           responseErrors.forEach((response) => {
             this.snackBarService.openSnackBar(response.error, 'Error while editing administrator emails!');
-          })
+          });
         }
       }, err => {
         this.isDataLoading = false;

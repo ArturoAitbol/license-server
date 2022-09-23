@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from "@angular/forms";
-import { CtaasSetupService } from "../../../services/ctaas-setup.service";
-import { SubAccountService } from "../../../services/sub-account.service";
+import { CtaasSetupService } from "src/app/services/ctaas-setup.service";
+import { SubAccountService } from "src/app/services/sub-account.service";
 import { map } from "rxjs/operators";
-import { SnackBarService } from "../../../services/snack-bar.service";
-import { ICtaasSetup } from "../../../model/ctaas-setup.model";
-import { LicenseService } from "../../../services/license.service";
+import { SnackBarService } from "src/app/services/snack-bar.service";
+import { ICtaasSetup } from "src/app/model/ctaas-setup.model";
+import { LicenseService } from "src/app/services/license.service";
 import { MatDialog } from "@angular/material/dialog";
 import { LicenseConfirmationModalComponent } from "./license-confirmation-modal/license-confirmation-modal.component";
 
