@@ -32,8 +32,8 @@ export class CtaasSetupComponent implements OnInit {
     tapUrl: [null, Validators.required],
     status: ['SETUP_INPROGRESS', Validators.required],
     onBoardingComplete: [{ value: false, disabled: true }, Validators.required],
-    powerbiWorkspaceId: [null],
-    powerbiReportId: [null],
+    powerBiWorkspaceId: [null],
+    powerBiReportId: [null],
   });
 
   constructor(

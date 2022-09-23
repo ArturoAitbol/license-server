@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
         },
         features = "src/test/resources/features/",
         glue = "ui",
-        tags = "not @ignoreTest") //use this tag when you want to ignore tests by default
+        tags = "not @CTaaSFeature") //use this tag when you want to ignore tests by default
 public class RunCucumberTests {
 
     @AfterClass

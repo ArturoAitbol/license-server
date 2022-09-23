@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Constants } from 'src/app/helpers/constants';
 import { CtaasTestSuiteService } from 'src/app/services/ctaas-test-suite.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-add-test-suite',
@@ -30,11 +30,12 @@ export class AddTestSuiteComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddTestSuiteComponent>,
     private snackBarService: SnackBarService,
+    private subaccountService: SubAccountService,
     private testSuiteService: CtaasTestSuiteService) {
   }
 
   ngOnInit(): void {
-    this.currentCustomer = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
+    this.currentCustomer = this.subaccountService.getSelectedSubAccount();
     console.log(this.currentCustomer)
   }
 
