@@ -123,12 +123,13 @@ describe('UI verification test', () => {
         fixture.detectChanges();
 
         const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
-        expect(headers[0].innerText).toBe('Project Code');
-        expect(headers[1].innerText).toBe('Project Name');
-        expect(headers[2].innerText).toBe('License Description');
-        expect(headers[3].innerText).toBe('Status');
-        expect(headers[4].innerText).toBe('Start Date');
-        expect(headers[5].innerText).toBe('Close Date');
+        // this has been temporarily disabled
+        // expect(headers[0].innerText).toBe('Project Code');
+        expect(headers[0].innerText).toBe('Project Name');
+        expect(headers[1].innerText).toBe('License Description');
+        expect(headers[2].innerText).toBe('Status');
+        expect(headers[3].innerText).toBe('Start Date');
+        expect(headers[4].innerText).toBe('Close Date');
     });
 
     it('should execute sortData()', () => {

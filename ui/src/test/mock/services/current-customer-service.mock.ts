@@ -1,3 +1,5 @@
+import { tekVizionServices } from "src/app/helpers/tekvizion-services";
+
 const CUSTOMER = {
     id: '0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848',
     name: 'Test Customer',
@@ -7,7 +9,7 @@ const CUSTOMER = {
     licenseId: '16f4f014-5bed-4166-b10a-808b2e6655e3',
     subaccountName: 'Default',
     testCustomer: true,
-    services: 'tokenConsumption,Ctaas'
+    services: tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight
 }
 
 
