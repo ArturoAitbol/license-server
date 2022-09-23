@@ -131,7 +131,7 @@ export class OnboardWizardComponent implements OnInit {
       default:
         this.addAnotherStakeHolder = false;
         this.interaction = '-1';
-        this.onCancel();
+        this.onCancel('closed');
         break;
     }
   }
@@ -195,8 +195,8 @@ export class OnboardWizardComponent implements OnInit {
   /**
    * on cancel dialog
    */
-  onCancel(): void {
-    this.dialogRef.close();
+  onCancel(type?: string): void {
+    this.dialogRef.close(type);
   }
 
 }

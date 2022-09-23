@@ -1,12 +1,15 @@
 import {Observable, throwError} from 'rxjs';
 
+const TEST_SUBACCOUNT_1 = {
+    name: 'TEST SUBACCOUNT 1',
+    customerId: '4a095621-5dea-4c68-91dd-705012e92a53',
+    id: '11111111-1111-1111-1111-111111111111',
+    subaccountAdminEmails: ['testSubaccountAdminEmail1@email.one', 'testSubaccountAdminEmail2@email.two']
+};
+
 const SUBACCOUNT_LIST = {
     subaccounts: [
-        {
-            name: 'Logitech - 360 Large',
-            customerId: '4a095621-5dea-4c68-91dd-705012e92a53',
-            id: '31c142a6-b735-4bce-bfb4-9fba6b539116'
-        },
+        TEST_SUBACCOUNT_1,
         {
             name: 'Default',
             customerId: 'b566c90f-3671-47e3-b01e-c44684e28f99',
@@ -340,10 +343,24 @@ const ERROR_MSG = 'Expected subaccount response error';
 
 export const SubaccountServiceMock = {
     subAccountListValue: SUBACCOUNT_LIST,
+    testSubaccount1: TEST_SUBACCOUNT_1,
     getSubAccountList: () => {
         return new Observable( (observer) => {
             observer.next(
                 SUBACCOUNT_LIST
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    getSubAccountDetails: (subAccountId: string) => {
+        return new Observable( (observer) => {
+            observer.next(
+                {
+                    subaccounts: [ SUBACCOUNT_LIST.subaccounts.find( (subAccount) => subAccount.id === subAccountId ) ]
+                }
             );
             observer.complete();
             return {

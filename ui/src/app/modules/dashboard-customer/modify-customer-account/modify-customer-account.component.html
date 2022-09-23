@@ -29,10 +29,11 @@
                     </mat-form-field>
                 </div>
                 <div *lcFeatureToggle="'ctaasFeature'">
+                    <h2 id="subaccount-services">Services</h2>
                     <section>
                         <ng-container formGroupName="services" *ngFor="let service of updateCustomerForm.get('services').controls | keyvalue">
                             <mat-checkbox formControlName="{{service.key}}" class="checkbox-margin" [color]="'primary'">
-                                {{service.key}} </mat-checkbox>
+                                {{parseService(service.key)}} </mat-checkbox>
                         </ng-container>
                     </section>
                 </div>

@@ -12,6 +12,8 @@ import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder
 import { AddStakeHolderComponent } from './ctaas-stakeholder/add-stake-holder/add-stake-holder.component';
 import { UpdateStakeHolderComponent } from './ctaas-stakeholder/update-stake-holder/update-stake-holder.component';
 import { AddTestSuiteComponent } from './ctaas-test-suites/add-test-suite/add-test-suite.component';
+import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
+import { LicenseConfirmationModalComponent } from './ctaas-setup/license-confirmation-modal/license-confirmation-modal.component';
 
 
 @NgModule({
@@ -23,6 +25,8 @@ import { AddTestSuiteComponent } from './ctaas-test-suites/add-test-suite/add-te
     AddStakeHolderComponent,
     UpdateStakeHolderComponent,
     AddTestSuiteComponent,
+    CtaasSetupComponent,
+    LicenseConfirmationModalComponent
 
   ],
   imports: [

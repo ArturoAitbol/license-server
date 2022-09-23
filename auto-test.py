@@ -140,7 +140,7 @@ def display_requirements():
         \t - You are running License server locally in default port 4200 (npm install && ng serve)\n
         Please note that if any of these requirements are not in place, Auto Test script could fail.\n
         Do you want to proceed? (Y/n)""")
-    if(val.lower() != 'y'):
+    if(val.lower() == 'n'):
         logging.info("Thanks for running Auto Test")
         sys.exit(1)
     logging.info("Auto Test will start soon, please stay tuned, at some point we'll prompt for a db user :)")   

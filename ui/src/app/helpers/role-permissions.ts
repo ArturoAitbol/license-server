@@ -10,7 +10,8 @@ export const permissions = {
             'ctaas',
             'dashboards',
             'test-suites',
-            'stakeholders'
+            'stakeholders',
+            "setup"
         ],
         elements: [
             'addCustomer',
@@ -49,7 +50,8 @@ export const permissions = {
                 'DELETE_PROJECT'
             ],
             ctaasTestSuiteOptions: [
-                'MODIFY_TEST_SUITE'
+                'MODIFY_TEST_SUITE',
+                'DELETE_TEST_SUITE'
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
@@ -109,7 +111,8 @@ export const permissions = {
             'ctaas',
             'dashboards',
             'test-suites',
-            'stakeholders'
+            'stakeholders',
+            'setup',
         ],
         elements: [
             'addProject',
@@ -136,7 +139,8 @@ export const permissions = {
                 'CLOSE_PROJECT'
             ],
             ctaasTestSuiteOptions: [
-                'MODIFY_TEST_SUITE'
+                'MODIFY_TEST_SUITE',
+                'DELETE_TEST_SUITE'
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
