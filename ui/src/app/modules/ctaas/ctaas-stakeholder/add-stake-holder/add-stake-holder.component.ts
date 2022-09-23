@@ -34,7 +34,7 @@ export class AddStakeHolderComponent implements OnInit {
       name: ['', Validators.required],
       jobTitle: ['', Validators.required],
       subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-      companyName: [{ value: '' }, Validators.required],
+      companyName: ['', Validators.required],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       type: ['', Validators.required],
       notifications: new FormArray([])
@@ -109,7 +109,7 @@ export class AddStakeHolderComponent implements OnInit {
       this.onCancel('closed');
     });
   }
-  
+
   /**
    * receive events when any change in reports checkboxes
    * @param event: any 
