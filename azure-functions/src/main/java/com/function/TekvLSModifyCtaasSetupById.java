@@ -90,7 +90,7 @@ public class TekvLSModifyCtaasSetupById {
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// validate ctaas setup completion
+		// validate SpotLight setup completion
 		Boolean isSetupReady = jobj.has(OPTIONAL_PARAMS.STATUS.jsonAttrib) 
 					&& jobj.getString(OPTIONAL_PARAMS.STATUS.jsonAttrib).equalsIgnoreCase(Constants.CTaaSSetupStatus.READY.value());
 		if (isSetupReady) {
@@ -107,7 +107,7 @@ public class TekvLSModifyCtaasSetupById {
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
-		// Build the sql query for ctaas setup
+		// Build the sql query for SpotLight setup
 		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
 		int optionalParamsFound = 0;
 		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
@@ -149,7 +149,7 @@ public class TekvLSModifyCtaasSetupById {
 			if (isSetupReady) {
 				String today = LocalDate.now().toString();
 				/**
-				 * Add CTaaS project
+				 * Add SpotLight project
 				 * */
 				// Set statement parameters
 				projectStatement.setString(1, jobj.getString("subaccountId"));
@@ -168,7 +168,7 @@ public class TekvLSModifyCtaasSetupById {
 				json.put("projectId", rs.getString("id"));
 
 				/**
-				 * Add License consumption for CTaaS project
+				 * Add License consumption for SpotLight project
 				 * */
 				JSONObject ctaasDevice = new JSONObject();
 				ctaasDevice.put("subaccountId", jobj.getString("subaccountId"));

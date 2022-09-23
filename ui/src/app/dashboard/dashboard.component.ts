@@ -25,6 +25,7 @@ import { Subject } from "rxjs/internal/Subject";
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 import { Features } from '../helpers/features';
 import { permissions } from '../helpers/role-permissions';
+import { tekVizionServices } from '../helpers/tekvizion-services';
 
 @Component({
     selector: 'app-dashboard',
@@ -46,7 +47,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
     readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
-    readonly VIEW_CTAAS_DASHBOARD: string = 'View CTaaS Dashboard';
+    readonly VIEW_CTAAS_DASHBOARD: string = 'View SpotLight Dashboard';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
 
@@ -415,11 +416,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     services: object.selectedRow.services
                 };
                 this.subaccountService.setSelectedSubAccount(selectedSubaccount);
-                const hasCtaasService = services && services.includes('ctaas');
+                const hasCtaasService = services && services.includes(tekVizionServices.SpotLight);
                 if (hasCtaasService)
-                    this.router.navigate(['/ctaas/dashboards']);
+                    this.router.navigate(['/spotlight/dashboards']);
                 else
-                    this.snackBarService.openSnackBar('CTaaS service is not available for this Subaccount', '');
+                    this.snackBarService.openSnackBar('SpotLight service is not available for this Subaccount', '');
 
                 break;
             case this.MODIFY_ACCOUNT:

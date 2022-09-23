@@ -151,7 +151,7 @@ public class TekvLSGetAllCtaasTestSuites {
                 }
             }
 
-            // Retrieve ctaas test suites.
+            // Retrieve SpotLight test suites.
             context.getLogger().info("Execute SQL statement: " + selectStmt);
             rs = selectStmt.executeQuery();
 

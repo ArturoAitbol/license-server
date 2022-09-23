@@ -16,7 +16,7 @@ export class Constants {
 
     // Tool bar constants
     public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekToken Usage';
-    public static readonly CTAAS_TOOL_BAR: string = 'CTaaS';
+    public static readonly CTAAS_TOOL_BAR: string = 'SpotLight';
 
 }
 

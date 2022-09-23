@@ -7,7 +7,7 @@ export const permissions = {
             'projects',
             'licenses',
             'redirect',
-            'ctaas',
+            'spotlight',
             'dashboards',
             'test-suites',
             'stakeholders',
@@ -49,7 +49,7 @@ export const permissions = {
                 'CLOSE_PROJECT',
                 'DELETE_PROJECT'
             ],
-            ctaasTestSuiteOptions: [
+            spotlightTestSuiteOptions: [
                 'MODIFY_TEST_SUITE',
                 'DELETE_TEST_SUITE'
             ],
@@ -68,7 +68,7 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
+            'spotlight',
             'dashboards'
         ],
         elements: [
@@ -108,7 +108,7 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
+            'spotlight',
             'dashboards',
             'test-suites',
             'stakeholders',
@@ -138,7 +138,7 @@ export const permissions = {
                 'MODIFY_PROJECT',
                 'CLOSE_PROJECT'
             ],
-            ctaasTestSuiteOptions: [
+            spotlightTestSuiteOptions: [
                 'MODIFY_TEST_SUITE',
                 'DELETE_TEST_SUITE'
             ],
@@ -157,7 +157,7 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
+            'spotlight',
             'dashboards'
         ],
         elements: [],
@@ -187,7 +187,7 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
+            'spotlight',
             'dashboards',
             'stakeholders'
         ],
@@ -221,7 +221,7 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
+            'spotlight',
             'dashboards',
             'stakeholders'
         ],
@@ -250,7 +250,7 @@ export const permissions = {
         paths: [
             'redirect',
             'apps',
-            'ctaas',
+            'spotlight',
             'dashboards'
         ],
         elements: [],

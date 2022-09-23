@@ -25,7 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly _destroying$ = new Subject<void>();
     title = 'license-server';
     currentUser = false;
-    // added as part of ctaas feature
+    // added as part of spotlight feature
     hideToolbar: boolean = false;
     isTransparentToolbar: boolean = false;
     // tabName: string = 'tekVizion 360 Portal';
@@ -35,28 +35,28 @@ export class AppComponent implements OnInit, OnDestroy {
         {
             name: 'Dashboard',
             iconName: "assets\\images\\dashboard_3.png",
-            routePath: '/ctaas/dashboards',
+            routePath: '/spotlight/dashboards',
             active: true,
             materialIcon: 'dashboard'
         },
         {
             name: 'Test Suites',
             iconName: "assets\\images\\project_3.png",
-            routePath: '/ctaas/test-suites',
+            routePath: '/spotlight/test-suites',
             active: false,
             materialIcon: 'folder_open'
         },
         {
             name: 'Stakeholders',
             iconName: "assets\\images\\multiple-users.png",
-            routePath: '/ctaas/stakeholders',
+            routePath: '/spotlight/stakeholders',
             active: false,
             materialIcon: 'groups'
         },
         {
             name: 'Configuration',
             iconName: "assets\\images\\tune.png",
-            routePath: '/ctaas/setup',
+            routePath: '/spotlight/setup',
             active: false,
             materialIcon: 'tune'
         }
@@ -65,10 +65,10 @@ export class AppComponent implements OnInit, OnDestroy {
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
-    readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/ctaas/dashboards';
-    readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/ctaas/test-suites';
-    readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/ctaas/stakeholders';
-    readonly CTAAS_SETUP_PATH: string = '/ctaas/setup';
+    readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/dashboards';
+    readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
+    readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
+    readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
 
     constructor(
         private router: Router,
@@ -179,14 +179,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 {
                     name: 'Dashboard',
                     iconName: "assets\\images\\dashboard_3.png",
-                    routePath: '/ctaas/dashboards',
+                    routePath: '/spotlight/dashboards',
                     active: true,
                     materialIcon: 'dashboard'
                 },
                 {
                     name: 'Test Suites',
                     iconName: "assets\\images\\project_3.png",
-                    routePath: '/ctaas/test-suites',
+                    routePath: '/spotlight/test-suites',
                     active: false,
                     materialIcon: 'folder_open'
                 }
@@ -278,11 +278,11 @@ export class AppComponent implements OnInit, OnDestroy {
     enableSidebar(): boolean {
         if (this.isCtaasFeatureEnabled()) {
             switch (this.currentRoutePath) {
-                case '/ctaas/dashboards':
-                case '/ctaas/project':
-                case '/ctaas/stakeholders':
-                case '/ctaas/test-suites':
-                case '/ctaas/setup':
+                case '/spotlight/dashboards':
+                case '/spotlight/project':
+                case '/spotlight/stakeholders':
+                case '/spotlight/test-suites':
+                case '/spotlight/setup':
                     this.sideBarItems.forEach((e: any) => {
                         if (e.routePath === this.currentRoutePath)
                             e.active = true;

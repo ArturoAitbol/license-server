@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { Constants } from '../helpers/constants';
+import { tekVizionServices } from '../helpers/tekvizion-services';
 import { IService } from '../model/service.model';
 import { AvailableServicesService } from '../services/available-services.service';
 
@@ -43,7 +44,7 @@ export class MyAppsComponent implements OnInit {
       if (currentSubaccountDetails) {
         let { services } = currentSubaccountDetails;
         if ((services === undefined || services === null) && roles) {
-          services = roles.includes('customer.SubaccountStakeholder') ? ['ctaas'] : [];
+          services = roles.includes('customer.SubaccountStakeholder') ? [tekVizionServices.SpotLight] : [];
         }
         // enable respective access to activated service here
         this.availableServices = this.availableServices.map(e => {

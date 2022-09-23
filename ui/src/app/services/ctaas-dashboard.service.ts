@@ -11,7 +11,7 @@ export class CtaasDashboardService {
   private readonly FETCH_DASHBOARD_URL: string = this.API_URL + '/{subaccountId}';
   constructor(private httpClient: HttpClient) { }
   /**
-   * fetch CTaaS Power BI dashboard required details like embedUrl & embedToken
+   * fetch SpotLight Power BI dashboard required details like embedUrl & embedToken
    * @param subaccountId: string 
    * @returns: Observable<any> 
    */

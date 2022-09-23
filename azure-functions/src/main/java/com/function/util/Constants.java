@@ -1,13 +1,13 @@
 package com.function.util;
 
 public abstract class Constants {
-    // CTaaS constants
+    // SpotLight constants
     public static Boolean DEFAULT_CTAAS_ON_BOARDING_COMPLETE = false;
-    public static String DEFAULT_CTAAS_PROJECT_NAME = "CTaaS Project";
-    public static String DEFAULT_CTAAS_PROJECT_NUMBER = "CTaaS 1";
+    public static String DEFAULT_CTAAS_PROJECT_NAME = "SpotLight Project";
+    public static String DEFAULT_CTAAS_PROJECT_NUMBER = "SpotLight";
     public static String DEFAULT_CTAAS_PROJECT_STATUS = "Open";
     public static String DEFAULT_CTAAS_PROJECT_OWNER = null;
-    public static String DEFAULT_CTAAS_DEVICE = "Base CTaaS platform ready";
+    public static String DEFAULT_CTAAS_DEVICE = "Base SpotLight platform ready";
     public static String DEFAULT_CONSUMPTION_TYPE = "Configuration";
 
     
@@ -27,7 +27,7 @@ public abstract class Constants {
 
     public enum SubaccountServices {
         TOKEN_CONSUMPTION("tokenConsumption"),
-        CTAAS("Ctaas");
+        SPOTLIGHT("spotlight");
 
         private final String value;
         SubaccountServices(String value){
