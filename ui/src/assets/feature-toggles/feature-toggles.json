@@ -36,6 +36,7 @@
       "ctaas": true,
       "dashboards": true,
       "project": true,
+      "test-suites": true,
       "stakeholders": true,
       "setup": true
     },
@@ -59,6 +60,7 @@
       "ctaas": false,
       "dashboards": false,
       "project": false,
+      "test-suites": false,
       "stakeholders": false,
       "setup": false
     },
