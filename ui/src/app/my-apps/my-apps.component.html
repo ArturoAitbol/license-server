@@ -4,11 +4,11 @@
             <div class="col">
                 <div class="row">
                     <div class="col-6" *ngFor="let service of availableServices">
-                        <div>
+                        <div (click)="onClickService(service)" class="service-container">
                             <img [src]="service.imagePath" alt="{{service.label +'-icon'}}">
                             <br>
-                            <button class="btn-bg" (click)="onClickService(service)"
-                                [ngClass]="{'not-allowed':!(service.access)}" [disabled]="!(service.access)" id="{{service.value +'-button'}}" title="{{service.label}}">
+                            <button class="btn-bg"  id="{{service.value +'-button'}}" title="{{service.label}}"
+                                [ngClass]="{'not-allowed':!(service.access)}" [disabled]="!(service.access)">
                                 <h3 [ngClass]="{'not-allowed':!(service.access)}">
                                     {{service.label}}
                                 </h3>
