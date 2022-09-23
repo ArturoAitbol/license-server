@@ -58,6 +58,7 @@ public class RoleAuthHandler {
             MODIFY_PROJECT,
             MODIFY_LICENSE_USAGE,
             MODIFY_CTAAS_SETUP,
+            MODIFY_CTAAS_TEST_SUITE,
             MODIFY_SUBACCOUNT_STAKEHOLDER);
 
     private static final EnumSet<Permission> SaleAdminPermissions = EnumSet.of(
@@ -115,6 +116,7 @@ public class RoleAuthHandler {
             MODIFY_PROJECT,
             MODIFY_LICENSE_USAGE,
             MODIFY_CTAAS_SETUP,
+            MODIFY_CTAAS_TEST_SUITE,
             MODIFY_SUBACCOUNT_STAKEHOLDER);
 
     private static final EnumSet<Permission> devicesAdminPermissions = EnumSet.of(

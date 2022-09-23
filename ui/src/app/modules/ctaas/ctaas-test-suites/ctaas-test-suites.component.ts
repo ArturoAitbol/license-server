@@ -10,6 +10,7 @@ import { DialogService } from 'src/app/services/dialog.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { AddTestSuiteComponent } from './add-test-suite/add-test-suite.component';
+import { ModifyTestSuiteComponent } from './modify-test-suite/modify-test-suite.component';
 
 @Component({
   selector: 'app-ctaas-test-suites',
@@ -126,7 +127,11 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
       // TO DO
       // break;
       case this.MODIFY_TEST_SUITE:
-        // TO DO
+        dialogRef = this.dialog.open(ModifyTestSuiteComponent, {
+          width: '400px',
+          data: selectedItemData,
+          disableClose: true
+        });
         break;
     }
     dialogRef.afterClosed().subscribe(res => {
