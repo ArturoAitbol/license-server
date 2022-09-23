@@ -14,7 +14,10 @@ export class SubAccountService {
   constructor(private httpClient: HttpClient) { }
 
   //set the selected subaccount
-  setSelectedSubAccount(subaccount: any) { this.selectedSubAccount = subaccount; }
+  setSelectedSubAccount(subaccount: any) { 
+    localStorage.setItem(Constants.SELECTED_SUBACCOUNT, JSON.stringify(subaccount)),
+    this.selectedSubAccount = subaccount;
+  }
   //get the selected subaccount
   getSelectedSubAccount() {
     return (this.selectedSubAccount) ? this.selectedSubAccount : JSON.parse(localStorage.getItem(Constants.SELECTED_SUBACCOUNT));

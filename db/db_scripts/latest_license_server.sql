@@ -438,6 +438,7 @@ a1dd5a7f-58b4-442f-ba8e-3b1b927c4826	Vertical	Wave IP 500/2500	ISM 7.0.0 (6336)	
 40ccfa3d-95dc-4f3b-9d8e-651a8602b862	YeaStar	S20	30.14.0.127	PBX	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
 b93b5634-4f2f-4b81-8e25-36f712eb507b	Zultys	MX250	17.0.6	PBX	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
 d28cf7d0-d5a8-4f8f-9002-ea40e8d2964a	Zoom	Zoom	5.9.3 (3169)	UCAAS	week	3	2022-06-17 15:42:48.550405	infinity	\N	f
+1ffd1209-f03a-4d07-a27f-fee93ec4cb5f	tekVizion	Base CTaaS platform ready	1.0	OTHER	static	0	2022-06-17 15:42:48.550405	infinity	\N	t
 6caa7a2b-2d73-43f7-ad50-1df1fca3c768	tekVizion	Additional Virtual Machine	1.0	OTHER	week	1	2022-06-17 15:42:48.550405	infinity	\N	f
 5a6fbb8b-f524-4cc8-9c45-3efcc9b0cde0	tekVizion	SIP Trunk Testing Engagement	1.0	OTHER	static	15	2022-06-17 15:42:48.550405	infinity	\N	f
 eeff2eac-c1cc-47a1-a628-eb1a59dd5897	tekVizion	Generic Device Test	1.0	OTHER	week	3	2022-06-17 15:42:48.550405	infinity	\N	f

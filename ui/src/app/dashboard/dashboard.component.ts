@@ -415,7 +415,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     services: object.selectedRow.services
                 };
                 this.subaccountService.setSelectedSubAccount(selectedSubaccount);
-                const hasCtaasService = services && services.includes('ctaas');
+                const hasCtaasService = services && services.includes('Ctaas');
                 if (hasCtaasService)
                     this.router.navigate(['/ctaas/dashboards']);
                 else

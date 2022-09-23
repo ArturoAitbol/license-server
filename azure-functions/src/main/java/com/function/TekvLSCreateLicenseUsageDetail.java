@@ -56,7 +56,6 @@ public class TekvLSCreateLicenseUsageDetail
 		}
 
 		context.getLogger().info("Entering TekvLSCreateLicenseUsageDetail Azure function");
-		String userEmail = getEmailFromToken(tokenClaims, context);
 		
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -89,6 +88,12 @@ public class TekvLSCreateLicenseUsageDetail
 			}
 		}
 
+		return createLicenseConsumptionEvent(tokenClaims, jobj, request, context);
+	}
+
+	public HttpResponseMessage createLicenseConsumptionEvent(Claims tokenClaims, JSONObject jobj, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) {
+		String userEmail = getEmailFromToken(tokenClaims, context);
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -97,7 +102,7 @@ public class TekvLSCreateLicenseUsageDetail
 		// Build the sql query to get tokens consumption and granularity from device table
 		String deviceTokensSql = "SELECT tokens_to_consume, granularity FROM device WHERE id=?::uuid;";
 		String insertSql = "INSERT INTO license_consumption (subaccount_id, device_id, consumption_date, usage_type, tokens_consumed, modified_by, modified_date, project_id) " +
-						   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid) RETURNING ID;";
+						   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid) RETURNING id;";
 		String devicePerProjectConsumptionSql;
 		if (jobj.has("projectId")) {
 			devicePerProjectConsumptionSql = "SELECT id FROM license_consumption WHERE device_id=?::uuid and project_id=?::uuid LIMIT 1;";
@@ -184,7 +189,7 @@ public class TekvLSCreateLicenseUsageDetail
 			insertUsageStmt.setTimestamp(6, Timestamp.from(Instant.now()));
 			insertUsageStmt.setString(7, consumptionObj.getString("userEmail"));
 
-			final JSONArray usageDays = consumptionObj.getJSONArray(OPTIONAL_PARAMS.USAGE_DAYS.value);
+			final JSONArray usageDays = consumptionObj.has(OPTIONAL_PARAMS.USAGE_DAYS.value)? consumptionObj.getJSONArray(OPTIONAL_PARAMS.USAGE_DAYS.value) : null;
 			if (usageDays != null && usageDays.length() > 0) {
 				int usage;
 				//Iterating the contents of the array
@@ -201,8 +206,8 @@ public class TekvLSCreateLicenseUsageDetail
 				if(defaultUsageDay==7) defaultUsageDay = 0;
 				insertUsageStmt.setDate(2, Date.valueOf(consumptionDate));
 				insertUsageStmt.setInt(3, defaultUsageDay);
-				insertUsageStmt.setString(4, consumptionObj.getString(OPTIONAL_PARAMS.MAC_ADDRESS.value));
-				insertUsageStmt.setString(5, consumptionObj.getString(OPTIONAL_PARAMS.SERIAL_NUMBER.value));
+				insertUsageStmt.setString(4, consumptionObj.has(OPTIONAL_PARAMS.MAC_ADDRESS.value)? consumptionObj.getString(OPTIONAL_PARAMS.MAC_ADDRESS.value) : null);
+				insertUsageStmt.setString(5, consumptionObj.has(OPTIONAL_PARAMS.SERIAL_NUMBER.value)? consumptionObj.getString(OPTIONAL_PARAMS.SERIAL_NUMBER.value) : null);
 				insertUsageStmt.addBatch();
 			}
 			context.getLogger().info("Execute create usages SQL statement (User: "+ consumptionObj.getString("userId") + "): " + insertUsageStmt);
