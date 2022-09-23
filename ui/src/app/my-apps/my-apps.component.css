@@ -21,3 +21,6 @@ h3 {
 .not-allowed {
   cursor: not-allowed;
 }
+.service-container {
+  cursor: pointer;
+}
