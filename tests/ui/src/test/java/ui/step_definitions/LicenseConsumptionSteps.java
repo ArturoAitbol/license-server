@@ -112,6 +112,7 @@ public class LicenseConsumptionSteps {
         // in case there are more consumptions than just one then get from table
         String tekTokens = consumption.getOrDefault("tekTokens", this.tekTokens);
         this.consumptionRow = new ConsumptionRow(project);
+
         String actualProject = this.consumptionRow.getColumnValue("Project Name");
         String actualStatus = this.consumptionRow.getColumnValue("Status");
         String actualTekTokens = this.consumptionRow.getColumnValue("tekTokens");
