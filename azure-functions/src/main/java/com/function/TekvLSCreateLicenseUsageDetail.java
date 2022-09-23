@@ -189,7 +189,7 @@ public class TekvLSCreateLicenseUsageDetail
 			insertUsageStmt.setTimestamp(6, Timestamp.from(Instant.now()));
 			insertUsageStmt.setString(7, consumptionObj.getString("userEmail"));
 
-			final JSONArray usageDays = consumptionObj.getJSONArray(OPTIONAL_PARAMS.USAGE_DAYS.value);
+			final JSONArray usageDays = consumptionObj.has(OPTIONAL_PARAMS.USAGE_DAYS.value)? consumptionObj.getJSONArray(OPTIONAL_PARAMS.USAGE_DAYS.value) : null;
 			if (usageDays != null && usageDays.length() > 0) {
 				int usage;
 				//Iterating the contents of the array
@@ -206,8 +206,8 @@ public class TekvLSCreateLicenseUsageDetail
 				if(defaultUsageDay==7) defaultUsageDay = 0;
 				insertUsageStmt.setDate(2, Date.valueOf(consumptionDate));
 				insertUsageStmt.setInt(3, defaultUsageDay);
-				insertUsageStmt.setString(4, consumptionObj.getString(OPTIONAL_PARAMS.MAC_ADDRESS.value));
-				insertUsageStmt.setString(5, consumptionObj.getString(OPTIONAL_PARAMS.SERIAL_NUMBER.value));
+				insertUsageStmt.setString(4, consumptionObj.has(OPTIONAL_PARAMS.MAC_ADDRESS.value)? consumptionObj.getString(OPTIONAL_PARAMS.MAC_ADDRESS.value) : null);
+				insertUsageStmt.setString(5, consumptionObj.has(OPTIONAL_PARAMS.SERIAL_NUMBER.value)? consumptionObj.getString(OPTIONAL_PARAMS.SERIAL_NUMBER.value) : null);
 				insertUsageStmt.addBatch();
 			}
 			context.getLogger().info("Execute create usages SQL statement (User: "+ consumptionObj.getString("userId") + "): " + insertUsageStmt);

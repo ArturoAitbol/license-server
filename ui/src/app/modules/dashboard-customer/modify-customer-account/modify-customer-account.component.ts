@@ -22,11 +22,15 @@ export class ModifyCustomerAccountComponent implements OnInit {
     testCustomer: [{value:false,disabled:true}],
     services: this.formBuilder.group({
       tokenConsumption: [false], 
-      ctaas: [false]
+      Ctaas: [false]
     }) 
   });
 
   types: string[] = ['MSP', 'Reseller'];
+  servicesList = {
+    Ctaas: "CTaaS",
+    tokenConsumption: "Token Consumption"
+  };
   private previousFormValue: any;
   edited = false;
   // flag
@@ -106,5 +110,12 @@ export class ModifyCustomerAccountComponent implements OnInit {
    */
   disableSumbitBtn(): boolean {
     return JSON.stringify(this.updateCustomerForm.value) === JSON.stringify(this.previousFormValue.value);
+  }
+  /**
+   * to check service display
+   * @returns: value
+   */
+  parseService(key: string): boolean {
+    return this.servicesList[key];
   }
 }

@@ -7,7 +7,6 @@ import { SnackBarService } from "../../../services/snack-bar.service";
 import { ICtaasSetup } from "../../../model/ctaas-setup.model";
 import { LicenseService } from "../../../services/license.service";
 import { MatDialog } from "@angular/material/dialog";
-import { SubaccountAdminEmailsComponent } from "../../../dashboard/subaccount-admin-emails-modal/subaccount-admin-emails.component";
 import { LicenseConfirmationModalComponent } from "./license-confirmation-modal/license-confirmation-modal.component";
 
 @Component({
@@ -67,6 +66,7 @@ export class CtaasSetupComponent implements OnInit {
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
           if (activeLicenses.length === 0) {
             this.snackBarService.openSnackBar("No active licenses found", "Error selecting a license");
+            return;
           }
           if (activeLicenses.length === 1) {
             selectedLicenseId = activeLicenses[0].id;

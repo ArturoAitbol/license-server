@@ -104,7 +104,7 @@ describe('UI verification test', () => {
     updateCustomerForm.get('subaccountName').setValue('subaccountName');
     updateCustomerForm.get('testCustomer').setValue(true);
     if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-      updateCustomerForm.get('services').get('ctaas').setValue(true);
+      updateCustomerForm.get('services').get('Ctaas').setValue(true);
       updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
     }
 
