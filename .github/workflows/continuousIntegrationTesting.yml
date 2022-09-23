@@ -33,6 +33,8 @@ jobs:
       run: |
         echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "password=${{ secrets.AZURE_TEST_USER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
+        echo -e "subaccountAdminUser=${{ secrets.AZURE_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
+        echo -e "subaccountAdminPassword=${{ secrets.AZURE_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
 
     - name: Run UI tests
       id: uiTests

@@ -1,4 +1,4 @@
-package ui.pages;
+package ui.pages.customer;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -6,11 +6,6 @@ import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 
 public class CustomerForm extends AbstractPageObject {
-/*    @FindBy(css = "[formcontrolname='name']")
-    WebElement name;
-    @FindBy(css = "[formcontrolname='customerName']")
-    WebElement customerName;*/
-
     @FindBy(css = "input#customerName")
     WebElement customerName;
     @FindBy(css = "[formcontrolname='customerType']")

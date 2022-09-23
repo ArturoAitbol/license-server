@@ -6,6 +6,11 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import ui.core.DriverManager;
 import ui.pages.*;
+import ui.pages.customer.CustomerRow;
+import ui.pages.customer.Customers;
+import ui.pages.projects.ProjectForm;
+import ui.pages.projects.ProjectRow;
+import ui.pages.projects.Projects;
 
 import static org.junit.Assert.assertEquals;
 

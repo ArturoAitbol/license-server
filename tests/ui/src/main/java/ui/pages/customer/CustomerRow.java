@@ -1,7 +1,8 @@
-package ui.pages;
+package ui.pages.customer;
 
 import org.openqa.selenium.By;
 import ui.core.AbstractPageObject;
+import ui.pages.ActionMenu;
 
 public class CustomerRow extends AbstractPageObject {
     private final String CUSTOMER_NAME_XPATH;
