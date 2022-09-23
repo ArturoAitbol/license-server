@@ -121,12 +121,12 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     const index = this.loggedInUserRoles.findIndex(e => e.includes('customer.SubaccountAdmin'));
     // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
     if ((this.isOnboardingComplete && index !== -1)) {
-      setTimeout(() => {
-        dialogRef = this.dialog.open(OnboardWizardComponent, { width: '700px', height: '500px', disableClose: true });
-      }, 0);
+      dialogRef = this.dialog.open(OnboardWizardComponent, { width: '700px', height: '500px', disableClose: true });
     }
     dialogRef.afterClosed().subscribe((res: any) => {
-      this.updateOnboardingStatus();
+      if (res === 'closed') {
+        this.updateOnboardingStatus();
+      }
     });
   }
   /**
