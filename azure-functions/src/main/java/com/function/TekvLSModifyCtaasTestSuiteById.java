@@ -3,6 +3,7 @@ package com.function;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -12,7 +13,6 @@ import org.json.JSONObject;
 import com.function.auth.Permission;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
-import com.function.util.Constants;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -86,73 +86,71 @@ public class TekvLSModifyCtaasTestSuiteById {
         // Build the sql query for ctaas test suite
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_test_suite");
         int optionalParamsFound = 0;
-		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
-			try {
-				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
-				optionalParamsFound++;
-			}
-			catch (Exception e) {
-				context.getLogger().info("Ignoring exception: " + e);
-			}
-		}
-		if (optionalParamsFound == 0) {
-			return request.createResponseBuilder(HttpStatus.OK).build();
-		}
-		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
+        for (OPTIONAL_PARAMS param : OPTIONAL_PARAMS.values()) {
+            try {
+                queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib),
+                        param.dataType);
+                optionalParamsFound++;
+            } catch (Exception e) {
+                context.getLogger().info("Ignoring exception: " + e);
+            }
+        }
+        if (optionalParamsFound == 0) {
+            return request.createResponseBuilder(HttpStatus.OK).build();
+        }
+        queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
-        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
-			+ "&user=" + System.getenv("POSTGRESQL_USER")
-			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-            try (
-                Connection connection = DriverManager.getConnection(dbConnectionUrl);
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"
+                + System.getenv("POSTGRESQL_SECURITY_MODE")
+                + "&user=" + System.getenv("POSTGRESQL_USER")
+                + "&password=" + System.getenv("POSTGRESQL_PWD");
+        try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 PreparedStatement statement = queryBuilder.build(connection)) {
-                
-                context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-                String userId = getUserIdFromToken(tokenClaims,context);
-                context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
-                statement.executeUpdate();
-                context.getLogger().info("Test Suite updated successfully."); 
-    
-                return request.createResponseBuilder(HttpStatus.OK).build();
-            }
-            catch (SQLException e) {
-                context.getLogger().info("SQL exception: " + e.getMessage());
-                JSONObject json = new JSONObject();
-                json.put("error", e.getMessage());
-                return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-            }
-            catch (Exception e) {
-                context.getLogger().info("Caught exception: " + e.getMessage());
-                JSONObject json = new JSONObject();
-                json.put("error", e.getMessage());
-                return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-            }
+
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+            String userId = getUserIdFromToken(tokenClaims, context);
+
+            context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
+            statement.executeUpdate();
+            context.getLogger().info("Test Suite updated successfully.");
+            return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
+        } catch (SQLException e) {
+            context.getLogger().info("SQL exception: " + e.getMessage());
+            JSONObject json = new JSONObject();
+            json.put("error", e.getMessage());
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+        } catch (Exception e) {
+            context.getLogger().info("Caught exception: " + e.getMessage());
+            JSONObject json = new JSONObject();
+            json.put("error", e.getMessage());
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+        }
     }
 
     private enum OPTIONAL_PARAMS {
         SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
-        TOTAL_EXECUTIONS("totalExecutions", "total_executions",QueryBuilder.DATA_TYPE.INTEGER),
-        NEXT_EXECUTION("nextExecution", "next_execution_ts",QueryBuilder.DATA_TYPE.TIMESTAMP),
-        FREQUENCY("frequency", "frequency",QueryBuilder.DATA_TYPE.VARCHAR),
-        SERVICE("service", "device_type",QueryBuilder.DATA_TYPE.VARCHAR),
-        SUITE_NAME("suiteName","name",QueryBuilder.DATA_TYPE.VARCHAR);
+        TOTAL_EXECUTIONS("totalExecutions", "total_executions", QueryBuilder.DATA_TYPE.INTEGER),
+        NEXT_EXECUTION("nextExecution", "next_execution_ts", QueryBuilder.DATA_TYPE.TIMESTAMP),
+        FREQUENCY("frequency", "frequency", QueryBuilder.DATA_TYPE.VARCHAR),
+        SERVICE("deviceType", "device_type", QueryBuilder.DATA_TYPE.VARCHAR),
+        SUITE_NAME("name", "name", QueryBuilder.DATA_TYPE.VARCHAR);
 
-		private final String jsonAttrib;
-		private final String columnName;
+        private final String jsonAttrib;
+        private final String columnName;
 
-		private final String dataType;
+        private final String dataType;
 
-		OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
-			this.jsonAttrib = jsonAttrib;
-			this.columnName = columnName;
-			this.dataType = dataType;
-		}
+        OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
+            this.jsonAttrib = jsonAttrib;
+            this.columnName = columnName;
+            this.dataType = dataType;
+        }
 
-		OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
-			this.jsonAttrib = jsonAttrib;
-			this.columnName = columnName;
-			this.dataType = dataType.getValue();
-		}
-	}
+        OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
+            this.jsonAttrib = jsonAttrib;
+            this.columnName = columnName;
+            this.dataType = dataType.getValue();
+        }
+    }
 
 }

@@ -135,8 +135,8 @@ public class TekvLSCreateCtaasTestSuite {
         TOTAL_EXECUTIONS("totalExecutions"),
         NEXT_EXECUTION("nextExecution"),
         FREQUENCY("frequency"),
-        SERVICE("service"),
-        SUITE_NAME("suiteName");
+        SERVICE("deviceType"),
+        SUITE_NAME("name");
 
         private final String value;
 

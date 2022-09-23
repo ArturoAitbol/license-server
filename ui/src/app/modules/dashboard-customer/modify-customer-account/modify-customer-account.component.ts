@@ -19,11 +19,11 @@ export class ModifyCustomerAccountComponent implements OnInit {
     name: ['', Validators.required],
     customerType: ['', Validators.required],
     subaccountName: [''],
-    testCustomer: [{value:false,disabled:true}],
+    testCustomer: [{ value: false, disabled: true }],
     services: this.formBuilder.group({
-      tokenConsumption: [false], 
+      tokenConsumption: [false],
       Ctaas: [false]
-    }) 
+    })
   });
 
   types: string[] = ['MSP', 'Reseller'];
@@ -48,7 +48,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
   ngOnInit() {
     if (this.data) {
       this.updateCustomerForm.patchValue(this.data);
-      this.data.services?.split(",").forEach( service => this.updateCustomerForm.get("services").get(service)?.setValue(true));
+      this.data.services?.split(",").forEach(service => this.updateCustomerForm.get("services").get(service)?.setValue(true));
       this.previousFormValue = { ...this.updateCustomerForm };
     }
   }
@@ -61,38 +61,37 @@ export class ModifyCustomerAccountComponent implements OnInit {
 
   modifiedServices(): any {
     let services = "";
-   for(let service in this.updateCustomerForm.get("services").controls){
-      if(this.updateCustomerForm.get("services").controls[service].value === true)
+    for (let service in this.updateCustomerForm.get("services").controls) {
+      if (this.updateCustomerForm.get("services").controls[service].value === true)
         services = services + service + ',';
     }
     services = services.slice(0, -1);
     return services;
-  } 
+  }
   /**
    * to submit the form
    */
   submit() {
     this.isDataLoading = true;
-    const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value }; 
+    const mergedLicenseObject = { ...this.data, ...this.updateCustomerForm.value };
     const customer = {
       id: mergedLicenseObject.id,
       customerName: mergedLicenseObject.name,
       customerType: mergedLicenseObject.customerType
     };
-    const requestsArray= [
+    const requestsArray = [
       this.customerService.updateCustomer(customer)
     ];
-    if (this.data.subaccountId){
+    if (this.data.subaccountId) {
       const subaccount: any = {
         id: mergedLicenseObject.subaccountId,
         subaccountName: mergedLicenseObject.subaccountName,
       };
-      if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
-        let modifiedServices;
-        modifiedServices = this.modifiedServices();
+      if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)) {
+        const modifiedServices = this.modifiedServices();
         subaccount.services = modifiedServices;
       }
-      requestsArray.push(this.subaccountService.updateSubAccount(subaccount)); 
+      requestsArray.push(this.subaccountService.updateSubAccount(subaccount));
     }
     forkJoin(requestsArray).subscribe((res: any) => {
       this.isDataLoading = false;

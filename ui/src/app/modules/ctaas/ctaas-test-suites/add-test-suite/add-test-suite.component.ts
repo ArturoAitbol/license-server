@@ -13,8 +13,8 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 export class AddTestSuiteComponent implements OnInit {
   isDataLoading = false;
   addTestSuiteForm = this.formBuilder.group({
-    suiteName: ['', Validators.required],
-    service: ['Webex', Validators.required],
+    name: ['', Validators.required],
+    deviceType: ['Webex', Validators.required],
     totalExecutions: ['', Validators.required],
     nextExecution: ['', Validators.required],
     frequency: ['', Validators.required]
@@ -35,15 +35,14 @@ export class AddTestSuiteComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentCustomer = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
-    console.log(this.currentCustomer)
   }
 
   addTestSuite(): void {
     this.isDataLoading = true;
     const suiteObject: any = {
       subaccountId: this.currentCustomer.id,
-      suiteName: this.addTestSuiteForm.value.suiteName,
-      service: this.addTestSuiteForm.value.service,
+      name: this.addTestSuiteForm.value.name,
+      deviceType: this.addTestSuiteForm.value.deviceType,
       totalExecutions: this.addTestSuiteForm.value.totalExecutions,
       nextExecution: this.addTestSuiteForm.value.nextExecution.format("YYYY-MM-DD"),
       frequency: this.addTestSuiteForm.value.frequency,
