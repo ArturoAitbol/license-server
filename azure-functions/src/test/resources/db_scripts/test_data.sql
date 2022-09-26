@@ -160,10 +160,10 @@ b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	http://tekvizionTap.com	SETUP_INP
 \.
 
 COPY public.ctaas_test_suite (id, subaccount_id, total_executions, next_execution_ts, frequency, device_type, name) FROM stdin;
-a8654484-1cb2-4fec-adf4-ee7ddc17375d	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	5	2022-10-03 04:00:00	Hourly	Webex	Execution A
-6a70a31b-fc5a-443b-82d4-d306961fa533	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	10	2022-10-04 04:00:00	Weekly	Teams	Execution B
-5726d813-834e-40c4-a52e-e9ac63459e03	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	15	2022-10-05 04:00:00	Monthly	Webex	Execution C
-30ab93f1-3bde-4721-8892-1ba34a005d08	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	5	2022-10-03 04:00:00	Hourly	Teams	Execution D
-89eeb522-157f-4125-96e6-b4cc900fa9d1	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	10	2022-10-04 04:00:00	Weekly	Webex	Execution E
-5798ecd9-6db9-43a6-a521-b21f065e7879	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	15	2022-10-05 04:00:00	Monthly	Teams	Execution F
+a8654484-1cb2-4fec-adf4-ee7ddc17375d	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	5	2022-10-03 00:00:00	Hourly	Webex	Execution A
+6a70a31b-fc5a-443b-82d4-d306961fa533	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	10	2022-10-04 00:00:00	Weekly	Teams	Execution B
+5726d813-834e-40c4-a52e-e9ac63459e03	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	15	2022-10-05 00:00:00	Monthly	Webex	Execution C
+30ab93f1-3bde-4721-8892-1ba34a005d08	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	5	2022-10-03 00:00:00	Hourly	Teams	Execution D
+89eeb522-157f-4125-96e6-b4cc900fa9d1	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	10	2022-10-04 00:00:00	Weekly	Webex	Execution E
+5798ecd9-6db9-43a6-a521-b21f065e7879	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	15	2022-10-05 00:00:00	Monthly	Teams	Execution F
 \.
