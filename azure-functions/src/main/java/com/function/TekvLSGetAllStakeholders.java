@@ -34,7 +34,6 @@ import com.function.auth.Permission;
 import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
-import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -202,14 +201,6 @@ public class TekvLSGetAllStakeholders {
 		for (Object obj : array) {
 			json = (JSONObject) obj;
 			try {
-				 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
-					 	json.put("name", "");
-						json.put("jobTitle", "");
-						json.put("companyName", "");
-						json.put("phoneNumber", "");
-						stakeHolders.put(json);
-						continue;
-				 }
 				userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"),context);
 				if(userProfile.getString("role").equals(SUBACCOUNT_STAKEHOLDER)) {
 					json.put("name",userProfile.get("displayName"));
