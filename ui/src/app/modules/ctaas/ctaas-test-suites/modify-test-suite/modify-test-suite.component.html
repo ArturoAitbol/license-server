@@ -1,0 +1,54 @@
+<div class="container" style="text-align: center;">
+    <h1 mat-dialig-title id="modal-title">Modify Test Suite</h1>
+    <form [formGroup]="updateTestSuiteForm" (ngSubmit)="modifyTestSuite()">
+        <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
+            <mat-dialog-content>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label id="name-label">Suite Name</mat-label>
+                        <input matInput required formControlName="name" id="name">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label id="deviceType-name-label">Testing Service</mat-label>
+                        <input matInput required formControlName="deviceType" id="deviceType">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label id="executions-label">Total Executions</mat-label>
+                        <input matInput required formControlName="totalExecutions" id="totalExecutions">
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Next Execution</mat-label>
+                        <input required matInput [matDatepicker]="picker" formControlName="nextExecution">
+                        <mat-datepicker-toggle matSuffix [for]="picker" id="date-calendar">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label id="frequency-label">Frequency</mat-label>
+                        <mat-select required formControlName="frequency">
+                            <mat-option *ngFor="let item of frequencies" [value]="item" title="{{item}}">
+                                {{item}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </mat-dialog-content>
+        </div>
+        <mat-dialog-actions>
+            <button id="cancelBtn" type="button" mat-stroked-button (click)="onCancel()">Cancel</button>
+            <button id="submitBtn" mat-raised-button color="primary" [disabled]="updateTestSuiteForm.invalid"
+                type="submit">Submit</button>
+        </mat-dialog-actions>
+    </form>
+</div>

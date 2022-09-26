@@ -32,8 +32,8 @@ export class CtaasSetupComponent implements OnInit {
     tapUrl: [null, Validators.required],
     status: ['SETUP_INPROGRESS', Validators.required],
     onBoardingComplete: [{ value: false, disabled: true }, Validators.required],
-    powerbiWorkspaceId: [null],
-    powerbiReportId: [null],
+    powerBiWorkspaceId: [null],
+    powerBiReportId: [null],
   });
 
   constructor(
@@ -80,12 +80,12 @@ export class CtaasSetupComponent implements OnInit {
           const ctaasSetup = this.generateUpdateBody(selectedLicenseId);
           this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, ctaasSetup).subscribe((res: any) => {
             if (!res?.error) {
-              this.snackBarService.openSnackBar('Ctaas Setup edited successfully!', '');
+              this.snackBarService.openSnackBar('SpotLight Setup edited successfully!', '');
               this.isEditing = false;
               this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, ...this.setupForm.value };
               this.disableForm();
             } else {
-              this.snackBarService.openSnackBar(res.error, 'Error updating Ctaas Setup!');
+              this.snackBarService.openSnackBar(res.error, 'Error updating SpotLight Setup!');
             }
           });
         });
@@ -93,12 +93,12 @@ export class CtaasSetupComponent implements OnInit {
         const ctaasSetup = this.generateUpdateBody();
         this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, ctaasSetup).subscribe((res: any) => {
           if (!res?.error) {
-            this.snackBarService.openSnackBar('Ctaas Setup edited successfully!', '');
+            this.snackBarService.openSnackBar('SpotLight Setup edited successfully!', '');
             this.isEditing = false;
             this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, ...this.setupForm.value };
             this.disableForm();
           } else {
-            this.snackBarService.openSnackBar(res.error, 'Error updating Ctaas Setup!');
+            this.snackBarService.openSnackBar(res.error, 'Error updating SpotLight Setup!');
           }
         });
       }

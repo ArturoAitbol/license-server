@@ -1,4 +1,4 @@
-package ui.pages;
+package ui.pages.subaccounts;
 
 import org.openqa.selenium.By;
 import ui.core.AbstractPageObject;

@@ -69,7 +69,7 @@ def run_ui_functional_tests():
     logging.info("Starting to run UI Functional tests")
     try:
         os.chdir('./tests/ui')
-        cmd = 'gradle uiTests -Denv=local -D"cucumber.filter.tags="'
+        cmd = 'gradle uiTests -Denv=local -D"cucumber.filter.tags=not @CTaaSFeature"
         process = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=True, bufsize=0)
         print_output(process)
         if process.returncode != 0:

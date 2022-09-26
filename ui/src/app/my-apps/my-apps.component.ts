@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import { Constants } from '../helpers/constants';
+import { tekVizionServices } from '../helpers/tekvizion-services';
 import { ICtaasSetup } from '../model/ctaas-setup.model';
 import { IService } from '../model/service.model';
 import { OnboardWizardComponent } from '../modules/ctaas/onboard-wizard/onboard-wizard.component';
 import { AvailableServicesService } from '../services/available-services.service';
 import { CtaasSetupService } from '../services/ctaas-setup.service';
+import { SubAccountService } from '../services/sub-account.service';
 
 @Component({
   selector: 'app-my-apps',
@@ -20,21 +21,22 @@ export class MyAppsComponent implements OnInit {
   isOnboardingComplete: boolean;
   loggedInUserRoles: string[] = [];
   ctaasSetupDetails: any = {};
-  subaccountId: string = '';
+  currentSubaccountDetails: any;
   constructor(
     private router: Router,
     private availabeService: AvailableServicesService,
     private ctaasSetupService: CtaasSetupService,
+    private subaccountService: SubAccountService,
     private dialog: MatDialog,
     private msalService: MsalService
   ) { }
   ngOnInit(): void {
+    this.currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
     this.getAvailableServices(roles);
     this.fetchCtaasSetupDetails();
-
   }
   /**
    * get logged in account details 
@@ -51,11 +53,10 @@ export class MyAppsComponent implements OnInit {
     if (response.length > 0) {
       this.availableServices = response.filter((x: IService) => x.enabled === true);
       // get the current logged in subaccount details
-      const currentSubaccountDetails = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
-      if (currentSubaccountDetails) {
-        let { services } = currentSubaccountDetails;
+      if (this.currentSubaccountDetails) {
+        let { services } = this.currentSubaccountDetails;
         if ((services === undefined || services === null) && roles) {
-          services = roles.includes('customer.SubaccountStakeholder') ? ['ctaas'] : [];
+          services = roles.includes('customer.SubaccountStakeholder') ? [tekVizionServices.SpotLight] : [];
         }
         // enable respective access to activated service here
         this.availableServices = this.availableServices.map(e => {
@@ -80,10 +81,7 @@ export class MyAppsComponent implements OnInit {
    * fetch Ctaas Setup details by subaccount id
    */
   fetchCtaasSetupDetails(): void {
-    const currentSubaccountDetails = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
-    const { id } = currentSubaccountDetails;
-    this.subaccountId = id;
-    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id)
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.currentSubaccountDetails.id)
       .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
         if (response) {
           this.ctaasSetupDetails = response['ctaasSetups'][0];

@@ -50,4 +50,15 @@ export class CtaasTestSuiteService {
   public deleteTestSuite(testSuiteId: string) {
     return this.httpClient.delete(`${this.API_URL}/${testSuiteId}`);
   }
+
+
+  /**
+   * update Test Suite details
+   * @param testSuite: TestSuite
+   * @returns: Observable 
+   */
+   public updateTestSuite(testSuite: any) {
+    return this.httpClient.put(`${this.API_URL}/${testSuite.id}`, testSuite);
+  }
+  
 }

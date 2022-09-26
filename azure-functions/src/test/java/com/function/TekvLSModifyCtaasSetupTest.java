@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
+import com.function.util.Constants;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
@@ -31,8 +32,8 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'status': 'SETUP_INPROGRESS'}";
+        String bodyRequest = "{'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'status': '" + Constants.CTaaSSetupStatus.INPROGRESS.value() + "'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = tekvLSCreateCtaasSetup.run(this.request,this.context);
         this.context.getLogger().info(response.getBody().toString());
@@ -56,9 +57,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     public void modifyCtaasSetupTest(){
         //Given
         String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'SETUP_READY'," +
-                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
+                "'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -98,9 +99,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     @Test
     public void modifyStatusTest(){
         //Given
-    	String bodyRequest = "{'status': 'SETUP_READY'," +
-        "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-        "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'}";
+    	String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+        "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+        "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -254,9 +255,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         //Given
         String invalidId = "invalid-id";
         String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'SETUP_READY'," +
-                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
+                "'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -275,9 +276,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     public void genericExceptionTest(){
         //Given
     	String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'SETUP_READY'," +
-                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
+                "'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();

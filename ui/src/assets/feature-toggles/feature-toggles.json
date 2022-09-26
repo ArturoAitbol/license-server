@@ -9,8 +9,8 @@
       "testFeature1": true,
       "redirect": true,
       "apps": true,
-      "ctaas": true,
-      "dashboards": true,
+      "spotlight": true,
+      "report-dashboards": true,
       "test-suites": true,
       "stakeholders": true,
       "setup": true
@@ -33,8 +33,8 @@
       "testFeature1": true,
       "redirect": true,
       "apps": true,
-      "ctaas": true,
-      "dashboards": true,
+      "spotlight": true,
+      "report-dashboards": true,
       "test-suites": true,
       "stakeholders": true,
       "setup": true
@@ -56,8 +56,8 @@
       "testFeature1": false,
       "redirect": false,
       "apps": false,
-      "ctaas": false,
-      "dashboards": false,
+      "spotlight": false,
+      "report-dashboards": false,
       "test-suites": false,
       "stakeholders": false,
       "setup": false
