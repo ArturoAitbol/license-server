@@ -202,8 +202,7 @@ public class TekvLSGetAllStakeholders {
 		for (Object obj : array) {
 			json = (JSONObject) obj;
 			try {
-				userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"),context);
-				 if(userProfile==null && !FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+				 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
 					json.put("name","");
 					json.put("jobTitle","");
 					json.put("companyName","");
@@ -211,6 +210,7 @@ public class TekvLSGetAllStakeholders {
 					stakeHolders.put(json);
 					continue;
 				 }
+				 userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"),context);
 				if(userProfile.getString("role").equals(SUBACCOUNT_STAKEHOLDER)) {
 					json.put("name",userProfile.get("displayName"));
 					json.put("jobTitle",userProfile.get("jobTitle"));
