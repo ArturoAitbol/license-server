@@ -25,12 +25,12 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import io.jsonwebtoken.Claims;
 
 public class TekVLSDeleteCtaasTestSuiteById {
-	/**
+    /**
 	 * This function listens at endpoint "/v1.0/ctaasTestSuites". Two ways to invoke it
 	 * using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasTestSuites
 	 */
-	@FunctionName("TekVLSDeleteCtaasTestSuiteById")
+	@FunctionName("TekvLSDeleteCtaasTestSuiteById")
 	public HttpResponseMessage run(
 			@HttpTrigger(
 				name = "req",
@@ -56,7 +56,7 @@ public class TekVLSDeleteCtaasTestSuiteById {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekVLSDeleteCtaasTestSuiteById Azure function");
+		context.getLogger().info("Entering TekvLSDeleteCtaasTestSuiteById Azure function");
 
 		String sql = "DELETE FROM ctaas_test_suite WHERE id = ?::uuid;";
 

@@ -52,7 +52,6 @@ public class TekvLSCreateCtaasTestSuite {
         }
 
         context.getLogger().info("Entering TekvLSCreateCtaasTestSuite Azure function");
-        String userEmail = getEmailFromToken(tokenClaims, context);
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");

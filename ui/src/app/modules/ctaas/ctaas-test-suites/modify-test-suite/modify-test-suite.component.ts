@@ -16,7 +16,7 @@ export class ModifyTestSuiteComponent implements OnInit {
     id: ['', Validators.required],
     subaccountId: ['', Validators.required],
     name: ['', Validators.required],
-    deviceType: ['Webex', Validators.required],
+    deviceType: ['MS Teams', Validators.required],
     totalExecutions: ['', Validators.required],
     nextExecution: ['', Validators.required],
     frequency: ['', Validators.required]
