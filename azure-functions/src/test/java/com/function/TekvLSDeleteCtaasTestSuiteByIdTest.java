@@ -22,7 +22,7 @@ import static org.mockito.Mockito.doThrow;
 public class TekvLSDeleteCtaasTestSuiteByIdTest extends TekvLSTest {
 
     private String testSuiteId = "EMPTY";
-    private final TekVLSDeleteCtaasTestSuiteById tekvLSDeleteCtaasTestSuiteById = new TekVLSDeleteCtaasTestSuiteById();
+    private final TekvLSDeleteCtaasTestSuiteById tekvLSDeleteCtaasTestSuiteById = new TekvLSDeleteCtaasTestSuiteById();
     private final TekvLSCreateCtaasTestSuite tekvLSCreateCtaasTestSuite = new TekvLSCreateCtaasTestSuite();
 
     @BeforeEach
