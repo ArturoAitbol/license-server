@@ -30,11 +30,10 @@
                         <input required matInput value="" formControlName="subaccountAdminEmail" id="email">
                     </mat-form-field>
                 </div>
-                <div class="mobile-num-container">
+                <div>
                     <mat-form-field class="example-full-width" appearance="outline">
                         <mat-label id="mobile-number-label">Mobile Number</mat-label>
-                        <input matInput type="text" ng2TelInput formControlName="phoneNumber" id="phoneNumber"
-                            (intlTelInputObject)="telInputObject($event)" (countryChange)="onCountryChange($event)" />
+                        <input required matInput value="" formControlName="phoneNumber" id="phoneNumber" maxlength="10">
                     </mat-form-field>
                 </div>
                 <h2 style="text-align: left;">Report preferences</h2>

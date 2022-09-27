@@ -23,6 +23,3 @@ mat-form-field {
 .item {
   flex: 1 1 auto;
 }
-::ng-deep.mobile-num-container .mat-form-field-label {
-  padding-left: 50px !important;
-}
