@@ -22,7 +22,7 @@ import static org.mockito.Mockito.doThrow;
 public class TekvLSDeleteCtaasTestSuiteByIdTest extends TekvLSTest {
 
     private String testSuiteId = "EMPTY";
-    private final TekVLSDeleteCtaasTestSuiteById tekVLSDeleteCtaasTestSuiteById = new TekVLSDeleteCtaasTestSuiteById();
+    private final TekvLSDeleteCtaasTestSuiteById tekvLSDeleteCtaasTestSuiteById = new TekvLSDeleteCtaasTestSuiteById();
     private final TekvLSCreateCtaasTestSuite tekvLSCreateCtaasTestSuite = new TekvLSCreateCtaasTestSuite();
 
     @BeforeEach
@@ -46,7 +46,7 @@ public class TekvLSDeleteCtaasTestSuiteByIdTest extends TekvLSTest {
         this.testSuiteId = jsonBody.getString("id");
 
         //When
-        HttpResponseMessage response = tekVLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId, this.context);
+        HttpResponseMessage response = tekvLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId, this.context);
         this.context.getLogger().info(response.getStatus().toString());
 
         HttpStatusType actualStatus = response.getStatus();
@@ -61,7 +61,7 @@ public class TekvLSDeleteCtaasTestSuiteByIdTest extends TekvLSTest {
         this.headers.remove("authorization");
 
         //When
-        HttpResponseMessage response = tekVLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId, this.context);
+        HttpResponseMessage response = tekvLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -85,7 +85,7 @@ public class TekvLSDeleteCtaasTestSuiteByIdTest extends TekvLSTest {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
         //When
-        HttpResponseMessage response = tekVLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId, this.context);
+        HttpResponseMessage response = tekvLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -109,7 +109,7 @@ public class TekvLSDeleteCtaasTestSuiteByIdTest extends TekvLSTest {
         this.testSuiteId = "invalid-id";
 
         //When
-        HttpResponseMessage response = tekVLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId,this.context);
+        HttpResponseMessage response = tekvLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId,this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -126,7 +126,7 @@ public class TekvLSDeleteCtaasTestSuiteByIdTest extends TekvLSTest {
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 
         //When
-        HttpResponseMessage response = tekVLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId, this.context);
+        HttpResponseMessage response = tekvLSDeleteCtaasTestSuiteById.run(this.request,this.testSuiteId, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then

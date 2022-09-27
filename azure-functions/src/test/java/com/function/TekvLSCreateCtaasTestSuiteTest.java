@@ -25,7 +25,7 @@ public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
     private String testSuiteId = "EMPTY";
     TekvLSCreateCtaasTestSuite createTestSuite = new TekvLSCreateCtaasTestSuite();
 
-    private final TekVLSDeleteCtaasTestSuiteById deleteTestSuiteById = new TekVLSDeleteCtaasTestSuiteById();
+    private final TekvLSDeleteCtaasTestSuiteById deleteTestSuiteById = new TekvLSDeleteCtaasTestSuiteById();
 
     @BeforeEach
     void setUp() {
@@ -50,7 +50,7 @@ public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
     public void createTestSuiteTest() {
         // Given - Arrange
         String name = "testSuiteTest" + LocalDateTime.now();
-        String bodyRequest = "{'name':'" + name + "','subaccountId':'0e2038ec-2b9b-493b-b3f2-6702e60b5b90','totalExecutions':'7','nextExecution':'2022-10-04 00:00:00','frequency':'Hourly','deviceType':'Webex'}";
+        String bodyRequest = "{'name':'" + name + "','subaccountId':'0e2038ec-2b9b-493b-b3f2-6702e60b5b90','totalExecutions':'7','nextExecution':'2022-10-04 00:00:00','frequency':'Hourly','deviceType':'MS Teams'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         // When - Action
@@ -95,7 +95,7 @@ public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
     @Test
     public void createTestSuiteWrongSubaccountId() {
         String name = "testSuiteTest" + LocalDateTime.now();
-        String bodyRequest = "{'name':'" + name + "','subaccountId':'00000000-2b9b-493b-0000-6702e60b5b90','totalExecutions':'7','nextExecution':'2022-10-04 00:00:00','frequency':'Hourly','deviceType':'Webex'}";
+        String bodyRequest = "{'name':'" + name + "','subaccountId':'00000000-2b9b-493b-0000-6702e60b5b90','totalExecutions':'7','nextExecution':'2022-10-04 00:00:00','frequency':'Hourly','deviceType':'MS Teams'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         HttpResponseMessage response = createTestSuite.run(this.request, this.context);
@@ -173,7 +173,7 @@ public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
         // Given - Arrange
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
         String name = "testSuiteTest" + LocalDateTime.now();
-        String bodyRequest = "{'name':'" + name + "','subaccountId':'00000000-2b9b-493b-0000-6702e60b5b90','totalExecutions':'7','nextExecution':'2022-10-04 00:00:00','frequency':'Hourly','deviceType':'Webex'}";
+        String bodyRequest = "{'name':'" + name + "','subaccountId':'00000000-2b9b-493b-0000-6702e60b5b90','totalExecutions':'7','nextExecution':'2022-10-04 00:00:00','frequency':'Hourly','deviceType':'MS Teams'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         // When - Action
