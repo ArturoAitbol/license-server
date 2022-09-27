@@ -17,6 +17,8 @@ export class UpdateStakeHolderComponent implements OnInit {
   updateStakeholderForm: FormGroup;
   previousFormValue: any;
   notificationsList: any;
+  countryCode: any;
+  sendCountryCode: any;
   mappedNotificationsList: string[] = [];
   constructor(
     private formBuilder: FormBuilder,
@@ -34,13 +36,21 @@ export class UpdateStakeHolderComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: [{ value: '' }, Validators.required],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/), Validators.maxLength(10)]],
       type: ['', Validators.required],
       notifications: new FormArray([])
     });
     try {
       const { mobilePhone, email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
+
+      if (this.data.phoneNumber) {
+        let splitPhone = this.data.phoneNumber.split('-');
+        if (splitPhone.length === 2) {
+          this.data.phoneNumber = splitPhone[1];
+          this.countryCode = splitPhone[0].slice(1);
+        }
+      }
       let { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
       if (notifications) {
         const mappedNotifications = notifications.split(',').map(e => {
@@ -125,6 +135,7 @@ export class UpdateStakeHolderComponent implements OnInit {
     } else {
       this.updateStakeholderForm.value.notifications = 'TYPE:' + this.updateStakeholderForm.value.type;
     }
+    this.updateStakeholderForm.value.phoneNumber = this.sendCountryCode + this.updateStakeholderForm.get('phoneNumber').value;
     return this.updateStakeholderForm.value;
   }
   /**
@@ -150,6 +161,19 @@ export class UpdateStakeHolderComponent implements OnInit {
         }
       });
     }
+  }
+
+  //Phone number validation
+  telInputObject(event) {
+    event.p.forEach((e) => {
+      if (e.dialCode === this.countryCode) {
+        event.setCountry(e.iso2);
+        this.sendCountryCode = "+" + e.dialCode + "-";
+      }
+    })
+  }
+  onCountryChange(event) {
+    this.sendCountryCode = "+" + event.dialCode + '-';
   }
 
 }
