@@ -87,9 +87,14 @@ public class TekvLSModifyCtaasOnBoardingById {
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
+		// Build the sql query
+		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
+
 		// Check mandatory params to be present
 		for (MANDATORY_PARAMS mandatoryParam: MANDATORY_PARAMS.values()) {
-			if (!jobj.has(mandatoryParam.jsonAttrib)) {
+			if (jobj.has(mandatoryParam.jsonAttrib)) {
+				queryBuilder.appendValueModification(mandatoryParam.columnName, jobj.getString(mandatoryParam.jsonAttrib), mandatoryParam.dataType);
+			} else {
 				// Parameter not found
 				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.jsonAttrib);
 				JSONObject json = new JSONObject();
@@ -97,22 +102,7 @@ public class TekvLSModifyCtaasOnBoardingById {
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
-		
-		// Build the sql query
-		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
-		int optionalParamsFound = 0;
-		for (MANDATORY_PARAMS param: MANDATORY_PARAMS.values()) {
-			try {
-				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
-				optionalParamsFound++;
-			}
-			catch (Exception e) {
-				context.getLogger().info("Ignoring exception: " + e);
-			}
-		}
-		if (optionalParamsFound == 0) {
-			return request.createResponseBuilder(HttpStatus.OK).build();
-		}
+
 		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
 		// Connect to the database
@@ -153,11 +143,6 @@ public class TekvLSModifyCtaasOnBoardingById {
 
 		private final String dataType;
 
-		MANDATORY_PARAMS(String jsonAttrib, String columnName, String dataType) {
-			this.jsonAttrib = jsonAttrib;
-			this.columnName = columnName;
-			this.dataType = dataType;
-		}
 
 		MANDATORY_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
 			this.jsonAttrib = jsonAttrib;
