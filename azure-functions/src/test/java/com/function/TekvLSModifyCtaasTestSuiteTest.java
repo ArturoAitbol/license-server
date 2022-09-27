@@ -24,7 +24,7 @@ public class TekvLSModifyCtaasTestSuiteTest extends TekvLSTest {
 
     private final TekvLSModifyCtaasTestSuiteById tekvLSModifyCtaasTestSuiteById = new TekvLSModifyCtaasTestSuiteById();
     private final TekvLSCreateCtaasTestSuite tekvLSCreateCtaasTestSuite = new TekvLSCreateCtaasTestSuite();
-    private final TekvLSDeleteCtaasTestSuiteById tekvLSDeleteCtaasTestSuiteById = new TekvLSDeleteCtaasTestSuiteById();
+    private final TekVLSDeleteCtaasTestSuiteById tekvLSDeleteCtaasTestSuiteById = new TekVLSDeleteCtaasTestSuiteById();
     private String ctaasTestSuiteId = "31d82e5c-b911-460d-edbe-6860f8464233";
 
     @BeforeEach
