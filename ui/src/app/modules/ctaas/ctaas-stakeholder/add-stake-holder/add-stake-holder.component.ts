@@ -66,8 +66,8 @@ export class AddStakeHolderComponent implements OnInit {
    */
   getReports(): any[] {
     return [
-      { label: "Daily reports", value: Report.DAILY_REPORTS },
-      { label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { label: "Daily Reports", value: Report.DAILY_REPORTS },
+      { label: "Weekly Reports", value: Report.WEEKLY_REPORTS },
       { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
   }
