@@ -8,10 +8,9 @@ const STAKE_HOLDERS_LIST = {
             companyName: 'tert',
             subaccountAdminEmail: 'tert@gmail.com',
             phoneNumber: '1111111111',
-            notifications: 'TYPE: weekly, daily',
+            notifications: 'TYPE:LOW TIER,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'LOW TIER',
-            label: ''
+            type:'LOW TIER'
         },
         {
             name:'vbvb', 
@@ -19,20 +18,36 @@ const STAKE_HOLDERS_LIST = {
             companyName:'bvbvb', 
             subaccountAdminEmail:'vbvbvb@gmail.com', 
             phoneNumber:'2222222222', 
+            notifications:'TYPE:HIGH TIER,DAILY_REPORTS,WEEKLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'HIGH TIER', 
-            notifications:'TYPE: daily, weekly',
-            label: ''
+            type:'HIGH TIER'
         }
     ]
 };
 
 export const StakeHolderServiceMock = {
     stakeHolderValue: STAKE_HOLDERS_LIST,
-    getStakeholderList: (id?:string) => {
+    getStakeholderList: () => {
         return new Observable((observer) => {
             observer.next(
-                STAKE_HOLDERS_LIST
+                JSON.parse(JSON.stringify(STAKE_HOLDERS_LIST))
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    deleteStakeholder: () => {
+        return new Observable((observer) => {
+            observer.next(
+                { 
+                    body:[
+                        {
+                            email:'tert@gmail.com',
+                        }
+                    ]
+                }
             );
             observer.complete();
             return {

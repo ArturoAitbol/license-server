@@ -9,6 +9,7 @@ import { Sort } from "@angular/material/sort";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MsalService } from "@azure/msal-angular";
+import { throwError } from "rxjs";
 import { DialogService } from "src/app/services/dialog.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
 import { StakeHolderService } from "src/app/services/stake-holder.service";
@@ -18,7 +19,9 @@ import { DialogServiceMock } from "src/test/mock/services/dialog.service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SharedModule } from "../../shared/shared.module";
+import { AddStakeHolderComponent } from "./add-stake-holder/add-stake-holder.component";
 import { CtaasStakeholderComponent } from "./ctaas-stakeholder.component";
+import { UpdateStakeHolderComponent } from "./update-stake-holder/update-stake-holder.component";
 
 let ctaasStakeholderComponentTestInstance: CtaasStakeholderComponent;
 let fixture: ComponentFixture<CtaasStakeholderComponent>;
@@ -31,7 +34,7 @@ const RouterMock = {
 
 const beforeEachFunction = () => {
     TestBed.configureTestingModule({
-        declarations: [CtaasStakeholderComponent],
+        declarations: [CtaasStakeholderComponent,AddStakeHolderComponent,UpdateStakeHolderComponent],
         imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
         providers: [
             {
@@ -73,7 +76,6 @@ const beforeEachFunction = () => {
     });
     fixture = TestBed.createComponent(CtaasStakeholderComponent);
     ctaasStakeholderComponentTestInstance = fixture.componentInstance;
-    ctaasStakeholderComponentTestInstance.ngOnInit();
     loader = TestbedHarnessEnvironment.loader(fixture);
     spyOn(console, 'log').and.callThrough();
 };
@@ -99,7 +101,6 @@ fdescribe('UI verification test', () => {
         expect(headers[3].innerText).toBe('Email');
         expect(headers[4].innerText).toBe('Phone Number');
         expect(headers[5].innerText).toBe('Type');
-        //expect(headers[6].innerText).toBe('Notifications');
     });
 
     it('should execute sortData()', () => {
@@ -124,9 +125,48 @@ fdescribe('Data collection test', () => {
         spyOn(StakeHolderServiceMock, 'getStakeholderList').and.callThrough();
         spyOn(ctaasStakeholderComponentTestInstance, 'initColumns').and.callThrough()
         fixture.detectChanges();
-        ctaasStakeholderComponentTestInstance.ngOnInit();
 
         expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
         expect(ctaasStakeholderComponentTestInstance.initColumns).toHaveBeenCalled();
     });
 });
+
+fdescribe('dialog calls and interactions',() => {
+    beforeEach(beforeEachFunction)
+    it('should execute openDialogs() with expected data', () => {
+        const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '0' }
+        fixture.detectChanges();
+
+        spyOn(ctaasStakeholderComponentTestInstance, 'openDialog').and.callThrough();
+        spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'deleteStakeholder').and.callThrough();
+
+        ctaasStakeholderComponentTestInstance.addStakeholder();
+        expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith('Add Stakeholder');
+       
+
+        selectedTestData.selectedOption = 'Update Stakeholder Details';
+        ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
+        expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedTestData.selectedOption, selectedTestData.selectedRow);
+        
+
+        selectedTestData.selectedOption = 'Delete Stakeholder Account';
+        dialogService.setExpectedConfirmDialogValue(true);
+        ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
+        expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
+        expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
+    });
+
+    it('should show a message if an error ocurred while fetching the data', () => {
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'getStakeholderList').and.returnValue(throwError('some error'))
+
+        fixture.detectChanges();
+        
+        expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error', 'Error while loading stake holders');
+        
+    });
+});
+

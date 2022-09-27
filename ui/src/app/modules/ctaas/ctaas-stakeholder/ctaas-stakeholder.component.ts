@@ -100,12 +100,13 @@ export class CtaasStakeholderComponent implements OnInit {
             });
             return e;
           }
-          catch (e) {
-            console.error('some error |', e)
+          catch (exption) {
+            console.error('some error |', exption);
+            return e;
           }
         })
       )
-      .subscribe((response: any) => {
+      .subscribe((response: any) => { 
         this.isRequestCompleted = true;
         this.isLoadingResults = false;
         const { stakeHolders } = response;
@@ -114,6 +115,8 @@ export class CtaasStakeholderComponent implements OnInit {
         } else {
           this.snackBarService.openSnackBar(response.error, 'Error while loading stake holders');
         }
+      }, (error) => {
+        this.snackBarService.openSnackBar(error, 'Error while loading stake holders');
       });
   }
 
