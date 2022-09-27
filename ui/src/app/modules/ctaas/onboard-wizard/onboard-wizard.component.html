@@ -78,8 +78,6 @@
         <br>
         <div class="row ">
             <div class="col-6">
-                <!-- <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
-                    class="form-control" maxlength="10"/> -->
                 <input matInput type="text" ng2TelInput [ng2TelInputOptions]="{initialCountry: 'in'}"
                     formControlName="phoneNumber" id="phoneNumber" (intlTelInputObject)="telInputObject($event)"
                     (countryChange)="onCountryChange($event)" />

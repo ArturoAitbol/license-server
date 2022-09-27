@@ -21,7 +21,6 @@ export class AddStakeHolderComponent implements OnInit {
   userprofileDetails: IUserProfile;
   countryCode:any;
 
-  indObj: any;
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
