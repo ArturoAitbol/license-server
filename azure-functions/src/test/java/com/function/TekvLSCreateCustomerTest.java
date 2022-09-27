@@ -67,7 +67,7 @@ class TekvLSCreateCustomerTest extends TekvLSTest {
     }
 
     @Test
-    public void createCustomerWhitOptionalParamsTest() {
+    public void createCustomerWithOptionalParamsTest() {
         String name = "customerTest" + LocalDateTime.now();
         String subAccountname = "customerSubAccountTest" + LocalDateTime.now();
         String bodyRequest = "{'distributorId':'f5ac1f7b-d93e-4872-bd5e-133c00d9e2bd','customerId':'6d9a055e-0435-4348-84b7-db8db243ac4c','customerName':'" + name + "','customerType':'MSP','customerAdminEmail':'" + name + "@hotmail.com','subaccountAdminEmail':'" + subAccountname + "@hotmail.com','test':'true'}";

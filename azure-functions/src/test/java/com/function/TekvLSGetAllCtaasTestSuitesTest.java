@@ -26,9 +26,9 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
     @BeforeEach
     public void setup() {
         this.initTestParameters();
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
     }
-    /*
+
     @Tag("acceptance")
     @Test
     public void getAllCtaasTestSuitesTest() {
@@ -42,8 +42,7 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
         // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expectedStatus = HttpStatus.OK;
-        assertEquals(expectedStatus, actualStatus,
-                "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+        assertEquals(expectedStatus, actualStatus, "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
@@ -60,23 +59,66 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
         assertTrue(ctaasTestSuite.has("frequency"));
         assertTrue(ctaasTestSuite.has("deviceType"));
         assertTrue(ctaasTestSuite.has("name"));
-    } */
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getAllTestSuitesBySubaccountId() {
+        String id = "EMPTY";
+        String expectedSubaccountId = "0e2038ec-2b9b-493b-b3f2-6702e60b5b90";
+        this.queryParams.put("subaccountId", expectedSubaccountId);
+
+        HttpResponseMessage response = tekvLSGetAllCtaasTestSuites.run(this.request, id, context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("ctaasTestSuites"));
+
+        JSONArray ctaasTestSuites = jsonBody.getJSONArray("ctaasTestSuites");
+        assertTrue(ctaasTestSuites.length() == 3);
+    }
+    
+    @Tag("acceptance")
+    @Test
+    public void getAllTestSuitesByInvalidSubaccountId() {
+        String id = "EMPTY";
+        String expectedSubaccountId = "00000000-0000-0000-0000-000000000000";
+        this.queryParams.put("subaccountId", expectedSubaccountId);
+
+        HttpResponseMessage response = tekvLSGetAllCtaasTestSuites.run(this.request, id, context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("ctaasTestSuites"));
+
+        JSONArray ctaasTestSuites = jsonBody.getJSONArray("ctaasTestSuites");
+        assertTrue(ctaasTestSuites.length() == 0);
+    }
 
     @Tag("Security")
     @Test
-    public void noTokenTest(){
-        //Given
+    public void noTokenTest() {
+        // Given
         String id = "EMPTY";
         this.headers.remove("authorization");
-
-        //When
+        // When
         HttpResponseMessage response = tekvLSGetAllCtaasTestSuites.run(this.request, id, this.context);
         this.context.getLogger().info(response.getBody().toString());
-
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expectedStatus = HttpStatus.UNAUTHORIZED;
-        assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+        assertEquals(expectedStatus, actualStatus,
+                "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
@@ -89,19 +131,18 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void invalidRoleTest(){
-        //Given
-        String id="EMPTY";
+    public void invalidRoleTest() {
+        // Given
+        String id = "EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
-
-        //When
+        // When
         HttpResponseMessage response = tekvLSGetAllCtaasTestSuites.run(this.request, id, this.context);
         this.context.getLogger().info(response.getBody().toString());
-
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expectedStatus = HttpStatus.FORBIDDEN;
-        assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+        assertEquals(expectedStatus, actualStatus,
+                "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
@@ -112,22 +153,18 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
-    
-
     @Test
-    public void genericExceptionTest(){
-        //Given
+    public void genericExceptionTest() {
+        // Given
         String id = "EMPTY";
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
-
-        //When
+        // When
         HttpResponseMessage response = tekvLSGetAllCtaasTestSuites.run(this.request, id, this.context);
         this.context.getLogger().info(response.getBody().toString());
-
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
