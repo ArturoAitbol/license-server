@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -26,15 +26,15 @@ export interface IPowerBiReponse {
   templateUrl: './ctaas-dashboard.component.html',
   styleUrls: ['./ctaas-dashboard.component.css']
 })
-export class CtaasDashboardComponent implements OnInit, OnDestroy {
+export class CtaasDashboardComponent implements OnInit {
 
-  onboardSetupStatus: string = '';
+  onboardSetupStatus = '';
   isOnboardingComplete: boolean;
   loggedInUserRoles: string[] = [];
   ctaasSetupDetails: any = {};
-  subaccountId: string = '';
-  hasDashboardDetails: boolean = false;
-  isLoadingResults: boolean = false;
+  subaccountId = '';
+  hasDashboardDetails = false;
+  isLoadingResults = false;
   // CSS Class to be passed to the wrapper
   // Hide the report container initially
   reportClass = 'report-container-hidden';
@@ -167,6 +167,5 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
       this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
     });
   }
-  ngOnDestroy(): void {
-  }
+
 }

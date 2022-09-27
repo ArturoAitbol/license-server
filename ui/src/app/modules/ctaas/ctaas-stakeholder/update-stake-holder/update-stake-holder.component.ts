@@ -41,7 +41,7 @@ export class UpdateStakeHolderComponent implements OnInit {
     try {
       const { mobilePhone, email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
-      let { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
+      const { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
       if (notifications) {
         const mappedNotifications = notifications.split(',').map(e => {
           const obj = this.reports.find(x => x.label === e);
