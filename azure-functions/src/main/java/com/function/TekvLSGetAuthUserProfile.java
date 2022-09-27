@@ -149,6 +149,10 @@ public class TekvLSGetAuthUserProfile {
 				item.put("companyName",userProfile.get("companyName"));
 				item.put("phoneNumber",userProfile.get("mobilePhone"));
 			} catch (Exception e) {
+				item.put("name","");
+				item.put("jobTitle","");
+				item.put("companyName","");
+				item.put("phoneNumber","");
 				context.getLogger().info("Caught exception: " + e.getMessage());
 			}
 		return item;
