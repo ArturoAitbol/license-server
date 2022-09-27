@@ -14,7 +14,7 @@ export class AddTestSuiteComponent implements OnInit {
   isDataLoading = false;
   addTestSuiteForm = this.formBuilder.group({
     name: ['', Validators.required],
-    deviceType: ['Webex', Validators.required],
+    deviceType: ['MS Teams', Validators.required],
     totalExecutions: ['', Validators.required],
     nextExecution: ['', Validators.required],
     frequency: ['', Validators.required]
