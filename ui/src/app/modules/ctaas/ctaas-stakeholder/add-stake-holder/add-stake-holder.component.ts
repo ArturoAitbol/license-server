@@ -89,15 +89,12 @@ export class AddStakeHolderComponent implements OnInit {
     stakeholderDetails.phoneNumber = this.countryCode + stakeholderDetails.phoneNumber
     const { type, notifications } = stakeholderDetails;
     stakeholderDetails.subaccountId = subaccountId;
-    // stakeholderDetails.notifications = type;
     if (notifications.length > 0) {
       stakeholderDetails.notifications = type + ',' + notifications.join(',');
     }
     else {
       stakeholderDetails.notifications = type;
     }
-    console.log('details', this.addStakeholderForm.value)
-
     this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => {
       const { error } = response;
       if (error) {

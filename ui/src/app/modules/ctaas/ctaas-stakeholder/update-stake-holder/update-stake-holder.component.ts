@@ -43,10 +43,14 @@ export class UpdateStakeHolderComponent implements OnInit {
     try {
       const { mobilePhone, email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
-      let splitPhone = this.data.phoneNumber.split('-');
-      this.data.phoneNumber = splitPhone[1];
-      this.countryCode = splitPhone[0].slice(1);
-      console.log('country', this.countryCode)
+
+      if (this.data.phoneNumber) {
+        let splitPhone = this.data.phoneNumber.split('-');
+        if (splitPhone.length === 2) {
+          this.data.phoneNumber = splitPhone[1];
+          this.countryCode = splitPhone[0].slice(1);
+        }
+      }
       let { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
       if (notifications) {
         const mappedNotifications = notifications.split(',').map(e => {
@@ -59,9 +63,6 @@ export class UpdateStakeHolderComponent implements OnInit {
       }
       const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type };
       this.updateStakeholderForm.patchValue(payload);
-
-      // this.updateStakeholderForm.get('phoneNumber').setValue(number)
-      // console.log('values', this.updateStakeholderForm.value)
       this.previousFormValue = { ...this.updateStakeholderForm };
     } catch (e) {
       console.error('some error | ', e);
