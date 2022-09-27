@@ -210,10 +210,6 @@ public class TekvLSGetAllStakeholders {
 					stakeHolders.put(json);
 				}
 			} catch (Exception e) {
-				json.put("name","");
-				json.put("jobTitle","");
-				json.put("companyName","");
-				json.put("phoneNumber","");
 				context.getLogger().info("Caught exception: " + e.getMessage());
 			}
 		}
