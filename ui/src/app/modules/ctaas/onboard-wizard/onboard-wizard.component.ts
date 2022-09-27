@@ -45,8 +45,8 @@ export class OnboardWizardComponent implements OnInit {
   }
   ngOnInit(): void {
     this.reportsNotificationsList = [
-      { label: "Daily reports", value: Report.DAILY_REPORTS },
-      { label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { label: "Daily Reports", value: Report.DAILY_REPORTS },
+      { label: "Weekly Reports", value: Report.WEEKLY_REPORTS },
       { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
     this.interaction = '1';

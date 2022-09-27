@@ -67,6 +67,8 @@ ac7a78c2-d0b2-4c81-9538-321562d426c7	Default	0b1ef03f-98d8-4fa3-8f9f-6b0013ce584
 8acb6997-4d6a-4427-ba2c-7bf463fa08ec	Test Subaccount3	b995ecaa-d64e-4067-90e5-cbc80935d1e0	tokenConsumption
 b5b91753-4c2b-43f5-afa0-feb00cefa981	Test SpotLight Setup	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
 b5b91753-4c2b-43f5-afa0-feb22cefa901	Test SpotLight Setup 2	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
+0e2038ec-2b9b-493b-b3f2-6702e60b5b90	Test SpotLight Suites 	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
+2c8e386b-d1bd-48b3-b73a-12bfa5d00805	Test SpotLight Suites 2	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
 \.
 
 
@@ -155,4 +157,13 @@ fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	http://tekvizionTap.com	SETUP_INP
 39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
 78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
 b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
+\.
+
+COPY public.ctaas_test_suite (id, subaccount_id, total_executions, next_execution_ts, frequency, device_type, name) FROM stdin;
+a8654484-1cb2-4fec-adf4-ee7ddc17375d	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	5	2022-10-03 00:00:00	Hourly	MS Teams	Execution A
+6a70a31b-fc5a-443b-82d4-d306961fa533	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	10	2022-10-04 00:00:00	Weekly	MS Teams	Execution B
+5726d813-834e-40c4-a52e-e9ac63459e03	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	15	2022-10-05 00:00:00	Monthly	MS Teams	Execution C
+30ab93f1-3bde-4721-8892-1ba34a005d08	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	5	2022-10-03 00:00:00	Hourly	MS Teams	Execution D
+89eeb522-157f-4125-96e6-b4cc900fa9d1	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	10	2022-10-04 00:00:00	Weekly	MS Teams	Execution E
+5798ecd9-6db9-43a6-a521-b21f065e7879	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	15	2022-10-05 00:00:00	Monthly	MS Teams	Execution F
 \.

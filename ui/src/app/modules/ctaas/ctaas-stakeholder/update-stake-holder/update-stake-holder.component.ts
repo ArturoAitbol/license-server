@@ -79,8 +79,8 @@ export class UpdateStakeHolderComponent implements OnInit {
    */
   getReports(): any[] {
     return [
-      { id: 1, label: "Daily reports", value: Report.DAILY_REPORTS },
-      { id: 2, label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { id: 1, label: "Daily Reports", value: Report.DAILY_REPORTS },
+      { id: 2, label: "Weekly Reports", value: Report.WEEKLY_REPORTS },
       { id: 3, label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
   }
