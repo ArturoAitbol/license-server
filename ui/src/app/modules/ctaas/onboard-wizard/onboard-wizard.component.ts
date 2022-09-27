@@ -26,6 +26,7 @@ export class OnboardWizardComponent implements OnInit {
   userProfileForm: FormGroup;
   stakeholderForm: FormGroup;
   subaccountUserProfileDetails: any = {};
+  countryCode:any;
   constructor(
     private userprofileService: UserProfileService,
     private stakeholderService: StakeHolderService,
@@ -104,6 +105,7 @@ export class OnboardWizardComponent implements OnInit {
     this.configuredReports = true;
     this.interaction = '3';
     const userProfileObj = this.userProfileForm.value;
+    userProfileObj.phoneNumber = this.countryCode + userProfileObj.phoneNumber
     const { type, notifications } = userProfileObj;
     // userProfileObj.notifications = type;
     if (notifications.length > 0) {
@@ -144,6 +146,7 @@ export class OnboardWizardComponent implements OnInit {
     this.configuredReports = true;
     this.isDataLoading = true;
     const requestPayload = this.stakeholderForm.value;
+    requestPayload.phoneNumber = this.countryCode + requestPayload.phoneNumber
     const { type, notifications } = requestPayload;
     const { subaccountId } = this.subaccountUserProfileDetails;
     requestPayload.subaccountId = subaccountId;
@@ -197,6 +200,13 @@ export class OnboardWizardComponent implements OnInit {
    */
   onCancel(type?: string): void {
     this.dialogRef.close(type);
+  }
+
+  telInputObject(event) {
+    this.countryCode = "+" + event.s.dialCode + '-';
+  }
+  onCountryChange(event) {
+    this.countryCode = "+" + event.dialCode + '-';
   }
 
 }

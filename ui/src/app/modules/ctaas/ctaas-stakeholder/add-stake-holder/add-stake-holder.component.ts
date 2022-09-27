@@ -19,13 +19,17 @@ export class AddStakeHolderComponent implements OnInit {
   isDataLoading = false;
   addStakeholderForm: FormGroup;
   userprofileDetails: IUserProfile;
+  countryCode:any;
+
+  indObj: any;
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
     private stakeholderService: StakeHolderService,
     private userprofileService: UserProfileService,
     public dialogRef: MatDialogRef<AddStakeHolderComponent>
-  ) { }
+  ) {
+  }
   /**
    * initialize update stake holder form
    */
@@ -82,6 +86,7 @@ export class AddStakeHolderComponent implements OnInit {
     this.isDataLoading = true;
     const { subaccountId } = this.userprofileDetails;
     const stakeholderDetails = { ... this.addStakeholderForm.value };
+    stakeholderDetails.phoneNumber = this.countryCode + stakeholderDetails.phoneNumber
     const { type, notifications } = stakeholderDetails;
     stakeholderDetails.subaccountId = subaccountId;
     // stakeholderDetails.notifications = type;
@@ -91,6 +96,7 @@ export class AddStakeHolderComponent implements OnInit {
     else {
       stakeholderDetails.notifications = type;
     }
+    console.log('details', this.addStakeholderForm.value)
 
     this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => {
       const { error } = response;
@@ -134,5 +140,14 @@ export class AddStakeHolderComponent implements OnInit {
       });
     }
   }
+
+  //Phone number validation
+  telInputObject(event) {
+    this.countryCode = "+" + event.s.dialCode + '-';
+  }
+  onCountryChange(event) {
+    this.countryCode = "+" + event.dialCode + '-';
+  }
+
 
 }

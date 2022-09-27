@@ -17,6 +17,8 @@ export class UpdateStakeHolderComponent implements OnInit {
   updateStakeholderForm: FormGroup;
   previousFormValue: any;
   notificationsList: any;
+  countryCode: any;
+  sendCountryCode: any;
   mappedNotificationsList: string[] = [];
   constructor(
     private formBuilder: FormBuilder,
@@ -34,13 +36,17 @@ export class UpdateStakeHolderComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: [{ value: '' }, Validators.required],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/), Validators.maxLength(10)]],
       type: ['', Validators.required],
       notifications: new FormArray([])
     });
     try {
       const { mobilePhone, email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
+      let splitPhone = this.data.phoneNumber.split('-');
+      this.data.phoneNumber = splitPhone[1];
+      this.countryCode = splitPhone[0].slice(1);
+      console.log('country', this.countryCode)
       let { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
       if (notifications) {
         const mappedNotifications = notifications.split(',').map(e => {
@@ -53,6 +59,9 @@ export class UpdateStakeHolderComponent implements OnInit {
       }
       const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type };
       this.updateStakeholderForm.patchValue(payload);
+
+      // this.updateStakeholderForm.get('phoneNumber').setValue(number)
+      // console.log('values', this.updateStakeholderForm.value)
       this.previousFormValue = { ...this.updateStakeholderForm };
     } catch (e) {
       console.error('some error | ', e);
@@ -125,6 +134,7 @@ export class UpdateStakeHolderComponent implements OnInit {
     } else {
       this.updateStakeholderForm.value.notifications = 'TYPE:' + this.updateStakeholderForm.value.type;
     }
+    this.updateStakeholderForm.value.phoneNumber = this.sendCountryCode + this.updateStakeholderForm.get('phoneNumber').value;
     return this.updateStakeholderForm.value;
   }
   /**
@@ -150,6 +160,19 @@ export class UpdateStakeHolderComponent implements OnInit {
         }
       });
     }
+  }
+
+  //Phone number validation
+  telInputObject(event) {
+    event.p.forEach((e) => {
+      if (e.dialCode === this.countryCode) {
+        event.setCountry(e.iso2);
+        this.sendCountryCode = "+" + e.dialCode + "-";
+      }
+    })
+  }
+  onCountryChange(event) {
+    this.sendCountryCode = "+" + event.dialCode + '-';
   }
 
 }
