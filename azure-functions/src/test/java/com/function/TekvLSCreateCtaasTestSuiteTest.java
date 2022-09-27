@@ -25,7 +25,7 @@ public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
     private String testSuiteId = "EMPTY";
     TekvLSCreateCtaasTestSuite createTestSuite = new TekvLSCreateCtaasTestSuite();
 
-    private final TekvLSDeleteCtaasTestSuiteById deleteTestSuiteById = new TekvLSDeleteCtaasTestSuiteById();
+    private final TekVLSDeleteCtaasTestSuiteById deleteTestSuiteById = new TekVLSDeleteCtaasTestSuiteById();
 
     @BeforeEach
     void setUp() {

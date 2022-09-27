@@ -24,7 +24,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import io.jsonwebtoken.Claims;
 
-public class TekvLSDeleteCtaasTestSuiteById {
+public class TekVLSDeleteCtaasTestSuiteById {
     /**
 	 * This function listens at endpoint "/v1.0/ctaasTestSuites". Two ways to invoke it
 	 * using "curl" command in bash:
