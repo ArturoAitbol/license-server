@@ -5,6 +5,7 @@ import { Constants } from 'src/app/helpers/constants';
 import { Report } from 'src/app/helpers/report';
 import { IStakeholder } from 'src/app/model/stakeholder.model';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
 
 @Component({
@@ -21,7 +22,7 @@ export class OnboardWizardComponent implements OnInit {
   reportsNotificationsList: any = [];
   errorCreatingStakeholder = false;
   isDataLoading = false;
-  errorMsg= '';
+  errorMsg = '';
   // form group
   userProfileForm: FormGroup;
   stakeholderForm: FormGroup;
@@ -30,14 +31,14 @@ export class OnboardWizardComponent implements OnInit {
     private userprofileService: UserProfileService,
     private stakeholderService: StakeHolderService,
     private formbuilder: FormBuilder,
-    public dialogRef: MatDialogRef<OnboardWizardComponent>
+    public dialogRef: MatDialogRef<OnboardWizardComponent>,
+    private subaccountService: SubAccountService
   ) { }
   /**
    * fetch user profile details
    */
   fetchUserProfileDetails(): void {
-    const subaccountUserProfileDetails = JSON.parse(localStorage.getItem(Constants.SUBACCOUNT_USER_PROJECT));
-    // const { userProfile } = subaccountUserProfileDetails;
+    const subaccountUserProfileDetails = this.subaccountService.getSelectedSubAccount();
     const { companyName, email, jobTitle, phoneNumber, name, subaccountId } = subaccountUserProfileDetails;
     const parsedObj = { companyName, email, jobTitle, phoneNumber, name, subaccountId };
     this.userProfileForm.patchValue(parsedObj);

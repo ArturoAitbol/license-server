@@ -101,9 +101,9 @@ export class CtaasDashboardComponent implements OnInit {
    */
   fetchCtaasSetupDetails(): void {
     const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-    const { id } = currentSubaccountDetails;
-    this.subaccountId = id;
-    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id)
+    const { id, subaccountId } = currentSubaccountDetails;
+    this.subaccountId = subaccountId ? subaccountId : id;
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountId)
       .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
         // const setupDetails: ICtaasSetup = response['ctaasSetups'][0];
         this.ctaasSetupDetails = response['ctaasSetups'][0];

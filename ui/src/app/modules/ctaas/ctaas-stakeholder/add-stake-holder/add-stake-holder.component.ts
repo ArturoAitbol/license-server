@@ -6,6 +6,7 @@ import { Report } from 'src/app/helpers/report';
 import { IUserProfile } from 'src/app/model/user-profile.model';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-add-stake-holder',
@@ -22,7 +23,8 @@ export class AddStakeHolderComponent implements OnInit {
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
     private stakeholderService: StakeHolderService,
-    public dialogRef: MatDialogRef<AddStakeHolderComponent>
+    public dialogRef: MatDialogRef<AddStakeHolderComponent>,
+    private subaccountService: SubAccountService
   ) { }
   /**
    * initialize update stake holder form
@@ -42,7 +44,7 @@ export class AddStakeHolderComponent implements OnInit {
    * fetch user profile details
    */
   private fetchUserProfileDetails(): void {
-    const subaccountUserProfileDetails = JSON.parse(localStorage.getItem(Constants.SELECTED_SUBACCOUNT));
+    const subaccountUserProfileDetails = this.subaccountService.getSelectedSubAccount();
     if (subaccountUserProfileDetails) {
       const { id, companyName } = subaccountUserProfileDetails;
       if (id) {
