@@ -100,9 +100,8 @@ export class CtaasStakeholderComponent implements OnInit {
             });
             return e;
           }
-          catch (exption) {
-            console.error('some error |', exption);
-            return e;
+          catch (exception) {
+            console.error('some error |', exception);
           }
         })
       )
