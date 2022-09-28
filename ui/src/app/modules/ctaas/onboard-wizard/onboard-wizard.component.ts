@@ -13,15 +13,15 @@ import { UserProfileService } from 'src/app/services/user-profile.service';
   styleUrls: ['./onboard-wizard.component.css']
 })
 export class OnboardWizardComponent implements OnInit {
-  userInteraction: boolean = false;
-  configuredReports: boolean = false;
-  addAnotherStakeHolder: boolean = false;
+  userInteraction = false;
+  configuredReports = false;
+  addAnotherStakeHolder = false;
   interaction: string;
   readonly pattern = "/[0-9]{3}-[0-9]{3}-[0-9]{4}$/";
   reportsNotificationsList: any = [];
-  errorCreatingStakeholder: boolean = false;
-  isDataLoading: boolean = false;
-  errorMsg: string = '';
+  errorCreatingStakeholder = false;
+  isDataLoading = false;
+  errorMsg= '';
   // form group
   userProfileForm: FormGroup;
   stakeholderForm: FormGroup;
