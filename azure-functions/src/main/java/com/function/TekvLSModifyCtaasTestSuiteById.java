@@ -87,8 +87,10 @@ public class TekvLSModifyCtaasTestSuiteById {
         int optionalParamsFound = 0;
         for (OPTIONAL_PARAMS param : OPTIONAL_PARAMS.values()) {
             try {
-                queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib),
-                        param.dataType);
+                if (param.columnName.equals("next_execution_ts") && jobj.getString(param.jsonAttrib).isEmpty())
+                    queryBuilder.appendValueModificationToNull(param.columnName);
+                else
+                    queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
                 optionalParamsFound++;
             } catch (Exception e) {
                 context.getLogger().info("Ignoring exception: " + e);
