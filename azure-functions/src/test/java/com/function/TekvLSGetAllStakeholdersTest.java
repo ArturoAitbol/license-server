@@ -538,5 +538,31 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
         assertEquals(expectedMessage,jsonBody.getString("error"));
     }
+
+    @Tag("acceptance")
+    @Test
+    public void sqlExceptionTest() {
+        //Given
+        String id = "EMPTY";
+        String subaccountId = "INVALID";
+        this.queryParams.put("subaccountId",subaccountId);
+
+        //When
+        HttpResponseMessage response = tekvLSGetAllStakeholders.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expectedStatus, actualStatus, "HTTP Status doesn't match with: ".concat(expectedStatus.toString()));
+
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = "ERROR: invalid input syntax for type uuid: \"INVALID\"";
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
     
 }
