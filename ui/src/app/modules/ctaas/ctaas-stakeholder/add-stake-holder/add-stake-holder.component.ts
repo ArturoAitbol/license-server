@@ -6,7 +6,6 @@ import { Report } from 'src/app/helpers/report';
 import { IUserProfile } from 'src/app/model/user-profile.model';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
-import { UserProfileService } from 'src/app/services/user-profile.service';
 
 @Component({
   selector: 'app-add-stake-holder',
@@ -23,7 +22,6 @@ export class AddStakeHolderComponent implements OnInit {
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
     private stakeholderService: StakeHolderService,
-    private userprofileService: UserProfileService,
     public dialogRef: MatDialogRef<AddStakeHolderComponent>
   ) { }
   /**
@@ -44,11 +42,18 @@ export class AddStakeHolderComponent implements OnInit {
    * fetch user profile details
    */
   private fetchUserProfileDetails(): void {
-    const subaccountUserProfileDetails = JSON.parse(localStorage.getItem(Constants.SUBACCOUNT_USER_PROJECT));
+    const subaccountUserProfileDetails = JSON.parse(localStorage.getItem(Constants.SELECTED_SUBACCOUNT));
     if (subaccountUserProfileDetails) {
-      this.userprofileDetails = subaccountUserProfileDetails;
-      const { companyName } = this.userprofileDetails;
-      this.addStakeholderForm.patchValue({ companyName });
+      const { id, companyName } = subaccountUserProfileDetails;
+      if (id) {
+        this.userprofileDetails = { subaccountId: id };
+      } else {
+        this.userprofileDetails = subaccountUserProfileDetails;
+      }
+      // check for company name and set it to form if company name has value
+      if (companyName) {
+        this.addStakeholderForm.patchValue({ companyName });
+      }
     }
   }
 
@@ -79,35 +84,39 @@ export class AddStakeHolderComponent implements OnInit {
    * on click Submit button
    */
   addStakeholder() {
-    this.isDataLoading = true;
-    const { subaccountId } = this.userprofileDetails;
-    const stakeholderDetails = { ... this.addStakeholderForm.value };
-    const { type, notifications } = stakeholderDetails;
-    stakeholderDetails.subaccountId = subaccountId;
-    // stakeholderDetails.notifications = type;
-    if (notifications.length > 0) {
-      stakeholderDetails.notifications = type + ',' + notifications.join(',');
-    }
-    else {
-      stakeholderDetails.notifications = type;
-    }
-
-    this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => {
-      const { error } = response;
-      if (error) {
-        this.snackBarService.openSnackBar(response.error, 'Error adding stakeholder');
-        this.dialogRef.close(response);
-        this.isDataLoading = false;
-      } else {
-        this.isDataLoading = false;
-        this.snackBarService.openSnackBar('Created Stakeholder successfully', '');
-        this.onCancel('closed');
+    try {
+      this.isDataLoading = true;
+      const { subaccountId } = this.userprofileDetails;
+      const stakeholderDetails = { ... this.addStakeholderForm.value };
+      const { type, notifications } = stakeholderDetails;
+      stakeholderDetails.subaccountId = subaccountId;
+      // stakeholderDetails.notifications = type;
+      if (notifications.length > 0) {
+        stakeholderDetails.notifications = type + ',' + notifications.join(',');
       }
-    }, (err) => {
-      this.isDataLoading = false;
-      this.snackBarService.openSnackBar(err.error, 'Error adding stakeholder');
-      this.onCancel('closed');
-    });
+      else {
+        stakeholderDetails.notifications = type;
+      }
+
+      this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => {
+        const { error } = response;
+        if (error) {
+          this.snackBarService.openSnackBar(response.error, 'Error adding stakeholder');
+          this.dialogRef.close(response);
+          this.isDataLoading = false;
+        } else {
+          this.isDataLoading = false;
+          this.snackBarService.openSnackBar('Created Stakeholder successfully', '');
+          this.onCancel('closed');
+        }
+      }, (err) => {
+        this.isDataLoading = false;
+        this.snackBarService.openSnackBar(err.error, 'Error adding stakeholder');
+        this.onCancel('closed');
+      });
+    } catch (e) {
+      console.error('error while creating stake holder | ', e);
+    }
   }
 
   /**
