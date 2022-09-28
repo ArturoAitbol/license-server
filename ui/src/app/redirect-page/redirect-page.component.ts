@@ -82,7 +82,8 @@ export class RedirectPageComponent implements OnInit {
         if (res) {
           const { subaccounts } = res;
           this.currentSubaccountDetails = subaccounts[0];
-          this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
+          if (this.loggedInUserRoles.includes("customer.SubaccountAdmin"))
+            this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
           // enable/disable the available services
           this.availableServices.forEach((e: { label: string, value: string, access: boolean }) => {
             if (this.currentSubaccountDetails.services.includes(e.value))
@@ -141,7 +142,7 @@ export class RedirectPageComponent implements OnInit {
   fetchUserProfileDetails(): void {
     this.userProfileService.getUserProfileDetails().subscribe((res: any) => {
       const { userProfile } = res;
-      localStorage.setItem(Constants.SUBACCOUNT_USER_PROJECT, JSON.stringify(userProfile));
+      localStorage.setItem(Constants.SELECTED_SUBACCOUNT, JSON.stringify(userProfile));
     });
   }
   /**

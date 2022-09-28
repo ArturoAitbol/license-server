@@ -21,7 +21,7 @@ export class MyAppsComponent implements OnInit {
   isOnboardingComplete: boolean;
   loggedInUserRoles: string[] = [];
   ctaasSetupDetails: any = {};
-  currentSubaccountDetails: any;
+  currentSubaccountDetails: any = {};
   constructor(
     private router: Router,
     private availabeService: AvailableServicesService,
@@ -81,7 +81,9 @@ export class MyAppsComponent implements OnInit {
    * fetch Ctaas Setup details by subaccount id
    */
   fetchCtaasSetupDetails(): void {
-    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.currentSubaccountDetails.id)
+    const { id, subaccountId } = this.currentSubaccountDetails;
+    const SUB_ACCOUNT_ID = (id) ? id : subaccountId;
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(SUB_ACCOUNT_ID)
       .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
         if (response) {
           this.ctaasSetupDetails = response['ctaasSetups'][0];
