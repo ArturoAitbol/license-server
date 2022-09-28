@@ -40,6 +40,14 @@
                         <input matInput type="email" required formControlName="subaccountAdminEmail">
                     </mat-form-field>
                 </div>
+                <div *lcFeatureToggle="'ctaasFeature'">
+                    <h2 id="subaccount-services">Services</h2>
+                    <section>
+                        <mat-checkbox class="checkbox-margin" *ngFor="let service of services; let i = index"
+                            [color]="'primary'" [checked]="service.used" (change)="setChecked($event.checked, i)">
+                            {{service.name}} </mat-checkbox>
+                    </section>
+                </div>
                 <div>
                     <section class="text-left">
                         <mat-checkbox id="test-customer-checkbox" color="primary" formControlName="testCustomer">Test Customer</mat-checkbox>
