@@ -71,6 +71,34 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
         this.ctaasSetupId = jsonBody.getString("id");
         assertNotNull(this.ctaasSetupId);
     }
+
+    @Tag("acceptance")
+    @Test
+    void createCtaasSetupWithOnBoardingParameter() {
+        //Given
+        String bodyRequest = "{" +
+                "'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
+                "'onBoardingComplete': 'true'," +
+                "'status': '" + Constants.CTaaSSetupStatus.INPROGRESS + "'}";
+
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateCtaasSetup.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("id"));
+
+        this.ctaasSetupId = jsonBody.getString("id");
+        assertNotNull(this.ctaasSetupId);
+    }
     
     @Tag("acceptance")
     @Test

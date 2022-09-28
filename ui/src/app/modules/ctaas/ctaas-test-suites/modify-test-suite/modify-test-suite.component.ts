@@ -16,9 +16,9 @@ export class ModifyTestSuiteComponent implements OnInit {
     id: ['', Validators.required],
     subaccountId: ['', Validators.required],
     name: ['', Validators.required],
-    deviceType: ['Webex', Validators.required],
-    totalExecutions: ['', Validators.required],
-    nextExecution: ['', Validators.required],
+    deviceType: ['MS Teams', Validators.required],
+    totalExecutions: ['', [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?$/)]],
+    nextExecution: ['',],
     frequency: ['', Validators.required]
   });
   frequencies: string[] = [
@@ -49,7 +49,11 @@ export class ModifyTestSuiteComponent implements OnInit {
 
   modifyTestSuite(): void {
     this.isDataLoading = true;
-    const execution = typeof (this.updateTestSuiteForm.value.nextExecution) !== 'string' ? this.updateTestSuiteForm.value.nextExecution.format("YYYY-MM-DD") : this.updateTestSuiteForm.value.nextExecution;
+    let execution;
+    if (this.updateTestSuiteForm.value.nextExecution)
+      execution = typeof (this.updateTestSuiteForm.value.nextExecution) !== 'string' ? this.updateTestSuiteForm.value.nextExecution.format("YYYY-MM-DD") : this.updateTestSuiteForm.value.nextExecution;
+    else
+      execution = '';
 
     const suiteObject: any = {
       id: this.updateTestSuiteForm.value.id,

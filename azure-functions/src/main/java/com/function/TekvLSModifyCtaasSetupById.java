@@ -238,12 +238,6 @@ public class TekvLSModifyCtaasSetupById {
 
 		private final String dataType;
 
-		OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
-			this.jsonAttrib = jsonAttrib;
-			this.columnName = columnName;
-			this.dataType = dataType;
-		}
-
 		OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
 			this.jsonAttrib = jsonAttrib;
 			this.columnName = columnName;

@@ -20,21 +20,6 @@
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label id="executions-label">Total Executions</mat-label>
-                        <input matInput required formControlName="totalExecutions" id="totalExecutions">
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Next Execution</mat-label>
-                        <input required matInput [matDatepicker]="picker" formControlName="nextExecution">
-                        <mat-datepicker-toggle matSuffix [for]="picker" id="date-calendar">
-                        </mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field appearance="outline">
                         <mat-label id="frequency-label">Frequency</mat-label>
                         <mat-select required formControlName="frequency">
                             <mat-option *ngFor="let item of frequencies" [value]="item" title="{{item}}">

@@ -21,13 +21,13 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label id="executions-label">Total Executions</mat-label>
-                        <input matInput required formControlName="totalExecutions" id="totalExecutions">
+                        <input matInput formControlName="totalExecutions" id="totalExecutions">
                     </mat-form-field>
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label>Next Execution</mat-label>
-                        <input required matInput [matDatepicker]="picker" formControlName="nextExecution">
+                        <input matInput [matDatepicker]="picker" formControlName="nextExecution">
                         <mat-datepicker-toggle matSuffix [for]="picker" id="date-calendar">
                         </mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>

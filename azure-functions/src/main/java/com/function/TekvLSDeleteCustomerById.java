@@ -80,39 +80,42 @@ public class TekvLSDeleteCustomerById
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
-				String getAdminEmailSql = "SELECT admin_email FROM customer_admin WHERE customer_id = ?::uuid;";
-				try(PreparedStatement getAdminEmailStmt = connection.prepareStatement(getAdminEmailSql)){
-					getAdminEmailStmt.setString(1, id);
-					ResultSet result = getAdminEmailStmt.executeQuery();
-					String adminEmail = result.next() ? result.getString("admin_email") : "";
+				String getAllEmailsSql = "SELECT sa.subaccount_admin_email,sa.subaccount_id,s.customer_id as subaccount_customer_id,ca.admin_email,ca.customer_id " +
+						"FROM subaccount_admin sa " +
+						"JOIN subaccount s ON sa.subaccount_id = s.id " +
+						"FULL JOIN customer_admin ca ON sa.subaccount_admin_email = ca.admin_email " +
+						"WHERE s.customer_id = ?::uuid OR ca.customer_id = ?::uuid;";
+				try(PreparedStatement getAllEmailsStmt = connection.prepareStatement(getAllEmailsSql)){
+					getAllEmailsStmt.setString(1,id);
+					getAllEmailsStmt.setString(2,id);
+					ResultSet resultSet = getAllEmailsStmt.executeQuery();
+					while (resultSet.next()){
+						String customerId =  resultSet.getString("customer_id");
+						String adminEmail = resultSet.getString("admin_email");
+						String subaccountCustomerId =  resultSet.getString("subaccount_customer_id");
+						String subaccountAdminEmail = resultSet.getString("subaccount_admin_email");
 
-					//Get all subaccounts emails related to the given customer except for those being used by another customer
-					String getSubaccountEmailsSql = "SELECT subaccount_admin_email " +
-							"FROM subaccount s,subaccount_admin sa " +
-							"WHERE s.id = sa.subaccount_id " +
-							"AND s.customer_id = ?::uuid " +
-							"AND sa.subaccount_admin_email NOT IN (SELECT ca.admin_email " +
-																"FROM subaccount s,customer_admin ca " +
-																"WHERE s.customer_id = ca.customer_id " +
-																"AND s.customer_id <> ?::uuid);";
-					try(PreparedStatement getSubaccountEmailsStmt = connection.prepareStatement(getSubaccountEmailsSql)){
-						getSubaccountEmailsStmt.setString(1, id);
-						getSubaccountEmailsStmt.setString(2, id);
-						ResultSet rs = getSubaccountEmailsStmt.executeQuery();
-						while(rs.next()){
-							String subaccountAdminEmail = rs.getString("subaccount_admin_email");
-							//If ad-customer-user-creation is enabled verify that a subaccount email is not equal to the given customer email.
-							if(!FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation") || !subaccountAdminEmail.equals(adminEmail)){
-								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, context);
-								context.getLogger().info("Guest User of subaccount admin email "+ subaccountAdminEmail +" deleted successfully from Active Directory.");
-							}
+						if(subaccountCustomerId == null){
+							if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation"))
+								GraphAPIClient.deleteGuestUser(adminEmail, context);
+								context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+adminEmail+").");
+							continue;
 						}
-					}
 
-					if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
-						if(!adminEmail.isEmpty()){
-							GraphAPIClient.deleteGuestUser(result.getString("admin_email"), context);
-							context.getLogger().info("Guest User deleted successfully from Active Directory.");
+						if(subaccountCustomerId.equals(id)){
+							if(adminEmail==null || subaccountCustomerId.equals(customerId)){
+								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, context);
+								context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+subaccountAdminEmail+").");
+								continue;
+							}
+							GraphAPIClient.removeRole(subaccountAdminEmail,SUBACCOUNT_ADMIN,context);
+							context.getLogger().info("Guest User Role (Subaccount Admin) removed successfully from Active Directory (email: "+subaccountAdminEmail+").");
+							continue;
+						}
+
+						if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")) {
+							GraphAPIClient.removeRole(adminEmail,CUSTOMER_FULL_ADMIN,context);
+							context.getLogger().info("Guest User Role (Customer Admin) removed successfully from Active Directory (email: " + adminEmail + ").");
 						}
 					}
 				}
