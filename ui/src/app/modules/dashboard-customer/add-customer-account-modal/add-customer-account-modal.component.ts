@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MsalService } from '@azure/msal-angular';
+import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
+import { Features } from 'src/app/helpers/features';
+import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
@@ -23,13 +27,18 @@ export class AddCustomerAccountModalComponent {
     'MSP',
     'Reseller',
   ];
+  services: any = [
+    {name: tekVizionServices.SpotLight, value: "SpotLight", used: false},
+    {name: tekVizionServices.tekTokenConstumption, value: "tekToken Consumption", used: true}
+  ];
   isDataLoading = false;
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddCustomerAccountModalComponent>,
     private snackBarService: SnackBarService,
     private customerService: CustomerService,
-    private subaccountService: SubAccountService
+    private subaccountService: SubAccountService,
+    private msalService: MsalService
   ) { }
 
   /**
@@ -38,6 +47,22 @@ export class AddCustomerAccountModalComponent {
   onCancel(): void {
     this.dialogRef.close();
   }
+  
+  setChecked(value: boolean, index: number){
+    this.services[index].used = value
+  }
+
+  getServices(): any{
+    let actualServices = ""
+    for(let i = 0 ; i < this.services.length; i++){
+      if(this.services[i].used){
+        actualServices = actualServices + this.services[i].name + ',';
+      }
+    }
+    actualServices = actualServices.slice(0, -1);
+    return actualServices;
+  }
+
   /**
    * on add customer account
    */
@@ -56,6 +81,11 @@ export class AddCustomerAccountModalComponent {
           customerId: resp.id,
           subaccountName: this.addCustomerForm.value.subaccountName,
           subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
+        }
+        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
+          let services;
+          services = this.getServices();
+          subaccountDetails.services = services
         }
         this.snackBarService.openSnackBar('Customer added successfully!', '');
         this.createSubAccount(subaccountDetails);
