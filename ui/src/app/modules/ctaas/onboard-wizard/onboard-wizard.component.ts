@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MsalService } from '@azure/msal-angular';
 import { Constants } from 'src/app/helpers/constants';
 import { Report } from 'src/app/helpers/report';
+import { AutoLogoutService } from 'src/app/services/auto-logout.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
 
@@ -31,7 +31,7 @@ export class OnboardWizardComponent implements OnInit {
     private stakeholderService: StakeHolderService,
     private formbuilder: FormBuilder,
     public dialogRef: MatDialogRef<OnboardWizardComponent>,
-    private msalService: MsalService
+    private autoLogoutService: AutoLogoutService
   ) { }
   /**
    * fetch user profile details
@@ -94,7 +94,7 @@ export class OnboardWizardComponent implements OnInit {
       default:
         this.userInteraction = false;
         this.interaction = '-1';
-        this.logout();
+        this.autoLogoutService.logout();
         break;
     }
   }
@@ -199,16 +199,6 @@ export class OnboardWizardComponent implements OnInit {
    */
   onCancel(type?: string): void {
     this.dialogRef.close(type);
-  }
-  /**
-   * logout 
-   */
-  logout() {
-    try {
-      this.msalService.logout();
-    } catch (error) {
-      console.error('error while logout: ', error);
-    }
   }
 
 }
