@@ -382,5 +382,29 @@ export const SubaccountServiceMock = {
         return throwError({
             error: 'Expected subaccount response error'
         });
+    },
+    updateSubAccount: (project: any) => {
+        return new Observable((observer) => {
+            observer.next(
+                {
+                  
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
+    },
+    getSubAccountDetails: (subaccountId?: string) => {
+        return new Observable((observer) => {
+            observer.next(
+                
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
     }
 };

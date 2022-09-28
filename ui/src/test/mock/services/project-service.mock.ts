@@ -157,5 +157,16 @@ export const ProjectServiceMock = {
                 unsubscribe() { }
             };
         });
+    },
+    getProjectList: () => {
+        return new Observable((observer) => {
+            observer.next(
+                PROJECT_LIST
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
     }
 };

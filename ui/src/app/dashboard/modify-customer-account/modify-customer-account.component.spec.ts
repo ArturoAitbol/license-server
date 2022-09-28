@@ -1,5 +1,6 @@
 // import { instance, mock, verify, when } from "ts-mockito";
 import { HttpClient } from '@angular/common/http';
+import { throwError } from 'rxjs';
 import { ComponentFixture, TestBed} from '@angular/core/testing';
 import { MatDialog} from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
@@ -12,6 +13,8 @@ import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { CustomerServiceMock } from 'src/test/mock/services/customer-service.mock';
 import { SharedModule } from '../../modules/shared/shared.module';
+import { SnackBarService } from "src/app/services/snack-bar.service";
+import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { ModifyCustomerAccountComponent } from './modify-customer-account.component';
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { ReactiveFormsModule } from '@angular/forms';
@@ -59,6 +62,10 @@ const beforeEachFunction = () => {
       {
           provide: MAT_DIALOG_DATA,
           useValue: CurrentCustomerServiceMock
+      },
+      {
+        provide: SnackBarService,
+        useValue: SnackBarServiceMock
       }
       ]
   });
@@ -131,6 +138,17 @@ describe('modify customers flow', () => {
     CustomerComponentTestInstance.submit();
     expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
     expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
+  });
+
+  it('should show an error when calling submit fails', () => {
+    
+    spyOn(CustomerComponentTestInstance, 'submit').and.callThrough();
+    spyOn(CustomerServiceMock, 'updateCustomer').and.returnValue(throwError({message: 'error message'}));
+    spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+    CustomerComponentTestInstance.submit();
+
+    expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
   });
 });
 
