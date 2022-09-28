@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { ComponentFixture, TestBed} from '@angular/core/testing';
-import { MatDialog} from '@angular/material/dialog';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
@@ -22,19 +22,26 @@ import { ProjectsComponent } from './projects.component';
 import { Sort } from '@angular/material/sort';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { SnackBarService } from "../../../services/snack-bar.service";
+import { LicenseService } from 'src/app/services/license.service';
+import { LicenseServiceMock } from 'src/test/mock/services/license-service.mock';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldHarness } from '@angular/material/form-field/testing';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 
 let projectsComponentTestInstance: ProjectsComponent;
 let fixture: ComponentFixture<ProjectsComponent>;
 const dialogService = new DialogServiceMock();
+let loader: HarnessLoader;
 
 const RouterMock = {
-    navigate: (commands: string[]) => {}
+    navigate: (commands: string[]) => { }
 };
 
 const beforeEachFunction = () => {
     TestBed.configureTestingModule({
-        declarations: [ ProjectsComponent, DataTableComponent, ModifyProjectComponent, AddProjectComponent ],
-        imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule ],
+        declarations: [ProjectsComponent, DataTableComponent, ModifyProjectComponent, AddProjectComponent],
+        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
         providers: [
             {
                 provide: Router,
@@ -51,6 +58,10 @@ const beforeEachFunction = () => {
             {
                 provide: ProjectService,
                 useValue: ProjectServiceMock
+            },
+            {
+                provide: LicenseService,
+                useValue: LicenseServiceMock
             },
             {
                 provide: DialogService,
@@ -71,25 +82,29 @@ const beforeEachFunction = () => {
             {
                 provide: SnackBarService,
                 useValue: SnackBarServiceMock
-            }
+            },
+            {
+                provide: FormBuilder
+            },
         ]
     });
     fixture = TestBed.createComponent(ProjectsComponent);
     projectsComponentTestInstance = fixture.componentInstance;
     projectsComponentTestInstance.ngOnInit();
     projectsComponentTestInstance.currentCustomer.testCustomer = false
+    loader = TestbedHarnessEnvironment.loader(fixture);
     spyOn(console, 'log').and.callThrough();
-    spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer' ).and.callThrough();
+    spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
     spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
 };
 
 describe('UI verification test', () => {
     beforeEach(beforeEachFunction);
-    it('should display essential UI and components', () =>{
+    it('should display essential UI and components', async () => {
         fixture.detectChanges();
         spyOn(projectsComponentTestInstance, 'sizeChange').and.callThrough();
 
-        const h2 = fixture.nativeElement.querySelector('#page-title');
+        const h2 = fixture.nativeElement.querySelector('#page-subtitle');
         const addProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
         const goBackButton = fixture.nativeElement.querySelector('#go-back-button');
 
@@ -98,21 +113,27 @@ describe('UI verification test', () => {
         expect(h2.textContent).toBe('Project Summary');
         expect(addProjectButton.textContent).toBe('Add New Project ');
         expect(goBackButton.textContent).toBe('Back');
+
+        // Filters
+        const licenseFilterForm = await loader.getHarness(MatFormFieldHarness.with({ selector: "#license-filter-form" }));
+        expect(await licenseFilterForm.getLabel()).toContain('tekVizion 360 Subscription');
     });
 
     it('should load correct data columns for the table', () => {
         fixture.detectChanges();
-        
+
         const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
-        expect(headers[0].innerText).toBe('Project Code');
-        expect(headers[1].innerText).toBe('Project Name');
+        // this has been temporarily disabled
+        // expect(headers[0].innerText).toBe('Project Code');
+        expect(headers[0].innerText).toBe('Project Name');
+        expect(headers[1].innerText).toBe('License Description');
         expect(headers[2].innerText).toBe('Status');
         expect(headers[3].innerText).toBe('Start Date');
         expect(headers[4].innerText).toBe('Close Date');
     });
 
     it('should execute sortData()', () => {
-        const sort: Sort  = {active:'projectName', direction:'desc'  }
+        const sort: Sort = { active: 'projectName', direction: 'desc' }
 
         spyOn(projectsComponentTestInstance, 'sortData').and.callThrough();
 
@@ -121,7 +142,7 @@ describe('UI verification test', () => {
 
         sort.direction = 'asc';
         projectsComponentTestInstance.sortData(sort);
-        
+
         sort.direction = '';
         projectsComponentTestInstance.sortData(sort);
     });
@@ -129,7 +150,8 @@ describe('UI verification test', () => {
 
 describe('Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
-    it('should make a call to get project list after initializing', () => {
+    it('should make a call to get licenses and projects after initializing', () => {
+        spyOn(LicenseServiceMock, 'getLicenseList').and.callThrough();
         spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
 
         fixture.detectChanges();
@@ -151,21 +173,21 @@ describe('Data collection and parsing tests', () => {
 
 describe('Dialog calls and interactions', () => {
     beforeEach(beforeEachFunction);
-    it('should open new project comp', () =>{
+    it('should open new project comp', () => {
         spyOn(projectsComponentTestInstance, 'openDialog');
         projectsComponentTestInstance.onNewProject();
         expect(projectsComponentTestInstance.openDialog).toHaveBeenCalledWith(AddProjectComponent);
     });
 
     it('should execute rowAction() with expected data given set arguments', () => {
-        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
-       
+        const selectedTestData = { selectedRow: { testProperty: 'testData' }, selectedOption: 'selectedTestOption', selectedIndex: '0' };
+
         spyOn(projectsComponentTestInstance, 'openDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'confirmCloseDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'confirmDeleteDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'openConsumptionView').and.callThrough();
         spyOn(dialogService, 'confirmDialog').and.callThrough();
-        
+
         selectedTestData.selectedOption = projectsComponentTestInstance.MODIFY_PROJECT;
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(projectsComponentTestInstance.openDialog).toHaveBeenCalledWith(ModifyProjectComponent, selectedTestData.selectedRow);
@@ -196,52 +218,52 @@ describe('Dialog calls and interactions', () => {
     });
 
     it('should show a message if an error ocurred while closing a project after calling confirmCloseDialog()', () => {
-        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
-        const response = {body: {error:"some error message"}};
+        const selectedTestData = { selectedRow: { testProperty: 'testData' }, selectedOption: 'selectedTestOption', selectedIndex: '0' };
+        const response = { body: { error: "some error message" } };
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(ProjectServiceMock, 'closeProject').and.returnValue(of(response));
         spyOn(dialogService, 'confirmDialog').and.callThrough();
         fixture.detectChanges();
-        
+
         selectedTestData.selectedOption = projectsComponentTestInstance.CLOSE_PROJECT;
         dialogService.setExpectedValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
 
         expect(ProjectServiceMock.closeProject).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.body.error, 'Error closing project!' );
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.body.error, 'Error closing project!');
     });
 
-    it('should show a message if successfully closed a project after calling confirmCloseDialog()',  () => {
-        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
-        const response = {body: null}
+    it('should show a message if successfully closed a project after calling confirmCloseDialog()', () => {
+        const selectedTestData = { selectedRow: { testProperty: 'testData' }, selectedOption: 'selectedTestOption', selectedIndex: '0' };
+        const response = { body: null }
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(ProjectServiceMock, 'closeProject').and.returnValue(of(response));
         spyOn(dialogService, 'confirmDialog').and.callThrough();
         fixture.detectChanges();
- 
+
         selectedTestData.selectedOption = projectsComponentTestInstance.CLOSE_PROJECT;
         dialogService.setExpectedValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
-    
+
         expect(ProjectServiceMock.closeProject).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project closed successfully!');
     });
 
     it('should show a message if successfully deleted a project after calling confirmDeleteDialog()', () => {
-        const selectedTestData = { selectedRow: { testProperty: 'testData'}, selectedOption: 'selectedTestOption', selectedIndex: '0' };
-        const response = {status: 200};
+        const selectedTestData = { selectedRow: { testProperty: 'testData' }, selectedOption: 'selectedTestOption', selectedIndex: '0' };
+        const response = { status: 200 };
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(ProjectServiceMock, 'deleteProject').and.returnValue(of(response));
         spyOn(dialogService, 'confirmDialog').and.callThrough();
         fixture.detectChanges();
- 
+
         selectedTestData.selectedOption = projectsComponentTestInstance.DELETE_PROJECT;
         dialogService.setExpectedValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
-    
+
         expect(ProjectServiceMock.deleteProject).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project deleted successfully!');
     });

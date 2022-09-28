@@ -1,12 +1,16 @@
 import {Observable, throwError} from 'rxjs';
+import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
+
+const TEST_SUBACCOUNT_1 = {
+    name: 'TEST SUBACCOUNT 1',
+    customerId: '4a095621-5dea-4c68-91dd-705012e92a53',
+    id: '11111111-1111-1111-1111-111111111111',
+    subaccountAdminEmails: ['testSubaccountAdminEmail1@email.one', 'testSubaccountAdminEmail2@email.two']
+};
 
 const SUBACCOUNT_LIST = {
     subaccounts: [
-        {
-            name: 'Logitech - 360 Large',
-            customerId: '4a095621-5dea-4c68-91dd-705012e92a53',
-            id: '31c142a6-b735-4bce-bfb4-9fba6b539116'
-        },
+        TEST_SUBACCOUNT_1,
         {
             name: 'Default',
             customerId: 'b566c90f-3671-47e3-b01e-c44684e28f99',
@@ -20,7 +24,8 @@ const SUBACCOUNT_LIST = {
         {
             name: '360 Custom (No Tokens)',
             customerId: 'aa85399d-1ce9-425d-9df7-d6e8a8baaec2',
-            id: '24372e49-5f31-4b38-bc3e-fb6a5c371623'
+            id: '24372e49-5f31-4b38-bc3e-fb6a5c371623',
+            services: tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight
         },
         {
             name: 'Default',
@@ -270,7 +275,8 @@ const SUBACCOUNT_LIST = {
         {
             name: 'Default',
             customerId: '0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848',
-            id: 'ac7a78c2-d0b2-4c81-9538-321562d426c7'
+            id: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
+            services: tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight
         },
         {
             name: 'Bigger Better 360 Small',
@@ -338,10 +344,24 @@ const ERROR_MSG = 'Expected subaccount response error';
 
 export const SubaccountServiceMock = {
     subAccountListValue: SUBACCOUNT_LIST,
+    testSubaccount1: TEST_SUBACCOUNT_1,
     getSubAccountList: () => {
         return new Observable( (observer) => {
             observer.next(
                 SUBACCOUNT_LIST
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    getSubAccountDetails: (subAccountId?: string) => {
+        return new Observable( (observer) => {
+            observer.next(
+                {
+                    subaccounts: [ SUBACCOUNT_LIST.subaccounts.find( (subAccount) => subAccount.id === subAccountId ) ]
+                }
             );
             observer.complete();
             return {
@@ -383,27 +403,12 @@ export const SubaccountServiceMock = {
             error: 'Expected subaccount response error'
         });
     },
-    updateSubAccount: (project: any) => {
+    updateSubAccount: (subaccount: any) => {
         return new Observable((observer) => {
-            observer.next(
-                {
-                  
-                }
-            );
+            observer.next();
             observer.complete();
             return {
                 unsubscribe() {}
-            };
-        });
-    },
-    getSubAccountDetails: (subaccountId?: string) => {
-        return new Observable((observer) => {
-            observer.next(
-                
-            );
-            observer.complete();
-            return {
-                unsubscribe() { }
             };
         });
     }

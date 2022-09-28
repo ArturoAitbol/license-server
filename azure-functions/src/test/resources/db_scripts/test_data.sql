@@ -1,5 +1,5 @@
 --
--- PostgreSQL database data dump
+-- PostgreSQL database data dump 
 --
 
 SET statement_timeout = 0;
@@ -34,6 +34,8 @@ COPY public.customer (id, name, type, tombstone, distributor_id, test_customer) 
 cb1b268a-850a-4459-8033-09854d9ac015	Test NoDistributor	MSP	f	\N	t
 9f6ff46a-5f19-4bcf-9f66-c5f29b800205	Test Distributor	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
 f1b695b5-b7d9-4245-86ca-9a2a9ccbe460	Test Subaccount	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
+b995ecaa-d64e-4067-90e5-cbc80935d1e0	Test Subaccount2	MSP	f	6826a94e-c4da-46e9-8001-668df24877ec	t
+950f47c7-a477-455b-b65b-331ecacc88dd	Test SpotLightCustomer	MSP	f	\N	f
 \.
 
 
@@ -47,6 +49,8 @@ test-distributor-full-admin@tekvizionlabs.com	9f6ff46a-5f19-4bcf-9f66-c5f29b8002
 test-subaccount@hotmail.com	f1b695b5-b7d9-4245-86ca-9a2a9ccbe460
 test1@tekvizion.com	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848
 test2@tekvizion.com	0856df81-8d32-4adb-941a-c0d9187f36a7
+test-customer-subaccount-stakeholder@tekvizionlabs.com	b995ecaa-d64e-4067-90e5-cbc80935d1e0
+test-customer-full-admin2@tekvizionlabs.com	950f47c7-a477-455b-b65b-331ecacc88dd
 \.
 
 
@@ -54,12 +58,17 @@ test2@tekvizion.com	0856df81-8d32-4adb-941a-c0d9187f36a7
 -- Data for Name: subaccount; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.subaccount (id, name, customer_id) FROM stdin;
-f5a609c0-8b70-4a10-9dc8-9536bdb5652c	Test RealCustomer - 360 Small	7d133fd2-8228-44ff-9636-1881f58f2dbb
-cebe6542-2032-4398-882e-ffb44ade169d	Test Subaccount2	9f6ff46a-5f19-4bcf-9f66-c5f29b800205
-96234b32-32d3-45a4-af26-4c912c0d6a06	Test Subaccount	f1b695b5-b7d9-4245-86ca-9a2a9ccbe460
-ac7a78c2-d0b2-4c81-9538-321562d426c7	Default	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848
-069dc3aa-dcb1-45e6-886f-be8f2345080f	Default	0856df81-8d32-4adb-941a-c0d9187f36a7
+COPY public.subaccount (id, name, customer_id, services) FROM stdin;
+f5a609c0-8b70-4a10-9dc8-9536bdb5652c	Test RealCustomer - 360 Small	7d133fd2-8228-44ff-9636-1881f58f2dbb	tokenConsumption
+cebe6542-2032-4398-882e-ffb44ade169d	Test Subaccount2	9f6ff46a-5f19-4bcf-9f66-c5f29b800205	tokenConsumption
+96234b32-32d3-45a4-af26-4c912c0d6a06	Test Subaccount	f1b695b5-b7d9-4245-86ca-9a2a9ccbe460	tokenConsumption
+ac7a78c2-d0b2-4c81-9538-321562d426c7	Default	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848	tokenConsumption
+069dc3aa-dcb1-45e6-886f-be8f2345080f	Default	0856df81-8d32-4adb-941a-c0d9187f36a7	tokenConsumption
+8acb6997-4d6a-4427-ba2c-7bf463fa08ec	Test Subaccount3	b995ecaa-d64e-4067-90e5-cbc80935d1e0	tokenConsumption
+b5b91753-4c2b-43f5-afa0-feb00cefa981	Test SpotLight Setup	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
+b5b91753-4c2b-43f5-afa0-feb22cefa901	Test SpotLight Setup 2	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
+0e2038ec-2b9b-493b-b3f2-6702e60b5b90	Test SpotLight Suites 	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
+2c8e386b-d1bd-48b3-b73a-12bfa5d00805	Test SpotLight Suites 2	950f47c7-a477-455b-b65b-331ecacc88dd	tokenConsumption,spotlight
 \.
 
 
@@ -81,6 +90,7 @@ test-customer-full-admin@tekvizionlabs.com	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
 test-customer-subaccount-admin@tekvizionlabs.com	96234b32-32d3-45a4-af26-4c912c0d6a06
 test1@tekvizion.com	ac7a78c2-d0b2-4c81-9538-321562d426c7
 test2@tekvizion.com	069dc3aa-dcb1-45e6-886f-be8f2345080f
+test-customer-subaccount-stakeholder@tekvizionlabs.com	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
 \.
 
 
@@ -96,6 +106,7 @@ b84852d7-0f04-4e9a-855c-7b2f01f61591	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2022-0
 986137d3-063d-4c0e-9b27-85fcf3b3272e	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-07 04:00:00	Small	2022-07-12 04:00:00	150	5000	Expired	Expired1
 ebc71e49-4f63-44b2-9c90-7750d3ccca05	cebe6542-2032-4398-882e-ffb44ade169d	2022-07-01 04:00:00	Basic	2022-07-31 04:00:00	55	5000	Expired	Expired2
 d9cb5f93-c4d0-427e-8133-77905abd8487	96234b32-32d3-45a4-af26-4c912c0d6a06	2021-12-26 04:00:00	Small	2022-01-22 04:00:00	150	5000	Expired	Expired3
+16f4f014-5bed-4166-b10a-574b2e6655e3	b5b91753-4c2b-43f5-afa0-feb22cefa901	2022-08-01 04:00:00	Small	2023-09-30 04:00:00	150	5000	Active	License5
 \.
 
 
@@ -137,4 +148,22 @@ b66edd36-ee7f-42e7-bfb4-41810ea69fe6	c323f5f8-cd49-4b0b-ac74-fe2113b658b8	2022-0
 ea00b987-0f14-4888-a0ce-f963d1eb7592	9285ca9e-04c3-49df-9d59-085322a13319	2022-07-09	6			\N	\N
 7ab51789-e767-42cc-a9ba-4ab4aef81d1f	9c0cc4a5-a773-46f3-b73e-a09c55080b1f	2021-12-27	1			\N	\N
 9f53d1ae-e22d-4c3b-b05d-6bf6b13c0658	9c0cc4a5-a773-46f3-b73e-a09c55080b1f	2021-12-28	2			\N	\N
+\.
+
+COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_complete, subaccount_id, powerbi_workspace_id, powerbi_report_id) FROM stdin;
+836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
+fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	96234b32-32d3-45a4-af26-4c912c0d6a06	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
+2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
+39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
+78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
+b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
+\.
+
+COPY public.ctaas_test_suite (id, subaccount_id, total_executions, next_execution_ts, frequency, device_type, name) FROM stdin;
+a8654484-1cb2-4fec-adf4-ee7ddc17375d	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	5	2022-10-03 00:00:00	Hourly	MS Teams	Execution A
+6a70a31b-fc5a-443b-82d4-d306961fa533	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	10	2022-10-04 00:00:00	Weekly	MS Teams	Execution B
+5726d813-834e-40c4-a52e-e9ac63459e03	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	15	2022-10-05 00:00:00	Monthly	MS Teams	Execution C
+30ab93f1-3bde-4721-8892-1ba34a005d08	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	5	2022-10-03 00:00:00	Hourly	MS Teams	Execution D
+89eeb522-157f-4125-96e6-b4cc900fa9d1	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	10	2022-10-04 00:00:00	Weekly	MS Teams	Execution E
+5798ecd9-6db9-43a6-a521-b21f065e7879	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	15	2022-10-05 00:00:00	Monthly	MS Teams	Execution F
 \.

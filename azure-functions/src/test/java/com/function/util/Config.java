@@ -22,6 +22,7 @@ public class Config {
     private static final String postgresqlPwd = "postgresql_pwd";
     private static final String postgresqlSecurityMode = "postgresql_security_mode";
     private static final String expiredToken = "expiredToken";
+    private static final String environmentName = "environment_name";
 //    private static final Logger LOGGER = LogManager.getLogger();
     public static Logger logger = Logger.getLogger(Config.class.getName());
 
@@ -75,6 +76,8 @@ public class Config {
 
     public String getExpiredToken() { return getConfig(expiredToken); }
 
+    public String getEnvironmentName() { return getConfig(environmentName); }
+
     public String getToken(String role) {
         String roleId, roleSecret, accessToken="",username="",password="";
         switch (role){
@@ -103,6 +106,24 @@ public class Config {
                 roleSecret = "fullAdminSecret";
                 username = "subaccountAdmin_user";
                 password = "subaccountAdmin_password";
+                break;
+            case "subaccountStakeholder":
+            	roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
+                username = "subaccountStakeholder_user";
+                password = "subaccountStakeholder_password";
+                break;
+            case "salesAdmin":
+            	roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
+                username = "salesAdmin_user";
+                password = "salesAdmin_password";
+                break;
+            case "configTester":
+            	roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
+                username = "configTester_user";
+                password = "configTester_password";
                 break;
             case "crm":
                 roleId = "crmId";

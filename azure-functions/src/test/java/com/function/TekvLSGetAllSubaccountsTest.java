@@ -160,11 +160,11 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         assertTrue(jsonBody.has("subaccounts"));
 
         JSONArray subaccounts = jsonBody.getJSONArray("subaccounts");
-        assertEquals(2, subaccounts.length());
+        assertEquals(3, subaccounts.length());
 
         String subaccountId;
         List<String> expectedSubaccounts = Arrays.asList("cebe6542-2032-4398-882e-ffb44ade169d",
-                                                        "96234b32-32d3-45a4-af26-4c912c0d6a06");
+                                                        "96234b32-32d3-45a4-af26-4c912c0d6a06","8acb6997-4d6a-4427-ba2c-7bf463fa08ec");
         for (int i = 0; i < subaccounts.length();i++){
             subaccountId = subaccounts.getJSONObject(i).getString("id");
             assertTrue(expectedSubaccounts.contains(subaccountId),
@@ -387,7 +387,7 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
@@ -398,4 +398,58 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
+    
+    @Tag("acceptance")
+    @Test
+    public void subaccountStakeholderRoleTest() {
+        //Given - Arrange
+        String id = "EMPTY";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+
+        //When - Action
+        HttpResponseMessage response = getAllSubaccountsApi.run(this.request, id, this.context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("subaccounts"));
+
+        JSONArray subaccounts = jsonBody.getJSONArray("subaccounts");
+        assertEquals(1, subaccounts.length());
+
+        JSONObject subaccount = subaccounts.getJSONObject(0);
+        String expectedSubaccountId = "8acb6997-4d6a-4427-ba2c-7bf463fa08ec";
+        assertEquals(expectedSubaccountId,subaccount.getString("id"));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void subaccountStakeholderRoleIncorrectIdTest() {
+        //Given - Arrange
+        String id = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+
+        //When - Action
+        HttpResponseMessage response = getAllSubaccountsApi.run(this.request, id, this.context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    
 }

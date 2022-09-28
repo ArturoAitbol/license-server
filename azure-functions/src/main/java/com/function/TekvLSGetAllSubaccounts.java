@@ -3,6 +3,7 @@ package com.function;
 import com.function.auth.Permission;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -49,16 +50,16 @@ public class TekvLSGetAllSubaccounts
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-		String currentRole = getRoleFromToken(tokenClaims,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.GET_ALL_SUBACCOUNTS)){
+		if(!hasPermission(roles, Permission.GET_ALL_SUBACCOUNTS)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
@@ -74,6 +75,7 @@ public class TekvLSGetAllSubaccounts
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM subaccount");
 		String email = getEmailFromToken(tokenClaims,context);
 		// adding conditions according to the role
+		String currentRole = evaluateRoles(roles);
 		switch (currentRole){
 			case DISTRIBUTOR_FULL_ADMIN:
 				queryBuilder.appendCustomCondition("customer_id IN (SELECT id FROM customer WHERE distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
@@ -83,6 +85,10 @@ public class TekvLSGetAllSubaccounts
 				queryBuilder.appendCustomCondition("customer_id = (select customer_id from customer_admin where admin_email = ?)", email);
 				break;
 			case SUBACCOUNT_ADMIN:
+				queryBuilder.appendCustomCondition("id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
+				break;
+			case SUBACCOUNT_STAKEHOLDER:
+				//subaccount stakeholders are stored in subaccount_admin_email table itself
 				queryBuilder.appendCustomCondition("id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
 				break;
 		}
@@ -113,6 +119,8 @@ public class TekvLSGetAllSubaccounts
 				JSONObject item = new JSONObject();
 				item.put("name", rs.getString("name"));
 				item.put("customerId", rs.getString("customer_id"));
+				if (FeatureToggles.INSTANCE.isFeatureActive("services-feature"))
+					item.put("services", rs.getString("services"));
 				if (!id.equals("EMPTY"))
 					item.put("subaccountAdminEmails", adminEmailsMap.get(rs.getString("id")));
 				else
@@ -122,7 +130,7 @@ public class TekvLSGetAllSubaccounts
 
 			if(!id.equals("EMPTY") && array.isEmpty()){
 				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + email);
-				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN, SUBACCOUNT_STAKEHOLDER);
 				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
@@ -140,7 +148,7 @@ public class TekvLSGetAllSubaccounts
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 

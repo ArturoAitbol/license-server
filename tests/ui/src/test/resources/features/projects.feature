@@ -1,6 +1,6 @@
 @projectsTest
 Feature: Projects
-  Background: : Login successfully with valid credentials
+  Background: Login successfully with valid credentials
     Given I am on the landing page
     When I try to login with email and password
 
@@ -10,9 +10,9 @@ Feature: Projects
     When I create a customer with the following data
       | name          | projectCustomerTest                   |
       | type          | MSP                                   |
-      | adminEmail    | test-project@tekvizionlabs.com        |
+      | adminEmail    | test-project@tekvizion.com            |
       | subaccount    | Default                               |
-      | subAdminEmail | project-subaccount@tekvizionlabs.com  |
+      | subAdminEmail | test-project@tekvizion.com            |
       | testCustomer  | yes                                   |
     Then I see the customer "projectCustomerTest" in the table
     

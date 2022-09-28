@@ -108,7 +108,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        HttpStatus expectedStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
 
         JSONObject jsonBody = new JSONObject(response.getBody().toString());
@@ -179,7 +179,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        HttpStatus expectedStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
 
         String body = (String) response.getBody();
@@ -242,7 +242,7 @@ class TekvLSModifyBundleByIdTest extends TekvLSTest {
 
         //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();

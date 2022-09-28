@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
@@ -12,14 +12,20 @@ import { DialogService } from '../services/dialog.service';
 import { LicenseService } from '../services/license.service';
 import { SnackBarService } from '../services/snack-bar.service';
 import { SubAccountService } from '../services/sub-account.service';
-import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
-import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
-import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
-import { AdminEmailsComponent } from "./admin-emails-modal/admin-emails.component";
-import { SubaccountAdminEmailsComponent } from "./subaccount-admin-emails-modal/subaccount-admin-emails.component";
+import { AddCustomerAccountModalComponent } from '../modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
+import { AddSubaccountModalComponent } from '../modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
+import { ModifyCustomerAccountComponent } from '../modules/dashboard-customer/modify-customer-account/modify-customer-account.component';
+import { AdminEmailsComponent } from "../modules/dashboard-customer/admin-emails-modal/admin-emails.component";
+import { SubaccountAdminEmailsComponent } from "../modules/dashboard-customer/subaccount-admin-emails-modal/subaccount-admin-emails.component";
 import { MsalService } from '@azure/msal-angular';
-import { permissions } from '../helpers/role-permissions';
 import { SubAccount } from '../model/subaccount.model';
+import { FormBuilder } from "@angular/forms";
+import { debounceTime, takeUntil } from "rxjs/operators";
+import { Subject } from "rxjs/internal/Subject";
+import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
+import { Features } from '../helpers/features';
+import { permissions } from '../helpers/role-permissions';
+import { tekVizionServices } from '../helpers/tekvizion-services';
 
 @Component({
     selector: 'app-dashboard',
@@ -27,11 +33,12 @@ import { SubAccount } from '../model/subaccount.model';
     styleUrls: ['./dashboard.component.css']
 })
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
     tableMaxHeight: number;
     displayedColumns: any[] = [];
     data: CustomerLicense[] = [];
     customerList: any = [];
+    filteredCustomerList: any = [];
     // flag
     isLoadingResults = true;
     isRequestCompleted = false;
@@ -40,10 +47,33 @@ export class DashboardComponent implements OnInit {
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
     readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
+    readonly VIEW_CTAAS_DASHBOARD: string = 'View SpotLight Dashboard';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
 
-    actionMenuOptions: any = [];
+    readonly options = {
+        VIEW_LICENSES: this.VIEW_LICENSES,
+        VIEW_CONSUMPTION: this.VIEW_CONSUMPTION,
+        VIEW_PROJECTS: this.VIEW_PROJECTS,
+        VIEW_ADMIN_EMAILS: this.VIEW_ADMIN_EMAILS,
+        VIEW_SUBACC_ADMIN_EMAILS: this.VIEW_SUBACC_ADMIN_EMAILS,
+        VIEW_CTAAS_DASHBOARD: this.VIEW_CTAAS_DASHBOARD,
+        MODIFY_ACCOUNT: this.MODIFY_ACCOUNT,
+        DELETE_ACCOUNT: this.DELETE_ACCOUNT
+    }
+
+    readonly subaccountTypes = ['MSP', 'Reseller'];
+    readonly subscriptionStatus = ['Active', 'Inactive', 'Expired'];
+
+    actionMenuOptions: string[] = [];
+
+    filterForm = this.fb.group({
+        customerFilterControl: [''],
+        typeFilterControl: [''],
+        subStatusFilterControl: ['']
+    });
+
+    private unsubscribe: Subject<void> = new Subject<void>();
 
     constructor(
         private customerService: CustomerService,
@@ -53,7 +83,8 @@ export class DashboardComponent implements OnInit {
         public dialog: MatDialog,
         private snackBarService: SnackBarService,
         private router: Router,
-        private msalService: MsalService
+        private msalService: MsalService,
+        private fb: FormBuilder
     ) {
     }
 
@@ -63,10 +94,13 @@ export class DashboardComponent implements OnInit {
     }
 
     private getActionMenuOptions() {
-        const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-        accountRoles.forEach(accountRole => {
-            permissions[accountRole].tables.customerOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
-        });
+        const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
+        this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"customerOptions");
+        // check for CTaas Toggle feature, if false then remove VIEW_CTAAS_DASHBOARD option in action menu
+        if (!FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
+            const index = this.actionMenuOptions.findIndex(option=>option===this.VIEW_CTAAS_DASHBOARD);
+            this.actionMenuOptions.splice(index,1);
+        }
     }
 
     private calculateTableHeight() {
@@ -80,11 +114,24 @@ export class DashboardComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.filterForm.disable();
         this.calculateTableHeight();
         this.initColumns();
         this.fetchDataToDisplay();
         localStorage.removeItem(Constants.PROJECT);
         this.getActionMenuOptions();
+        this.filterForm.valueChanges.pipe(
+            debounceTime(300),
+            takeUntil(this.unsubscribe)
+        ).subscribe(value => {
+            const filters = [];
+            if (value.customerFilterControl != '') filters.push(customer => customer.name.includes(value.customerFilterControl) || customer.subaccountName?.includes(value.customerFilterControl));
+            if (value.typeFilterControl != '' && value.typeFilterControl != undefined) filters.push(customer => customer.customerType === value.typeFilterControl);
+            if (value.subStatusFilterControl != '' && value.subStatusFilterControl != undefined) filters.push(customer => customer.status && customer.status === value.subStatusFilterControl);
+            this.isLoadingResults = true;
+            this.filteredCustomerList = this.customerList.filter(customer => filters.every(filter => filter(customer)));
+            this.isLoadingResults = false;
+        })
     }
 
     /**
@@ -118,6 +165,8 @@ export class DashboardComponent implements OnInit {
             this.customerList = newDataObject['customers'];
             this.assignSubAccountData(newDataObject['subaccounts'], newDataObject['licenses']);
             this.customerList.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            this.filteredCustomerList = this.customerList;
+            this.filterForm.enable();
             this.isLoadingResults = false;
         }, err => {
             console.debug('error', err);
@@ -132,11 +181,14 @@ export class DashboardComponent implements OnInit {
             const subaccounts = subaccountsList.filter(s => s.customerId === customer.id);
             if (subaccounts.length > 0) {
                 subaccounts.forEach(subaccount => {
+                    const { id, name, services } = subaccount;
                     const customerWithDetails = { ...customer };
-                    customerWithDetails.subaccountName = subaccount.name;
-                    customerWithDetails.subaccountId = subaccount.id;
-                    const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccount.id));
+                    customerWithDetails.subaccountName = name;
+                    customerWithDetails.subaccountId = id;
+                    const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === id));
                     customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
+                    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService))
+                        customerWithDetails.services = (services) ? services : null;
                     fullCustomerList.push(customerWithDetails);
                 })
             } else {
@@ -350,10 +402,26 @@ export class DashboardComponent implements OnInit {
                 this.openDialog(object.selectedOption, object.selectedRow);
                 break;
             case this.VIEW_SUBACC_ADMIN_EMAILS:
-                if(object.selectedRow.subaccountId !== undefined ) 
+                if (object.selectedRow.subaccountId !== undefined)
                     this.openDialog(object.selectedOption, object.selectedRow);
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access Subaccount admin emails view', '');
+                break;
+            case this.VIEW_CTAAS_DASHBOARD:
+                const { selectedRow: { services } } = object;
+                const selectedSubaccount = {
+                    id: object.selectedRow.subaccountId,
+                    name: object.selectedRow.subaccountName,
+                    customerId: object.selectedRow.id,
+                    services: object.selectedRow.services
+                };
+                this.subaccountService.setSelectedSubAccount(selectedSubaccount);
+                const hasCtaasService = services && services.includes(tekVizionServices.SpotLight);
+                if (hasCtaasService)
+                    this.router.navigate(['/spotlight/report-dashboards']);
+                else
+                    this.snackBarService.openSnackBar('SpotLight service is not available for this Subaccount', '');
+
                 break;
             case this.MODIFY_ACCOUNT:
                 this.openDialog(object.selectedOption, object.selectedRow);
@@ -383,5 +451,10 @@ export class DashboardComponent implements OnInit {
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
                 break;
         }
+    }
+
+    ngOnDestroy() {
+        this.unsubscribe.next();
+        this.unsubscribe.complete();
     }
 }

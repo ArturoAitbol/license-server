@@ -1,6 +1,8 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.clients.GraphAPIClient;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -15,6 +17,7 @@ import java.sql.*;
 import java.util.Optional;
 
 import io.jsonwebtoken.Claims;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -41,16 +44,16 @@ public class TekvLSDeleteCustomerById
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-		String currentRole = getRoleFromToken(tokenClaims,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.DELETE_CUSTOMER)){
+		if(!hasPermission(roles, Permission.DELETE_CUSTOMER)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
@@ -75,6 +78,49 @@ public class TekvLSDeleteCustomerById
 			PreparedStatement tombstoneStmt = connection.prepareStatement(tombstoneSql);
 			PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+
+			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
+				String getAllEmailsSql = "SELECT sa.subaccount_admin_email,sa.subaccount_id,s.customer_id as subaccount_customer_id,ca.admin_email,ca.customer_id " +
+						"FROM subaccount_admin sa " +
+						"JOIN subaccount s ON sa.subaccount_id = s.id " +
+						"FULL JOIN customer_admin ca ON sa.subaccount_admin_email = ca.admin_email " +
+						"WHERE s.customer_id = ?::uuid OR ca.customer_id = ?::uuid;";
+				try(PreparedStatement getAllEmailsStmt = connection.prepareStatement(getAllEmailsSql)){
+					getAllEmailsStmt.setString(1,id);
+					getAllEmailsStmt.setString(2,id);
+					ResultSet resultSet = getAllEmailsStmt.executeQuery();
+					while (resultSet.next()){
+						String customerId =  resultSet.getString("customer_id");
+						String adminEmail = resultSet.getString("admin_email");
+						String subaccountCustomerId =  resultSet.getString("subaccount_customer_id");
+						String subaccountAdminEmail = resultSet.getString("subaccount_admin_email");
+
+						if(subaccountCustomerId == null){
+							if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation"))
+								GraphAPIClient.deleteGuestUser(adminEmail, context);
+								context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+adminEmail+").");
+							continue;
+						}
+
+						if(subaccountCustomerId.equals(id)){
+							if(adminEmail==null || subaccountCustomerId.equals(customerId)){
+								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, context);
+								context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+subaccountAdminEmail+").");
+								continue;
+							}
+							GraphAPIClient.removeRole(subaccountAdminEmail,SUBACCOUNT_ADMIN,context);
+							context.getLogger().info("Guest User Role (Subaccount Admin) removed successfully from Active Directory (email: "+subaccountAdminEmail+").");
+							continue;
+						}
+
+						if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")) {
+							GraphAPIClient.removeRole(adminEmail,CUSTOMER_FULL_ADMIN,context);
+							context.getLogger().info("Guest User Role (Customer Admin) removed successfully from Active Directory (email: " + adminEmail + ").");
+						}
+					}
+				}
+			}
+
 			// Get test_customer by id if not force delete
 			if (!deleteFlag) {
 				isTestCustomerStmt.setString(1, id);

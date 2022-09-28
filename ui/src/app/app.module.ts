@@ -13,12 +13,12 @@ import { ErrorInterceptor } from './helpers/error.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MaterialModule } from './modules/material/material.module';
-import { AddCustomerAccountModalComponent } from './dashboard/add-customer-account-modal/add-customer-account-modal.component';
-import { AddSubaccountModalComponent } from './dashboard/add-subaccount-modal/add-subaccount-modal.component';
-import { ModifyCustomerAccountComponent } from './dashboard/modify-customer-account/modify-customer-account.component';
+import { AddCustomerAccountModalComponent } from './modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
+import { AddSubaccountModalComponent } from './modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
+import { ModifyCustomerAccountComponent } from './modules/dashboard-customer/modify-customer-account/modify-customer-account.component';
 import { ConfirmComponent } from './dialogs/confirm/confirm.component';
-import { AdminEmailsComponent } from './dashboard/admin-emails-modal/admin-emails.component';
-import { SubaccountAdminEmailsComponent } from './dashboard/subaccount-admin-emails-modal/subaccount-admin-emails.component';
+import { AdminEmailsComponent } from './modules/dashboard-customer/admin-emails-modal/admin-emails.component';
+import { SubaccountAdminEmailsComponent } from './modules/dashboard-customer/subaccount-admin-emails-modal/subaccount-admin-emails.component';
 // third party modules
 import { MsalInterceptor, MsalModule } from '@azure/msal-angular';
 import { InteractionType, PublicClientApplication } from '@azure/msal-browser';
@@ -28,6 +28,8 @@ import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permi
 import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applicationinsights-angularplugin-js';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { AboutModalComponent } from './generics/about-modal/about-modal.component';
+import { MyAppsComponent } from './my-apps/my-apps.component';
+import { RedirectPageComponent } from './redirect-page/redirect-page.component';
 
 @NgModule({
     declarations: [
@@ -42,7 +44,9 @@ import { AboutModalComponent } from './generics/about-modal/about-modal.componen
         AdminEmailsComponent,
         SubaccountAdminEmailsComponent,
         NoPermissionsPageComponent,
-        AboutModalComponent
+        AboutModalComponent,
+        MyAppsComponent,
+        RedirectPageComponent,
     ],
     imports: [
         AppRoutingModule,
@@ -78,7 +82,7 @@ import { AboutModalComponent } from './generics/about-modal/about-modal.componen
         { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
         { provide: ErrorHandler, useClass: ApplicationinsightsAngularpluginErrorService },
-        { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true, strict: true} }
+        { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true, strict: true } }
     ],
     bootstrap: [AppComponent],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -1,6 +1,10 @@
 package com.function;
 
 import com.function.auth.Permission;
+import com.function.clients.GraphAPIClient;
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
+import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -12,9 +16,13 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import com.microsoft.azure.functions.annotation.BindingName;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import io.jsonwebtoken.Claims;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -41,16 +49,16 @@ public class TekvLSDeleteSubaccountById
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-		String currentRole = getRoleFromToken(tokenClaims,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.DELETE_SUB_ACCOUNT)){
+		if(!hasPermission(roles, Permission.DELETE_SUB_ACCOUNT)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
@@ -68,6 +76,30 @@ public class TekvLSDeleteSubaccountById
 			PreparedStatement statement = connection.prepareStatement(sql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+
+			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
+				String emailSql = "SELECT sa.subaccount_admin_email, ca.admin_email FROM subaccount_admin sa " +
+						"LEFT JOIN customer_admin ca ON sa.subaccount_admin_email = ca.admin_email " +
+						"WHERE subaccount_id = ?::uuid;";
+
+				try(PreparedStatement emailStatement = connection.prepareStatement(emailSql)){
+					emailStatement.setString(1, id);
+					context.getLogger().info("Execute SQL statement: " + emailStatement);
+					ResultSet rs = emailStatement.executeQuery();
+					String adminEmail,subaccountAdminEmail;
+					while(rs.next()) {
+						adminEmail = rs.getString("admin_email");
+						if(adminEmail!=null){
+							GraphAPIClient.removeRole(adminEmail, SUBACCOUNT_ADMIN, context);
+							context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+adminEmail+").");
+							continue;
+						}
+						subaccountAdminEmail = rs.getString("subaccount_admin_email");
+						GraphAPIClient.deleteGuestUser(subaccountAdminEmail,context);
+						context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+subaccountAdminEmail+").");
+					}
+				}
+			}
 
 			statement.setString(1, id);
 
@@ -89,7 +121,7 @@ public class TekvLSDeleteSubaccountById
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 }

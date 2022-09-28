@@ -15,11 +15,11 @@ import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consu
 import { ProjectService } from 'src/app/services/project.service';
 import { Constants } from 'src/app/helpers/constants';
 import { MsalService } from '@azure/msal-angular';
-import { permissions } from 'src/app/helpers/role-permissions';
 import { DataTableComponent } from '../../../generics/data-table/data-table.component';
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
 import moment, { Moment } from 'moment';
 import { License } from 'src/app/model/license.model';
+import { Utility } from 'src/app/helpers/utils';
 
 @Component({
   selector: 'app-license-consumption',
@@ -45,6 +45,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   projectConsumptionData = [];
   detailedConsumptionData = [];
   tokenConsumptionData = [];
+  listDetailedConsumptionBK: any[] = [];
+  weeklyConsumptionDataBK: any[] = [];
+  projectConsumptionDataBK: any[] = [];
+  equipmentDataBK: any[] = [];
   licenseForm = this.formBuilder.group({
     selectedLicense: ['']
   });
@@ -116,6 +120,11 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   detailedConsumptionTableSelectable = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
+
+  readonly options = {
+    EDIT: this.EDIT,
+    DELETE: this.DELETE
+  }
 
   licConsumptionActionMenuOptions: any = [];
 
@@ -189,10 +198,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   private getActionMenuOptions() {
     this.licConsumptionActionMenuOptions = [];
-    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    accountRoles.forEach(accountRole => {
-      permissions[accountRole].tables.licConsumptionOptions.forEach(item => this.licConsumptionActionMenuOptions.push(this[item]));
-    })
+    const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    this.licConsumptionActionMenuOptions = Utility.getTableOptions(roles,this.options,"licConsumptionOptions");
   }
 
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
@@ -267,6 +274,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.equipmentData = res.equipmentSummary;
       this.isEquipmentSummaryLoadingResults = false;
       this.isEquipmentSummaryRequestCompleted = true;
+      this.equipmentDataBK = [...res['equipmentSummary']];
     }, (err: any) => {
       console.error('Error fetching equipment data: ', err);
       this.isEquipmentSummaryLoadingResults = false;
@@ -302,6 +310,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         this.isDetailedConsumptionSupplementalRequestCompleted = true;
         this.isDetailedConsumptionLoadingResults = false;
         this.isDetailedConsumptionRequestCompleted = true;
+        this.listDetailedConsumptionBK = [...res['usage']];
+        this.weeklyConsumptionDataBK = [...res['weeklyConsumption']];
+        this.projectConsumptionDataBK = [...res['projectConsumption']];
       }, (err: any) => {
         console.error('Error fetching detailed license consumption data: ', err);
         this.isDetailedConsumptionSupplementalLoadingResults = false;
@@ -468,12 +479,32 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
  * @param sortParameters: Sort
  * @param data: any[]
  */
-  sortData(sortParameters: Sort, data: any[]) {
+  sortData(sortParameters: Sort, data: any[], listName: string): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      data = data.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
+      data = data.sort((a: any, b: any) =>{
+        if(typeof a[keyName] === 'number')
+          return +a[keyName] > +b[keyName] ? 1 : (+a[keyName] < +b[keyName] ? -1 : 0);
+        return a[keyName].localeCompare(b[keyName]);
+      });
     } else if (sortParameters.direction === 'desc') {
-      data = data.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+      data = data.sort((a: any, b: any) => {
+        if(typeof a[keyName] === 'number')
+          return +a[keyName] < +b[keyName] ? 1 : (+a[keyName] > +b[keyName] ? -1 : 0);
+        return b[keyName].localeCompare(a[keyName]);
+      });
+    } else {
+      switch(listName){
+        case 'detailedList':
+          return this.detailedConsumptionData = [...this.listDetailedConsumptionBK];
+        case 'projectList':
+          return this.projectConsumptionData = [...this.projectConsumptionDataBK];
+        case 'weeklyList':
+          return this.weeklyConsumptionData = [...this.weeklyConsumptionDataBK];
+        case 'equipmentList':
+          return this.equipmentData = [...this.equipmentDataBK];
+        default:
+      }
     }
   }
   /**

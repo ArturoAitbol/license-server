@@ -48,7 +48,7 @@ def run_ui_unit_tests():
         if process.returncode != 0:
             logging.error("Error on Dependency installation: " +
                           str(process.stdout))
-            raise Exception("API Unit test returned an error")
+            raise Exception("UI Unit test returned an error")
         else:
             cmd = "npm run test -- --no-watch --no-progress"
             process = Popen(cmd, stdout=PIPE, stderr=STDOUT,
@@ -57,9 +57,9 @@ def run_ui_unit_tests():
             if process.returncode != 0:
                 logging.error("Error running UI unit tests: " +
                               str(process.stdout))
-                raise Exception("API Unit test returned an error")
+                raise Exception("UI Unit test returned an error")
         os.chdir(root_directory)
-        logging.info("API Test Completed Succesfully")
+        logging.info("UI Unit test Completed Succesfully")
         time.sleep(5)
     except Exception as e:
         return_error(e)
@@ -69,11 +69,11 @@ def run_ui_functional_tests():
     logging.info("Starting to run UI Functional tests")
     try:
         os.chdir('./tests/ui')
-        cmd = "gradle uiTests -Denv=local"
+        cmd = 'gradle uiTests -Denv=local -D"cucumber.filter.tags=not @CTaaSFeature"'
         process = Popen(cmd, stdout=PIPE, stderr=STDOUT, shell=True, bufsize=0)
         print_output(process)
         if process.returncode != 0:
-            logging.error("Error on Unit Tests execution: " +
+            logging.error("Error on UI Functional Test execution: " +
                           str(process.stdout))
             raise Exception("UI Functional test returned an error")
         os.chdir(root_directory)
@@ -140,7 +140,7 @@ def display_requirements():
         \t - You are running License server locally in default port 4200 (npm install && ng serve)\n
         Please note that if any of these requirements are not in place, Auto Test script could fail.\n
         Do you want to proceed? (Y/n)""")
-    if(val.lower() != 'y'):
+    if(val.lower() == 'n'):
         logging.info("Thanks for running Auto Test")
         sys.exit(1)
     logging.info("Auto Test will start soon, please stay tuned, at some point we'll prompt for a db user :)")   

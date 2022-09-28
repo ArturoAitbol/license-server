@@ -30,21 +30,21 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
     void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-            String bodyRequest = "{ " +
-                    "    'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                    "    'projectId': '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d'," +
-                    "    'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
-                    "    'consumptionDate': '2022-06-19'," +
-                    "    'type': 'Configuration'," +
-                    "    'usageDays': [0,4] }";
-            doReturn(Optional.of(bodyRequest)).when(request).getBody();
-            HttpResponseMessage response = tekvLSCreateLicenseUsageDetail.run(this.request,this.context);
-            this.context.getLogger().info(response.getBody().toString());
-            HttpStatusType actualStatus = response.getStatus();
-            HttpStatus expected = HttpStatus.OK;
-            assertEquals(expected,actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
-            JSONObject jsonBody = new JSONObject(response.getBody().toString());
-            this.licenseUsageId = jsonBody.getString("id");
+        String bodyRequest = "{ " +
+                "    'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
+                "    'projectId': '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d'," +
+                "    'deviceId': 'ef7a4bcd-fc3f-4f87-bf87-ae934799690b'," +
+                "    'consumptionDate': '2022-06-19'," +
+                "    'type': 'Configuration'," +
+                "    'usageDays': [0,4] }";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        HttpResponseMessage response = tekvLSCreateLicenseUsageDetail.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected,actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        JSONObject jsonBody = new JSONObject(response.getBody().toString());
+        this.licenseUsageId = jsonBody.getString("id");
     }
 
     @AfterEach
@@ -240,7 +240,7 @@ class TekvLSModifyLicenseUsageByIdTest extends TekvLSTest {
 
         //Then
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
 
         String responseBody = (String) response.getBody();

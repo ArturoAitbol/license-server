@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -11,11 +11,11 @@ import { SubAccountService } from '../services/sub-account.service';
 import { DashboardComponent } from './dashboard.component';
 import { SharedModule } from '../modules/shared/shared.module';
 import { DataTableComponent } from '../generics/data-table/data-table.component';
-import { AddCustomerAccountModalComponent } from './add-customer-account-modal/add-customer-account-modal.component';
-import { AddSubaccountModalComponent } from './add-subaccount-modal/add-subaccount-modal.component';
-import { ModifyCustomerAccountComponent } from './modify-customer-account/modify-customer-account.component';
-import { AdminEmailsComponent } from './admin-emails-modal/admin-emails.component';
-import { SubaccountAdminEmailsComponent } from './subaccount-admin-emails-modal/subaccount-admin-emails.component';
+import { AddCustomerAccountModalComponent } from '../modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
+import { AddSubaccountModalComponent } from '../modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
+import { ModifyCustomerAccountComponent } from '../modules/dashboard-customer/modify-customer-account/modify-customer-account.component';
+import { AdminEmailsComponent } from '../modules/dashboard-customer/admin-emails-modal/admin-emails.component';
+import { SubaccountAdminEmailsComponent } from '../modules/dashboard-customer/subaccount-admin-emails-modal/subaccount-admin-emails.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LicenseServiceMock } from '../../test/mock/services/license-service.mock';
 import { CustomerServiceMock } from '../../test/mock/services/customer-service.mock';
@@ -25,6 +25,10 @@ import { MsalServiceMock } from '../../test/mock/services/msal-service.mock';
 import { SnackBarServiceMock } from "../../test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "../services/snack-bar.service";
 import { DialogServiceMock } from '../../test/mock/services/dialog.service.mock';
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
+import { Features } from '../helpers/features';
+import { tekVizionServices } from '../helpers/tekvizion-services';
 
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
@@ -37,7 +41,7 @@ const RouterMock = {
 const beforeEachFunction = async () => {
     TestBed.configureTestingModule({
         declarations: [DashboardComponent, DataTableComponent, AddCustomerAccountModalComponent, AddSubaccountModalComponent, ModifyCustomerAccountComponent, AdminEmailsComponent, SubaccountAdminEmailsComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule],
+        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
         providers: [
             {
                 provide: Router,
@@ -161,6 +165,7 @@ describe('Dialog calls and interactions', () => {
         tick();
         expect(dashboardComponentTestInstance.addCustomerAccount).toHaveBeenCalled();
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith('add-customer');
+        discardPeriodicTasks();
     }));
 
     it('should call openDialog when calling the #add-customer-button function', fakeAsync(() => {
@@ -172,6 +177,7 @@ describe('Dialog calls and interactions', () => {
         tick();
         expect(dashboardComponentTestInstance.addSubaccount).toHaveBeenCalled();
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith('add-subaccount');
+        discardPeriodicTasks();
     }));
 
     it('should delete customer if resultAllData is true', () => {
@@ -443,4 +449,18 @@ describe('.columnAction()', ()  => {
         expect(dashboardComponentTestInstance.openLicenseDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 
+});
+
+describe('Filtering table rows', ()  => {
+    beforeEach(beforeEachFunction);
+    it('should filter the rows in the table based on the name, type and status filters', async () => {
+        dashboardComponentTestInstance.filterForm.patchValue({customerFilterControl: "Amazon", typeFilterControl: "MSP", subStatusFilterControl: "Inactive"});
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
+        const objectToCompare: any = {"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive"};
+        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature))
+            objectToCompare.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
+        expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);
+    });
 });

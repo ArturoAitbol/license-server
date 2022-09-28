@@ -1,0 +1,10 @@
+export interface IStakeholder {
+    name: string;
+    jobTitle: string;
+    companyName: string;
+    subaccountAdminEmail: string;
+    phoneNumber: string;
+    notifications: string;
+    subaccountId?: string;
+    type:string;
+}

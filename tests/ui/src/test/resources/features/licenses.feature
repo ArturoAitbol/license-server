@@ -1,6 +1,6 @@
 @licensesTest
 Feature: Licenses
-    Background: : Login successfully with valid credentials
+    Background: Login successfully with valid credentials
         Given I am on the landing page
         When I try to login with email and password
         Then I should see the "Customers" page
@@ -11,9 +11,9 @@ Feature: Licenses
         When I create a customer with the following data
             | name          | licenseCustomerTest                   |
             | type          | MSP                                   |
-            | adminEmail    | test-license@tekvizionlabs.com        |
+            | adminEmail    | test-license@tekvizion.com            |
             | subaccount    | Default                               |
-            | subAdminEmail | license-subaccount@tekvizionlabs.com  |
+            | subAdminEmail | test-license@tekvizion.com            |
             | testCustomer  | yes                                   |
         Then I see the customer "licenseCustomerTest" in the table
     

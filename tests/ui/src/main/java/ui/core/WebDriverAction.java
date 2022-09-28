@@ -8,6 +8,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public class WebDriverAction {
     public WebDriver driver;
@@ -121,6 +122,10 @@ public class WebDriverAction {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
+    public List<WebElement> waitVisibilityElements(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(locator));
+    }
+
     public boolean checkTitle(String title) {
         boolean response = false;
         try {
@@ -133,13 +138,15 @@ public class WebDriverAction {
     }
     public String checkElement(By locator){
         String output;
-        try{
-            driver.findElement(locator).click();
+        try {
+            wait = new WebDriverWait(driver, Duration.ofSeconds(minTimeout));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
             output="ok";
         }
         catch (Exception e){
             output="error";
         }
+        wait = new WebDriverWait(driver, Duration.ofSeconds(defaultTimeout));
         return output;
     }
 }

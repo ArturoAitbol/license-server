@@ -1,0 +1,53 @@
+<div class="container" style="text-align: center;">
+    <h1 mat-dialig-title>Subaccount Administrator Emails</h1>
+    <form [formGroup]="adminEmailsForm" (ngSubmit)="submit()">
+        <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
+            <mat-dialog-content>
+                <div>
+                    <label style="font-weight: bold;">{{data.name}}</label>
+                </div>
+                <div class="email-info" *ngFor="let email of adminEmails; let emailIndex = index">
+                    <div class="row" title="{{email}}">
+                        <div class="col-10">
+                            <label class = "col-form-label"><b> Email: </b>{{email}}</label>
+                        </div>
+                        <div class="col-2" id="clearButton">
+                            <button id="clearButton" *lcCheckAccessFor="'deleteSubAccAdminEmail'" mat-icon-button color="primary" title="Delete email" 
+                                    (click)="deleteExistingEmail(emailIndex)">
+                                <mat-icon>clear</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <ng-container formArrayName="emails">
+                        <ng-container *ngFor="let emailForm of emailForms.controls; let i = index">
+                            <div class="form-row" [formGroupName]="i">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Email</mat-label>
+                                    <input id="email" type="email" placeholder="Enter a valid email" aria-label="Email" matInput
+                                           formControlName="email">
+                                </mat-form-field>
+                                <button mat-icon-button color="primary" title="Delete email" style="float: right;"
+                                    (click)="deleteEmailForm(i)">
+                                    <mat-icon>clear</mat-icon>
+                                </button>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                    <button *lcCheckAccessFor="'addSubAccAdminEmail'" mat-mini-fab color="primary" type="button" class="mb-3" id="addButton" title="Add email"
+                            (click)="addEmailForm()">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </mat-dialog-content>
+        </div>
+        <mat-dialog-actions>
+            <button id="cancel-button" mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
+            <button id="submit-button" *lcCheckAccessFor="'addSubAccAdminEmail'" mat-raised-button color="primary" type="submit" [disabled]="!adminEmailsForm.valid">Submit</button>
+        </mat-dialog-actions>
+    </form>
+</div>

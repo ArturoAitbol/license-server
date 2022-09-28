@@ -9,6 +9,12 @@
         "licenses": true
       },
       "features": {}
+    },
+    "username@test.com": {
+      "routes": {
+        "unitTestingRoute": true
+      },
+      "features": {}
     }
   },
   "integration": {},

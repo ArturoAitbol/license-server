@@ -8,6 +8,8 @@ import org.aeonbits.owner.Config;
 public interface Environment extends Config {
     String username();
     String password();
+    String subaccountAdminUser();
+    String subaccountAdminPassword();
     String browser();
     String url();
     @Key("db.port")

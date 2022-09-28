@@ -17,6 +17,8 @@ import io.jsonwebtoken.Claims;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.Optional;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -43,16 +45,16 @@ public class TekvLSModifyLicenseUsageById
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-		String currentRole = getRoleFromToken(tokenClaims,context);
-		if(currentRole.isEmpty()){
+		JSONArray roles = getRolesFromToken(tokenClaims,context);
+		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(currentRole, Permission.MODIFY_LICENSE_USAGE)){
+		if(!hasPermission(roles, Permission.MODIFY_LICENSE_USAGE)){
 			JSONObject json = new JSONObject();
-			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + currentRole);
+			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
@@ -137,7 +139,7 @@ public class TekvLSModifyLicenseUsageById
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 	}
 
