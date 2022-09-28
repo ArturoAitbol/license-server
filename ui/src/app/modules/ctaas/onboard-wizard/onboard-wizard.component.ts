@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { MatDialogRef } from '@angular/material/dialog';
 import { Constants } from 'src/app/helpers/constants';
 import { Report } from 'src/app/helpers/report';
-import { IStakeholder } from 'src/app/model/stakeholder.model';
+import { AutoLogoutService } from 'src/app/services/auto-logout.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
@@ -32,7 +32,8 @@ export class OnboardWizardComponent implements OnInit {
     private stakeholderService: StakeHolderService,
     private formbuilder: FormBuilder,
     public dialogRef: MatDialogRef<OnboardWizardComponent>,
-    private subaccountService: SubAccountService
+    private subaccountService: SubAccountService,
+    private autoLogoutService: AutoLogoutService
   ) { }
   /**
    * fetch user profile details
@@ -94,6 +95,7 @@ export class OnboardWizardComponent implements OnInit {
       default:
         this.userInteraction = false;
         this.interaction = '-1';
+        this.autoLogoutService.logout();
         break;
     }
   }
