@@ -1,4 +1,16 @@
 export const permissions = {
+    'tekvizion.DevicesAdmin': {
+        paths: [],
+        elements: [],
+        tables: {
+            customerOptions: [],
+            licenseOptions: [],
+            licConsumptionOptions: [],
+            projectOptions: [],
+            ctaasTestSuiteOptions: [],
+            stakeholderOptions: []
+        }
+    },
     'tekvizion.FullAdmin': {
         paths: [
             'dashboard',
@@ -96,7 +108,8 @@ export const permissions = {
             projectOptions: [
                 'VIEW_CONSUMPTION'
             ],
-            stakeholderOptions: []
+            stakeholderOptions: [],
+            ctaasTestSuiteOptions: []
         }
     },
     'tekvizion.ConfigTester': {
@@ -175,7 +188,8 @@ export const permissions = {
             projectOptions: [
                 'VIEW_CONSUMPTION'
             ],
-            stakeholderOptions: []
+            stakeholderOptions: [],
+            ctaasTestSuiteOptions: []
         }
     },
     'customer.FullAdmin': {
@@ -209,7 +223,8 @@ export const permissions = {
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
-            ]
+            ],
+            ctaasTestSuiteOptions: []
         }
     },
     'customer.SubaccountAdmin': {
@@ -243,7 +258,8 @@ export const permissions = {
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
-            ]
+            ],
+            ctaasTestSuiteOptions: []
         }
     },
     'customer.SubaccountStakeholder': {
@@ -259,7 +275,8 @@ export const permissions = {
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
-            stakeholderOptions: []
+            stakeholderOptions: [],
+            ctaasTestSuiteOptions: []
         }
     }
 };

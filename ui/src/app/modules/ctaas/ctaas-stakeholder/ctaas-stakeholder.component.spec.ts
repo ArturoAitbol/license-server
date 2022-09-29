@@ -81,96 +81,92 @@ const beforeEachFunction = () => {
     loader = TestbedHarnessEnvironment.loader(fixture);
     spyOn(console, 'log').and.callThrough();
 };
-if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-    describe('UI verification test', () => {
-        beforeEach(beforeEachFunction);
-        it('should display essential UI and components', () => {
-           fixture.detectChanges();
-           const h2 = fixture.nativeElement.querySelector('#main-title');
-           const addButton = fixture.nativeElement.querySelector('#add-customer-button');
+
+describe('UI verification test', () => {
+    beforeEach(beforeEachFunction);
+    it('should display essential UI and components', () => {
+        fixture.detectChanges();
+        const h2 = fixture.nativeElement.querySelector('#main-title');
+        const addButton = fixture.nativeElement.querySelector('#add-customer-button');
     
-           expect(h2.textContent).toBe('Stakeholders');
-           expect(addButton.textContent).toBe(' Add Stakeholder ');
-        });
-    
-        it('should load correct data columns for the table', () => {
-            fixture.detectChanges();
-    
-            const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
-            expect(headers[0].innerText).toBe('User');
-            expect(headers[1].innerText).toBe('Company Name');
-            expect(headers[2].innerText).toBe('Job Title');
-            expect(headers[3].innerText).toBe('Email');
-            expect(headers[4].innerText).toBe('Phone Number');
-            expect(headers[5].innerText).toBe('Type');
-        });
-    
-        it('should execute sortData()', () => {
-            const sort: Sort = { active: 'companyName', direction: 'desc' }
-    
-            spyOn(ctaasStakeholderComponentTestInstance, 'sortData').and.callThrough();
-    
-            ctaasStakeholderComponentTestInstance.sortData(sort);
-            expect(ctaasStakeholderComponentTestInstance.sortData).toHaveBeenCalledWith(sort);
-    
-            sort.direction = 'asc';
-            ctaasStakeholderComponentTestInstance.sortData(sort);
-    
-            sort.direction = '';
-            ctaasStakeholderComponentTestInstance.sortData(sort);
-        });
+        expect(h2.textContent).toBe('Stakeholders');
+        expect(addButton.textContent).toBe(' Add Stakeholder ');
     });
     
-    describe('Data collection test', () => {
-        beforeEach(beforeEachFunction);
-        it('should make a call to fetch fetchStakeholderList', () => { 
-            spyOn(StakeHolderServiceMock, 'getStakeholderList').and.callThrough();
-            spyOn(ctaasStakeholderComponentTestInstance, 'initColumns').and.callThrough()
-            fixture.detectChanges();
-    
-            expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
-            expect(ctaasStakeholderComponentTestInstance.initColumns).toHaveBeenCalled();
-        });
+    it('should load correct data columns for the table', () => {
+        fixture.detectChanges();
+        
+        const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
+        expect(headers[0].innerText).toBe('User');
+        expect(headers[1].innerText).toBe('Company Name');
+        expect(headers[2].innerText).toBe('Job Title');
+        expect(headers[3].innerText).toBe('Email');
+        expect(headers[4].innerText).toBe('Phone Number');
+        expect(headers[5].innerText).toBe('Type');
     });
+
+    it('should execute sortData()', () => {
+        const sort: Sort = { active: 'companyName', direction: 'desc' }
+        
+        spyOn(ctaasStakeholderComponentTestInstance, 'sortData').and.callThrough();
+        
+        ctaasStakeholderComponentTestInstance.sortData(sort);
+        expect(ctaasStakeholderComponentTestInstance.sortData).toHaveBeenCalledWith(sort);
+        
+        sort.direction = 'asc';
+        ctaasStakeholderComponentTestInstance.sortData(sort);
+        
+        sort.direction = '';
+        ctaasStakeholderComponentTestInstance.sortData(sort);
+    });
+});
+describe('Data collection test', () => {
+    beforeEach(beforeEachFunction);
+    it('should make a call to fetch fetchStakeholderList', () => { 
+        spyOn(StakeHolderServiceMock, 'getStakeholderList').and.callThrough();
+        spyOn(ctaasStakeholderComponentTestInstance, 'initColumns').and.callThrough()
+        fixture.detectChanges();
+        
+        expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
+        expect(ctaasStakeholderComponentTestInstance.initColumns).toHaveBeenCalled();
+    });
+});
     
-    describe('dialog calls and interactions',() => {
-        beforeEach(beforeEachFunction)
-        it('should execute openDialogs() with expected data', () => {
-            const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '0' }
-            fixture.detectChanges();
+describe('dialog calls and interactions',() => {
+    beforeEach(beforeEachFunction)
+    it('should execute openDialogs() with expected data', () => {
+        const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '0' }
+        fixture.detectChanges();
     
-            spyOn(ctaasStakeholderComponentTestInstance, 'openDialog').and.callThrough();
-            spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
-            spyOn(dialogService, 'confirmDialog').and.callThrough();
-            spyOn(StakeHolderServiceMock, 'deleteStakeholder').and.callThrough();
+        spyOn(ctaasStakeholderComponentTestInstance, 'openDialog').and.callThrough();
+        spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'deleteStakeholder').and.callThrough();
     
-            ctaasStakeholderComponentTestInstance.addStakeholder();
-            expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith('Add Stakeholder');
+        ctaasStakeholderComponentTestInstance.addStakeholder();
+        expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith('Add Stakeholder');
            
     
-            selectedTestData.selectedOption = 'Update Stakeholder Details';
-            ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
-            expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedTestData.selectedOption, selectedTestData.selectedRow);
+        selectedTestData.selectedOption = 'Update Stakeholder Details';
+        ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
+        expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedTestData.selectedOption, selectedTestData.selectedRow);
             
     
-            selectedTestData.selectedOption = 'Delete Stakeholder Account';
-            dialogService.setExpectedConfirmDialogValue(true);
-            ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
-            expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
-            expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
-        });
-    
-        it('should show a message if an error ocurred while fetching the data', () => {
-            spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
-            spyOn(StakeHolderServiceMock, 'getStakeholderList').and.returnValue(throwError('some error'))
-    
-            fixture.detectChanges();
-            
-            expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
-            expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error', 'Error while loading stake holders');
-            
-        });
+        selectedTestData.selectedOption = 'Delete Stakeholder Account';
+        dialogService.setExpectedConfirmDialogValue(true);
+        ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
+        expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
+        expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
     });
-}
-
-
+    
+    it('should show a message if an error ocurred while fetching the data', () => {
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'getStakeholderList').and.returnValue(throwError('some error'))
+    
+        fixture.detectChanges();
+            
+        expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error', 'Error while loading stake holders');
+            
+    });
+});

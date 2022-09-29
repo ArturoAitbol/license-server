@@ -3,8 +3,9 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { MatDialogRef } from '@angular/material/dialog';
 import { Constants } from 'src/app/helpers/constants';
 import { Report } from 'src/app/helpers/report';
-import { IStakeholder } from 'src/app/model/stakeholder.model';
+import { AutoLogoutService } from 'src/app/services/auto-logout.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
 
 @Component({
@@ -13,15 +14,15 @@ import { UserProfileService } from 'src/app/services/user-profile.service';
   styleUrls: ['./onboard-wizard.component.css']
 })
 export class OnboardWizardComponent implements OnInit {
-  userInteraction: boolean = false;
-  configuredReports: boolean = false;
-  addAnotherStakeHolder: boolean = false;
+  userInteraction = false;
+  configuredReports = false;
+  addAnotherStakeHolder = false;
   interaction: string;
   readonly pattern = "/[0-9]{3}-[0-9]{3}-[0-9]{4}$/";
   reportsNotificationsList: any = [];
-  errorCreatingStakeholder: boolean = false;
-  isDataLoading: boolean = false;
-  errorMsg: string = '';
+  errorCreatingStakeholder = false;
+  isDataLoading = false;
+  errorMsg = '';
   // form group
   userProfileForm: FormGroup;
   stakeholderForm: FormGroup;
@@ -30,14 +31,15 @@ export class OnboardWizardComponent implements OnInit {
     private userprofileService: UserProfileService,
     private stakeholderService: StakeHolderService,
     private formbuilder: FormBuilder,
-    public dialogRef: MatDialogRef<OnboardWizardComponent>
+    public dialogRef: MatDialogRef<OnboardWizardComponent>,
+    private subaccountService: SubAccountService,
+    private autoLogoutService: AutoLogoutService
   ) { }
   /**
    * fetch user profile details
    */
   fetchUserProfileDetails(): void {
-    const subaccountUserProfileDetails = JSON.parse(localStorage.getItem(Constants.SUBACCOUNT_USER_PROJECT));
-    // const { userProfile } = subaccountUserProfileDetails;
+    const subaccountUserProfileDetails = this.subaccountService.getSelectedSubAccount();
     const { companyName, email, jobTitle, phoneNumber, name, subaccountId } = subaccountUserProfileDetails;
     const parsedObj = { companyName, email, jobTitle, phoneNumber, name, subaccountId };
     this.userProfileForm.patchValue(parsedObj);
@@ -64,7 +66,7 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
       type: ['', Validators.required],
       notifications: new FormArray([]),
     });
@@ -74,7 +76,7 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
       type: ['', Validators.required],
       notifications: new FormArray([]),
     });
@@ -93,6 +95,7 @@ export class OnboardWizardComponent implements OnInit {
       default:
         this.userInteraction = false;
         this.interaction = '-1';
+        this.autoLogoutService.logout();
         break;
     }
   }

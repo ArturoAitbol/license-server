@@ -76,13 +76,6 @@ public class TekvLSGetAllCtaasSetups {
 		// adding conditions according to the role
 		String currentRole = evaluateRoles(roles);
 		switch (currentRole){
-			case DISTRIBUTOR_FULL_ADMIN:
-				queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id from subaccount s, customer c WHERE s.customer_id = c.id " +
-						"AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca WHERE c.id = ca.customer_id AND admin_email = ?))", email);
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer c");
-				verificationQueryBuilder.appendCustomCondition("s.customer_id = c.id AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
-						"WHERE c.id = ca.customer_id and admin_email= ?)", email);
-				break;
 			case CUSTOMER_FULL_ADMIN:
 				queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id FROM subaccount s, customer_admin ca " +
 						"WHERE s.customer_id = ca.customer_id AND admin_email = ?)", email);
@@ -122,7 +115,6 @@ public class TekvLSGetAllCtaasSetups {
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();
 			PreparedStatement selectStmt = queryBuilder.build(connection)) {
 
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));

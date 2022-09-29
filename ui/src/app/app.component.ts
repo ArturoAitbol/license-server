@@ -27,8 +27,8 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'license-server';
     currentUser = false;
     // added as part of spotlight feature
-    hideToolbar: boolean = false;
-    isTransparentToolbar: boolean = false;
+    hideToolbar = false;
+    isTransparentToolbar = false;
     baseCtaasURL = "/spotlight/";
     // tabName: string = 'tekVizion 360 Portal';
     tabName: string = Constants.TEK_TOKEN_TOOL_BAR;
@@ -72,7 +72,7 @@ export class AppComponent implements OnInit, OnDestroy {
             materialIcon: 'dashboard'
         }
     ];
-    currentRoutePath: string = '';
+    currentRoutePath = '';
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';

@@ -18,6 +18,7 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
 public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
 
@@ -130,5 +131,39 @@ public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
         String expectedResponse = "Error message";
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
         
+    }
+
+    @Test
+    public void sqlExceptionTest() {
+        //Given
+        String bodyRequest = "{'notifications': 'email,text'," +
+                "'name': 'test-customer-subaccount-stakeholder'," +
+                "'jobTitle': 'Software Engineer'," +
+                "'companyName': 'tekVizion'," +
+                "'phoneNumber': '+12142425968'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When - Action
+        HttpResponseMessage response;
+        try {
+            response = new EnvironmentVariables("POSTGRESQL_SERVER", "test").execute(
+                    () -> tekvLSDeleteSubaccountStakeHolderByEmail.run(this.request,this.stakeHolderEmail, this.context));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "SQL Exception: The connection attempt failed.";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse);
     }
 }

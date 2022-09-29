@@ -100,11 +100,11 @@ export class Utility {
      * @param options: Object
      * @return: string[]
      */
-    public static getTableOptions(roles: string[], options: Object, optionType : string) : string[]{
+    public static getTableOptions(roles: string[], options: any, optionType : string) : string[]{
         //new Set([]) is used to avoid repeated options when a user has multiple roles
         const set = new Set([]);
         roles.forEach(accountRole => {
-            permissions[accountRole].tables[optionType].forEach(item =>set.add(options[item]));
+            permissions[accountRole]?.tables[optionType]?.forEach(item =>set.add(options[item]));
         });
         return [...set];
     }
@@ -120,7 +120,7 @@ export class Utility {
         const set = new Set([]);
         options.forEach((item) => {
             roles.forEach(accountRole => {
-                const found = permissions[accountRole].paths.find(path => path === item.path);
+                const found = permissions[accountRole]?.paths.find(path => path === item.path);
                 if (found)
                     set.add(item)
             });

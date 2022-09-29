@@ -356,7 +356,7 @@ export const SubaccountServiceMock = {
             };
         });
     },
-    getSubAccountDetails: (subAccountId: string) => {
+    getSubAccountDetails: (subAccountId?: string) => {
         return new Observable( (observer) => {
             observer.next(
                 {

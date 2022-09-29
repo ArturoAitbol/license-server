@@ -21,8 +21,8 @@ export class CtaasStakeholderComponent implements OnInit {
   displayedColumns: any[] = [];
   stakeholdersData: any = [];
   actionMenuOptions: any = [];
-  isLoadingResults: boolean = false;
-  isRequestCompleted: boolean = false;
+  isLoadingResults = false;
+  isRequestCompleted = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
@@ -100,9 +100,8 @@ export class CtaasStakeholderComponent implements OnInit {
             });
             return e;
           }
-          catch (exption) {
-            console.error('some error |', exption);
-            return e;
+          catch (exception) {
+            console.error('some error |', exception);
           }
         })
       )
@@ -239,8 +238,8 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   getReports(): any[] {
     return [
-      { label: "Daily reports", value: Report.DAILY_REPORTS },
-      { label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { label: "Daily Reports", value: Report.DAILY_REPORTS },
+      { label: "Weekly Reports", value: Report.WEEKLY_REPORTS },
       { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
   }

@@ -1,4 +1,4 @@
-import { of } from "rxjs";
+import { of, Observable } from "rxjs";
 
 const DEVICE_LIST = {
     devices: [
@@ -705,6 +705,36 @@ export const DevicesServiceMock = {
 
     getDeviceById: (id: string) => {
         return of({ devices: [DEVICE_LIST.devices.filter(device => device.id === id)[0]] })
+    },
+    updateDevice: (device: any) => {
+        return new Observable((observer) => {
+            observer.next(
+                {
+                  
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
+    },
+    createDevice: (device: any) => {
+        return new Observable((observer) => {
+            observer.next(
+                { 
+                    body:[
+                        {
+                 
+                        }
+                    ]
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
     }
 };
 

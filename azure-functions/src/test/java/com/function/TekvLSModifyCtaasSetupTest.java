@@ -117,7 +117,64 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         assertTrue(jsonBody.has("projectId"));
         assertTrue(jsonBody.has("deviceId"));
     }
-    
+
+
+    @Tag("acceptance")
+    @Test
+    public void modifyStatusTestWithoutLicenseId(){
+        //Given
+        String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "error: licenseId is missing.";
+        assertEquals(expectedResponse,actualResponse,"Response doesn't match with: ".concat(expectedResponse));
+    }
+
+
+    @Tag("acceptance")
+    @Test
+    public void modifyStatusTestWithoutSubaccountId(){
+        //Given
+        String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "error: subaccountId is missing.";
+        assertEquals(expectedResponse,actualResponse,"Response doesn't match with: ".concat(expectedResponse));
+    }
+
+
+
     @Tag("acceptance")
     @Test
     public void modifyTapDetailsTest(){

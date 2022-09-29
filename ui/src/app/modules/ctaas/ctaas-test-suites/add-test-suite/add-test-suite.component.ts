@@ -14,9 +14,7 @@ export class AddTestSuiteComponent implements OnInit {
   isDataLoading = false;
   addTestSuiteForm = this.formBuilder.group({
     name: ['', Validators.required],
-    deviceType: ['Webex', Validators.required],
-    totalExecutions: ['', Validators.required],
-    nextExecution: ['', Validators.required],
+    deviceType: ['MS Teams', Validators.required],
     frequency: ['', Validators.required]
   });
   frequencies: string[] = [
@@ -44,8 +42,6 @@ export class AddTestSuiteComponent implements OnInit {
       subaccountId: this.currentCustomer.id,
       name: this.addTestSuiteForm.value.name,
       deviceType: this.addTestSuiteForm.value.deviceType,
-      totalExecutions: this.addTestSuiteForm.value.totalExecutions,
-      nextExecution: this.addTestSuiteForm.value.nextExecution.format("YYYY-MM-DD"),
       frequency: this.addTestSuiteForm.value.frequency,
     };
     this.testSuiteService.createTestSuite(suiteObject).subscribe((res: any) => {
