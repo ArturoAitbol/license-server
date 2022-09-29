@@ -55,4 +55,13 @@ export const StakeHolderServiceMock = {
             };
         });
     },
+    updateStakeholderDetails: () => {
+        return new Observable((observer) => {
+            observer.next(STAKE_HOLDERS_LIST);
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
+    }
 }

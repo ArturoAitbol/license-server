@@ -52,4 +52,5 @@ export class DialogServiceMock {
             };
         });
     }
+    close(): void {}
 }
