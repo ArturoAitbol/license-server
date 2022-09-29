@@ -13,6 +13,11 @@ import {SubaccountServiceMock} from '../../../../test/mock/services/subaccount-s
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { MsalService } from '@azure/msal-angular';
+import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
+import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
+import { Features } from 'src/app/helpers/features';
+import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 
 let addCustomerAccountModalComponentInstance: AddCustomerAccountModalComponent;
 let fixture: ComponentFixture<AddCustomerAccountModalComponent>;
@@ -51,6 +56,10 @@ const beforeEachFunction = async () => {
             {
                 provide: MatDialogRef,
                 useValue: MatDialogRefMock
+            },
+            {
+                provide: MsalService,
+                useValue: MsalServiceMock
             }
         ]
     }).compileComponents().then(() => {
@@ -120,6 +129,16 @@ describe('addCustomer', () => {
             subaccountName: customerToAdd.subaccountName,
             testCustomer: customerToAdd.testCustomer,
         });
+        const expectedCustomerCall: any = {
+            customerId: '12341234-1234-1234-1234-123412341234',
+            subaccountName: customerToAdd.subaccountName,
+            subaccountAdminEmail: ''
+        }
+        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
+            expectedCustomerCall.services = tekVizionServices.tekTokenConstumption;
+            customerToAdd.services = tekVizionServices.tekTokenConstumption;
+            addCustomerAccountModalComponentInstance.addCustomerForm['services'] = customerToAdd.services;
+        }
         spyOn(CustomerServiceMock, 'createCustomer').and.callThrough();
         spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
@@ -128,11 +147,7 @@ describe('addCustomer', () => {
         addCustomerAccountModalComponentInstance.addCustomer();
 
         expect(CustomerServiceMock.createCustomer).toHaveBeenCalledWith(customerToCompare);
-        expect(addCustomerAccountModalComponentInstance.createSubAccount).toHaveBeenCalledWith({
-            customerId: '12341234-1234-1234-1234-123412341234',
-            subaccountName: customerToAdd.subaccountName,
-            subaccountAdminEmail: ''
-        });
+        expect(addCustomerAccountModalComponentInstance.createSubAccount).toHaveBeenCalledWith(expectedCustomerCall);
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Customer added successfully!', '' );
     });
 
@@ -184,6 +199,9 @@ describe('createSubAccount', () => {
             subaccountName: 'test subaccount name',
             subaccountAdminEmail: 'test subaccount admin email',
         };
+        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
+            subaccountDetails.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
+        }
         spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar');
         spyOn(MatDialogRefMock, 'close');
