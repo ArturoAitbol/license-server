@@ -95,11 +95,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private getActionMenuOptions() {
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-        this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"customerOptions");
+        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "customerOptions");
         // check for CTaas Toggle feature, if false then remove VIEW_CTAAS_DASHBOARD option in action menu
-        if (!FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
-            const index = this.actionMenuOptions.findIndex(option=>option===this.VIEW_CTAAS_DASHBOARD);
-            this.actionMenuOptions.splice(index,1);
+        if (!FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)) {
+            const index = this.actionMenuOptions.findIndex(option => option === this.VIEW_CTAAS_DASHBOARD);
+            this.actionMenuOptions.splice(index, 1);
         }
     }
 
@@ -408,12 +408,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access Subaccount admin emails view', '');
                 break;
             case this.VIEW_CTAAS_DASHBOARD:
-                const { selectedRow: { services } } = object;
+                const { selectedRow: { subaccountId, subaccountName, id, name, services } } = object;
                 const selectedSubaccount = {
-                    id: object.selectedRow.subaccountId,
-                    name: object.selectedRow.subaccountName,
-                    customerId: object.selectedRow.id,
-                    services: object.selectedRow.services
+                    id: subaccountId,
+                    name: subaccountName,
+                    customerId: id,
+                    customerName: name,
+                    services: services
                 };
                 this.subaccountService.setSelectedSubAccount(selectedSubaccount);
                 const hasCtaasService = services && services.includes(tekVizionServices.SpotLight);
