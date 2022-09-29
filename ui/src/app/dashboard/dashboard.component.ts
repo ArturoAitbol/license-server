@@ -24,7 +24,6 @@ import { debounceTime, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs/internal/Subject";
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 import { Features } from '../helpers/features';
-import { permissions } from '../helpers/role-permissions';
 import { tekVizionServices } from '../helpers/tekvizion-services';
 
 @Component({
