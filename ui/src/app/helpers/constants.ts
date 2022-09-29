@@ -17,5 +17,8 @@ export class Constants {
     public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekVizion 360 Portal';
     public static readonly CTAAS_TOOL_BAR: string = 'SpotLight';
 
+    //Phone number Validation
+    public static readonly PHONE_NUMBER_PATTERN = '^[+]*[0-9]*$';
+
 }
 
