@@ -40,12 +40,12 @@ export class UpdateStakeHolderComponent implements OnInit {
       notifications: new FormArray([])
     });
     try {
-      const { mobilePhone, email } = this.data;
+      const { email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
       const { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
       if (notifications) {
-        const mappedNotifications = notifications.split(',').map(e => {
-          const obj = this.reports.find(x => x.label === e);
+        const mappedNotifications = notifications.split(',').map((e: string) => {
+          const obj = this.reports.find((x: { label: string, value: string }) => x.label.toLowerCase() === e.toLowerCase());
           if (obj) {
             return obj.value;
           }
