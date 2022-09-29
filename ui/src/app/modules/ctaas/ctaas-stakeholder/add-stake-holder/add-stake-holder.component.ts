@@ -35,7 +35,7 @@ export class AddStakeHolderComponent implements OnInit {
       jobTitle: ['', Validators.required],
       subaccountAdminEmail: ['', [Validators.required, Validators.email]],
       companyName: ['', Validators.required],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
       type: ['', Validators.required],
       notifications: new FormArray([])
     });
