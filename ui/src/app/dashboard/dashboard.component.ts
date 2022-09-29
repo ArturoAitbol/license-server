@@ -95,11 +95,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private getActionMenuOptions() {
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-        this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"customerOptions");
+        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "customerOptions");
         // check for CTaas Toggle feature, if false then remove VIEW_CTAAS_DASHBOARD option in action menu
-        if (!FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
-            const index = this.actionMenuOptions.findIndex(option=>option===this.VIEW_CTAAS_DASHBOARD);
-            this.actionMenuOptions.splice(index,1);
+        if (!FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)) {
+            const index = this.actionMenuOptions.findIndex(option => option === this.VIEW_CTAAS_DASHBOARD);
+            this.actionMenuOptions.splice(index, 1);
         }
     }
 
@@ -213,10 +213,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     /**
      * on click delete account
-     * @param index: string
+     * @param id: string
      */
-    onDeleteAccount(index: string): void {
-        this.openConfirmCancelDialog(index);
+    onDeleteAccount(id: string): void {
+        this.openConfirmCancelDialog(id);
     }
 
     /**
@@ -291,7 +291,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     /**
      * open confirm cancel dialog
      */
-    openConfirmCancelDialog(index?: number | string) {
+    openConfirmCancelDialog(customerId?: number | string) {
+        const customer = this.customerList.find((customer: any) => customer.id = customerId);
         this.dialogService
             .deleteCustomerDialog({
                 title: 'Confirm Action',
@@ -299,12 +300,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 confirmCaption: 'Delete Subaccount',
                 deleteAllDataCaption: 'Delete Customer',
                 cancelCaption: 'Cancel',
-                canDeleteSubaccount: this.customerList[index]?.testCustomer
+                canDeleteSubaccount: customer?.testCustomer
             })
             .subscribe((result) => {
                 if (result.confirm) {
-                    console.debug('The user confirmed the action: ', this.customerList[index]);
-                    const { subaccountId, id } = this.customerList[index];
+                    console.debug('The user confirmed the action: ', customer);
+                    const { subaccountId, id } = customer;
                     if (subaccountId && !result.deleteAllData) {
                         this.subaccountService.deleteSubAccount(subaccountId).subscribe((res: any) => {
                             if (!res?.error) {
@@ -427,7 +428,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.openDialog(object.selectedOption, object.selectedRow);
                 break;
             case this.DELETE_ACCOUNT:
-                this.onDeleteAccount(object.selectedIndex);
+                this.onDeleteAccount(object.selectedRow.id);
                 break;
         }
     }
