@@ -66,7 +66,7 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
       type: ['', Validators.required],
       notifications: new FormArray([]),
     });
@@ -76,7 +76,7 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
       type: ['', Validators.required],
       notifications: new FormArray([]),
     });
