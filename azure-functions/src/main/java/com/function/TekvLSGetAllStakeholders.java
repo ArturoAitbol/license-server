@@ -194,7 +194,7 @@ public class TekvLSGetAllStakeholders {
 		for (Object obj : array) {
 			json = (JSONObject) obj;
 			try {
-				 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+				 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
 					json.put("name","");
 					json.put("jobTitle","");
 					json.put("companyName","");
