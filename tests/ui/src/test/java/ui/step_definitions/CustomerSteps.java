@@ -67,8 +67,7 @@ public class CustomerSteps {
     @When("I delete the subaccount {string} of the customer {string}")
     public void iDeleteTheSubaccount(String subaccountName, String customerName) {
         this.actionMenu = this.customerRow.openActionMenu();
-        this.actualMessage = this.actionMenu.delete("customer");
-//        this.actualMessage = this.actionMenu.delete("subaccount");
+        this.actualMessage = this.actionMenu.delete("subaccount");
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
