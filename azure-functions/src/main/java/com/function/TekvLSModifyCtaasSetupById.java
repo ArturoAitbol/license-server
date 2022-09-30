@@ -187,7 +187,7 @@ public class TekvLSModifyCtaasSetupById {
 				licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
 
 				// adding users if feature toggle 'ad-ctaas-user-creation-after-setup-ready' enabled
-				if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation") && FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
+				if (FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
 					this.ADUserCreation(jobj,context,connection);
 
 				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
