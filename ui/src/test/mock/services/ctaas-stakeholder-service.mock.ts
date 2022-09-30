@@ -8,9 +8,9 @@ const STAKE_HOLDERS_LIST = {
             companyName: 'tert',
             subaccountAdminEmail: 'tert@gmail.com',
             phoneNumber: '1111111111',
-            notifications: 'TYPE:LOW TIER,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
+            notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'LOW TIER'
+            type:'Detailed'
         },
         {
             name:'vbvb', 
@@ -18,9 +18,9 @@ const STAKE_HOLDERS_LIST = {
             companyName:'bvbvb', 
             subaccountAdminEmail:'vbvbvb@gmail.com', 
             phoneNumber:'2222222222', 
-            notifications:'TYPE:HIGH TIER,DAILY_REPORTS,WEEKLY_REPORTS',
+            notifications:'TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'HIGH TIER'
+            type:'High level'
         }
     ]
 };
