@@ -3,7 +3,7 @@ export class Constants {
     public static readonly SELECTED_CUSTOMER: string = 'selectedCustomer';
     public static readonly SELECTED_SUBACCOUNT: string = 'selectedSubAccount';
     public static readonly PROJECT: string = 'project';
-    public static readonly SUBACCOUNT_USER_PROJECT: string = 'subAccountUserProfile';
+    public static readonly SUBACCOUNT_USER_PROFILE: string = 'subAccountUserProfile';
     public static readonly CURRENT_ENABLED_SERVICES: string = 'currentEnabledServices';
     public static readonly TOOLBAR_DETAILS: string = 'toolbarDetails';
 
