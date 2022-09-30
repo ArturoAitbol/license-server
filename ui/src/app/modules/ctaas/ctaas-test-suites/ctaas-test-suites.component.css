@@ -1,12 +1,12 @@
-.suites-content {
-    padding: 20px;
-  }
+/* .suites-content {
+    /* padding: 20px; */
+  /* } */ */
   table {
     width: 100%;
   }
-  .table-section {
-    margin-top: 2em;
-  }
+  /* .table-section {
+    margin-top: 1em;
+  } */
   th.mat-sort-header-sorted {
     color: black;
   }
@@ -24,5 +24,17 @@
     font-size: 1rem;
     font-weight: 500;
     margin-top: 50px;
+  }
+  #page-title {
+    font: 500 20px / 32px Roboto, "Helvetica Neue", sans-serif !important;
+    letter-spacing: normal;
+    margin: 0 0 16px;
+    height: 0px;
+    /* padding-top: 8px; */
+  }
+  .test-suite-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0px;
   }
   

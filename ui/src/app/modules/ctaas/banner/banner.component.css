@@ -1,0 +1,28 @@
+.banner-container {
+    height: 40px;
+    background: #f0f0f0;
+    padding: 6px;
+}
+ul {
+    list-style-type: none;
+    /* display: inline-flex; */
+    margin: 0;
+    padding: 0;
+}
+ul li {
+    padding: 0px 10px;
+    display: inline-block;
+    color: #203c66;
+    font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
+    letter-spacing: normal;
+    /* margin: 0 0 16px; */
+}
+ul.breadcrumb li+li:before {
+    /* padding: 8px; */
+    color: #203c66;
+    content: "/\00a0";
+}
+.alignment {
+    margin-left: 12px;
+    margin-right: 12px;
+} 

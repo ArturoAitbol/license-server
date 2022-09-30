@@ -24,6 +24,7 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   testSuites: any = [];
   isLoadingResults = true;
   isRequestCompleted = false;
+  loggedInUserRoles: string[] = [];
   // readonly EXECUTE_ON_DEMAND: string = 'Execute OnDemand';
   readonly MODIFY_TEST_SUITE: string = 'Edit';
   readonly DELETE_TEST_SUITE: string = 'Delete';
@@ -66,7 +67,14 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
       - (window.outerHeight * 0.05 * 2); // - table-section margin
   }
 
+  private getAccountDetails(): any | null {
+    return this.msalService.instance.getActiveAccount() || null;
+  }
+
   ngOnInit(): void {
+    const accountDetails = this.getAccountDetails();
+    const { idTokenClaims: { roles } } = accountDetails;
+    this.loggedInUserRoles = roles;
     this.calculateTableHeight();
     this.currentCustomer = this.subaccountService.getSelectedSubAccount();
     this.initColumns();

@@ -23,6 +23,7 @@ export class CtaasStakeholderComponent implements OnInit {
   actionMenuOptions: any = [];
   isLoadingResults = false;
   isRequestCompleted = false;
+  loggedInUserRoles: string[] = [];
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
@@ -119,7 +120,14 @@ export class CtaasStakeholderComponent implements OnInit {
       });
   }
 
+  private getAccountDetails(): any | null {
+    return this.msalService.instance.getActiveAccount() || null;
+  }
+
   ngOnInit(): void {
+    const accountDetails = this.getAccountDetails();
+    const { idTokenClaims: { roles } } = accountDetails;
+    this.loggedInUserRoles = roles;
     this.calculateTableHeight();
     this.getActionMenuOptions();
     this.initColumns();

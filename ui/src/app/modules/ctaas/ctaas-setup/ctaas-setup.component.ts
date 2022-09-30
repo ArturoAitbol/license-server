@@ -8,6 +8,7 @@ import { ICtaasSetup } from "src/app/model/ctaas-setup.model";
 import { LicenseService } from "src/app/services/license.service";
 import { MatDialog } from "@angular/material/dialog";
 import { LicenseConfirmationModalComponent } from "./license-confirmation-modal/license-confirmation-modal.component";
+import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-ctaas-setup',
@@ -20,10 +21,11 @@ export class CtaasSetupComponent implements OnInit {
   originalCtaasSetupDetails: ICtaasSetup;
   isDataLoading = false;
   isEditing = false;
+  loggedInUserRoles: string[] = [];
 
   readonly statusOptions = {
-    SETUP_READY: { label: 'READY'},
-    SETUP_INPROGRESS: { label: 'IN PROGRESS'}
+    SETUP_READY: { label: 'READY' },
+    SETUP_INPROGRESS: { label: 'IN PROGRESS' }
   };
 
 
@@ -37,14 +39,22 @@ export class CtaasSetupComponent implements OnInit {
   });
 
   constructor(
-      private ctaasSetupService: CtaasSetupService,
-      private fb: FormBuilder,
-      private snackBarService: SnackBarService,
-      private subaccountService: SubAccountService,
-      private licenseService: LicenseService,
-      public dialog: MatDialog) { }
+    private ctaasSetupService: CtaasSetupService,
+    private fb: FormBuilder,
+    private snackBarService: SnackBarService,
+    private subaccountService: SubAccountService,
+    private licenseService: LicenseService,
+    private msalService: MsalService,
+    public dialog: MatDialog) { }
+
+  private getAccountDetails(): any | null {
+    return this.msalService.instance.getActiveAccount() || null;
+  }
 
   ngOnInit(): void {
+    const accountDetails = this.getAccountDetails();
+    const { idTokenClaims: { roles } } = accountDetails;
+    this.loggedInUserRoles = roles;
     this.fetchSetupInfo();
     this.disableForm();
   }
@@ -52,7 +62,7 @@ export class CtaasSetupComponent implements OnInit {
   editForm() {
     this.setupForm.enable();
     this.setupForm.get('onBoardingComplete').disable();
-    if (this.setupForm.value.status ===  'SETUP_READY') this.setupForm.get('status').disable();
+    if (this.setupForm.value.status === 'SETUP_READY') this.setupForm.get('status').disable();
     this.isEditing = true;
   }
 

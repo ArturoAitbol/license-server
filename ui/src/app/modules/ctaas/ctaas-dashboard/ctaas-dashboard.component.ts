@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -42,6 +42,8 @@ export class CtaasDashboardComponent implements OnInit {
   // Flag which specify the type of embedding
   phasedEmbeddingFlag = false;
   reportConfig: IReportEmbedConfiguration;
+
+  @ViewChild('embeddedReport') embeddedReport: ElementRef;
   /**
    * Map of event handlers to be applied to the embedded report
    */
