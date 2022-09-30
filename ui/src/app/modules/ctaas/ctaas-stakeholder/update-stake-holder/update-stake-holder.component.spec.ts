@@ -32,8 +32,8 @@ const currentStakeHolder = {
     email: "teststakeholder11@gmail.com",
     jobTitle: "test",
     name: "testName",
-    notifications: "Daily reports",
-    phoneNumber: "",
+    notifications: 'Weekly Reports,Monthly Summaries',
+    phoneNumber: "2222222222",
     subaccountId: "f6c0e45e-cfdc-4c1a-820e-bef6a856aaea",
     type: "HIGH TIER"
 };
@@ -85,7 +85,7 @@ const beforeEachFunction = () => {
             {
                 provide: MAT_DIALOG_DATA,
                 useValue: currentStakeHolder
-            },
+            }
         ]
     });
     fixture = TestBed.createComponent(UpdateStakeHolderComponent);
@@ -94,7 +94,7 @@ const beforeEachFunction = () => {
     spyOn(console, 'log').and.callThrough();
 };
 
-fdescribe('UI verification test', () => {
+describe('UI verification test', () => {
     beforeEach(beforeEachFunction);
     it('should display essential UI and components', () => {
         fixture.detectChanges();
@@ -110,25 +110,42 @@ fdescribe('UI verification test', () => {
         expect(jobTitleLabel.textContent).toBe('Job Title');
         expect(companyNameLabel.textContent).toBe('Company Name');
         expect(emailLabel.textContent).toBe('Email');
-        expect(mobileNumberLabel.textContent).toBe('Mobile Number')
+        expect(mobileNumberLabel.textContent).toBe('Phone Number')
     });
 });
 
-fdescribe('modify stakeholder interactions', () => {
-    it('it should update an stakeholder', () => {
+describe('modify stakeholder interactions', () => {
+    beforeEach(beforeEachFunction)
+    it('it should update an stakeholder', async () => {
         spyOn(modifyStakeholderComponentTestInstance, 'updateStakeholderDetails').and.callThrough();
-
+        spyOn(StakeHolderServiceMock, 'updateStakeholderDetails').and.callThrough();
+        fixture.detectChanges();
+        
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('name').setValue('testN');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('jobTitle').setValue('testJ');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('companyName').setValue('testC');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('phoneNumber').setValue('1111111111');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('LOW TIER');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([true, true, false]);
+       
         modifyStakeholderComponentTestInstance.updateStakeholderDetails();
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('name').setValue('testName');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([true, false, true]);
-
-        expect(modifyStakeholderComponentTestInstance.updateStakeholderDetails).toHaveBeenCalled();
-        expect(fixture.debugElement.nativeElement.querySelector('#submit-project-button').disabled).toBeTrue();
+        await fixture.whenStable();
+        expect(StakeHolderServiceMock.updateStakeholderDetails).toHaveBeenCalled();
     });
 
-    it('it shuold cancel the update of a stakeholder', () => {
+    it('should cancel the update of a stakeholder', () => {
         spyOn(modifyStakeholderComponentTestInstance, 'updateStakeholderDetails').and.callThrough();
         spyOn(dialogService, 'close').and.callThrough();
+        fixture.detectChanges();
+
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('name').setValue('testN');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('jobTitle').setValue('testJ');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('companyName').setValue('testC');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('phoneNumber').setValue('1111111111');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('LOW TIER');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([true, true, false]);
 
         modifyStakeholderComponentTestInstance.updateStakeholderDetails();
         modifyStakeholderComponentTestInstance.onCancel();
@@ -138,9 +155,70 @@ fdescribe('modify stakeholder interactions', () => {
 
     it('should check the report checkbox', () => {
         spyOn(modifyStakeholderComponentTestInstance, 'onChangeReportCheckbox').and.callThrough();
-
+        fixture.detectChanges();
         modifyStakeholderComponentTestInstance.onChangeReportCheckbox(true,1);
 
         expect(modifyStakeholderComponentTestInstance.onChangeReportCheckbox).toHaveBeenCalled();
     });
 });
+
+describe('modify stakeholder - FromGroup verification test', () => {
+    beforeEach(beforeEachFunction);
+    it('should make all the controls required', () => {
+        fixture.detectChanges();
+        const modifyStakeholder = modifyStakeholderComponentTestInstance.updateStakeholderForm
+
+        modifyStakeholder.setValue({
+            name: '',
+            jobTitle:'',
+            companyName:'',
+            subaccountAdminEmail:'',
+            phoneNumber:'',
+            type:'',
+            notifications: ['','','']
+        });
+        expect(modifyStakeholder.get('name').valid).toBeFalse();
+        expect(modifyStakeholder.get('jobTitle').valid).toBeFalse();
+        expect(modifyStakeholder.get('companyName').valid).toBeFalse();
+        expect(modifyStakeholder.get('subaccountAdminEmail').valid).toBeFalse();
+        expect(modifyStakeholder.get('phoneNumber').valid).toBeFalse();
+        expect(modifyStakeholder.get('type').valid).toBeFalse();
+        expect(modifyStakeholder.get('notifications').valid).toBeTrue();
+    })
+
+    it('it should enable the submit button', () => {
+        fixture.detectChanges();
+        const modifyStakeholder = modifyStakeholderComponentTestInstance.updateStakeholderForm;
+
+        modifyStakeholder.setValue({
+            name:'testNf',
+            jobTitle:'testJf',
+            companyName:'testCf',
+            subaccountAdminEmail:'teststakeholder11@gmail.com',
+            phoneNumber:'+919898989809',
+            type:'LOW TIER',
+            notifications:[true, true, false],
+        });
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').enable();
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('teststakeholder11@gmail.com');
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submit-stakeholder-button').disabled).toBeFalse();
+    });
+
+    it('it should disable the submit button', () => {
+        fixture.detectChanges();
+        const modifyStakeholder = modifyStakeholderComponentTestInstance.updateStakeholderForm;
+
+        modifyStakeholder.setValue({
+            name:'',
+            jobTitle:'',
+            companyName:'',
+            subaccountAdminEmail:'',
+            phoneNumber:'',
+            type:'',
+            notifications:['', '', ''],
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submit-stakeholder-button').disabled).toBeTrue();
+    });
+})

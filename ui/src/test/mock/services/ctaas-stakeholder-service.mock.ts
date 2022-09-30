@@ -57,7 +57,7 @@ export const StakeHolderServiceMock = {
     },
     updateStakeholderDetails: () => {
         return new Observable((observer) => {
-            observer.next(STAKE_HOLDERS_LIST);
+            observer.next();
             observer.complete();
             return {
                 unsubscribe() {}
