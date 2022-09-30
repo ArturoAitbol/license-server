@@ -56,7 +56,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
 
         context.getLogger().info("Entering TekvLSDeleteSubaccountStakeHolderByEmail Azure function");
 
-        if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+        if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
             try{
                 GraphAPIClient.removeRole(email,SUBACCOUNT_STAKEHOLDER,context);
                 context.getLogger().info("Guest User Role removed successfully from Active Directory. Email : "+email);

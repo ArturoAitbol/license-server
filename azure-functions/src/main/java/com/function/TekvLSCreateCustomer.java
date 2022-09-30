@@ -169,7 +169,7 @@ public class TekvLSCreateCustomer
 			emailStatement.executeUpdate();
 			context.getLogger().info("Admin emails inserted successfully.");
 
-			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation") && FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
+			if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
 				String customerName = jobj.getString(MANDATORY_PARAMS.CUSTOMER_NAME.value);
 				String customerEmail = jobj.getString(MANDATORY_PARAMS.CUSTOMER_ADMIN_EMAIL.value);
 				GraphAPIClient.createGuestUserWithProperRole(customerName,customerEmail,CUSTOMER_FULL_ADMIN,context);

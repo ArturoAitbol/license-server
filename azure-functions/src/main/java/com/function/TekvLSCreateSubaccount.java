@@ -170,9 +170,9 @@ public class TekvLSCreateSubaccount
 					insertCtassSetupStmt.executeUpdate();
 					context.getLogger().info("SpotLight setup default values inserted successfully.");
 
-					if(!FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
+					if (!FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
 						this.ADUserCreation(jobj,context);
-				}else{
+				} else {
 					this.ADUserCreation(jobj,context);
 				}
 			} else {
@@ -211,7 +211,7 @@ public class TekvLSCreateSubaccount
 	}
 
 	private void ADUserCreation(JSONObject jobj, ExecutionContext context) throws Exception {
-		if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
+		if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
 			String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
 			String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
 			GraphAPIClient.createGuestUserWithProperRole(subaccountName, subaccountEmail, SUBACCOUNT_ADMIN, context);
