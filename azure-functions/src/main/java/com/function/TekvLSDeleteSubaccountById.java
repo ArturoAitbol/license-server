@@ -77,7 +77,7 @@ public class TekvLSDeleteSubaccountById
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
+			if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
 				String emailSql = "SELECT sa.subaccount_admin_email, ca.admin_email FROM subaccount_admin sa " +
 						"LEFT JOIN customer_admin ca ON sa.subaccount_admin_email = ca.admin_email " +
 						"WHERE subaccount_id = ?::uuid;";

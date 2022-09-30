@@ -81,7 +81,7 @@ public class TekvLSCreateSubaccountAdminEmail {
             statement.executeUpdate();
             context.getLogger().info("Subaccount Admin email inserted successfully.");
 
-            if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+            if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
                 final String subaccountNameSql = "SELECT name FROM subaccount WHERE id = ?::uuid;";
                 try(PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)){
                     subaccountNameStmt.setString(1,createSubaccountAdminRequest.getSubaccountId());
