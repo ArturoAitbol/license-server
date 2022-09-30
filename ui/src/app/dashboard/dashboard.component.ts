@@ -24,7 +24,6 @@ import { debounceTime, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs/internal/Subject";
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 import { Features } from '../helpers/features';
-import { permissions } from '../helpers/role-permissions';
 import { tekVizionServices } from '../helpers/tekvizion-services';
 
 @Component({
@@ -213,10 +212,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     /**
      * on click delete account
-     * @param index: string
+     * @param id: string
      */
-    onDeleteAccount(index: string): void {
-        this.openConfirmCancelDialog(index);
+    onDeleteAccount(id: string): void {
+        this.openConfirmCancelDialog(id);
     }
 
     /**
@@ -291,7 +290,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     /**
      * open confirm cancel dialog
      */
-    openConfirmCancelDialog(index?: number | string) {
+    openConfirmCancelDialog(customerId?: number | string) {
+        const customer = this.customerList.find((customer: any) => customer.id = customerId);
         this.dialogService
             .deleteCustomerDialog({
                 title: 'Confirm Action',
@@ -299,12 +299,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 confirmCaption: 'Delete Subaccount',
                 deleteAllDataCaption: 'Delete Customer',
                 cancelCaption: 'Cancel',
-                canDeleteSubaccount: this.customerList[index]?.testCustomer
+                canDeleteSubaccount: customer?.testCustomer
             })
             .subscribe((result) => {
                 if (result.confirm) {
-                    console.debug('The user confirmed the action: ', this.customerList[index]);
-                    const { subaccountId, id } = this.customerList[index];
+                    console.debug('The user confirmed the action: ', customer);
+                    const { subaccountId, id } = customer;
                     if (subaccountId && !result.deleteAllData) {
                         this.subaccountService.deleteSubAccount(subaccountId).subscribe((res: any) => {
                             if (!res?.error) {
@@ -428,7 +428,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.openDialog(object.selectedOption, object.selectedRow);
                 break;
             case this.DELETE_ACCOUNT:
-                this.onDeleteAccount(object.selectedIndex);
+                this.onDeleteAccount(object.selectedRow.id);
                 break;
         }
     }

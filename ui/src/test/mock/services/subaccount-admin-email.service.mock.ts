@@ -1,14 +1,14 @@
 import {Observable} from 'rxjs';
-const CUSTOMER_ADMIN_EMAIL ={
-    "customerAdminEmail":"z-test+1@customer.com",
-    "customerId":"e3c62d9c-d3f2-4b16-9164-28b76017c8f5"
+const SUBACCOUNT_ADMIN_EMAIL ={
+    "subaccountAdminEmail": "test@tekvizion.com",
+    "subaccountId": "20a00e47-464f-4ff3-ba01-5269170d38ac"
 }
-const MOCK_CUSTOMER_ADMIN_EMAIL_CREATED= {};
-export const CustomerAdminEmailServiceMock = {
-    customerAdminEmail: CUSTOMER_ADMIN_EMAIL,
+const MOCK_SUBACCOUNT_ADMIN_EMAIL_CREATED= {};
+export const SubaccountAdminEmailServiceMock = {
+    subaccountAdminEmail: SUBACCOUNT_ADMIN_EMAIL,
     createAdminEmail: () => {
         return new Observable((observer) => {
-            observer.next(CUSTOMER_ADMIN_EMAIL);
+            observer.next(SUBACCOUNT_ADMIN_EMAIL);
             observer.complete();
             return {
                 unsubscribe() { }

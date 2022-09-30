@@ -39,7 +39,7 @@ export class OnboardWizardComponent implements OnInit {
    * fetch user profile details
    */
   fetchUserProfileDetails(): void {
-    const subaccountUserProfileDetails = this.subaccountService.getSelectedSubAccount();
+    const subaccountUserProfileDetails = this.userprofileService.getSubaccountUserProfileDetails();
     const { companyName, email, jobTitle, phoneNumber, name, subaccountId } = subaccountUserProfileDetails;
     const parsedObj = { companyName, email, jobTitle, phoneNumber, name, subaccountId };
     this.userProfileForm.patchValue(parsedObj);
@@ -66,7 +66,7 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
       type: ['', Validators.required],
       notifications: new FormArray([]),
     });
@@ -76,7 +76,7 @@ export class OnboardWizardComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
       type: ['', Validators.required],
       notifications: new FormArray([]),
     });
@@ -147,14 +147,14 @@ export class OnboardWizardComponent implements OnInit {
     this.configuredReports = true;
     this.isDataLoading = true;
     const requestPayload = this.stakeholderForm.value;
-    const { type, notifications } = requestPayload;
+    let { type, notifications } = requestPayload;
     const { subaccountId } = this.subaccountUserProfileDetails;
     requestPayload.subaccountId = subaccountId;
     // requestPayload.notifications = type
+    notifications = notifications.filter((e: string) => e !== null && e !== undefined);
     if (notifications.length > 0) {
       requestPayload.notifications = type + ',' + notifications.join(',');
-    }
-    else {
+    } else {
       requestPayload.notifications = type;
     }
     this.stakeholderService.createStakeholder(requestPayload).subscribe((response: any) => {

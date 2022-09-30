@@ -35,7 +35,7 @@ let fixture: ComponentFixture<DashboardComponent>;
 const dialogServiceMock = new DialogServiceMock();
 
 const RouterMock = {
-    navigate: (commands: string[]) => {}
+    navigate: (commands: string[]) => { }
 };
 
 const beforeEachFunction = async () => {
@@ -267,7 +267,8 @@ describe('.rowAction()', () => {
         const selectedTestData = {
             selectedRow: {
                 testProperty: 'testData',
-                subaccountId: undefined
+                subaccountId: undefined,
+                id: '821f079f-be9f-4b11-b364-4f9652c581ce'
             },
             selectedOption: 'selectedTestOption',
             selectedIndex: 'selectedTestItem',
@@ -393,7 +394,8 @@ describe('.rowAction()', () => {
         const selectedTestData = {
             selectedRow: {
                 testProperty: 'testData',
-                subaccountId: undefined
+                subaccountId: undefined,
+                id: undefined
             },
             selectedOption: 'selectedTestOption',
             selectedIndex: 'selectedTestItem',
@@ -403,11 +405,11 @@ describe('.rowAction()', () => {
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.DELETE_ACCOUNT;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(dashboardComponentTestInstance.onDeleteAccount).toHaveBeenCalledWith(selectedTestData.selectedIndex);
+        expect(dashboardComponentTestInstance.onDeleteAccount).toHaveBeenCalledWith(selectedTestData.selectedRow.id);
     });
 });
 
-describe('.columnAction()', ()  => {
+describe('.columnAction()', () => {
     beforeEach(beforeEachFunction);
     it('should make a call to openLicenseConsumption or snackBarService if the column name is "Subaccount"', () => {
         const selectedTestData: { selectedRow: any, selectedIndex: string, columnName: string } = {
@@ -451,14 +453,14 @@ describe('.columnAction()', ()  => {
 
 });
 
-describe('Filtering table rows', ()  => {
+describe('Filtering table rows', () => {
     beforeEach(beforeEachFunction);
     it('should filter the rows in the table based on the name, type and status filters', async () => {
-        dashboardComponentTestInstance.filterForm.patchValue({customerFilterControl: "Amazon", typeFilterControl: "MSP", subStatusFilterControl: "Inactive"});
+        dashboardComponentTestInstance.filterForm.patchValue({ customerFilterControl: "Amazon", typeFilterControl: "MSP", subStatusFilterControl: "Inactive" });
         fixture.detectChanges();
         await fixture.whenStable();
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
-        const objectToCompare: any = {"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive"};
+        const objectToCompare: any = { "customerType": "MSP", "testCustomer": false, "name": "Amazon", "id": "aa85399d-1ce9-425d-9df7-d6e8a8baaec2", "subaccountName": "360 Custom (No Tokens)", "subaccountId": "24372e49-5f31-4b38-bc3e-fb6a5c371623", "status": "Inactive" };
         if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature))
             objectToCompare.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
         expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);

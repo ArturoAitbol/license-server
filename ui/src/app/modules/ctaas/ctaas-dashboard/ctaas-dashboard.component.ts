@@ -154,7 +154,14 @@ export class CtaasDashboardComponent implements OnInit {
           embedUrl,
           tokenType: models.TokenType.Embed,
           accessToken: embedToken,
-          settings: undefined
+          settings: {
+            filterPaneEnabled: false,
+            navContentPaneEnabled: true,
+            layoutType: models.LayoutType.Custom,
+            customLayout: {
+              displayOption: models.DisplayOption.FitToPage
+            }
+          }
         };
         this.hasDashboardDetails = true;
       } else {
