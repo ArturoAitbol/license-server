@@ -8,10 +8,11 @@ import ui.core.AbstractPageObject;
 public class Consumptions extends AbstractPageObject {
     @FindBy(css = "#add-license-consumption-button")
     WebElement addConsumptionButton;
+    By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public ConsumptionForm openConsumptionForm() {
         this.action.click(this.addConsumptionButton);
-        this.action.waitModal();
+        this.action.waitSpinner(this.spinnerSelector);
         return new ConsumptionForm();
     }
 
@@ -36,5 +37,10 @@ public class Consumptions extends AbstractPageObject {
             message = "None";
         }
         return message;
+    }
+
+    public void waitData(){
+        By spinnerSelector = By.cssSelector("#tektokens-summary-table [src*='spinner']");
+        this.action.waitSpinner(spinnerSelector);
     }
 }

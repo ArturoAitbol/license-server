@@ -55,13 +55,12 @@ public class WebDriverAction {
         return element.getAttribute("disabled");
     }
 
-    public void waitModal() {
+    public void waitSpinner(By elementSelector) {
         try {
             wait = new WebDriverWait(driver, Duration.ofSeconds(minTimeout));
-            By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
-            wait.until(ExpectedConditions.visibilityOfElementLocated(modalLocator));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(elementSelector));
             wait = new WebDriverWait(driver, Duration.ofSeconds(defaultTimeout));
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(modalLocator));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(elementSelector));
         } catch (Exception e) {
             System.out.println("Spinner wasn't displayed");
             System.out.println(e);
