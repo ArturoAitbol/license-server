@@ -3,6 +3,6 @@ export interface IUserProfile {
     email?: string;
     companyName?: string;
     jobTitle?: string;
-    mobilePhone?: string;
+    phoneNumber?: string;
     subaccountId?: string;
 }

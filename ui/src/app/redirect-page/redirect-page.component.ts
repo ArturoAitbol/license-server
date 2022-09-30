@@ -34,10 +34,12 @@ export class RedirectPageComponent implements OnInit {
   ngOnInit(): void {
     try {
       this.getAvailableServices();
-      // hide toolbar on load this redirect page
       const accountDetails = this.getAccountDetails();
       const { idTokenClaims: { roles } } = accountDetails;
       this.loggedInUserRoles = roles;
+      if (this.loggedInUserRoles.includes("customer.SubaccountAdmin")) {
+        this.fetchUserProfileDetails();
+      }
       this.getSubAccountDetails();
     } catch (e) { console.error('error at redirect page'); }
   }
@@ -61,9 +63,6 @@ export class RedirectPageComponent implements OnInit {
           const { services } = e['subaccounts'][0];
           if (services) {
             e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
-            if (this.loggedInUserRoles.includes("customer.SubaccountAdmin")) {
-              this.fetchUserProfileDetails();
-            }
           } else if (this.isAllServicesFeatureEnabled() && this.loggedInUserRoles.length > 0) {
             // check if logged in user is stakeholder
             // hard-coded this values for dev
@@ -82,8 +81,8 @@ export class RedirectPageComponent implements OnInit {
         if (res) {
           const { subaccounts } = res;
           this.currentSubaccountDetails = subaccounts[0];
-          if (this.loggedInUserRoles.includes("customer.SubaccountAdmin"))
-            this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
+          // if (this.loggedInUserRoles.includes("customer.SubaccountAdmin"))
+          this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
           // enable/disable the available services
           this.availableServices.forEach((e: { label: string, value: string, access: boolean }) => {
             if (this.currentSubaccountDetails.services.includes(e.value))
@@ -139,11 +138,13 @@ export class RedirectPageComponent implements OnInit {
   /**
    * fetch user profile details
    */
-  fetchUserProfileDetails(): void {
-    this.userProfileService.getUserProfileDetails().subscribe((res: any) => {
+  async fetchUserProfileDetails() {
+    const res: any = await this.userProfileService.getUserProfileDetails().toPromise()
+    if (res) {
       const { userProfile } = res;
-      localStorage.setItem(Constants.SELECTED_SUBACCOUNT, JSON.stringify(userProfile));
-    });
+      // localStorage.setItem(Constants.SUBACCOUNT_USER_PROFILE, JSON.stringify(userProfile));
+      this.userProfileService.setSubaccountUserProfileDetails(userProfile);
+    }
   }
   /**
    * check whether Enable_All_Service_Feature toggle feature is enabled or not
