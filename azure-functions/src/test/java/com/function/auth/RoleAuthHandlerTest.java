@@ -9,16 +9,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 
-import static com.function.auth.Permission.*;
+import static com.function.auth.Resource.*;
+import static com.function.auth.Roles.*;
 import static com.function.auth.RoleAuthHandler.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RoleAuthHandlerTest extends TekvLSTest {
-
-    private final int totalPermissions = 36;
 
     @BeforeEach
     void setUp() {
@@ -28,565 +27,23 @@ class RoleAuthHandlerTest extends TekvLSTest {
 
     @Tag("security")
     @Test
-    public void fullAdminPermissionsTest() {
-        String role = FULL_ADMIN;
-        int permissionsChecked = 0;
+    public void rolePermissionsTest() {
+        List<String> roles = Roles.getAllRoles();
+        Resource[] resources = Resource.values();
+        EnumMap<Resource, ExpectedPermissions> verifiers = RBACVerifier.getInstance().verifiers;
 
-        List<Permission> allowedActions = Arrays.asList(
-                CREATE_CUSTOMER,
-                CREATE_SUBACCOUNT,
-                CREATE_ADMIN_EMAIL,
-                CREATE_SUBACCOUNT_ADMIN_MAIL,
-                CREATE_LICENSE,
-                CREATE_LICENSE_USAGE_DETAIL,
-                CREATE_USAGE_DETAILS,
-                CREATE_PROJECT,
-                DELETE_CUSTOMER,
-                DELETE_SUB_ACCOUNT,
-                DELETE_ADMIN_EMAIL,
-                DELETE_SUBACCOUNT_ADMIN_EMAIL,
-                DELETE_LICENSE,
-                DELETE_PROJECT,
-                DELETE_LICENSE_USAGE,
-                DELETE_USAGE_DETAILS,
-                GET_ALL_CUSTOMERS,
-                GET_ALL_SUBACCOUNTS,
-                GET_ALL_LICENSES,
-                GET_ALL_DEVICES,
-                GET_ALL_PROJECTS,
-                GET_ALL_BUNDLES,
-                GET_ALL_LICENSE_USAGE_DETAILS,
-                GET_CONSUMPTION_USAGE_DETAILS,
-                GET_USER_EMAIL_INFO,
-                MODIFY_CUSTOMER,
-                MODIFY_SUBACCOUNT,
-                MODIFY_LICENSE,
-                MODIFY_PROJECT,
-                MODIFY_LICENSE_USAGE);
+        for(String role : roles){
+            for(Resource resource : resources){
+                ExpectedPermissions expectedPermissions = verifiers.get(resource);
+                assertNotNull(expectedPermissions,"RBAC verifier for "+ resource + " has not been defined");
 
-        List<Permission> forbiddenActions = Arrays.asList(
-                CREATE_DEVICE,
-                CREATE_BUNDLE,
-                DELETE_DEVICE,
-                DELETE_BUNDLE,
-                MODIFY_DEVICE,
-                MODIFY_BUNDLE);
+                Boolean expectedPermission = expectedPermissions.getExpectation(role);
+                assertNotNull(expectedPermission,"Expected Permissions for "+ role + " have not been defined");
 
-
-        //Then
-        for (Permission allowedAction : allowedActions) {
-            assertTrue(hasPermission(role, allowedAction),
-                    "The provided Role does not have permission to perform the action: " + allowedAction);
-            permissionsChecked++;
+                assertEquals(expectedPermission,hasPermission(role,resource),
+                        "The provided Role ("+role+") does not have the expected permission: " + resource);
+            }
         }
-        for (Permission forbiddenAction : forbiddenActions) {
-            assertFalse(hasPermission(role, forbiddenAction),
-                    "The provided Role does have permission to perform the action: " + forbiddenAction);
-            permissionsChecked++;
-        }
-
-        assertEquals(totalPermissions, permissionsChecked,
-                "Permissions checked do not match the amount of total permissions.");
-
-    }
-
-    @Tag("security")
-    @Test
-    public void salesAdminPermissionsTest() {
-        String role = SALES_ADMIN;
-        int permissionsChecked = 0;
-
-        List<Permission> allowedActions = Arrays.asList(
-                CREATE_CUSTOMER,
-                CREATE_SUBACCOUNT,
-                CREATE_SUBACCOUNT_ADMIN_MAIL,
-                CREATE_ADMIN_EMAIL,
-                CREATE_LICENSE,
-                GET_ALL_CUSTOMERS,
-                GET_ALL_SUBACCOUNTS,
-                GET_ALL_LICENSES,
-                GET_ALL_LICENSE_USAGE_DETAILS,
-                GET_CONSUMPTION_USAGE_DETAILS,
-                GET_ALL_DEVICES,
-                GET_ALL_PROJECTS,
-                GET_ALL_BUNDLES,
-                MODIFY_CUSTOMER,
-                MODIFY_SUBACCOUNT,
-                MODIFY_LICENSE);
-        List<Permission> forbiddenActions = Arrays.asList(
-                CREATE_LICENSE_USAGE_DETAIL,
-                CREATE_USAGE_DETAILS,
-                CREATE_PROJECT,
-                DELETE_CUSTOMER,
-                DELETE_SUB_ACCOUNT,
-                DELETE_ADMIN_EMAIL,
-                DELETE_SUBACCOUNT_ADMIN_EMAIL,
-                DELETE_LICENSE,
-                DELETE_PROJECT,
-                DELETE_LICENSE_USAGE,
-                DELETE_USAGE_DETAILS,
-                GET_USER_EMAIL_INFO,
-                MODIFY_PROJECT,
-                MODIFY_LICENSE_USAGE,
-                CREATE_DEVICE,
-                CREATE_BUNDLE,
-                DELETE_DEVICE,
-                DELETE_BUNDLE,
-                MODIFY_DEVICE,
-                MODIFY_BUNDLE);
-
-
-        //Then
-        for (Permission allowedAction : allowedActions) {
-            assertTrue(hasPermission(role, allowedAction),
-                    "The provided Role does not have permission to perform the action: " + allowedAction);
-            permissionsChecked++;
-        }
-        for (Permission forbiddenAction : forbiddenActions) {
-            assertFalse(hasPermission(role, forbiddenAction),
-                    "The provided Role does have permission to perform the action: " + forbiddenAction);
-            permissionsChecked++;
-        }
-
-        assertEquals(totalPermissions, permissionsChecked,
-                "Permissions checked do not match the amount of total permissions.");
-    }
-
-    @Tag("security")
-    @Test
-    public void configTesterPermissionsTest() {
-        String role = CONFIG_TESTER;
-        int permissionsChecked = 0;
-
-        List<Permission> allowedActions = Arrays.asList(
-                CREATE_LICENSE_USAGE_DETAIL,
-                CREATE_PROJECT,
-                CREATE_USAGE_DETAILS,
-                DELETE_LICENSE_USAGE,
-                DELETE_USAGE_DETAILS,
-                GET_ALL_CUSTOMERS,
-                GET_ALL_SUBACCOUNTS,
-                GET_ALL_LICENSES,
-                GET_ALL_LICENSE_USAGE_DETAILS,
-                GET_CONSUMPTION_USAGE_DETAILS,
-                GET_ALL_DEVICES,
-                GET_ALL_PROJECTS,
-                GET_ALL_BUNDLES,
-                MODIFY_PROJECT,
-                MODIFY_LICENSE_USAGE);
-        List<Permission> forbiddenActions = Arrays.asList(
-                CREATE_CUSTOMER,
-                CREATE_SUBACCOUNT,
-                CREATE_ADMIN_EMAIL,
-                CREATE_SUBACCOUNT_ADMIN_MAIL,
-                CREATE_LICENSE,
-                DELETE_CUSTOMER,
-                DELETE_SUB_ACCOUNT,
-                DELETE_ADMIN_EMAIL,
-                DELETE_SUBACCOUNT_ADMIN_EMAIL,
-                DELETE_LICENSE,
-                DELETE_PROJECT,
-                GET_USER_EMAIL_INFO,
-                MODIFY_CUSTOMER,
-                MODIFY_SUBACCOUNT,
-                MODIFY_LICENSE,
-                CREATE_DEVICE,
-                CREATE_BUNDLE,
-                DELETE_DEVICE,
-                DELETE_BUNDLE,
-                MODIFY_DEVICE,
-                MODIFY_BUNDLE);
-
-
-        //Then
-        for (Permission allowedAction : allowedActions) {
-            assertTrue(hasPermission(role, allowedAction),
-                    "The provided Role does not have permission to perform the action: " + allowedAction);
-            permissionsChecked++;
-        }
-        for (Permission forbiddenAction : forbiddenActions) {
-            assertFalse(hasPermission(role, forbiddenAction),
-                    "The provided Role does have permission to perform the action: " + forbiddenAction);
-            permissionsChecked++;
-        }
-
-        assertEquals(totalPermissions, permissionsChecked,
-                "Permissions checked do not match the amount of total permissions.");
-
-    }
-
-    @Tag("security")
-    @Test
-    public void devicesAdminPermissionsTest() {
-        String role = DEVICES_ADMIN;
-        int permissionsChecked = 0;
-
-        List<Permission> allowedActions = Arrays.asList(
-                CREATE_DEVICE,
-                CREATE_BUNDLE,
-                DELETE_DEVICE,
-                DELETE_BUNDLE,
-                GET_ALL_DEVICES,
-                GET_ALL_BUNDLES,
-                MODIFY_DEVICE,
-                MODIFY_BUNDLE);
-        List<Permission> forbiddenActions = Arrays.asList(
-                CREATE_CUSTOMER,
-                CREATE_SUBACCOUNT,
-                CREATE_ADMIN_EMAIL,
-                CREATE_SUBACCOUNT_ADMIN_MAIL,
-                CREATE_LICENSE,
-                CREATE_LICENSE_USAGE_DETAIL,
-                CREATE_USAGE_DETAILS,
-                CREATE_PROJECT,
-                DELETE_CUSTOMER,
-                DELETE_SUB_ACCOUNT,
-                DELETE_ADMIN_EMAIL,
-                DELETE_SUBACCOUNT_ADMIN_EMAIL,
-                DELETE_LICENSE,
-                DELETE_PROJECT,
-                DELETE_LICENSE_USAGE,
-                DELETE_USAGE_DETAILS,
-                GET_ALL_CUSTOMERS,
-                GET_ALL_SUBACCOUNTS,
-                GET_ALL_LICENSES,
-                GET_ALL_PROJECTS,
-                GET_ALL_LICENSE_USAGE_DETAILS,
-                GET_CONSUMPTION_USAGE_DETAILS,
-                GET_USER_EMAIL_INFO,
-                MODIFY_CUSTOMER,
-                MODIFY_SUBACCOUNT,
-                MODIFY_LICENSE,
-                MODIFY_PROJECT,
-                MODIFY_LICENSE_USAGE);
-
-        //Then
-        for (Permission allowedAction : allowedActions) {
-            assertTrue(hasPermission(role, allowedAction),
-                    "The provided Role does not have permission to perform the action: " + allowedAction);
-            permissionsChecked++;
-        }
-        for (Permission forbiddenAction : forbiddenActions) {
-            assertFalse(hasPermission(role, forbiddenAction),
-                    "The provided Role does have permission to perform the action: " + forbiddenAction);
-            permissionsChecked++;
-        }
-
-        assertEquals(totalPermissions, permissionsChecked,
-                "Permissions checked do not match the amount of total permissions.");
-
-    }
-
-    @Tag("security")
-    @Test
-    public void automationPlatformPermissionsTest() {
-        String role = AUTOMATION_PLATFORM;
-        int permissionsChecked = 0;
-
-        List<Permission> allowedActions = Arrays.asList(
-                CREATE_LICENSE_USAGE_DETAIL,
-                CREATE_USAGE_DETAILS,
-                GET_ALL_DEVICES);
-        List<Permission> forbiddenActions = Arrays.asList(
-                CREATE_CUSTOMER,
-                CREATE_SUBACCOUNT,
-                CREATE_ADMIN_EMAIL,
-                CREATE_SUBACCOUNT_ADMIN_MAIL,
-                CREATE_LICENSE,
-                CREATE_PROJECT,
-                DELETE_CUSTOMER,
-                DELETE_SUB_ACCOUNT,
-                DELETE_ADMIN_EMAIL,
-                DELETE_SUBACCOUNT_ADMIN_EMAIL,
-                DELETE_LICENSE,
-                DELETE_PROJECT,
-                DELETE_LICENSE_USAGE,
-                DELETE_USAGE_DETAILS,
-                GET_ALL_CUSTOMERS,
-                GET_ALL_SUBACCOUNTS,
-                GET_ALL_LICENSES,
-                GET_ALL_PROJECTS,
-                GET_ALL_LICENSE_USAGE_DETAILS,
-                GET_CONSUMPTION_USAGE_DETAILS,
-                GET_USER_EMAIL_INFO,
-                MODIFY_CUSTOMER,
-                MODIFY_SUBACCOUNT,
-                MODIFY_LICENSE,
-                MODIFY_PROJECT,
-                MODIFY_LICENSE_USAGE,
-                CREATE_DEVICE,
-                CREATE_BUNDLE,
-                DELETE_DEVICE,
-                DELETE_BUNDLE,
-                GET_ALL_BUNDLES,
-                MODIFY_DEVICE,
-                MODIFY_BUNDLE);
-
-        //Then
-        for (Permission allowedAction : allowedActions) {
-            assertTrue(hasPermission(role, allowedAction),
-                    "The provided Role does not have permission to perform the action: " + allowedAction);
-            permissionsChecked++;
-        }
-        for (Permission forbiddenAction : forbiddenActions) {
-            assertFalse(hasPermission(role, forbiddenAction),
-                    "The provided Role does have permission to perform the action: " + forbiddenAction);
-            permissionsChecked++;
-        }
-
-        assertEquals(totalPermissions, permissionsChecked,
-                "Permissions checked do not match the amount of total permissions.");
-
-    }
-
-    @Tag("security")
-    @Test
-    public void crmPermissionsTest() {
-        String role = CRM;
-        int permissionsChecked = 0;
-
-        List<Permission> allowedActions = Arrays.asList(
-                CREATE_CUSTOMER,
-                CREATE_SUBACCOUNT,
-                CREATE_ADMIN_EMAIL,
-                CREATE_SUBACCOUNT_ADMIN_MAIL,
-                CREATE_LICENSE,
-                GET_ALL_CUSTOMERS,
-                GET_ALL_SUBACCOUNTS,
-                GET_ALL_LICENSES,
-                GET_ALL_LICENSE_USAGE_DETAILS,
-                GET_CONSUMPTION_USAGE_DETAILS,
-                MODIFY_CUSTOMER,
-                MODIFY_SUBACCOUNT,
-                MODIFY_LICENSE);
-        List<Permission> forbiddenActions = Arrays.asList(
-                CREATE_LICENSE_USAGE_DETAIL,
-                CREATE_USAGE_DETAILS,
-                CREATE_PROJECT,
-                DELETE_CUSTOMER,
-                DELETE_SUB_ACCOUNT,
-                DELETE_ADMIN_EMAIL,
-                DELETE_SUBACCOUNT_ADMIN_EMAIL,
-                DELETE_LICENSE,
-                DELETE_PROJECT,
-                DELETE_LICENSE_USAGE,
-                DELETE_USAGE_DETAILS,
-                GET_ALL_PROJECTS,
-                GET_USER_EMAIL_INFO,
-                MODIFY_PROJECT,
-                MODIFY_LICENSE_USAGE,
-                CREATE_DEVICE,
-                CREATE_BUNDLE,
-                DELETE_DEVICE,
-                DELETE_BUNDLE,
-                GET_ALL_DEVICES,
-                GET_ALL_BUNDLES,
-                MODIFY_DEVICE,
-                MODIFY_BUNDLE);
-
-        //Then
-        for (Permission allowedAction : allowedActions) {
-            assertTrue(hasPermission(role, allowedAction),
-                    "The provided Role does not have permission to perform the action: " + allowedAction);
-            permissionsChecked++;
-        }
-        for (Permission forbiddenAction : forbiddenActions) {
-            assertFalse(hasPermission(role, forbiddenAction),
-                    "The provided Role does have permission to perform the action: " + forbiddenAction);
-            permissionsChecked++;
-        }
-
-        assertEquals(totalPermissions, permissionsChecked,
-                "Permissions checked do not match the amount of total permissions.");
-
-    }
-
-    @Tag("security")
-    @Test
-    public void distributorAdminPermissionsTest() {
-        String role = DISTRIBUTOR_FULL_ADMIN;
-        int permissionsChecked = 0;
-
-        List<Permission> allowedActions = Arrays.asList(
-                GET_ALL_CUSTOMERS,
-                GET_ALL_SUBACCOUNTS,
-                GET_ALL_LICENSES,
-                GET_ALL_LICENSE_USAGE_DETAILS,
-                GET_CONSUMPTION_USAGE_DETAILS,
-                GET_ALL_DEVICES,
-                GET_ALL_PROJECTS,
-                GET_ALL_BUNDLES);
-        List<Permission> forbiddenActions = Arrays.asList(
-                CREATE_CUSTOMER,
-                CREATE_SUBACCOUNT,
-                CREATE_ADMIN_EMAIL,
-                CREATE_SUBACCOUNT_ADMIN_MAIL,
-                CREATE_LICENSE,
-                CREATE_LICENSE_USAGE_DETAIL,
-                CREATE_USAGE_DETAILS,
-                CREATE_PROJECT,
-                DELETE_CUSTOMER,
-                DELETE_SUB_ACCOUNT,
-                DELETE_ADMIN_EMAIL,
-                DELETE_SUBACCOUNT_ADMIN_EMAIL,
-                DELETE_LICENSE,
-                DELETE_PROJECT,
-                DELETE_LICENSE_USAGE,
-                DELETE_USAGE_DETAILS,
-                GET_USER_EMAIL_INFO,
-                MODIFY_CUSTOMER,
-                MODIFY_SUBACCOUNT,
-                MODIFY_LICENSE,
-                MODIFY_PROJECT,
-                CREATE_DEVICE,
-                CREATE_BUNDLE,
-                DELETE_DEVICE,
-                DELETE_BUNDLE,
-                MODIFY_DEVICE,
-                MODIFY_BUNDLE,
-                MODIFY_LICENSE_USAGE);
-
-        //Then
-        for (Permission allowedAction : allowedActions) {
-            assertTrue(hasPermission(role, allowedAction),
-                    "The provided Role does not have permission to perform the action: " + allowedAction);
-            permissionsChecked++;
-        }
-        for (Permission forbiddenAction : forbiddenActions) {
-            assertFalse(hasPermission(role, forbiddenAction),
-                    "The provided Role does have permission to perform the action: " + forbiddenAction);
-            permissionsChecked++;
-        }
-
-        assertEquals(totalPermissions, permissionsChecked,
-                "Permissions checked do not match the amount of total permissions.");
-
-    }
-
-    @Tag("security")
-    @Test
-    public void customerAdminPermissionsTest() {
-        String role = CUSTOMER_FULL_ADMIN;
-        int permissionsChecked = 0;
-
-        List<Permission> allowedActions = Arrays.asList(
-                GET_ALL_CUSTOMERS,
-                GET_ALL_SUBACCOUNTS,
-                GET_ALL_LICENSES,
-                GET_ALL_LICENSE_USAGE_DETAILS,
-                GET_CONSUMPTION_USAGE_DETAILS,
-                GET_ALL_DEVICES,
-                GET_ALL_PROJECTS,
-                GET_ALL_BUNDLES);
-        List<Permission> forbiddenActions = Arrays.asList(
-                CREATE_CUSTOMER,
-                CREATE_SUBACCOUNT,
-                CREATE_ADMIN_EMAIL,
-                CREATE_SUBACCOUNT_ADMIN_MAIL,
-                CREATE_LICENSE,
-                CREATE_LICENSE_USAGE_DETAIL,
-                CREATE_USAGE_DETAILS,
-                CREATE_PROJECT,
-                DELETE_CUSTOMER,
-                DELETE_SUB_ACCOUNT,
-                DELETE_ADMIN_EMAIL,
-                DELETE_SUBACCOUNT_ADMIN_EMAIL,
-                DELETE_LICENSE,
-                DELETE_PROJECT,
-                DELETE_LICENSE_USAGE,
-                DELETE_USAGE_DETAILS,
-                GET_USER_EMAIL_INFO,
-                MODIFY_CUSTOMER,
-                MODIFY_SUBACCOUNT,
-                MODIFY_LICENSE,
-                MODIFY_PROJECT,
-                CREATE_DEVICE,
-                CREATE_BUNDLE,
-                DELETE_DEVICE,
-                DELETE_BUNDLE,
-                MODIFY_DEVICE,
-                MODIFY_BUNDLE,
-                MODIFY_LICENSE_USAGE);
-
-
-        //Then
-        for (Permission allowedAction : allowedActions) {
-            assertTrue(hasPermission(role, allowedAction),
-                    "The provided Role does not have permission to perform the action: " + allowedAction);
-            permissionsChecked++;
-        }
-        for (Permission forbiddenAction : forbiddenActions) {
-            assertFalse(hasPermission(role, forbiddenAction),
-                    "The provided Role does have permission to perform the action: " + forbiddenAction);
-            permissionsChecked++;
-        }
-
-        assertEquals(totalPermissions, permissionsChecked,
-                "Permissions checked do not match the amount of total permissions.");
-
-    }
-
-    @Tag("security")
-    @Test
-    public void subaccountAdminPermissionsTest() {
-        String role = SUBACCOUNT_ADMIN;
-        int permissionsChecked = 0;
-
-        List<Permission> allowedActions = Arrays.asList(
-                GET_ALL_CUSTOMERS,
-                GET_ALL_SUBACCOUNTS,
-                GET_ALL_LICENSES,
-                GET_ALL_LICENSE_USAGE_DETAILS,
-                GET_CONSUMPTION_USAGE_DETAILS,
-                GET_ALL_DEVICES,
-                GET_ALL_PROJECTS,
-                GET_ALL_BUNDLES);
-        List<Permission> forbiddenActions = Arrays.asList(
-                CREATE_CUSTOMER,
-                CREATE_SUBACCOUNT,
-                CREATE_ADMIN_EMAIL,
-                CREATE_SUBACCOUNT_ADMIN_MAIL,
-                CREATE_LICENSE,
-                CREATE_LICENSE_USAGE_DETAIL,
-                CREATE_USAGE_DETAILS,
-                CREATE_PROJECT,
-                DELETE_CUSTOMER,
-                DELETE_SUB_ACCOUNT,
-                DELETE_ADMIN_EMAIL,
-                DELETE_SUBACCOUNT_ADMIN_EMAIL,
-                DELETE_LICENSE,
-                DELETE_PROJECT,
-                DELETE_LICENSE_USAGE,
-                DELETE_USAGE_DETAILS,
-                GET_USER_EMAIL_INFO,
-                MODIFY_CUSTOMER,
-                MODIFY_SUBACCOUNT,
-                MODIFY_LICENSE,
-                MODIFY_PROJECT,
-                CREATE_DEVICE,
-                CREATE_BUNDLE,
-                DELETE_DEVICE,
-                DELETE_BUNDLE,
-                MODIFY_DEVICE,
-                MODIFY_BUNDLE,
-                MODIFY_LICENSE_USAGE);
-
-
-        //Then
-        for (Permission allowedAction : allowedActions) {
-            assertTrue(hasPermission(role, allowedAction),
-                    "The provided Role does not have permission to perform the action: " + allowedAction);
-            permissionsChecked++;
-        }
-        for (Permission forbiddenAction : forbiddenActions) {
-            assertFalse(hasPermission(role, forbiddenAction),
-                    "The provided Role does have permission to perform the action: " + forbiddenAction);
-            permissionsChecked++;
-        }
-
-        assertEquals(totalPermissions, permissionsChecked,
-                "Permissions checked do not match the amount of total permissions.");
-
     }
 
     @Tag("security")
@@ -741,5 +198,30 @@ class RoleAuthHandlerTest extends TekvLSTest {
         assertTrue(userId.isEmpty());
     }
 
+    @Tag("security")
+    @Test
+    public void evaluateCustomerRolesTest(){
+        //Given
+        JSONArray roles = new JSONArray();
+        roles.put(SUBACCOUNT_ADMIN);
+        roles.put(CUSTOMER_FULL_ADMIN);
+        //When
+        String role = evaluateRoles(roles);
+        //Then
+        assertEquals(CUSTOMER_FULL_ADMIN,role);
+    }
 
+    @Tag("security")
+    @Test
+    public void evaluateTekvizionRolesTest(){
+        //Given
+        JSONArray roles = new JSONArray();
+        roles.put(CONFIG_TESTER);
+        roles.put(FULL_ADMIN);
+
+        //When
+        String role = evaluateRoles(roles);
+        //Then
+        assertEquals(CONFIG_TESTER,role);
+    }
 }

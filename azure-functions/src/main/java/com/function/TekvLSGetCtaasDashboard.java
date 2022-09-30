@@ -1,6 +1,7 @@
 package com.function;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.PowerBIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
@@ -56,7 +57,7 @@ public class TekvLSGetCtaasDashboard {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.GET_CTAAS_DASHBOARD)){
+		if(!hasPermission(roles, Resource.GET_CTAAS_DASHBOARD)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);

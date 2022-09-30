@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -44,7 +44,7 @@ public class TekvLSCreateCtaasTestSuite {
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
 
-        if (!hasPermission(roles, Permission.CREATE_CTAAS_TEST_SUITE)) {
+        if (!hasPermission(roles, Resource.CREATE_CTAAS_TEST_SUITE)) {
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);

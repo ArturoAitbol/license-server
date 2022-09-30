@@ -8,233 +8,12 @@ import org.json.JSONArray;
 
 import java.util.*;
 
-import static com.function.auth.Permission.*;
+import static com.function.auth.Permissions.*;
+import static com.function.auth.Roles.*;
 
 public class RoleAuthHandler {
 
-    private static final EnumSet<Permission> FullAdminPermissions = EnumSet.of(
-            // CREATE
-            CREATE_CUSTOMER,
-            CREATE_SUBACCOUNT,
-            CREATE_ADMIN_EMAIL,
-            CREATE_SUBACCOUNT_ADMIN_MAIL,
-            CREATE_LICENSE,
-            CREATE_LICENSE_USAGE_DETAIL,
-            CREATE_USAGE_DETAILS,
-            CREATE_PROJECT,
-            CREATE_CTAAS_SETUP,
-            CREATE_CTAAS_TEST_SUITE,
-            CREATE_SUBACCOUNT_STAKEHOLDER,
-            // DELETE
-            DELETE_CUSTOMER,
-            DELETE_SUB_ACCOUNT,
-            DELETE_ADMIN_EMAIL,
-            DELETE_SUBACCOUNT_ADMIN_EMAIL,
-            DELETE_LICENSE,
-            DELETE_PROJECT,
-            DELETE_LICENSE_USAGE,
-            DELETE_USAGE_DETAILS,
-            DELETE_CTAAS_SETUP,
-            DELETE_CTAAS_TEST_SUITE,
-            DELETE_SUBACCOUNT_STAKEHOLDER,
-            // READ
-            GET_ALL_CUSTOMERS,
-            GET_ALL_SUBACCOUNTS,
-            GET_ALL_LICENSES,
-            GET_ALL_DEVICES,
-            GET_ALL_PROJECTS,
-            GET_ALL_BUNDLES,
-            GET_ALL_LICENSE_USAGE_DETAILS,
-            GET_CONSUMPTION_USAGE_DETAILS,
-            GET_USER_EMAIL_INFO,
-            GET_ALL_CTAAS_SETUPS,
-            GET_ALL_CTAAS_TEST_SUITES,
-            GET_ALL_SUBACCOUNT_STAKEHOLDER,
-            GET_CTAAS_DASHBOARD,
-            // UPDATE
-            MODIFY_CUSTOMER,
-            MODIFY_SUBACCOUNT,
-            MODIFY_LICENSE,
-            MODIFY_PROJECT,
-            MODIFY_LICENSE_USAGE,
-            MODIFY_CTAAS_SETUP,
-            MODIFY_CTAAS_TEST_SUITE,
-            MODIFY_SUBACCOUNT_STAKEHOLDER);
-
-    private static final EnumSet<Permission> SaleAdminPermissions = EnumSet.of(
-            // CREATE
-            CREATE_CUSTOMER,
-            CREATE_SUBACCOUNT,
-            CREATE_SUBACCOUNT_ADMIN_MAIL,
-            CREATE_ADMIN_EMAIL,
-            CREATE_LICENSE,
-            // READ
-            GET_ALL_CUSTOMERS,
-            GET_ALL_SUBACCOUNTS,
-            GET_ALL_LICENSES,
-            GET_ALL_LICENSE_USAGE_DETAILS,
-            GET_CONSUMPTION_USAGE_DETAILS,
-            GET_ALL_DEVICES,
-            GET_ALL_PROJECTS,
-            GET_ALL_BUNDLES,
-            GET_ALL_CTAAS_SETUPS,
-            GET_ALL_SUBACCOUNT_STAKEHOLDER,
-            GET_CTAAS_DASHBOARD,
-            // UPDATE
-            MODIFY_CUSTOMER,
-            MODIFY_SUBACCOUNT,
-            MODIFY_LICENSE);
-
-    private static final EnumSet<Permission> ConfigTesterPermissions = EnumSet.of(
-            // CREATE
-            CREATE_LICENSE_USAGE_DETAIL,
-            CREATE_PROJECT,
-            CREATE_USAGE_DETAILS,
-            CREATE_CTAAS_SETUP,
-            CREATE_CTAAS_TEST_SUITE,
-            // CREATE
-            CREATE_SUBACCOUNT_STAKEHOLDER,
-            // DELETE
-            DELETE_LICENSE_USAGE,
-            DELETE_USAGE_DETAILS,
-            DELETE_SUBACCOUNT_STAKEHOLDER,
-            DELETE_CTAAS_TEST_SUITE,
-            // READ
-            GET_ALL_CUSTOMERS,
-            GET_ALL_SUBACCOUNTS,
-            GET_ALL_LICENSES,
-            GET_ALL_LICENSE_USAGE_DETAILS,
-            GET_CONSUMPTION_USAGE_DETAILS,
-            GET_ALL_DEVICES,
-            GET_ALL_PROJECTS,
-            GET_ALL_BUNDLES,
-            GET_ALL_CTAAS_SETUPS,
-            GET_ALL_CTAAS_TEST_SUITES,
-            GET_ALL_SUBACCOUNT_STAKEHOLDER,
-            GET_CTAAS_DASHBOARD,
-            // UPDATE
-            MODIFY_PROJECT,
-            MODIFY_LICENSE_USAGE,
-            MODIFY_CTAAS_SETUP,
-            MODIFY_CTAAS_TEST_SUITE,
-            MODIFY_SUBACCOUNT_STAKEHOLDER);
-
-    private static final EnumSet<Permission> devicesAdminPermissions = EnumSet.of(
-            // CREATE
-            CREATE_DEVICE,
-            CREATE_BUNDLE,
-            // DELETE
-            DELETE_DEVICE,
-            DELETE_BUNDLE,
-            // READ
-            GET_ALL_DEVICES,
-            GET_ALL_BUNDLES,
-            // UPDATE
-            MODIFY_DEVICE,
-            MODIFY_BUNDLE);
-
-    private static final EnumSet<Permission> automationPlatformPermissions = EnumSet.of(
-            // CREATE
-            CREATE_LICENSE_USAGE_DETAIL,
-            CREATE_USAGE_DETAILS,
-            // READ
-            GET_ALL_DEVICES);
-
-    private static final EnumSet<Permission> crmPermissions = EnumSet.of(
-            // CREATE
-            CREATE_CUSTOMER,
-            CREATE_SUBACCOUNT,
-            CREATE_ADMIN_EMAIL,
-            CREATE_SUBACCOUNT_ADMIN_MAIL,
-            CREATE_LICENSE,
-            CREATE_CTAAS_SETUP,
-            // READ
-            GET_ALL_CUSTOMERS,
-            GET_ALL_SUBACCOUNTS,
-            GET_ALL_LICENSES,
-            GET_ALL_LICENSE_USAGE_DETAILS,
-            GET_CONSUMPTION_USAGE_DETAILS,
-            // UPDATE
-            MODIFY_CUSTOMER,
-            MODIFY_SUBACCOUNT,
-            MODIFY_LICENSE);
-
-    private static final EnumSet<Permission> distributorAdminPermissions = EnumSet.of(
-            // READ
-            GET_ALL_CUSTOMERS,
-            GET_ALL_SUBACCOUNTS,
-            GET_ALL_LICENSES,
-            GET_ALL_LICENSE_USAGE_DETAILS,
-            GET_CONSUMPTION_USAGE_DETAILS,
-            GET_ALL_DEVICES,
-            GET_ALL_PROJECTS,
-            GET_ALL_BUNDLES);
-
-    private static final EnumSet<Permission> customerAdminPermissions = EnumSet.of(
-            // CREATE
-            CREATE_SUBACCOUNT_STAKEHOLDER,
-            // DELETE
-            DELETE_SUBACCOUNT_STAKEHOLDER,
-            // READ
-            GET_ALL_CUSTOMERS,
-            GET_ALL_SUBACCOUNTS,
-            GET_ALL_LICENSES,
-            GET_ALL_LICENSE_USAGE_DETAILS,
-            GET_CONSUMPTION_USAGE_DETAILS,
-            GET_ALL_DEVICES,
-            GET_ALL_PROJECTS,
-            GET_ALL_BUNDLES,
-            GET_ALL_CTAAS_SETUPS,
-            GET_ALL_SUBACCOUNT_STAKEHOLDER,
-            GET_CTAAS_DASHBOARD,
-            // MODIFY
-            MODIFY_CTAAS_ONBOARDING,
-            MODIFY_SUBACCOUNT_STAKEHOLDER);
-
-    private static final EnumSet<Permission> SubAccountAdminPermissions = EnumSet.of(
-            // CREATE
-            CREATE_SUBACCOUNT_STAKEHOLDER,
-            // DELETE
-            DELETE_SUBACCOUNT_STAKEHOLDER,
-            // READ
-            GET_ALL_CUSTOMERS,
-            GET_ALL_SUBACCOUNTS,
-            GET_ALL_LICENSES,
-            GET_ALL_LICENSE_USAGE_DETAILS,
-            GET_CONSUMPTION_USAGE_DETAILS,
-            GET_ALL_DEVICES,
-            GET_ALL_PROJECTS,
-            GET_ALL_BUNDLES,
-            GET_ALL_CTAAS_SETUPS,
-            GET_ALL_SUBACCOUNT_STAKEHOLDER,
-            GET_AUTH_USER_PROFILE,
-            GET_CTAAS_DASHBOARD,
-            // MODIFY
-            MODIFY_CTAAS_ONBOARDING,
-            MODIFY_SUBACCOUNT_STAKEHOLDER,
-            MODIFY_AUTH_USER_PROFILE);
-
-    private static final EnumSet<Permission> SubAccountStakeholderPermissions = EnumSet.of(
-            // READ
-            GET_ALL_CUSTOMERS,
-            GET_ALL_SUBACCOUNTS,
-            GET_ALL_CTAAS_SETUPS,
-            GET_ALL_SUBACCOUNT_STAKEHOLDER,
-            GET_AUTH_USER_PROFILE,
-            GET_CTAAS_DASHBOARD,
-            // MODIFY
-            MODIFY_AUTH_USER_PROFILE);
-
-    public static final String FULL_ADMIN = "tekvizion.FullAdmin";
-    public static final String SALES_ADMIN = "tekvizion.SalesAdmin";
-    public static final String CONFIG_TESTER = "tekvizion.ConfigTester";
-    public static final String DEVICES_ADMIN = "tekvizion.DevicesAdmin";
-    public static final String AUTOMATION_PLATFORM = "tekvizion.AutomationPlatform";
-    public static final String CRM = "tekvizion.CRM";
-    public static final String DISTRIBUTOR_FULL_ADMIN = "distributor.FullAdmin";
-    public static final String CUSTOMER_FULL_ADMIN = "customer.FullAdmin";
-    public static final String SUBACCOUNT_ADMIN = "customer.SubaccountAdmin";
-    public static final String SUBACCOUNT_STAKEHOLDER = "customer.SubaccountStakeholder";
+    private static final String ISSUER = System.getenv("ISSUER");
 
     public static final String LOG_MESSAGE_FOR_UNAUTHORIZED = "Unauthorized error: Access denied due to missing or invalid credentials.";
     public static final String MESSAGE_FOR_UNAUTHORIZED = "UNAUTHORIZED: Access denied due to missing or invalid credentials";
@@ -248,21 +27,20 @@ public class RoleAuthHandler {
     public static final String LOG_MESSAGE_FOR_INVALID_EMAIL = "Invalid Request Error: The authenticated user provided does not belong to the account of: ";
     public static final String MESSAGE_FOR_INVALID_AUTH_EMAIL = "The authenticated user does not exist in your account.";
     public static final String MESSAGE_EMAIL_NOT_FOUND = "Authenticated user does not exist.";
-    private static final String ISSUER = System.getenv("ISSUER");
 
     public static final String MESSAGE_SUBACCOUNT_ID_NOT_FOUND = "Subaccount id provided does not exist. ";
     public static final String LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID = "Invalid Request Error: Subaccount id provided does not belong to the account of: ";
 
-    public static boolean hasPermission(JSONArray roles, Permission permission) {
+    public static boolean hasPermission(JSONArray roles, Resource resource) {
         for (int i = 0; i < roles.length(); i++) {
-            if (hasPermission(roles.getString(i), permission))
+            if (hasPermission(roles.getString(i), resource))
                 return true;
         }
         return false;
     }
 
-    public static boolean hasPermission(String role, Permission permission) {
-        EnumSet<Permission> rolePermissions;
+    public static boolean hasPermission(String role, Resource resource) {
+        EnumSet<Resource> rolePermissions;
         switch (role) {
             case FULL_ADMIN:
                 rolePermissions = FullAdminPermissions;
@@ -297,14 +75,14 @@ public class RoleAuthHandler {
             default:
                 return false;
         }
-        return rolePermissions.contains(permission);
+        return rolePermissions.contains(resource);
     }
 
     public static String evaluateRoles(JSONArray roles) {
         if (roles.length() == 1) {
             return roles.getString(0);
         }
-        List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN, CUSTOMER_FULL_ADMIN, SUBACCOUNT_ADMIN);
+        List<String> customerRoles = getCustomerRoles();
         String role;
         for (String customerRole : customerRoles) {
             for (int i = 0; i < roles.length(); i++) {
