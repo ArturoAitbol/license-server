@@ -8,10 +8,11 @@ import ui.core.AbstractPageObject;
 public class Projects extends AbstractPageObject {
     @FindBy(css="#add-new-project-button")
     WebElement addProjectButton;
+    By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public ProjectForm openProjectForm(){
         this.action.click(this.addProjectButton);
-        this.action.waitModal();
+        this.action.waitSpinner(this.spinnerSelector);
         return new ProjectForm();
     }
 

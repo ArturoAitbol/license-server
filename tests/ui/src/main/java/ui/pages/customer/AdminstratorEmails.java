@@ -13,12 +13,13 @@ public class AdminstratorEmails extends AbstractPageObject {
     @FindBy(css = "button#submit-button")
     WebElement submitButton;
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
+    By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public String addAdministrator(String adminEmail){
         this.action.click(this.addButton);
         this.action.sendText(this.emailInput, adminEmail);
         this.action.click(this.submitButton);
-        this.action.waitModal();
+        this.action.waitSpinner(this.spinnerSelector);
         return this.action.getText(this.messageSelector);
     }
 
