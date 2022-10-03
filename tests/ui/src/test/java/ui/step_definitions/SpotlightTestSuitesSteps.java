@@ -1,9 +1,12 @@
 package ui.step_definitions;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Map;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import ui.core.DriverManager;
 import ui.pages.ActionMenu;
@@ -52,9 +55,26 @@ public class SpotlightTestSuitesSteps {
         String executions = testSuite.get("executions");
         String nextExecution = testSuite.get("nextExecution");
         String frequency = testSuite.get("frequency");
-        this.testSuites = this.testSuiteForm.editTestSuite(name, service, executions, nextExecution,frequency);        
+        this.testSuites = this.testSuiteForm.editTestSuite(name, service, executions, nextExecution, frequency);
         String actualMessage = this.testSuites.getMessage();
         this.testSuites.waitData();
         DriverManager.getInstance().setMessage(actualMessage);
+    }
+
+    @Then("I see the {string} test suite in the table")
+    public void iShouldSeeTheTestSuiteInTheTable(String name) {
+        this.testSuiteRow = new TestSuiteRow(name);
+        String actualTestSuite = this.testSuiteRow.getColumnValue("Name");
+        assertEquals("Test suites table doesn't have the test suire: ".concat(name), name,
+                actualTestSuite);
+    }
+
+    @Then("I delete the {string} test suite")
+    public void iDeleteATestSuite(String name) throws InterruptedException {
+        this.testSuiteRow = new TestSuiteRow(name);
+        Thread.sleep(2500);
+        ActionMenu actionMenu = this.testSuiteRow.openActionMenu();
+        this.actualMessage = actionMenu.delete("testSuite");
+        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 }

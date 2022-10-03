@@ -12,6 +12,13 @@ public class TestSuiteRow extends AbstractPageObject {
         this.TEST_SUITE_NAME_XPATH = String.format("//td[@title='%s']", testSuite);
     }
 
+    public String getColumnValue(String column) {
+        By columnSelector = null;
+        if (column.equals("Name"))
+            columnSelector = By.xpath(this.TEST_SUITE_NAME_XPATH);
+        return this.action.getText(columnSelector);
+    }
+
     public ActionMenu openActionMenu() {
         By actionMenuSelector = By.xpath(this.TEST_SUITE_NAME_XPATH + "/following-sibling::td[@id='more_vert']/button");
         this.action.forceClick(actionMenuSelector);

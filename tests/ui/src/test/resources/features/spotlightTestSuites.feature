@@ -43,8 +43,17 @@ Feature: TestSuites
       | frequency     | Monthly       |
     Then I should see the message "Test Suite successfully edited!"
 
-  # @deleteTestSuitesCustomer @ignore
-  # Scenario: Delete the test suites customer
-  #   Given I see the customer "SpotlightTestSuite" in the table
-  #   When I delete the customer "SpotlightTestSuite"
-  #   Then I should see the message "Customer deleted successfully!"
+  @deleteTestSuite
+  Scenario: Delete Test Suite A Updated
+      Given I see the customer "SpotlightTestSuite" in the table
+      And I go to the spotlight dashboard for "SpotlightTestSuite"
+      And I go to the spotlight "Test Suites" tab
+      And I see the "Test Suite A Updated" test suite in the table
+      When I delete the "Test Suite A Updated" test suite
+      Then I should see the message "Test suite deleted successfully!"
+
+  @deleteTestSuitesCustomer @ignore
+  Scenario: Delete the test suites customer
+    Given I see the customer "SpotlightTestSuite" in the table
+    When I delete the customer "SpotlightTestSuite"
+    Then I should see the message "Customer deleted successfully!"
