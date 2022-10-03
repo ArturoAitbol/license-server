@@ -51,11 +51,11 @@ Feature: Subaccounts
     Then I should see the message "Customer and subaccount edited successfully!"
     And I should see the modified data in Subaccounts table
 
-#  @deleteSubaccount @delete
-#  Scenario: Delete a subaccount
-#    Given I see in the table the customer "subCustomTest" and its subaccount "subaccountModified"
-#    When I delete the subaccount "subaccountModified" of the customer "subCustomTest"
-#    Then I should see the message "Subaccount deleted successfully!"
+  @deleteSubaccount @delete
+  Scenario: Delete a subaccount
+    Given I see in the table the customer "subCustomTest" and its subaccount "subaccountModified"
+    When I delete the subaccount "subaccountModified" of the customer "subCustomTest"
+    Then I should see the message "Subaccount deleted successfully!"
 
   @deleteSubaccountCustomer @delete
   Scenario: Delete the test subaccount customer
