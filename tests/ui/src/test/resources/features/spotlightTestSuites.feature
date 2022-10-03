@@ -6,7 +6,7 @@ Feature: TestSuites
     Then I should see the "Customers" page
     
   @createTestSuitesCustomer
-  Scenario: Create a test customer for license consumption tests
+  Scenario: Create a test customer for test suite tests
     Given I open the Add Customer form
     When I create a customer with the following data
       | name          | SpotlightTestSuite                    |
