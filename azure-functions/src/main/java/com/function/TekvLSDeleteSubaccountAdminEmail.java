@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.*;
@@ -16,6 +16,7 @@ import java.sql.*;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 public class TekvLSDeleteSubaccountAdminEmail {
     @FunctionName("TekvLSDeleteSubaccountAdminEmail")
@@ -37,7 +38,7 @@ public class TekvLSDeleteSubaccountAdminEmail {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if(!hasPermission(roles, Permission.DELETE_SUBACCOUNT_ADMIN_EMAIL)){
+        if(!hasPermission(roles, Resource.DELETE_SUBACCOUNT_ADMIN_EMAIL)){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
