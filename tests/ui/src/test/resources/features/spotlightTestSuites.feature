@@ -19,18 +19,29 @@ Feature: TestSuites
     Then I see the customer "SpotlightTestSuite" in the table
   
   @addTestSuite
-  Scenario: Add a test suite for customer
+  Scenario: Add a Test Suite for customer
     Given I see the customer "SpotlightTestSuite" in the table
     And I go to the spotlight dashboard for "SpotlightTestSuite"
     And I go to the spotlight "Test Suites" tab
     And I open the Add Test Suite form
     When I create a test suite with the following data
-      | suiteName     | Test Execution |
-      | service       | MS Teams |
-      | frequency     | Hourly     |
+      | suiteName     | Test Suite A |
+      | service       | MS Teams     |
+      | frequency     | Hourly       |
     Then I should see the message "Test Suite added successfully!"
   
-  # @editTestSuite
+  @editTestSuite
+  Scenario: Edit a Test Suite
+    Given I see the customer "SpotlightTestSuite" in the table
+    And I go to the spotlight dashboard for "SpotlightTestSuite"
+    And I go to the spotlight "Test Suites" tab
+    When I edit the test suite "Test Suite A" with the following data
+      | suiteName     | Test Suite A Updated |
+      | service       | MS Teams     |
+      | executions    | 10           |
+      | nextExecution | 10/20/2022    |      
+      | frequency     | Monthly       |
+    Then I should see the message "Test Suite successfully edited!"
 
   # @deleteTestSuitesCustomer @ignore
   # Scenario: Delete the test suites customer

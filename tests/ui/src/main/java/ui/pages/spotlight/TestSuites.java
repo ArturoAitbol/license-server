@@ -28,4 +28,9 @@ public class TestSuites extends AbstractPageObject {
         return message;
     }
 
+    public void waitData(){
+        By spinnerSelector = By.cssSelector("#test-suites-table [src*='spinner']");
+        this.action.waitSpinner(spinnerSelector);
+    }
+
 }

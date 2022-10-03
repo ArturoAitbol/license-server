@@ -1,0 +1,21 @@
+package ui.pages.spotlight;
+
+import org.openqa.selenium.By;
+
+import ui.core.AbstractPageObject;
+import ui.pages.ActionMenu;
+
+public class TestSuiteRow extends AbstractPageObject {
+    private final String TEST_SUITE_NAME_XPATH;
+
+    public TestSuiteRow(String testSuite) {
+        this.TEST_SUITE_NAME_XPATH = String.format("//td[@title='%s']", testSuite);
+    }
+
+    public ActionMenu openActionMenu() {
+        By actionMenuSelector = By.xpath(this.TEST_SUITE_NAME_XPATH + "/following-sibling::td[@id='more_vert']/button");
+        this.action.forceClick(actionMenuSelector);
+        return new ActionMenu();
+    }
+
+}
