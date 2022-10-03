@@ -1,13 +1,13 @@
 package com.function;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
@@ -56,7 +56,7 @@ public class TekvLSGetAllCtaasSetups {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.GET_ALL_CTAAS_SETUPS)){
+		if(!hasPermission(roles, Resource.GET_ALL_CTAAS_SETUPS)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);

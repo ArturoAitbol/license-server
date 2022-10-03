@@ -3,7 +3,7 @@ package com.function;
 import java.sql.*;
 import java.util.*;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 import io.jsonwebtoken.Claims;
@@ -39,7 +39,7 @@ public class TekvLSCreateBundle {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if(!hasPermission(roles, Permission.CREATE_BUNDLE)){
+        if(!hasPermission(roles, Resource.CREATE_BUNDLE)){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);

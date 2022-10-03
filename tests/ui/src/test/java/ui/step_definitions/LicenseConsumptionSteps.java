@@ -84,6 +84,7 @@ public class LicenseConsumptionSteps {
         this.consumptions = this.consumptionForm.editConsumption(currentProject, this.project, deviceVendor,
                 deviceModel, deviceVersion, deviceGranularity, tekTokens, usageDays);
         String actualMessage = this.consumptions.getMessage();
+        this.consumptions.waitData();
         DriverManager.getInstance().setMessage(actualMessage);
         if (this.project.isEmpty())
             this.project = currentProject;

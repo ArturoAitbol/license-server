@@ -31,6 +31,7 @@ public class ActionMenu extends AbstractPageObject {
     WebElement subaccountAdminButton;
     @FindBy(xpath = "//button[@id='View SpotLight Dashboard']")
     WebElement spotlightDashboardButton;
+    By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public String delete(String type) {
         /*
@@ -64,8 +65,7 @@ public class ActionMenu extends AbstractPageObject {
 
     public void editForm() {
         this.action.forceClick(this.editButton);
-        this.action.waitModal();
-
+        this.action.waitSpinner(this.spinnerSelector);
     }
 
     public Projects goToProjects() {
@@ -116,14 +116,15 @@ public class ActionMenu extends AbstractPageObject {
     public AdminstratorEmails goToCustomerAdmins() {
         JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.customerAdminButton);
-        this.action.waitModal();
+        this.action.waitSpinner(this.spinnerSelector);
         return new AdminstratorEmails();
     }
 
     public AdminstratorEmails goToSubaccountAdmins() {
         JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.subaccountAdminButton);
-        this.action.waitModal();
+        By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
+        this.action.waitSpinner(spinnerSelector);
         return new AdminstratorEmails();
     }
 }

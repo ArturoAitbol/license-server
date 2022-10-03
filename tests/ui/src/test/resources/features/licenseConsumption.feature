@@ -83,7 +83,7 @@ Feature: LicensesConsumption
       | tekTokens         | 4           |
     And I should see the same data in the tekToken Consumption Events table
 
-  @addLicenseConsumptionForSupport @test
+  @addLicenseConsumptionForSupport
   Scenario: Add a tekToken Consumption for a support device
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
@@ -108,7 +108,7 @@ Feature: LicensesConsumption
       | tekTokens         | 0           |
     And I should see the same data in the tekToken Consumption Events table
 
-  @editLicenseConsumptionForSupport @test
+  @editLicenseConsumptionForSupport
   Scenario: Edit the tekToken Consumption for a support device
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
@@ -120,19 +120,19 @@ Feature: LicensesConsumption
       | tekTokens         | 0             |
     And I should see the same data in the tekToken Consumption Events table
 
-  @deleteLicenseConsumption @ignore
+  @deleteLicenseConsumption
   Scenario: Delete the tekToken Consumption of a device
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     When I delete the consumption of the project "deviceTest"
 
-  @deleteLicenseConsumptionForSupport @ignore
+  @deleteLicenseConsumptionForSupport
   Scenario: Delete the tekToken Consumption of a support device
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     When I delete the consumption of the project "supportTest"
 
-  @deleteCustomerProject @ignore
+  @deleteCustomerProject
   Scenario: Delete the test licenses customer
     Given I see the customer "licenseUsageCustomerTest" in the table
     When I delete the customer "licenseUsageCustomerTest"

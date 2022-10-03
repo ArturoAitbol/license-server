@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 public class GraphAPIClient {
 
