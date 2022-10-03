@@ -12,7 +12,6 @@ public class TestSuites extends AbstractPageObject {
 
     public TestSuiteForm openTestSuiteForm() {
         this.action.click(this.addTestSuiteButton);
-        this.action.waitModal();
         return new TestSuiteForm();
     }
 

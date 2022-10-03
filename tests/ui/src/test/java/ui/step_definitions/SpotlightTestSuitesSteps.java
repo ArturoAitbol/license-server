@@ -24,6 +24,7 @@ public class SpotlightTestSuitesSteps {
 
     @And("I create a test suite with the following data")
     public void iCreateATestSuiteWithTheFollowingData(DataTable testSuiteTable) {
+        this.testSuiteForm.waitSpinner();
         Map<String, String> testSuite = testSuiteTable.asMap(String.class, String.class);
         String name = testSuite.get("suiteName");
         String service = testSuite.getOrDefault("service", "MS Teams");

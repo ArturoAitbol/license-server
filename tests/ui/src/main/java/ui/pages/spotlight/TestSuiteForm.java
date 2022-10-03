@@ -16,9 +16,7 @@ public class TestSuiteForm extends AbstractPageObject {
     @FindBy(css = "#submitBtn")
     WebElement submitButton;
 
-    public void waitSpinner() {
-        this.action.waitModal();
-    }
+    By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public TestSuites addTestSuite(String name, String service, String frequency) {
         this.action.sendText(this.nameInput, name);
@@ -27,5 +25,9 @@ public class TestSuiteForm extends AbstractPageObject {
         this.action.selectOption(this.frequencyInput, frequencySelector);
         this.action.click(this.submitButton);
         return new TestSuites();
+    }
+
+    public void waitSpinner() {
+        this.action.waitSpinner(this.spinnerSelector);
     }
 }
