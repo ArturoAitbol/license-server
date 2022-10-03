@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.exceptions.ADException;
 import com.function.util.FeatureToggles;
@@ -17,6 +17,7 @@ import java.sql.*;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 public class TekvLSDeleteAdminEmail {
 
@@ -39,7 +40,7 @@ public class TekvLSDeleteAdminEmail {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if(!hasPermission(roles, Permission.DELETE_ADMIN_EMAIL)){
+        if(!hasPermission(roles, Resource.DELETE_ADMIN_EMAIL)){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -58,7 +59,7 @@ public class TekvLSDeleteAdminEmail {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-            if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation") && FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
+            if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
                 String searchSubaccountAdminEmailSql = "SELECT subaccount_admin_email FROM subaccount_admin WHERE subaccount_admin_email = ?;";
                 try(PreparedStatement emailStatement = connection.prepareStatement(searchSubaccountAdminEmailSql)){
                     emailStatement.setString(1, email);
@@ -71,7 +72,7 @@ public class TekvLSDeleteAdminEmail {
                         GraphAPIClient.deleteGuestUser(email,context);
                         context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+email+").");
                     }
-                }catch (Exception e){
+                }catch (ADException e){
                     context.getLogger().info("AD exception: " + e.getMessage());
                     JSONObject json = new JSONObject();
                     json.put("error", "AD Exception: " + e.getMessage());

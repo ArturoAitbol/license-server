@@ -1,7 +1,9 @@
 package com.function;
 
-import static com.function.auth.RoleAuthHandler.CUSTOMER_FULL_ADMIN;
-import static com.function.auth.RoleAuthHandler.DISTRIBUTOR_FULL_ADMIN;
+import static com.function.auth.Roles.CUSTOMER_FULL_ADMIN;
+import static com.function.auth.Roles.DISTRIBUTOR_FULL_ADMIN;
+import static com.function.auth.Roles.SUBACCOUNT_ADMIN;
+import static com.function.auth.Roles.SUBACCOUNT_STAKEHOLDER;
 import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_FORBIDDEN;
 import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_INVALID_ID;
 import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_UNAUTHORIZED;
@@ -9,8 +11,6 @@ import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
 import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
 import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
 import static com.function.auth.RoleAuthHandler.MESSAGE_ID_NOT_FOUND;
-import static com.function.auth.RoleAuthHandler.SUBACCOUNT_ADMIN;
-import static com.function.auth.RoleAuthHandler.SUBACCOUNT_STAKEHOLDER;
 import static com.function.auth.RoleAuthHandler.evaluateRoles;
 import static com.function.auth.RoleAuthHandler.getEmailFromToken;
 import static com.function.auth.RoleAuthHandler.getRolesFromToken;
@@ -30,7 +30,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
@@ -72,7 +72,7 @@ public class TekvLSGetAllStakeholders {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.GET_ALL_SUBACCOUNT_STAKEHOLDER)){
+		if(!hasPermission(roles, Resource.GET_ALL_SUBACCOUNT_STAKEHOLDER)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -194,7 +194,7 @@ public class TekvLSGetAllStakeholders {
 		for (Object obj : array) {
 			json = (JSONObject) obj;
 			try {
-				 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+				 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
 					json.put("name","");
 					json.put("jobTitle","");
 					json.put("companyName","");

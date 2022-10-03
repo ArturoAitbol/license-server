@@ -1,6 +1,7 @@
 package com.function;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +12,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
@@ -46,7 +47,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if(!hasPermission(roles, Permission.DELETE_SUBACCOUNT_STAKEHOLDER)){
+        if(!hasPermission(roles, Resource.DELETE_SUBACCOUNT_STAKEHOLDER)){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -55,7 +56,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
 
         context.getLogger().info("Entering TekvLSDeleteSubaccountStakeHolderByEmail Azure function");
 
-        if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+        if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
             try{
                 GraphAPIClient.removeRole(email,SUBACCOUNT_STAKEHOLDER,context);
                 context.getLogger().info("Guest User Role removed successfully from Active Directory. Email : "+email);
