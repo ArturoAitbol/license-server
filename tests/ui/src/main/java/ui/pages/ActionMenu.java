@@ -8,6 +8,7 @@ import ui.core.AbstractPageObject;
 import ui.pages.consumptions.Consumptions;
 import ui.pages.customer.AdminstratorEmails;
 import ui.pages.projects.Projects;
+import ui.pages.spotlight.Dashboard;
 import ui.pages.subscriptions.Subscriptions;
 
 public class ActionMenu extends AbstractPageObject {
@@ -28,12 +29,16 @@ public class ActionMenu extends AbstractPageObject {
     WebElement customerAdminButton;
     @FindBy(xpath = "//button[@id='View Subaccount Admin Emails']")
     WebElement subaccountAdminButton;
+    @FindBy(xpath = "//button[@id='View SpotLight Dashboard']")
+    WebElement spotlightDashboardButton;
 
     public String delete(String type) {
-/*        By deleteSelector = By.cssSelector("button#Delete");
-        this.action.click(deleteSelector);*/
+        /*
+         * By deleteSelector = By.cssSelector("button#Delete");
+         * this.action.click(deleteSelector);
+         */
         String message;
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.deleteButton);
         Modal confirmModal = new Modal();
         if (type.equals("customer")) {
@@ -49,30 +54,40 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public void edit() {
-/*        By editSelector = By.cssSelector("button#Edit");
-        this.action.click(editSelector);*/
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        /*
+         * By editSelector = By.cssSelector("button#Edit");
+         * this.action.click(editSelector);
+         */
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.editButton);
     }
 
-    public void editForm(){
+    public void editForm() {
         this.action.forceClick(this.editButton);
         this.action.waitModal();
 
     }
 
-    public Projects goToProjects(){
-/*        By projectsSelector = By.xpath("//button[@id='View Projects List']");
-        this.action.click(projectsSelector);*/
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+    public Projects goToProjects() {
+        /*
+         * By projectsSelector = By.xpath("//button[@id='View Projects List']");
+         * this.action.click(projectsSelector);
+         */
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.projectsButton);
         return new Projects();
     }
 
-    public Subscriptions goToSubscriptions(){
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+    public Subscriptions goToSubscriptions() {
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.subscriptionsButton);
         return new Subscriptions();
+    }
+
+    public Dashboard goToSpotlightDashboard() {
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
+        executor.executeScript("arguments[0].click();", this.spotlightDashboardButton);
+        return new Dashboard();
     }
 
     public void viewItem(String item) {
@@ -81,9 +96,11 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public String close() {
-/*        By deleteSelector = By.cssSelector("button#Close");
-        this.action.click(deleteSelector);*/
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        /*
+         * By deleteSelector = By.cssSelector("button#Close");
+         * this.action.click(deleteSelector);
+         */
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.closeButton);
         Modal confirmModal = new Modal();
         confirmModal.confirmAction();
@@ -91,20 +108,20 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public Consumptions goToConsumption() {
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.consumptionsButton);
         return new Consumptions();
     }
 
     public AdminstratorEmails goToCustomerAdmins() {
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.customerAdminButton);
         this.action.waitModal();
         return new AdminstratorEmails();
     }
 
     public AdminstratorEmails goToSubaccountAdmins() {
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.subaccountAdminButton);
         this.action.waitModal();
         return new AdminstratorEmails();
