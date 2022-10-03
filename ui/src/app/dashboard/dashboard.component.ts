@@ -213,8 +213,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * on click delete account
      * @param id: string
      */
-    onDeleteAccount(id: string): void {
-        this.openConfirmCancelDialog(id);
+    onDeleteAccount(selectedItemData: string): void {
+        this.openConfirmCancelDialog(selectedItemData);
     }
 
     /**
@@ -289,8 +289,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     /**
      * open confirm cancel dialog
      */
-    openConfirmCancelDialog(customerId?: number | string) {
-        const customer = this.customerList.find((customer: any) => customer.id = customerId);
+    openConfirmCancelDialog(customer?: any) {
         this.dialogService
             .deleteCustomerDialog({
                 title: 'Confirm Action',
@@ -426,7 +425,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.openDialog(object.selectedOption, object.selectedRow);
                 break;
             case this.DELETE_ACCOUNT:
-                this.onDeleteAccount(object.selectedRow.id);
+                this.onDeleteAccount(object.selectedRow);
                 break;
         }
     }
