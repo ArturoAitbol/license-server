@@ -29,8 +29,8 @@ public class Landing extends AbstractPageObject {
     }
 
     public String checkIfLoggedIn() {
-        By copyrightSelector = By.cssSelector("#settings-button");
-        String res = this.action.checkElement(copyrightSelector);
+        By settingsSelector = By.cssSelector("#settings-button");
+        String res = this.action.checkElement(settingsSelector);
         return res;
     }
 }
