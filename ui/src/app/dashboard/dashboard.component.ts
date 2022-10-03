@@ -213,7 +213,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * on click delete account
      * @param id: string
      */
-    onDeleteAccount(selectedItemData: string): void {
+    onDeleteAccount(selectedItemData: any): void {
         this.openConfirmCancelDialog(selectedItemData);
     }
 
