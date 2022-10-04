@@ -16,7 +16,7 @@ export class SnackBarService {
    * @param duration: number
    */
   openSnackBar(message: string, action?: string, duration?: number) {
-    this._snackBar.dismiss()
+    this._snackBar.dismiss();
     this._snackBar.open(message, action, {
       horizontalPosition: this.horizontalPosition,
       verticalPosition: this.verticalPosition,
