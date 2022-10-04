@@ -194,8 +194,7 @@ describe('Dialog calls and interactions', () => {
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(CustomerServiceMock, 'deleteCustomer').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
-        dashboardComponentTestInstance.customerList['0'] = expectedCustomerObject;
-        dashboardComponentTestInstance.openConfirmCancelDialog('0');
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
 
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
@@ -222,8 +221,7 @@ describe('Dialog calls and interactions', () => {
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(SubaccountServiceMock, 'deleteSubAccount').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: false });
-        dashboardComponentTestInstance.customerList['0'] = expectedCustomerObject;
-        dashboardComponentTestInstance.openConfirmCancelDialog('0');
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
 
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
@@ -405,7 +403,7 @@ describe('.rowAction()', () => {
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.DELETE_ACCOUNT;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(dashboardComponentTestInstance.onDeleteAccount).toHaveBeenCalledWith(selectedTestData.selectedRow.id);
+        expect(dashboardComponentTestInstance.onDeleteAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 });
 
