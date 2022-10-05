@@ -411,5 +411,11 @@ export const SubaccountServiceMock = {
                 unsubscribe() {}
             };
         });
+    },
+    getSelectedSubAccount: () => {
+        return {
+            id:'fbb2d912-b202-432d-8c07-dce0dad51f7f',
+            companyName:"testComp"
+        }
     }
 };

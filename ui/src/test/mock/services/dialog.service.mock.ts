@@ -36,7 +36,7 @@ export class DialogServiceMock {
 
     afterClosed() {
         return new Observable((observer) => {
-            observer.next({res: {closed} });
+            observer.next({res: 'closed' });
             observer.complete();
             return {
                 unsubscribe() {}

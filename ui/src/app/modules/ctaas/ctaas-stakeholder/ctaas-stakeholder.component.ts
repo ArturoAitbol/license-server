@@ -173,7 +173,7 @@ export class CtaasStakeholderComponent implements OnInit {
         break;
     }
     dialogRef.afterClosed().subscribe((res: any) => {
-      if (res === 'closed') {
+      if (res) {
         this.stakeholdersData = [];
         this.fetchStakeholderList();
       }

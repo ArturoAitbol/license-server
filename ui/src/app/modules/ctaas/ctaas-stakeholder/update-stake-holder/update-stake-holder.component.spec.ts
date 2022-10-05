@@ -2,12 +2,13 @@ import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatSnackBarModule, MatSnackBarRef } from "@angular/material/snack-bar";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MsalService } from "@azure/msal-angular";
+import { of } from "rxjs";
 import { SharedModule } from "src/app/modules/shared/shared.module";
 import { DialogService } from "src/app/services/dialog.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
@@ -153,6 +154,24 @@ describe('modify stakeholder interactions', () => {
         expect(dialogService.close).toHaveBeenCalled();
     });
 
+    it('it should update an stakeholder without notifications', async () => {
+        spyOn(modifyStakeholderComponentTestInstance, 'updateStakeholderDetails').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'updateStakeholderDetails').and.callThrough();
+        fixture.detectChanges();
+        
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('name').setValue('testN');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('jobTitle').setValue('testJ');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('companyName').setValue('testC');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('phoneNumber').setValue('1111111111');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('LOW TIER');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([false, false, false]);
+       
+        modifyStakeholderComponentTestInstance.updateStakeholderDetails();
+        await fixture.whenStable();
+        expect(StakeHolderServiceMock.updateStakeholderDetails).toHaveBeenCalled();
+    });
+
     it('should check the report checkbox', () => {
         spyOn(modifyStakeholderComponentTestInstance, 'onChangeReportCheckbox').and.callThrough();
         fixture.detectChanges();
@@ -184,7 +203,7 @@ describe('modify stakeholder - FromGroup verification test', () => {
         expect(modifyStakeholder.get('phoneNumber').valid).toBeFalse();
         expect(modifyStakeholder.get('type').valid).toBeFalse();
         expect(modifyStakeholder.get('notifications').valid).toBeTrue();
-    })
+    });
 
     it('it should enable the submit button', () => {
         fixture.detectChanges();
@@ -222,3 +241,20 @@ describe('modify stakeholder - FromGroup verification test', () => {
         expect(fixture.nativeElement.querySelector('#submit-stakeholder-button').disabled).toBeTrue();
     });
 })
+
+describe('dialog calls', () => {
+    beforeEach(beforeEachFunction);
+    it('should show a message if an error ocurred while updating stakeholder',() => {
+        const response = {error: "some error message"};
+        fixture.detectChanges();
+
+        spyOn(modifyStakeholderComponentTestInstance,'updateStakeholderDetails').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'updateStakeholderDetails').and.returnValue(of(response));
+
+        modifyStakeholderComponentTestInstance.updateStakeholderDetails();
+
+        expect(StakeHolderServiceMock.updateStakeholderDetails).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledOnceWith(response.error, 'Error while updating stake holder');
+    });
+});
