@@ -12,6 +12,7 @@ export class LoginPageComponent implements OnInit {
     password = '';
     loading_status = false;
     returnUrl: string;
+    waitingForMsAuth = false;
 
     constructor(private router: Router, private msalService: MsalService) {
         if (this.msalService.instance.getActiveAccount() != null)
@@ -38,10 +39,12 @@ export class LoginPageComponent implements OnInit {
      */
     onSubmit() {
         try {
+            this.waitingForMsAuth = true;
             this.msalService.loginPopup().subscribe((res: AuthenticationResult) => {
+                this.waitingForMsAuth = false;
                 console.debug('login res: ', res);
                 this.msalService.instance.setActiveAccount(res.account);
-                if (this.isLoggedIn)
+                if (this.isLoggedIn())
                     this.router.navigate(['/']);
             });
         } catch (error) {
