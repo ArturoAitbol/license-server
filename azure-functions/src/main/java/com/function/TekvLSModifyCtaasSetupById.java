@@ -8,6 +8,7 @@ import static com.function.auth.RoleAuthHandler.getRolesFromToken;
 import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
 import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 import static com.function.auth.RoleAuthHandler.hasPermission;
+import static com.function.auth.Roles.*;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ import com.function.util.FeatureToggles;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.Constants;
@@ -33,8 +34,6 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import io.jsonwebtoken.Claims;
-
-import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSModifyCtaasSetupById {
 	/**
@@ -61,7 +60,7 @@ public class TekvLSModifyCtaasSetupById {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.MODIFY_CTAAS_SETUP)){
+		if(!hasPermission(roles, Resource.MODIFY_CTAAS_SETUP)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -187,7 +186,7 @@ public class TekvLSModifyCtaasSetupById {
 				licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
 
 				// adding users if feature toggle 'ad-ctaas-user-creation-after-setup-ready' enabled
-				if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation") && FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
+				if (FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
 					this.ADUserCreation(jobj,context,connection);
 
 				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();

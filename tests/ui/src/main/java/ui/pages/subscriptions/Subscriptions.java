@@ -15,6 +15,7 @@ public class Subscriptions extends AbstractPageObject {
     WebElement addLicenseButton;
     @FindBy(css = "button#back-button")
     WebElement backButton;
+    By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public String getTableTitle() {
         String title = "none";
@@ -24,7 +25,7 @@ public class Subscriptions extends AbstractPageObject {
 
     public SubscriptionForm openSubscriptionForm() {
         this.action.click(this.addLicenseButton);
-        this.action.waitModal();
+        this.action.waitSpinner(this.spinnerSelector);
         return new SubscriptionForm();
     }
 

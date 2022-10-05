@@ -1,6 +1,7 @@
 package com.function;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.PowerBIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
@@ -56,7 +57,7 @@ public class TekvLSGetCtaasDashboard {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.GET_CTAAS_DASHBOARD)){
+		if(!hasPermission(roles, Resource.GET_CTAAS_DASHBOARD)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -81,11 +82,6 @@ public class TekvLSGetCtaasDashboard {
 		// adding conditions according to the role
 		String currentRole = evaluateRoles(roles);
 		switch (currentRole){
-			case DISTRIBUTOR_FULL_ADMIN:
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer c");
-				verificationQueryBuilder.appendCustomCondition("s.customer_id = c.id AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
-						"WHERE c.id = ca.customer_id and admin_email= ?)", email);
-				break;
 			case CUSTOMER_FULL_ADMIN:
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer_admin ca");
 				verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?", email);
@@ -115,7 +111,6 @@ public class TekvLSGetCtaasDashboard {
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();
 			PreparedStatement selectStmt = queryBuilder.build(connection)) {
 
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
