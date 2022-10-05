@@ -28,8 +28,8 @@ export class AddCustomerAccountModalComponent {
     'Reseller',
   ];
   services: any = [
-    {name: tekVizionServices.SpotLight, value: "SpotLight", used: false},
-    {name: tekVizionServices.tekTokenConstumption, value: "tekToken Consumption", used: true}
+    { name: tekVizionServices.SpotLight, value: "SpotLight", used: false },
+    { name: tekVizionServices.tekTokenConstumption, value: "tekToken Consumption", used: true }
   ];
   isDataLoading = false;
   constructor(
@@ -47,15 +47,15 @@ export class AddCustomerAccountModalComponent {
   onCancel(): void {
     this.dialogRef.close();
   }
-  
-  setChecked(value: boolean, index: number){
+
+  setChecked(value: boolean, index: number) {
     this.services[index].used = value
   }
 
-  getServices(): any{
+  getServices(): any {
     let actualServices = ""
-    for(let i = 0 ; i < this.services.length; i++){
-      if(this.services[i].used){
+    for (let i = 0; i < this.services.length; i++) {
+      if (this.services[i].used) {
         actualServices = actualServices + this.services[i].name + ',';
       }
     }
@@ -82,9 +82,8 @@ export class AddCustomerAccountModalComponent {
           subaccountName: this.addCustomerForm.value.subaccountName,
           subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
         }
-        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
-          let services;
-          services = this.getServices();
+        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)) {
+          const services = this.getServices();
           subaccountDetails.services = services
         }
         this.snackBarService.openSnackBar('Customer added successfully!', '');
@@ -100,7 +99,7 @@ export class AddCustomerAccountModalComponent {
     });
   }
 
-  createSubAccount(subaccountDetails: any){
+  createSubAccount(subaccountDetails: any) {
     this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
       if (!res.error)
         this.snackBarService.openSnackBar('Subaccount added successfully!', '');
@@ -108,7 +107,7 @@ export class AddCustomerAccountModalComponent {
         this.snackBarService.openSnackBar(res.error, 'Error adding subaccount!');
       this.dialogRef.close(res);
       this.isDataLoading = false;
-    },err => {
+    }, err => {
       this.isDataLoading = false;
       this.snackBarService.openSnackBar(err.error, 'Error adding subaccount!');
       console.error('error while adding subbacount', err);

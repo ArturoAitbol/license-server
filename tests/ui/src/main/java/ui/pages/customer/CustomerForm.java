@@ -16,6 +16,8 @@ public class CustomerForm extends AbstractPageObject {
     WebElement subaccountName;
     @FindBy(css = "[formcontrolname='subaccountAdminEmail']")
     WebElement subaccountAdminEmail;
+    @FindBy(id = "spotlight-service")
+    WebElement spotlightPermission;
     @FindBy(css = "[formcontrolname='testCustomer']")
     WebElement testCustomer;
     @FindBy(css = "button#submitBtn")
@@ -23,7 +25,7 @@ public class CustomerForm extends AbstractPageObject {
 
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
 
-    public Customers createCustomer(String customerName, String type, String adminEmail, String subaccount, String subAdminEmail, String testCustomer){
+    public Customers createCustomer(String customerName, String type, String adminEmail, String subaccount, String subAdminEmail, String spotlightPermission, String testCustomer){
         this.action.sendText(this.customerName, customerName);
         By optionType = By.cssSelector(String.format("mat-option[title='%s']", type));
         this.action.selectOption(this.customerType, optionType);
@@ -31,6 +33,8 @@ public class CustomerForm extends AbstractPageObject {
         if (!subaccount.equals("Default"))
             this.action.replaceText(this.subaccountName, subaccount);
         this.action.sendText(this.subaccountAdminEmail, subAdminEmail);
+        if (!spotlightPermission.equals("no") && !spotlightPermission.equals("disable"))
+            this.action.click(this.spotlightPermission);
         if (!testCustomer.equals("no") && !testCustomer.equals("disable"))
             this.action.click(this.testCustomer);
         this.action.click(this.submitButton);
