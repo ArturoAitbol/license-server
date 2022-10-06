@@ -88,7 +88,7 @@ const beforeEachFunction = () => {
     fixture.detectChanges();
 };
 
-fdescribe('UI verification test', () => {
+describe('UI verification test', () => {
     beforeEach(beforeEachFunction);
     it('should display essential UI and components', () => {
         const h1 = fixture.nativeElement.querySelector('#page-title');
@@ -138,7 +138,7 @@ fdescribe('UI verification test', () => {
     });
 });
 
-fdescribe('add stakeholder interactions', () => {
+describe('add stakeholder interactions', () => {
     beforeEach(beforeEachFunction);
     it('should add a stakeholder', () => {
         spyOn(addStakeholderComponentTestInstance, 'addStakeholder').and.callThrough();
@@ -175,7 +175,7 @@ fdescribe('add stakeholder interactions', () => {
     });
 });
 
-fdescribe('display of error messages', () => {
+describe('display of error messages', () => {
     beforeEach(beforeEachFunction);
     it('should display an error message whe adding a stakeholder', () => {
         const err = {error:"some error"}
@@ -211,7 +211,7 @@ fdescribe('display of error messages', () => {
     })
 });
 
-fdescribe('addStakeholder - without subaccount id', () => {
+describe('addStakeholder - without subaccount id', () => {
     beforeEach(() =>{
         TestBed.configureTestingModule(defaultTestBedConfig);
         TestBed.overrideProvider(SubAccountService, {
