@@ -88,7 +88,7 @@ const beforeEachFunction = () => {
     fixture.detectChanges();
 };
 
-describe('UI verification test', () => {
+fdescribe('UI verification test', () => {
     beforeEach(beforeEachFunction);
     it('should display essential UI and components', () => {
         const h1 = fixture.nativeElement.querySelector('#page-title');
@@ -138,7 +138,7 @@ describe('UI verification test', () => {
     });
 });
 
-describe('add stakeholder interactions', () => {
+fdescribe('add stakeholder interactions', () => {
     beforeEach(beforeEachFunction);
     it('should add a stakeholder', () => {
         spyOn(addStakeholderComponentTestInstance, 'addStakeholder').and.callThrough();
@@ -175,7 +175,7 @@ describe('add stakeholder interactions', () => {
     });
 });
 
-describe('display of error messages', () => {
+fdescribe('display of error messages', () => {
     beforeEach(beforeEachFunction);
     it('should display an error message whe adding a stakeholder', () => {
         const err = {error:"some error"}
@@ -207,11 +207,11 @@ describe('display of error messages', () => {
         addStakeholderComponentTestInstance.userprofileDetails = null;
         addStakeholderComponentTestInstance.addStakeholder();
 
-        expect(console.error).toHaveBeenCalledWith('error while creating stake holder | ', TypeError("Cannot destructure property 'subaccountId' of '((cov_1k8ur7uvt0(...).s[21]++) , this.userprofileDetails)' as it is null."));
+        expect(console.error).toHaveBeenCalledWith('error while creating stake holder | ', jasmine.any(TypeError));
     })
 });
 
-describe('addStakeholder - without subaccount id', () => {
+fdescribe('addStakeholder - without subaccount id', () => {
     beforeEach(() =>{
         TestBed.configureTestingModule(defaultTestBedConfig);
         TestBed.overrideProvider(SubAccountService, {
