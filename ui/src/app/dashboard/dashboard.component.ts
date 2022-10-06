@@ -180,14 +180,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
             const subaccounts = subaccountsList.filter(s => s.customerId === customer.id);
             if (subaccounts.length > 0) {
                 subaccounts.forEach(subaccount => {
-                    const { id, name, services } = subaccount;
-                    const customerWithDetails = { ...customer };
-                    customerWithDetails.subaccountName = name;
-                    customerWithDetails.subaccountId = id;
-                    const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === id));
+                    let customerWithDetails = { ...customer };
+                    customerWithDetails.subaccountName = subaccount.name;
+                    customerWithDetails.subaccountId = subaccount.id;
+                    const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccount.id));
                     customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
                     if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService))
-                        customerWithDetails.services = (services) ? services : null;
+                        customerWithDetails.services = (subaccount.services) ? subaccount.services : null;
                     fullCustomerList.push(customerWithDetails);
                 })
             } else {
@@ -214,8 +213,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * on click delete account
      * @param id: string
      */
-    onDeleteAccount(id: string): void {
-        this.openConfirmCancelDialog(id);
+    onDeleteAccount(selectedItemData: any): void {
+        this.openConfirmCancelDialog(selectedItemData);
     }
 
     /**
@@ -290,8 +289,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     /**
      * open confirm cancel dialog
      */
-    openConfirmCancelDialog(customerId?: number | string) {
-        const customer = this.customerList.find((customer: any) => customer.id = customerId);
+    openConfirmCancelDialog(customer?: any) {
         this.dialogService
             .deleteCustomerDialog({
                 title: 'Confirm Action',
@@ -428,7 +426,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.openDialog(object.selectedOption, object.selectedRow);
                 break;
             case this.DELETE_ACCOUNT:
-                this.onDeleteAccount(object.selectedRow.id);
+                this.onDeleteAccount(object.selectedRow);
                 break;
         }
     }

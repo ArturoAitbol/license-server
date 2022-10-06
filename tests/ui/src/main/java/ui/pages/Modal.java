@@ -13,9 +13,13 @@ public class Modal extends AbstractPageObject {
     WebElement reconfirmButton;
 
     public void reconfirmAction(){
+        String button = this.action.getText(reconfirmButton);
+        System.out.println(button);
         this.action.click(reconfirmButton);
     }
     public void confirmAction(){
+        String button = this.action.getText(confirmButton);
+        System.out.println(button);
         this.action.click(confirmButton);
     }
 }

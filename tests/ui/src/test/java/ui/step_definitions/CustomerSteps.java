@@ -41,12 +41,13 @@ public class CustomerSteps {
         String adminEmail = customer.get("adminEmail");
         String subaccount = customer.getOrDefault("subaccount", "Default");
         String subAdminEmail = customer.getOrDefault("subAdminEmail", "noSubAdminEmail@test.com");
+        String spotlightPermission = customer.getOrDefault("spotlight", "no").toLowerCase();
         String testCustomer = customer.getOrDefault("testCustomer", "yes").toLowerCase();
         this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,
-                testCustomer);
+                spotlightPermission, testCustomer);
         this.actualMessage = this.customers.getMessage();
         System.out.println("Message: " + this.actualMessage);
-//        DriverManager.getInstance().setMessage(this.actualMessage);
+        // DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @Then("I see the customer {string} in the table")
@@ -106,7 +107,7 @@ public class CustomerSteps {
     @Then("I see in the table the customer {string} and its subaccount {string}")
     public void iSeeInTheTableTheTheCustomerAndItsSubaccount(String customerName, String subaccountName) {
         this.customerRow = this.customers.getCustomer(customerName);
-        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer",null);
+        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer", null);
         String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", subaccountName);
 
         assertEquals(
@@ -120,9 +121,9 @@ public class CustomerSteps {
     @Then("I should see the modified data in Subaccounts table")
     public void iShouldSeeTheModifiedDataInSubaccountsTable() {
         this.customerRow = new CustomerRow(this.customerName);
-        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer",null);
+        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer", null);
         String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", this.subaccount);
-        String actualType = this.customerRow.getSubaccountColumn("Type",null);
+        String actualType = this.customerRow.getSubaccountColumn("Type", null);
         assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
                 actualCustomerName);
         assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
@@ -142,7 +143,6 @@ public class CustomerSteps {
         this.actualMessage = this.adminEmails.addAdministrator(adminEmail);
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
-
 
     @When("I delete the administrator with email {string}")
     public void iDeleteTheAdministratorWithEmail(String adminEmail) {

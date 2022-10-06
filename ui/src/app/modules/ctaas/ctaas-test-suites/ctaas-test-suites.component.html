@@ -12,7 +12,7 @@
         </div>
     </div>
     <section class="table-section">
-        <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
+        <div id="test-suites-table" class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
             <app-data-table [tableData]="testSuites" [tableColumns]="displayedColumns" [isFilterable]="false"
                 [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                 [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"

@@ -67,17 +67,17 @@ export class ModifyTestSuiteComponent implements OnInit {
 
     this.testSuiteService.updateTestSuite(suiteObject).subscribe((res: any) => {
       if (!res.error) {
-        this.snackBarService.openSnackBar('Test Suite added successfully!', '');
+        this.snackBarService.openSnackBar('Test Suite successfully edited!', '');
         this.dialogRef.close(res);
       } else {
-        this.snackBarService.openSnackBar(res.error, 'Error adding test suite!');
+        this.snackBarService.openSnackBar(res.error, 'Error modifying test suite!');
         this.dialogRef.close(res);
         this.isDataLoading = false;
       }
     }, err => {
       this.isDataLoading = false;
-      this.snackBarService.openSnackBar(err.error, 'Error adding test suite!');
-      console.error('Error while adding test suite', err);
+      this.snackBarService.openSnackBar(err.error, 'Error modifying test suite!');
+      console.error('Error while modifying test suite', err);
     })
   }
 
