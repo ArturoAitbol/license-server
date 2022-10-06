@@ -5,7 +5,7 @@ Feature: Customers
     When I try to login with email and password
     Then I should see the "Customers" page
 
-  @createCustomer
+  @createTestCustomer
   Scenario: Create a test customer
     Given I open the Add Customer form
     When I create a customer with the following data

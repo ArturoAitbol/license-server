@@ -65,7 +65,7 @@ export class CtaasSetupComponent implements OnInit {
           this.isDataLoading = false;
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
           if (activeLicenses.length === 0) {
-            this.snackBarService.openSnackBar("No active licenses found", "Error selecting a license");
+            this.snackBarService.openSnackBar("No active subscriptions found", "Error selecting a subscription");
             return;
           }
           if (activeLicenses.length === 1) {
