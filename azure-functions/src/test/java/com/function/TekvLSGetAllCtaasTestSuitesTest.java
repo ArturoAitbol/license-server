@@ -32,8 +32,6 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
     @Tag("acceptance")
     @Test
     public void getAllCtaasTestSuitesTest() {
-        // Given
-
         // When
         HttpResponseMessage response = tekvLSGetAllCtaasTestSuites.run(this.request, this.context);
         this.context.getLogger().info(response.getBody().toString());
@@ -65,7 +63,7 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
     @Test
     public void getAllTestSuitesBySubaccountId() {
 
-        String expectedSubaccountId = "0e2038ec-2b9b-493b-b3f2-6702e60b5b90";
+        String expectedSubaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
         this.queryParams.put("subaccountId", expectedSubaccountId);
 
         HttpResponseMessage response = tekvLSGetAllCtaasTestSuites.run(this.request, context);
@@ -154,9 +152,7 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
     }
 
     @Test
-    public void genericExceptionTest() {
-        // Given
-        
+    public void genericExceptionTest() {        
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
         // When
         HttpResponseMessage response = tekvLSGetAllCtaasTestSuites.run(this.request, this.context);
