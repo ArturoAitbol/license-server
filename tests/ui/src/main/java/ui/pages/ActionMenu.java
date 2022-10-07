@@ -10,6 +10,7 @@ import ui.pages.customer.AdminstratorEmails;
 import ui.pages.projects.Projects;
 import ui.pages.spotlight.Dashboard;
 import ui.pages.subscriptions.Subscriptions;
+import ui.pages.spotlight.Stakeholders;
 
 public class ActionMenu extends AbstractPageObject {
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
@@ -31,6 +32,10 @@ public class ActionMenu extends AbstractPageObject {
     WebElement subaccountAdminButton;
     @FindBy(xpath = "//button[@id='View SpotLight Dashboard']")
     WebElement spotlightDashboardButton;
+    @FindBy(xpath = "//button[@id='Delete Stakeholder Account']")
+    WebElement spotlightStakeholderButton;
+    @FindBy(xpath = "//button[@id='Update Stakeholder Details']")
+    WebElement spotlightUpdateStakeholderButton;
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public String delete(String type) {
@@ -40,8 +45,14 @@ public class ActionMenu extends AbstractPageObject {
          */
         String message;
         JavascriptExecutor executor = (JavascriptExecutor) this.driver;
-        executor.executeScript("arguments[0].click();", this.deleteButton);
+        if (type.equals("stakeholder")) {
+            executor.executeScript("arguments[0].click();", this.spotlightStakeholderButton);
+        }
+        else{
+            executor.executeScript("arguments[0].click();", this.deleteButton);
+        }
         Modal confirmModal = new Modal();
+        
         if (type.equals("customer")) {
             confirmModal.reconfirmAction();
         } else {
@@ -61,6 +72,11 @@ public class ActionMenu extends AbstractPageObject {
          */
         JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.editButton);
+    }
+
+    public void editStakeholderForm() {
+        this.action.forceClick(this.spotlightUpdateStakeholderButton);
+        this.action.waitSpinner(this.spinnerSelector);
     }
 
     public void editForm() {
