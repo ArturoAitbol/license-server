@@ -75,9 +75,4 @@ public class LoginSteps {
             this.apps = new Apps();
         }
     }
-
-    @Then("I should see the CTaaS and tekTokenUsage buttons")
-    public void iShouldSeeTheCTaaSAndTekTokenUsageButtons() {
-
-    }
 }

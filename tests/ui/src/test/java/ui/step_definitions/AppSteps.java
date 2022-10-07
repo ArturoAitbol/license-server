@@ -43,4 +43,11 @@ public class AppSteps {
             Assert.assertEquals("View doesn't have this button: " + button, button, actualButton);
         }
     }
+
+    @Then("I should see the logout page")
+    public void iShouldSeeTheLogoutPage() {
+        boolean actualTitle = this.apps.checkWindowTitle();
+        Assert.assertEquals("Window doesn't have a Sign out title", true, actualTitle);
+        this.apps.logout();
+    }
 }
