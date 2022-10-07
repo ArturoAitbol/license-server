@@ -163,7 +163,7 @@ public class LicenseConsumptionSteps {
             assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), this.deviceVersion,
                     actualVersion);
         if (!this.tekTokens.isEmpty())
-            assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), actualTekTokens,
+            assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), this.tekTokens,
                     actualTekTokens);
         if (!this.usageDays.isEmpty()) {
             if (actualTekTokens.equals("0"))
@@ -171,6 +171,52 @@ public class LicenseConsumptionSteps {
             else
                 assertEquals("Consumption doesn't have this UsageDays: ".concat(usageDays), this.usageDays,
                         actualUsageDays);
+        }
+    }
+
+    @And("I should see the following data in the tekToken Consumption Events table")
+    public void iShouldSeeTheFollowingDataInTheTekTokenConsumptionEventsTable(DataTable dataTable) {
+        Map<String,String> consumption = dataTable.asMap(String.class,String.class);
+
+        String project = consumption.getOrDefault("project", "");
+        String type = consumption.getOrDefault("type", "Configuration");
+        String deviceVendor = consumption.getOrDefault("vendor", "");
+        String deviceModel = consumption.getOrDefault("model", "");
+        String deviceVersion = consumption.getOrDefault("version", "");
+        String tekTokens = consumption.getOrDefault("tekTokensUsed", "");
+        String usageDays = consumption.getOrDefault("usageDays", "");
+
+        this.consumptionRow = new ConsumptionRow(project);
+        String actualProject = this.consumptionRow.getColumnValue("Project");
+        String actualType = this.consumptionRow.getColumnValue("Type");
+        String actualVendor = this.consumptionRow.getColumnValue("Vendor");
+        String actualModel = this.consumptionRow.getColumnValue("Model");
+        String actualVersion = this.consumptionRow.getColumnValue("Version");
+        String actualTekTokens = this.consumptionRow.getColumnValue("tekTokens Used");
+        String actualUsageDays = this.consumptionRow.getColumnValue("Usage Days");
+
+        if (!project.isEmpty())
+            assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
+
+        assertEquals("Consumption doesn't have this type: ".concat(type), type, actualType);
+
+        if (!deviceVendor.isEmpty())
+            assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), deviceVendor,
+                    actualVendor);
+        if (!deviceModel.isEmpty())
+            assertEquals("Consumption doesn't have this deviceModel: ".concat(deviceModel), deviceModel,
+                    actualModel);
+        if (!deviceVersion.isEmpty())
+            assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), deviceVersion,
+                    actualVersion);
+        if (!tekTokens.isEmpty())
+            assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), tekTokens,
+                    actualTekTokens);
+        if (actualTekTokens.equals("0"))
+            assertEquals("Consumption doesn't have this UsageDays: ".concat("..."), "...", actualUsageDays);
+        else{
+            if (!usageDays.isEmpty())
+                assertEquals("Consumption doesn't have this UsageDays: ".concat(usageDays), usageDays,actualUsageDays);
         }
     }
 

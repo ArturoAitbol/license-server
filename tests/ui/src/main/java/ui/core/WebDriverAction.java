@@ -110,6 +110,10 @@ public class WebDriverAction {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getText();
     }
 
+    public String getAttribute(By locator,String attributeName) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getAttribute(attributeName);
+    }
+
     public String getText(WebElement element) {
         return wait.until(ExpectedConditions.visibilityOf(element)).getText();
     }
