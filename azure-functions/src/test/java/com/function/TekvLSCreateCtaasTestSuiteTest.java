@@ -15,10 +15,10 @@ import com.microsoft.azure.functions.HttpStatusType;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-
 
 public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
 
@@ -91,7 +91,7 @@ public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
-    
+
     @Test
     public void createTestSuiteWrongSubaccountId() {
         String name = "testSuiteTest" + LocalDateTime.now();
@@ -154,7 +154,6 @@ public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
-
     @Test
     public void createTestSuiteWithoutJsonTest() {
         String bodyRequest = "test";
@@ -191,6 +190,34 @@ public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
         assertTrue(jsonBody.has("error"));
 
         String expectedResponse = RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
+    public void genericException(){
+        //Given - Arrange
+        String name = "testSuiteTest" + LocalDateTime.now();
+        String bodyRequest = "{'name':'" + name + "','subaccountId':'0e2038ec-2b9b-493b-b3f2-6702e60b5b90','totalExecutions':'7','nextExecution':'2022-10-04 00:00:00','frequency':'Hourly','deviceType':'MS Teams'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+
+        //When - Action
+        TekvLSCreateCtaasTestSuite createCtaasTestSuite = new TekvLSCreateCtaasTestSuite();        
+        HttpResponseMessage response = createCtaasTestSuite.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Generic error";
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
