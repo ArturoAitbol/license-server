@@ -171,14 +171,15 @@ describe('modify stakeholder interactions', () => {
         await fixture.whenStable();
         expect(StakeHolderServiceMock.updateStakeholderDetails).toHaveBeenCalled();
     });
+    it('should display an error message if an error ocurred in initializeForm', () => {
+        spyOn(modifyStakeholderComponentTestInstance, 'initializeForm').and.callThrough();
+        spyOn(console, 'error').and.callThrough();
 
-    it('should check the report checkbox', () => {
-        spyOn(modifyStakeholderComponentTestInstance, 'onChangeReportCheckbox').and.callThrough();
-        fixture.detectChanges();
-        modifyStakeholderComponentTestInstance.onChangeReportCheckbox(true,1);
+        modifyStakeholderComponentTestInstance.data = null
+        modifyStakeholderComponentTestInstance.initializeForm();
 
-        expect(modifyStakeholderComponentTestInstance.onChangeReportCheckbox).toHaveBeenCalled();
-    });
+        expect(console.error).toHaveBeenCalledWith('some error | ',jasmine.any(TypeError))
+    })
 });
 
 describe('modify stakeholder - FromGroup verification test', () => {

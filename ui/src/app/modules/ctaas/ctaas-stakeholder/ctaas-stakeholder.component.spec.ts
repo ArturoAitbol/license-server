@@ -10,8 +10,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MsalService } from "@azure/msal-angular";
 import { of, throwError } from "rxjs";
-import { FeatureToggleHelper } from "src/app/helpers/feature-toggle.helper";
-import { Features } from "src/app/helpers/features";
+import { permissions } from "src/app/helpers/role-permissions";
 import { DialogService } from "src/app/services/dialog.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
 import { StakeHolderService } from "src/app/services/stake-holder.service";
@@ -200,7 +199,7 @@ describe('dialog calls and interactions',() => {
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
-    })
+    });
 
     it('should show a message if an error ocurred while fetching the data', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
@@ -211,5 +210,16 @@ describe('dialog calls and interactions',() => {
         expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error', 'Error while loading stake holders');
             
+    });
+
+    it('should display an error message if an error ocurred in fetchStakeholderList', () => {
+        spyOn(console, 'error').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'getStakeholderList').and.returnValue(of([{error:'some error'}]));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+        fixture.detectChanges()
+    
+
+        expect(console.error).toHaveBeenCalledWith('some error |', jasmine.any(TypeError))
     });
 });

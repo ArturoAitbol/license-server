@@ -111,8 +111,6 @@ export class CtaasStakeholderComponent implements OnInit {
         const { stakeHolders } = response;
         if (stakeHolders) {
           this.stakeholdersData = stakeHolders;
-        } else {
-          this.snackBarService.openSnackBar(response.error, 'Error while loading stake holders');
         }
       }, (error) => {
         this.snackBarService.openSnackBar(error, 'Error while loading stake holders');
@@ -169,8 +167,8 @@ export class CtaasStakeholderComponent implements OnInit {
           disableClose: true
         });
         break;
-      case this.DELETE_STAKEHOLDER:
-        break;
+      // case this.DELETE_STAKEHOLDER:
+      //   break;
     }
     dialogRef.afterClosed().subscribe((res: any) => {
       if (res) {
