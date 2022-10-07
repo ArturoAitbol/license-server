@@ -26,7 +26,7 @@ public class AppSteps {
     @When("I click on {string} button")
     public void iClickOnButton(String button) {
         boolean available = this.apps.click(button);
-        Assert.assertTrue(button + "button wasn't available", available);
+        Assert.assertTrue("'" + button + "'" + " button wasn't available", available);
     }
 
     @Then("I should see the {string} view")

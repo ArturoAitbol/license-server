@@ -7,8 +7,12 @@ import ui.core.AbstractPageObject;
 import ui.core.DriverManager;
 
 public class OnBoardWizard extends AbstractPageObject {
+    @FindBy(css="[formcontrolname='name']")
+    WebElement name;
     @FindBy(css="[formcontrolname='jobTitle']")
     WebElement jobTitle;
+    @FindBy(css="[formcontrolname='email']")
+    WebElement email;
     @FindBy(css="[formcontrolname='companyName']")
     WebElement companyName;
     @FindBy(css="[formcontrolname='phoneNumber']")
@@ -25,8 +29,10 @@ public class OnBoardWizard extends AbstractPageObject {
     WebElement submitButton;
 
 
-    public void acceptForm(String jobTitle, String companyName, String phoneNumber, String type, String dailyReports, String weeklyReports, String monthlyReports) {
+    public void acceptForm(String name, String jobTitle, String email, String companyName, String phoneNumber, String type, String dailyReports, String weeklyReports, String monthlyReports) {
+        this.action.replaceText(this.name, name);
         this.action.sendText(this.jobTitle, jobTitle);
+        this.action.replaceText(this.email, email);
         this.action.sendText(this.companyName, companyName);
         this.action.sendText(this.phoneNumber, phoneNumber);
         By typeSelector = By.cssSelector(String.format("[value='TYPE:%s']", type));

@@ -29,12 +29,13 @@ Feature: Customers
     Given I try to login with a subaccount administrator
     When I click on "Sure. Let's do it!" button
     And I fill the on board wizard with the following data
-      | jobTitle        | Manager         |
-      | company         | TestComp        |
-      | phoneNumber     | +12064563059    |
-      | type            | Detailed        |
-      | dailyReports    | yes             |
-      | weeklyReports   | yes             |
-      | monthlyReports  | yes             |
-    And I click on "No, I'm done" button
-    Then I should see the message "Suc"
+      | name            | test-functional-subaccount-admin                  |
+      | jobTitle        | Manager                                           |
+      | email           | test-functional-subaccount-admin@tekvizion360.com |
+      | company         | TestComp                                          |
+      | phoneNumber     | +12064563059                                      |
+      | type            | Detailed                                          |
+      | dailyReports    | yes                                               |
+      | weeklyReports   | yes                                               |
+      | monthlyReports  | yes                                               |
+    Then I click on "No, I'm done" button
