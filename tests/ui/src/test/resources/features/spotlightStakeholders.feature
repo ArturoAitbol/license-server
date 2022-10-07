@@ -28,7 +28,7 @@ Feature: Stakeholders
       | name                  | Stakeholder Test                |
       | jobTitle              | Stakeholder Job                 |
       | companyName           | Stakeholder Company             |
-      | subaccountAdminEmail  | samuelvs667@gmail.com           |
+      | subaccountAdminEmail  | email@tekvizion.com             |
       | phoneNumber           | 6524352354                      |
       | type                  | High level                      |
     Then I should see the message "Created Stakeholder successfully"
