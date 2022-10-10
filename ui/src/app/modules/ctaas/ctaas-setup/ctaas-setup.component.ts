@@ -47,14 +47,7 @@ export class CtaasSetupComponent implements OnInit {
     private msalService: MsalService,
     public dialog: MatDialog) { }
 
-  private getAccountDetails(): any | null {
-    return this.msalService.instance.getActiveAccount() || null;
-  }
-
   ngOnInit(): void {
-    const accountDetails = this.getAccountDetails();
-    const { idTokenClaims: { roles } } = accountDetails;
-    this.loggedInUserRoles = roles;
     this.fetchSetupInfo();
     this.disableForm();
   }

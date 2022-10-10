@@ -120,14 +120,7 @@ export class CtaasStakeholderComponent implements OnInit {
       });
   }
 
-  private getAccountDetails(): any | null {
-    return this.msalService.instance.getActiveAccount() || null;
-  }
-
   ngOnInit(): void {
-    const accountDetails = this.getAccountDetails();
-    const { idTokenClaims: { roles } } = accountDetails;
-    this.loggedInUserRoles = roles;
     this.calculateTableHeight();
     this.getActionMenuOptions();
     this.initColumns();
