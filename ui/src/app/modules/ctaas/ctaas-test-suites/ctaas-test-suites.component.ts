@@ -24,7 +24,6 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   testSuites: any = [];
   isLoadingResults = true;
   isRequestCompleted = false;
-  loggedInUserRoles: string[] = [];
   // readonly EXECUTE_ON_DEMAND: string = 'Execute OnDemand';
   readonly MODIFY_TEST_SUITE: string = 'Edit';
   readonly DELETE_TEST_SUITE: string = 'Delete';

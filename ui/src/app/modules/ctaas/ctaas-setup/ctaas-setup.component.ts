@@ -21,7 +21,6 @@ export class CtaasSetupComponent implements OnInit {
   originalCtaasSetupDetails: ICtaasSetup;
   isDataLoading = false;
   isEditing = false;
-  loggedInUserRoles: string[] = [];
 
   readonly statusOptions = {
     SETUP_READY: { label: 'READY' },
