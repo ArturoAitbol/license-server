@@ -72,7 +72,6 @@ export class CtaasSetupComponent implements OnInit {
         let selectedLicenseId;
         this.isDataLoading = true;
         this.licenseService.getLicenseList(this.subaccountService.getSelectedSubAccount().id).subscribe(async (licenseList: any) => {
-          this.isDataLoading = false;
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
           if (activeLicenses.length === 0) {
             this.snackBarService.openSnackBar("No active licenses found", "Error selecting a license");
@@ -97,6 +96,7 @@ export class CtaasSetupComponent implements OnInit {
             } else {
               this.snackBarService.openSnackBar(res.error, 'Error updating SpotLight Setup!');
             }
+            this.isDataLoading = false;
           });
         });
       } else {

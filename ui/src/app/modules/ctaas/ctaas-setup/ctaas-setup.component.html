@@ -60,8 +60,8 @@
                     <div class="col-md-6">
                         <mat-form-field appearance="outline">
                             <mat-label id="status-label">Status</mat-label>
-                            <mat-select required formControlName="status">
-                                <mat-option *ngFor="let status of statusOptions | keyvalue" [value]="status.key">
+                            <mat-select required formControlName="status" id="status">
+                                <mat-option *ngFor="let status of statusOptions | keyvalue" [value]="status.key" id="{{status.value.label}}">
                                     {{status.value.label}}
                                 </mat-option>
                             </mat-select>
