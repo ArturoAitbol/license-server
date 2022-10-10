@@ -1,4 +1,4 @@
-<app-banner [stylesflag] = "'setup'" *ngIf = "loggedInUserRoles[0] !== 'customer.SubaccountStakeholder' && loggedInUserRoles[0] !== 'customer.SubaccountAdmin'"></app-banner>
+<app-banner [stylesflag] = "'setup'" *lcCheckAccessFor="'showBanner'"></app-banner>
 <div class="container">
     <div class="flex-container">
         <div class="loading-shade" *ngIf="isDataLoading">

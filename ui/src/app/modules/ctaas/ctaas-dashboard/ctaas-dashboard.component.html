@@ -1,7 +1,7 @@
 <div>
   <div>
     <app-banner [stylesflag]="'dashboard'"
-      *ngIf="loggedInUserRoles[0] !== 'customer.SubaccountStakeholder' && loggedInUserRoles[0] !== 'customer.SubaccountAdmin'">
+    *lcCheckAccessFor="'showBanner'">
     </app-banner>
     <div class="container-fluid controls" id="reportContainer">
       <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
