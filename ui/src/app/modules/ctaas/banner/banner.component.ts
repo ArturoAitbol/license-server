@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MsalService } from '@azure/msal-angular';
+import { SubAccountService } from '../../../services/sub-account.service'
 
 @Component({
   selector: 'app-banner',
@@ -8,13 +9,13 @@ import { MsalService } from '@azure/msal-angular';
 })
 export class BannerComponent implements OnInit {
 
-  customerDetails:any = {};
+  getLoginUserDetails:any = {};
   @Input() stylesflag:any;
 
-  constructor(private msalService: MsalService,) { }
+  constructor(private msalService: MsalService,private subaccountservice: SubAccountService) {}
 
   ngOnInit(): void {
-    this.customerDetails = JSON.parse(localStorage.getItem("selectedSubAccount"));
+    this.getLoginUserDetails = this.subaccountservice.getSelectedSubAccount();
   }
 
 }

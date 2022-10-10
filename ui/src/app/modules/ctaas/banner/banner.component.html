@@ -1,11 +1,11 @@
 <div class="banner-container" [ngClass]="{'alignment' : stylesflag === 'dashboard' || stylesflag === 'setup'}">
     <ul class="breadcrumb" *ngIf="customerDetails.customerName !== customerDetails.name; else elseBlock">
-        <li> {{customerDetails.customerName}} </li>
-        <li> {{customerDetails.name}} </li>
+        <li> {{getLoginUserDetails.customerName}} </li>
+        <li> {{getLoginUserDetails.name}} </li>
     </ul>
     <ng-template #elseBlock> 
         <ul>
-            <li> {{customerDetails.customerName}} </li>
+            <li> {{getLoginUserDetails.customerName}} </li>
         </ul>
     </ng-template>
 </div>
