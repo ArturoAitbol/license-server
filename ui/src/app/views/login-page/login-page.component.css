@@ -201,3 +201,7 @@
 .was-validated .form-control:invalid {
   background-image: none !important;
 }
+
+.loading-shade {
+  bottom: 0px;
+}
