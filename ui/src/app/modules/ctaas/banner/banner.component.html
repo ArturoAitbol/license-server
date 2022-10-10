@@ -1,5 +1,5 @@
 <div class="banner-container" [ngClass]="{'alignment' : stylesflag === 'dashboard' || stylesflag === 'setup'}">
-    <ul class="breadcrumb" *ngIf="customerDetails.customerName !== customerDetails.name; else elseBlock">
+    <ul class="breadcrumb" *ngIf="getLoginUserDetails.customerName !== getLoginUserDetails.name; else elseBlock">
         <li> {{getLoginUserDetails.customerName}} </li>
         <li> {{getLoginUserDetails.name}} </li>
     </ul>
