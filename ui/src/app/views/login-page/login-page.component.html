@@ -1,4 +1,7 @@
 <section *ngIf="loading_status; else loading_div" class="login p-fixed d-flex text-center common-img-bg rsdLoginBg">
+  <div class="loading-shade" *ngIf="waitingForMsAuth">
+    <mat-spinner></mat-spinner>
+  </div>
   <div class="auth-fluid" style="margin: auto">
     <div class="row" style="display:block;">
       <div class="col-sm-12">
