@@ -8,7 +8,6 @@ import { ICtaasSetup } from "src/app/model/ctaas-setup.model";
 import { LicenseService } from "src/app/services/license.service";
 import { MatDialog } from "@angular/material/dialog";
 import { LicenseConfirmationModalComponent } from "./license-confirmation-modal/license-confirmation-modal.component";
-import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-ctaas-setup',
@@ -43,7 +42,6 @@ export class CtaasSetupComponent implements OnInit {
     private snackBarService: SnackBarService,
     private subaccountService: SubAccountService,
     private licenseService: LicenseService,
-    private msalService: MsalService,
     public dialog: MatDialog) { }
 
   ngOnInit(): void {

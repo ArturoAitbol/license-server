@@ -1,12 +1,7 @@
-/* .suites-content {
-    /* padding: 20px; */
-  /* } */ */
+
   table {
     width: 100%;
   }
-  /* .table-section {
-    margin-top: 1em;
-  } */
   th.mat-sort-header-sorted {
     color: black;
   }
@@ -30,7 +25,6 @@
     letter-spacing: normal;
     margin: 0 0 16px;
     height: 0px;
-    /* padding-top: 8px; */
   }
   .test-suite-container {
     display: flex;

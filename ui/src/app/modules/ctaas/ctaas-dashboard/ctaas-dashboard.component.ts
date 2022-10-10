@@ -42,8 +42,6 @@ export class CtaasDashboardComponent implements OnInit {
   // Flag which specify the type of embedding
   phasedEmbeddingFlag = false;
   reportConfig: IReportEmbedConfiguration;
-
-  @ViewChild('embeddedReport') embeddedReport: ElementRef;
   /**
    * Map of event handlers to be applied to the embedded report
    */

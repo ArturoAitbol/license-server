@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MsalService } from '@azure/msal-angular';
 import { SubAccountService } from '../../../services/sub-account.service'
 
 @Component({
@@ -12,7 +11,7 @@ export class BannerComponent implements OnInit {
   getLoginUserDetails:any = {};
   @Input() stylesflag:any;
 
-  constructor(private msalService: MsalService,private subaccountservice: SubAccountService) {}
+  constructor(private subaccountservice: SubAccountService) {}
 
   ngOnInit(): void {
     this.getLoginUserDetails = this.subaccountservice.getSelectedSubAccount();
