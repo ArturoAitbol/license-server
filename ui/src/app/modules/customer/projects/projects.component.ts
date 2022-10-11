@@ -209,6 +209,7 @@ export class ProjectsComponent implements OnInit {
   columnAction(object: { selectedRow: any, selectedIndex: string, columnName: string }) {
     switch (object.columnName) {
       case 'Status':
+        console.log("proj",object.selectedRow)
         this.openDialog(ModifyProjectComponent, object.selectedRow);
         break;
       case 'Project Name':
