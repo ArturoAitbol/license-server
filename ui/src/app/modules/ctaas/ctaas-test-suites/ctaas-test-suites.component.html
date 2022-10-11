@@ -1,11 +1,14 @@
-<div class="container-fluid suites-content">
-    <main>
-        <h1 id="page-title">Test Suites</h1>
-    </main>
-    <div class="row align-items-center">
-        <div class="col-auto ms-auto justify-content-end">
-            <button *lcCheckAccessFor="'addTestSuite'" mat-raised-button (click)="addTestSuite()"
-                id="add-test-suite-button">Add Test Suite</button>            
+<app-banner [stylesflag] = "'testsuite'" *lcCheckAccessFor="'showBanner'"></app-banner>
+<div class="suites-content">
+    <div class="test-suite-container">
+        <div>
+            <h1 id="page-title">Test Suites</h1>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-auto ms-auto justify-content-end">
+                <button *lcCheckAccessFor="'addTestSuite'" mat-raised-button (click)="addTestSuite()"
+                    id="add-test-suite-button">Add Test Suite</button>
+            </div>
         </div>
     </div>
     <section class="table-section">
