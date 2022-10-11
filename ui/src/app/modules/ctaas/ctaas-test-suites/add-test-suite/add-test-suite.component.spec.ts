@@ -163,3 +163,47 @@ describe('display of messages when an error ocurred', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error adding test suite!');
     });
 });
+
+describe('add test suite FormGroup verifications', () => {
+    beforeEach(beforeEachFunction);
+    it('should create formGruop wiht necessary controls', () => {
+        fixture.detectChanges();
+        expect(addTestSuitesComponentTestInstance.addTestSuiteForm.get('name')).toBeTruthy();
+        expect(addTestSuitesComponentTestInstance.addTestSuiteForm.get('deviceType')).toBeTruthy();
+        expect(addTestSuitesComponentTestInstance.addTestSuiteForm.get('frequency')).toBeTruthy();
+    });
+
+    it('should make all the controls required', () => {
+        const addTestSuite = addTestSuitesComponentTestInstance.addTestSuiteForm;
+        addTestSuite.setValue({
+            name: '',
+            deviceType: '',
+            frequency: ''
+        });
+        expect(addTestSuite.get('name').valid).toBeFalse();
+        expect(addTestSuite.get('deviceType').valid).toBeFalse();
+        expect(addTestSuite.get('frequency').valid).toBeFalse();
+    });
+    
+    it('should enable submit button', () => {
+        const addTestSuite = addTestSuitesComponentTestInstance.addTestSuiteForm;
+        addTestSuite.setValue({
+            name: 'testName',
+            deviceType: 'MS Teams',
+            frequency: '2'
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submitBtn').disabled).toBeFalse();
+    });
+
+    it('should disable submit button', () => {
+        const addTestSuite = addTestSuitesComponentTestInstance.addTestSuiteForm;
+        addTestSuite.setValue({
+            name: '',
+            deviceType: 'MS Teams',
+            frequency: ''
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submitBtn').disabled).toBeTrue();
+    })
+});

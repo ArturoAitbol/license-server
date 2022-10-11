@@ -202,3 +202,52 @@ describe('display of messages', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(err.error, 'Error modifying test suite!');
     });
 });
+
+describe('modify test suite FormGroup verifications', () => {
+    beforeEach(beforeEachFunction);
+    it('should create formGroup with necessary controls', () => {
+        fixture.detectChanges();
+        expect(modifyTestSuitesComponentTestInstance.updateTestSuiteForm.get('id')).toBeTruthy();
+        expect(modifyTestSuitesComponentTestInstance.updateTestSuiteForm.get('subaccountId')).toBeTruthy();
+        expect(modifyTestSuitesComponentTestInstance.updateTestSuiteForm.get('name')).toBeTruthy();
+        expect(modifyTestSuitesComponentTestInstance.updateTestSuiteForm.get('deviceType')).toBeTruthy();
+        expect(modifyTestSuitesComponentTestInstance.updateTestSuiteForm.get('totalExecutions')).toBeTruthy();
+        expect(modifyTestSuitesComponentTestInstance.updateTestSuiteForm.get('nextExecution')).toBeTruthy();
+        expect(modifyTestSuitesComponentTestInstance.updateTestSuiteForm.get('frequency')).toBeTruthy();
+    });
+
+    it('should make all the controls required', () => {
+        const modifyTestSuite = modifyTestSuitesComponentTestInstance.updateTestSuiteForm;
+        modifyTestSuite.setValue({
+            id: '',
+            subaccountId: '',
+            name: '',
+            deviceType: '',
+            totalExecutions: '',
+            nextExecution: '',
+            frequency: ''
+        });
+        expect(modifyTestSuite.get('id').valid).toBeFalse();
+        expect(modifyTestSuite.get('subaccountId').valid).toBeFalse();
+        expect(modifyTestSuite.get('name').valid).toBeFalse();
+        expect(modifyTestSuite.get('deviceType').valid).toBeFalse();
+        expect(modifyTestSuite.get('totalExecutions').valid).toBeFalse();
+        expect(modifyTestSuite.get('nextExecution').valid).toBeTrue();
+        expect(modifyTestSuite.get('frequency').valid).toBeFalse();
+    });
+
+    it('should enable the submit button', () => {
+        const modifyTestSuite = modifyTestSuitesComponentTestInstance.updateTestSuiteForm;
+        modifyTestSuite.setValue({
+            id: 'ca637f77-03eb-4fd1-a473-7bcaaa54302f',
+            subaccountId: 'fbb2d912-b202-432d-8c07-dce0dad51f7f',
+            name: 'testSuiteV2',
+            deviceType: 'MS Teams',
+            totalExecutions: '2',
+            nextExecution: '2022-10-12 00:00:00',
+            frequency: 'Monthly'
+        });
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('#submitBtn').disabled).toBeFalse();
+    });
+});
