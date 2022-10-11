@@ -15,6 +15,7 @@ import { AddTestSuiteComponent } from './ctaas-test-suites/add-test-suite/add-te
 import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
 import { LicenseConfirmationModalComponent } from './ctaas-setup/license-confirmation-modal/license-confirmation-modal.component';
 import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/modify-test-suite.component';
+import { BannerComponent } from './banner/banner.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/
     AddTestSuiteComponent,
     CtaasSetupComponent,
     LicenseConfirmationModalComponent,
-    ModifyTestSuiteComponent
+    ModifyTestSuiteComponent,
+    BannerComponent
 
   ],
   imports: [

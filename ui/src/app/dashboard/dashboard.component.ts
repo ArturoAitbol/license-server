@@ -406,12 +406,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access Subaccount admin emails view', '');
                 break;
             case this.VIEW_CTAAS_DASHBOARD:
-                const { selectedRow: { services } } = object;
+                const { selectedRow: { subaccountId, subaccountName, id, name, services } } = object;
                 const selectedSubaccount = {
-                    id: object.selectedRow.subaccountId,
-                    name: object.selectedRow.subaccountName,
-                    customerId: object.selectedRow.id,
-                    services: object.selectedRow.services
+                    id: subaccountId,
+                    name: subaccountName,
+                    customerId: id,
+                    customerName: name,
+                    services: services
                 };
                 this.subaccountService.setSelectedSubAccount(selectedSubaccount);
                 const hasCtaasService = services && services.includes(tekVizionServices.SpotLight);
