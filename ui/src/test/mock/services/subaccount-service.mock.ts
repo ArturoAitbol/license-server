@@ -414,7 +414,11 @@ export const SubaccountServiceMock = {
     },
     getSelectedSubAccount: () => {
         return {
-            id:'fbb2d912-b202-432d-8c07-dce0dad51f7f',
+            id: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            name: "testv2Demo",
+            customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
+            services: "tokenConsumption,spotlight",
+            testCustomer: false,
             companyName:"testComp"
         }
     }
