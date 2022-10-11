@@ -418,7 +418,8 @@ export const SubaccountServiceMock = {
             name: "testv2Demo",
             customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
             services: "tokenConsumption,spotlight",
-            testCustomer: false
+            testCustomer: false,
+            companyName:"testComp"
         }
     }
 };
