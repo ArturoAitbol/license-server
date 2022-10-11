@@ -128,29 +128,29 @@ export class UpdateStakeHolderComponent implements OnInit {
     }
     return this.updateStakeholderForm.value;
   }
-  /**
-   * on change checkbox
-   * @param event : any
-   * @param item : any
-   */
-  onChangeReportCheckbox(event: any, item: any): void {
-    const { checked } = event;
-    const { value: selectedItemValue } = item;
-    const formArray: FormArray = this.updateStakeholderForm.get('notifications') as FormArray;
-    /* Selected */
-    if (checked) {
-      // Add a new control in the arrayForm
-      formArray.push(new FormControl(selectedItemValue));
-    } else { /* unselected */
-      // find the unselected element
-      formArray.controls.forEach((ctrl: FormControl, index: number) => {
-        if (ctrl.value == selectedItemValue) {
-          // Remove the unselected element from the arrayForm
-          formArray.removeAt(index);
-          return;
-        }
-      });
-    }
-  }
+  // /**
+  //  * on change checkbox
+  //  * @param event : any
+  //  * @param item : any
+  //  */
+  // onChangeReportCheckbox(event: any, item: any): void {
+  //   const { checked } = event;
+  //   const { value: selectedItemValue } = item;
+  //   const formArray: FormArray = this.updateStakeholderForm.get('notifications') as FormArray;
+  //   /* Selected */
+  //   if (checked) {
+  //     // Add a new control in the arrayForm
+  //     formArray.push(new FormControl(selectedItemValue));
+  //   } else { /* unselected */
+  //     // find the unselected element
+  //     formArray.controls.forEach((ctrl: FormControl, index: number) => {
+  //       if (ctrl.value == selectedItemValue) {
+  //         // Remove the unselected element from the arrayForm
+  //         formArray.removeAt(index);
+  //         return;
+  //       }
+  //     });
+  //   }
+  // }
 
 }

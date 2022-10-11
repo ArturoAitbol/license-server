@@ -15,9 +15,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 })
 export class AddStakeHolderComponent implements OnInit {
 
-  reports: any = [];
   isDataLoading = false;
-  addStakeholderForm: FormGroup;
   userprofileDetails: IUserProfile;
   constructor(
     private formBuilder: FormBuilder,
@@ -29,17 +27,27 @@ export class AddStakeHolderComponent implements OnInit {
   /**
    * initialize update stake holder form
    */
-  initializeForm(): void {
-    this.addStakeholderForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      jobTitle: ['', Validators.required],
-      subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-      companyName: ['', Validators.required],
-      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
-      type: ['', Validators.required],
-      notifications: new FormArray([])
-    });
-  }
+  addStakeholderForm = this.formBuilder.group({
+    name: ['', Validators.required],
+    jobTitle: ['', Validators.required],
+    subaccountAdminEmail: ['', [Validators.required, Validators.email]],
+    companyName: ['', Validators.required],
+    phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
+    type: ['', Validators.required],
+    notifications: new FormArray([ 
+      new FormControl(false),
+      new FormControl(false),
+      new FormControl(false)
+    ])
+    
+  });
+
+  reports: any =  [
+    { label: "Daily Reports", value: Report.DAILY_REPORTS},
+    { label: "Weekly Reports", value: Report.WEEKLY_REPORTS},
+    { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS}
+  ];
+  
   /**
    * fetch user profile details
    */
@@ -60,21 +68,9 @@ export class AddStakeHolderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.reports = this.getReports();
-    this.initializeForm();
     this.fetchUserProfileDetails();
   }
-  /**
-   * get reports
-   * @returns: any[]
-   */
-  getReports(): any[] {
-    return [
-      { label: "Daily Reports", value: Report.DAILY_REPORTS },
-      { label: "Weekly Reports", value: Report.WEEKLY_REPORTS },
-      { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
-    ];
-  }
+  
   /**
    * close the open dialog 
    * @param type: string [optional] 
@@ -91,15 +87,15 @@ export class AddStakeHolderComponent implements OnInit {
       const { subaccountId } = this.userprofileDetails;
       const stakeholderDetails = { ... this.addStakeholderForm.value };
       const { type, notifications } = stakeholderDetails;
+      let mappedNotifications = notifications.filter(notification => notification).map((notification, index) => this.reports[index].value);
       stakeholderDetails.subaccountId = subaccountId;
       // stakeholderDetails.notifications = type;
-      if (notifications.length > 0) {
-        stakeholderDetails.notifications = type + ',' + notifications.join(',');
+      if (mappedNotifications.length > 0) {
+        stakeholderDetails.notifications = type + ',' + mappedNotifications.join(',');
       }
       else {
         stakeholderDetails.notifications = type;
       }
-
       this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => {
         const { error } = response;
         if (error) {
@@ -120,30 +116,4 @@ export class AddStakeHolderComponent implements OnInit {
       console.error('error while creating stake holder | ', e);
     }
   }
-
-  /**
-   * receive events when any change in reports checkboxes
-   * @param event: any 
-   * @param item: any 
-   */
-  onChangeReportCheckbox(event: any, item: any): void {
-    const { checked } = event;
-    const { value: selectedItemValue } = item;
-    const formArray: FormArray = this.addStakeholderForm.get('notifications') as FormArray;
-    /* Selected */
-    if (checked) {
-      // Add a new control in the arrayForm
-      formArray.push(new FormControl(selectedItemValue));
-    } else { /* unselected */
-      // find the unselected element
-      formArray.controls.forEach((ctrl: FormControl, index: number) => {
-        if (ctrl.value == selectedItemValue) {
-          // Remove the unselected element from the arrayForm
-          formArray.removeAt(index);
-          return;
-        }
-      });
-    }
-  }
-
 }

@@ -9,9 +9,8 @@ import { Sort } from "@angular/material/sort";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MsalService } from "@azure/msal-angular";
-import { throwError } from "rxjs";
-import { FeatureToggleHelper } from "src/app/helpers/feature-toggle.helper";
-import { Features } from "src/app/helpers/features";
+import { of, throwError } from "rxjs";
+import { permissions } from "src/app/helpers/role-permissions";
 import { DialogService } from "src/app/services/dialog.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
 import { StakeHolderService } from "src/app/services/stake-holder.service";
@@ -106,8 +105,8 @@ describe('UI verification test', () => {
     });
 
     it('should execute sortData()', () => {
-        const sort: Sort = { active: 'companyName', direction: 'desc' }
-        
+        const sort: Sort = { active: 'type', direction: 'desc' }
+        fixture.detectChanges();
         spyOn(ctaasStakeholderComponentTestInstance, 'sortData').and.callThrough();
         
         ctaasStakeholderComponentTestInstance.sortData(sort);
@@ -120,9 +119,10 @@ describe('UI verification test', () => {
         ctaasStakeholderComponentTestInstance.sortData(sort);
     });
 });
+
 describe('Data collection test', () => {
     beforeEach(beforeEachFunction);
-    it('should make a call to fetch fetchStakeholderList', () => { 
+    it('should make a call to fetchStakeholderList', () => { 
         spyOn(StakeHolderServiceMock, 'getStakeholderList').and.callThrough();
         spyOn(ctaasStakeholderComponentTestInstance, 'initColumns').and.callThrough()
         fixture.detectChanges();
@@ -141,24 +141,66 @@ describe('dialog calls and interactions',() => {
         spyOn(ctaasStakeholderComponentTestInstance, 'openDialog').and.callThrough();
         spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
         spyOn(dialogService, 'confirmDialog').and.callThrough();
+        spyOn(dialogService, 'afterClosed').and.callThrough();
         spyOn(StakeHolderServiceMock, 'deleteStakeholder').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
     
         ctaasStakeholderComponentTestInstance.addStakeholder();
         expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith('Add Stakeholder');
            
-    
         selectedTestData.selectedOption = 'Update Stakeholder Details';
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
         expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedTestData.selectedOption, selectedTestData.selectedRow);
+        dialogService.afterClosed();
             
-    
+        selectedTestData.selectedOption = 'Delete Stakeholder Account';
+        dialogService.setExpectedConfirmDialogValue(true);
+        ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Deleted Stakeholder successfully', '');
+        expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
+        expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
+
         selectedTestData.selectedOption = 'Delete Stakeholder Account';
         dialogService.setExpectedConfirmDialogValue(true);
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
     });
+
+    it('should show a messge if an error ocurred while deleteing stakeholder', () => {
+        const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '1' }
+        const response = {error: "some error message"};
+        fixture.detectChanges();
+
+        spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'deleteStakeholder').and.returnValue(of(response));
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+
+        selectedTestData.selectedOption = 'Delete Stakeholder Account';
+        dialogService.setExpectedConfirmDialogValue(true);
+        ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
+        expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
+        expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error while deleting Stakeholder');
+    });
     
+    it('should call deleteStakeHolder with an object', () => {
+        const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '1' }
+        const response = {email: "testmail@gmail.com"};
+        fixture.detectChanges();
+
+        spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'deleteStakeholder').and.returnValue(of(response));
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+
+        selectedTestData.selectedOption = 'Delete Stakeholder Account';
+        dialogService.setExpectedConfirmDialogValue(true);
+        ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
+        expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
+        expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
+    });
+
     it('should show a message if an error ocurred while fetching the data', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(StakeHolderServiceMock, 'getStakeholderList').and.returnValue(throwError('some error'))
@@ -168,5 +210,16 @@ describe('dialog calls and interactions',() => {
         expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error', 'Error while loading stake holders');
             
+    });
+
+    it('should display an error message if an error ocurred in fetchStakeholderList', () => {
+        spyOn(console, 'error').and.callThrough();
+        spyOn(StakeHolderServiceMock, 'getStakeholderList').and.returnValue(of([{error:'some error'}]));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+        fixture.detectChanges()
+    
+
+        expect(console.error).toHaveBeenCalledWith('some error |', jasmine.any(TypeError))
     });
 });
