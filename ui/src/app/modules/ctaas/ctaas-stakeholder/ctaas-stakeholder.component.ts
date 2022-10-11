@@ -11,6 +11,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { map } from 'rxjs/operators';
 import { IStakeholder } from 'src/app/model/stakeholder.model';
 import { Report } from 'src/app/helpers/report';
+import { Utility } from 'src/app/helpers/utils';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -26,6 +27,11 @@ export class CtaasStakeholderComponent implements OnInit {
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
+
+  readonly options = {
+    MODIFY_STAKEHOLDER : this.MODIFY_STAKEHOLDER,
+    DELETE_STAKEHOLDER : this.DELETE_STAKEHOLDER
+  }
   constructor(
     private msalService: MsalService,
     public dialog: MatDialog,
@@ -63,10 +69,8 @@ export class CtaasStakeholderComponent implements OnInit {
    * get action menu options
    */
   private getActionMenuOptions() {
-    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-    accountRoles.forEach(accountRole => {
-      permissions[accountRole].tables.stakeholderOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
-    });
+   const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+   this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions")
   }
   /**
    * fetch stakeholder data

@@ -36,7 +36,7 @@ const currentStakeHolder = {
     notifications: 'Weekly Reports,Monthly Summaries',
     phoneNumber: "2222222222",
     subaccountId: "f6c0e45e-cfdc-4c1a-820e-bef6a856aaea",
-    type: "HIGH TIER"
+    type: "High level"
 };
 
 const beforeEachFunction = () => {
@@ -127,7 +127,7 @@ describe('modify stakeholder interactions', () => {
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('companyName').setValue('testC');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('phoneNumber').setValue('1111111111');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('LOW TIER');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('Detailed');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([true, true, false]);
        
         modifyStakeholderComponentTestInstance.updateStakeholderDetails();
@@ -145,7 +145,7 @@ describe('modify stakeholder interactions', () => {
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('companyName').setValue('testC');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('phoneNumber').setValue('1111111111');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('LOW TIER');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('Detailed');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([true, true, false]);
 
         modifyStakeholderComponentTestInstance.updateStakeholderDetails();
@@ -164,7 +164,7 @@ describe('modify stakeholder interactions', () => {
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('companyName').setValue('testC');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('phoneNumber').setValue('1111111111');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('LOW TIER');
+        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('Detailed');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([false, false, false]);
        
         modifyStakeholderComponentTestInstance.updateStakeholderDetails();
@@ -216,7 +216,7 @@ describe('modify stakeholder - FromGroup verification test', () => {
             companyName:'testCf',
             subaccountAdminEmail:'teststakeholder11@gmail.com',
             phoneNumber:'+919898989809',
-            type:'LOW TIER',
+            type:'Detailed',
             notifications:[true, true, false],
         });
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').enable();
