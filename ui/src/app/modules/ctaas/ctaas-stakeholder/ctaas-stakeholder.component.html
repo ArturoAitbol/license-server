@@ -1,10 +1,13 @@
-<div>
-    <h2 id="main-title">Stakeholders</h2>
-</div>
+<app-banner [stylesflag] = "'stakeholder'" *lcCheckAccessFor="'showBanner'"></app-banner>
 <div class="btn-container">
-    <button style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addStakeholder()">
-        Add Stakeholder
-    </button>
+    <div class="stakeholder-heading">
+        <h2 id="main-title">Stakeholders</h2>
+    </div>
+    <div>
+        <button style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addStakeholder()">
+            Add Stakeholder
+        </button>
+    </div>
 </div>
 
 <section class="table-section">

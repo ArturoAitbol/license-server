@@ -22,8 +22,8 @@ export class CtaasSetupComponent implements OnInit {
   isEditing = false;
 
   readonly statusOptions = {
-    SETUP_READY: { label: 'READY'},
-    SETUP_INPROGRESS: { label: 'IN PROGRESS'}
+    SETUP_READY: { label: 'READY' },
+    SETUP_INPROGRESS: { label: 'IN PROGRESS' }
   };
 
 
@@ -37,12 +37,12 @@ export class CtaasSetupComponent implements OnInit {
   });
 
   constructor(
-      private ctaasSetupService: CtaasSetupService,
-      private fb: FormBuilder,
-      private snackBarService: SnackBarService,
-      private subaccountService: SubAccountService,
-      private licenseService: LicenseService,
-      public dialog: MatDialog) { }
+    private ctaasSetupService: CtaasSetupService,
+    private fb: FormBuilder,
+    private snackBarService: SnackBarService,
+    private subaccountService: SubAccountService,
+    private licenseService: LicenseService,
+    public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.fetchSetupInfo();
@@ -52,7 +52,7 @@ export class CtaasSetupComponent implements OnInit {
   editForm() {
     this.setupForm.enable();
     this.setupForm.get('onBoardingComplete').disable();
-    if (this.setupForm.value.status ===  'SETUP_READY') this.setupForm.get('status').disable();
+    if (this.setupForm.value.status === 'SETUP_READY') this.setupForm.get('status').disable();
     this.isEditing = true;
   }
 
@@ -62,7 +62,6 @@ export class CtaasSetupComponent implements OnInit {
         let selectedLicenseId;
         this.isDataLoading = true;
         this.licenseService.getLicenseList(this.subaccountService.getSelectedSubAccount().id).subscribe(async (licenseList: any) => {
-          this.isDataLoading = false;
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
           if (activeLicenses.length === 0) {
             this.snackBarService.openSnackBar("No active subscriptions found", "Error selecting a subscription");
@@ -87,6 +86,7 @@ export class CtaasSetupComponent implements OnInit {
             } else {
               this.snackBarService.openSnackBar(res.error, 'Error updating SpotLight Setup!');
             }
+            this.isDataLoading = false;
           });
         });
       } else {

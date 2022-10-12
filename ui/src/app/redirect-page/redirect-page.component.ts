@@ -139,11 +139,16 @@ export class RedirectPageComponent implements OnInit {
    * fetch user profile details
    */
   async fetchUserProfileDetails() {
-    const res: any = await this.userProfileService.getUserProfileDetails().toPromise()
-    if (res) {
-      const { userProfile } = res;
-      // localStorage.setItem(Constants.SUBACCOUNT_USER_PROFILE, JSON.stringify(userProfile));
-      this.userProfileService.setSubaccountUserProfileDetails(userProfile);
+    try {
+      const res: any = await this.userProfileService.getUserProfileDetails().toPromise()
+      if (res) {
+        const { userProfile } = res;
+        // localStorage.setItem(Constants.SUBACCOUNT_USER_PROFILE, JSON.stringify(userProfile));
+        this.userProfileService.setSubaccountUserProfileDetails(userProfile);
+      }
+    } catch (error) {
+      console.error(error);
+      this.navigateToDashboard();
     }
   }
   /**

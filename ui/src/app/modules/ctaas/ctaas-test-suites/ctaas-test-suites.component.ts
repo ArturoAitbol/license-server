@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { MsalService } from '@azure/msal-angular';
 import { Subject } from 'rxjs';
-import { permissions } from 'src/app/helpers/role-permissions';
+import { Utility } from 'src/app/helpers/utils';
 import { TestSuite } from 'src/app/model/test-suite.model';
 import { CtaasTestSuiteService } from 'src/app/services/ctaas-test-suite.service';
 import { DialogService } from 'src/app/services/dialog.service';
@@ -28,6 +28,11 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   readonly MODIFY_TEST_SUITE: string = 'Edit';
   readonly DELETE_TEST_SUITE: string = 'Delete';
 
+  readonly options = {
+    MODIFY_TEST_SUITE : this.MODIFY_TEST_SUITE,
+    DELETE_TEST_SUITE : this.DELETE_TEST_SUITE
+  }
+
   actionMenuOptions: any = [];
   private unsubscribe: Subject<void> = new Subject<void>();
 
@@ -45,15 +50,13 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   }
 
   private getActionMenuOptions() {
-    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    accountRoles.forEach(accountRole => {
-      permissions[accountRole].tables.ctaasTestSuiteOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
-      if (this.currentCustomer.testCustomer === false) {
-        const action = (action) => action === 'Delete';
-        const index = this.actionMenuOptions.findIndex(action);
-        this.actionMenuOptions.splice(index,);
-      }
-    })
+    const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"ctaasTestSuiteOptions")
+    if (this.currentCustomer.testCustomer === false) {
+      const action = (action) => action === 'Delete';
+      const index = this.actionMenuOptions.findIndex(action);
+      this.actionMenuOptions.splice(index,);
+    }
   }
 
   private calculateTableHeight() {
@@ -135,13 +138,9 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
         break;
     }
     dialogRef.afterClosed().subscribe(res => {
-      try {
-        console.debug(`${type} dialog closed: ${res}`);
-        if (res) {
-          this.fetchDataToDisplay();
-        }
-      } catch (error) {
-        console.log('error while in action ' + type, error);
+      console.debug(`${type} dialog closed: ${res}`);
+      if (res) {
+        this.fetchDataToDisplay();
       }
     });
   }
