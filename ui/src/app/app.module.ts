@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 // Created and used Modules
 import { AppRoutingModule } from './app-routing.module';
@@ -56,6 +57,7 @@ import { RedirectPageComponent } from './redirect-page/redirect-page.component';
         FormsModule,
         ReactiveFormsModule,
         MaterialModule,
+        FlexLayoutModule,
         MsalModule.forRoot(new PublicClientApplication({
             auth: {
                 clientId: environment.UI_CLIENT_ID,
