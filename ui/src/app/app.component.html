@@ -24,7 +24,8 @@
                                         {{item.materialIcon}}</mat-icon>
                                 </span>
                                 <br>
-                                <span [ngClass]="{'btn-active':(item.active),'btn-inactive':!(item.active)}" title="{{item.name}}">
+                                <span [ngClass]="{'btn-active':(item.active),'btn-inactive':!(item.active)}"
+                                    title="{{item.name}}">
                                     {{item.name}}
                                 </span>
                             </button>
@@ -70,7 +71,7 @@
                 </span>
             </div>
             <!-- divider and service name -->
-            <div *lcFeatureToggle="'ctaasFeature'">
+            <div *lcFeatureToggle="'ctaasFeature'" fxShow="true" fxHide.lt-md="true">
                 <span>
                     <div class="row">
                         <div class="col-1">
