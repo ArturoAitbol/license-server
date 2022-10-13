@@ -1,31 +1,33 @@
 <div class="container-fluid content">
     <main>
-        <div class="row">
-            <div class="col">
+        <div class="row mb-2">
+            <div class="col-sm-12 col-md-2 col-lg-2 col-xl-3">
                 <button id="back-button" mat-stroked-button (click)="goToDashboard()">Back</button>
             </div>
-            <div class="col">
-                <div class="page-title">
-                    <h1 id="page-title">{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
-                    <!-- license filter -->
-                    <form [formGroup]="licenseForm">
-                        <mat-form-field id="license-period-form" appearance="outline" class="full-width example-form-field">
-                            <mat-label><b>tekVizion 360 Subscription</b></mat-label>
-                            <mat-select class="bold-field" formControlName="selectedLicense" (valueChange)="onChangeLicense($event)">
-                                <mat-option *ngFor="let license of licensesList" [value]="license.id">
-                                    {{license.description}} ({{license.startDate}} - {{license.renewalDate}})
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </form>
-                </div>
+            <div class="col-sm-12 col-md-10 col-lg-10 col-xl-6">
+                <h1 id="page-title">{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
+                <!-- license filter -->
+                <form [formGroup]="licenseForm">
+                    <mat-form-field id="license-period-form" appearance="outline" class="full-width example-form-field">
+                        <mat-label><b>tekVizion 360 Subscription</b></mat-label>
+                        <mat-select class="bold-field" formControlName="selectedLicense"
+                            (valueChange)="onChangeLicense($event)">
+                            <mat-option *ngFor="let license of licensesList" [value]="license.id">
+                                {{license.description}} ({{license.startDate}} - {{license.renewalDate}})
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </form>
             </div>
-            <div class="col">
-                <mat-button-toggle-group name="fontStyle" aria-label="Font Style">
-                    <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-license-button" (change)="onChangeToggle($event)">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
+                <mat-button-toggle-group name="fontStyle" aria-label="Font Style" id="btn-group">
+                    <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-license-button"
+                        (change)="onChangeToggle($event)" class="add-btn">
                         Add tekVizion 360 Subscription
                     </mat-button-toggle>
-                    <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption" id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)">
+                    <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption"
+                        id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
+                        class="add-btn">
                         Add tekToken Consumption
                     </mat-button-toggle>
                 </mat-button-toggle-group>
@@ -35,7 +37,7 @@
     <h2 id="first-section-title">tekToken Consumption Summary</h2>
     <section>
         <div class="row">
-            <div class="col-6">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
                 <div id="tektokens-summary-table" class="mat-elevation-z8">
                     <app-data-table [tableData]="data" [tableColumns]="tekTokensSummaryColumns" [isFilterable]="false"
                         [isPageable]="false" [isLoadingResults]="isLicenseSummaryLoadingResults"
@@ -44,7 +46,7 @@
                     </app-data-table>
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
                 <div id="automation-summary-table" class="mat-elevation-z8">
                     <app-data-table [tableData]="data" [tableColumns]="automationSummaryColumns" [isFilterable]="false"
                         [isPageable]="false" [isLoadingResults]="isLicenseSummaryLoadingResults"
@@ -59,41 +61,50 @@
     <!-- Detailed Consumption for selection -->
     <section>
         <!-- filters -->
-        <div style="display: flex;">
-            <div class="col-4">
+        <div class="filter-container">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
                 <mat-radio-group id="period-filter">
                     <mat-radio-button color="primary" value="period" [checked]="aggregation === 'period'"
                         (change)="getMultipleChoiceAnswer($event.value)">License Period</mat-radio-button>
                     <br>
                     <div class="row">
-                        <div class="col-4">
-                            <mat-radio-button color="primary" value="week" [checked]="aggregation === 'week'" [disabled]="!isLicenseListLoaded"
-                                (change)="getMultipleChoiceAnswer($event.value)">Week</mat-radio-button>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 ">
+                            <mat-radio-button color="primary" value="week" [checked]="aggregation === 'week'"
+                                [disabled]="!isLicenseListLoaded" (change)="getMultipleChoiceAnswer($event.value)">Week
+                            </mat-radio-button>
                             <br>
-                            <mat-radio-button color="primary" value="month" [checked]="aggregation === 'month'" [disabled]="!isLicenseListLoaded"
-                                (change)="getMultipleChoiceAnswer($event.value)">Month</mat-radio-button>
+                            <mat-radio-button color="primary" value="month" [checked]="aggregation === 'month'"
+                                [disabled]="!isLicenseListLoaded" (change)="getMultipleChoiceAnswer($event.value)">Month
+                            </mat-radio-button>
                             <br>
                         </div>
-                        <div class="col-8">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 d-flex justify-content-center">
                             <mat-form-field id="date-form" appearance="outline">
                                 <mat-label>{{getDatePickerLabel()}}</mat-label>
-                                <mat-date-range-input [formGroup]="range" [rangePicker]="picker" [min]="startDate" [max]="endDate">
-                                <input formControlName="start" matStartDate placeholder="Start date" [readonly]="true"> 
-                                <input formControlName="end" matEndDate placeholder="End date" [readonly]="true" (dateChange)="setWeek()">
+                                <mat-date-range-input [formGroup]="range" [rangePicker]="picker" [min]="startDate"
+                                    [max]="endDate">
+                                    <input formControlName="start" matStartDate placeholder="Start date"
+                                        [readonly]="true">
+                                    <input formControlName="end" matEndDate placeholder="End date" [readonly]="true"
+                                        (dateChange)="setWeek()">
                                 </mat-date-range-input>
-                                <mat-datepicker-toggle [disabled]="aggregation === 'period'" matSuffix [for]="picker"></mat-datepicker-toggle>
-                                <mat-date-range-picker lcDateRange [minDate]="startDate" [maxDate]="endDate" [month]="aggregation === 'month'" 
-                                    #picker [startView]="aggregation === 'month'?'year':'month'" (monthSelected)="setMonthAndYear($event, picker)">
+                                <mat-datepicker-toggle [disabled]="aggregation === 'period'" matSuffix [for]="picker">
+                                </mat-datepicker-toggle>
+                                <mat-date-range-picker lcDateRange [minDate]="startDate" [maxDate]="endDate"
+                                    [month]="aggregation === 'month'" #picker
+                                    [startView]="aggregation === 'month'?'year':'month'"
+                                    (monthSelected)="setMonthAndYear($event, picker)">
                                 </mat-date-range-picker>
                             </mat-form-field>
                         </div>
                     </div>
                 </mat-radio-group>
             </div>
-            <div class="col-4 d-flex justify-content-center">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 d-flex justify-content-center">
                 <mat-form-field id="project-form" appearance="outline">
                     <mat-label>Project</mat-label>
-                    <mat-select [(value)]="selectedProject" (valueChange)="getProject($event)" [disabled]="!isLicenseListLoaded">
+                    <mat-select [(value)]="selectedProject" (valueChange)="getProject($event)"
+                        [disabled]="!isLicenseListLoaded">
                         <mat-option value="">All</mat-option>
                         <mat-option *ngFor="let project of projects" [value]="project.id">
                             {{project.projectName}}
@@ -101,7 +112,7 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="col-4 d-flex justify-content-center">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 d-flex justify-content-center">
                 <mat-form-field id="consumption-type-form" appearance="outline">
                     <mat-label>Consumption Type</mat-label>
                     <mat-select (valueChange)="getType($event)" [disabled]="!isLicenseListLoaded">
@@ -114,7 +125,7 @@
         </div>
         <br>
         <div class="row">
-            <div class="col-6">
+            <div class="col-12">
                 <div id="tektokens-consumption-table" class="overflow-auto mat-elevation-z8">
                     <app-data-table [tableData]="tokenConsumptionData" [tableColumns]="tekTokenConsumptionColumns"
                         [isFilterable]="false" [isPageable]="false"
@@ -126,23 +137,25 @@
         </div>
         <br>
         <div class="row">
-            <div class="col-4">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 mb-2">
                 <div id="weekly-consumption-table" class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="weeklyConsumptionColumns"
-                                    [isFilterable]="false" [isPageable]="false" (sort)="sortData($event, weeklyConsumptionData,'weeklyList')" 
-                                    [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
-                                    [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted" [paginationSizes]="[5,10,20]"
-                                    [defaultPageSize]="5">
+                        [isFilterable]="false" [isPageable]="false"
+                        (sort)="sortData($event, weeklyConsumptionData,'weeklyList')"
+                        [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
+                        [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted"
+                        [paginationSizes]="[5,10,20]" [defaultPageSize]="5">
                     </app-data-table>
                 </div>
             </div>
-            <div class="col-8">
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 mb-2">
                 <div id="project-consumption-table" class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="projectConsumptionData" [tableColumns]="projectConsumptionColumns"
-                                    [isFilterable]="false" [isPageable]="false" (sort)="sortData($event, projectConsumptionData,'projectList')" 
-                                    [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
-                                    [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted" [paginationSizes]="[5,10,20]"
-                                    [defaultPageSize]="5">
+                        [isFilterable]="false" [isPageable]="false"
+                        (sort)="sortData($event, projectConsumptionData,'projectList')"
+                        [isLoadingResults]="isDetailedConsumptionSupplementalLoadingResults"
+                        [isRequestCompleted]="isDetailedConsumptionSupplementalRequestCompleted"
+                        [paginationSizes]="[5,10,20]" [defaultPageSize]="5">
                     </app-data-table>
                 </div>
             </div>
@@ -152,11 +165,11 @@
             <div class="row">
                 <div class="col-2 ms-auto">
                     <button *ngIf="!detailedConsumptionTableSelectable" id="clone-consumption"
-                            (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded"
-                            mat-raised-button style="float: right">Clone Consumption
+                        (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded" mat-raised-button
+                        style="float: right">Clone Consumption
                     </button>
                     <button class="confirm-button" *ngIf="detailedConsumptionTableSelectable" style="float: right"
-                            id="confirm-cloning" (click)="cloneConsumptions()" mat-raised-button>Confirm Cloning
+                        id="confirm-cloning" (click)="cloneConsumptions()" mat-raised-button>Confirm Cloning
                     </button>
 
                 </div>
@@ -166,18 +179,19 @@
         <div class="row">
             <div class="col-12">
                 <div id="detailed-consumption-table" class="table-container mat-elevation-z8">
-                    <app-data-table [tableData]="detailedConsumptionData"
-                                    [tableColumns]="detailedConsumptionColumns" [isFilterable]="false" [isPageable]="true"
-                                    [isLoadingResults]="isDetailedConsumptionLoadingResults"
-                                    [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[6, 10, 20, 50]"
-                                    [defaultPageSize]="6" (sort)="sortData($event, detailedConsumptionData,'detailedList')" [rowActionIcon]="'more_vert'"
-                                    (rowAction)="licConsumptionRowAction($event)"
-                                    [actionMenuList]="licConsumptionActionMenuOptions" [serverSidePagination]="true"
-                                    (pageChanged)="onPageChange($event)" [length]="detailedConsumptionDataLength" [isSelectable]="detailedConsumptionTableSelectable"
-                                    [selectionById]="true" #detailsConsumptionTable>
+                    <app-data-table [tableData]="detailedConsumptionData" [tableColumns]="detailedConsumptionColumns"
+                        [isFilterable]="false" [isPageable]="true"
+                        [isLoadingResults]="isDetailedConsumptionLoadingResults"
+                        [isRequestCompleted]="isDetailedConsumptionRequestCompleted" [paginationSizes]="[6, 10, 20, 50]"
+                        [defaultPageSize]="6" (sort)="sortData($event, detailedConsumptionData,'detailedList')"
+                        [rowActionIcon]="'more_vert'" (rowAction)="licConsumptionRowAction($event)"
+                        [actionMenuList]="licConsumptionActionMenuOptions" [serverSidePagination]="true"
+                        (pageChanged)="onPageChange($event)" [length]="detailedConsumptionDataLength"
+                        [isSelectable]="detailedConsumptionTableSelectable" [selectionById]="true"
+                        #detailsConsumptionTable>
                     </app-data-table>
                 </div>
-            </div>   
+            </div>
         </div>
     </section>
     <br>
