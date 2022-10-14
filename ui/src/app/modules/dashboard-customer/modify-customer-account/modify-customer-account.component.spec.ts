@@ -1,5 +1,6 @@
 // import { instance, mock, verify, when } from "ts-mockito";
 import { HttpClient } from '@angular/common/http';
+import { throwError } from 'rxjs';
 import { ComponentFixture, TestBed} from '@angular/core/testing';
 import { MatDialog} from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
@@ -16,11 +17,11 @@ import { ModifyCustomerAccountComponent } from './modify-customer-account.compon
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { ReactiveFormsModule } from '@angular/forms';
 import { CurrentCustomerServiceMock } from "src/test/mock/services/current-customer-service.mock";
-import { throwError } from 'rxjs';
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Features } from 'src/app/helpers/features';
 import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
+import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
 const dialogMock = new DialogServiceMock();
@@ -104,8 +105,8 @@ describe('UI verification test', () => {
     updateCustomerForm.get('subaccountName').setValue('subaccountName');
     updateCustomerForm.get('testCustomer').setValue(true);
     if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-      updateCustomerForm.get('services').get('Ctaas').setValue(true);
-      updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+      updateCustomerForm.get('services').get(tekVizionServices.SpotLight).setValue(true);
+      updateCustomerForm.get('services').get(tekVizionServices.tekTokenConstumption).setValue(false);
     }
 
     expect(updateCustomerForm.errors).toBeNull();
@@ -155,8 +156,8 @@ describe('modify customers flow', () => {
     CustomerComponentTestInstance.data = CurrentCustomerServiceMock;
     updateCustomerForm.patchValue(CustomerComponentTestInstance.data);
     if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-      updateCustomerForm.get('services').get('Ctaas').setValue(true);
-      updateCustomerForm.get('services').get('tokenConsumption').setValue(false);
+      updateCustomerForm.get('services').get(tekVizionServices.SpotLight).setValue(true);
+      updateCustomerForm.get('services').get(tekVizionServices.tekTokenConstumption).setValue(false);
     }
     expect(updateCustomerForm.errors).toBeNull();
     CustomerComponentTestInstance.ngOnInit();

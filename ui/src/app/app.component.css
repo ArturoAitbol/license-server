@@ -11,14 +11,17 @@
   width: 100%;
   height: 100%;
 }
+
 .route-content {
   margin-top: 60px;
 }
+
 .position-fixed {
   z-index: 998;
   position: fixed;
   background: #203c66;
 }
+
 .spacer,
 .example-spacer {
   flex: 1 1 auto;
@@ -43,17 +46,21 @@
   justify-content: center;
   width: 200px;
 }
+
 .logo-changes {
   margin-top: -10px;
   padding: 0px 20px;
   cursor: pointer;
 }
+
 .tab-name {
   color: white;
 }
+
 .selected {
   background: lightgray;
 }
+
 .notify-dot {
   background-color: #1e81b0;
   position: relative;
@@ -65,11 +72,13 @@
   border-radius: 50%;
   left: -14px;
 }
+
 .content-clr {
   background: #fafafa;
   width: 100%;
   height: 100%;
 }
+
 .logo {
   height: 30px;
   width: 30px;
@@ -92,27 +101,34 @@ button {
   background: none;
   border: hidden;
 }
+
 .mat-drawer-container {
   height: 100vh;
 }
+
 ::ng-deep .mat-drawer-inner-container {
   background: #f0f0f0;
   overflow: hidden !important;
 }
+
 .shadow-backdrop {
   height: 100vh;
   box-shadow: 0px 5px 5px -3px rgb(0 0 0 / 20%),
     0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%);
 }
+
 .material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48;
+  font-variation-settings: "FILL"0, "wght"400, "GRAD"0, "opsz"48;
 }
+
 .sidenav-color {
   background: #f0f0f0;
 }
+
 .btn-inactive {
   color: lightslategray;
 }
+
 .text-white-color {
   color: white;
 }
@@ -122,11 +138,13 @@ button {
   background: none;
   font-weight: 600;
 }
+
 .divider {
   height: 40px;
   width: 2px;
   background: white;
 }
+
 .sidebar-content {
   margin: 70px -4px -4px -4px !important;
 }

@@ -1,4 +1,5 @@
 import { Observable } from "rxjs";
+import { Bundle } from 'src/app/model/bundle.model';
 
 const BASIC_BUNDLE = {
     bundleName: "Basic",
@@ -58,5 +59,17 @@ export const BundleServiceMock = {
                 unsubscribe() { }
             };
         });
-    }
+    },
+    getBundleDetails: (bundleId?: string) => {
+        return new Observable((observer) => {
+            let bundle = CUSTOM_BUNDLE;
+            if(bundleId)
+                bundle = BUNDLE_LIST.bundles.find((bundle) => (bundle.id === bundleId));
+            observer.next({customers:[bundle]});
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
 }

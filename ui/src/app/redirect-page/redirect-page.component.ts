@@ -10,6 +10,7 @@ import { AvailableServicesService } from '../services/available-services.service
 import { Features } from '../helpers/features';
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 import { UserProfileService } from '../services/user-profile.service';
+import { tekVizionServices } from '../helpers/tekvizion-services';
 @Component({
   selector: 'app-redirect-page',
   templateUrl: './redirect-page.component.html',
@@ -33,10 +34,12 @@ export class RedirectPageComponent implements OnInit {
   ngOnInit(): void {
     try {
       this.getAvailableServices();
-      // hide toolbar on load this redirect page
       const accountDetails = this.getAccountDetails();
       const { idTokenClaims: { roles } } = accountDetails;
       this.loggedInUserRoles = roles;
+      if (this.loggedInUserRoles.includes("customer.SubaccountAdmin")) {
+        this.fetchUserProfileDetails();
+      }
       this.getSubAccountDetails();
     } catch (e) { console.error('error at redirect page'); }
   }
@@ -60,17 +63,14 @@ export class RedirectPageComponent implements OnInit {
           const { services } = e['subaccounts'][0];
           if (services) {
             e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
-            if (this.loggedInUserRoles.includes("customer.SubaccountAdmin")) {
-              this.fetchUserProfileDetails();
-            }
           } else if (this.isAllServicesFeatureEnabled() && this.loggedInUserRoles.length > 0) {
             // check if logged in user is stakeholder
             // hard-coded this values for dev
             // future we're going to remove this
             if (this.loggedInUserRoles.includes("customer.SubaccountStakeholder")) {
-              e['subaccounts'][0]['services'] = ['ctaas'];
+              e['subaccounts'][0]['services'] = [tekVizionServices.SpotLight];
             } else
-              e['subaccounts'][0]['services'] = ['ctaas', 'tokenConsumption'];
+              e['subaccounts'][0]['services'] = [tekVizionServices.SpotLight, tekVizionServices.tekTokenConstumption];
           } else {
             e['subaccounts'][0]['services'] = [];
           }
@@ -81,7 +81,8 @@ export class RedirectPageComponent implements OnInit {
         if (res) {
           const { subaccounts } = res;
           this.currentSubaccountDetails = subaccounts[0];
-          localStorage.setItem(Constants.CURRENT_SUBACCOUNT, JSON.stringify(this.currentSubaccountDetails));
+          // if (this.loggedInUserRoles.includes("customer.SubaccountAdmin"))
+          this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
           // enable/disable the available services
           this.availableServices.forEach((e: { label: string, value: string, access: boolean }) => {
             if (this.currentSubaccountDetails.services.includes(e.value))
@@ -119,9 +120,9 @@ export class RedirectPageComponent implements OnInit {
   private navigateToMyApps(): void {
     const { services } = this.currentSubaccountDetails;
     const stakeholderCheck: number = this.loggedInUserRoles.findIndex(e => e === 'customer.SubaccountStakeholder');
-    // checkpoint for stake holder, navigate to ctaas dashboard
+    // checkpoint for stake holder, navigate to spotlight dashboard
     if (stakeholderCheck !== -1 && services.length > 0) {
-      const serviceObj: IService = this.availableServices.find((e: any) => e.value === 'ctaas');
+      const serviceObj: IService = this.availableServices.find((e: any) => e.value === tekVizionServices.SpotLight);
       const { routePath } = serviceObj;
       this.router.navigate([routePath]);
     } else {
@@ -137,11 +138,18 @@ export class RedirectPageComponent implements OnInit {
   /**
    * fetch user profile details
    */
-  fetchUserProfileDetails(): void {
-    this.userProfileService.getUserProfileDetails().subscribe((res: any) => {
-      const { userProfile } = res;
-      localStorage.setItem(Constants.SUBACCOUNT_USER_PROJECT, JSON.stringify(userProfile));
-    });
+  async fetchUserProfileDetails() {
+    try {
+      const res: any = await this.userProfileService.getUserProfileDetails().toPromise()
+      if (res) {
+        const { userProfile } = res;
+        // localStorage.setItem(Constants.SUBACCOUNT_USER_PROFILE, JSON.stringify(userProfile));
+        this.userProfileService.setSubaccountUserProfileDetails(userProfile);
+      }
+    } catch (error) {
+      console.error(error);
+      this.navigateToDashboard();
+    }
   }
   /**
    * check whether Enable_All_Service_Feature toggle feature is enabled or not

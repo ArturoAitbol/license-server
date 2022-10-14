@@ -1,14 +1,13 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Constants } from 'src/app/helpers/constants';
 import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { ICtaasSetup } from 'src/app/model/ctaas-setup.model';
 import { IReportEmbedConfiguration, models, service } from 'powerbi-client';
-import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 // Handles the embed config response for embedding
 export interface ConfigResponse {
@@ -27,15 +26,15 @@ export interface IPowerBiReponse {
   templateUrl: './ctaas-dashboard.component.html',
   styleUrls: ['./ctaas-dashboard.component.css']
 })
-export class CtaasDashboardComponent implements OnInit, OnDestroy {
+export class CtaasDashboardComponent implements OnInit {
 
-  onboardSetupStatus: string = '';
+  onboardSetupStatus = '';
   isOnboardingComplete: boolean;
   loggedInUserRoles: string[] = [];
   ctaasSetupDetails: any = {};
-  subaccountId: string = '';
-  hasDashboardDetails: boolean = false;
-  isLoadingResults: boolean = false;
+  subaccountId = '';
+  hasDashboardDetails = false;
+  isLoadingResults = false;
   // CSS Class to be passed to the wrapper
   // Hide the report container initially
   reportClass = 'report-container-hidden';
@@ -78,6 +77,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     private msalService: MsalService,
     private ctaasSetupService: CtaasSetupService,
     private ctaasDashboardService: CtaasDashboardService,
+    private subaccountService: SubAccountService,
     private snackBarService: SnackBarService
   ) { }
 
@@ -97,13 +97,13 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     this.fetchCtaasDashboardDetailsBySubaccount();
   }
   /**
-   * fetch Ctaas Setup details by subaccount id
+   * fetch SpotLight Setup details by subaccount id
    */
   fetchCtaasSetupDetails(): void {
-    const currentSubaccountDetails = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
-    const { id } = currentSubaccountDetails;
-    this.subaccountId = id;
-    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id)
+    const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+    const { id, subaccountId } = currentSubaccountDetails;
+    this.subaccountId = subaccountId ? subaccountId : id;
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountId)
       .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
         // const setupDetails: ICtaasSetup = response['ctaasSetups'][0];
         this.ctaasSetupDetails = response['ctaasSetups'][0];
@@ -130,7 +130,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     });
   }
   /**
-   * update ctaas onboarding details
+   * update spotlight onboarding details
    */
   updateOnboardingStatus(): void {
     const { id } = this.ctaasSetupDetails;
@@ -140,7 +140,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     });
   }
   /**
-   * fetch CTaaS Power BI dashboard required details
+   * fetch SpotLight Power BI dashboard required details
    */
   fetchCtaasDashboardDetailsBySubaccount(): void {
     this.isLoadingResults = true;
@@ -154,7 +154,14 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
           embedUrl,
           tokenType: models.TokenType.Embed,
           accessToken: embedToken,
-          settings: undefined
+          settings: {
+            filterPaneEnabled: false,
+            navContentPaneEnabled: true,
+            layoutType: models.LayoutType.Custom,
+            customLayout: {
+              displayOption: models.DisplayOption.FitToPage
+            }
+          }
         };
         this.hasDashboardDetails = true;
       } else {
@@ -167,6 +174,5 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
       this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
     });
   }
-  ngOnDestroy(): void {
-  }
+
 }

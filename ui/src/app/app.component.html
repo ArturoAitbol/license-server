@@ -15,7 +15,7 @@
     <mat-drawer-container class="mat-drawer-container">
         <mat-drawer class="text-center sidenav-color" mode="side" opened>
             <div class="sidebar-content">
-                <div class="d-flex flex-column mt-3" *ngFor="let item of sideBarItems">
+                <div class="d-flex flex-column mt-3" *ngFor="let item of displayedSideBarItems">
                     <div class="logo-hvr">
                         <div class="p-1 mt-1">
                             <button (click)="onSelectedNavItem(item)">
@@ -24,7 +24,8 @@
                                         {{item.materialIcon}}</mat-icon>
                                 </span>
                                 <br>
-                                <span [ngClass]="{'btn-active':(item.active),'btn-inactive':!(item.active)}">
+                                <span [ngClass]="{'btn-active':(item.active),'btn-inactive':!(item.active)}"
+                                    title="{{item.name}}">
                                     {{item.name}}
                                 </span>
                             </button>
@@ -65,18 +66,18 @@
         <mat-toolbar class="position-fixed">
             <!-- logo -->
             <div *lcFeatureToggle="'ctaasFeature'">
-                <span class="logo-changes" (click)="navigateToMainView()">
+                <span class="logo-changes" (click)="navigateToMainView()" title="tekVizion">
                     <img src="assets/images/logo_1.png" alt="" srcset="">
                 </span>
             </div>
             <!-- divider and service name -->
-            <div *lcFeatureToggle="'ctaasFeature'">
+            <div *lcFeatureToggle="'ctaasFeature'" fxShow="true" fxHide.lt-md="true">
                 <span>
                     <div class="row">
                         <div class="col-1">
                             <mat-divider vertical class="divider"></mat-divider>
                         </div>
-                        <div class="col-9 m-auto">
+                        <div class="col-9 m-auto" id="header-title">
                             <span class="text-white-color">{{tabName}}</span>
                         </div>
                     </div>
@@ -113,7 +114,7 @@
             </button>
             <!-- user settings menu -->
             <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="about()" id="logout-button">
+                <button mat-menu-item (click)="about()" id="about-button">
                     <mat-icon>info</mat-icon>
                     <span>About</span>
                 </button>
@@ -167,7 +168,7 @@
             </button>
             <!-- user settings menu -->
             <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="about()" id="logout-button">
+                <button mat-menu-item (click)="about()" id="about-button">
                     <mat-icon>info</mat-icon>
                     <span>About</span>
                 </button>

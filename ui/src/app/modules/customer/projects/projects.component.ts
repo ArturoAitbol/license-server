@@ -27,7 +27,8 @@ import { ModifyProjectComponent } from "./modify-project/modify-project.componen
 export class ProjectsComponent implements OnInit {
 
   readonly displayedColumns: TableColumn[] = [
-    { name: 'Project Code', dataKey: 'projectNumber', position: 'left', isSortable: true },
+    // we are not displaying this column for now as this is intendedfor internal usage only
+    // { name: 'Project Code', dataKey: 'projectNumber', position: 'left', isSortable: true },
     { name: 'Project Name', dataKey: 'projectName', position: 'left', isSortable: true, isClickable: true },
     { name: 'License Description', dataKey: 'licenseDescription', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true, canHighlighted: true, isClickable: true },

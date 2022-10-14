@@ -1,3 +1,4 @@
+import { FocusKeyManager } from "@angular/cdk/a11y";
 import { permissions } from "./role-permissions";
 
 export class Utility {
@@ -99,11 +100,30 @@ export class Utility {
      * @param options: Object
      * @return: string[]
      */
-    public static getTableOptions(roles: string[], options: Object, optionType : string) : string[]{
+    public static getTableOptions(roles: string[], options: any, optionType : string) : string[]{
         //new Set([]) is used to avoid repeated options when a user has multiple roles
         const set = new Set([]);
         roles.forEach(accountRole => {
-            permissions[accountRole].tables[optionType].forEach(item =>set.add(options[item]));
+            permissions[accountRole]?.tables[optionType]?.forEach(item =>set.add(options[item]));
+        });
+        return [...set];
+    }
+
+    /**
+     * to get the available paths for a navbar based on the user role(s)
+     * @param roles: Object
+     * @param options: any[]
+     * @return: any[]
+     */
+    public static getNavbarOptions(roles: string[], options: any[]) : any[]{
+        //new Set([]) is used to avoid repeated options when a user has multiple roles
+        const set = new Set([]);
+        options.forEach((item) => {
+            roles.forEach(accountRole => {
+                const found = permissions[accountRole]?.paths.find(path => path === item.path);
+                if (found)
+                    set.add(item)
+            });
         });
         return [...set];
     }

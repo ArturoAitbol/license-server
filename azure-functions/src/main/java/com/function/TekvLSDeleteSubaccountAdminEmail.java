@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.*;
@@ -16,6 +16,7 @@ import java.sql.*;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 public class TekvLSDeleteSubaccountAdminEmail {
     @FunctionName("TekvLSDeleteSubaccountAdminEmail")
@@ -37,7 +38,7 @@ public class TekvLSDeleteSubaccountAdminEmail {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if(!hasPermission(roles, Permission.DELETE_SUBACCOUNT_ADMIN_EMAIL)){
+        if(!hasPermission(roles, Resource.DELETE_SUBACCOUNT_ADMIN_EMAIL)){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -45,18 +46,6 @@ public class TekvLSDeleteSubaccountAdminEmail {
         }
 
         context.getLogger().info("Entering TekvLSDeleteSubaccountAdminEmail Azure function");
-
-        if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
-            try{
-                GraphAPIClient.removeRole(email,SUBACCOUNT_ADMIN,context);
-                context.getLogger().info("Guest User Role removed successfully from Active Directory.");
-            }catch (Exception e){
-                context.getLogger().info("AD exception: " + e.getMessage());
-                JSONObject json = new JSONObject();
-                json.put("error", "AD Exception: " + e.getMessage());
-                return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-            }
-        }
 
         String sql = "DELETE FROM subaccount_admin WHERE subaccount_admin_email = ?;";
 
@@ -69,6 +58,26 @@ public class TekvLSDeleteSubaccountAdminEmail {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
+            if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
+                String searchAdminEmailSql = "SELECT admin_email FROM customer_admin WHERE admin_email = ?;";
+                try(PreparedStatement emailStatement = connection.prepareStatement(searchAdminEmailSql)){
+                        emailStatement.setString(1, email);
+                        context.getLogger().info("Execute SQL statement: " + emailStatement);
+                        ResultSet rs = emailStatement.executeQuery();
+                        if(rs.next()){
+                            GraphAPIClient.removeRole(email,SUBACCOUNT_ADMIN,context);
+                            context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+email+").");
+                        }else{
+                            GraphAPIClient.deleteGuestUser(email,context);
+                            context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+email+").");
+                        }
+                }catch (Exception e){
+                    context.getLogger().info("AD exception: " + e.getMessage());
+                    JSONObject json = new JSONObject();
+                    json.put("error", "AD Exception: " + e.getMessage());
+                    return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+                }
+            }
             statement.setString(1, email);
 
             // Delete device

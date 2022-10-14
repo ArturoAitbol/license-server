@@ -1,4 +1,4 @@
-package ui.pages;
+package ui.pages.consumptions;
 
 import com.google.common.collect.Sets;
 import org.openqa.selenium.By;
@@ -32,6 +32,7 @@ public class ConsumptionForm extends AbstractPageObject {
     @FindBy(css = "#close-button")
     WebElement closeButton;
     private String[] daysArray;
+    By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public Consumptions addConsumption(String startWeek, String endWeek, String project, String deviceVendor,
                         String deviceModel, String supportVendor, String supportModel, String deviceVersion, String deviceGranularity, String tekTokens, String usageDays) {
@@ -95,7 +96,7 @@ public class ConsumptionForm extends AbstractPageObject {
                 if (currentDays.equals("...")) {
                     daySelector = By.cssSelector(String.format("[title='%s'] button[title='Delete Usage']", day));
                     this.action.click(daySelector);
-                    this.action.waitModal();
+                    this.waitSpinner();
                 } else {
                     daySelector = By.cssSelector(String.format("mat-checkbox[title='%s']", day));
                     this.action.click(daySelector);
@@ -135,6 +136,6 @@ public class ConsumptionForm extends AbstractPageObject {
     }
 
     public void waitSpinner() {
-        this.action.waitModal();
+        this.action.waitSpinner(this.spinnerSelector);
     }
 }

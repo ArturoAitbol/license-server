@@ -24,7 +24,7 @@ import { debounceTime, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs/internal/Subject";
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 import { Features } from '../helpers/features';
-import { permissions } from '../helpers/role-permissions';
+import { tekVizionServices } from '../helpers/tekvizion-services';
 
 @Component({
     selector: 'app-dashboard',
@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
     readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
-    readonly VIEW_CTAAS_DASHBOARD: string = 'View CTaaS Dashboard';
+    readonly VIEW_CTAAS_DASHBOARD: string = 'View SpotLight Dashboard';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
 
@@ -94,11 +94,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private getActionMenuOptions() {
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-        this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"customerOptions");
+        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "customerOptions");
         // check for CTaas Toggle feature, if false then remove VIEW_CTAAS_DASHBOARD option in action menu
-        if (!FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
-            const index = this.actionMenuOptions.findIndex(option=>option===this.VIEW_CTAAS_DASHBOARD);
-            this.actionMenuOptions.splice(index,1);
+        if (!FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)) {
+            const index = this.actionMenuOptions.findIndex(option => option === this.VIEW_CTAAS_DASHBOARD);
+            this.actionMenuOptions.splice(index, 1);
         }
     }
 
@@ -180,14 +180,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
             const subaccounts = subaccountsList.filter(s => s.customerId === customer.id);
             if (subaccounts.length > 0) {
                 subaccounts.forEach(subaccount => {
-                    const { id, name, services } = subaccount;
-                    const customerWithDetails = { ...customer };
-                    customerWithDetails.subaccountName = name;
-                    customerWithDetails.subaccountId = id;
-                    const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === id));
+                    let customerWithDetails = { ...customer };
+                    customerWithDetails.subaccountName = subaccount.name;
+                    customerWithDetails.subaccountId = subaccount.id;
+                    const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccount.id));
                     customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
                     if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService))
-                        customerWithDetails.services = (services) ? services : null;
+                        customerWithDetails.services = (subaccount.services) ? subaccount.services : null;
                     fullCustomerList.push(customerWithDetails);
                 })
             } else {
@@ -212,10 +211,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     /**
      * on click delete account
-     * @param index: string
+     * @param id: string
      */
-    onDeleteAccount(index: string): void {
-        this.openConfirmCancelDialog(index);
+    onDeleteAccount(selectedItemData: any): void {
+        this.openConfirmCancelDialog(selectedItemData);
     }
 
     /**
@@ -290,7 +289,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     /**
      * open confirm cancel dialog
      */
-    openConfirmCancelDialog(index?: number | string) {
+    openConfirmCancelDialog(customer?: any) {
         this.dialogService
             .deleteCustomerDialog({
                 title: 'Confirm Action',
@@ -298,12 +297,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 confirmCaption: 'Delete Subaccount',
                 deleteAllDataCaption: 'Delete Customer',
                 cancelCaption: 'Cancel',
-                canDeleteSubaccount: this.customerList[index]?.testCustomer
+                canDeleteSubaccount: customer?.testCustomer
             })
             .subscribe((result) => {
                 if (result.confirm) {
-                    console.debug('The user confirmed the action: ', this.customerList[index]);
-                    const { subaccountId, id } = this.customerList[index];
+                    console.debug('The user confirmed the action: ', customer);
+                    const { subaccountId, id } = customer;
                     if (subaccountId && !result.deleteAllData) {
                         this.subaccountService.deleteSubAccount(subaccountId).subscribe((res: any) => {
                             if (!res?.error) {
@@ -407,26 +406,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access Subaccount admin emails view', '');
                 break;
             case this.VIEW_CTAAS_DASHBOARD:
-                const { selectedRow: { services } } = object;
+                const { selectedRow: { subaccountId, subaccountName, id, name, services } } = object;
                 const selectedSubaccount = {
-                    id: object.selectedRow.subaccountId,
-                    name: object.selectedRow.subaccountName,
-                    customerId: object.selectedRow.id,
-                    services: object.selectedRow.services
+                    id: subaccountId,
+                    name: subaccountName,
+                    customerId: id,
+                    customerName: name,
+                    services: services
                 };
                 this.subaccountService.setSelectedSubAccount(selectedSubaccount);
-                const hasCtaasService = services && services.includes('ctaas');
+                const hasCtaasService = services && services.includes(tekVizionServices.SpotLight);
                 if (hasCtaasService)
-                    this.router.navigate(['/ctaas/dashboards']);
+                    this.router.navigate(['/spotlight/report-dashboards']);
                 else
-                    this.snackBarService.openSnackBar('CTaaS service is not available for this Subaccount', '');
+                    this.snackBarService.openSnackBar('SpotLight service is not available for this Subaccount', '');
 
                 break;
             case this.MODIFY_ACCOUNT:
                 this.openDialog(object.selectedOption, object.selectedRow);
                 break;
             case this.DELETE_ACCOUNT:
-                this.onDeleteAccount(object.selectedIndex);
+                this.onDeleteAccount(object.selectedRow);
                 break;
         }
     }

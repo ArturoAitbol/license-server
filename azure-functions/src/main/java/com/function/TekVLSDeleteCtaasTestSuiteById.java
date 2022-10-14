@@ -11,7 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -25,12 +25,12 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import io.jsonwebtoken.Claims;
 
 public class TekVLSDeleteCtaasTestSuiteById {
-	/**
+    /**
 	 * This function listens at endpoint "/v1.0/ctaasTestSuites". Two ways to invoke it
 	 * using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasTestSuites
 	 */
-	@FunctionName("TekVLSDeleteCtaasTestSuiteById")
+	@FunctionName("TekvLSDeleteCtaasTestSuiteById")
 	public HttpResponseMessage run(
 			@HttpTrigger(
 				name = "req",
@@ -49,14 +49,14 @@ public class TekVLSDeleteCtaasTestSuiteById {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if (!hasPermission(roles, Permission.DELETE_CTAAS_TEST_SUITE)) {
+		if (!hasPermission(roles, Resource.DELETE_CTAAS_TEST_SUITE)) {
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekVLSDeleteCtaasTestSuiteById Azure function");
+		context.getLogger().info("Entering TekvLSDeleteCtaasTestSuiteById Azure function");
 
 		String sql = "DELETE FROM ctaas_test_suite WHERE id = ?::uuid;";
 

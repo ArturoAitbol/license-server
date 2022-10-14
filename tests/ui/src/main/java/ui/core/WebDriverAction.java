@@ -14,12 +14,13 @@ public class WebDriverAction {
     public WebDriver driver;
     public WebDriverWait wait;
     private int defaultTimeout;
-    private int minTimeout;
+    private int minTimeout, maxTimeout;
 
-    public WebDriverAction(WebDriver driver, int defaultTimeout, int minTimeout) {
+    public WebDriverAction(WebDriver driver, int defaultTimeout, int minTimeout, int maxTimeout) {
         this.driver = driver;
         this.defaultTimeout = defaultTimeout;
         this.minTimeout = minTimeout;
+        this.maxTimeout = maxTimeout;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
     }
 
@@ -55,13 +56,12 @@ public class WebDriverAction {
         return element.getAttribute("disabled");
     }
 
-    public void waitModal() {
+    public void waitSpinner(By elementSelector) {
         try {
-            wait = new WebDriverWait(driver, Duration.ofSeconds(minTimeout));
-            By modalLocator = By.cssSelector("svg[preserveAspectRatio]");
-            wait.until(ExpectedConditions.visibilityOfElementLocated(modalLocator));
-            wait = new WebDriverWait(driver, Duration.ofSeconds(defaultTimeout));
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(modalLocator));
+            wait = new WebDriverWait(driver, Duration.ofSeconds(this.minTimeout));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(elementSelector));
+            wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(elementSelector));
         } catch (Exception e) {
             System.out.println("Spinner wasn't displayed");
             System.out.println(e);
@@ -110,6 +110,10 @@ public class WebDriverAction {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getText();
     }
 
+    public String getAttribute(By locator,String attributeName) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).getAttribute(attributeName);
+    }
+
     public String getText(WebElement element) {
         return wait.until(ExpectedConditions.visibilityOf(element)).getText();
     }
@@ -139,14 +143,14 @@ public class WebDriverAction {
     public String checkElement(By locator){
         String output;
         try {
-            wait = new WebDriverWait(driver, Duration.ofSeconds(minTimeout));
+            wait = new WebDriverWait(driver, Duration.ofSeconds(this.maxTimeout));
             wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
             output="ok";
         }
         catch (Exception e){
             output="error";
         }
-        wait = new WebDriverWait(driver, Duration.ofSeconds(defaultTimeout));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
         return output;
     }
 }

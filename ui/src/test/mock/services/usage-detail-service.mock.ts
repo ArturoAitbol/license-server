@@ -23,9 +23,19 @@ const USAGE_DETAIL_LIST = {
         }
     ]
 };
+const USAGE_DETAIL ={
+    consumptionId: "483b7876-9be9-4bfa-b097-275bea5ac9a0",
+    dayOfWeek: 4,
+    id: "2c06c971-0074-4c43-b113-5c3e2c393c38",
+    macAddress: "",
+    modifiedBy: "user@tekvizionlabs.com",
+    serialNumber: "",
+    usageDate: "2024-02-05"
+}
 
 export const UsageDetailServiceMock = {
     usageDetails: USAGE_DETAIL_LIST,
+    usageDetail: USAGE_DETAIL,
     getUsageDetailsByConsumptionId : (consumptionId: string)=>{
         return new Observable( (observer) => {
             observer.next(JSON.parse(JSON.stringify(USAGE_DETAIL_LIST)));

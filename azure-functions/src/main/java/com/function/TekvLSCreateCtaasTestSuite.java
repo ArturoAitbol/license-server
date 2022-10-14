@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -44,7 +44,7 @@ public class TekvLSCreateCtaasTestSuite {
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
 
-        if (!hasPermission(roles, Permission.CREATE_CTAAS_TEST_SUITE)) {
+        if (!hasPermission(roles, Resource.CREATE_CTAAS_TEST_SUITE)) {
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -52,7 +52,6 @@ public class TekvLSCreateCtaasTestSuite {
         }
 
         context.getLogger().info("Entering TekvLSCreateCtaasTestSuite Azure function");
-        String userEmail = getEmailFromToken(tokenClaims, context);
 
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
@@ -102,8 +101,8 @@ public class TekvLSCreateCtaasTestSuite {
 
             // Set statement parameters
             insertStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
-            insertStmt.setString(2, jobj.getString(MANDATORY_PARAMS.TOTAL_EXECUTIONS.value));
-            insertStmt.setString(3, jobj.getString(MANDATORY_PARAMS.NEXT_EXECUTION.value));
+            insertStmt.setString(2, jobj.has(OPTIONAL_PARAMS.TOTAL_EXECUTIONS.value) ? jobj.getString(OPTIONAL_PARAMS.TOTAL_EXECUTIONS.value) : "0");
+            insertStmt.setString(3, jobj.has(OPTIONAL_PARAMS.NEXT_EXECUTION.value) ? jobj.getString(OPTIONAL_PARAMS.NEXT_EXECUTION.value) : null);
             insertStmt.setString(4, jobj.getString(MANDATORY_PARAMS.FREQUENCY.value));
             insertStmt.setString(5, jobj.getString(MANDATORY_PARAMS.SERVICE.value));
             insertStmt.setString(6, jobj.getString(MANDATORY_PARAMS.SUITE_NAME.value));
@@ -132,11 +131,9 @@ public class TekvLSCreateCtaasTestSuite {
 
     private enum MANDATORY_PARAMS {
         SUBACCOUNT_ID("subaccountId"),
-        TOTAL_EXECUTIONS("totalExecutions"),
-        NEXT_EXECUTION("nextExecution"),
         FREQUENCY("frequency"),
-        SERVICE("service"),
-        SUITE_NAME("suiteName");
+        SERVICE("deviceType"),
+        SUITE_NAME("name");
 
         private final String value;
 
@@ -144,4 +141,15 @@ public class TekvLSCreateCtaasTestSuite {
             this.value = value;
         }
     }
+
+    private enum OPTIONAL_PARAMS {
+		TOTAL_EXECUTIONS("totalExecutions"),
+        NEXT_EXECUTION("nextExecution");
+
+		private final String value;
+
+		OPTIONAL_PARAMS(String value) {
+			this.value = value;
+		}
+	}
 }

@@ -1,8 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IStakeholder } from '../model/stakeholder.model';
+import { SubAccountService } from './sub-account.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,13 +15,19 @@ export class StakeHolderService {
   private readonly UPDATE_STAKE_HOLDER_API: string = this.API_URL + '/{email}';
   private readonly DELETE_STAKE_HOLDER_API: string = this.API_URL + '/{email}';
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private subaacountService: SubAccountService) { }
   /**
    * get stakeholder list details
    * @returns: Observable<any>
    */
   public getStakeholderList(): Observable<any> {
-    return this.httpClient.get(this.GET_STAKE_HOLDER_LIST);
+    let params = new HttpParams();
+    const subaccountDetails = this.subaacountService.getSelectedSubAccount();
+    const { id, subaccountId } = subaccountDetails;
+    const SUB_ACCOUNT_ID = (id) ? id : subaccountId;
+    params = params.set('subaccountId', SUB_ACCOUNT_ID);
+    const headers = this.getHeaders();
+    return this.httpClient.get(this.GET_STAKE_HOLDER_LIST, { headers, params });
   }
   /**
    * create stake holder

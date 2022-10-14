@@ -1,9 +1,11 @@
-package ui.pages;
+package ui.pages.customer;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
+import ui.pages.subaccounts.SubaccountForm;
+import ui.pages.subaccounts.SubaccountRow;
 
 public class Customers extends AbstractPageObject {
     @FindBy(css = "#page-title")
@@ -12,6 +14,7 @@ public class Customers extends AbstractPageObject {
     WebElement addCustomerButton;
     @FindBy(css = "#add-subaccount-button")
     WebElement addSubaccountButton;
+    By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public CustomerForm openCustomerForm() {
         this.action.click(this.addCustomerButton);
@@ -34,7 +37,7 @@ public class Customers extends AbstractPageObject {
 
     public SubaccountForm openSubaccountForm() {
         this.action.click(this.addSubaccountButton);
-        this.action.waitModal();
+        this.action.waitSpinner(this.spinnerSelector);
         return new SubaccountForm();
     }
 

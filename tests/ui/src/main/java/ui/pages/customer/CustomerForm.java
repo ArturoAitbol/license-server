@@ -1,4 +1,4 @@
-package ui.pages;
+package ui.pages.customer;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -6,11 +6,6 @@ import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 
 public class CustomerForm extends AbstractPageObject {
-/*    @FindBy(css = "[formcontrolname='name']")
-    WebElement name;
-    @FindBy(css = "[formcontrolname='customerName']")
-    WebElement customerName;*/
-
     @FindBy(css = "input#customerName")
     WebElement customerName;
     @FindBy(css = "[formcontrolname='customerType']")
@@ -21,6 +16,8 @@ public class CustomerForm extends AbstractPageObject {
     WebElement subaccountName;
     @FindBy(css = "[formcontrolname='subaccountAdminEmail']")
     WebElement subaccountAdminEmail;
+    @FindBy(id = "spotlight-service")
+    WebElement spotlightPermission;
     @FindBy(css = "[formcontrolname='testCustomer']")
     WebElement testCustomer;
     @FindBy(css = "button#submitBtn")
@@ -28,7 +25,7 @@ public class CustomerForm extends AbstractPageObject {
 
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
 
-    public Customers createCustomer(String customerName, String type, String adminEmail, String subaccount, String subAdminEmail, String testCustomer){
+    public Customers createCustomer(String customerName, String type, String adminEmail, String subaccount, String subAdminEmail, String spotlightPermission, String testCustomer){
         this.action.sendText(this.customerName, customerName);
         By optionType = By.cssSelector(String.format("mat-option[title='%s']", type));
         this.action.selectOption(this.customerType, optionType);
@@ -36,6 +33,8 @@ public class CustomerForm extends AbstractPageObject {
         if (!subaccount.equals("Default"))
             this.action.replaceText(this.subaccountName, subaccount);
         this.action.sendText(this.subaccountAdminEmail, subAdminEmail);
+        if (!spotlightPermission.equals("no") && !spotlightPermission.equals("disable"))
+            this.action.click(this.spotlightPermission);
         if (!testCustomer.equals("no") && !testCustomer.equals("disable"))
             this.action.click(this.testCustomer);
         this.action.click(this.submitButton);

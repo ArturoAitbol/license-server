@@ -28,6 +28,12 @@
                         <input matInput required formControlName="subaccountName">
                     </mat-form-field>
                 </div>
+                <div *ngIf="data.testCustomer===true">
+                    <section class="text-left">
+                        <mat-checkbox color="primary" formControlName="testCustomer">Test Customer</mat-checkbox>
+                        <small class="text-muted d-block">(For development and testing)</small>
+                    </section>
+                </div>
                 <div *lcFeatureToggle="'ctaasFeature'">
                     <h2 id="subaccount-services">Services</h2>
                     <section>
@@ -35,12 +41,6 @@
                             <mat-checkbox formControlName="{{service.key}}" class="checkbox-margin" [color]="'primary'">
                                 {{parseService(service.key)}} </mat-checkbox>
                         </ng-container>
-                    </section>
-                </div>
-                <div *ngIf="data.testCustomer===true">
-                    <section class="text-left">
-                        <mat-checkbox color="primary" formControlName="testCustomer">Test Customer</mat-checkbox>
-                        <small class="text-muted d-block">(For development and testing)</small>
                     </section>
                 </div>
             </mat-dialog-content>

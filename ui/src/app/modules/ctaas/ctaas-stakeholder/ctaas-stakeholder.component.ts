@@ -11,6 +11,7 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { map } from 'rxjs/operators';
 import { IStakeholder } from 'src/app/model/stakeholder.model';
 import { Report } from 'src/app/helpers/report';
+import { Utility } from 'src/app/helpers/utils';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -21,11 +22,16 @@ export class CtaasStakeholderComponent implements OnInit {
   displayedColumns: any[] = [];
   stakeholdersData: any = [];
   actionMenuOptions: any = [];
-  isLoadingResults: boolean = false;
-  isRequestCompleted: boolean = false;
+  isLoadingResults = false;
+  isRequestCompleted = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
+
+  readonly options = {
+    MODIFY_STAKEHOLDER : this.MODIFY_STAKEHOLDER,
+    DELETE_STAKEHOLDER : this.DELETE_STAKEHOLDER
+  }
   constructor(
     private msalService: MsalService,
     public dialog: MatDialog,
@@ -63,10 +69,8 @@ export class CtaasStakeholderComponent implements OnInit {
    * get action menu options
    */
   private getActionMenuOptions() {
-    const accountRoles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-    accountRoles.forEach(accountRole => {
-      permissions[accountRole].tables.stakeholderOptions?.forEach(item => this.actionMenuOptions.push(this[item]));
-    });
+   const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+   this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions")
   }
   /**
    * fetch stakeholder data
@@ -100,20 +104,20 @@ export class CtaasStakeholderComponent implements OnInit {
             });
             return e;
           }
-          catch (e) {
-            console.error('some error |', e)
+          catch (exception) {
+            console.error('some error |', exception);
           }
         })
       )
-      .subscribe((response: any) => {
+      .subscribe((response: any) => { 
         this.isRequestCompleted = true;
         this.isLoadingResults = false;
         const { stakeHolders } = response;
         if (stakeHolders) {
           this.stakeholdersData = stakeHolders;
-        } else {
-          this.snackBarService.openSnackBar(response.error, 'Error while loading stake holders');
         }
+      }, (error) => {
+        this.snackBarService.openSnackBar(error, 'Error while loading stake holders');
       });
   }
 
@@ -167,11 +171,11 @@ export class CtaasStakeholderComponent implements OnInit {
           disableClose: true
         });
         break;
-      case this.DELETE_STAKEHOLDER:
-        break;
+      // case this.DELETE_STAKEHOLDER:
+      //   break;
     }
     dialogRef.afterClosed().subscribe((res: any) => {
-      if (res === 'closed') {
+      if (res) {
         this.stakeholdersData = [];
         this.fetchStakeholderList();
       }
@@ -236,8 +240,8 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   getReports(): any[] {
     return [
-      { label: "Daily reports", value: Report.DAILY_REPORTS },
-      { label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { label: "Daily Reports", value: Report.DAILY_REPORTS },
+      { label: "Weekly Reports", value: Report.WEEKLY_REPORTS },
       { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
   }

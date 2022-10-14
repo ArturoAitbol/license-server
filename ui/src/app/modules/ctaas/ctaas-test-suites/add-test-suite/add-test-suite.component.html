@@ -8,29 +8,14 @@
             <mat-dialog-content>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label id="suite-name-label">Suite Name</mat-label>
-                        <input matInput required formControlName="suiteName" id="suiteName">
+                        <mat-label id="name-label">Suite Name</mat-label>
+                        <input matInput required formControlName="name" id="name">
                     </mat-form-field>
                 </div>
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label id="service-name-label">Testing Service</mat-label>
-                        <input matInput required formControlName="service" id="service">
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label id="executions-label">Total Executions</mat-label>
-                        <input matInput required formControlName="totalExecutions" id="totalExecutions">
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Next Execution</mat-label>
-                        <input required matInput [matDatepicker]="picker" formControlName="nextExecution">
-                        <mat-datepicker-toggle matSuffix [for]="picker" id="date-calendar">
-                        </mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-label id="deviceType-name-label">Service Under Test</mat-label>
+                        <input matInput required formControlName="deviceType" id="deviceType">
                     </mat-form-field>
                 </div>
                 <div>

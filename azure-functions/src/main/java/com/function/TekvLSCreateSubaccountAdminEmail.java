@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.*;
@@ -15,6 +15,7 @@ import java.sql.*;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 public class TekvLSCreateSubaccountAdminEmail {
     private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -39,7 +40,7 @@ public class TekvLSCreateSubaccountAdminEmail {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if(!hasPermission(roles,Permission.CREATE_SUBACCOUNT_ADMIN_MAIL)){
+        if(!hasPermission(roles, Resource.CREATE_SUBACCOUNT_ADMIN_MAIL)){
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -81,7 +82,7 @@ public class TekvLSCreateSubaccountAdminEmail {
             statement.executeUpdate();
             context.getLogger().info("Subaccount Admin email inserted successfully.");
 
-            if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
+            if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
                 final String subaccountNameSql = "SELECT name FROM subaccount WHERE id = ?::uuid;";
                 try(PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)){
                     subaccountNameStmt.setString(1,createSubaccountAdminRequest.getSubaccountId());

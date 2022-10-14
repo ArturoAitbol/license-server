@@ -1,4 +1,16 @@
 export const permissions = {
+    'tekvizion.DevicesAdmin': {
+        paths: [],
+        elements: [],
+        tables: {
+            customerOptions: [],
+            licenseOptions: [],
+            licConsumptionOptions: [],
+            projectOptions: [],
+            ctaasTestSuiteOptions: [],
+            stakeholderOptions: []
+        }
+    },
     'tekvizion.FullAdmin': {
         paths: [
             'dashboard',
@@ -7,8 +19,8 @@ export const permissions = {
             'projects',
             'licenses',
             'redirect',
-            'ctaas',
-            'dashboards',
+            'spotlight',
+            'report-dashboards',
             'test-suites',
             'stakeholders',
             "setup"
@@ -24,7 +36,8 @@ export const permissions = {
             'addSubAccAdminEmail',
             'deleteSubAccAdminEmail',
             'auditInfo',
-            'addTestSuite'
+            'addTestSuite',
+            'showBanner'
         ],
         tables: {
             customerOptions: [
@@ -68,8 +81,8 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards'
+            'spotlight',
+            'report-dashboards'
         ],
         elements: [
             'addCustomer',
@@ -78,7 +91,7 @@ export const permissions = {
             'addAdminEmail',
             'deleteAdminEmail',
             'addSubAccAdminEmail',
-            'deleteSubAccAdminEmail'],
+            'deleteSubAccAdminEmail', 'showBanner'],
         tables: {
             customerOptions: [
                 'VIEW_LICENSES',
@@ -96,7 +109,8 @@ export const permissions = {
             projectOptions: [
                 'VIEW_CONSUMPTION'
             ],
-            stakeholderOptions: []
+            stakeholderOptions: [],
+            ctaasTestSuiteOptions: []
         }
     },
     'tekvizion.ConfigTester': {
@@ -108,8 +122,8 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards',
+            'spotlight',
+            'report-dashboards',
             'test-suites',
             'stakeholders',
             'setup',
@@ -117,7 +131,8 @@ export const permissions = {
         elements: [
             'addProject',
             'addLicenseConsumption',
-            'addTestSuite'
+            'addTestSuite',
+            'showBanner'
         ],
         tables: {
             customerOptions: [
@@ -157,10 +172,10 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards'
+            'spotlight',
+            'report-dashboards'
         ],
-        elements: [],
+        elements: ['showBanner'],
         tables: {
             customerOptions: [
                 'VIEW_LICENSES',
@@ -175,7 +190,8 @@ export const permissions = {
             projectOptions: [
                 'VIEW_CONSUMPTION'
             ],
-            stakeholderOptions: []
+            stakeholderOptions: [],
+            ctaasTestSuiteOptions: []
         }
     },
     'customer.FullAdmin': {
@@ -187,11 +203,11 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards',
+            'spotlight',
+            'report-dashboards',
             'stakeholders'
         ],
-        elements: [],
+        elements: ['showBanner'],
         tables: {
             customerOptions: [
                 'VIEW_LICENSES',
@@ -209,7 +225,8 @@ export const permissions = {
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
-            ]
+            ],
+            ctaasTestSuiteOptions: []
         }
     },
     'customer.SubaccountAdmin': {
@@ -221,8 +238,8 @@ export const permissions = {
             'licenses',
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards',
+            'spotlight',
+            'report-dashboards',
             'stakeholders'
         ],
         elements: [],
@@ -243,15 +260,16 @@ export const permissions = {
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
-            ]
+            ],
+            ctaasTestSuiteOptions: []
         }
     },
     'customer.SubaccountStakeholder': {
         paths: [
             'redirect',
             'apps',
-            'ctaas',
-            'dashboards'
+            'spotlight',
+            'report-dashboards'
         ],
         elements: [],
         tables: {
@@ -259,7 +277,8 @@ export const permissions = {
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
-            stakeholderOptions: []
+            stakeholderOptions: [],
+            ctaasTestSuiteOptions: []
         }
     }
 };

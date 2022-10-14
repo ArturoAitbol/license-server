@@ -8,6 +8,7 @@ import static com.function.auth.RoleAuthHandler.getRolesFromToken;
 import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
 import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 import static com.function.auth.RoleAuthHandler.hasPermission;
+import static com.function.auth.Roles.*;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ import com.function.util.FeatureToggles;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.Constants;
@@ -33,8 +34,6 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import io.jsonwebtoken.Claims;
-
-import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSModifyCtaasSetupById {
 	/**
@@ -61,7 +60,7 @@ public class TekvLSModifyCtaasSetupById {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.MODIFY_CTAAS_SETUP)){
+		if(!hasPermission(roles, Resource.MODIFY_CTAAS_SETUP)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -90,7 +89,7 @@ public class TekvLSModifyCtaasSetupById {
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-		// validate ctaas setup completion
+		// validate SpotLight setup completion
 		Boolean isSetupReady = jobj.has(OPTIONAL_PARAMS.STATUS.jsonAttrib) 
 					&& jobj.getString(OPTIONAL_PARAMS.STATUS.jsonAttrib).equalsIgnoreCase(Constants.CTaaSSetupStatus.READY.value());
 		if (isSetupReady) {
@@ -107,7 +106,7 @@ public class TekvLSModifyCtaasSetupById {
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
-		// Build the sql query for ctaas setup
+		// Build the sql query for SpotLight setup
 		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
 		int optionalParamsFound = 0;
 		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
@@ -149,12 +148,12 @@ public class TekvLSModifyCtaasSetupById {
 			if (isSetupReady) {
 				String today = LocalDate.now().toString();
 				/**
-				 * Add CTaaS project
+				 * Add SpotLight project
 				 * */
 				// Set statement parameters
 				projectStatement.setString(1, jobj.getString("subaccountId"));
-				projectStatement.setString(2, Constants.DEFAULT_CTAAS_PROJECT_NUMBER + " - " + id);
-				projectStatement.setString(3, Constants.DEFAULT_CTAAS_PROJECT_NAME + " - " + today);
+				projectStatement.setString(2, today + " - " + id);
+				projectStatement.setString(3, Constants.DEFAULT_CTAAS_PROJECT_NAME);
 				projectStatement.setString(4, Constants.DEFAULT_CTAAS_PROJECT_STATUS);
 				projectStatement.setString(5, today);
 				projectStatement.setString(6, Constants.DEFAULT_CTAAS_PROJECT_OWNER);
@@ -168,7 +167,7 @@ public class TekvLSModifyCtaasSetupById {
 				json.put("projectId", rs.getString("id"));
 
 				/**
-				 * Add License consumption for CTaaS project
+				 * Add License consumption for SpotLight project
 				 * */
 				JSONObject ctaasDevice = new JSONObject();
 				ctaasDevice.put("subaccountId", jobj.getString("subaccountId"));
@@ -187,7 +186,7 @@ public class TekvLSModifyCtaasSetupById {
 				licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
 
 				// adding users if feature toggle 'ad-ctaas-user-creation-after-setup-ready' enabled
-				if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation") && FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
+				if (FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
 					this.ADUserCreation(jobj,context,connection);
 
 				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
@@ -230,19 +229,13 @@ public class TekvLSModifyCtaasSetupById {
 		TAP_URL("tapUrl", "tap_url", QueryBuilder.DATA_TYPE.VARCHAR),
 		STATUS("status", "status", QueryBuilder.DATA_TYPE.VARCHAR),
 		ON_BOARDING_COMPLETE("onBoardingComplete", "on_boarding_complete", QueryBuilder.DATA_TYPE.BOOLEAN),
-		POWERBI_WORKSPACE_ID("powerbiWorkspaceId", "powerbi_workspace_id", QueryBuilder.DATA_TYPE.VARCHAR),
-		POWERBI_REPORT_ID("powerbiReportId", "powerbi_report_id", QueryBuilder.DATA_TYPE.VARCHAR);
+		POWERBI_WORKSPACE_ID("powerBiWorkspaceId", "powerbi_workspace_id", QueryBuilder.DATA_TYPE.VARCHAR),
+		POWERBI_REPORT_ID("powerBiReportId", "powerbi_report_id", QueryBuilder.DATA_TYPE.VARCHAR);
 
 		private final String jsonAttrib;
 		private final String columnName;
 
 		private final String dataType;
-
-		OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
-			this.jsonAttrib = jsonAttrib;
-			this.columnName = columnName;
-			this.dataType = dataType;
-		}
 
 		OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
 			this.jsonAttrib = jsonAttrib;

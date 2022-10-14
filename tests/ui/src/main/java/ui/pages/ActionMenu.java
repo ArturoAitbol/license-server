@@ -5,7 +5,12 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
+import ui.pages.consumptions.Consumptions;
+import ui.pages.customer.AdminstratorEmails;
+import ui.pages.projects.Projects;
+import ui.pages.spotlight.Dashboard;
 import ui.pages.subscriptions.Subscriptions;
+import ui.pages.spotlight.Stakeholders;
 
 public class ActionMenu extends AbstractPageObject {
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
@@ -25,14 +30,29 @@ public class ActionMenu extends AbstractPageObject {
     WebElement customerAdminButton;
     @FindBy(xpath = "//button[@id='View Subaccount Admin Emails']")
     WebElement subaccountAdminButton;
+    @FindBy(xpath = "//button[@id='View SpotLight Dashboard']")
+    WebElement spotlightDashboardButton;
+    @FindBy(xpath = "//button[@id='Delete Stakeholder Account']")
+    WebElement spotlightStakeholderButton;
+    @FindBy(xpath = "//button[@id='Update Stakeholder Details']")
+    WebElement spotlightUpdateStakeholderButton;
+    By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public String delete(String type) {
-/*        By deleteSelector = By.cssSelector("button#Delete");
-        this.action.click(deleteSelector);*/
+        /*
+         * By deleteSelector = By.cssSelector("button#Delete");
+         * this.action.click(deleteSelector);
+         */
         String message;
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
-        executor.executeScript("arguments[0].click();", this.deleteButton);
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
+        if (type.equals("stakeholder")) {
+            executor.executeScript("arguments[0].click();", this.spotlightStakeholderButton);
+        }
+        else{
+            executor.executeScript("arguments[0].click();", this.deleteButton);
+        }
         Modal confirmModal = new Modal();
+        
         if (type.equals("customer")) {
             confirmModal.reconfirmAction();
         } else {
@@ -46,30 +66,44 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public void edit() {
-/*        By editSelector = By.cssSelector("button#Edit");
-        this.action.click(editSelector);*/
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        /*
+         * By editSelector = By.cssSelector("button#Edit");
+         * this.action.click(editSelector);
+         */
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.editButton);
     }
 
-    public void editForm(){
-        this.action.forceClick(this.editButton);
-        this.action.waitModal();
-
+    public void editStakeholderForm() {
+        this.action.forceClick(this.spotlightUpdateStakeholderButton);
+        this.action.waitSpinner(this.spinnerSelector);
     }
 
-    public Projects goToProjects(){
-/*        By projectsSelector = By.xpath("//button[@id='View Projects List']");
-        this.action.click(projectsSelector);*/
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+    public void editForm() {
+        this.action.forceClick(this.editButton);
+        this.action.waitSpinner(this.spinnerSelector);
+    }
+
+    public Projects goToProjects() {
+        /*
+         * By projectsSelector = By.xpath("//button[@id='View Projects List']");
+         * this.action.click(projectsSelector);
+         */
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.projectsButton);
         return new Projects();
     }
 
-    public Subscriptions goToSubscriptions(){
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+    public Subscriptions goToSubscriptions() {
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.subscriptionsButton);
         return new Subscriptions();
+    }
+
+    public Dashboard goToSpotlightDashboard() {
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
+        executor.executeScript("arguments[0].click();", this.spotlightDashboardButton);
+        return new Dashboard();
     }
 
     public void viewItem(String item) {
@@ -78,9 +112,11 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public String close() {
-/*        By deleteSelector = By.cssSelector("button#Close");
-        this.action.click(deleteSelector);*/
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        /*
+         * By deleteSelector = By.cssSelector("button#Close");
+         * this.action.click(deleteSelector);
+         */
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.closeButton);
         Modal confirmModal = new Modal();
         confirmModal.confirmAction();
@@ -88,22 +124,23 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public Consumptions goToConsumption() {
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.consumptionsButton);
         return new Consumptions();
     }
 
     public AdminstratorEmails goToCustomerAdmins() {
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.customerAdminButton);
-        this.action.waitModal();
+        this.action.waitSpinner(this.spinnerSelector);
         return new AdminstratorEmails();
     }
 
     public AdminstratorEmails goToSubaccountAdmins() {
-        JavascriptExecutor executor = (JavascriptExecutor)this.driver;
+        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.subaccountAdminButton);
-        this.action.waitModal();
+        By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
+        this.action.waitSpinner(spinnerSelector);
         return new AdminstratorEmails();
     }
 }

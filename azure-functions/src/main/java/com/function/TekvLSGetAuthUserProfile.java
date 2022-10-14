@@ -1,6 +1,7 @@
 package com.function;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,11 +16,10 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
-import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -54,7 +54,7 @@ public class TekvLSGetAuthUserProfile {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.GET_AUTH_USER_PROFILE)){
+		if(!hasPermission(roles, Resource.GET_AUTH_USER_PROFILE)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -144,19 +144,16 @@ public class TekvLSGetAuthUserProfile {
 	private JSONObject fetchUserDetails(JSONObject item, ExecutionContext context) {
 			JSONObject userProfile = null; 
 			try {
-				 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
-					 item.put("name", "");
-					 item.put("jobTitle", "");
-					 item.put("companyName", "");
-					 item.put("phoneNumber", "");
-					 return item;
-				 }
 				userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(item.getString("email"),context);
 				item.put("name",userProfile.get("displayName"));
 				item.put("jobTitle",userProfile.get("jobTitle"));
 				item.put("companyName",userProfile.get("companyName"));
 				item.put("phoneNumber",userProfile.get("mobilePhone"));
 			} catch (Exception e) {
+				item.put("name","");
+				item.put("jobTitle","");
+				item.put("companyName","");
+				item.put("phoneNumber","");
 				context.getLogger().info("Caught exception: " + e.getMessage());
 			}
 		return item;
