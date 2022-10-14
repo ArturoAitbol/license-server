@@ -23,6 +23,7 @@ public class LoginSteps {
     Customers customers;
     Header header;
     Apps apps;
+
     Environment environment = ConfigFactory.create(Environment.class);
     String logged;
 
@@ -73,6 +74,61 @@ public class LoginSteps {
         if (this.logged.equals("ok")){
 //            System.out.println("User has already been logged on");
             this.apps = new Apps();
+        }
+    }
+
+    @Given("I try to login with a stakeholder account")
+    public void iTryToLoginWithAStakeholderAccount() {
+        if (this.logged.equals("error")){
+            this.loginForm = this.landing.openLoginForm();
+            String email = environment.stakeholderUser();
+            String password = environment.stakeholderPassword();
+            this.customers = this.loginForm.SignIn(email, password);
+        }
+        if (this.logged.equals("ok")){
+            this.apps = new Apps();
+        }
+    }
+
+    @Given("I try to login using a {string}")
+    public void iTryToLoginUsingA(String role) {
+        if (this.logged.equals("error")){
+            String email, password;
+            this.loginForm = this.landing.openLoginForm();
+            switch (role){
+                case "FullAdministrator":
+                    email = environment.username();
+                    password = environment.password();
+                    break;
+                case "SubaccountAdministrator":
+                    email = environment.subaccountAdminUser();
+                    password = environment.subaccountAdminPassword();
+                    break;
+                case "Stakeholder":
+                    email = environment.stakeholderUser();
+                    password = environment.stakeholderPassword();
+                default:
+                    email = environment.username();
+                    password = environment.password();
+                    break;
+            }
+            this.customers = this.loginForm.SignIn(email, password);
+        }
+        if (this.logged.equals("ok")){
+            switch (role){
+                case "FullAdministrator":
+                    this.customers = new Customers();
+                    break;
+                case "SubaccountAdministrator":
+                    this.apps = new Apps();
+                    break;
+                case "Stakeholder":
+                    this.apps = new Apps();
+                    break;
+                default:
+                    this.customers = new Customers();
+                    break;
+            }
         }
     }
 }

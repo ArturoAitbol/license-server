@@ -42,9 +42,9 @@ public class CustomerSteps {
         Map<String, String> customer = customerTable.asMap(String.class, String.class);
         String customerName = customer.get("name");
         String type = customer.getOrDefault("type", "MSP");
-        String adminEmail = customer.get("adminEmail");
+        String adminEmail = customer.getOrDefault("adminEmail", environment.subaccountAdminUser());
         String subaccount = customer.getOrDefault("subaccount", "Default");
-        String subAdminEmail = customer.getOrDefault("subAdminEmail", "noSubAdminEmail@test.com");
+        String subAdminEmail = customer.getOrDefault("subAdminEmail", environment.subaccountAdminUser());
         String spotlightPermission = customer.getOrDefault("spotlight", "no").toLowerCase();
         String testCustomer = customer.getOrDefault("testCustomer", "yes").toLowerCase();
         this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,

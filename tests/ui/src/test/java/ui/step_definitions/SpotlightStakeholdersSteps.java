@@ -8,11 +8,13 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.aeonbits.owner.ConfigFactory;
 import ui.core.DriverManager;
 import ui.pages.ActionMenu;
 import ui.pages.spotlight.StakeholderForm;
 import ui.pages.spotlight.StakeholderRow;
 import ui.pages.spotlight.Stakeholders;
+import ui.utils.Environment;
 
 
 public class SpotlightStakeholdersSteps {
@@ -20,6 +22,7 @@ public class SpotlightStakeholdersSteps {
     StakeholderRow stakeholderRow;
     StakeholderForm stakeholderForm;
     private String actualMessage = "none";
+    Environment environment = ConfigFactory.create(Environment.class);
 
     public SpotlightStakeholdersSteps(Stakeholders stakeholders) {
         this.stakeholders = stakeholders;
@@ -37,7 +40,8 @@ public class SpotlightStakeholdersSteps {
         String name = stakeholder.get("name");
         String jobTitle = stakeholder.get("jobTitle");
         String companyName = stakeholder.get("companyName");
-        String subaccountAdminEmail = stakeholder.get("subaccountAdminEmail");
+//        String subaccountAdminEmail = stakeholder.get("subaccountAdminEmail");
+        String subaccountAdminEmail = environment.stakeholderUser();
         String phoneNumber = stakeholder.get("phoneNumber");
         String type = stakeholder.get("type");
         this.stakeholders = stakeholderForm.addStakeholder(name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type);

@@ -10,6 +10,8 @@ public interface Environment extends Config {
     String password();
     String subaccountAdminUser();
     String subaccountAdminPassword();
+    String stakeholderUser();
+    String stakeholderPassword();
     String browser();
     String url();
     @Key("db.port")

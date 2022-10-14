@@ -5,7 +5,7 @@ Feature: Customers
 
   @createSubAdminCustomer
   Scenario: Create a test customer for subaccount admin
-    Given I try to login with email and password
+    Given I try to login using a "FullAdministrator"
     And I open the Add Customer form
     When I create a spotlight customer with the following data
       | name          | subAdminCustomerTest                              |
@@ -18,13 +18,13 @@ Feature: Customers
 
   @rejectOnBoard
   Scenario: Reject On Board Wizard
-    Given I try to login with a subaccount administrator
+    Given I try to login using a "SubaccountAdministrator"
     When I click on "Not right now" button
     Then I should see the logout page
 
   @completeOnBoard
   Scenario: Complete On Board Wizard
-    Given I try to login with a subaccount administrator
+    Given I try to login using a "SubaccountAdministrator"
     When I click on "Sure. Let's do it!" button
     And I fill the on board wizard with the following data
       | name            | test-functional-subaccount-admin                  |
@@ -40,7 +40,7 @@ Feature: Customers
 
   @spotLightNavigation
   Scenario: Test SpotLight Navigation
-    Given I try to login with a subaccount administrator
+    Given I try to login using a "SubaccountAdministrator"
     And I am on the apps view
     When I click on "SpotLight" button
     Then I should see the "SpotLight" view
@@ -49,8 +49,9 @@ Feature: Customers
       | Stakeholders  |
 #    And I logout
 
-  @tokenNavigation
+  @tokenNavigation @test
   Scenario: Test tekToken Usage Navigation
+    Given I try to login using a "SubaccountAdministrator"
     Given I am on the apps view
     When I click on "tekToken Usage" button
     And I should see the "tekVizion 360 Portal" view
@@ -58,10 +59,15 @@ Feature: Customers
     Then I am on the apps view
     And I logout
 
-  @deleteCustomer
+  @testLogin @test
+  Scenario: Test login
+    Given I try to login using a "FullAdministrator"
+    Then I should see the "Customers" page
+
+  @deleteCustomer @ignore
   Scenario: Delete a test customer
 #    Given I logout
-    Given I try to login with email and password
+    Given I try to login using a "FullAdministrator"
     And I see the customer "subAdminCustomerTest" in the table
     When I delete the customer "subAdminCustomerTest"
     Then I should see the message "Customer deleted successfully!"

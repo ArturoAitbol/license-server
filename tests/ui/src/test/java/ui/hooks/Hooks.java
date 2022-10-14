@@ -20,4 +20,12 @@ public class Hooks {
             scenario.attach(screenshot, "image/png", "screenshot");
         }
     }
+
+    @After("@tokenNavigation")
+    public static void logout(Scenario scenario) {
+        if (scenario.isFailed()) {
+            WebDriver driver = DriverManager.getInstance().getDriver();
+            driver.manage().deleteAllCookies();
+        }
+    }
 }
