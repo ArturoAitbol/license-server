@@ -62,13 +62,13 @@
     <section>
         <!-- filters -->
         <div class="filter-container">
-            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4">
                 <mat-radio-group id="period-filter">
                     <mat-radio-button color="primary" value="period" [checked]="aggregation === 'period'"
                         (change)="getMultipleChoiceAnswer($event.value)">License Period</mat-radio-button>
                     <br>
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 ">
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-4 ">
                             <mat-radio-button color="primary" value="week" [checked]="aggregation === 'week'"
                                 [disabled]="!isLicenseListLoaded" (change)="getMultipleChoiceAnswer($event.value)">Week
                             </mat-radio-button>
@@ -78,7 +78,7 @@
                             </mat-radio-button>
                             <br>
                         </div>
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 d-flex justify-content-center">
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-8 d-flex justify-content-center">
                             <mat-form-field id="date-form" appearance="outline">
                                 <mat-label>{{getDatePickerLabel()}}</mat-label>
                                 <mat-date-range-input [formGroup]="range" [rangePicker]="picker" [min]="startDate"
@@ -100,7 +100,7 @@
                     </div>
                 </mat-radio-group>
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 d-flex justify-content-center">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4 d-flex justify-content-center">
                 <mat-form-field id="project-form" appearance="outline">
                     <mat-label>Project</mat-label>
                     <mat-select [(value)]="selectedProject" (valueChange)="getProject($event)"
@@ -112,7 +112,7 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 d-flex justify-content-center">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4 d-flex justify-content-center">
                 <mat-form-field id="consumption-type-form" appearance="outline">
                     <mat-label>Consumption Type</mat-label>
                     <mat-select (valueChange)="getType($event)" [disabled]="!isLicenseListLoaded">
@@ -137,7 +137,7 @@
         </div>
         <br>
         <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 mb-2">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4 mb-2">
                 <div id="weekly-consumption-table" class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="weeklyConsumptionData" [tableColumns]="weeklyConsumptionColumns"
                         [isFilterable]="false" [isPageable]="false"
@@ -148,7 +148,7 @@
                     </app-data-table>
                 </div>
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 mb-2">
+            <div class="col-12 col-sm-12 col-md-8 col-lg-8 mb-2">
                 <div id="project-consumption-table" class="table-container mat-elevation-z8">
                     <app-data-table [tableData]="projectConsumptionData" [tableColumns]="projectConsumptionColumns"
                         [isFilterable]="false" [isPageable]="false"
