@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Constants } from 'src/app/helpers/constants';
 import { Report } from 'src/app/helpers/report';
 import { AutoLogoutService } from 'src/app/services/auto-logout.service';
+import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
@@ -27,14 +29,20 @@ export class OnboardWizardComponent implements OnInit {
   userProfileForm: FormGroup;
   stakeholderForm: FormGroup;
   subaccountUserProfileDetails: any = {};
+
+  ctaasSetupDetails: any;
   constructor(
     private userprofileService: UserProfileService,
     private stakeholderService: StakeHolderService,
     private formbuilder: FormBuilder,
     public dialogRef: MatDialogRef<OnboardWizardComponent>,
-    private subaccountService: SubAccountService,
-    private autoLogoutService: AutoLogoutService
-  ) { }
+    private autoLogoutService: AutoLogoutService,
+    private ctaasSetupService: CtaasSetupService,
+    private snackBarService: SnackBarService,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    this.ctaasSetupDetails = data;
+  }
   /**
    * fetch user profile details
    */
@@ -117,7 +125,11 @@ export class OnboardWizardComponent implements OnInit {
     }
     this.userprofileService.updateUserProfile(userProfileObj)
       .subscribe((response: any) => {
-        console.debug('update profile response | ', response);
+        if (response?.error) {
+          this.snackBarService.openSnackBar('Error updating User profile details !', '');
+        } else {
+          this.updateOnboardingStatus();
+        }
       });
   }
   /**
@@ -201,5 +213,17 @@ export class OnboardWizardComponent implements OnInit {
   onCancel(type?: string): void {
     this.dialogRef.close(type);
   }
-
+  /**
+   * update spotlight onboarding details
+   */
+  updateOnboardingStatus(): void {
+    const { id } = this.ctaasSetupDetails;
+    const requestPayload = { onBoardingComplete: 't', ctaasSetupId: id };
+    this.ctaasSetupService.updateSubaccountCtaasDetails(requestPayload)
+      .subscribe((response: any) => {
+        if (response?.error) {
+          this.snackBarService.openSnackBar('Error updating the onboarding status !', '');
+        }
+      });
+  }
 }

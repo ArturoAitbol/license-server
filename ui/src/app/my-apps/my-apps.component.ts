@@ -102,11 +102,12 @@ export class MyAppsComponent implements OnInit {
     const index = this.loggedInUserRoles.findIndex(e => e.includes('customer.SubaccountAdmin'));
     // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
     if ((this.isOnboardingComplete && index !== -1)) {
-      dialogRef = this.dialog.open(OnboardWizardComponent, { width: '700px', height: '500px', disableClose: true });
+      dialogRef = this.dialog.open(OnboardWizardComponent, { width: '700px', height: '500px', disableClose: true, data: this.ctaasSetupDetails });
     }
     dialogRef.afterClosed().subscribe((res: any) => {
-      if (res === 'closed')
-        this.updateOnboardingStatus();
+      // Don't need this since, we invoke an service call when click on save button
+      // if (res === 'closed')
+      //   this.updateOnboardingStatus();
     });
   }
   /**
