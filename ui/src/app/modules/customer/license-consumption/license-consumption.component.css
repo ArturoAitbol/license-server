@@ -56,3 +56,20 @@ h1 {
 .bold-field {
   font-weight: 500;
 }
+
+@media (max-width: 575.98px) {
+  .add-btn {
+    font-size: 11px;
+  }
+
+  #btn-group {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .filter-container {
+    display: flex;
+  }
+}
