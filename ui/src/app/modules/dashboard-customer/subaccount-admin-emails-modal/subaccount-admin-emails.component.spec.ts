@@ -134,7 +134,7 @@ describe('UnitTest', () => {
             fixture.detectChanges();
             spyOn(SnackBarServiceMock, 'openSnackBar');
             spyOn(console, 'error');
-            subaccountModalComponentInstance.deleteExistingEmail(0);
+            subaccountModalComponentInstance.deleteExistingEmail(3);
             expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith( 'Error deleting administrator email!' );
             expect(console.error).toHaveBeenCalledWith( 'Error while deleting administrator email',
                 { error: 'Expected subaccount admin emails response error' }
@@ -145,7 +145,7 @@ describe('UnitTest', () => {
             spyOn(SubaccountAdminEmailServiceMock, 'deleteAdminEmail').and.callFake(SubaccountAdminEmailServiceMock.apiErrorResponse);
             fixture.detectChanges();
             spyOn(SnackBarServiceMock, 'openSnackBar');
-            subaccountModalComponentInstance.deleteExistingEmail(0);
+            subaccountModalComponentInstance.deleteExistingEmail(3);
             expect(SnackBarServiceMock.openSnackBar)
                 .toHaveBeenCalledWith( 'Expected create subaccount admin email error', 'Error while deleting administrator email!' );
         });
@@ -153,7 +153,7 @@ describe('UnitTest', () => {
             const res = null;
             spyOn(SubaccountAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
             fixture.detectChanges();
-            subaccountModalComponentInstance.deleteExistingEmail(0);
+            subaccountModalComponentInstance.deleteExistingEmail(3);
             expect(SubaccountAdminEmailServiceMock.deleteAdminEmail).toHaveBeenCalled();
         });
     });
