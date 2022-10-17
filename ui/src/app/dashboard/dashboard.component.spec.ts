@@ -553,6 +553,7 @@ describe('error messages', () => {
         spyOn(CustomerServiceMock, 'deleteCustomer').and.returnValue(of(res));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
+        fixture.detectChanges();
         dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
 
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error customer could not be deleted !', '');
@@ -573,6 +574,7 @@ describe('error messages', () => {
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(CustomerServiceMock, 'deleteCustomer').and.returnValue(of(res));
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
+        fixture.detectChanges();
         dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
         expect(CustomerServiceMock.deleteCustomer).toHaveBeenCalled();
     });
@@ -593,6 +595,7 @@ describe('error messages', () => {
         spyOn(SubaccountServiceMock, 'deleteSubAccount').and.returnValue(of(res));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: false });
+        fixture.detectChanges();
         dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error Subaccount could not be deleted !', '');
     });
@@ -613,6 +616,7 @@ describe('error messages', () => {
         spyOn(SubaccountServiceMock, 'deleteSubAccount').and.returnValue(of(res));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: false });
+        fixture.detectChanges();
         dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
 
         expect(SubaccountServiceMock.deleteSubAccount).toHaveBeenCalled();
