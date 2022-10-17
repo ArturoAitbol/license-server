@@ -90,7 +90,7 @@ test-customer-full-admin@tekvizionlabs.com	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
 test-customer-subaccount-admin@tekvizionlabs.com	96234b32-32d3-45a4-af26-4c912c0d6a06
 test1@tekvizion.com	ac7a78c2-d0b2-4c81-9538-321562d426c7
 test2@tekvizion.com	069dc3aa-dcb1-45e6-886f-be8f2345080f
-test-customer-subaccount-stakeholder@tekvizionlabs.com	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
+test-customer-subaccount-stakeholder@tekvizionlabs.com	96234b32-32d3-45a4-af26-4c912c0d6a06
 \.
 
 
@@ -102,6 +102,7 @@ COPY public.license (id, subaccount_id, start_date, package_type, renewal_date, 
 1d1bf1e8-6522-4ab9-956a-864041f890e2	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-01 04:00:00	Basic	2022-07-31 04:00:00	55	5000	Active	License1
 6524a6ab-b88b-49a8-aee5-624e86e24dcd	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-10 04:00:00	Small	2022-07-18 04:00:00	150	5000	Active	License2
 b84852d7-0f04-4e9a-855c-7b2f01f61591	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2022-03-14 05:00:00	Small	2023-03-13 05:00:00	150	5000	Active	License3
+a3475bf9-41d5-432a-ae2d-ccf7681385cf	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2022-10-04 04:00:00	Small	2022-11-04 04:00:00	150	5000	Active	License6
 16f4f014-5bed-4166-b10a-808b2e6655e3	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-08-01 04:00:00	Small	2022-09-30 04:00:00	150	5000	Active	License4
 986137d3-063d-4c0e-9b27-85fcf3b3272e	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-07 04:00:00	Small	2022-07-12 04:00:00	150	5000	Expired	Expired1
 ebc71e49-4f63-44b2-9c90-7750d3ccca05	cebe6542-2032-4398-882e-ffb44ade169d	2022-07-01 04:00:00	Basic	2022-07-31 04:00:00	55	5000	Expired	Expired2
@@ -117,6 +118,7 @@ d9cb5f93-c4d0-427e-8133-77905abd8487	96234b32-32d3-45a4-af26-4c912c0d6a06	2021-1
 COPY public.project (id, subaccount_id, code, name, status, open_date, close_date, project_owner, license_id) FROM stdin;
 f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	00	app development	Open	2022-03-20 18:30:00	2022-04-20 18:30:00	powner@email.com	b84852d7-0f04-4e9a-855c-7b2f01f61591
 2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	01	test 2	Open	2022-03-20 18:30:00	\N	powner@email.com	b84852d7-0f04-4e9a-855c-7b2f01f61591
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	02	test 3	Open	2022-10-04 18:30:00	\N	powner@email.com	a3475bf9-41d5-432a-ae2d-ccf7681385cf
 a42edf7f-9b38-472f-afa3-10a4632acca1	cebe6542-2032-4398-882e-ffb44ade169d	0022	Project 2	Open	2022-08-01 04:00:00	\N	\N	ebc71e49-4f63-44b2-9c90-7750d3ccca05
 be612704-c26e-48ea-ab9b-19312f03d644	96234b32-32d3-45a4-af26-4c912c0d6a06	0011	Project 1	Open	2022-07-03 04:00:00	\N	\N	d9cb5f93-c4d0-427e-8133-77905abd8487
 \.
@@ -128,6 +130,7 @@ be612704-c26e-48ea-ab9b-19312f03d644	96234b32-32d3-45a4-af26-4c912c0d6a06	0011	P
 
 COPY public.license_consumption (id, subaccount_id, project_id, consumption_date, usage_type, device_id, tokens_consumed, modified_date, modified_by) FROM stdin;
 c323f5f8-cd49-4b0b-ac74-fe2113b658b8	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	2022-07-16 00:00:00	Configuration	d41126e1-53eb-473f-b011-9bd0ac44644a	2	2022-07-18 00:00:00	conf_eng@email.com
+0cba280f-06fa-47c2-9782-c16d8bf8ed05	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	7564aab0-5331-4ab5-85f7-e37acbdfd90d	2022-10-10 00:00:00	Configuration	1922a5fb-228c-4a90-b2d3-ec517d7a3f9a	3	2022-10-10 00:00:00	\N
 9285ca9e-04c3-49df-9d59-085322a13319	cebe6542-2032-4398-882e-ffb44ade169d	a42edf7f-9b38-472f-afa3-10a4632acca1	2022-07-03 00:00:00	Configuration	ef7a4bcd-fc3f-4f87-bf87-ae934799690b	2	2022-07-26 00:00:00	\N
 9c0cc4a5-a773-46f3-b73e-a09c55080b1f	96234b32-32d3-45a4-af26-4c912c0d6a06	be612704-c26e-48ea-ab9b-19312f03d644	2021-12-26 00:00:00	Configuration	ef7a4bcd-fc3f-4f87-bf87-ae934799690b	2	2022-07-26 00:00:00	\N
 \.
@@ -142,6 +145,7 @@ eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	c323f5f8-cd49-4b0b-ac74-fe2113b658b8	2022-0
 3ad3f83e-2654-466d-b9e9-9cd8ded28110	c323f5f8-cd49-4b0b-ac74-fe2113b658b8	2022-07-18	2			2022-07-18 00:00:00	conf_eng@email.com
 34859fba-9987-4a1c-b176-14569b331653	c323f5f8-cd49-4b0b-ac74-fe2113b658b8	2022-07-19	3			2022-07-18 00:00:00	conf_eng@email.com
 b66edd36-ee7f-42e7-bfb4-41810ea69fe6	c323f5f8-cd49-4b0b-ac74-fe2113b658b8	2022-07-20	4			2022-07-18 00:00:00	conf_eng@email.com
+7f6c9fec-978f-41a6-ba38-117611f0dfa3	0cba280f-06fa-47c2-9782-c16d8bf8ed05	2022-10-10	1			2022-10-10 00:00:00	conf_eng@email.com
 866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	9285ca9e-04c3-49df-9d59-085322a13319	2022-07-03	0			\N	\N
 1ba09c6f-9a2a-4181-ac1e-b7217763df96	9285ca9e-04c3-49df-9d59-085322a13319	2022-07-07	4			\N	\N
 0e709699-3dab-47f1-a710-ebd2ae78d57b	9285ca9e-04c3-49df-9d59-085322a13319	2022-07-08	5			\N	\N

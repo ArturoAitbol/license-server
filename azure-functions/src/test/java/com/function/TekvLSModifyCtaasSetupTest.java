@@ -77,6 +77,23 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         assertTrue(jsonBody.has("projectId"));
         assertTrue(jsonBody.has("deviceId"));
     }
+
+    @Tag("acceptance")
+    @Test
+    public void modifyCtaasSetupStatusInProgressTest(){
+        //Given
+        String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.INPROGRESS.value() + "'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+    }
     
     @Tag("acceptance")
     @Test

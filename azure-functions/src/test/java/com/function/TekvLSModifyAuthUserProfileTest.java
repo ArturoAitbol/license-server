@@ -1,5 +1,6 @@
 package com.function;
 
+import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_MISSING_CUSTOMER_EMAIL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -50,21 +51,50 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
 	 @Tag("acceptance")
 	 @Test
 	 public void modifyStakeHolderAuthUserProfile(){
-		 this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
-		 //Given
-	        String bodyRequest = "{'notifications': 'email,text'," +
-	        		 "'name': 'test-customer-subaccount-stakeholder'," +
-	                 "'jobTitle': 'Software Engineer'," +
-	                 "'companyName': 'tekVizion'," +
-	                 "'phoneNumber': '+12142425968'}";
-	        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-	        HttpResponseMessage response = tekvLSModifyAuthUserProfile.run(this.request,this.context);
-	        this.context.getLogger().info(response.getStatus().toString());
-	        //Then
-	        HttpStatusType actualStatus = response.getStatus();
-	        HttpStatus expected = HttpStatus.OK;
-	        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+        String bodyRequest = "{'notifications': 'email,text'," +
+                 "'name': 'test-customer-subaccount-stakeholder'," +
+                 "'jobTitle': 'Software Engineer'," +
+                 "'companyName': 'tekVizion'," +
+                 "'phoneNumber': '+12142425968'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        //When
+        HttpResponseMessage response = tekvLSModifyAuthUserProfile.run(this.request,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
 	 }
+
+    @Tag("acceptance")
+    @Test
+    public void invalidEmailTest(){
+        //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("functional_subaccountAdmin"));
+        String bodyRequest = "{'notifications': 'email,text'," +
+                "'name': 'test-customer-subaccount-stakeholder'," +
+                "'jobTitle': 'Software Engineer'," +
+                "'companyName': 'tekVizion'," +
+                "'phoneNumber': '+12142425968'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        //When
+        HttpResponseMessage response = tekvLSModifyAuthUserProfile.run(this.request,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = MESSAGE_FOR_MISSING_CUSTOMER_EMAIL;
+        assertEquals(expectedResponse,actualResponse,"Response doesn't match with: ".concat(expectedResponse));
+    }
 	 
 	@Tag("acceptance")
     @Test
