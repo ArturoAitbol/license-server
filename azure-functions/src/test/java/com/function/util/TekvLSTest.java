@@ -35,8 +35,17 @@ public class TekvLSTest {
     public static Logger logger = Logger.getLogger(TekvLSGetAllBundlesTest.class.getName());
 
     @SystemStub
-    private final EnvironmentVariables environmentVariables = new EnvironmentVariables("POSTGRESQL_SERVER", Config.getInstance().getServer(),
-            "POSTGRESQL_USER", Config.getInstance().getUser(), "POSTGRESQL_PWD", Config.getInstance().getPassword(), "POSTGRESQL_SECURITY_MODE", Config.getInstance().getSecurityMode(),"ENVIRONMENT_NAME",Config.getInstance().getEnvironmentName());
+    private final EnvironmentVariables environmentVariables = new EnvironmentVariables(
+            "POSTGRESQL_SERVER", Config.getInstance().getServer(),
+            "POSTGRESQL_USER", Config.getInstance().getUser(),
+            "POSTGRESQL_PWD", Config.getInstance().getPassword(),
+            "POSTGRESQL_SECURITY_MODE", Config.getInstance().getSecurityMode(),
+            "ENVIRONMENT_NAME",Config.getInstance().getEnvironmentName(),
+            "TENANT_ID",Config.getInstance().getTenantId(),
+            "EMAIL_INVITE_CLIENT_ID",Config.getInstance().getEmailInviteClientId(),
+            "EMAIL_INVITE_CLIENT_SECRET",Config.getInstance().getEmailInviteClientSecret(),
+            "POWER_BI_CLIENT_ID",Config.getInstance().getPowerBiClientId(),
+            "POWER_BI_CLIENT_SECRET",Config.getInstance().getPowerBiClientSecret());
 
     public void initTestParameters(){
         doReturn(this.headers).when(request).getHeaders();
