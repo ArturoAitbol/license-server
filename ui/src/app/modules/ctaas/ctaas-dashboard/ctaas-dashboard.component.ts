@@ -114,7 +114,7 @@ export class CtaasDashboardComponent implements OnInit {
                 // const setupDetails: ICtaasSetup = response['ctaasSetups'][0];
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
                 const {onBoardingComplete, status} = this.ctaasSetupDetails;
-                this.isOnboardingComplete = (onBoardingComplete === 'f'); // t- true | f - false
+                this.isOnboardingComplete = (!onBoardingComplete);
                 this.onboardSetupStatus = status;
                 this.setupCustomerOnboardDetails();
             });

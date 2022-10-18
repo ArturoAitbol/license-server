@@ -95,7 +95,7 @@ export class MyAppsComponent implements OnInit {
                 if (response) {
                     this.ctaasSetupDetails = response['ctaasSetups'][0];
                     const {onBoardingComplete, status} = this.ctaasSetupDetails;
-                    this.isOnboardingComplete = (onBoardingComplete === 'f'); // t- true | f - false
+                    this.isOnboardingComplete = (!onBoardingComplete);
                     this.onboardSetupStatus = status;
                     this.setupCustomerOnboardDetails();
                 }
