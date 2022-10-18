@@ -40,22 +40,22 @@
                         <input matInput type="email" required formControlName="subaccountAdminEmail">
                     </mat-form-field>
                 </div>
-                <div *lcFeatureToggle="'ctaasFeature'">
-                    <h2 id="subaccount-services">Services</h2>
-                    <section class="d-flex flex-column align-items-start">
-                        <mat-checkbox class="checkbox-margin" *ngFor="let service of services; let i = index"
-                            [color]="'primary'" [checked]="service.used" (change)="setChecked($event.checked, i)"
-                            [name]="service.name+'-service'" [id]="service.name+'-service'">
-                            {{service.name}} </mat-checkbox>
-                    </section>
-                    <br>
-                </div>
                 <div>
                     <section class="text-left">
                         <mat-checkbox id="test-customer-checkbox" color="primary" formControlName="testCustomer">Test
                             Customer</mat-checkbox>
-                        <small class="text-muted d-block">(For development and testing)</small>
+                        <small class="text-muted d-block checkbox-hint">(For development and testing)</small>
                     </section>
+                </div>
+                <div *lcFeatureToggle="'ctaasFeature'">
+                    <h2 id="subaccount-services" class="mt-3 mb-0">Services</h2>
+                    <section class="d-flex flex-column align-items-start">
+                        <mat-checkbox class="checkbox-margin" *ngFor="let service of services; let i = index"
+                            [color]="'primary'" [checked]="service.used" (change)="setChecked($event.checked, i)"
+                            [name]="service.name+'-service'" [id]="service.name+'-service'">
+                            {{service.value}} </mat-checkbox>
+                    </section>
+                    <br>
                 </div>
             </mat-dialog-content>
         </div>
