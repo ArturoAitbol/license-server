@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatDialog } from "@angular/material/dialog";
+import { Sort } from "@angular/material/sort";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MsalService } from "@azure/msal-angular";
@@ -78,8 +79,11 @@ describe('UI verification tests',()=>{
 
     beforeEach(beforeEachFunction);
 
-    it('should display essential UI and components',()=>{
+    it('should display essential UI and components and call sizeChange()',()=>{
+        spyOn(licensesComponentTestInstance, 'sizeChange').and.callThrough();
+
         fixture.detectChanges();
+        licensesComponentTestInstance.sizeChange();
 
         const h1: HTMLElement = fixture.nativeElement.querySelector('#page-title');
         const h2: HTMLElement = fixture.nativeElement.querySelector('#table-title');
@@ -150,6 +154,19 @@ describe('Data collection and parsing tests',()=>{
         licensesComponentTestInstance.licensesBk = LicenseServiceMock.unsortedLicensesList.licenses;
         licensesComponentTestInstance.sortData({active: "status", direction: ''});
         expect(licensesComponentTestInstance.licenses).toEqual(LicenseServiceMock.unsortedLicensesList.licenses);
+
+        licensesComponentTestInstance.licenses = LicenseServiceMock.unsortedLicensesList.licenses;
+        licensesComponentTestInstance.sortData({active: "tokensPurchased", direction: "asc"});
+        expect(licensesComponentTestInstance.licenses).toEqual(LicenseServiceMock.sortedAscTokenPurchasedList.licenses);
+
+        licensesComponentTestInstance.sortData({active: "tokensPurchased", direction: "desc"});
+        expect(licensesComponentTestInstance.licenses).toEqual(LicenseServiceMock.sortedDescTokenPurchasedList.licenses);
+
+        fixture.detectChanges();
+        licensesComponentTestInstance.licenses = LicenseServiceMock.mockUnsortedTwoTokensPurchased.licenses;
+        licensesComponentTestInstance.sortData({active: "tokensPurchased", direction: "desc"});
+        expect(licensesComponentTestInstance.licenses).toEqual(LicenseServiceMock.mockSortedDescTwoTokensPurchsed.licenses);
+
     });
 });
 

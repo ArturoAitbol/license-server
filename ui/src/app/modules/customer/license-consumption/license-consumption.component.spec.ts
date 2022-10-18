@@ -549,7 +549,7 @@ describe('Methods Calls', ()=>{
 
         licenseConsumptionComponentTestInstance.onChangeLicense(expectedLicense.id);
 
-        expect(licenseConsumptionComponentTestInstance.selectedLicense).toBe(expectedLicense);
+        expect(licenseConsumptionComponentTestInstance.selectedLicense).toEqual(expectedLicense);
         expect(licenseConsumptionComponentTestInstance.resetPeriodFilter).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalled();
     });
@@ -663,9 +663,11 @@ describe('Methods Calls', ()=>{
 
     it('should sort the given array after calling sortData() according to the set arguments',()=>{
         const sort: Sort  = {active:'name', direction:'asc'};
+        const unsortedNumberArray = [{name: 3},{name: 1},{name: 2},{name:0}, {name:1}];
         const unsortedArray = [{name:"c"},{name:"a"},{name:"b"}];
         let sortedArray = [{name:"a"},{name:"b"},{name:"c"}];
-
+        let sortedNumberArray = [{name:0}, {name: 1}, {name:1}, {name: 2}, {name:3}];
+        
         licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray,'detailedList');
         expect(unsortedArray).toEqual(sortedArray);
 
@@ -689,6 +691,26 @@ describe('Methods Calls', ()=>{
         sort.direction = '';
         licenseConsumptionComponentTestInstance.sortData(sort,unsortedArray,'equipmentList');
         expect(unsortedArray).toEqual(sortedArray);
+
+        sort.direction = 'asc';
+        licenseConsumptionComponentTestInstance.sortData(sort,unsortedNumberArray,'equipmentList');
+        expect(unsortedNumberArray).toEqual(sortedNumberArray);
+
+        sort.direction = 'desc';
+        sortedNumberArray = [{name: 3},{name: 2}, {name:1}, {name:1}, {name:0}];
+        licenseConsumptionComponentTestInstance.sortData(sort,unsortedNumberArray,'equipmentList');
+        expect(unsortedNumberArray).toEqual(sortedNumberArray);
+
+        sort.direction =  '';
+        licenseConsumptionComponentTestInstance.sortData(sort,unsortedNumberArray, 'any');
+        expect(unsortedNumberArray).toEqual(unsortedNumberArray);
+
+        sort.direction = 'desc';
+        sortedNumberArray = [{name:1}, {name:0} ];
+        fixture.detectChanges();
+        licenseConsumptionComponentTestInstance.sortData(sort,sortedNumberArray,'equipmentList');
+        expect(sortedNumberArray).toEqual(sortedNumberArray);
+
     });
 })
 

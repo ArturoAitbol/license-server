@@ -15,7 +15,7 @@ import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
 import { ProjectsComponent } from "../projects.component";
 import { ModifyProjectComponent } from "./modify-project.component";
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "src/app/services/snack-bar.service";
 import { LicenseService } from "src/app/services/license.service";
@@ -30,53 +30,55 @@ const RouterMock = {
     navigate: (commands: string[]) => {}
 };
 
+const defaultTestBedConfig = {
+    declarations: [ModifyProjectComponent, ProjectsComponent],
+    imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule,  ReactiveFormsModule ],
+    providers: [
+        {
+            provide: Router,
+        useValue: RouterMock
+        },
+        {
+            provide: MatDialog,
+            useValue: MatDialogMock
+        },
+        {
+            provide: MatSnackBarRef,
+            useValue: {}
+        },
+        {
+            provide: ProjectService,
+             useValue: ProjectServiceMock
+        },
+        {
+            provide: LicenseService,
+            useValue: LicenseServiceMock
+        },
+        {
+            provide: MsalService,
+            useValue: MsalServiceMock
+        },
+        {
+            provide: HttpClient,
+            useValue: HttpClient
+        },
+        {
+            provide: MatDialogRef,
+            useValue: dialogMock
+        },
+        {
+            provide: MAT_DIALOG_DATA,
+            useValue: currentProject
+        },
+        {
+            provide: SnackBarService,
+            useValue: SnackBarServiceMock
+        }
+    ]
+}
+
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [ModifyProjectComponent, ProjectsComponent],
-        imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule,  ReactiveFormsModule ],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: MatSnackBarRef,
-                useValue: {}
-            },
-            {
-                provide: ProjectService,
-                useValue: ProjectServiceMock
-            },
-            {
-                provide: LicenseService,
-                useValue: LicenseServiceMock
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            },
-            {
-                provide: MatDialogRef,
-                useValue: dialogMock
-            },
-            {
-                provide: MAT_DIALOG_DATA,
-                useValue: currentProject
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            }
-        ]
-    });
+    TestBed.configureTestingModule(defaultTestBedConfig)
     fixture = TestBed.createComponent(ModifyProjectComponent);
     modifyPorjectComponentTestInstance = fixture.componentInstance;
     modifyPorjectComponentTestInstance.ngOnInit();
@@ -281,4 +283,51 @@ describe('modify-project FormGroup verification', () => {
         expect(fixture.nativeElement.querySelector('#submit-project-button').disabled).toBeTrue();
     });
 
+    it('should renewal date be grater than today',() => {
+        fixture.detectChanges();
+        modifyPorjectComponentTestInstance.updateProjectForm.get('closeDate').setValue(new Date().setHours(2,2,2))
+    })
+
+});
+
+describe('renewal date greater than today tests', () => {
+    beforeEach(() => {
+        TestBed.configureTestingModule(defaultTestBedConfig);
+        TestBed.overrideProvider(LicenseService, {
+            useValue: {
+                getLicenseList: (subaccountId?: string) => {
+                    return new Observable((observer) => {
+                        observer.next({licenses:[
+                            {
+                                subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
+                                id: '16f4f014-5bed-4166-b10a-808b2e6655e3',
+                                description: 'DescriptionA',
+                                status: 'Active',
+                                deviceLimit: '',
+                                tokensPurchased: 150,
+                                startDate: '2022-08-01',
+                                renewalDate: '2080-10-15',
+                                subscriptionType: ''
+                            }
+                        ]} 
+                        );
+                        observer.complete();
+                        return {
+                            unsubscribe() { }
+                        };
+                    });
+                },
+            }
+        });
+        fixture = TestBed.createComponent(ModifyProjectComponent);
+        modifyPorjectComponentTestInstance = fixture.componentInstance;
+    });
+
+    it('sould get a license with renewal date grater today date', () => {
+        spyOn(modifyPorjectComponentTestInstance, 'onLicenseChange').and.callThrough();
+        fixture.detectChanges();
+        modifyPorjectComponentTestInstance.onLicenseChange('16f4f014-5bed-4166-b10a-808b2e6655e3');
+        
+        expect(modifyPorjectComponentTestInstance.onLicenseChange).toHaveBeenCalled();
+    });
 });
