@@ -61,9 +61,7 @@ export class CtaasSetupComponent implements OnInit {
       if (this.setupForm.value.status != null && this.setupForm.value.status === 'SETUP_READY') {
         let selectedLicenseId;
         this.isDataLoading = true;
-        this.licenseService.getLicenseList(this.subaccountService.getSelectedSubAccount().id).subscribe(async (licenseList: any) => {
-          console.log(licenseList);
-          
+        this.licenseService.getLicenseList(this.subaccountService.getSelectedSubAccount().id).subscribe(async (licenseList: any) => {          
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
           if (activeLicenses.length === 0) {
             this.snackBarService.openSnackBar("No active licenses found", "Error selecting a license");
@@ -72,11 +70,13 @@ export class CtaasSetupComponent implements OnInit {
           if (activeLicenses.length === 1) {
             selectedLicenseId = activeLicenses[0].id;
           } else {
-            selectedLicenseId = await this.dialog.open(LicenseConfirmationModalComponent, {
-              width: 'auto',
-              data: activeLicenses,
-              disableClose: true
-            }).afterClosed().toPromise();
+            // selectedLicenseId = await this.dialog.open(LicenseConfirmationModalComponent, {
+            //   width: 'auto',
+            //   data: activeLicenses,
+            //   disableClose: true
+            // }).afterClosed().toPromise();
+
+            selectedLicenseId = await this.openDialog(activeLicenses)
           }
           const ctaasSetup = this.generateUpdateBody(selectedLicenseId);
           this.editSetup(ctaasSetup);
@@ -132,5 +132,13 @@ export class CtaasSetupComponent implements OnInit {
     if (licenseId != null) ctaasSetup.licenseId = licenseId;
     return ctaasSetup;
   }
+
+  openDialog(activeLicenses){    
+    return this.dialog.open(LicenseConfirmationModalComponent, {
+        width: 'auto',
+        data: activeLicenses,
+        disableClose: true
+      }).afterClosed().toPromise();
+  }  
 
 }

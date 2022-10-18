@@ -30,6 +30,11 @@ let fixture: ComponentFixture<CtaasSetupComponent>;
 const dialogService = new DialogServiceMock();
 let loader: HarnessLoader;
 
+const licenseList = LicenseServiceMock.licensesList
+const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
+
+
+
 const RouterMock = {
     navigate: (commands: string[]) => { }
 };
@@ -136,7 +141,13 @@ describe('make method calls', () => {
         expect(cancelButton.textContent).toBe(' Cancel ');
     });
 
-    
+    it('should update setup details on "Update" button click', () => {
+        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
+        fixture.detectChanges();
+
+        CtaasSetupComponentTestInstance.submit();
+        expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
+    });
 
     it('should cancel editing when "Cancel" is clicked and disable form', () => {
         fixture.detectChanges();
@@ -190,7 +201,7 @@ describe('setup form verifications', () => {
 describe('display message when error occurs',() => {
     beforeEach(beforeEachFunction);
 
-    it('should display a message if error occurs wile updating setup form', () => {
+    it('should display a message if error occurs while updating setup form', () => {
         spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(throwError("error"));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
@@ -203,9 +214,29 @@ describe('display message when error occurs',() => {
 });
 
 describe('dailog calls and interactions', () => {
-    it('should open dialog with expected data when update button is clicked, in case if there’s more than one license. ', () => {
-        const licenseList = {license1 : 'License 1', license2 : 'License 2'}
-        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
-        
-    })
+    beforeEach(beforeEachFunction);
+
+    it('should update setup details on "Update" button click, if case of one license', () => {
+        const testUser = CtaasSetupServiceMock.testuser1
+        testUser.status = 'READY';
+        activeLicenses.length === 1;
+        fixture.detectChanges();
+        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
+
+        CtaasSetupComponentTestInstance.submit();
+        expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
+    });
+
+    it('should open dialog with expected data when update button is clicked, in case if there’s more than one license', () => {
+        const testUser = CtaasSetupServiceMock.testuser1
+        testUser.status = 'READY';
+        licenseList.licenses.length > 1;
+        fixture.detectChanges();
+        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
+        spyOn(CtaasSetupComponentTestInstance, 'openDialog').and.callThrough(); 
+
+        CtaasSetupComponentTestInstance.submit();
+        CtaasSetupComponentTestInstance.openDialog(activeLicenses);
+        expect(CtaasSetupComponentTestInstance.openDialog).toHaveBeenCalled();
+    });
 });
