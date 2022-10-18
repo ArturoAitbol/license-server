@@ -83,10 +83,6 @@ public class TekvLSGetAllCtaasSetups {
 				verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?", email);
 				break;
 			case SUBACCOUNT_ADMIN:
-				queryBuilder.appendCustomCondition("subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
-				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
-				break;
 			case SUBACCOUNT_STAKEHOLDER:
 				queryBuilder.appendCustomCondition("subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
