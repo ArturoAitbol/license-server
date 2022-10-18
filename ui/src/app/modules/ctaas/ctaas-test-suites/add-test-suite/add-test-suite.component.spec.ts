@@ -1,7 +1,6 @@
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { HttpClient } from "@angular/common/http";
-import { SafeCall } from "@angular/compiler";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
@@ -17,7 +16,7 @@ import { SnackBarService } from "src/app/services/snack-bar.service";
 import { SubAccountService } from "src/app/services/sub-account.service";
 import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { TestSuitesMock } from "src/test/mock/services/ctaas-test-suites.service.mock";
-import { DialogServiceMock } from "src/test/mock/services/dialog.service.mock";
+import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
