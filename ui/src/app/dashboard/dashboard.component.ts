@@ -275,13 +275,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 break;
         }
         dialogRef.afterClosed().subscribe(res => {
-            try {
+            if (res) {
                 console.debug(`${type} dialog closed: ${res}`);
-                if (res) {
-                    this.fetchDataToDisplay();
-                }
-            } catch (error) {
-                console.log('error while in action ' + type, error);
+                this.fetchDataToDisplay();
             }
         });
     }
@@ -297,7 +293,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 confirmCaption: 'Delete Subaccount',
                 deleteAllDataCaption: 'Delete Customer',
                 cancelCaption: 'Cancel',
-                canDeleteSubaccount: customer?.testCustomer
+                canDeleteSubaccount: customer.testCustomer
             })
             .subscribe((result) => {
                 if (result.confirm) {

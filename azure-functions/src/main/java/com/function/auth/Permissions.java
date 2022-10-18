@@ -71,7 +71,6 @@ public class Permissions {
             GET_ALL_PROJECTS,
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
-            GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_CTAAS_DASHBOARD,
             // UPDATE
             MODIFY_CUSTOMER,
@@ -212,7 +211,6 @@ public class Permissions {
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
             GET_ALL_CTAAS_SETUPS,
-            GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_AUTH_USER_PROFILE,
             GET_CTAAS_DASHBOARD,
             // MODIFY

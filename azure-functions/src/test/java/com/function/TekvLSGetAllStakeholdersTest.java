@@ -2,14 +2,11 @@ package com.function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
-import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -24,45 +21,11 @@ import com.microsoft.azure.functions.HttpStatusType;
 public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
 
     private final TekvLSGetAllStakeholders tekvLSGetAllStakeholders = new TekvLSGetAllStakeholders();
-    private final TekvLSCreateSubaccountStakeHolder tekvLSCreateSubaccountStakeHolder = new TekvLSCreateSubaccountStakeHolder();
-    private final TekvLSDeleteSubaccountStakeHolderByEmail tekvLSDeleteSubaccountStakeHolderByEmail = new TekvLSDeleteSubaccountStakeHolderByEmail();
-    private String stakeHolderEmail = "test-customer-subaccount-stakeholder1@tekvizion.com";
     
     @BeforeEach
     public void setup(){
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'subaccountAdminEmail': '"+this.stakeHolderEmail+"'," +
-                "'notifications': 'email,text'," +
-                "'name': 'test-customer-subaccount-stakeholder'," +
-                "'jobTitle': 'Software Engineer'," +
-                "'companyName': 'tekVizion'," +
-                "'phoneNumber': '+12142425968'}";
-        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-
-        //When
-        HttpResponseMessage response = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        //Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
-    }
-    
-    @AfterEach
-    void tearDown() {
-        if (!this.stakeHolderEmail.equals("EMPTY")){
-        	this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-            HttpResponseMessage response = tekvLSDeleteSubaccountStakeHolderByEmail.run(this.request, this.stakeHolderEmail, this.context);
-            this.context.getLogger().info(response.getStatus().toString());
-            this.stakeHolderEmail = "EMPTY";
-
-            HttpStatusType actualStatus = response.getStatus();
-            HttpStatus expected = HttpStatus.OK;
-            assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
-        }
     }
 
     @Tag("acceptance")
@@ -100,8 +63,9 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
     @Test
     public void getStakeHoldersByEmailTest() {
         //Given
+        String stakeHolderEmail = "test-customer-subaccount-stakeholder@tekvizionlabs.com";
        //When
-        HttpResponseMessage response = tekvLSGetAllStakeholders.run(this.request, this.stakeHolderEmail, this.context);
+        HttpResponseMessage response = tekvLSGetAllStakeholders.run(this.request, stakeHolderEmail, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
         //Then
@@ -118,7 +82,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
 
         JSONObject stakeHolder = (JSONObject) stakeHolders.get(0);
         String actualEmail = stakeHolder.getString("email");
-        assertEquals(this.stakeHolderEmail, actualEmail, "Actual Id doesn't match with: ".concat(this.stakeHolderEmail));
+        assertEquals(stakeHolderEmail, actualEmail, "Actual Id doesn't match with: ".concat(stakeHolderEmail));
     }
 
     @Tag("acceptance")
@@ -126,7 +90,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
     public void getBySubaccountIdTest() {
         //Given
         String id = "EMPTY";
-        String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        String subaccountId = "96234b32-32d3-45a4-af26-4c912c0d6a06";
         this.queryParams.put("subaccountId",subaccountId);
 
         //When
@@ -157,7 +121,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
     @Tag("acceptance")
     @Test
     public void getForDistributorRoleTest(){
-        
+        //Given
         String id="EMPTY";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
 
@@ -200,15 +164,15 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(jsonBody.has("stakeHolders"));
 
         JSONArray stakeHolders = jsonBody.getJSONArray("stakeHolders");
-        assertTrue(stakeHolders.length()>0);
+        assertEquals(0,stakeHolders.length());
 
-        JSONObject stakeHolder = stakeHolders.getJSONObject(0);
-        assertTrue(stakeHolder.has("email"));
-        assertTrue(stakeHolder.has("subaccountId"));
-        assertTrue(stakeHolder.has("name"));
-        assertTrue(stakeHolder.has("jobTitle"));
-        assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("phoneNumber"));
+//        JSONObject stakeHolder = stakeHolders.getJSONObject(0);
+//        assertTrue(stakeHolder.has("email"));
+//        assertTrue(stakeHolder.has("subaccountId"));
+//        assertTrue(stakeHolder.has("name"));
+//        assertTrue(stakeHolder.has("jobTitle"));
+//        assertTrue(stakeHolder.has("companyName"));
+//        assertTrue(stakeHolder.has("phoneNumber"));
     }
 
     @Tag("security")
@@ -297,7 +261,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
     @Test
     public void getForSubaccountRoleIncorrectIdTest(){
         //Given
-    	String email = "test-customer-subaccount-stakeholder@tekvizionlabs.com";
+    	String email = "test-customer-subaccount-stakeholder1@tekvizionlabs.com";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
 
         // When
@@ -423,37 +387,6 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
     
     @Tag("acceptance")
     @Test
-    public void getForSalesAdminRoleTest(){
-        //Given
-        String id = "EMPTY";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("salesAdmin"));
-        // When
-        HttpResponseMessage response = tekvLSGetAllStakeholders.run(this.request,id,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        // Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.OK;
-        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("stakeHolders"));
-
-        JSONArray stakeHolders = jsonBody.getJSONArray("stakeHolders");
-        assertTrue(stakeHolders.length()>0);
-
-        JSONObject stakeHolder = stakeHolders.getJSONObject(0);
-        assertTrue(stakeHolder.has("email"));
-        assertTrue(stakeHolder.has("subaccountId"));
-        assertTrue(stakeHolder.has("name"));
-        assertTrue(stakeHolder.has("jobTitle"));
-        assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("phoneNumber"));
-    }
-    
-    @Tag("acceptance")
-    @Test
     public void getForConfigTesterRoleTest(){
         //Given
         String id = "EMPTY";
@@ -481,62 +414,6 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(stakeHolder.has("jobTitle"));
         assertTrue(stakeHolder.has("companyName"));
         assertTrue(stakeHolder.has("phoneNumber"));
-    }
-    
-    @Tag("acceptance")
-    @Test
-    public void getForSubaccountStakeholderRoleTest(){
-        //Given
-        String email = "EMPTY";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
-
-        // When
-        HttpResponseMessage response = tekvLSGetAllStakeholders.run(this.request,email,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        // Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.OK;
-        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("stakeHolders"));
-
-        JSONArray stakeHolders = jsonBody.getJSONArray("stakeHolders");
-        assertEquals(1, stakeHolders.length());
-
-        JSONObject stakeHolder = stakeHolders.getJSONObject(0);
-        assertTrue(stakeHolder.has("email"));
-        assertTrue(stakeHolder.has("subaccountId"));
-        assertTrue(stakeHolder.has("name"));
-        assertTrue(stakeHolder.has("jobTitle"));
-        assertTrue(stakeHolder.has("companyName"));
-        assertTrue(stakeHolder.has("phoneNumber"));
-    }
-    
-    @Tag("security")
-    @Test
-    public void getForSubaccountStakeholderRoleIncorrectIdTest(){
-        //Given
-        String email = "test-customer-subaccount-stakeholder1@tekvizionlabs.com";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
-
-        // When
-        HttpResponseMessage response = tekvLSGetAllStakeholders.run(this.request,email,this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        // Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
-        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("error"));
-
-        String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
-        assertEquals(expectedMessage,jsonBody.getString("error"));
     }
 
     @Tag("acceptance")

@@ -38,8 +38,7 @@ const RouterMock = {
     navigate: (commands: string[]) => { }
 };
 
-const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
+const defaultTestBedConfig = {
         declarations: [ProjectsComponent, DataTableComponent, ModifyProjectComponent, AddProjectComponent],
         imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
         providers: [
@@ -87,16 +86,18 @@ const beforeEachFunction = () => {
                 provide: FormBuilder
             },
         ]
-    });
+};
+
+const beforeEachFunction = () => {
+    TestBed.configureTestingModule(defaultTestBedConfig);
     fixture = TestBed.createComponent(ProjectsComponent);
     projectsComponentTestInstance = fixture.componentInstance;
     projectsComponentTestInstance.ngOnInit();
-    projectsComponentTestInstance.currentCustomer.testCustomer = false
     loader = TestbedHarnessEnvironment.loader(fixture);
     spyOn(console, 'log').and.callThrough();
     spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
     spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
-};
+}
 
 describe('UI verification test', () => {
     beforeEach(beforeEachFunction);
@@ -267,6 +268,28 @@ describe('Dialog calls and interactions', () => {
         expect(ProjectServiceMock.deleteProject).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project deleted successfully!');
     });
+
+    it('should execute columnAction', () => {
+        const selectedTestData = { selectedRow: { testProperty: 'testData' }, selectedIndex: '0', columnName: 'Status' };
+        spyOn(projectsComponentTestInstance, 'columnAction').and.callThrough();
+        spyOn(projectsComponentTestInstance, 'openDialog').and.callThrough();
+        spyOn(projectsComponentTestInstance, 'openConsumptionView').and.callThrough();
+
+        projectsComponentTestInstance.columnAction(selectedTestData);
+        expect(projectsComponentTestInstance.openDialog).toHaveBeenCalledWith(ModifyProjectComponent, selectedTestData.selectedRow);
+
+        selectedTestData.columnName='Project Name';
+        projectsComponentTestInstance.columnAction(selectedTestData);
+        expect(projectsComponentTestInstance.openConsumptionView).toHaveBeenCalledWith(selectedTestData.selectedRow);
+    });
+
+    it('should execute onChangeLicense', () => {
+        fixture.detectChanges();
+        spyOn(projectsComponentTestInstance, 'onChangeLicense').and.callThrough();;
+    
+        projectsComponentTestInstance.onChangeLicense('16f4f014-5bed-4166-b10a-808b2e6655e3')
+        expect(projectsComponentTestInstance.onChangeLicense).toHaveBeenCalled();
+    });
 });
 
 describe('navigate', () => {
@@ -282,5 +305,40 @@ describe('navigate', () => {
         spyOn(RouterMock, 'navigate');
         projectsComponentTestInstance.goToDashboard();
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/dashboard']);
+    });
+});
+
+describe('test customer false ', () => {
+    beforeEach(() => {
+        TestBed.configureTestingModule(defaultTestBedConfig);
+        TestBed.overrideProvider(CustomerService, {
+            useValue:{
+                getSelectedCustomer:() => {
+                    return{ 
+                        id: '0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848',
+                        name: 'Test Customer',
+                        status: 'Active',
+                        customerType: 'MSP',
+                        subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
+                        licenseId: '16f4f014-5bed-4166-b10a-808b2e6655e3',
+                        subaccountName: 'Default',
+                        testCustomer: false,
+                        services: 'tokenConsumption,Ctaas'
+                    }
+                }
+            }
+        })
+        fixture = TestBed.createComponent(ProjectsComponent);
+        projectsComponentTestInstance = fixture.componentInstance;
+    });
+
+    it('should fetch the data of a real customer', () => {
+        spyOn(LicenseServiceMock, 'getLicenseList').and.callThrough();
+        spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
+
+        fixture.detectChanges();
+
+        expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
+        expect(projectsComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects);
     });
 });

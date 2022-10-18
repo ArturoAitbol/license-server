@@ -505,6 +505,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         case 'equipmentList':
           return this.equipmentData = [...this.equipmentDataBK];
         default:
+          break;
       }
     }
   }
