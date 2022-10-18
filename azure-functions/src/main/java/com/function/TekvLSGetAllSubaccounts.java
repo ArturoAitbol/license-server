@@ -166,10 +166,7 @@ public class TekvLSGetAllSubaccounts
 			while (rs.next()) {
 				emailsMap.computeIfAbsent(rs.getString("subaccount_id"), k -> new ArrayList<>()).add(rs.getString("subaccount_admin_email"));
 			}
-		} catch (SQLException e) {
-			context.getLogger().info("SQL exception: " + e.getMessage());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 		}
 		return emailsMap;
