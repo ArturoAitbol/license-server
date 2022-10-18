@@ -112,7 +112,6 @@ export class CtaasSetupComponent implements OnInit {
     const { id } = currentSubaccountDetails;
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(id).pipe(map(res => res.ctaasSetups[0])).subscribe(res => {
       this.originalCtaasSetupDetails = res;
-      res.onBoardingComplete = res.onBoardingComplete === 't';
       this.setupForm.patchValue(res);
       this.ctaasSetupId = res.id;
       this.isDataLoading = false;
