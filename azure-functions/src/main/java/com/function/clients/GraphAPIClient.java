@@ -227,7 +227,7 @@ public class GraphAPIClient {
     }
     
     static public JSONObject getUserProfileByEmail(String userEmail, String token, ExecutionContext context) throws Exception {
-        String url = GraphAPIClient.baseURL+"users?$filter=mail%20eq%20'"+userEmail+"'&&$select=id,displayName,jobTitle,companyName,mobilePhone";
+        String url = GraphAPIClient.baseURL+"users?$filter=mail%20eq%20'"+userEmail+"'%20or%20userPrincipalName%20eq%20'"+userEmail+"'&&$select=id,displayName,jobTitle,companyName,mobilePhone";
         HashMap<String,String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer "+ token);
         JSONObject response = HttpClient.get(url,headers);
@@ -322,7 +322,6 @@ public class GraphAPIClient {
             context.getLogger().severe("Error response: " + response);
             throw new ADException("No App roles assigned for user (AD): " + id);
         }
-        JSONArray appRoleAssignments = response.getJSONArray("value");
-        return  appRoleAssignments;
+        return response.getJSONArray("value");
     }	
 }

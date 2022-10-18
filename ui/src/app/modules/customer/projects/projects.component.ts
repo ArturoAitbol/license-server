@@ -140,7 +140,6 @@ export class ProjectsComponent implements OnInit {
           return { ...current, ...next };
         }, {});
         this.licensesList = resDataObject['licenses'];
-
         this.licensesList.unshift({ id: 'all', description: 'All' })
         if (updateLicenses)
           this.setSelectedLicense(this.licensesList[0]);

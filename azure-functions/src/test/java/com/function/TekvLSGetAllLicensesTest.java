@@ -221,7 +221,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(jsonBody.has("licenses"));
 
         JSONArray licenses = jsonBody.getJSONArray("licenses");
-        assertEquals(1, licenses.length());
+        assertEquals(2, licenses.length());
 
         JSONObject license = licenses.getJSONObject(0);
         assertTrue(license.has("id"));
@@ -229,8 +229,9 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(license.has("status"));
         assertTrue(license.has("description"));
 
-        String expectedLicenseId = "b84852d7-0f04-4e9a-855c-7b2f01f61591";
-        assertEquals(expectedLicenseId,license.getString("id"));
+        String expectedSubaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        assertEquals(expectedSubaccountId,license.getString("subaccountId"));
+        assertEquals(expectedSubaccountId,licenses.getJSONObject(1).getString("subaccountId"));
     }
 
     @Tag("security")

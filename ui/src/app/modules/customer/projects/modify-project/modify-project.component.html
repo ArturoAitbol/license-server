@@ -56,11 +56,9 @@
                 </div>
             </mat-dialog-content>
         </div>
-        <!-- <div class="btn-flex-container"> -->
         <mat-dialog-actions>
             <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Cancel</button>
             <button mat-raised-button color="primary" id="submit-project-button" [disabled]="!updateProjectForm.valid || isDataLoading" type="submit">Submit</button>
-            <!-- </div> -->
         </mat-dialog-actions>
     </form>
 </div>

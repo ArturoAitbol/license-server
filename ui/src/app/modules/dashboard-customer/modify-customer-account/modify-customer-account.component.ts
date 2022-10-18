@@ -48,7 +48,7 @@ export class ModifyCustomerAccountComponent implements OnInit {
   ngOnInit() {
     if (this.data) {
       this.updateCustomerForm.patchValue(this.data);
-      this.data.services?.split(",").forEach(service => this.updateCustomerForm.get("services").get(service)?.setValue(true));
+      this.data.services?.split(",").forEach(service => this.updateCustomerForm.get("services").get(service).setValue(true));
       this.previousFormValue = { ...this.updateCustomerForm };
     }
   }
