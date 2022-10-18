@@ -393,7 +393,7 @@ public class RBACVerifier {
                 false,
                 false));
         verifiers.put(GET_ALL_SUBACCOUNT_STAKEHOLDER, new ExpectedPermissions(true,
-                true,
+                false,
                 true,
                 false,
                 false,
@@ -401,7 +401,7 @@ public class RBACVerifier {
                 false,
                 true,
                 true,
-                true));
+                false));
         verifiers.put(GET_AUTH_USER_PROFILE, new ExpectedPermissions(false,
                 false,
                 false,

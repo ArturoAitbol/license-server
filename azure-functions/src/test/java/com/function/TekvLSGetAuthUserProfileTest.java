@@ -1,5 +1,6 @@
 package com.function;
 
+import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_MISSING_CUSTOMER_EMAIL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,6 +15,7 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
+import org.mockito.Mockito;
 
 public class TekvLSGetAuthUserProfileTest extends TekvLSTest {
 
@@ -121,5 +123,54 @@ public class TekvLSGetAuthUserProfileTest extends TekvLSTest {
         String actualResponse = jsonBody.getString("error");
         String expectedResponse = RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void missingEmailInDatabaseTest(){
+	    //Given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("functional_subaccountAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAuthUserProfile.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = MESSAGE_FOR_MISSING_CUSTOMER_EMAIL;
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+
+    }
+
+    @Test
+    public void genericExceptionTest() {
+	    //Given
+        Mockito.when(this.request.createResponseBuilder(HttpStatus.OK)).thenThrow(new RuntimeException("Generic error"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAuthUserProfile.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "Generic error";
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+
     }
 }

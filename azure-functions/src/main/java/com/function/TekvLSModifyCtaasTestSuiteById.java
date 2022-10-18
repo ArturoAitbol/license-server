@@ -75,13 +75,6 @@ public class TekvLSModifyCtaasTestSuiteById {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
-        if (!jobj.has("subaccountId")) {
-            context.getLogger().info("error: subaccountId is missing.");
-            JSONObject json = new JSONObject();
-            json.put("error", "error: subaccountId is missing.");
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-
         // Build the sql query for ctaas test suite
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_test_suite");
         int optionalParamsFound = 0;
@@ -129,7 +122,6 @@ public class TekvLSModifyCtaasTestSuiteById {
     }
 
     private enum OPTIONAL_PARAMS {
-        SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
         TOTAL_EXECUTIONS("totalExecutions", "total_executions", QueryBuilder.DATA_TYPE.INTEGER),
         NEXT_EXECUTION("nextExecution", "next_execution_ts", QueryBuilder.DATA_TYPE.TIMESTAMP),
         FREQUENCY("frequency", "frequency", QueryBuilder.DATA_TYPE.VARCHAR),
@@ -140,12 +132,6 @@ public class TekvLSModifyCtaasTestSuiteById {
         private final String columnName;
 
         private final String dataType;
-
-        OPTIONAL_PARAMS(String jsonAttrib, String columnName, String dataType) {
-            this.jsonAttrib = jsonAttrib;
-            this.columnName = columnName;
-            this.dataType = dataType;
-        }
 
         OPTIONAL_PARAMS(String jsonAttrib, String columnName, QueryBuilder.DATA_TYPE dataType) {
             this.jsonAttrib = jsonAttrib;

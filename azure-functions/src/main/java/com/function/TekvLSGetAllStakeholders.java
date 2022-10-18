@@ -103,11 +103,6 @@ public class TekvLSGetAllStakeholders {
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
 				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", authEmail);
 				break;
-			case SUBACCOUNT_STAKEHOLDER:
-				queryBuilder.appendCustomCondition("subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", authEmail);
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
-				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", authEmail);
-				break;
 		}
 
 		if (email.equals("EMPTY")){
@@ -119,7 +114,7 @@ public class TekvLSGetAllStakeholders {
 		}
 
 		if (verificationQueryBuilder != null) {
-			if (currentRole.equals(SUBACCOUNT_ADMIN) || currentRole.equals(SUBACCOUNT_STAKEHOLDER))
+			if (currentRole.equals(SUBACCOUNT_ADMIN))
 				verificationQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 			else
 				verificationQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
@@ -194,14 +189,6 @@ public class TekvLSGetAllStakeholders {
 		for (Object obj : array) {
 			json = (JSONObject) obj;
 			try {
-				 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
-					json.put("name","");
-					json.put("jobTitle","");
-					json.put("companyName","");
-					json.put("phoneNumber","");
-					stakeHolders.put(json);
-					continue;
-				 }
 				 userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"),context);
 				if(userProfile.getString("role").equals(SUBACCOUNT_STAKEHOLDER)) {
 					json.put("name",userProfile.get("displayName"));
