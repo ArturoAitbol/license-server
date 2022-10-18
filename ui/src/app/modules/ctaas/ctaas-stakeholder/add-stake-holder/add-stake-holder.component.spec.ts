@@ -15,7 +15,7 @@ import { StakeHolderService } from "src/app/services/stake-holder.service";
 import { SubAccountService } from "src/app/services/sub-account.service";
 import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { StakeHolderServiceMock } from "src/test/mock/services/ctaas-stakeholder-service.mock";
-import { DialogServiceMock } from "src/test/mock/services/dialog.service.mock";
+import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";

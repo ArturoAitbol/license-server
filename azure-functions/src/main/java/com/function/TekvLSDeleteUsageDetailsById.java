@@ -120,15 +120,6 @@ public class TekvLSDeleteUsageDetailsById
 					context.getLogger().info("Execute SQL statement: " + deleteLicenseStatement);
 					deleteLicenseStatement.executeUpdate();
 					context.getLogger().info("License delete successfully.");
-				}catch (SQLException e) {
-					context.getLogger().info("SQL exception: " + e.getMessage());
-					json.put("error", e.getMessage());
-					return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-				}
-				catch (Exception e) {
-					context.getLogger().info("Caught exception: " + e.getMessage());
-					json.put("error", e.getMessage());
-					return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 				}
 			}
 			return request.createResponseBuilder(HttpStatus.OK).build();

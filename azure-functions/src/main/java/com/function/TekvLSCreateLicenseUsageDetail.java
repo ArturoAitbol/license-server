@@ -93,77 +93,74 @@ public class TekvLSCreateLicenseUsageDetail
 
 	public HttpResponseMessage createLicenseConsumptionEvent(Claims tokenClaims, JSONObject jobj, HttpRequestMessage<Optional<String>> request, final ExecutionContext context) {
 		String userEmail = getEmailFromToken(tokenClaims, context);
+		try{
+			// Connect to the database
+			String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
+				+ "&user=" + System.getenv("POSTGRESQL_USER")
+				+ "&password=" + System.getenv("POSTGRESQL_PWD");
 
-		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
-			+ "&user=" + System.getenv("POSTGRESQL_USER")
-			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-
-		// Build the sql query to get tokens consumption and granularity from device table
-		String deviceTokensSql = "SELECT tokens_to_consume, granularity FROM device WHERE id=?::uuid;";
-		String insertSql = "INSERT INTO license_consumption (subaccount_id, device_id, consumption_date, usage_type, tokens_consumed, modified_by, modified_date, project_id) " +
-						   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid) RETURNING id;";
-		String devicePerProjectConsumptionSql;
-		if (jobj.has("projectId")) {
+			// Build the sql query to get tokens consumption and granularity from device table
+			String deviceTokensSql = "SELECT tokens_to_consume, granularity FROM device WHERE id=?::uuid;";
+			String insertSql = "INSERT INTO license_consumption (subaccount_id, device_id, consumption_date, usage_type, tokens_consumed, modified_by, modified_date, project_id) " +
+							   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid) RETURNING id;";
+			String devicePerProjectConsumptionSql;
 			devicePerProjectConsumptionSql = "SELECT id FROM license_consumption WHERE device_id=?::uuid and project_id=?::uuid LIMIT 1;";
-		} else {
-			devicePerProjectConsumptionSql = "SELECT id FROM license_consumption WHERE device_id=?::uuid and project_id IS NULL LIMIT 1;";
-		}
 
-		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			 PreparedStatement deviceTokensStmt = connection.prepareStatement(deviceTokensSql);
 			 PreparedStatement insertStmt = connection.prepareStatement(insertSql);
 			 PreparedStatement devicePerProjectStmt = connection.prepareStatement(devicePerProjectConsumptionSql)) {
-			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			String userId = getUserIdFromToken(tokenClaims,context);
+				context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+				String userId = getUserIdFromToken(tokenClaims,context);
 
-			//Insert parameters to statement
-			deviceTokensStmt.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
+				//Insert parameters to statement
+				deviceTokensStmt.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
 
-			// get tokens to consume
-			context.getLogger().info("Execute SQL statement: " + deviceTokensStmt);
-			ResultSet rs = deviceTokensStmt.executeQuery();
-			rs.next();
-			int tokensToConsume = rs.getInt("tokens_to_consume");
-			String granularity = rs.getString("granularity");
-			// check if there was a consumption for this device in the same project previously.
-			if (granularity.equalsIgnoreCase("static")) {
+				// get tokens to consume
+				context.getLogger().info("Execute SQL statement: " + deviceTokensStmt);
+				ResultSet rs = deviceTokensStmt.executeQuery();
+				rs.next();
+				int tokensToConsume = rs.getInt("tokens_to_consume");
+				String granularity = rs.getString("granularity");
+				// check if there was a consumption for this device in the same project previously.
+				if (granularity.equalsIgnoreCase("static")) {
+
+					// Set statement parameters
+					devicePerProjectStmt.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
+					devicePerProjectStmt.setString(2, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
+
+					context.getLogger().info("Execute SQL statement: " + devicePerProjectStmt);
+					rs = devicePerProjectStmt.executeQuery();
+
+					// if there was a condition only create usage details and not a consumption, otherwise continue the normal flow
+					if (rs.next()) {
+						jobj.put("id", rs.getString("id"));
+						jobj.put("userEmail", userEmail);
+						jobj.put("userId", userId);
+						return this.createUsageDetail(jobj, connection, request, context);
+					}
+				}
 
 				// Set statement parameters
-				devicePerProjectStmt.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
-				if (jobj.has("projectId")) devicePerProjectStmt.setString(2, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
+				insertStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+				insertStmt.setString(2, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
+				insertStmt.setString(3, jobj.getString(MANDATORY_PARAMS.CONSUMPTION_DATE.value));
+				insertStmt.setString(4, jobj.getString(MANDATORY_PARAMS.TYPE.value));
+				insertStmt.setInt(5, tokensToConsume);
+				insertStmt.setString(6, userEmail);
+				insertStmt.setTimestamp(7, Timestamp.from(Instant.now()));
+				insertStmt.setString(8, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
 
-				context.getLogger().info("Execute SQL statement: " + devicePerProjectStmt);
-				rs = devicePerProjectStmt.executeQuery();
-
-				// if there was a condition only create usage details and not a consumption, otherwise continue the normal flow
-				if (rs.next()) {
-					jobj.put("id", rs.getString("id"));
-					jobj.put("userEmail", userEmail);
-					jobj.put("userId", userId);
-					return this.createUsageDetail(jobj, connection, request, context);
-				}
+				// Insert consumption
+				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertStmt);
+				rs = insertStmt.executeQuery();
+				rs.next();
+				jobj.put("id", rs.getString("id"));
+				jobj.put("userEmail", userEmail);
+				jobj.put("userId", userId);
+				context.getLogger().info("tekToken consumption inserted successfully.");
+				return this.createUsageDetail(jobj, connection, request, context);
 			}
-
-			// Set statement parameters
-			insertStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
-			insertStmt.setString(2, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
-			insertStmt.setString(3, jobj.getString(MANDATORY_PARAMS.CONSUMPTION_DATE.value));
-			insertStmt.setString(4, jobj.getString(MANDATORY_PARAMS.TYPE.value));
-			insertStmt.setInt(5, tokensToConsume);
-			insertStmt.setString(6, userEmail);
-			insertStmt.setTimestamp(7, Timestamp.from(Instant.now()));
-			insertStmt.setString(8, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
-
-			// Insert consumption
-			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertStmt);
-			rs = insertStmt.executeQuery();
-			rs.next();
-			jobj.put("id", rs.getString("id"));
-			jobj.put("userEmail", userEmail);
-			jobj.put("userId", userId);
-			context.getLogger().info("tekToken consumption inserted successfully.");
-			return this.createUsageDetail(jobj, connection, request, context);
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());

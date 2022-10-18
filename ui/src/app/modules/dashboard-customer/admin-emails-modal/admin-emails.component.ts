@@ -62,7 +62,7 @@ export class AdminEmailsComponent implements OnInit {
           this.snackBarService.openSnackBar('Customer admin emails edited successfully! ', '');
           this.dialogRef.close(false);
         } else
-          this.snackBarService.openSnackBar(res.error, 'Error while editing administrator emails!');
+          this.snackBarService.openSnackBar('Error while editing administrator emails!', '');
       }, err => {
         this.isDataLoading = false;
         this.dialogRef.close(false);

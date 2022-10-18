@@ -1,16 +1,12 @@
 package com.function;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.Roles.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONArray;
@@ -65,10 +61,8 @@ public class TekvLSGetAllCtaasTestSuites {
 
         // Build SQL statement
         SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_test_suite");
-        String email = getEmailFromToken(tokenClaims, context);
 
         // adding conditions according to the role
-        String currentRole = evaluateRoles(roles);
 
         if (!subaccountId.isEmpty())
             queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
@@ -80,7 +74,6 @@ public class TekvLSGetAllCtaasTestSuites {
 
         try (
                 Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                Statement statement = connection.createStatement();
                 PreparedStatement selectStmt = queryBuilder.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
@@ -103,14 +96,6 @@ public class TekvLSGetAllCtaasTestSuites {
                 item.put("deviceType", rs.getString("device_type"));
                 item.put("name", rs.getString("name"));
                 array.put(item);
-            }
-
-            if (array.isEmpty()) {
-                context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + email);
-                List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN, CUSTOMER_FULL_ADMIN,
-                        SUBACCOUNT_ADMIN, SUBACCOUNT_STAKEHOLDER);
-                json.put("error", customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
-                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
             json.put("ctaasTestSuites", array);

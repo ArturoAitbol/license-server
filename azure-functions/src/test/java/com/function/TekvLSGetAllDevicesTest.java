@@ -76,7 +76,7 @@ class TekvLSGetAllDevicesTest extends TekvLSTest {
         JSONObject jsonBody = new JSONObject(body);
         assertTrue(jsonBody.has("devices"));
         JSONArray devices = jsonBody.getJSONArray("devices");
-        assertTrue(((JSONArray) devices).length() > 0);
+        assertTrue(devices.length() > 0);
 
         JSONObject device = (JSONObject) devices.get(0);
         String actualId = device.getString("id");
@@ -196,6 +196,28 @@ class TekvLSGetAllDevicesTest extends TekvLSTest {
         assertTrue(jsonBody.has("devices"));
         JSONArray devices = jsonBody.getJSONArray("devices");
         assertTrue(devices.length() > 0);
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getDevicesWithLimitAndOffset() {
+        String id = "EMPTY";
+        String limit = "2", offset = "0";
+        this.queryParams.put("limit", limit);
+        this.queryParams.put("offset", offset);
+
+        HttpResponseMessage response = getAllDevicesApi.run(this.request, id, this.context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("devices"));
+        JSONArray devices = jsonBody.getJSONArray("devices");
+        assertEquals(devices.length(), Integer.parseInt(limit),"The number of devices returned doesn't match the limit defined");
     }
 
     @Test
