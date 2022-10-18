@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
@@ -54,14 +54,14 @@ public class TekvLSModifyAuthUserProfile {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.MODIFY_AUTH_USER_PROFILE)){
+		if(!hasPermission(roles, Resource.MODIFY_AUTH_USER_PROFILE)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSModifySubaccountStakeholderByEmail Azure function");
+		context.getLogger().info("Entering TekvLSModifyAuthUserProfile Azure function");
 		String authEmail = getEmailFromToken(tokenClaims,context);
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -101,7 +101,7 @@ public class TekvLSModifyAuthUserProfile {
 			if (!rs.next()) {
 				context.getLogger().info(LOG_MESSAGE_FOR_INVALID_EMAIL + authEmail);
 				JSONObject json = new JSONObject();
-				json.put("error", MESSAGE_FOR_INVALID_AUTH_EMAIL);
+				json.put("error", MESSAGE_FOR_MISSING_CUSTOMER_EMAIL);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			// Build the sql query
@@ -130,12 +130,6 @@ public class TekvLSModifyAuthUserProfile {
 			updateADUser(authEmail, jobj, context);
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
-		catch (SQLException e) {
-			context.getLogger().info("SQL exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
@@ -159,10 +153,10 @@ public class TekvLSModifyAuthUserProfile {
 	}
 	
 	private void updateADUser(String email, JSONObject jobj, ExecutionContext context) {
-		 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
-			 context.getLogger().info("ad-user-creation toggle is not active. Nothing to do at Azure AD");
+		if (!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+			 context.getLogger().info("ad-subaccount-user-creation toggle is not active. Nothing to do at Azure AD");
 			 return;
-		 }
+		}
 		try {
 			context.getLogger().info("Updating user profile at Azure AD : "+email);
 			GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"),getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);

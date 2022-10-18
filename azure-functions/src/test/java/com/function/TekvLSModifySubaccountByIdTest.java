@@ -2,6 +2,7 @@ package com.function;
 
 import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
+import com.function.util.Constants;
 import com.function.util.FeatureToggles;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
@@ -83,7 +84,7 @@ class TekvLSModifySubaccountByIdTest extends TekvLSTest {
     public void modifySubaccountServicesTest() {
         if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
             //Given - Arrange
-            String services = "Ctaas,tokenConsumption";
+            String services = Constants.SubaccountServices.SPOTLIGHT.value() + "," + Constants.SubaccountServices.TOKEN_CONSUMPTION.value();
             String bodyRequest = "{\n" +
                     "    \"services\": \"" + services + "\"\n" +
                     "}";

@@ -293,14 +293,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.isDetailedConsumptionLoadingResults = true;
       this.isDetailedConsumptionRequestCompleted = false;
       this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
-        res.usage.forEach(item => {
-          if (item.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
-            item.usageDays = "...";
-          } else {
-            this.getNameOfDays(item.usageDays);
-          }
-        });
-        this.detailedConsumptionData = res.usage;
+        this.detailedConsumptionData = this.formatUsageDays(res.usage);
         this.detailedConsumptionDataLength = res.usageTotalCount;
         this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
         this.projectConsumptionData = res.projectConsumption;
@@ -373,10 +366,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
-      res.usage.forEach(item => {
-        this.getNameOfDays(item.usageDays);
-      });
-      this.detailedConsumptionData = res.usage;
+      this.detailedConsumptionData = this.formatUsageDays(res.usage);
       this.detailedConsumptionDataLength = res.usageTotalCount;
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
@@ -385,6 +375,17 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
     });
+  }
+
+  private formatUsageDays(usage: any[]){
+    usage.forEach(item => {
+      if (item.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
+        item.usageDays = "...";
+      } else {
+        this.getNameOfDays(item.usageDays);
+      }
+    });
+    return usage;
   }
 
   private getNameOfDays(list: any[]): void {
@@ -504,6 +505,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         case 'equipmentList':
           return this.equipmentData = [...this.equipmentDataBK];
         default:
+          break;
       }
     }
   }

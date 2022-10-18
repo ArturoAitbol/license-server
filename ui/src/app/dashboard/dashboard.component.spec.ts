@@ -28,13 +28,16 @@ import { DialogServiceMock } from '../../test/mock/services/dialog.service.mock'
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 import { Features } from '../helpers/features';
+import { tekVizionServices } from '../helpers/tekvizion-services';
+import { of, throwError } from 'rxjs';
+import { Sort } from '@angular/material/sort';
 
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
 const dialogServiceMock = new DialogServiceMock();
 
 const RouterMock = {
-    navigate: (commands: string[]) => {}
+    navigate: (commands: string[]) => { }
 };
 
 const beforeEachFunction = async () => {
@@ -93,6 +96,8 @@ describe('UI verification tests', () => {
         const h1 = fixture.nativeElement.querySelector('#page-title');
         const addCustomerButton = fixture.nativeElement.querySelector('#add-customer-button');
         const addSubaccountButton = fixture.nativeElement.querySelector('#add-subaccount-button');
+        dashboardComponentTestInstance.sizeChange();
+        dashboardComponentTestInstance.getColor('available');
         expect(h1.textContent).toBe('Customers');
         expect(addCustomerButton.textContent).toBe('Add Customer');
         expect(addSubaccountButton.textContent).toBe('Add Subaccount');
@@ -108,6 +113,21 @@ describe('UI verification tests', () => {
         expect(subAccountColumn.innerText).toBe('Subaccount');
         expect(typeColumn.innerText).toBe('Type');
         expect(statusColumn.innerText).toBe('Subscription Status');
+    });
+
+    it('should call sortData and sort the data', () => {
+        const sort: Sort = { active: 'name', direction: 'desc' }
+        fixture.detectChanges();
+        spyOn(dashboardComponentTestInstance, 'sortData').and.callThrough();
+            
+        dashboardComponentTestInstance.sortData(sort);
+        expect(dashboardComponentTestInstance.sortData).toHaveBeenCalledWith(sort);
+            
+        sort.direction = 'asc';
+        dashboardComponentTestInstance.sortData(sort);
+            
+        sort.direction = '';
+        dashboardComponentTestInstance.sortData(sort);
     });
 });
 
@@ -193,8 +213,7 @@ describe('Dialog calls and interactions', () => {
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(CustomerServiceMock, 'deleteCustomer').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
-        dashboardComponentTestInstance.customerList['0'] = expectedCustomerObject;
-        dashboardComponentTestInstance.openConfirmCancelDialog('0');
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
 
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
@@ -221,8 +240,7 @@ describe('Dialog calls and interactions', () => {
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(SubaccountServiceMock, 'deleteSubAccount').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: false });
-        dashboardComponentTestInstance.customerList['0'] = expectedCustomerObject;
-        dashboardComponentTestInstance.openConfirmCancelDialog('0');
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
 
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
@@ -258,6 +276,45 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         dashboardComponentTestInstance.openProjectDetails({});
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects']);
     });
+
+    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
+        it('should navigate to Spotlight dashboard ', () => {
+            const selectedTestData = { selectedRow: {
+                name: "testV2",
+                id: "157fdef0-c28e-4764-9023-75c06daad09d",
+                subaccountName: "testv2Demo",
+                subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+                services: "tokenConsumption,spotlight"
+            }, 
+            selectedOption: 'selectedTestOption', 
+            selectedIndex: '0' }; 
+            spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
+            spyOn(RouterMock, 'navigate').and.callThrough();
+
+            selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
+            dashboardComponentTestInstance.rowAction(selectedTestData);
+            expect(RouterMock.navigate).toHaveBeenCalledWith(['/spotlight/report-dashboards']);
+        });
+
+        it('should navigate to Spotlight dashboard ', () => {
+            const selectedTestData = { selectedRow: {
+                name: "testV2",
+                id: "157fdef0-c28e-4764-9023-75c06daad09d",
+                subaccountName: "testv2Demo",
+                subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+                services: "tokenConsumption"
+            }, 
+            selectedOption: 'selectedTestOption', 
+            selectedIndex: '0' }; 
+            spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
+            spyOn(RouterMock, 'navigate').and.callThrough();
+            spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+
+            selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
+            dashboardComponentTestInstance.rowAction(selectedTestData);
+            expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('SpotLight service is not available for this Subaccount', '');
+        });
+    };
 });
 
 describe('.rowAction()', () => {
@@ -266,7 +323,8 @@ describe('.rowAction()', () => {
         const selectedTestData = {
             selectedRow: {
                 testProperty: 'testData',
-                subaccountId: undefined
+                subaccountId: undefined,
+                id: '821f079f-be9f-4b11-b364-4f9652c581ce'
             },
             selectedOption: 'selectedTestOption',
             selectedIndex: 'selectedTestItem',
@@ -392,21 +450,22 @@ describe('.rowAction()', () => {
         const selectedTestData = {
             selectedRow: {
                 testProperty: 'testData',
-                subaccountId: undefined
+                subaccountId: undefined,
+                id: undefined
             },
             selectedOption: 'selectedTestOption',
             selectedIndex: 'selectedTestItem',
             subaccountId: 'test-id'
         };
-        spyOn(dashboardComponentTestInstance, 'onDeleteAccount');
+        spyOn(dashboardComponentTestInstance, 'onDeleteAccount').and.callThrough();
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.DELETE_ACCOUNT;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(dashboardComponentTestInstance.onDeleteAccount).toHaveBeenCalledWith(selectedTestData.selectedIndex);
+        expect(dashboardComponentTestInstance.onDeleteAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 });
 
-describe('.columnAction()', ()  => {
+describe('.columnAction()', () => {
     beforeEach(beforeEachFunction);
     it('should make a call to openLicenseConsumption or snackBarService if the column name is "Subaccount"', () => {
         const selectedTestData: { selectedRow: any, selectedIndex: string, columnName: string } = {
@@ -450,16 +509,116 @@ describe('.columnAction()', ()  => {
 
 });
 
-describe('Filtering table rows', ()  => {
+describe('Filtering table rows', () => {
     beforeEach(beforeEachFunction);
     it('should filter the rows in the table based on the name, type and status filters', async () => {
-        dashboardComponentTestInstance.filterForm.patchValue({customerFilterControl: "Amazon", typeFilterControl: "MSP", subStatusFilterControl: "Inactive"});
+        dashboardComponentTestInstance.filterForm.patchValue({ customerFilterControl: "Amazon", typeFilterControl: "MSP", subStatusFilterControl: "Inactive" });
         fixture.detectChanges();
         await fixture.whenStable();
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
-        let objectToCompare: any = {"customerType":"MSP","testCustomer":false,"name":"Amazon","id":"aa85399d-1ce9-425d-9df7-d6e8a8baaec2","subaccountName":"360 Custom (No Tokens)","subaccountId":"24372e49-5f31-4b38-bc3e-fb6a5c371623","status":"Inactive"};
+        const objectToCompare: any = { "customerType": "MSP", "testCustomer": false, "name": "Amazon", "id": "aa85399d-1ce9-425d-9df7-d6e8a8baaec2", "subaccountName": "360 Custom (No Tokens)", "subaccountId": "24372e49-5f31-4b38-bc3e-fb6a5c371623", "status": "Inactive" };
         if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature))
-            objectToCompare.services = "tokenConsumption,Ctaas";
+            objectToCompare.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
         expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);
+    });
+});
+
+describe('error messages', () => {
+    beforeEach(beforeEachFunction);
+    it('should display an message if an error ocurred while fetching data', () => {
+        const err = "some error";
+        spyOn(CustomerServiceMock, 'getCustomerList').and.returnValue(throwError(err));
+        spyOn(console, 'debug').and.callThrough();
+
+       dashboardComponentTestInstance.ngOnInit();
+
+        expect(console.debug).toHaveBeenCalledWith('error', err);
+        expect(dashboardComponentTestInstance.isLoadingResults).toBeFalse();
+        expect(dashboardComponentTestInstance.isRequestCompleted).toBeTrue();
+    });
+
+    it('should display a message if ocurred an error deleting a customer', () => {
+        const expectedCustomerObject = {
+            customerType: 'MSP',
+            testCustomer: false,
+            name: 'Unit Test',
+            id: '821f079f-be9f-4b11-b364-4f9652c581ce',
+            subaccountName: 'Unit Test - 360 Small - Old Token Model',
+            subaccountId: '565e134e-62ef-4820-b077-2d8a6f628702',
+            status: 'Expired'
+        };
+        const res = {error: "some error"};
+        spyOn(dashboardComponentTestInstance, 'openConfirmCancelDialog').and.callThrough();
+        spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
+        spyOn(CustomerServiceMock, 'deleteCustomer').and.returnValue(of(res));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
+        fixture.detectChanges();
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
+
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error customer could not be deleted !', '');
+    });
+
+    it('should return a null response', () => {
+        const expectedCustomerObject = {
+            customerType: 'MSP',
+            testCustomer: false,
+            name: 'Unit Test',
+            id: '821f079f-be9f-4b11-b364-4f9652c581ce',
+            subaccountName: 'Unit Test - 360 Small - Old Token Model',
+            subaccountId: '565e134e-62ef-4820-b077-2d8a6f628702',
+            status: 'Expired'
+        };
+        const res = null;
+        spyOn(dashboardComponentTestInstance, 'openConfirmCancelDialog').and.callThrough();
+        spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
+        spyOn(CustomerServiceMock, 'deleteCustomer').and.returnValue(of(res));
+        dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
+        fixture.detectChanges();
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
+        expect(CustomerServiceMock.deleteCustomer).toHaveBeenCalled();
+    });
+
+    it('should display a meesage if an error ocurred while deleting a subaccount', () => {
+        const expectedCustomerObject = {
+            customerType: 'MSP',
+            testCustomer: false,
+            name: 'Unit Test',
+            id: '821f079f-be9f-4b11-b364-4f9652c581ce',
+            subaccountName: 'Unit Test - 360 Small - Old Token Model',
+            subaccountId: '565e134e-62ef-4820-b077-2d8a6f628702',
+            status: 'Expired'
+        };
+        const res = {error:"some error"};
+        spyOn(dashboardComponentTestInstance, 'openConfirmCancelDialog').and.callThrough();
+        spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
+        spyOn(SubaccountServiceMock, 'deleteSubAccount').and.returnValue(of(res));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: false });
+        fixture.detectChanges();
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error Subaccount could not be deleted !', '');
+    });
+
+    it('should return a null response', () => {
+        const expectedCustomerObject = {
+            customerType: 'MSP',
+            testCustomer: false,
+            name: 'Unit Test',
+            id: '821f079f-be9f-4b11-b364-4f9652c581ce',
+            subaccountName: 'Unit Test - 360 Small - Old Token Model',
+            subaccountId: '565e134e-62ef-4820-b077-2d8a6f628702',
+            status: 'Expired'
+        };
+        const res = null;
+        spyOn(dashboardComponentTestInstance, 'openConfirmCancelDialog').and.callThrough();
+        spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
+        spyOn(SubaccountServiceMock, 'deleteSubAccount').and.returnValue(of(res));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: false });
+        fixture.detectChanges();
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
+
+        expect(SubaccountServiceMock.deleteSubAccount).toHaveBeenCalled();
     });
 });

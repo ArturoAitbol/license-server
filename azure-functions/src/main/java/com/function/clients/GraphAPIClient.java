@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 public class GraphAPIClient {
 
@@ -149,7 +149,7 @@ public class GraphAPIClient {
                 throw new ADException("Delete a guest user failed (AD): " + url);
             }
         }else{
-            context.getLogger().info("Ignoring Error: the user with email " + userEmail + " does not exist. (DELETE GUEST USER)");
+            context.getLogger().info("Ignoring Error (DELETE GUEST USER): User with email " + userEmail + " does not exist (AD)");
         }
     }
 
@@ -189,11 +189,11 @@ public class GraphAPIClient {
                         throw new ADException("Remove guest user role failed (AD): " + url);
                     }
                 }else{
-                    context.getLogger().info("Ignoring Error: There is no App role assignment to delete.");
+                    context.getLogger().info("Ignoring Error: There is no App role assignment to delete (AD)");
                 }
             }
         }else{
-            context.getLogger().info("Ignoring Error: the user with email " + userEmail + " does not exist.(REMOVE GUEST USER ROLE)");
+            context.getLogger().info("Ignoring Error (REMOVE APP ROLE ASSIGNMENT): User with email " + userEmail + " does not exist (AD)");
         }
     }
 
@@ -227,7 +227,7 @@ public class GraphAPIClient {
     }
     
     static public JSONObject getUserProfileByEmail(String userEmail, String token, ExecutionContext context) throws Exception {
-        String url = GraphAPIClient.baseURL+"users?$filter=mail%20eq%20'"+userEmail+"'&&$select=id,displayName,jobTitle,companyName,mobilePhone";
+        String url = GraphAPIClient.baseURL+"users?$filter=mail%20eq%20'"+userEmail+"'%20or%20userPrincipalName%20eq%20'"+userEmail+"'&&$select=id,displayName,jobTitle,companyName,mobilePhone";
         HashMap<String,String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer "+ token);
         JSONObject response = HttpClient.get(url,headers);
@@ -322,7 +322,6 @@ public class GraphAPIClient {
             context.getLogger().severe("Error response: " + response);
             throw new ADException("No App roles assigned for user (AD): " + id);
         }
-        JSONArray appRoleAssignments = response.getJSONArray("value");
-        return  appRoleAssignments;
+        return response.getJSONArray("value");
     }	
 }

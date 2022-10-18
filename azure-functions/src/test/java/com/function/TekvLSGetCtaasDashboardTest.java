@@ -15,6 +15,7 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
 public class TekvLSGetCtaasDashboardTest extends TekvLSTest {
 
@@ -251,7 +252,79 @@ public class TekvLSGetCtaasDashboardTest extends TekvLSTest {
         JSONObject jsonBody = new JSONObject(body);
         assertTrue(jsonBody.has("powerBiInfo"));
     }
-    
-    
+
+    @Tag("acceptance")
+    @Test
+    public void getForSubaccountStakeHolderRoleTest(){
+        //Given
+        String subaccountId = "96234b32-32d3-45a4-af26-4c912c0d6a06";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+        // When
+        HttpResponseMessage response = tekvLSGetCtaasDashboard.run(this.request,subaccountId,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("powerBiInfo"));
+    }
+
+    @Tag("security")
+    @Test
+    public void getForIncorrectSubaccountIdTest() {
+        //Given
+        String subaccountId = "f5a60920-8b70-4a10-9dc8-9536bdb5652c";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
+
+        //When
+        HttpResponseMessage response = tekvLSGetCtaasDashboard.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus, "HTTP Status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_SUBACCOUNT_ID_NOT_FOUND;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Test
+    public void sqlExceptionTest() {
+        //Given
+        String subaccountId = "f5a60920-8b70-4a10-9dc8-9536bdb5652c";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
+
+        //When - Action
+        HttpResponseMessage response;
+        try {
+            response = new EnvironmentVariables("POSTGRESQL_SERVER", "test").execute(
+                    () -> tekvLSGetCtaasDashboard.run(this.request, subaccountId, this.context));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "The connection attempt failed.";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse);
+    }
     
 }

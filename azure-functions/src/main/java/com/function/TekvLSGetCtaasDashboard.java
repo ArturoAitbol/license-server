@@ -1,6 +1,7 @@
 package com.function;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.PowerBIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
@@ -56,7 +57,7 @@ public class TekvLSGetCtaasDashboard {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.GET_CTAAS_DASHBOARD)){
+		if(!hasPermission(roles, Resource.GET_CTAAS_DASHBOARD)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -81,19 +82,11 @@ public class TekvLSGetCtaasDashboard {
 		// adding conditions according to the role
 		String currentRole = evaluateRoles(roles);
 		switch (currentRole){
-			case DISTRIBUTOR_FULL_ADMIN:
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer c");
-				verificationQueryBuilder.appendCustomCondition("s.customer_id = c.id AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
-						"WHERE c.id = ca.customer_id and admin_email= ?)", email);
-				break;
 			case CUSTOMER_FULL_ADMIN:
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer_admin ca");
 				verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?", email);
 				break;
 			case SUBACCOUNT_ADMIN:
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
-				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
-				break;
 			case SUBACCOUNT_STAKEHOLDER:
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
 				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
@@ -115,14 +108,13 @@ public class TekvLSGetCtaasDashboard {
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();
 			PreparedStatement selectStmt = queryBuilder.build(connection)) {
 
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			ResultSet rs;
 			JSONObject json = new JSONObject();
 
-			if (verificationQueryBuilder != null && !subaccountId.isEmpty()) {
+			if (verificationQueryBuilder != null) {
 				try (PreparedStatement verificationStmt = verificationQueryBuilder.build(connection)) {
 					context.getLogger().info("Execute SQL role verification statement: " + verificationStmt);
 					rs = verificationStmt.executeQuery();
@@ -134,7 +126,7 @@ public class TekvLSGetCtaasDashboard {
 				}
 			}
 
-			// Retrieve ctaas setup.
+			// Retrieve SpotLight setup.
 			context.getLogger().info("Execute SQL statement: " + selectStmt);
 			rs = selectStmt.executeQuery();
 			// Return a JSON array of ctaas_setups
@@ -145,25 +137,17 @@ public class TekvLSGetCtaasDashboard {
 				item.put("powerBiReportId", rs.getString("powerbi_report_id"));
 			}
 
-			if(!subaccountId.equals("EMPTY") && item==null){
+			if(item == null){
 				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
 				json.put("error",MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			
 			JSONObject powerBiInfo = new JSONObject();
-			if(!FeatureToggles.INSTANCE.isFeatureActive("powerBi-dashboard")){
-				json.put("powerBiInfo", powerBiInfo);
-				return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
-			}
-			
-			try {
+
+			if(FeatureToggles.INSTANCE.isFeatureActive("powerBi-dashboard"))
 				powerBiInfo = PowerBIClient.getPowerBiDetails(item.getString("powerBiWorkspaceId"), item.getString("powerBiReportId"), context);
-			}catch(Exception e) {
-				json.put("error", e.getMessage());
-				return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-			}
-			
+
 			json.put("powerBiInfo", powerBiInfo);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}

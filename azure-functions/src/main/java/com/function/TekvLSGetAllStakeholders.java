@@ -1,7 +1,9 @@
 package com.function;
 
-import static com.function.auth.RoleAuthHandler.CUSTOMER_FULL_ADMIN;
-import static com.function.auth.RoleAuthHandler.DISTRIBUTOR_FULL_ADMIN;
+import static com.function.auth.Roles.CUSTOMER_FULL_ADMIN;
+import static com.function.auth.Roles.DISTRIBUTOR_FULL_ADMIN;
+import static com.function.auth.Roles.SUBACCOUNT_ADMIN;
+import static com.function.auth.Roles.SUBACCOUNT_STAKEHOLDER;
 import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_FORBIDDEN;
 import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_INVALID_ID;
 import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_UNAUTHORIZED;
@@ -9,8 +11,6 @@ import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
 import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
 import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
 import static com.function.auth.RoleAuthHandler.MESSAGE_ID_NOT_FOUND;
-import static com.function.auth.RoleAuthHandler.SUBACCOUNT_ADMIN;
-import static com.function.auth.RoleAuthHandler.SUBACCOUNT_STAKEHOLDER;
 import static com.function.auth.RoleAuthHandler.evaluateRoles;
 import static com.function.auth.RoleAuthHandler.getEmailFromToken;
 import static com.function.auth.RoleAuthHandler.getRolesFromToken;
@@ -30,7 +30,7 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
@@ -72,7 +72,7 @@ public class TekvLSGetAllStakeholders {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.GET_ALL_SUBACCOUNT_STAKEHOLDER)){
+		if(!hasPermission(roles, Resource.GET_ALL_SUBACCOUNT_STAKEHOLDER)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -92,13 +92,6 @@ public class TekvLSGetAllStakeholders {
 		// adding conditions according to the role
 		String currentRole = evaluateRoles(roles);
 		switch (currentRole){
-			case DISTRIBUTOR_FULL_ADMIN:
-				queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id from subaccount s, customer c WHERE s.customer_id = c.id " +
-						"AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca WHERE c.id = ca.customer_id AND admin_email = ?))", authEmail);
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer c");
-				verificationQueryBuilder.appendCustomCondition("s.customer_id = c.id AND distributor_id = (SELECT distributor_id FROM customer c,customer_admin ca " +
-						"WHERE c.id = ca.customer_id and admin_email= ?)", authEmail);
-				break;
 			case CUSTOMER_FULL_ADMIN:
 				queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id FROM subaccount s, customer_admin ca " +
 						"WHERE s.customer_id = ca.customer_id AND admin_email = ?)", authEmail);
@@ -106,11 +99,6 @@ public class TekvLSGetAllStakeholders {
 				verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?", authEmail);
 				break;
 			case SUBACCOUNT_ADMIN:
-				queryBuilder.appendCustomCondition("subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", authEmail);
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
-				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", authEmail);
-				break;
-			case SUBACCOUNT_STAKEHOLDER:
 				queryBuilder.appendCustomCondition("subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", authEmail);
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
 				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", authEmail);
@@ -126,7 +114,7 @@ public class TekvLSGetAllStakeholders {
 		}
 
 		if (verificationQueryBuilder != null) {
-			if (currentRole.equals(SUBACCOUNT_ADMIN) || currentRole.equals(SUBACCOUNT_STAKEHOLDER))
+			if (currentRole.equals(SUBACCOUNT_ADMIN))
 				verificationQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 			else
 				verificationQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
@@ -138,7 +126,6 @@ public class TekvLSGetAllStakeholders {
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			Statement statement = connection.createStatement();
 			PreparedStatement selectStmt = queryBuilder.build(connection)) {
 
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
@@ -202,15 +189,7 @@ public class TekvLSGetAllStakeholders {
 		for (Object obj : array) {
 			json = (JSONObject) obj;
 			try {
-				 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")){
-					 	json.put("name", "");
-						json.put("jobTitle", "");
-						json.put("companyName", "");
-						json.put("phoneNumber", "");
-						stakeHolders.put(json);
-						continue;
-				 }
-				userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"),context);
+				 userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"),context);
 				if(userProfile.getString("role").equals(SUBACCOUNT_STAKEHOLDER)) {
 					json.put("name",userProfile.get("displayName"));
 					json.put("jobTitle",userProfile.get("jobTitle"));

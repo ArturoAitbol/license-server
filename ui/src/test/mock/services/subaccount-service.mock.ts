@@ -1,4 +1,5 @@
 import {Observable, throwError} from 'rxjs';
+import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 
 const TEST_SUBACCOUNT_1 = {
     name: 'TEST SUBACCOUNT 1',
@@ -24,7 +25,7 @@ const SUBACCOUNT_LIST = {
             name: '360 Custom (No Tokens)',
             customerId: 'aa85399d-1ce9-425d-9df7-d6e8a8baaec2',
             id: '24372e49-5f31-4b38-bc3e-fb6a5c371623',
-            services: 'tokenConsumption,Ctaas'
+            services: tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight
         },
         {
             name: 'Default',
@@ -275,7 +276,7 @@ const SUBACCOUNT_LIST = {
             name: 'Default',
             customerId: '0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848',
             id: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
-            services: 'tokenConsumption,Ctaas'
+            services: tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight
         },
         {
             name: 'Bigger Better 360 Small',
@@ -355,7 +356,7 @@ export const SubaccountServiceMock = {
             };
         });
     },
-    getSubAccountDetails: (subAccountId: string) => {
+    getSubAccountDetails: (subAccountId?: string) => {
         return new Observable( (observer) => {
             observer.next(
                 {
@@ -410,5 +411,24 @@ export const SubaccountServiceMock = {
                 unsubscribe() {}
             };
         });
+    },
+    getSelectedSubAccount: () => {
+        return {
+            id: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            name: "testv2Demo",
+            customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
+            services: "tokenConsumption,spotlight",
+            testCustomer: false,
+            companyName:"testComp"
+        }
+    },
+    setSelectedSubAccount: () => {
+        return {
+            id: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            name: "testv2Demo",
+            customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
+            services: 'spotlight',
+            customerName: "testName"
+        }
     }
 };

@@ -34,7 +34,15 @@ export class DialogServiceMock {
         });
     }
 
-    afterClosed(): void{}
+    afterClosed() {
+        return new Observable((observer) => {
+            observer.next({res: 'closed' });
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
+    }
     afterAll() {
         return new Observable((observer) => {
             observer.next({ res: {} });
@@ -44,4 +52,5 @@ export class DialogServiceMock {
             };
         });
     }
+    close(): void {}
 }

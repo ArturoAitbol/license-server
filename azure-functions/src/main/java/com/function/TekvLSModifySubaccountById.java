@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.Constants;
@@ -54,7 +54,7 @@ public class TekvLSModifySubaccountById
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.MODIFY_SUBACCOUNT)){
+		if(!hasPermission(roles, Resource.MODIFY_SUBACCOUNT)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -121,7 +121,7 @@ public class TekvLSModifySubaccountById
 			context.getLogger().info("Subaccount updated successfully."); 
 
 			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
-				if (jobj.has("services") && jobj.getString("services").contains(Constants.SubaccountServices.CTAAS.value())) {
+				if (jobj.has("services") && jobj.getString("services").contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
 					verifyCtassSetupStmt.setString(1, id);
 		
 					context.getLogger().info("Execute SQL statement: " + verifyCtassSetupStmt);
@@ -134,7 +134,7 @@ public class TekvLSModifySubaccountById
 			
 						context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
 						insertCtassSetupStmt.executeUpdate();
-						context.getLogger().info("CTaaS setup default values inserted successfully.");
+						context.getLogger().info("SpotLight setup default values inserted successfully.");
 					}
 				}
 			}

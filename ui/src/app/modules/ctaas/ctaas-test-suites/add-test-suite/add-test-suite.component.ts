@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Constants } from 'src/app/helpers/constants';
 import { CtaasTestSuiteService } from 'src/app/services/ctaas-test-suite.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-add-test-suite',
@@ -13,10 +13,8 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 export class AddTestSuiteComponent implements OnInit {
   isDataLoading = false;
   addTestSuiteForm = this.formBuilder.group({
-    suiteName: ['', Validators.required],
-    service: ['Webex', Validators.required],
-    totalExecutions: ['', Validators.required],
-    nextExecution: ['', Validators.required],
+    name: ['', Validators.required],
+    deviceType: ['MS Teams', Validators.required],
     frequency: ['', Validators.required]
   });
   frequencies: string[] = [
@@ -30,22 +28,20 @@ export class AddTestSuiteComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddTestSuiteComponent>,
     private snackBarService: SnackBarService,
+    private subaccountService: SubAccountService,
     private testSuiteService: CtaasTestSuiteService) {
   }
 
   ngOnInit(): void {
-    this.currentCustomer = JSON.parse(localStorage.getItem(Constants.CURRENT_SUBACCOUNT));
-    console.log(this.currentCustomer)
+    this.currentCustomer = this.subaccountService.getSelectedSubAccount();
   }
 
   addTestSuite(): void {
     this.isDataLoading = true;
     const suiteObject: any = {
       subaccountId: this.currentCustomer.id,
-      suiteName: this.addTestSuiteForm.value.suiteName,
-      service: this.addTestSuiteForm.value.service,
-      totalExecutions: this.addTestSuiteForm.value.totalExecutions,
-      nextExecution: this.addTestSuiteForm.value.nextExecution.format("YYYY-MM-DD"),
+      name: this.addTestSuiteForm.value.name,
+      deviceType: this.addTestSuiteForm.value.deviceType,
       frequency: this.addTestSuiteForm.value.frequency,
     };
     this.testSuiteService.createTestSuite(suiteObject).subscribe((res: any) => {

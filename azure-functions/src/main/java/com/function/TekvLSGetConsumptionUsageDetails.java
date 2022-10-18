@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.*;
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -47,7 +48,7 @@ public class TekvLSGetConsumptionUsageDetails {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.GET_CONSUMPTION_USAGE_DETAILS)){
+		if(!hasPermission(roles, Resource.GET_CONSUMPTION_USAGE_DETAILS)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -98,11 +99,11 @@ public class TekvLSGetConsumptionUsageDetails {
 				item.put("usageDate", rs.getString("usage_date"));
 				item.put("macAddress", rs.getString("mac_address"));
 				item.put("serialNumber", rs.getString("serial_number"));
-				if (hasPermission(roles, Permission.GET_USER_EMAIL_INFO))
+				if (hasPermission(roles, Resource.GET_USER_EMAIL_INFO))
 					item.put("modifiedBy", rs.getString("modified_by"));
 				array.put(item);
 			}
-			if (hasPermission(roles, Permission.GET_USER_EMAIL_INFO)) {
+			if (hasPermission(roles, Resource.GET_USER_EMAIL_INFO)) {
 				final String sql = "SELECT modified_by FROM license_consumption WHERE id = ?::uuid;";// get tokens to consume
 				try (PreparedStatement modifiedByStmt = connection.prepareStatement(sql)) {
 					modifiedByStmt.setString(1, id);

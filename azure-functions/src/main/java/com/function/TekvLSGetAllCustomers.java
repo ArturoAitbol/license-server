@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -56,7 +57,7 @@ public class TekvLSGetAllCustomers {
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.GET_ALL_CUSTOMERS)){
+		if(!hasPermission(roles, Resource.GET_ALL_CUSTOMERS)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -170,10 +171,7 @@ public class TekvLSGetAllCustomers {
 			while (rs.next()) {
 				emailsMap.computeIfAbsent(rs.getString("customer_id"), k -> new ArrayList<>()).add(rs.getString("admin_email"));
 			}
-		} catch (SQLException e) {
-			context.getLogger().info("SQL exception: " + e.getMessage());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 		}
 		return emailsMap;

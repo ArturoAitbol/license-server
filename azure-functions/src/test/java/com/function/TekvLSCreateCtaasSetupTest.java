@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
+import com.function.util.Constants;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
@@ -50,7 +51,35 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     void createCtaasSetup() {
         //Given
         String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
-                "'status': 'SETUP_INPROGRESS'}";
+                "'status': '" + Constants.CTaaSSetupStatus.INPROGRESS + "'}";
+
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateCtaasSetup.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("id"));
+
+        this.ctaasSetupId = jsonBody.getString("id");
+        assertNotNull(this.ctaasSetupId);
+    }
+
+    @Tag("acceptance")
+    @Test
+    void createCtaasSetupWithOnBoardingParameter() {
+        //Given
+        String bodyRequest = "{" +
+                "'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
+                "'onBoardingComplete': 'true'," +
+                "'status': '" + Constants.CTaaSSetupStatus.INPROGRESS + "'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -78,7 +107,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     	 this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("crm"));
         //Given
         String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
-                "'status': 'SETUP_INPROGRESS'}";
+                "'status': '" + Constants.CTaaSSetupStatus.INPROGRESS + "'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -103,7 +132,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     @Test
     void bodyWithoutSubaccountTest() {
         //Given
-    	String bodyRequest = "{'status': 'SETUP_INPROGRESS'}";
+    	String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.INPROGRESS + "'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -248,7 +277,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     public void invalidSQLTest(){
         //Given
        String bodyRequest = "{'subaccountId': 'invalid-id'," +
-                "'status': 'SETUP_INPROGRESS'}";
+                "'status': '" + Constants.CTaaSSetupStatus.INPROGRESS + "'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -265,7 +294,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
     public void genericExceptionTest(){
         //Given
     	 String bodyRequest = "{'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb00cefa981'," +
-                 "'status': 'SETUP_INPROGRESS'}";
+                 "'status': '" + Constants.CTaaSSetupStatus.INPROGRESS + "'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);

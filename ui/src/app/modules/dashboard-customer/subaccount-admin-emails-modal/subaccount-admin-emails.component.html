@@ -10,29 +10,25 @@
                     <label style="font-weight: bold;">{{data.name}}</label>
                 </div>
                 <div class="email-info" *ngFor="let email of adminEmails; let emailIndex = index">
-                    <div class="row" title="{{email}}">
-                        <div class="col-10">
-                            <label class = "col-form-label"><b> Email: </b>{{email}}</label>
-                        </div>
-                        <div class="col-2" id="clearButton">
-                            <button id="clearButton" mat-icon-button color="primary" title="Delete email" 
-                                    (click)="deleteExistingEmail(emailIndex)">
-                                <mat-icon>clear</mat-icon>
-                            </button>
-                        </div>
+A                    <div class="row d-flex justify-content-between align-items-center" title="{{email}}">
+                        <label class="col-form-label email col-10"><b>Email: </b>{{email}}</label>
+                        <button id="clearButton" *lcCheckAccessFor="'deleteSubAccAdminEmail'" mat-icon-button color="primary" title="Delete email"
+                            (click)="deleteExistingEmail(emailIndex)" class="col-2">
+                            <mat-icon>clear</mat-icon>
+                        </button>
                     </div>
                 </div>
                 <div>
                     <ng-container formArrayName="emails">
                         <ng-container *ngFor="let emailForm of emailForms.controls; let i = index">
-                            <div class="form-row" [formGroupName]="i">
-                                <mat-form-field appearance="outline">
+                            <div class="form-row d-flex justify-content-between align-items-center" [formGroupName]="i">
+                                <mat-form-field appearance="outline" class="col-10">
                                     <mat-label>Email</mat-label>
                                     <input id="email" type="email" placeholder="Enter a valid email" aria-label="Email" matInput
                                            formControlName="email">
                                 </mat-form-field>
-                                <button mat-icon-button color="primary" title="Delete email" style="float: right;"
-                                    (click)="deleteEmailForm(i)">
+                                <button mat-icon-button color="primary" title="Delete email"
+                                    (click)="deleteEmailForm(i)" class="col-2">
                                     <mat-icon>clear</mat-icon>
                                 </button>
                             </div>

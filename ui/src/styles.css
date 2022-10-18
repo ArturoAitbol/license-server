@@ -39,7 +39,8 @@ button:focus {
 .mat-header-cell,
 .mat-cell {
   padding-left: 15px !important;
-} 
+}
+
 /* 
 .strip-table:nth-child(odd) {
     background: rgba(255, 255, 255, 1) 0% 0% no-repeat padding-box;
@@ -246,19 +247,19 @@ tbody tr {
   outline-width: 1.5pt;
 }
 
-.chekboxcontainer:hover input ~ .checkmark {
+.chekboxcontainer:hover input~.checkmark {
   background-color: #ccc;
 }
 
-.chekboxcontainer:hover input ~ .checkmarkTCP {
+.chekboxcontainer:hover input~.checkmarkTCP {
   background-color: #ccc;
 }
 
-.chekboxcontainer input:checked ~ .checkmark {
+.chekboxcontainer input:checked~.checkmark {
   background-color: #203c66;
 }
 
-.chekboxcontainer input:checked ~ .checkmarkTCP {
+.chekboxcontainer input:checked~.checkmarkTCP {
   background-color: white;
 }
 
@@ -274,11 +275,11 @@ tbody tr {
   display: none;
 }
 
-.chekboxcontainer input:checked ~ .checkmark:after {
+.chekboxcontainer input:checked~.checkmark:after {
   display: block;
 }
 
-.chekboxcontainer input:checked ~ .checkmarkTCP:after {
+.chekboxcontainer input:checked~.checkmarkTCP:after {
   display: block;
 }
 
@@ -330,12 +331,15 @@ tbody tr {
 .ng-sidebar__content--animate {
   overflow-y: hidden !important;
 }
+
 .ng-select.ng-select-single .ng-select-container {
   border: none;
 }
+
 .bs-timepicker-field {
   width: 70px !important;
 }
+
 /* .form-control.is-invalid,
 .was-validated .form-control:invalid {
   background-image: none !important;
@@ -347,14 +351,17 @@ tbody tr {
   text-align: center;
   width: 33px;
 }
+
 .autocomplete-wrap .autocomplete-container .suggestions-container {
   position: fixed !important;
   width: 12% !important;
 }
+
 html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -368,6 +375,7 @@ body {
   align-items: flex-start;
   align-content: flex-start;
 }
+
 th {
   font-size: 14px !important;
   color: black !important;
@@ -377,6 +385,7 @@ th {
 .mat-row:hover {
   background: whitesmoke;
 }
+
 .mat-dialog-actions {
   float: right !important;
 }
@@ -392,4 +401,9 @@ th {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+#page-title {
+  text-align: center;
 }

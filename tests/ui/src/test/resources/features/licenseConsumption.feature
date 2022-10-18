@@ -1,6 +1,6 @@
 @licenseConsumptionTest
 Feature: LicensesConsumption
-  Background: : Login successfully with valid credentials
+  Background: Login successfully with valid credentials
     Given I am on the landing page
     When I try to login with email and password
     Then I should see the "Customers" page
@@ -61,7 +61,7 @@ Feature: LicensesConsumption
       | tekTokens         | 7           |
     And I should see the same data in the tekToken Consumption Events table
 
-  @editLicenseConsumption @test
+  @editLicenseConsumption
   Scenario: Edit a tekToken Consumption
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
@@ -83,7 +83,7 @@ Feature: LicensesConsumption
       | tekTokens         | 4           |
     And I should see the same data in the tekToken Consumption Events table
 
-  @addLicenseConsumptionForSupport @test
+  @addLicenseConsumptionForSupport
   Scenario: Add a tekToken Consumption for a support device
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
@@ -109,7 +109,7 @@ Feature: LicensesConsumption
     And I should see the same data in the tekToken Consumption Events table
 
   @editLicenseConsumptionForSupport
-  Scenario: Edit a tekToken Consumption
+  Scenario: Edit the tekToken Consumption for a support device
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     When I edit the consumption of the project "supportTest" with the following data
@@ -121,10 +121,16 @@ Feature: LicensesConsumption
     And I should see the same data in the tekToken Consumption Events table
 
   @deleteLicenseConsumption
-  Scenario: Delete a tekToken Consumption
+  Scenario: Delete the tekToken Consumption of a device
     Given I see the customer "licenseUsageCustomerTest" in the table
     And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
     When I delete the consumption of the project "deviceTest"
+
+  @deleteLicenseConsumptionForSupport
+  Scenario: Delete the tekToken Consumption of a support device
+    Given I see the customer "licenseUsageCustomerTest" in the table
+    And I go to the tekToken Consumption view of "licenseUsageCustomerTest"
+    When I delete the consumption of the project "supportTest"
 
   @deleteCustomerProject
   Scenario: Delete the test licenses customer

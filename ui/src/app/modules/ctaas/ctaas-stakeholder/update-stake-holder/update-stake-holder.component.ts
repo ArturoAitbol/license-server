@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Report } from 'src/app/helpers/report';
+import { Constants } from 'src/app/helpers/constants';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
 
@@ -34,17 +35,17 @@ export class UpdateStakeHolderComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: [{ value: '' }, Validators.required],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
       type: ['', Validators.required],
       notifications: new FormArray([])
     });
     try {
-      const { mobilePhone, email } = this.data;
+      const { email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
-      let { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
+      const { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
       if (notifications) {
-        const mappedNotifications = notifications.split(',').map(e => {
-          const obj = this.reports.find(x => x.label === e);
+        const mappedNotifications = notifications.split(',').map((e: string) => {
+          const obj = this.reports.find((x: { label: string, value: string }) => x.label.toLowerCase() === e.toLowerCase());
           if (obj) {
             return obj.value;
           }
@@ -79,8 +80,8 @@ export class UpdateStakeHolderComponent implements OnInit {
    */
   getReports(): any[] {
     return [
-      { id: 1, label: "Daily reports", value: Report.DAILY_REPORTS },
-      { id: 2, label: "Weekly reports", value: Report.WEEKLY_REPORTS },
+      { id: 1, label: "Daily Reports", value: Report.DAILY_REPORTS },
+      { id: 2, label: "Weekly Reports", value: Report.WEEKLY_REPORTS },
       { id: 3, label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
   }
@@ -127,29 +128,29 @@ export class UpdateStakeHolderComponent implements OnInit {
     }
     return this.updateStakeholderForm.value;
   }
-  /**
-   * on change checkbox
-   * @param event : any
-   * @param item : any
-   */
-  onChangeReportCheckbox(event: any, item: any): void {
-    const { checked } = event;
-    const { value: selectedItemValue } = item;
-    const formArray: FormArray = this.updateStakeholderForm.get('notifications') as FormArray;
-    /* Selected */
-    if (checked) {
-      // Add a new control in the arrayForm
-      formArray.push(new FormControl(selectedItemValue));
-    } else { /* unselected */
-      // find the unselected element
-      formArray.controls.forEach((ctrl: FormControl, index: number) => {
-        if (ctrl.value == selectedItemValue) {
-          // Remove the unselected element from the arrayForm
-          formArray.removeAt(index);
-          return;
-        }
-      });
-    }
-  }
+  // /**
+  //  * on change checkbox
+  //  * @param event : any
+  //  * @param item : any
+  //  */
+  // onChangeReportCheckbox(event: any, item: any): void {
+  //   const { checked } = event;
+  //   const { value: selectedItemValue } = item;
+  //   const formArray: FormArray = this.updateStakeholderForm.get('notifications') as FormArray;
+  //   /* Selected */
+  //   if (checked) {
+  //     // Add a new control in the arrayForm
+  //     formArray.push(new FormControl(selectedItemValue));
+  //   } else { /* unselected */
+  //     // find the unselected element
+  //     formArray.controls.forEach((ctrl: FormControl, index: number) => {
+  //       if (ctrl.value == selectedItemValue) {
+  //         // Remove the unselected element from the arrayForm
+  //         formArray.removeAt(index);
+  //         return;
+  //       }
+  //     });
+  //   }
+  // }
 
 }

@@ -14,6 +14,8 @@ import { UpdateStakeHolderComponent } from './ctaas-stakeholder/update-stake-hol
 import { AddTestSuiteComponent } from './ctaas-test-suites/add-test-suite/add-test-suite.component';
 import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
 import { LicenseConfirmationModalComponent } from './ctaas-setup/license-confirmation-modal/license-confirmation-modal.component';
+import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/modify-test-suite.component';
+import { BannerComponent } from './banner/banner.component';
 
 
 @NgModule({
@@ -26,7 +28,9 @@ import { LicenseConfirmationModalComponent } from './ctaas-setup/license-confirm
     UpdateStakeHolderComponent,
     AddTestSuiteComponent,
     CtaasSetupComponent,
-    LicenseConfirmationModalComponent
+    LicenseConfirmationModalComponent,
+    ModifyTestSuiteComponent,
+    BannerComponent
 
   ],
   imports: [

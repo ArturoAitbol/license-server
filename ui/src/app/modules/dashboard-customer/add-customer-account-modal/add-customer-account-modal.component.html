@@ -40,9 +40,20 @@
                         <input matInput type="email" required formControlName="subaccountAdminEmail">
                     </mat-form-field>
                 </div>
+                <div *lcFeatureToggle="'ctaasFeature'">
+                    <h2 id="subaccount-services">Services</h2>
+                    <section class="d-flex flex-column align-items-start">
+                        <mat-checkbox class="checkbox-margin" *ngFor="let service of services; let i = index"
+                            [color]="'primary'" [checked]="service.used" (change)="setChecked($event.checked, i)"
+                            [name]="service.name+'-service'" [id]="service.name+'-service'">
+                            {{service.name}} </mat-checkbox>
+                    </section>
+                    <br>
+                </div>
                 <div>
                     <section class="text-left">
-                        <mat-checkbox id="test-customer-checkbox" color="primary" formControlName="testCustomer">Test Customer</mat-checkbox>
+                        <mat-checkbox id="test-customer-checkbox" color="primary" formControlName="testCustomer">Test
+                            Customer</mat-checkbox>
                         <small class="text-muted d-block">(For development and testing)</small>
                     </section>
                 </div>
@@ -50,7 +61,8 @@
         </div>
         <mat-dialog-actions>
             <button id="cancelBtn" type="button" mat-stroked-button (click)="onCancel()">Cancel</button>
-            <button id="submitBtn" mat-raised-button color="primary" [disabled]="addCustomerForm.invalid" type="submit">Submit</button>
+            <button id="submitBtn" mat-raised-button color="primary" [disabled]="addCustomerForm.invalid"
+                type="submit">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>

@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.exceptions.ADException;
 import com.function.util.FeatureToggles;
@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -49,7 +50,7 @@ public class TekvLSCreateCustomer
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.CREATE_CUSTOMER)){
+		if(!hasPermission(roles, Resource.CREATE_CUSTOMER)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -129,7 +130,7 @@ public class TekvLSCreateCustomer
 			
 			
 			if (jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value)) {
-				verifySubAdminEmailStmt.setString(1, jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value) ? jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value) : null);
+				verifySubAdminEmailStmt.setString(1,jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
 
 				context.getLogger().info("Execute SQL statement: " + verifySubAdminEmailStmt);
 				ResultSet rsSubEmails = verifySubAdminEmailStmt.executeQuery();
@@ -168,7 +169,7 @@ public class TekvLSCreateCustomer
 			emailStatement.executeUpdate();
 			context.getLogger().info("Admin emails inserted successfully.");
 
-			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation") && FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
+			if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
 				String customerName = jobj.getString(MANDATORY_PARAMS.CUSTOMER_NAME.value);
 				String customerEmail = jobj.getString(MANDATORY_PARAMS.CUSTOMER_ADMIN_EMAIL.value);
 				GraphAPIClient.createGuestUserWithProperRole(customerName,customerEmail,CUSTOMER_FULL_ADMIN,context);
@@ -185,7 +186,7 @@ public class TekvLSCreateCustomer
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			String modifiedResponse = adminEmailUnique(customerUnique(e.getMessage()));
+			String modifiedResponse = customerUnique(e.getMessage());
 			json.put("error", modifiedResponse);
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
@@ -200,12 +201,6 @@ public class TekvLSCreateCustomer
 		if(errorMessage.contains("customer_unique"))
 			return "Customer already exists";
 		return "SQL Exception: " + errorMessage;
-	}
-
-	private String adminEmailUnique(String errorMessage){
-		if(errorMessage.contains("customer_admin_pk"))
-			return "Administrator email already exists";
-		return errorMessage;
 	}
 
 	private enum MANDATORY_PARAMS {

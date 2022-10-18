@@ -19,13 +19,13 @@
         </div>
         <div class="container mt-5">
             <section>
-                <h1>You’ve signed up for the following CTaaS services:​</h1>
-                <p class="m-5 fs-4">CTaaS for Microsoft Teams</p>
+                <h1>You’ve signed up for the following SpotLight services:​</h1>
+                <p class="m-5 fs-4">SpotLight for Microsoft Teams</p>
                 <h1>We’ll help you set up your service in just a few minutes.</h1>
             </section>
             <div class="row mt-5">
                 <div class="col-6">
-                    <button class="btn btn-custom btn-sm px-5" data-bs-toggle="button" (click)="onClickBtn('confirm')">
+                    <button class="btn btn-custom btn-sm px-5" data-bs-toggle="button" (click)="onClickBtn('confirm')" title="Sure. Let's do it!">
                         <p>
                             Sure. Let's do it!
                         </p>
@@ -33,7 +33,7 @@
                 </div>
                 <div class="col-6">
                     <button class="btn btn-secondary btn-sm px-5" data-bs-toggle="button" mat-dialog-close
-                        (click)="onClickBtn('cancel')">
+                        (click)="onClickBtn('cancel')" title="Not right now">
                         <p>
                             Not right now
                         </p>
@@ -78,7 +78,7 @@
         <div class="row ">
             <div class="col-6">
                 <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
-                    class="form-control" maxlength="10"/>
+                    class="form-control"/>
                 <span
                     *ngIf="userProfileForm.get('phoneNumber').dirty && userProfileForm.get('phoneNumber').hasError('required')"></span>
                 <span
@@ -92,8 +92,8 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Select Type</mat-label>
                     <mat-select formControlName="type" id = "type">
-                        <mat-option value="TYPE:HIGH TIER"> HIGH TIER </mat-option>
-                        <mat-option value="TYPE:LOW TIER"> LOW TIER </mat-option>
+                        <mat-option value="TYPE:High level"> High level </mat-option>
+                        <mat-option value="TYPE:Detailed"> Detailed </mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -182,7 +182,7 @@
             <div class="row ">
                 <div class="col-6">
                     <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
-                        class="form-control" maxlength="10"/>
+                        class="form-control"/>
                     <span
                         *ngIf="stakeholderForm.get('phoneNumber').dirty && stakeholderForm.get('phoneNumber').hasError('required')"></span>
                     <span
@@ -196,8 +196,8 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Select Type</mat-label>
                         <mat-select formControlName="type" id = "type">
-                            <mat-option value="TYPE:HIGH TIER"> HIGH TIER </mat-option>
-                            <mat-option value="TYPE:LOW TIER"> LOW TIER </mat-option>
+                            <mat-option value="TYPE:High level"> High level </mat-option>
+                            <mat-option value="TYPE:Detailed"> Detailed </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>

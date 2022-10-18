@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
@@ -52,7 +52,7 @@ public class TekvLSDeleteUsageDetailsById
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.DELETE_USAGE_DETAILS)){
+		if(!hasPermission(roles, Resource.DELETE_USAGE_DETAILS)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -120,15 +120,6 @@ public class TekvLSDeleteUsageDetailsById
 					context.getLogger().info("Execute SQL statement: " + deleteLicenseStatement);
 					deleteLicenseStatement.executeUpdate();
 					context.getLogger().info("License delete successfully.");
-				}catch (SQLException e) {
-					context.getLogger().info("SQL exception: " + e.getMessage());
-					json.put("error", e.getMessage());
-					return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-				}
-				catch (Exception e) {
-					context.getLogger().info("Caught exception: " + e.getMessage());
-					json.put("error", e.getMessage());
-					return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 				}
 			}
 			return request.createResponseBuilder(HttpStatus.OK).build();

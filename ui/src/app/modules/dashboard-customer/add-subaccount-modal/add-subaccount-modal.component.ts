@@ -4,6 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MsalService } from '@azure/msal-angular';
 import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
 import { Features } from 'src/app/helpers/features';
+import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
@@ -20,8 +21,8 @@ export class AddSubaccountModalComponent implements OnInit {
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
   });
   services: any = [
-    {name: "Ctaas", value: "CTaaS", used: false},
-    {name: "tokenConsumption", value: "Token Consumption", used: true}
+    {name: tekVizionServices.SpotLight, value: "SpotLight", used: false},
+    {name: tekVizionServices.tekTokenConstumption, value: "tekToken Consumption", used: true}
   ];
   isDataLoading = false;
   customers: any[];

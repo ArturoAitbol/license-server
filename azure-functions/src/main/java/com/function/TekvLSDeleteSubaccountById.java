@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -51,7 +52,7 @@ public class TekvLSDeleteSubaccountById
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.DELETE_SUB_ACCOUNT)){
+		if(!hasPermission(roles, Resource.DELETE_SUB_ACCOUNT)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -72,14 +73,26 @@ public class TekvLSDeleteSubaccountById
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-			if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
-				String emailSql = "SELECT subaccount_admin_email FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
+			if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+				String emailSql = "SELECT sa.subaccount_admin_email, ca.admin_email FROM subaccount_admin sa " +
+						"LEFT JOIN customer_admin ca ON sa.subaccount_admin_email = ca.admin_email " +
+						"WHERE subaccount_id = ?::uuid;";
+
 				try(PreparedStatement emailStatement = connection.prepareStatement(emailSql)){
 					emailStatement.setString(1, id);
+					context.getLogger().info("Execute SQL statement: " + emailStatement);
 					ResultSet rs = emailStatement.executeQuery();
-					if (rs.next()) {
-						GraphAPIClient.removeRole(rs.getString("subaccount_admin_email"), SUBACCOUNT_ADMIN, context);
-						context.getLogger().info("Guest User Role removed successfully from Active Directory.");
+					String adminEmail,subaccountAdminEmail;
+					while(rs.next()) {
+						adminEmail = rs.getString("admin_email");
+						if(adminEmail!=null){
+							GraphAPIClient.removeRole(adminEmail, SUBACCOUNT_ADMIN, context);
+							context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+adminEmail+").");
+							continue;
+						}
+						subaccountAdminEmail = rs.getString("subaccount_admin_email");
+						GraphAPIClient.deleteGuestUser(subaccountAdminEmail,context);
+						context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+subaccountAdminEmail+").");
 					}
 				}
 			}

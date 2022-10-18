@@ -80,7 +80,7 @@ mat-form-field {
   flex: 1;
 }
 
-.device-container--start {
+.device-container-start {
   order: -1;
 }
 

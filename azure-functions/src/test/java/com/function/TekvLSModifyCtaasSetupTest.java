@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
+import com.function.util.Constants;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
@@ -31,8 +32,8 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'status': 'SETUP_INPROGRESS'}";
+        String bodyRequest = "{'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'status': '" + Constants.CTaaSSetupStatus.INPROGRESS.value() + "'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = tekvLSCreateCtaasSetup.run(this.request,this.context);
         this.context.getLogger().info(response.getBody().toString());
@@ -56,9 +57,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     public void modifyCtaasSetupTest(){
         //Given
         String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'SETUP_READY'," +
-                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
+                "'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -75,6 +76,23 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         JSONObject jsonBody = new JSONObject(response.getBody().toString());
         assertTrue(jsonBody.has("projectId"));
         assertTrue(jsonBody.has("deviceId"));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void modifyCtaasSetupStatusInProgressTest(){
+        //Given
+        String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.INPROGRESS.value() + "'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
     }
     
     @Tag("acceptance")
@@ -98,9 +116,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     @Test
     public void modifyStatusTest(){
         //Given
-    	String bodyRequest = "{'status': 'SETUP_READY'," +
-        "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-        "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'}";
+    	String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+        "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+        "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -116,7 +134,64 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         assertTrue(jsonBody.has("projectId"));
         assertTrue(jsonBody.has("deviceId"));
     }
-    
+
+
+    @Tag("acceptance")
+    @Test
+    public void modifyStatusTestWithoutLicenseId(){
+        //Given
+        String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "error: licenseId is missing.";
+        assertEquals(expectedResponse,actualResponse,"Response doesn't match with: ".concat(expectedResponse));
+    }
+
+
+    @Tag("acceptance")
+    @Test
+    public void modifyStatusTestWithoutSubaccountId(){
+        //Given
+        String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "error: subaccountId is missing.";
+        assertEquals(expectedResponse,actualResponse,"Response doesn't match with: ".concat(expectedResponse));
+    }
+
+
+
     @Tag("acceptance")
     @Test
     public void modifyTapDetailsTest(){
@@ -254,9 +329,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         //Given
         String invalidId = "invalid-id";
         String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'SETUP_READY'," +
-                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
+                "'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -275,9 +350,9 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     public void genericExceptionTest(){
         //Given
     	String bodyRequest = "{'azureResourceGroup': 'tapResourceGroup'," +
-                "'status': 'SETUP_READY'," +
-                "'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'licenseId': 'b84852d7-0f04-4e9a-855c-7b2f01f61591'," +
+                "'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
                 "'onBoardingComplete': 'true'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();

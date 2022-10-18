@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.*;
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -48,7 +49,7 @@ public class TekvLSGetAllProjects {
 		   json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 		   return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 	   }
-	   if(!hasPermission(roles, Permission.GET_ALL_PROJECTS)){
+	   if(!hasPermission(roles, Resource.GET_ALL_PROJECTS)){
 		   JSONObject json = new JSONObject();
 		   context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 		   json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -153,7 +154,7 @@ public class TekvLSGetAllProjects {
 				item.put("openDate", rs.getString("open_date").split(" ")[0]);
 				closeDate = rs.getString("close_date");
 				item.put("closeDate", closeDate != null ? closeDate.split(" ")[0] : JSONObject.NULL);
-				if (hasPermission(roles, Permission.GET_USER_EMAIL_INFO))
+				if (hasPermission(roles, Resource.GET_USER_EMAIL_INFO))
 					item.put("projectOwner", rs.getString("project_owner"));
 				array.put(item);
 			}

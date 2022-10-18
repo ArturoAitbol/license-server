@@ -1,6 +1,6 @@
 package com.function;
 
-import com.function.auth.Permission;
+import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.exceptions.ADException;
 import com.function.util.Constants;
@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -52,7 +53,7 @@ public class TekvLSCreateSubaccount
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Permission.CREATE_SUBACCOUNT)){
+		if(!hasPermission(roles, Resource.CREATE_SUBACCOUNT)){
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -160,18 +161,18 @@ public class TekvLSCreateSubaccount
 			insertEmailStmt.executeUpdate();
 			context.getLogger().info("Subaccount admin email inserted successfully.");
 			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
-				if (subaccountServices.contains(Constants.SubaccountServices.CTAAS.value())) {
+				if (subaccountServices.contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
 					insertCtassSetupStmt.setString(1, subaccountId);
 					insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());
 					insertCtassSetupStmt.setBoolean(3, Constants.DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
 		
 					context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
 					insertCtassSetupStmt.executeUpdate();
-					context.getLogger().info("CTaaS setup default values inserted successfully.");
+					context.getLogger().info("SpotLight setup default values inserted successfully.");
 
-					if(!FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
+					if (!FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
 						this.ADUserCreation(jobj,context);
-				}else{
+				} else {
 					this.ADUserCreation(jobj,context);
 				}
 			} else {
@@ -210,7 +211,7 @@ public class TekvLSCreateSubaccount
 	}
 
 	private void ADUserCreation(JSONObject jobj, ExecutionContext context) throws Exception {
-		if(FeatureToggles.INSTANCE.isFeatureActive("ad-user-creation")) {
+		if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
 			String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
 			String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
 			GraphAPIClient.createGuestUserWithProperRole(subaccountName, subaccountEmail, SUBACCOUNT_ADMIN, context);
