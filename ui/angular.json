@@ -30,10 +30,13 @@
             "styles": [
               "src/styles.css",
               "src/styles.scss",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css"
             ],
             "scripts": [
-              "node_modules/bootstrap/dist/js/bootstrap.js"
+              "./node_modules/bootstrap/dist/js/bootstrap.min.js",
+              "./node_modules/jquery/dist/jquery.min.js",
+              "./node_modules/popper.js/dist/umd/popper.min.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -44,12 +47,10 @@
           },
           "configurations": {
             "integration": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.integration.ts"
-                }
-              ],
+              "fileReplacements": [{
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.integration.ts"
+              }],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -57,8 +58,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "budgets": [
-                {
+              "budgets": [{
                   "type": "initial",
                   "maximumWarning": "3mb",
                   "maximumError": "5mb"
@@ -70,12 +70,10 @@
               ]
             },
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
+              "fileReplacements": [{
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.prod.ts"
+              }],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -83,8 +81,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "budgets": [
-                {
+              "budgets": [{
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
@@ -128,11 +125,16 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "./node_modules/bootstrap/dist/css/bootstrap.css",
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/styles.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "./node_modules/bootstrap/dist/js/bootstrap.min.js",
+              "./node_modules/jquery/dist/jquery.min.js",
+              "./node_modules/popper.js/dist/umd/popper.min.js"
+            ],
             "assets": ["src/favicon.ico", "src/assets", "src/privacy.html"],
             "codeCoverage": true
           }

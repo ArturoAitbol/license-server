@@ -1,15 +1,19 @@
 .content {
   padding: 20px;
 }
+
 table {
   width: 100%;
 }
+
 .table-section {
   margin-top: 5%;
 }
+
 th.mat-sort-header-sorted {
   color: black;
 }
+
 .btn-section {
   float: right;
 }
@@ -17,19 +21,34 @@ th.mat-sort-header-sorted {
 .example-form-field {
   margin-right: 20px;
 }
+
 .mt-4 {
   margin-top: auto;
 }
+
 h1 {
   font-weight: 500;
 }
+
 .table-container {
   position: relative;
   min-height: 200px;
   overflow: auto;
 }
+
 .no-data-found {
   font-size: 1rem;
   font-weight: 500;
   margin-top: 50px;
+}
+
+.add-btn {
+  display: flex;
+  justify-content: end;
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .add-btn {
+    display: block;
+  }
 }
