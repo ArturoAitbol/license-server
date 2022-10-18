@@ -520,7 +520,7 @@ describe('Dialog calls and interactions', () => {
         expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalledTimes(2);
     });
     it('should delete a consumptionDetail after confirmDialog when calling onDelete()',()=>{
-        dialogService.expectedValue = true;
+        dialogService.expectedConfirmDialogValue = true;
         const consumption = ConsumptionServiceMock.mockConsumptionA;
         spyOn(ConsumptionServiceMock,'deleteLicenseConsumptionDetails').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance,'fetchDataToDisplay');

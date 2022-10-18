@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { Subject } from 'rxjs/internal/Subject';
@@ -15,6 +15,7 @@ import { Features } from './helpers/features';
 import { MatSidenav } from '@angular/material/sidenav';
 import { Constants } from './helpers/constants';
 import { Utility } from './helpers/utils';
+import { MediaMatcher } from '@angular/cdk/layout';
 
 
 @Component({
@@ -24,6 +25,8 @@ import { Utility } from './helpers/utils';
 })
 export class AppComponent implements OnInit, OnDestroy {
     private readonly _destroying$ = new Subject<void>();
+    @ViewChild('snav') snav;
+    mobileQuery: MediaQueryList;
     title = 'license-server';
     currentUser = false;
     // added as part of spotlight feature
@@ -81,13 +84,22 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
 
+    private _mobileQueryListener: () => void;
+
     constructor(
         private router: Router,
         private msalService: MsalService,
         public dialog: MatDialog,
         private broadcastService: MsalBroadcastService,
-        private autoLogoutService: AutoLogoutService
+        private autoLogoutService: AutoLogoutService,
+        changeDetectorRef: ChangeDetectorRef, 
+        media: MediaMatcher
     ) {
+
+        this.mobileQuery = media.matchMedia('(max-width: 600px)');
+        this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+        this.mobileQuery.addEventListener("change",this._mobileQueryListener);
+
         const angularPlugin = new AngularPlugin();
         const appInsights = new ApplicationInsights({
             config: {
@@ -256,6 +268,7 @@ export class AppComponent implements OnInit, OnDestroy {
         const { path } = item;
         const componentRoute = this.baseCtaasURL + path;
         this.router.navigate([componentRoute]);
+        if(this.mobileQuery.matches) this.snav.toggle();
     }
     /**
      * enable side bar based on the service and this feature is enabled only when CTaaS_Feature is enabled

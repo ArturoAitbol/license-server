@@ -18,3 +18,6 @@ mat-form-field {
 .checkbox-margin{
   margin-right: 16%;
 }
+.checkbox-hint{
+  margin-top: -10px;
+}

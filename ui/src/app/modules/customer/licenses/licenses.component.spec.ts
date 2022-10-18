@@ -219,7 +219,7 @@ describe('Dialog calls and interactions', ()=>{
         spyOn(licensesComponentTestInstance,'fetchLicenses');
         const license: License = LicenseServiceMock.mockLicenseA;
 
-        dialogServiceMock.setExpectedValue(true);
+        dialogServiceMock.setExpectedConfirmDialogValue(true);
         licensesComponentTestInstance.onDelete(license);
 
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
@@ -233,7 +233,7 @@ describe('Dialog calls and interactions', ()=>{
         spyOn(LicenseServiceMock,'deleteLicense').and.callThrough();
         spyOn(licensesComponentTestInstance,'fetchLicenses');
 
-        dialogServiceMock.setExpectedValue(false);
+        dialogServiceMock.setExpectedConfirmDialogValue(false);
         licensesComponentTestInstance.onDelete(LicenseServiceMock.mockLicenseA);
         
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
