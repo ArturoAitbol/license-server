@@ -82,9 +82,10 @@ const beforeEachFunction = () => {
     });
     fixture = TestBed.createComponent(CtaasSetupComponent);
     CtaasSetupComponentTestInstance = fixture.componentInstance;
+    CtaasSetupComponentTestInstance.ngOnInit();
     loader = TestbedHarnessEnvironment.loader(fixture);
     spyOn(console, 'log').and.callThrough();
-    
+  
 }
 
 describe('UI verification test', () => {
@@ -188,12 +189,15 @@ describe('setup form verifications', () => {
             powerBiWorkspaceId: '',
             powerBiReportId: ''
         });
+        expect(setup.hasError('required')).toBeTruthy;
+        
         expect(setup.get('azureResourceGroup').valid).toBeFalse();
         expect(setup.get('tapUrl').valid).toBeFalse();
         expect(setup.get('status').valid).toBeFalse();
         expect(setup.get('onBoardingComplete').valid).toBeFalse();
         expect(setup.get('powerBiWorkspaceId').valid).toBeFalse();
         expect(setup.get('powerBiReportId').valid).toBeFalse();
+        expect(setup.valid).toBeFalsy();
     });
 
 });
@@ -217,9 +221,12 @@ describe('dailog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     it('should update setup details on "Update" button click, if case of one license', () => {
+        spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
+
         const testUser = CtaasSetupServiceMock.testuser1
         testUser.status = 'READY';
-        activeLicenses.length === 1;
+        CtaasSetupComponentTestInstance.editForm();
+
         fixture.detectChanges();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
 
@@ -228,12 +235,17 @@ describe('dailog calls and interactions', () => {
     });
 
     it('should open dialog with expected data when update button is clicked, in case if there’s more than one license', () => {
+        spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
+
         const testUser = CtaasSetupServiceMock.testuser1
         testUser.status = 'READY';
+        CtaasSetupComponentTestInstance.editForm();
+        
         licenseList.licenses.length > 1;
         fixture.detectChanges();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
         spyOn(CtaasSetupComponentTestInstance, 'openDialog').and.callThrough(); 
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
 
         CtaasSetupComponentTestInstance.submit();
         CtaasSetupComponentTestInstance.openDialog(activeLicenses);

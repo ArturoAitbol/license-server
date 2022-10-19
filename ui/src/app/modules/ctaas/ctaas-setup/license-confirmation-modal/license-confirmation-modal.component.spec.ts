@@ -143,6 +143,17 @@ describe('UI verification test', () => {
         expect(submitBtn.disabled).toBeFalsy();
     });
 
+    it('should update form on submit button click', () => {
+        const license = licenseComponentTestInstance.form.get('license');
+        spyOn(licenseComponentTestInstance, 'submit').and.callThrough();
+        license.setValue(activeLicenses[0]);
+        licenseComponentTestInstance.submit();
+        fixture.detectChanges();
+        const submitBtn = fixture.nativeElement.querySelector('#submit-button');
+        expect(submitBtn.disabled).toBeFalsy();
+        expect(licenseComponentTestInstance.submit).toHaveBeenCalled();
+    });
+
     it('should cancel when "Cancel" is clicked', () => {
         fixture.detectChanges();
         spyOn(licenseComponentTestInstance, 'onCancel').and.callThrough();

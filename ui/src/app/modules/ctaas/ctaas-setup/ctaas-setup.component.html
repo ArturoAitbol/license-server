@@ -20,7 +20,7 @@
             <div *ngIf="isEditing" class="group-btn-container">
                 <ng-container>
                     <div class="col-auto">
-                        <button color="primary" mat-raised-button id="update-button" (click)="submit()" id="update-button">
+                        <button color="primary" mat-raised-button id="update-button" (click)="submit()" id="update-button" [disabled]="!setupForm.valid">
                             Update
                         </button>
                     </div>
