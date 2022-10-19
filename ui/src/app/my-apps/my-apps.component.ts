@@ -112,7 +112,7 @@ export class MyAppsComponent implements OnInit {
             const {id} = this.ctaasSetupDetails;
             this.dialog.open(OnboardWizardComponent, {
                 width: '700px',
-                height: '500px',
+                maxHeight: '80vh',
                 disableClose: true,
                 data: id
             });
