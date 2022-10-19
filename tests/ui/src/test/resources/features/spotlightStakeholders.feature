@@ -8,11 +8,11 @@ Feature: Stakeholders
     Given I try to login using a "FullAdministrator"
     And I open the Add Customer form
     When I create a customer with the following data
-      | name          | stakeholderTestCustomer              |
-      | type          | MSP                                   |
-      | subaccount    | Default                               |
-      | spotlight     | yes                                   |
-      | testCustomer  | yes                                   |
+      | name          | stakeholderTestCustomer |
+      | type          | MSP                     |
+      | subaccount    | Default                 |
+      | spotlight     | yes                     |
+      | testCustomer  | yes                     |
     Then I see the customer "stakeholderTestCustomer" in the table
 
   @addStakeholder
@@ -22,15 +22,15 @@ Feature: Stakeholders
     And I go to the spotlight "Stakeholders" tab
     And I open the Add Stakeholder form
     When I create a stakeholder with the following data
-      | name                  | stakeholderTest                |
-      | jobTitle              | Manager                        |
-      | companyName           | stakeholderCompany             |
-      | phoneNumber           | 6524352354                      |
-      | type                  | High level                      |
+      | name          | stakeholderTest         |
+      | jobTitle      | Manager                 |
+      | companyName   | stakeholderCompany      |
+      | phoneNumber   | 6524352354              |
+      | type          | High level              |
     Then I should see the message "Created Stakeholder successfully"
     And I logout
 
-  @loginStakeholder @test
+  @loginStakeholder
   Scenario: Stakeholder login
     Given I try to login using a "Stakeholder"
     Then I should see the "SpotLight" view
@@ -38,7 +38,7 @@ Feature: Stakeholders
       | Dashboard     |
     And I logout
 
-  @editStakeholder
+  @editStakeholder @ignore
   Scenario: Edit a StakeHolder
     Given I try to login using a "FullAdministrator"
     And I see the customer "stakeholderTestCustomer" in the table

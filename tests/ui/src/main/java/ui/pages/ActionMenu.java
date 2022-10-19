@@ -61,7 +61,10 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public void editForm(String type) {
-        this.action.forceClick(this.editButton);
+        if (!type.equals("stakeholder"))
+            this.action.forceClick(this.editButton);
+        else
+            this.action.forceClick(this.spotlightUpdateStakeholderButton);
         if (!type.equals("customer") && !type.equals("stakeholder"))
             this.action.waitSpinner(this.spinnerSelector);
     }
@@ -81,6 +84,8 @@ public class ActionMenu extends AbstractPageObject {
     public Dashboard goToSpotlightDashboard() {
         JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.spotlightDashboardButton);
+        By messageSelector = By.xpath("//simple-snack-bar");
+        this.action.waitSpinner(messageSelector);
         return new Dashboard();
     }
 

@@ -1,7 +1,7 @@
 @loginTest
 Feature: Login
 
-  @validCredentials
+  @validCredentials @local
   Scenario: Login successfully with valid credentials
     Given I am on the landing page
     When I try to login using a "FullAdministrator"

@@ -31,8 +31,8 @@ public class LoginForm extends AbstractPageObject {
         this.action.click(acceptButton);
         this.action.sendText(this.passwordInput, password);
         this.action.click(acceptButton);
-        if (role.equals("Stakeholder") || role.equals("SubaccountAdministrator"))
-            this.action.forceClick(permissionButton);
+/*        if (role.equals("Stakeholder") || role.equals("SubaccountAdministrator"))
+            this.action.forceClick(permissionButton);*/
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);
         assertTrue(this.action.checkTitle("tekVizion 360 Portal"));

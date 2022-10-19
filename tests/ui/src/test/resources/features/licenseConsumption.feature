@@ -11,9 +11,9 @@ Feature: LicensesConsumption
     When I create a customer with the following data
       | name          | licenseUsageCustomerTest              |
       | type          | MSP                                   |
-      | adminEmail    | test-usage@tekvizion.com              |
+#      | adminEmail    | test-usage@tekvizion.com              |
       | subaccount    | Default                               |
-      | subAdminEmail | test-usage@tekvizion.com              |
+#      | subAdminEmail | test-usage@tekvizion.com              |
       | testCustomer  | yes                                   |
     Then I see the customer "licenseUsageCustomerTest" in the table
 
@@ -42,8 +42,6 @@ Feature: LicensesConsumption
       | subscription      | License1    |
     And I should see the message "Project added successfully!"
     When I add a consumption with the following data
-#      | startWeek         | 8/21/2022     |
-#      | endWeek           | 8/27/2022     |
       | project           | deviceTest                        |
       | deviceVendor      | Cisco                             |
       | deviceModel       | Contact Center Enterprise (UCCE)  |

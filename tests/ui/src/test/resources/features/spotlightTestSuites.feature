@@ -11,9 +11,9 @@ Feature: TestSuites
     When I create a customer with the following data
       | name          | SpotlightTestSuite                    |
       | type          | MSP                                   |
-      | adminEmail    | spotlight-test-suite@tekvizion.com    |
+#      | adminEmail    | spotlight-test-suite@tekvizion.com    |
       | subaccount    | Default                               |
-      | subAdminEmail | spotlight-test-suite-sa@tekvizion.com |
+#      | subAdminEmail | spotlight-test-suite-sa@tekvizion.com |
       | spotlight     | yes                                   |
       | testCustomer  | yes                                   |
     Then I see the customer "SpotlightTestSuite" in the table

@@ -4,27 +4,18 @@ Feature: Customers
     Given I am on the landing page
     When I try to login using a "FullAdministrator"
     Then I should see the "Customers" page
+
   @createTestCustomer
   Scenario: Create a test customer
     Given I open the Add Customer form
     When I create a customer with the following data
       | name          | customerTest                      |
       | type          | Reseller                          |
-      | adminEmail    | test-customer@tekvizion.com       |
+#      | adminEmail    | test-customer@tekvizion.com       |
       | subaccount    | subaccountTest                    |
-      | subAdminEmail | test-customer@tekvizion.com       |
+#      | subAdminEmail | test-customer@tekvizion.com       |
       | testCustomer  | yes                               |
     Then I see the customer "customerTest" in the table
-  @createCustomer
-  Scenario: Create a customer
-    Given I open the Add Customer form
-    When I create a customer with the following data
-      | name          | newCustomer                       |
-      | type          | MSP                               |
-      | adminEmail    | admin-customer@tekvizion.com      |
-      | subaccount    | newSubaccount                     |
-      | subAdminEmail | subadmin-customer@tekvizion.com   |
-    Then I see the customer "newCustomer" in the table
 
   @addCustomerAdmin
   Scenario: Add a customer administrator

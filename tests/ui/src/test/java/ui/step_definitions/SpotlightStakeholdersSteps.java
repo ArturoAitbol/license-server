@@ -51,7 +51,8 @@ public class SpotlightStakeholdersSteps {
 
     @When("I edit the stakeholder {string} with the following data")
     public void iEditTheStakeholderWithTheFollowingData(String currentStakeholder, DataTable dataTable) {
-        this.stakeholderRow = new StakeholderRow(currentStakeholder);
+//        this.stakeholderRow = new StakeholderRow(currentStakeholder);
+        this.stakeholderRow = new StakeholderRow(environment.stakeholderUser());
         ActionMenu actionMenu = this.stakeholderRow.openActionMenu();
         actionMenu.editForm("stakeholder");
         this.stakeholderForm = new StakeholderForm();
