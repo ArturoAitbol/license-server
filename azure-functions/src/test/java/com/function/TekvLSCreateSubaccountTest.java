@@ -2,6 +2,7 @@ package com.function;
 
 import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
+import com.function.util.Constants;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
@@ -77,11 +78,12 @@ class TekvLSCreateSubaccountTest extends TekvLSTest {
     public void createSubaccountWithCtaasTest() {
         //Given - Arrange
         String name = "unitTest" + LocalDateTime.now();
+        String services = Constants.SubaccountServices.SPOTLIGHT.value()+","+ Constants.SubaccountServices.TOKEN_CONSUMPTION.value();
         String bodyRequest = "{\n" +
                 "    \"subaccountName\": \"" + name + "\",\n" +
                 "    \"customerId\": 7d133fd2-8228-44ff-9636-1881f58f2dbb,\n" +
                 "    \"subaccountAdminEmail\": \"" + name + "@test.com\",\n" +
-                "    \"services\": \"Ctass,tokenConsumption\"\n" +
+                "    \"services\": \""+services+"\"\n" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 

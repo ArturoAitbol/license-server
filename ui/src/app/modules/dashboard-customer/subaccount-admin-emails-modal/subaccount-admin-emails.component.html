@@ -10,7 +10,7 @@
                     <label style="font-weight: bold;">{{data.name}}</label>
                 </div>
                 <div class="email-info" *ngFor="let email of adminEmails; let emailIndex = index">
-A                    <div class="row d-flex justify-content-between align-items-center" title="{{email}}">
+                    <div class="row d-flex justify-content-between align-items-center" title="{{email}}">
                         <label class="col-form-label email col-10"><b>Email: </b>{{email}}</label>
                         <button id="clearButton" *lcCheckAccessFor="'deleteSubAccAdminEmail'" mat-icon-button color="primary" title="Delete email"
                             (click)="deleteExistingEmail(emailIndex)" class="col-2">

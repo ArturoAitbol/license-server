@@ -518,7 +518,7 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
         assertTrue(ctaasSetup.has("tapUrl"));
         assertTrue(ctaasSetup.has("onBoardingComplete"));
 
-        String expectedCtaasSetupId = "39b5ed3f-9ab2-4feb-a2ac-9c450db181a0";
+        String expectedCtaasSetupId = "fee9374f-2c18-4feb-9dc2-fa1280651802";
         assertEquals(expectedCtaasSetupId,ctaasSetup.getString("id"));
     }
     

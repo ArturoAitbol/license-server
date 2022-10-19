@@ -130,7 +130,7 @@ public class TekvLSCreateCustomer
 			
 			
 			if (jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value)) {
-				verifySubAdminEmailStmt.setString(1, jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value) ? jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value) : null);
+				verifySubAdminEmailStmt.setString(1,jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
 
 				context.getLogger().info("Execute SQL statement: " + verifySubAdminEmailStmt);
 				ResultSet rsSubEmails = verifySubAdminEmailStmt.executeQuery();
@@ -186,7 +186,7 @@ public class TekvLSCreateCustomer
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
-			String modifiedResponse = adminEmailUnique(customerUnique(e.getMessage()));
+			String modifiedResponse = customerUnique(e.getMessage());
 			json.put("error", modifiedResponse);
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
@@ -201,12 +201,6 @@ public class TekvLSCreateCustomer
 		if(errorMessage.contains("customer_unique"))
 			return "Customer already exists";
 		return "SQL Exception: " + errorMessage;
-	}
-
-	private String adminEmailUnique(String errorMessage){
-		if(errorMessage.contains("customer_admin_pk"))
-			return "Administrator email already exists";
-		return errorMessage;
 	}
 
 	private enum MANDATORY_PARAMS {

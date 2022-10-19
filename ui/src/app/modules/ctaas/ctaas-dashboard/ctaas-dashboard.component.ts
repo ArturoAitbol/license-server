@@ -111,10 +111,9 @@ export class CtaasDashboardComponent implements OnInit {
         this.subaccountId = subaccountId ? subaccountId : id;
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountId)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
-                // const setupDetails: ICtaasSetup = response['ctaasSetups'][0];
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
                 const {onBoardingComplete, status} = this.ctaasSetupDetails;
-                this.isOnboardingComplete = (onBoardingComplete === 'f'); // t- true | f - false
+                this.isOnboardingComplete = onBoardingComplete;
                 this.onboardSetupStatus = status;
                 this.setupCustomerOnboardDetails();
             });
@@ -126,11 +125,11 @@ export class CtaasDashboardComponent implements OnInit {
     setupCustomerOnboardDetails(): void {
         const index = this.loggedInUserRoles.findIndex(e => e.includes('customer.SubaccountAdmin'));
         // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
-        if ((this.isOnboardingComplete && index !== -1)) {
+        if ((!this.isOnboardingComplete && index !== -1)) {
             const {id} = this.ctaasSetupDetails;
             this.dialog.open(OnboardWizardComponent, {
                 width: '700px',
-                height: '500px',
+                maxHeight: '80vh',
                 disableClose: true,
                 data: id
             });

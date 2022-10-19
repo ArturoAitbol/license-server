@@ -1,7 +1,6 @@
 .banner-container {
-    height: 40px;
     background: #f0f0f0;
-    padding: 6px;
+    padding: 6px 6px 6px 12px;
 }
 ul {
     list-style-type: none;
@@ -10,19 +9,26 @@ ul {
     padding: 0;
 }
 ul li {
-    padding: 0px 10px;
     display: inline-block;
     color: #203c66;
     font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
     letter-spacing: normal;
     /* margin: 0 0 16px; */
 }
-ul.breadcrumb li+li:before {
-    /* padding: 8px; */
+/* ul.breadcrumb li+li:before {
     color: #203c66;
     content: "/\00a0";
-}
+} */
 .alignment {
     margin-left: 12px;
     margin-right: 12px;
-} 
+}
+
+@media (max-width: 600px) {
+    .banner-container {
+        padding: 0px 2px 0px 6px;
+    }
+    ul li {
+        font-size:calc(5px + 1.7vw);
+    }
+}

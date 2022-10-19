@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doThrow;
 
@@ -152,14 +155,16 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         assertTrue(jsonBody.has("weeklyConsumption"));
         JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
-        assertEquals(1, weeklyConsumption.length());
+        assertEquals(2, weeklyConsumption.length());
 
         assertTrue(jsonBody.has("usage"));
         JSONArray usage = jsonBody.getJSONArray("usage");
-        assertEquals(1, usage.length());
+        assertEquals(2, usage.length());
 
-        String expectedProjectId = "2bdaf2af-838f-4053-b3fa-ef22aaa11b0d";
-        assertEquals(expectedProjectId,usage.getJSONObject(0).getString("projectId"));
+        List<String> expectedProjectIds = Arrays.asList("2bdaf2af-838f-4053-b3fa-ef22aaa11b0d","7564aab0-5331-4ab5-85f7-e37acbdfd90d");
+        for (int i = 0; i < 2; i++) {
+            assertTrue(expectedProjectIds.contains(usage.getJSONObject(i).getString("projectId")));
+        }
 
         assertTrue(jsonBody.has("projectConsumption"));
         JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
@@ -252,6 +257,42 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
         String expectedMessage = RoleAuthHandler.MESSAGE_FOR_INVALID_ID;
         assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void licenseIdFilterTest(){
+        //Given
+        this.queryParams.put("subaccountId",subaccountId);
+        this.queryParams.put("licenseId","a3475bf9-41d5-432a-ae2d-ccf7681385cf");
+
+        //When
+        HttpResponseMessage response = getAllLicenseUsageDetails.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("usageTotalCount"));
+
+        assertTrue(jsonBody.has("tokenConsumption"));
+
+        assertTrue(jsonBody.has("usage"));
+        JSONArray usage = jsonBody.getJSONArray("usage");
+        assertEquals(1, usage.length());
+
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertEquals(1, weeklyConsumption.length());
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertEquals(1, projectConsumption.length());
     }
 
     @Tag("acceptance")
