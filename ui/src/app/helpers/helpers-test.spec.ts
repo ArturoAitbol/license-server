@@ -1,7 +1,6 @@
-import { FeatureToggleDirective } from "../directives/feature-toggle.directive";
-import { FeatureToggleHelper } from "./feature-toggle.helper";
 import { Utility } from "./utils";
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
+import { FormControl, FormGroup } from "@angular/forms";
+import { renewalDateValidator } from "./renewal-date.validator";
 
 describe('testing changing utils', () => {
 
@@ -98,7 +97,85 @@ describe('table options', () => {
         Utility.getTableOptions(['tekvizion.FullAdmin'], 'MODIFY_STAKEHOLDER', "stakeholderOptions")
         expect(Utility.getTableOptions).toHaveBeenCalled();
     });
+
+    it('should call getTableOptions with a null role', () => {
+        spyOn(Utility, 'getTableOptions').and.callThrough();
+        Utility.getTableOptions([null], 'MODIFY_STAKEHOLDER', "stakeholderOptions")
+        expect(Utility.getTableOptions).toHaveBeenCalled();
+    });
+
+    it('should call getNavbarOptions', () => {
+        spyOn(Utility, 'getNavbarOptions').and.callThrough();
+        Utility.getNavbarOptions(['tekvizion.FullAdmin'], [{
+            "name": "Dashboard",
+            "iconName": "assets\\images\\dashboard_3.png",
+            "path": "report-dashboards",
+            "active": true,
+            "materialIcon": "dashboard"
+        }]);
+        expect(Utility.getNavbarOptions).toHaveBeenCalled();
+    });
+
+    it('should call getNavbarOptions with a null role', () => {
+        spyOn(Utility, 'getNavbarOptions').and.callThrough();
+        Utility.getNavbarOptions([null], [{
+            "name": "Dashboard",
+            "iconName": "assets\\images\\dashboard_3.png",
+            "path": "report-dashboards",
+            "active": true,
+            "materialIcon": "dashboard"
+        }]);
+        expect(Utility.getNavbarOptions).toHaveBeenCalled();
+    });
 });
 
+describe('renewal date tests with nill dates', () => {
+    let formGroup: FormGroup
+    const description = 'description'
+    const tokensPurchased = 'tokensPurchased'
+    const deviceLimit = 'deviceLimit'
+    const renewalDate = 'renewalDate'
+    beforeEach(() => {
+        formGroup = new FormGroup({
+          [description]: new FormControl(),
+          [tokensPurchased]: new FormControl(),
+          [deviceLimit]: new FormControl(),
+          [renewalDate]: new FormControl(),
+        }, renewalDateValidator);
+    });
 
+    it('should call renewalDateValidator', () => {
+        expect(formGroup.get('renewalDate').value).toBe(null);
+    });
+});
 
+describe('renewal date tests', () => {
+    let formGroup: FormGroup
+    const description = 'description'
+    const tokensPurchased = 'tokensPurchased'
+    const deviceLimit = 'deviceLimit'
+    const renewalDate = 'renewalDate'
+    const startDate = 'startDate'
+    beforeEach(() => {
+        formGroup = new FormGroup({
+          [description]: new FormControl(),
+          [tokensPurchased]: new FormControl(),
+          [deviceLimit]: new FormControl(),
+          [renewalDate]: new FormControl(),
+          [startDate]: new FormControl()
+        }, renewalDateValidator);
+        
+    });
+
+    it('should call renewalDateValidator', () => {
+        formGroup.setValue({
+            description: "test",
+            tokensPurchased: "testToken",
+            deviceLimit:'testDevice',
+            renewalDate:'2022-08-02',
+            startDate:'2022-09-01'
+        })
+        expect(formGroup.get('renewalDate').value).toEqual('2022-08-02');
+        expect(formGroup.get('startDate').value).toEqual('2022-09-01');
+    });
+});
