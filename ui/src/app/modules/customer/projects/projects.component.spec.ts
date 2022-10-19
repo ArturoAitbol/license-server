@@ -206,13 +206,13 @@ describe('Dialog calls and interactions', () => {
         expect(projectsComponentTestInstance.openConsumptionView).toHaveBeenCalledWith(selectedTestData.selectedRow);
 
         selectedTestData.selectedOption = projectsComponentTestInstance.CLOSE_PROJECT;
-        dialogService.setExpectedValue(true);
+        dialogService.setExpectedConfirmDialogValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(projectsComponentTestInstance.confirmCloseDialog).toHaveBeenCalledWith(selectedTestData.selectedIndex);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
 
         selectedTestData.selectedOption = projectsComponentTestInstance.DELETE_PROJECT;
-        dialogService.setExpectedValue(true);
+        dialogService.setExpectedConfirmDialogValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(projectsComponentTestInstance.confirmDeleteDialog).toHaveBeenCalledWith(selectedTestData.selectedIndex);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
@@ -227,7 +227,7 @@ describe('Dialog calls and interactions', () => {
         fixture.detectChanges();
 
         selectedTestData.selectedOption = projectsComponentTestInstance.CLOSE_PROJECT;
-        dialogService.setExpectedValue(true);
+        dialogService.setExpectedConfirmDialogValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
 
@@ -244,7 +244,7 @@ describe('Dialog calls and interactions', () => {
         fixture.detectChanges();
 
         selectedTestData.selectedOption = projectsComponentTestInstance.CLOSE_PROJECT;
-        dialogService.setExpectedValue(true);
+        dialogService.setExpectedConfirmDialogValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
 
@@ -261,7 +261,7 @@ describe('Dialog calls and interactions', () => {
         fixture.detectChanges();
 
         selectedTestData.selectedOption = projectsComponentTestInstance.DELETE_PROJECT;
-        dialogService.setExpectedValue(true);
+        dialogService.setExpectedConfirmDialogValue(true);
         projectsComponentTestInstance.rowAction(selectedTestData);
         expect(dialogService.confirmDialog).toHaveBeenCalled();
 

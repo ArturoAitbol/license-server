@@ -161,6 +161,9 @@ fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	http://tekvizionTap.com	SETUP_INP
 39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
 78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
 b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981	3036896b-185c-4480-8574-858845b48675	287846f9-d707-4fc9-bbbe-f11db4de53bb
+a079c3a9-66c7-424f-aa1b-fdc2565d615a	\N	\N	SETUP_INPROGRESS	false	b5b91753-4c2b-43f5-afa0-feb22cefa901	\N	\N
+b079c3a9-66c7-424f-aa1b-fdc2565d616a	\N	\N	SETUP_INPROGRESS	false	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	\N	\N
+c079c3a9-66c7-424f-aa1b-fdc2565d617a	\N	\N	SETUP_INPROGRESS	false	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	\N	\N
 \.
 
 COPY public.ctaas_test_suite (id, subaccount_id, total_executions, next_execution_ts, frequency, device_type, name) FROM stdin;

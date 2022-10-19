@@ -81,28 +81,6 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
         assertTrue(ctaasTestSuites.length() == 3);
     }
 
-    @Tag("acceptance")
-    @Test
-    public void getAllTestSuitesByInvalidSubaccountId() {
-        String expectedSubaccountId = "00000000-0000-0000-0000-000000000000";
-        this.queryParams.put("subaccountId", expectedSubaccountId);
-
-        HttpResponseMessage response = tekvLSGetAllCtaasTestSuites.run(this.request, context);
-        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
-
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-
-        String actualResponse = jsonBody.getString("error");
-        String expectedResponse = RoleAuthHandler.MESSAGE_ID_NOT_FOUND;
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
-
-    }
-
     @Tag("Security")
     @Test
     public void noTokenTest() {

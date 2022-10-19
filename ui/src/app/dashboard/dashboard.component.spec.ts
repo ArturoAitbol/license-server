@@ -24,7 +24,7 @@ import { MatDialogMock } from '../../test/mock/components/mat-dialog.mock';
 import { MsalServiceMock } from '../../test/mock/services/msal-service.mock';
 import { SnackBarServiceMock } from "../../test/mock/services/snack-bar-service.mock";
 import { SnackBarService } from "../services/snack-bar.service";
-import { DialogServiceMock } from '../../test/mock/services/dialog.service.mock';
+import { DialogServiceMock } from '../../test/mock/services/dialog-service.mock';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 import { Features } from '../helpers/features';
