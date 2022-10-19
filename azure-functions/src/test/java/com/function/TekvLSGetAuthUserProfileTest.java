@@ -129,7 +129,7 @@ public class TekvLSGetAuthUserProfileTest extends TekvLSTest {
     @Test
     public void missingEmailInDatabaseTest(){
 	    //Given
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("functional_subaccountAdmin"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("nonexistent_subaccountAdmin"));
 
         // When
         HttpResponseMessage response = tekvLSGetAuthUserProfile.run(this.request,this.context);
