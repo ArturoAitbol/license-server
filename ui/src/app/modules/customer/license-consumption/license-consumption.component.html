@@ -4,7 +4,7 @@
             <div class="col-sm-12 col-md-2 col-lg-2 col-xl-3">
                 <button id="back-button" mat-stroked-button (click)="goToDashboard()">Back</button>
             </div>
-            <div class="col-sm-12 col-md-10 col-lg-10 col-xl-6">
+            <div class="col-sm-12 col-md-10 col-lg-10 col-xl-5">
                 <h1 id="page-title">{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
                 <!-- license filter -->
                 <form [formGroup]="licenseForm">
@@ -19,8 +19,8 @@
                     </mat-form-field>
                 </form>
             </div>
-            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3">
-                <mat-button-toggle-group name="fontStyle" aria-label="Font Style" id="btn-group">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
+                <mat-button-toggle-group class="float-xl-right" name="fontStyle" aria-label="Font Style" id="btn-group">
                     <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-license-button"
                         (change)="onChangeToggle($event)" class="add-btn">
                         Add tekVizion 360 Subscription
