@@ -93,7 +93,7 @@ public class LicenseSteps {
     public void iEditTheSubscriptionWithTheFollowingData(String subscriptionDescription, DataTable dataTable) throws InterruptedException {
         this.subscriptionRow = new SubscriptionRow(subscriptionDescription);
         ActionMenu actionMenu = this.subscriptionRow.openActionMenu();
-        actionMenu.editForm();
+        actionMenu.editForm("license");
         this.subscriptionForm = new SubscriptionForm();
         Map<String, String> license = dataTable.asMap(String.class, String.class);
         this.startDate = license.getOrDefault("startDate", "none");

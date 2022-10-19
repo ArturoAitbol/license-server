@@ -1,4 +1,4 @@
-@onBoardTest
+@CTaaSFeature @onBoardTest
 Feature: Customers
   Background: Login successfully with valid credentials
     Given I am on the landing page
@@ -49,9 +49,8 @@ Feature: Customers
       | Stakeholders  |
 #    And I logout
 
-  @tokenNavigation @test
+  @tokenNavigation
   Scenario: Test tekToken Usage Navigation
-    Given I try to login using a "SubaccountAdministrator"
     Given I am on the apps view
     When I click on "tekToken Usage" button
     And I should see the "tekVizion 360 Portal" view
@@ -59,14 +58,8 @@ Feature: Customers
     Then I am on the apps view
     And I logout
 
-  @testLogin @test
-  Scenario: Test login
-    Given I try to login using a "FullAdministrator"
-    Then I should see the "Customers" page
-
   @deleteCustomer @ignore
   Scenario: Delete a test customer
-#    Given I logout
     Given I try to login using a "FullAdministrator"
     And I see the customer "subAdminCustomerTest" in the table
     When I delete the customer "subAdminCustomerTest"

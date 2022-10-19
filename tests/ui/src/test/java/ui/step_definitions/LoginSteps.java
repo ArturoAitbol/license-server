@@ -36,62 +36,8 @@ public class LoginSteps {
         this.logged = this.landing.checkIfLoggedIn();
     }
 
-    @When("I try to login with email and password")
-    public void iTryToLoginWithEmailAndPassword() {
-        if (this.logged.equals("error")){
-            this.loginForm = this.landing.openLoginForm();
-            String email = environment.username();
-            String password = environment.password();
-            this.customers = this.loginForm.SignIn(email, password);
-        }
-        if (this.logged.equals("ok")){
-//            System.out.println("User has already been logged on");
-            this.customers = new Customers();
-        }
-    }
-
-    @Then("I should see the {string} page")
-    public void iShouldSeeThePage(String expectedTitle) {
-        String actualTitle = this.customers.getTitle();
-        assertEquals("Page doesn't have the title: ".concat(expectedTitle), expectedTitle, actualTitle);
-    }
-
-    @And("I logout")
-    public void iLogout() {
-        this.header = new Header();
-        boolean result = this.header.logout();
-        assertTrue("Couldn't logout from License Server", result);
-    }
-
-    @When("I try to login with a subaccount administrator")
-    public void iTryToLoginWithASubaccountAdministrator() {
-        if (this.logged.equals("error")){
-            this.loginForm = this.landing.openLoginForm();
-            String email = environment.subaccountAdminUser();
-            String password = environment.subaccountAdminPassword();
-            this.customers = this.loginForm.SignIn(email, password);
-        }
-        if (this.logged.equals("ok")){
-//            System.out.println("User has already been logged on");
-            this.apps = new Apps();
-        }
-    }
-
-    @Given("I try to login with a stakeholder account")
-    public void iTryToLoginWithAStakeholderAccount() {
-        if (this.logged.equals("error")){
-            this.loginForm = this.landing.openLoginForm();
-            String email = environment.stakeholderUser();
-            String password = environment.stakeholderPassword();
-            this.customers = this.loginForm.SignIn(email, password);
-        }
-        if (this.logged.equals("ok")){
-            this.apps = new Apps();
-        }
-    }
-
     @Given("I try to login using a {string}")
-    public void iTryToLoginUsingA(String role) {
+    public void iTryToLoginUsingA(String role) throws Exception {
         if (this.logged.equals("error")){
             String email, password;
             this.loginForm = this.landing.openLoginForm();
@@ -107,12 +53,11 @@ public class LoginSteps {
                 case "Stakeholder":
                     email = environment.stakeholderUser();
                     password = environment.stakeholderPassword();
-                default:
-                    email = environment.username();
-                    password = environment.password();
                     break;
+                default:
+                    throw new Exception("Invalid role. Check feature file");
             }
-            this.customers = this.loginForm.SignIn(email, password);
+            this.customers = this.loginForm.SignIn(email, password, role);
         }
         if (this.logged.equals("ok")){
             switch (role){
@@ -130,5 +75,18 @@ public class LoginSteps {
                     break;
             }
         }
+    }
+
+    @Then("I should see the {string} page")
+    public void iShouldSeeThePage(String expectedTitle) {
+        String actualTitle = this.customers.getTitle();
+        assertEquals("Page doesn't have the title: ".concat(expectedTitle), expectedTitle, actualTitle);
+    }
+
+    @And("I logout")
+    public void iLogout() {
+        this.header = new Header();
+        boolean result = this.header.logout();
+        assertTrue("Couldn't logout from License Server", result);
     }
 }

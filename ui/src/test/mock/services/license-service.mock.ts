@@ -18,7 +18,7 @@ const MOCK_LICENSE_B: License = {
     description: 'DescriptionB',
     status: 'Active',
     deviceLimit: '',
-    tokensPurchased: 0,
+    tokensPurchased: 2,
     startDate: '',
     renewalDate: '',
     subscriptionType: ''
@@ -51,7 +51,7 @@ const MOCK_LICENSE_E: License = {
     description: 'DescriptionE',
     status: 'Expired',
     deviceLimit: '',
-    tokensPurchased: 0,
+    tokensPurchased: 2,
     startDate: '',
     renewalDate: '',
     subscriptionType: ''
@@ -185,8 +185,8 @@ const MOCK_UNSORTED_STATUS_LICENSES_LIST = {
     licenses: [
         MOCK_LICENSE_A,
         MOCK_LICENSE_E,
-        MOCK_LICENSE_B,
-        MOCK_LICENSE_G
+        MOCK_LICENSE_G,
+        MOCK_LICENSE_B
     ]
 }
 
@@ -214,7 +214,7 @@ const MOCK_DELETED_LICENSE: License = {
     description: 'DescriptionE',
     status: 'Expired',
     deviceLimit: '',
-    tokensPurchased: 0,
+    tokensPurchased: 2,
     startDate: '',
     renewalDate: '',
     subscriptionType: ''
@@ -232,6 +232,38 @@ const MOCK_CREATED_LICENSE: License = {
     subscriptionType: ""
 };
 
+const MOCK_SORTED_ASC_TOKENS_PURCHASED_LIST = {
+    licenses: [
+        MOCK_LICENSE_G,
+        MOCK_LICENSE_E,
+        MOCK_LICENSE_B,
+        MOCK_LICENSE_A
+    ]
+};
+
+const MOCK_SORTED_DESC_TOKENS_PURCHASED_LIST = {
+    licenses: [
+        MOCK_LICENSE_A,
+        MOCK_LICENSE_E,
+        MOCK_LICENSE_B,
+        MOCK_LICENSE_G
+    ]
+};
+
+const MOCK_UNSORTED_TWO_TOKENS_PURCHASED = {
+    licenses: [
+        MOCK_LICENSE_B,
+        MOCK_LICENSE_G
+    ]
+}
+
+const MOCK_SORTED_DESC_TWO_TOKENS_PURCHASED = {
+    licenses: [
+        MOCK_LICENSE_B,
+        MOCK_LICENSE_G
+    ]
+}
+
 export const LicenseServiceMock = {
     licensesList: MOCK_LICENSES_LIST,
     filteredSubAccountIdList: MOCK_FILTERED_ID_LICENSES_LIST,
@@ -245,6 +277,10 @@ export const LicenseServiceMock = {
     unsortedLicensesList: MOCK_UNSORTED_STATUS_LICENSES_LIST,
     sortedAscLicensesList: MOCK_SORTED_ASC_STATUS_LICENSES_LIST,
     sortedDescLicensesList: MOCK_SORTED_DESC_STATUS_LICENSES_LIST,
+    sortedAscTokenPurchasedList: MOCK_SORTED_ASC_TOKENS_PURCHASED_LIST,
+    sortedDescTokenPurchasedList: MOCK_SORTED_DESC_TOKENS_PURCHASED_LIST,
+    mockUnsortedTwoTokensPurchased: MOCK_UNSORTED_TWO_TOKENS_PURCHASED,
+    mockSortedDescTwoTokensPurchsed: MOCK_SORTED_DESC_TWO_TOKENS_PURCHASED,
     getLicenseList: (subaccountId?: string) => {
         return new Observable((observer) => {
             let licenseList;

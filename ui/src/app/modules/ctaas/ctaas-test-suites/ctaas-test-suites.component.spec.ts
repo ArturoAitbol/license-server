@@ -16,7 +16,7 @@ import { SnackBarService } from "src/app/services/snack-bar.service";
 import { SubAccountService } from "src/app/services/sub-account.service";
 import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { TestSuitesMock } from "src/test/mock/services/ctaas-test-suites.service.mock";
-import { DialogServiceMock } from "src/test/mock/services/dialog.service.mock";
+import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";

@@ -1,8 +1,8 @@
-@CTaaSFeature @SpotLightSetupTest
+@CTaaSFeature @spotLightSetupTest
   Feature: CtaasSetup
     Background: Login successfully with valid credentials
       Given I am on the landing page
-      When I try to login with email and password
+      When I try to login using a "FullAdministrator"
       Then I should see the "Customers" page
 
     @createSpotLightCustomer

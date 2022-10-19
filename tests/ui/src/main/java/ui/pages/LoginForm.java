@@ -19,16 +19,20 @@ public class LoginForm extends AbstractPageObject {
     WebElement stayedSigned;
     @FindBy(css = "div[role='heading']")
     WebElement formTitle;
+    @FindBy(css = "[type='submit']")
+    WebElement permissionButton;
 
     public LoginForm(String window) {
         this.originalWindow = window;
     }
 
-    public Customers SignIn(String email, String password) {
+    public Customers SignIn(String email, String password,String role) {
         this.action.sendText(this.emailInput, email);
         this.action.click(acceptButton);
         this.action.sendText(this.passwordInput, password);
         this.action.click(acceptButton);
+        if (role.equals("Stakeholder") || role.equals("SubaccountAdministrator"))
+            this.action.forceClick(permissionButton);
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);
         assertTrue(this.action.checkTitle("tekVizion 360 Portal"));

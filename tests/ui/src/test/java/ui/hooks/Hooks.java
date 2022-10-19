@@ -6,6 +6,7 @@ import io.cucumber.java.Scenario;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import ui.pages.Header;
 
 public class Hooks {
     /*    @After
@@ -21,11 +22,12 @@ public class Hooks {
         }
     }
 
-    @After("@tokenNavigation")
+    @After("@tokenNavigation or @loginStakeholder")
     public static void logout(Scenario scenario) {
         if (scenario.isFailed()) {
-            WebDriver driver = DriverManager.getInstance().getDriver();
-            driver.manage().deleteAllCookies();
+            Header header = new Header();
+            boolean result = header.logout();
+            System.out.println("Logout: " + result);
         }
     }
 }

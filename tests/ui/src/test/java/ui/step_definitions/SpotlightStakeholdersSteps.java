@@ -35,12 +35,11 @@ public class SpotlightStakeholdersSteps {
 
     @And("I create a stakeholder with the following data")
     public void iCreateAStakeholderWithTheFollowingData(DataTable stakeholdersTable) {
-        this.stakeholderForm.waitSpinner();
+//        this.stakeholderForm.waitSpinner();
         Map<String, String> stakeholder = stakeholdersTable.asMap(String.class, String.class);
         String name = stakeholder.get("name");
         String jobTitle = stakeholder.get("jobTitle");
         String companyName = stakeholder.get("companyName");
-//        String subaccountAdminEmail = stakeholder.get("subaccountAdminEmail");
         String subaccountAdminEmail = environment.stakeholderUser();
         String phoneNumber = stakeholder.get("phoneNumber");
         String type = stakeholder.get("type");
@@ -51,11 +50,10 @@ public class SpotlightStakeholdersSteps {
     }
 
     @When("I edit the stakeholder {string} with the following data")
-    public void iEditTheStakeholderWithTheFollowingData(String currentStakeholder, DataTable dataTable)
-            throws InterruptedException {
+    public void iEditTheStakeholderWithTheFollowingData(String currentStakeholder, DataTable dataTable) {
         this.stakeholderRow = new StakeholderRow(currentStakeholder);
         ActionMenu actionMenu = this.stakeholderRow.openActionMenu();
-        actionMenu.editStakeholderForm();
+        actionMenu.editForm("stakeholder");
         this.stakeholderForm = new StakeholderForm();
         Map<String, String> stakeholder = dataTable.asMap(String.class, String.class);
         String name = stakeholder.get("name");
@@ -78,8 +76,7 @@ public class SpotlightStakeholdersSteps {
 
     @Then("I delete the {string} stakeholder")
     public void iDeleteAStakeholder(String name) throws InterruptedException {
-        this.stakeholderRow = new StakeholderRow(name);
-        Thread.sleep(2500);
+//        Thread.sleep(2500);
         ActionMenu actionMenu = this.stakeholderRow.openActionMenu();
         this.actualMessage = actionMenu.delete("stakeholder");
         DriverManager.getInstance().setMessage(this.actualMessage);

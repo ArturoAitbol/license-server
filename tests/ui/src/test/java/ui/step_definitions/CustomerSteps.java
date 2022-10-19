@@ -89,7 +89,7 @@ public class CustomerSteps {
         this.type = customer.get("type");
         this.subaccount = customer.get("subaccount");
         this.actionMenu = this.customerRow.openActionMenu();
-        this.actionMenu.edit();
+        this.actionMenu.editForm("customer");
         this.customerForm = new CustomerForm();
         this.actualMessage = customerForm.editCustomer(this.customerName, this.type, this.subaccount);
         DriverManager.getInstance().setMessage(this.actualMessage);

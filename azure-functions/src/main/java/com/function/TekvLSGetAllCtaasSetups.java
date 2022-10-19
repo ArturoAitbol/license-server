@@ -83,10 +83,6 @@ public class TekvLSGetAllCtaasSetups {
 				verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?", email);
 				break;
 			case SUBACCOUNT_ADMIN:
-				queryBuilder.appendCustomCondition("subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
-				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
-				break;
 			case SUBACCOUNT_STAKEHOLDER:
 				queryBuilder.appendCustomCondition("subaccount_id = (SELECT subaccount_id FROM subaccount_admin WHERE subaccount_admin_email = ?)", email);
 				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
@@ -145,7 +141,7 @@ public class TekvLSGetAllCtaasSetups {
 				item.put("status", rs.getString("status"));
 				item.put("azureResourceGroup", rs.getString("azure_resource_group"));
 				item.put("tapUrl", rs.getString("tap_url"));
-				item.put("onBoardingComplete", rs.getString("on_boarding_complete"));
+				item.put("onBoardingComplete", rs.getBoolean("on_boarding_complete"));
 				item.put("powerBiWorkspaceId", rs.getString("powerbi_workspace_id"));
 				item.put("powerBiReportId", rs.getString("powerbi_report_id"));
 				array.put(item);

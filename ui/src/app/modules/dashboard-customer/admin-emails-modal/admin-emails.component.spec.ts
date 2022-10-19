@@ -1,6 +1,6 @@
 // import { instance, mock, verify, when } from "ts-mockito";
 import { HttpClient } from '@angular/common/http';
-import { throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { ComponentFixture, TestBed} from '@angular/core/testing';
 import { MatDialog} from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
@@ -100,6 +100,7 @@ describe('UI verification test', () => {
     expect(cancel.textContent).toBe('Cancel');
   });
 });
+
 describe('add admin email flow', () => {
   beforeEach(beforeEachFunction);
 
@@ -145,12 +146,26 @@ describe('add admin email flow', () => {
     expect(AdminEmailTestInstance.dialogRef.close).toHaveBeenCalledWith(false);
   });
 
-  it('should show an error when create an adminEmail fails after calling submit()', () => {
+  // it('should show an error when create an adminEmail fails after calling submit()', () => {
+  //   spyOn(AdminEmailTestInstance, 'addEmailForm').and.callThrough();
+  //   AdminEmailTestInstance.addEmailForm();
+  //   const res = {error: "some error"}
+  //   spyOn(CustomerAdminEmailServiceMock, 'createAdminEmail').and.returnValue(of(res));
+  //   spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+  //   fixture.detectChanges();
+  //   AdminEmailTestInstance.submit();
+
+  //   expect(CustomerAdminEmailServiceMock.createAdminEmail).toHaveBeenCalled();
+  //   expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error while editing administrator emails!', '');
+  // });
+
+  it('should show a message if an error ocurred while editing an administrator email', () => {
     spyOn(AdminEmailTestInstance, 'addEmailForm').and.callThrough();
     AdminEmailTestInstance.addEmailForm();
-    
-    spyOn(CustomerAdminEmailServiceMock, 'createAdminEmail').and.returnValue(throwError({message: 'error message'}));
+    spyOn(CustomerAdminEmailServiceMock, 'createAdminEmail').and.returnValue(throwError('some error'));
     spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+    spyOn(console, 'error').and.callThrough();
     const adminEmailsForm = AdminEmailTestInstance.adminEmailsForm;
     adminEmailsForm.setValue({name: "test", emails:[{email:"test@email.com"}]});
 
@@ -158,7 +173,8 @@ describe('add admin email flow', () => {
     AdminEmailTestInstance.submit();
 
     expect(CustomerAdminEmailServiceMock.createAdminEmail).toHaveBeenCalled();
-    // expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('error message', 'Error while editing administrator emails!');
+    expect(console.error).toHaveBeenCalledWith('error while editing administrator emails', 'some error');
+    expect(AdminEmailTestInstance.isDataLoading).toBeFalse();
   });
 
   it('should test deleteEmailForm', () => {
@@ -196,4 +212,54 @@ describe('add admin email flow', () => {
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error deleting administrator email!');
   });
 
+  it('should show a message if an error ocurred while deleting an administrator email', () => {
+    const res = {error: "some error"};
+    spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
+    spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+    spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+
+    fixture.detectChanges();
+    AdminEmailTestInstance.deleteExistingEmail(0);
+
+    expect(CustomerAdminEmailServiceMock.deleteAdminEmail).toHaveBeenCalled();
+    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(res.error, 'Error while deleting administrator email!');
+  });
+
+  it('should get an null response', () => {
+    const res = null;
+    spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
+    spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+    spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+
+    fixture.detectChanges();
+    AdminEmailTestInstance.deleteExistingEmail(0);
+
+    expect(CustomerAdminEmailServiceMock.deleteAdminEmail).toHaveBeenCalled();
+  });
+});
+
+describe('calls without customer list', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule(defaultTestBedConfig);
+    TestBed.overrideProvider(CustomerService, {
+      useValue:{
+        getCustomerById: (customerId?: string) => {
+          return new Observable((observer) => {
+              observer.next({customers:[null]});
+              observer.complete();
+              return {
+                  unsubscribe() { }
+              };
+          });
+      },
+      }
+    })
+    fixture = TestBed.createComponent(AdminEmailsComponent)
+    AdminEmailTestInstance = fixture.componentInstance;
+  });
+  
+  it('should not fetch any customer', () => {
+    AdminEmailTestInstance.ngOnInit();
+    expect(AdminEmailTestInstance.adminEmails).toEqual(undefined);
+  })
 });

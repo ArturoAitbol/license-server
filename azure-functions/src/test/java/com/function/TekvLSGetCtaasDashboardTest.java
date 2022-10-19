@@ -257,7 +257,7 @@ public class TekvLSGetCtaasDashboardTest extends TekvLSTest {
     @Test
     public void getForSubaccountStakeHolderRoleTest(){
         //Given
-        String subaccountId = "8acb6997-4d6a-4427-ba2c-7bf463fa08ec";
+        String subaccountId = "96234b32-32d3-45a4-af26-4c912c0d6a06";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
         // When
         HttpResponseMessage response = tekvLSGetCtaasDashboard.run(this.request,subaccountId,this.context);
