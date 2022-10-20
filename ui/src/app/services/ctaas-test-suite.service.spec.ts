@@ -24,7 +24,6 @@ describe('CTaaS Test Suite service http requests test', () => {
             next: () => { done(); },
             error: done.fail
         });
-        console.log(JSON.stringify(params));
         expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/ctaasTestSuites', { headers, params});
     });
 
