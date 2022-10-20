@@ -70,7 +70,7 @@ public class LicenseConsumptionSteps {
             throws InterruptedException {
         this.consumptionRow = new ConsumptionRow(currentProject);
         ActionMenu actionMenu = this.consumptionRow.openActionMenu();
-        actionMenu.editForm();
+        actionMenu.editForm("licenseConsumption");
         this.consumptionForm = new ConsumptionForm();
         Map<String, String> consumption = dataTable.asMap(String.class, String.class);
         this.project = consumption.getOrDefault("project", "");

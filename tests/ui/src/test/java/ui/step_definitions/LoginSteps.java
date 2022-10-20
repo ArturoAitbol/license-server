@@ -23,6 +23,7 @@ public class LoginSteps {
     Customers customers;
     Header header;
     Apps apps;
+
     Environment environment = ConfigFactory.create(Environment.class);
     String logged;
 
@@ -35,17 +36,44 @@ public class LoginSteps {
         this.logged = this.landing.checkIfLoggedIn();
     }
 
-    @When("I try to login with email and password")
-    public void iTryToLoginWithEmailAndPassword() {
+    @Given("I try to login using a {string}")
+    public void iTryToLoginUsingA(String role) throws Exception {
         if (this.logged.equals("error")){
+            String email, password;
             this.loginForm = this.landing.openLoginForm();
-            String email = environment.username();
-            String password = environment.password();
-            this.customers = this.loginForm.SignIn(email, password);
+            switch (role){
+                case "FullAdministrator":
+                    email = environment.username();
+                    password = environment.password();
+                    break;
+                case "SubaccountAdministrator":
+                    email = environment.subaccountAdminUser();
+                    password = environment.subaccountAdminPassword();
+                    break;
+                case "Stakeholder":
+                    email = environment.stakeholderUser();
+                    password = environment.stakeholderPassword();
+                    break;
+                default:
+                    throw new Exception("Invalid role. Check feature file");
+            }
+            this.customers = this.loginForm.SignIn(email, password, role);
         }
         if (this.logged.equals("ok")){
-//            System.out.println("User has already been logged on");
-            this.customers = new Customers();
+            switch (role){
+                case "FullAdministrator":
+                    this.customers = new Customers();
+                    break;
+                case "SubaccountAdministrator":
+                    this.apps = new Apps();
+                    break;
+                case "Stakeholder":
+                    this.apps = new Apps();
+                    break;
+                default:
+                    this.customers = new Customers();
+                    break;
+            }
         }
     }
 
@@ -60,24 +88,5 @@ public class LoginSteps {
         this.header = new Header();
         boolean result = this.header.logout();
         assertTrue("Couldn't logout from License Server", result);
-    }
-
-    @When("I try to login with a subaccount administrator")
-    public void iTryToLoginWithASubaccountAdministrator() {
-        if (this.logged.equals("error")){
-            this.loginForm = this.landing.openLoginForm();
-            String email = environment.subaccountAdminUser();
-            String password = environment.subaccountAdminPassword();
-            this.customers = this.loginForm.SignIn(email, password);
-        }
-        if (this.logged.equals("ok")){
-//            System.out.println("User has already been logged on");
-            this.apps = new Apps();
-        }
-    }
-
-    @Then("I should see the CTaaS and tekTokenUsage buttons")
-    public void iShouldSeeTheCTaaSAndTekTokenUsageButtons() {
-
     }
 }

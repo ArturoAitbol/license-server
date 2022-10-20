@@ -19,7 +19,7 @@ public class StakeholderForm extends AbstractPageObject {
     WebElement phoneNumberInput;
     @FindBy(css = "[formcontrolname='type']")
     WebElement typeInput;
-    @FindBy(css = "#submit-project-button")
+    @FindBy(css = "#submit-stakeholder-button")
     WebElement submitButton;
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
@@ -49,6 +49,7 @@ public class StakeholderForm extends AbstractPageObject {
             this.action.selectOption(this.typeInput, typeSelector);
         }
         this.action.click(this.submitButton);
+        waitSpinner();
         return new Stakeholders();
     }
 
