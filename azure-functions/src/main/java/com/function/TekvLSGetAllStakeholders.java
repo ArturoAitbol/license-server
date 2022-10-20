@@ -190,11 +190,13 @@ public class TekvLSGetAllStakeholders {
 			json = (JSONObject) obj;
 			try {
 				 userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"),context);
-				if(userProfile.getString("role").equals(SUBACCOUNT_STAKEHOLDER)) {
+				 String userRole=userProfile.getString("role");  
+				if(userRole.equals(SUBACCOUNT_STAKEHOLDER) || userRole.equals(SUBACCOUNT_ADMIN)) { 
 					json.put("name",userProfile.get("displayName"));
 					json.put("jobTitle",userProfile.get("jobTitle"));
 					json.put("companyName",userProfile.get("companyName"));
 					json.put("phoneNumber",userProfile.get("mobilePhone"));
+					json.put("role",userRole);
 					stakeHolders.put(json);
 				}
 			} catch (Exception e) {
