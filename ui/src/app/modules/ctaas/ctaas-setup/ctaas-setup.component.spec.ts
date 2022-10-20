@@ -21,7 +21,7 @@ import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { DialogService } from 'src/app/services/dialog.service';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
 
@@ -82,10 +82,9 @@ const beforeEachFunction = () => {
     });
     fixture = TestBed.createComponent(CtaasSetupComponent);
     CtaasSetupComponentTestInstance = fixture.componentInstance;
-    CtaasSetupComponentTestInstance.ngOnInit();
+    // CtaasSetupComponentTestInstance.ngOnInit();
     loader = TestbedHarnessEnvironment.loader(fixture);
     spyOn(console, 'log').and.callThrough();
-  
 }
 
 describe('UI verification test', () => {
@@ -207,7 +206,7 @@ describe('setup form verifications', () => {
 
 describe('display message when error occurs',() => {
     beforeEach(beforeEachFunction);
-
+    //
     it('should display a message if error occurs while updating setup form', () => {
         spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(throwError("error"));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
@@ -226,6 +225,8 @@ describe('dailog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     it('should update setup details on "Update" button click, if case of one license', () => {
+        const licenseList = LicenseServiceMock.licensesList
+
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
         
@@ -235,15 +236,18 @@ describe('dailog calls and interactions', () => {
         fixture.detectChanges();
         
         CtaasSetupComponentTestInstance.submit();
-        licenseList.licenses.length === 1;
+        activeLicenses.length === 1;
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
     });
-
+    //
     it('should open dialog with expected data when update button is clicked, in case if there is more than one license', () => {
+        const licenseList = LicenseServiceMock.licensesList.licenses
+        const activeLicenses = licenseList.filter(license => license.status === 'Active');
+        // const license = LicenseServiceMock.mockLicenseA
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
         spyOn(CtaasSetupComponentTestInstance, 'openDialog').and.callThrough(); 
-        spyOn(LicenseServiceMock, 'getLicenseList').and.callThrough();
+        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(activeLicenses[0]));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         
         CtaasSetupComponentTestInstance.editForm();
@@ -252,9 +256,23 @@ describe('dailog calls and interactions', () => {
         fixture.detectChanges();
         
         CtaasSetupComponentTestInstance.submit();
-        licenseList.licenses.length > 1;
+        activeLicenses.length > 1;
+        // CtaasSetupComponentTestInstance.isDataLoading = true;
         LicenseServiceMock.getLicenseList();
         CtaasSetupComponentTestInstance.openDialog(activeLicenses);
         expect(CtaasSetupComponentTestInstance.openDialog).toHaveBeenCalledOnceWith(activeLicenses);
     });
+
+    it('should throw error if there is no license available', () => {    
+        spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(throwError('some error'));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+        const licenseList = LicenseServiceMock.licensesList.licenses;
+        const activeLicenses = licenseList.filter(license => license.status === 'Active');
+        activeLicenses.length === 0;
+        fixture.detectChanges();
+        expect(CtaasSetupServiceMock.getSubaccountCtaasSetupDetails).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error', "Error selecting a license");
+
+    })
 });

@@ -33,8 +33,6 @@ let loader: HarnessLoader;
 const licenseList = LicenseServiceMock.licensesList
 const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
 
-
-
 const beforeEachFunction = () => {
     TestBed.configureTestingModule({
         declarations: [LicenseConfirmationModalComponent, CtaasSetupComponent],
