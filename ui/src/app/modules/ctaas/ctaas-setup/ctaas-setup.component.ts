@@ -71,12 +71,6 @@ export class CtaasSetupComponent implements OnInit {
           if (activeLicenses.length === 1) {
             selectedLicenseId = activeLicenses[0].id;
           } else {
-            // selectedLicenseId = await this.dialog.open(LicenseConfirmationModalComponent, {
-            //   width: 'auto',
-            //   data: activeLicenses,
-            //   disableClose: true
-            // }).afterClosed().toPromise();
-
             selectedLicenseId = await this.openDialog(activeLicenses)
           }
           const ctaasSetup = this.generateUpdateBody(selectedLicenseId);
@@ -137,7 +131,8 @@ export class CtaasSetupComponent implements OnInit {
     return ctaasSetup;
   }
 
-  openDialog(activeLicenses){    
+  // opens a popup when update is clicked
+  openDialog(activeLicenses){
     return this.dialog.open(LicenseConfirmationModalComponent, {
         width: 'auto',
         data: activeLicenses,

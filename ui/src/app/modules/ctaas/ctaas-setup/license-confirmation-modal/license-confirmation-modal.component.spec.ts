@@ -16,7 +16,7 @@ import { CtaasSetupComponent } from '../ctaas-setup.component';
 import { LicenseConfirmationModalComponent } from '../license-confirmation-modal/license-confirmation-modal.component';
 import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.service.mock';
 import { MsalService } from '@azure/msal-angular';
-import { DialogServiceMock } from 'src/test/mock/services/dialog.service.mock';
+import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { DialogService } from 'src/app/services/dialog.service';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -30,20 +30,9 @@ let fixture: ComponentFixture<LicenseConfirmationModalComponent>;
 const dialogService = new DialogServiceMock();
 let loader: HarnessLoader;
 
-const activeLicenses = [
-    {
-    id : 'd973456e-049a-4490-ad4c-c3fc9205d50d',
-    license : ['Test License 1']
-    },
-    {
-    id : 'a973456c-049a-4490-ad4c-c3fc9205d50d',
-    license : 'Test License 2'
-    },
-    {
-    id : 'f973456d-049c-4490-ad4c-c3fc9205d50d',
-    license : 'Test License 3'
-    },
-];
+const licenseList = LicenseServiceMock.licensesList
+const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
+
 
 
 const beforeEachFunction = () => {
@@ -167,4 +156,3 @@ describe('UI verification test', () => {
         expect(licenseComponentTestInstance.onCancel).toHaveBeenCalled();
     });
 });
-

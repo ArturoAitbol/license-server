@@ -17,7 +17,7 @@ import { CtaasSetupComponent } from './ctaas-setup.component';
 import { LicenseConfirmationModalComponent } from './license-confirmation-modal/license-confirmation-modal.component';
 import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.service.mock';
 import { MsalService } from '@azure/msal-angular';
-import { DialogServiceMock } from 'src/test/mock/services/dialog.service.mock';
+import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { DialogService } from 'src/app/services/dialog.service';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -127,7 +127,9 @@ describe('make method calls', () => {
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough;
 
         CtaasSetupComponentTestInstance.editForm();
+        const form = CtaasSetupComponentTestInstance.setupForm.enable();
         expect(CtaasSetupComponentTestInstance.editForm).toHaveBeenCalled();
+        expect(form).toBeTruthy
     });
 
     it('should display update and cancel buttons, when "Edit Setup Details" button is clicked', () => {
@@ -158,6 +160,7 @@ describe('make method calls', () => {
         CtaasSetupComponentTestInstance.editForm();
         CtaasSetupComponentTestInstance.cancelEdit();
         dialogService.close()
+        CtaasSetupComponentTestInstance.setupForm.disable();
         fixture.detectChanges(); 
 
         expect(dialogService.close).toHaveBeenCalled();
@@ -208,6 +211,8 @@ describe('display message when error occurs',() => {
     it('should display a message if error occurs while updating setup form', () => {
         spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(throwError("error"));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(CtaasSetupComponentTestInstance,'submit')
+
         fixture.detectChanges();
 
         CtaasSetupComponentTestInstance.submit();
@@ -222,33 +227,34 @@ describe('dailog calls and interactions', () => {
 
     it('should update setup details on "Update" button click, if case of one license', () => {
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
-
-        const testUser = CtaasSetupServiceMock.testuser1
-        testUser.status = 'READY';
-        CtaasSetupComponentTestInstance.editForm();
-
-        fixture.detectChanges();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
-
+        
+        const testUser = CtaasSetupServiceMock.testuser1
+        CtaasSetupComponentTestInstance.editForm();     
+        testUser.status === 'SETUP_READY';
+        fixture.detectChanges();
+        
         CtaasSetupComponentTestInstance.submit();
+        licenseList.licenses.length === 1;
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
     });
 
-    it('should open dialog with expected data when update button is clicked, in case if there’s more than one license', () => {
+    it('should open dialog with expected data when update button is clicked, in case if there is more than one license', () => {
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
-
-        const testUser = CtaasSetupServiceMock.testuser1
-        testUser.status = 'READY';
-        CtaasSetupComponentTestInstance.editForm();
-        
-        licenseList.licenses.length > 1;
-        fixture.detectChanges();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
         spyOn(CtaasSetupComponentTestInstance, 'openDialog').and.callThrough(); 
+        spyOn(LicenseServiceMock, 'getLicenseList').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
-
+        
+        CtaasSetupComponentTestInstance.editForm();
+        const testUser = CtaasSetupServiceMock.testuser1
+        testUser.status === 'SETUP_READY';
+        fixture.detectChanges();
+        
         CtaasSetupComponentTestInstance.submit();
+        licenseList.licenses.length > 1;
+        LicenseServiceMock.getLicenseList();
         CtaasSetupComponentTestInstance.openDialog(activeLicenses);
-        expect(CtaasSetupComponentTestInstance.openDialog).toHaveBeenCalled();
+        expect(CtaasSetupComponentTestInstance.openDialog).toHaveBeenCalledOnceWith(activeLicenses);
     });
 });
