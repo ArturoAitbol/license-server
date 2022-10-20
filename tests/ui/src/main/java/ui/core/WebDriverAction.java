@@ -140,6 +140,16 @@ public class WebDriverAction {
         }
         return response;
     }
+    public boolean checkText(By selector, String text) {
+        boolean response = false;
+        try {
+            wait.until(ExpectedConditions.textToBePresentInElementLocated(selector, text));
+            response = true;
+        } catch (Exception e) {
+            System.out.println("Element doesn't have the text:" + text);
+        }
+        return response;
+    }
     public String checkElement(By locator){
         String output;
         try {

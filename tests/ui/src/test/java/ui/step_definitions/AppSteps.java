@@ -6,9 +6,12 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
 import ui.pages.Apps;
+import ui.pages.Header;
 import ui.pages.Landing;
 
 import java.util.List;
+
+import static org.junit.Assert.assertTrue;
 
 public class AppSteps {
     Apps apps;
@@ -48,6 +51,8 @@ public class AppSteps {
     public void iShouldSeeTheLogoutPage() {
         boolean actualTitle = this.apps.checkWindowTitle();
         Assert.assertEquals("Window doesn't have a Sign out title", true, actualTitle);
-        this.apps.logout();
+        Header header = new Header();
+        Boolean result = header.logoutWindow();
+        assertTrue("Couldn't logout from License Server", result);
     }
 }
