@@ -545,7 +545,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"samuel-vs6@hotmail.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -880,7 +880,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"samuel-vs6@hotmail.com\",\r\n    \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n    \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
 						"options": {
 						"raw": {
 							"language": "json"
