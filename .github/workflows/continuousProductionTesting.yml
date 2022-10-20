@@ -67,8 +67,8 @@ jobs:
       run: |
         echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
         echo -e "password=${{ secrets.AZURE_TEST_USER_PWD_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
-        echo -e "subaccountAdminUser=${{ secrets.AZURE_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/production.properties
-        echo -e "subaccountAdminPassword=${{ secrets.AZURE_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/production.properties
+        echo -e "subaccountAdminUser=${{ secrets.AZURE_PRODUCTION_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/production.properties
+        echo -e "subaccountAdminPassword=${{ secrets.AZURE_PRODUCTION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/production.properties
 
     - name: Run UI tests
       id: uiTests

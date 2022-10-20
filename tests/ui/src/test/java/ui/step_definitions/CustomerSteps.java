@@ -6,12 +6,15 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import static org.junit.Assert.assertEquals;
+
+import org.aeonbits.owner.ConfigFactory;
 import ui.core.DriverManager;
 import ui.pages.*;
 import ui.pages.customer.AdminstratorEmails;
 import ui.pages.customer.CustomerForm;
 import ui.pages.customer.CustomerRow;
 import ui.pages.customer.Customers;
+import ui.utils.Environment;
 
 import java.util.Map;
 
@@ -23,6 +26,7 @@ public class CustomerSteps {
     private String actualMessage = "none";
     private String customerName, type, subaccount;
     private AdminstratorEmails adminEmails;
+    Environment environment = ConfigFactory.create(Environment.class);
 
     public CustomerSteps(Customers customers) {
         this.customers = customers;
@@ -38,9 +42,9 @@ public class CustomerSteps {
         Map<String, String> customer = customerTable.asMap(String.class, String.class);
         String customerName = customer.get("name");
         String type = customer.getOrDefault("type", "MSP");
-        String adminEmail = customer.get("adminEmail");
+        String adminEmail = customer.getOrDefault("adminEmail", environment.subaccountAdminUser());
         String subaccount = customer.getOrDefault("subaccount", "Default");
-        String subAdminEmail = customer.getOrDefault("subAdminEmail", "noSubAdminEmail@test.com");
+        String subAdminEmail = customer.getOrDefault("subAdminEmail", environment.subaccountAdminUser());
         String spotlightPermission = customer.getOrDefault("spotlight", "no").toLowerCase();
         String testCustomer = customer.getOrDefault("testCustomer", "yes").toLowerCase();
         this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,
@@ -85,7 +89,7 @@ public class CustomerSteps {
         this.type = customer.get("type");
         this.subaccount = customer.get("subaccount");
         this.actionMenu = this.customerRow.openActionMenu();
-        this.actionMenu.edit();
+        this.actionMenu.editForm("customer");
         this.customerForm = new CustomerForm();
         this.actualMessage = customerForm.editCustomer(this.customerName, this.type, this.subaccount);
         DriverManager.getInstance().setMessage(this.actualMessage);
@@ -155,5 +159,22 @@ public class CustomerSteps {
         this.customerRow = this.customers.getCustomer(customerName);
         this.actionMenu = this.customerRow.openActionMenu();
         this.adminEmails = this.actionMenu.goToSubaccountAdmins();
+    }
+
+    @When("I create a spotlight customer with the following data")
+    public void iCreateASpotlightCustomerWithTheFollowingData(DataTable customerTable) {
+        Map<String, String> customer = customerTable.asMap(String.class, String.class);
+        String customerName = customer.get("name");
+        String type = customer.getOrDefault("type", "MSP");
+        String adminEmail = environment.subaccountAdminUser();
+        String subaccount = customer.getOrDefault("subaccount", "Default");
+        String subAdminEmail = environment.subaccountAdminUser();
+        String spotlightPermission = customer.getOrDefault("spotlight", "no").toLowerCase();
+        String testCustomer = customer.getOrDefault("testCustomer", "yes").toLowerCase();
+        this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,
+                spotlightPermission, testCustomer);
+        this.actualMessage = this.customers.getMessage();
+        System.out.println("Message: " + this.actualMessage);
+        // DriverManager.getInstance().setMessage(this.actualMessage);
     }
 }

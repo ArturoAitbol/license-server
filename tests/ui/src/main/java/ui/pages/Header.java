@@ -13,26 +13,29 @@ public class Header extends AbstractPageObject {
     public boolean logout(){
         try{
             this.action.forceClick(this.settingsButton);
-
-/*            this.driver.manage().deleteCookieNamed("ESTSAUTH");
-            this.driver.manage().deleteCookieNamed("ESTSAUTHPERSISTENT");
-            this.driver.manage().deleteCookieNamed("ESTSAUTHLIGHT");*/
 //            driver.manage().deleteAllCookies();
-
-            driver.manage().deleteAllCookies();
             By logoutSelector = By.cssSelector("#logout-button");
             this.action.forceClick(logoutSelector);
-
-            By accountSelector = By.cssSelector("div[role='heading']");
-            this.action.waitVisibilityElement(accountSelector);
-//            By accountSelector = By.cssSelector("div.table");
-//            this.action.click(accountSelector);
-
-            driver.manage().deleteAllCookies();
-            return true;
+            return logoutWindow();
 
         } catch (Exception e) {
             System.out.println("Couldn't execute the logout process: Some buttons/messages weren't available");
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    public Boolean logoutWindow(){
+        try{
+            By logoutHeader = By.cssSelector("div[role='heading']");
+            this.action.waitVisibilityElement(logoutHeader);
+            By accountSelector = By.cssSelector("div.table");
+            this.action.click(accountSelector);
+            driver.manage().deleteAllCookies();
+            this.action.checkText(logoutHeader, "You signed out of your account");
+            return true;
+        } catch (Exception e) {
+            System.out.println("Couldn't execute the logout process from window: Some buttons/messages weren't available");
             System.out.println(e.toString());
             return false;
         }

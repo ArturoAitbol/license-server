@@ -76,7 +76,7 @@ public class ProjectSteps {
     public void iEditTheProjectWithTheFollowingData(String projectName, DataTable datatable) throws InterruptedException {
         this.projectRow = new ProjectRow(projectName);
         ActionMenu actionMenu = this.projectRow.openActionMenu();
-        actionMenu.editForm();
+        actionMenu.editForm("project");
         this.projectForm = new ProjectForm();
         Map<String, String> projectTable = datatable.asMap(String.class, String.class);
         this.startDate = projectTable.getOrDefault("startDate", "none");

@@ -6,12 +6,16 @@ import org.aeonbits.owner.Config;
         "classpath:${env}.properties"
 })
 public interface Environment extends Config {
+    String browser();
+    String url();
     String username();
     String password();
     String subaccountAdminUser();
     String subaccountAdminPassword();
-    String browser();
-    String url();
+    String stakeholderUser();
+    String stakeholderPassword();
+    boolean activeDirectory();
+
     @Key("db.port")
     int getDBPort();
 }
