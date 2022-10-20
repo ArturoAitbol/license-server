@@ -179,7 +179,7 @@ export class CtaasStakeholderComponent implements OnInit {
     }
     dialogRef.afterClosed().subscribe((res: any) => {
       if (res) {
-        this.stakeholdersData = [];
+        this.stakeholdersDataBk = this.stakeholdersData = [];
         this.fetchStakeholderList();
       }
     });
@@ -227,12 +227,12 @@ export class CtaasStakeholderComponent implements OnInit {
         if (error) {
           this.snackBarService.openSnackBar(response.error, 'Error while deleting Stakeholder');
         } else {
-          this.stakeholdersData = [];
+          this.stakeholdersDataBk = this.stakeholdersData = [];
           this.fetchStakeholderList();
         }
       } else {
         this.snackBarService.openSnackBar('Deleted Stakeholder successfully', '');
-        this.stakeholdersData = [];
+        this.stakeholdersDataBk = this.stakeholdersData = [];
         this.fetchStakeholderList();
       }
     });
