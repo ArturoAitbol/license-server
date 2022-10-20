@@ -72,7 +72,7 @@ public class TekvLSModifyAuthUserProfileTest extends TekvLSTest {
     @Test
     public void invalidEmailTest(){
         //Given
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("functional_subaccountAdmin"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("nonexistent_subaccountAdmin"));
         String bodyRequest = "{'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +

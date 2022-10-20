@@ -144,6 +144,7 @@ describe('addCustomer', () => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         spyOn(addCustomerAccountModalComponentInstance, 'createSubAccount');
 
+        addCustomerAccountModalComponentInstance.setChecked(true,1);
         addCustomerAccountModalComponentInstance.addCustomer();
 
         expect(CustomerServiceMock.createCustomer).toHaveBeenCalledWith(customerToCompare);

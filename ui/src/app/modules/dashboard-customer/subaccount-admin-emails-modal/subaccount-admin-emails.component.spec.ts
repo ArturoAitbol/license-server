@@ -15,6 +15,7 @@ import {MsalService} from '@azure/msal-angular';
 import {MsalServiceMock} from '../../../../test/mock/services/msal-service.mock';
 import {SubaccountAdminEmailServiceMock} from '../../../../test/mock/services/subaccount-admin-email-service.mock';
 import {SubaccountAdminEmailService} from '../../../services/subaccount-admin-email.service';
+import { Observable, of } from 'rxjs';
 
 let subaccountModalComponentInstance: SubaccountAdminEmailsComponent;
 let fixture: ComponentFixture<SubaccountAdminEmailsComponent>;
@@ -25,8 +26,7 @@ const RouterMock = {
 const MatDialogRefMock = {
     close: ()=> {}
 };
-const beforeEachFunction = async () => {
-    TestBed.configureTestingModule({
+const defaultTestBedConfig = {
         declarations: [SubaccountAdminEmailsComponent],
         imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule, HttpClientModule],
         providers: [
@@ -61,12 +61,15 @@ const beforeEachFunction = async () => {
                 provide: SubaccountAdminEmailService,
                 useValue: SubaccountAdminEmailServiceMock
             }
-        ]
-    }).compileComponents().then(() => {
+        ]  
+};
+
+const beforeEachFunction = async () =>{
+    TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
         fixture = TestBed.createComponent(SubaccountAdminEmailsComponent);
         subaccountModalComponentInstance = fixture.componentInstance;
-    });
-};
+    })
+}
 
 describe('UnitTest', () => {
     describe('simple functions', () => {
@@ -131,7 +134,7 @@ describe('UnitTest', () => {
             fixture.detectChanges();
             spyOn(SnackBarServiceMock, 'openSnackBar');
             spyOn(console, 'error');
-            subaccountModalComponentInstance.deleteExistingEmail(0);
+            subaccountModalComponentInstance.deleteExistingEmail(3);
             expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith( 'Error deleting administrator email!' );
             expect(console.error).toHaveBeenCalledWith( 'Error while deleting administrator email',
                 { error: 'Expected subaccount admin emails response error' }
@@ -142,9 +145,16 @@ describe('UnitTest', () => {
             spyOn(SubaccountAdminEmailServiceMock, 'deleteAdminEmail').and.callFake(SubaccountAdminEmailServiceMock.apiErrorResponse);
             fixture.detectChanges();
             spyOn(SnackBarServiceMock, 'openSnackBar');
-            subaccountModalComponentInstance.deleteExistingEmail(0);
+            subaccountModalComponentInstance.deleteExistingEmail(3);
             expect(SnackBarServiceMock.openSnackBar)
                 .toHaveBeenCalledWith( 'Expected create subaccount admin email error', 'Error while deleting administrator email!' );
+        });
+        it('should throw a null response while delating a email', () => {
+            const res = null;
+            spyOn(SubaccountAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
+            fixture.detectChanges();
+            subaccountModalComponentInstance.deleteExistingEmail(3);
+            expect(SubaccountAdminEmailServiceMock.deleteAdminEmail).toHaveBeenCalled();
         });
     });
 
@@ -191,6 +201,36 @@ describe('UnitTest', () => {
             fixture.detectChanges();
             subaccountModalComponentInstance.submit();
             expect(MatDialogRefMock.close).toHaveBeenCalled();
+        });
+    });
+
+    describe('should fetch data without a subaccounts', () => {
+        beforeEach(() => {
+            TestBed.configureTestingModule(defaultTestBedConfig)
+            TestBed.overrideProvider(SubAccountService, {
+                useValue:{
+                    getSubAccountDetails: (subAccountId: string) => {
+                        return new Observable( (observer) => {
+                            observer.next(
+                                {
+                                    subaccounts: [ null ]
+                                }
+                            );
+                            observer.complete();
+                            return {
+                                unsubscribe() { }
+                            };
+                        });
+                    },
+                }
+            })
+            fixture = TestBed.createComponent(SubaccountAdminEmailsComponent);
+            subaccountModalComponentInstance = fixture.componentInstance;
+        });
+        it('should fetch data without a subaccount', () => {
+            spyOn(SubaccountServiceMock, 'getSubAccountDetails').and.callThrough();
+            fixture.detectChanges();
+            expect(subaccountModalComponentInstance.adminEmails).toBe(undefined);
         });
     });
 });

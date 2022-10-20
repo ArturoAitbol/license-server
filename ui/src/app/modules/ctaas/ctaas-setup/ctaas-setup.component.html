@@ -4,20 +4,21 @@
         <div class="loading-shade" *ngIf="isDataLoading">
             <mat-spinner *ngIf="isDataLoading"></mat-spinner>
         </div>
-        <div class="setup-container">
+        <div class="setup-container flex-sm-row flex-column">
             <div>
                 <h1 mat-dialig-title id="setup-title">SpotLight Setup Details</h1>
             </div>
             <div>
                 <ng-container *ngIf="!isEditing">
-                    <div class="col-auto edit-btn">
-                        <button class="col-auto" mat-raised-button id="edit-details-button" (click)="editForm()" id="edit-details-button">
+
+                    <div class="col-auto edit-btn d-flex justify-content-end">
+                        <button class="col-auto" mat-raised-button id="edit-details-button" (click)="editForm()">
                             Edit Setup Details
                         </button>
                     </div>
                 </ng-container>
             </div>
-            <div *ngIf="isEditing" class="group-btn-container">
+            <div *ngIf="isEditing" class="group-btn-container d-flex justify-content-end">
                 <ng-container>
                     <div class="col-auto">
                         <button color="primary" mat-raised-button id="update-button" (click)="submit()" id="update-button" [disabled]="!setupForm.valid">

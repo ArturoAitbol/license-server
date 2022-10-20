@@ -64,6 +64,7 @@ export class CtaasSetupComponent implements OnInit {
         this.licenseService.getLicenseList(this.subaccountService.getSelectedSubAccount().id).subscribe(async (licenseList: any) => {          
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
           if (activeLicenses.length === 0) {
+            this.isDataLoading = false;
             this.snackBarService.openSnackBar("No active licenses found", "Error selecting a license");
             return;
           }
@@ -112,11 +113,14 @@ export class CtaasSetupComponent implements OnInit {
     this.isDataLoading = true;
     const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     const { id } = currentSubaccountDetails;
-    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id).pipe(map(res => res.ctaasSetups[0])).subscribe(res => {
-      this.originalCtaasSetupDetails = res;
-      res.onBoardingComplete = res.onBoardingComplete === 't';
-      this.setupForm.patchValue(res);
-      this.ctaasSetupId = res.id;
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id).pipe(map(res => res.ctaasSetups.length>0 ? res.ctaasSetups[0] : null )).subscribe(res => {
+      if(res!=null){
+        this.originalCtaasSetupDetails = res;
+        this.setupForm.patchValue(res);
+        this.ctaasSetupId = res.id;
+      }else{
+        this.snackBarService.openSnackBar("No initial setup found", 'Error getting SpotLight Setup!');
+      }
       this.isDataLoading = false;
     })
   }

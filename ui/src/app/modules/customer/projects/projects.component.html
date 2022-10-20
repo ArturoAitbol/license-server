@@ -1,10 +1,10 @@
 <div class="container-fluid content">
     <main>
         <div class="row">
-            <div class="col">
+            <div class="col-12 col-lg-4">
                 <button mat-stroked-button id="go-back-button" (click)="goToDashboard()">Back</button>
             </div>
-            <div class="col">
+            <div class="col-12 col-lg-4 d-flex justify-content-center">
                 <div class="page-title">
                     <h1 id="page-title">{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
                     <!-- license filter -->
@@ -21,7 +21,7 @@
                     </form>
                 </div>
             </div>
-            <div class="col">
+            <div class="col-12 col-lg-4 d-flex justify-content-end align-items-end">
                 <mat-button-toggle-group *lcCheckAccessFor="'addProject'" name="fontStyle" aria-label="Font Style">
                     <mat-button-toggle value="add-new-project" (click)="onNewProject()" id="add-new-project-button">Add
                         New Project
