@@ -38,7 +38,7 @@ Feature: Stakeholders
       | Dashboard     |
     And I logout
 
-  @editStakeholder @ignore
+  @editStakeholder
   Scenario: Edit a StakeHolder
     Given I try to login using a "FullAdministrator"
     And I see the customer "stakeholderTestCustomer" in the table

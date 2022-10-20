@@ -22,7 +22,7 @@ Feature: Customers
     When I click on "Not right now" button
     Then I should see the logout page
 
-  @completeOnBoard @local
+  @completeOnBoard
   Scenario: Complete On Board Wizard
     Given I try to login using a "SubaccountAdministrator"
     When I click on "Sure. Let's do it!" button
@@ -38,7 +38,7 @@ Feature: Customers
     Then I click on "No, I'm done" button
     And I logout
 
-  @spotLightNavigation @ignore
+  @spotLightNavigation
   Scenario: Test SpotLight Navigation
     Given I try to login using a "SubaccountAdministrator"
     And I am on the apps view
@@ -49,7 +49,7 @@ Feature: Customers
       | Stakeholders  |
 #    And I logout
 
-  @tokenNavigation @ignore
+  @tokenNavigation
   Scenario: Test tekToken Usage Navigation
     Given I am on the apps view
     When I click on "tekToken Usage" button
