@@ -44,13 +44,16 @@ public class OnBoardWizard extends AbstractPageObject {
         if (!monthlyReports.isEmpty())
             this.action.click(this.monthlyReports);
         this.action.click(this.submitButton);
+        String message = getMessage();
+        System.out.println("Complete On Board : " + message);
     }
 
     public String getMessage(){
         String message;
-        By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
+        By messageSelector = By.xpath("//simple-snack-bar");
         try{
             message = this.action.getText(messageSelector);
+            this.action.waitSpinner(messageSelector);
         } catch (Exception e){
             System.out.println("Message couldn't be retrieved");
             System.out.println(e.toString());

@@ -31,7 +31,7 @@ public class Apps extends AbstractPageObject {
         boolean response = false;
         try {
             By buttonSelector = By.cssSelector(String.format("[title=\"%s\"]",button));
-            this.action.click(buttonSelector);
+            this.action.forceClick(buttonSelector);
             response = true;
         } catch (Exception e){
             System.out.println("Button wasn't available: " + button);
