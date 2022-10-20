@@ -26,6 +26,11 @@ public class SpotlightDashboardSteps {
     public void iGoToTheSpotlightRequiredTab(String tabName) {
         SideBar sideBar = new SideBar();
         sideBar.clickOnOption(tabName);
+        if (tabName.equals("Configuration"))
+        {
+            System.out.println("Wait configuration");
+            sideBar.waitSpinner();
+        }
     }
 
 }

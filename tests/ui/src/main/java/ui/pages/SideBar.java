@@ -17,4 +17,8 @@ public class SideBar extends AbstractPageObject {
             return false;
         }
     }
+    public void waitSpinner(){
+        By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
+        this.action.waitSpinner(spinnerSelector);
+    }
 }

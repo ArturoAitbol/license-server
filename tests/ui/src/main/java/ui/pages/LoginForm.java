@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
+import ui.core.DriverManager;
 import ui.pages.customer.Customers;
 
 public class LoginForm extends AbstractPageObject {
@@ -21,6 +22,7 @@ public class LoginForm extends AbstractPageObject {
     WebElement formTitle;
     @FindBy(css = "[type='submit']")
     WebElement permissionButton;
+    By accountSelector = By.cssSelector("div.table");
 
     public LoginForm(String window) {
         this.originalWindow = window;
@@ -29,11 +31,18 @@ public class LoginForm extends AbstractPageObject {
     public Customers SignIn(String email, String password,String role) {
         this.action.sendText(this.emailInput, email);
         this.action.click(acceptButton);
+
+/*        String loginHeader = this.action.getText(formTitle);
+        if (loginHeader.contains("trouble locating you account"))
+            this.action.click(accountSelector);*/
+
         this.action.sendText(this.passwordInput, password);
         this.action.click(acceptButton);
-/*        if (role.equals("Stakeholder") || role.equals("SubaccountAdministrator"))
-        //If window has permission required make this click
+
+/*        String loginHeader = this.action.getText(formTitle);
+        if (loginHeader.contains("Permission requested"))
             this.action.forceClick(permissionButton);*/
+
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);
         assertTrue(this.action.checkTitle("tekVizion 360 Portal"));
@@ -45,11 +54,5 @@ public class LoginForm extends AbstractPageObject {
         String sample = formTitle.getAttribute("innerHTML");
         return sample;
 
-    }
-
-    public Customers signedIn() {
-        driver.switchTo().window(this.originalWindow);
-        assertTrue(this.action.checkTitle("tekVizion 360 Portal"));
-        return new Customers();
     }
 }

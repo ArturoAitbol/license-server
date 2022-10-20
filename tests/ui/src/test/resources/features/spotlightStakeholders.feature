@@ -52,7 +52,7 @@ Feature: Stakeholders
       | type                  | High level                      |
     Then I should see the message "Updated stake holder details successfully"
 
-  @deleteStakeholder @ignore
+  @deleteStakeholder
   Scenario: Delete Stakeholder Test
     Given I see the customer "stakeholderTestCustomer" in the table
     And I go to the spotlight dashboard for "stakeholderTestCustomer"
