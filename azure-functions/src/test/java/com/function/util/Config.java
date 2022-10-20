@@ -122,11 +122,11 @@ public class Config {
                 username = "subaccountAdmin_user";
                 password = "subaccountAdmin_password";
                 break;
-            case "functional_subaccountAdmin":
+            case "nonexistent_subaccountAdmin":
                 roleId = "fullAdminId";
                 roleSecret = "fullAdminSecret";
-                username = "functional_subaccountAdmin_user";
-                password = "functional_subaccountAdmin_password";
+                username = "nonexistent_subaccountAdmin_user";
+                password = "nonexistent_subaccountAdmin_password";
                 break;
             case "subaccountStakeholder":
             	roleId = "fullAdminId";

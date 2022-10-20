@@ -483,6 +483,129 @@
 			"response": []
 		},
 		{
+			"name": "ctaasTestSuites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"ctaasTestSuitId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"name\": \"{{name}}\",\r\n    \"deviceType\": \"MS Teams\",\r\n  \"frequency\": \"Daily\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/ctaasTestSuites",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasTestSuites"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSubaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"subaccountAdminEmail\");\r",
+							"    pm.expect(pm.response.json().subaccountAdminEmail).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"subaccountAdminEmail\", pm.response.json().subaccountAdminEmail);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/subaccountStakeHolders",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccountStakeHolders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"ctaasSetupId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"status test\",\r\n     \"onBoardingComplete\": \"true\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/ctaasSetups",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasSetups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "licenseUsageDetails",
 			"event": [
 				{
@@ -694,6 +817,123 @@
 					"path": [
 						"projects",
 						"{{projectId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasTestSuites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"name\": \"{{name}}Modified\",\r\n    \"deviceType\": \"MS Teams\",\r\n    \"totalExecutions\": \"0\",\r\n    \"frequency\": \"Daily\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/ctaasTestSuites/{{ctaasTestSuitId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasTestSuites",
+						"{{ctaasTestSuitId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSubaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n    \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
+						"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/subaccountStakeHolders/{{subaccountAdminEmail}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccountStakeHolders",
+						"{{subaccountAdminEmail}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"status test\",\r\n     \"onBoardingComplete\": \"false\"\r\n}",
+						"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/ctaasSetups/{{ctaasSetupId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasSetups",
+						"{{ctaasSetupId}}"
 					]
 				}
 			},
@@ -1006,6 +1246,117 @@
 			"response": []
 		},
 		{
+			"name": "ctaasTestSuites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"ctaasTestSuites\");\r",
+							"    pm.expect(pm.response.json().ctaasTestSuites).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/ctaasTestSuites?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasTestSuites"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSubaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"stakeHolders\");\r",
+							"    pm.expect(pm.response.json().stakeHolders).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/subaccountStakeHolders?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccountStakeHolders"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"ctaasSetups\");\r",
+							"    pm.expect(pm.response.json().ctaasSetups).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/ctaasSetups?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasSetups"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "usageDetails",
 			"event": [
 				{
@@ -1309,6 +1660,93 @@
 			"response": []
 		},
 		{
+			"name": "ctaasTestSuites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/ctaasTestSuites/{{ctaasTestSuitId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasTestSuites",
+						"{{ctaasTestSuitId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "subaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/subaccountStakeHolders/{{subaccountAdminEmail}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccountStakeHolders",
+						"{{subaccountAdminEmail}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/ctaasSetups/{{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasSetups",
+						"{{subaccountId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "customers",
 			"event": [
 				{
@@ -1409,6 +1847,18 @@
 		},
 		{
 			"key": "licenseUsageId",
+			"value": ""
+		},
+		{
+			"key": "ctaasTestSuitId",
+			"value": ""
+		},
+		{
+			"key": "ctaasSetupId",
+			"value": ""
+		},
+		{
+			"key": "subaccountAdminEmail",
 			"value": ""
 		},
 		{
