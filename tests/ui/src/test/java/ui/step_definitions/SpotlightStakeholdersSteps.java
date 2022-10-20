@@ -65,7 +65,7 @@ public class SpotlightStakeholdersSteps {
         this.stakeholders = stakeholderForm.editStakeholder(name, jobTitle, companyName, phoneNumber, type);
         this.actualMessage = this.stakeholders.getMessage();
         this.stakeholders.waitData();
-        DriverManager.getInstance().setMessage(actualMessage);
+        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @Then("I see the {string} stakeholder in the table")

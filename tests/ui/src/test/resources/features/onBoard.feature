@@ -1,9 +1,9 @@
-@CTaaSFeature @onBoardTest @local
+@CTaaSFeature @onBoardTest
 Feature: Customers
   Background: Login successfully with valid credentials
     Given I am on the landing page
 
-  @createSubAdminCustomer @test
+  @createSubAdminCustomer
   Scenario: Create a test customer for subaccount admin
     Given I try to login using a "FullAdministrator"
     And I open the Add Customer form
@@ -16,13 +16,13 @@ Feature: Customers
     Then I see the customer "subAdminCustomerTest" in the table
     And I logout
 
-  @rejectOnBoard @test
+  @rejectOnBoard
   Scenario: Reject On Board Wizard
     Given I try to login using a "SubaccountAdministrator"
     When I click on "Not right now" button
     Then I should see the logout page
 
-  @completeOnBoard
+  @completeOnBoard @local
   Scenario: Complete On Board Wizard
     Given I try to login using a "SubaccountAdministrator"
     When I click on "Sure. Let's do it!" button
@@ -38,7 +38,7 @@ Feature: Customers
     Then I click on "No, I'm done" button
     And I logout
 
-  @spotLightNavigation
+  @spotLightNavigation @ignore
   Scenario: Test SpotLight Navigation
     Given I try to login using a "SubaccountAdministrator"
     And I am on the apps view
@@ -49,7 +49,7 @@ Feature: Customers
       | Stakeholders  |
 #    And I logout
 
-  @tokenNavigation
+  @tokenNavigation @ignore
   Scenario: Test tekToken Usage Navigation
     Given I am on the apps view
     When I click on "tekToken Usage" button

@@ -32,6 +32,7 @@ public class LoginForm extends AbstractPageObject {
         this.action.sendText(this.passwordInput, password);
         this.action.click(acceptButton);
 /*        if (role.equals("Stakeholder") || role.equals("SubaccountAdministrator"))
+        //If window has permission required make this click
             this.action.forceClick(permissionButton);*/
         this.action.click(stayedSigned);
         driver.switchTo().window(this.originalWindow);

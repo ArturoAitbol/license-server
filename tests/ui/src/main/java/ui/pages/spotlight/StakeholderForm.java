@@ -49,6 +49,7 @@ public class StakeholderForm extends AbstractPageObject {
             this.action.selectOption(this.typeInput, typeSelector);
         }
         this.action.click(this.submitButton);
+        waitSpinner();
         return new Stakeholders();
     }
 
