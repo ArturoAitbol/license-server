@@ -29,7 +29,6 @@ public class Header extends AbstractPageObject {
         try{
             By logoutHeader = By.cssSelector("div[role='heading']");
             this.action.waitVisibilityElement(logoutHeader);
-            driver.manage().deleteAllCookies();
             By accountSelector = By.cssSelector("div.table");
             this.action.click(accountSelector);
             driver.manage().deleteAllCookies();
