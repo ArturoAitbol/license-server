@@ -8,14 +8,23 @@ const TEST_SUBACCOUNT_1 = {
     subaccountAdminEmails: ['testSubaccountAdminEmail1@email.one', 'testSubaccountAdminEmail2@email.two']
 };
 
+const TEST_SUBACCOUNT_2 = {
+    name: 'Default',
+    customerId: 'b566c90f-3671-47e3-b01e-c44684e28f99',
+    id: '31d81e5c-a916-470b-aabe-6860f8464211'
+};
+
+const TEST_SUBACCOUNT_3 = {
+    name: 'Default',
+    customerId: '0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848',
+    id: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
+    services: tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight
+};
+
 const SUBACCOUNT_LIST = {
     subaccounts: [
         TEST_SUBACCOUNT_1,
-        {
-            name: 'Default',
-            customerId: 'b566c90f-3671-47e3-b01e-c44684e28f99',
-            id: '89ef7e6a-367f-48c8-b69e-c52bf16a4e05'
-        },
+        TEST_SUBACCOUNT_2,
         {
             name: 'Default',
             customerId: 'b8350fc2-93d5-41d3-897e-aa8b0ad54e1c',
@@ -272,12 +281,7 @@ const SUBACCOUNT_LIST = {
             customerId: 'c4716775-bad0-4eee-8f77-e14f878c0320',
             id: '5f1fa1f7-92e3-4c92-b18b-d30f26ef4f73'
         },
-        {
-            name: 'Default',
-            customerId: '0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848',
-            id: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
-            services: tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight
-        },
+        TEST_SUBACCOUNT_3,
         {
             name: 'Bigger Better 360 Small',
             customerId: '79f4f8b5-d9e9-e611-8101-3863bb3c7738',
@@ -306,7 +310,7 @@ const SUBACCOUNT_LIST = {
         {
             name: 'testv3Sub',
             customerId: '467aee0e-0cc8-4822-9789-fc90acea0a04',
-            id: '31d81e5c-a916-470b-aabe-6860f8464211'
+            id: '89ef7e6a-367f-48c8-b69e-c52bf16a4e05'
         },
         {
             name: 'testDemo',
@@ -345,6 +349,8 @@ const ERROR_MSG = 'Expected subaccount response error';
 export const SubaccountServiceMock = {
     subAccountListValue: SUBACCOUNT_LIST,
     testSubaccount1: TEST_SUBACCOUNT_1,
+    testSubaccount2: TEST_SUBACCOUNT_2,
+    testSubaccount3: TEST_SUBACCOUNT_3,
     getSubAccountList: () => {
         return new Observable( (observer) => {
             observer.next(

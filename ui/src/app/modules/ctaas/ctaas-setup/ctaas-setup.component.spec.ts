@@ -30,11 +30,6 @@ let fixture: ComponentFixture<CtaasSetupComponent>;
 const dialogService = new DialogServiceMock();
 let loader: HarnessLoader;
 
-const licenseList = LicenseServiceMock.licensesList
-const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
-
-
-
 const RouterMock = {
     navigate: (commands: string[]) => { }
 };
@@ -82,7 +77,7 @@ const beforeEachFunction = () => {
     });
     fixture = TestBed.createComponent(CtaasSetupComponent);
     CtaasSetupComponentTestInstance = fixture.componentInstance;
-    // CtaasSetupComponentTestInstance.ngOnInit();
+    CtaasSetupComponentTestInstance.ngOnInit();
     loader = TestbedHarnessEnvironment.loader(fixture);
     spyOn(console, 'log').and.callThrough();
 }
@@ -225,54 +220,67 @@ describe('dailog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     it('should update setup details on "Update" button click, if case of one license', () => {
-        const licenseList = LicenseServiceMock.licensesList
+        const licenseList = LicenseServiceMock.licensesList.licenses;
+        const subaccount = SubaccountServiceMock.testSubaccount3;
+        const activeLicensesOfSubAccount = licenseList.filter(license => license.subaccountId === subaccount.id && license.status === 'Active');
+        activeLicensesOfSubAccount.length === 1;
 
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
-        
-        const testUser = CtaasSetupServiceMock.testuser1
-        CtaasSetupComponentTestInstance.editForm();     
-        testUser.status === 'SETUP_READY';
         fixture.detectChanges();
         
+        const ctaasSetups = CtaasSetupServiceMock.usersListValue.setups;
+        ctaasSetups.find(setup => setup.subaccountId === subaccount.id);
+        CtaasSetupComponentTestInstance.editForm();
+        
+        const form = CtaasSetupComponentTestInstance.setupForm.get('status');
+        form.setValue('SETUP_READY');
+        fixture.detectChanges();
         CtaasSetupComponentTestInstance.submit();
-        activeLicenses.length === 1;
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
     });
-    //
-    it('should open dialog with expected data when update button is clicked, in case if there is more than one license', () => {
-        const licenseList = LicenseServiceMock.licensesList.licenses
-        const activeLicenses = licenseList.filter(license => license.status === 'Active');
-        // const license = LicenseServiceMock.mockLicenseA
+
+    it('should update setup details on "Update" button click, if case of more the one license', () => {
+        const licenseList = LicenseServiceMock.licensesList.licenses;
+        const subaccount = SubaccountServiceMock.testSubaccount3;
+        const activeLicensesOfSubAccount = licenseList.filter(license => license.subaccountId === subaccount.id && license.status === 'Active');
+        activeLicensesOfSubAccount.length > 1;
+
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
-        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
         spyOn(CtaasSetupComponentTestInstance, 'openDialog').and.callThrough(); 
-        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(activeLicenses[0]));
+        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(LicenseServiceMock.licensesList));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         
+        const ctaasSetups = CtaasSetupServiceMock.usersListValue.setups;
+        ctaasSetups.find(setup => setup.subaccountId === subaccount.id);
         CtaasSetupComponentTestInstance.editForm();
-        const testUser = CtaasSetupServiceMock.testuser1
-        testUser.status === 'SETUP_READY';
+        
+        const form = CtaasSetupComponentTestInstance.setupForm.get('status');
+        form.setValue('SETUP_READY');
         fixture.detectChanges();
         
         CtaasSetupComponentTestInstance.submit();
-        activeLicenses.length > 1;
-        // CtaasSetupComponentTestInstance.isDataLoading = true;
         LicenseServiceMock.getLicenseList();
-        CtaasSetupComponentTestInstance.openDialog(activeLicenses);
-        expect(CtaasSetupComponentTestInstance.openDialog).toHaveBeenCalledOnceWith(activeLicenses);
+        CtaasSetupComponentTestInstance.openDialog(activeLicensesOfSubAccount);
+        expect(CtaasSetupComponentTestInstance.openDialog).toHaveBeenCalled();
+    });
+    it('should update setup details on "Update" button click, if case of more the one license', () => {
+        const licenseList = LicenseServiceMock.licensesList.licenses;
+        const subaccount = SubaccountServiceMock.testSubaccount3;
+        const activeLicensesOfSubAccount = licenseList.filter(license => license.subaccountId === subaccount.id && license.status === 'Active');
+        activeLicensesOfSubAccount.length === 0;
+        const response = {error:'some error'}
+        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(response));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        fixture.detectChanges();
+        
+        const ctaasSetups = CtaasSetupServiceMock.usersListValue.setups;
+        ctaasSetups.find(setup => setup.subaccountId === subaccount.id);
+        CtaasSetupComponentTestInstance.editForm();
+        LicenseServiceMock.getLicenseList();
+        SnackBarServiceMock.openSnackBar(response.error, 'Error selecting a subscription');
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error selecting a subscription');
     });
 
-    it('should throw error if there is no license available', () => {    
-        spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(throwError('some error'));
-        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
-
-        const licenseList = LicenseServiceMock.licensesList.licenses;
-        const activeLicenses = licenseList.filter(license => license.status === 'Active');
-        activeLicenses.length === 0;
-        fixture.detectChanges();
-        expect(CtaasSetupServiceMock.getSubaccountCtaasSetupDetails).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error', "Error selecting a license");
-
-    })
 });

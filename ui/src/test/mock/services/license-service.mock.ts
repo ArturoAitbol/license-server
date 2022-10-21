@@ -287,7 +287,7 @@ export const LicenseServiceMock = {
             if (subaccountId)
                 licenseList = { licenses: MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.subaccountId === subaccountId)) };
             else
-                licenseList = MOCK_LICENSES_LIST;
+                licenseList = { licenses: MOCK_LICENSES_LIST };
             observer.next(licenseList);
             observer.complete();
             return {
