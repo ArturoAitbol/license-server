@@ -199,7 +199,7 @@ describe('Dialog calls and interactions', () => {
         discardPeriodicTasks();
     }));
 
-    it('should delete customer if resultAllData is true', () => {
+    it('should delete customer if resultAllData is true', async () => {
         const expectedCustomerObject = {
             customerType: 'MSP',
             testCustomer: false,
@@ -212,8 +212,11 @@ describe('Dialog calls and interactions', () => {
         spyOn(dashboardComponentTestInstance, 'openConfirmCancelDialog').and.callThrough();
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(CustomerServiceMock, 'deleteCustomer').and.callThrough();
+        spyOn( dialogServiceMock,'setExpectedResult').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
+        fixture.detectChanges();
         dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
+        await fixture.whenStable();
 
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
@@ -226,7 +229,7 @@ describe('Dialog calls and interactions', () => {
         expect(CustomerServiceMock.deleteCustomer).toHaveBeenCalledWith(expectedCustomerObject.id);
     });
 
-    it('should delete subaccount if resultAllData is false', () => {
+    it('should delete subaccount if resultAllData is false', async () => {
         const expectedCustomerObject = {
             customerType: 'MSP',
             testCustomer: false,
@@ -239,9 +242,11 @@ describe('Dialog calls and interactions', () => {
         spyOn(dashboardComponentTestInstance, 'openConfirmCancelDialog').and.callThrough();
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(SubaccountServiceMock, 'deleteSubAccount').and.callThrough();
+        spyOn( dialogServiceMock,'setExpectedResult').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: false });
+        fixture.detectChanges();
         dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
-
+        await fixture.whenStable();
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
             message: 'Do you want to confirm this action?',
@@ -446,12 +451,12 @@ describe('.rowAction()', () => {
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.MODIFY_ACCOUNT, selectedTestData.selectedRow);
     });
 
-    it('should make a call to onDeleteAccount if the selected option is DELETE_ACCOUNT', () => {
+    it('should make a call to onDeleteAccount if the selected option is DELETE_ACCOUNT', async () => {
         const selectedTestData = {
             selectedRow: {
                 testProperty: 'testData',
-                subaccountId: undefined,
-                id: undefined
+                subaccountId: '565e134e-62ef-4820-b077-2d8a6f628702',
+                id: '821f079f-be9f-4b11-b364-4f9652c581ce'
             },
             selectedOption: 'selectedTestOption',
             selectedIndex: 'selectedTestItem',
@@ -460,6 +465,9 @@ describe('.rowAction()', () => {
         spyOn(dashboardComponentTestInstance, 'onDeleteAccount').and.callThrough();
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.DELETE_ACCOUNT;
+        dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
+        fixture.detectChanges();
+        await fixture.whenStable();
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.onDeleteAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
@@ -538,10 +546,10 @@ describe('error messages', () => {
     });
 
     it('should display a message if ocurred an error deleting a customer', () => {
-        const expectedCustomerObject = {
+        const expectedCustomerObjectA = {
             customerType: 'MSP',
             testCustomer: false,
-            name: 'Unit Test',
+            name: 'UnitTestA',
             id: '821f079f-be9f-4b11-b364-4f9652c581ce',
             subaccountName: 'Unit Test - 360 Small - Old Token Model',
             subaccountId: '565e134e-62ef-4820-b077-2d8a6f628702',
@@ -552,18 +560,17 @@ describe('error messages', () => {
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(CustomerServiceMock, 'deleteCustomer').and.returnValue(of(res));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(dialogServiceMock, 'setExpectedResult').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
-        fixture.detectChanges();
-        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
-
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObjectA);
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error customer could not be deleted !', '');
     });
 
     it('should return a null response', () => {
-        const expectedCustomerObject = {
+        const expectedCustomerObjectB = {
             customerType: 'MSP',
             testCustomer: false,
-            name: 'Unit Test',
+            name: 'UnitTestB',
             id: '821f079f-be9f-4b11-b364-4f9652c581ce',
             subaccountName: 'Unit Test - 360 Small - Old Token Model',
             subaccountId: '565e134e-62ef-4820-b077-2d8a6f628702',
@@ -573,17 +580,17 @@ describe('error messages', () => {
         spyOn(dashboardComponentTestInstance, 'openConfirmCancelDialog').and.callThrough();
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(CustomerServiceMock, 'deleteCustomer').and.returnValue(of(res));
+        spyOn(dialogServiceMock, 'setExpectedResult').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: true });
-        fixture.detectChanges();
-        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObjectB);
         expect(CustomerServiceMock.deleteCustomer).toHaveBeenCalled();
     });
 
     it('should display a meesage if an error ocurred while deleting a subaccount', () => {
-        const expectedCustomerObject = {
+        const expectedCustomerObjectC = {
             customerType: 'MSP',
             testCustomer: false,
-            name: 'Unit Test',
+            name: 'UnitTestC',
             id: '821f079f-be9f-4b11-b364-4f9652c581ce',
             subaccountName: 'Unit Test - 360 Small - Old Token Model',
             subaccountId: '565e134e-62ef-4820-b077-2d8a6f628702',
@@ -594,17 +601,17 @@ describe('error messages', () => {
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(SubaccountServiceMock, 'deleteSubAccount').and.returnValue(of(res));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(dialogServiceMock, 'setExpectedResult').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: false });
-        fixture.detectChanges();
-        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObjectC);
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error Subaccount could not be deleted !', '');
     });
 
     it('should return a null response', () => {
-        const expectedCustomerObject = {
+        const expectedCustomerObjectD = {
             customerType: 'MSP',
             testCustomer: false,
-            name: 'Unit Test',
+            name: 'UnitTestD',
             id: '821f079f-be9f-4b11-b364-4f9652c581ce',
             subaccountName: 'Unit Test - 360 Small - Old Token Model',
             subaccountId: '565e134e-62ef-4820-b077-2d8a6f628702',
@@ -615,10 +622,9 @@ describe('error messages', () => {
         spyOn(dialogServiceMock, 'deleteCustomerDialog').and.callThrough();
         spyOn(SubaccountServiceMock, 'deleteSubAccount').and.returnValue(of(res));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(dialogServiceMock, 'setExpectedResult').and.callThrough();
         dialogServiceMock.setExpectedResult({ confirm: true, deleteAllData: false });
-        fixture.detectChanges();
-        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObject);
-
+        dashboardComponentTestInstance.openConfirmCancelDialog(expectedCustomerObjectD);
         expect(SubaccountServiceMock.deleteSubAccount).toHaveBeenCalled();
     });
 });
