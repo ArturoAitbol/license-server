@@ -10,7 +10,6 @@ import ui.pages.customer.AdminstratorEmails;
 import ui.pages.projects.Projects;
 import ui.pages.spotlight.Dashboard;
 import ui.pages.subscriptions.Subscriptions;
-import ui.pages.spotlight.Stakeholders;
 
 public class ActionMenu extends AbstractPageObject {
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");

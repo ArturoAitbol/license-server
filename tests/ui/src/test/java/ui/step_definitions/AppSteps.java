@@ -6,7 +6,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
 import ui.pages.Apps;
-import ui.pages.Landing;
 
 import java.util.List;
 

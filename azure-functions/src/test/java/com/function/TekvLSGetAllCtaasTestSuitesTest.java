@@ -91,11 +91,14 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
         this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
 
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
+
+        JSONArray ctaasTestSuites = jsonBody.getJSONArray("ctaasTestSuites");
+        assertTrue(ctaasTestSuites.length() == 0);
 
         String actualResponse = jsonBody.getString("error");
         String expectedResponse = RoleAuthHandler.MESSAGE_ID_NOT_FOUND;
