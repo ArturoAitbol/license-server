@@ -2,7 +2,7 @@
 Feature: Subaccounts
   Background: Login successfully with valid credentials
     Given I am on the landing page
-    When I try to login with email and password
+    When I try to login using a "FullAdministrator"
 
   @createSubaccountCustomer
   Scenario: Create a test customer for subaccounts tests
@@ -10,9 +10,9 @@ Feature: Subaccounts
     When I create a customer with the following data
       | name          | subaccountCustomerTest              |
       | type          | MSP                                 |
-      | adminEmail    | test-sub-custom@tekvizion.com       |
+#      | adminEmail    | test-sub-custom@tekvizion.com       |
       | subaccount    | Default                             |
-      | subAdminEmail | test-sub-custom@tekvizion.com       |
+#      | subAdminEmail | test-sub-custom@tekvizion.com       |
       | testCustomer  | yes                                 |
     Then I see the customer "subaccountCustomerTest" in the table
 

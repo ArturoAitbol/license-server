@@ -128,11 +128,15 @@ jobs:
           run: |
             echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
             echo -e "password=${{ secrets.AZURE_TEST_USER_PWD_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
+            echo -e "subaccountAdminUser=${{ secrets.AZURE_PRODUCTION_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/production.properties
+            echo -e "subaccountAdminPassword=${{ secrets.AZURE_PRODUCTION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/production.properties
+            echo -e "stakeholderUser=${{ secrets.AZURE_PRODUCTION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/production.properties
+            echo -e "stakeholderPassword=${{ secrets.AZURE_PRODUCTION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/production.properties
 
         - name: Run UI tests
           run: |
             cd tests/ui
-            gradle uiTests -Denv=production
+            gradle uiTests -Denv=production -D"cucumber.filter.tags=not @CTaaSFeature"
         
         - name: Publish Cucumber Report
           uses: deblockt/cucumber-report-annotations-action@v1.7

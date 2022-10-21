@@ -20,13 +20,13 @@ public class SpotlightSetupSteps {
 
     @When("I edit the setup details with the following data")
     public void iEditTheSetupDetailsWithTheFollowingData(DataTable dataTable) {
-        this.setup.enableFieldsToEdit();
         Map<String,String> setupDetails = dataTable.asMap(String.class,String.class);
         this.azureResourceGroup = setupDetails.get("azureResourceGroup");
         this.tapUrl = setupDetails.get("tapUrl");
         this.status = setupDetails.get("status");
         this.powerBiWorkspaceId = setupDetails.get("powerBiWorkspaceId");
         this.powerBiReportId = setupDetails.get("powerBiReportId");
+        this.setup.enableFieldsToEdit();
         this.setup.editSetupDetails(azureResourceGroup,tapUrl,status,powerBiWorkspaceId,powerBiReportId);
     }
 
