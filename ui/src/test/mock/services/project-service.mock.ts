@@ -11,7 +11,7 @@ const PROJECT_LIST = {
             openDate: '2022-01-26 05:00:00',
             closeDate: '2022-05-29 05:00:00',
             status: 'Open',
-            licenseDescription:''
+            licenseDescription:'DescriptionA'
         },
         {
             id: '6eb1f15b-168d-4ef0-adb1-fec73b65af25',
@@ -22,7 +22,7 @@ const PROJECT_LIST = {
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
             status: 'Open',
-            licenseDescription:''
+            licenseDescription:'DescriptionA'
         },
         {
             id: '234d6482-4004-44ca-a846-f9ec9a7ae1dd',
@@ -33,7 +33,7 @@ const PROJECT_LIST = {
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
             status: 'Open',
-            licenseDescription:''
+            licenseDescription:'DescriptionA'
         },
         {
             id: '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d',
@@ -44,17 +44,38 @@ const PROJECT_LIST = {
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
             status: 'Open',
-            licenseDescription:''
+            licenseDescription:'DescriptionA'
         }
     ]
 };
+
+const CLOSED_PROJECT = {
+    body:[
+        {
+            id:'459cf3ca-7365-47a1-8d9b-1abee381545c',
+            status:'Open',
+            closeDate:'2022-05-29 05:00:00'
+        }
+    ]
+}
+
+const SELECTED_SUBACCOUNT = {
+    body:[
+        {
+           projectName: "tttt6",
+           projectNumber: "666t",
+           status: "Open",
+           subaccountId: "eea5f3b8-37eb-41fe-adad-5f94da124a5a"
+        }
+    ]
+}
 
 export const ProjectServiceMock = {
     projectsListValue: PROJECT_LIST,
     getProjectDetailsBySubAccount: (id?:string) => {
         return new Observable((observer) => {
             observer.next(
-                PROJECT_LIST
+                JSON.parse(JSON.stringify(PROJECT_LIST))
             );
             observer.complete();
             return {
@@ -65,7 +86,7 @@ export const ProjectServiceMock = {
     getProjectDetailsByLicense: (subaccountId?: string, licenseId?: string) => {
         return new Observable((observer) => {
             observer.next(
-                PROJECT_LIST
+                JSON.parse(JSON.stringify(PROJECT_LIST))
             );
             observer.complete();
             return {
@@ -79,15 +100,7 @@ export const ProjectServiceMock = {
     closeProject: () => {
         return new Observable((observer) => {
             observer.next(
-                { 
-                    body:[
-                        {
-                            id:'459cf3ca-7365-47a1-8d9b-1abee381545c',
-                            status:'Open',
-                            closeDate:'2022-05-29 05:00:00'
-                        }
-                    ]
-                }
+                JSON.parse(JSON.stringify(CLOSED_PROJECT))
             );
             observer.complete();
             return {
@@ -128,16 +141,7 @@ export const ProjectServiceMock = {
     getSelectedSubAccount: () => {
         return new Observable((observer) => {
             observer.next(
-                { 
-                    body:[
-                        {
-                           projectName: "tttt6",
-                           projectNumber: "666t",
-                           status: "Open",
-                           subaccountId: "eea5f3b8-37eb-41fe-adad-5f94da124a5a"
-                        }
-                    ]
-                }
+                JSON.parse(JSON.stringify(SELECTED_SUBACCOUNT))
             );
             observer.complete();
             return {
@@ -165,7 +169,7 @@ export const ProjectServiceMock = {
     getProjectList: () => {
         return new Observable((observer) => {
             observer.next(
-                PROJECT_LIST
+                JSON.parse(JSON.stringify(PROJECT_LIST))
             );
             observer.complete();
             return {

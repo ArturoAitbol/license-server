@@ -275,7 +275,7 @@ describe('Data collection and parsing tests', () => {
         licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
         licenseConsumptionComponentTestInstance.fetchProjectsList();
         expect(ProjectServiceMock.getProjectDetailsByLicense).toHaveBeenCalledWith(CurrentCustomerServiceMock.selectedCustomer.subaccountId, CurrentCustomerServiceMock.selectedCustomer.licenseId);
-        expect(licenseConsumptionComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects);
+        expect(licenseConsumptionComponentTestInstance.projects).toEqual(ProjectServiceMock.projectsListValue.projects);
     });
 
     it('should make a call to get licenseConsumptionDetails for summary view when calling fetchSummaryData()',()=>{

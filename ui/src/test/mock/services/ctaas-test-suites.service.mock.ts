@@ -20,7 +20,33 @@ const CTAAS_TEST_SUITES = {
         }
     ]  
 }
+const UPDATED_TEST_SUITE = {
+    body:[
+        {
+                deviceType: "MS Teams",
+                subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+                totalExecutions: "2",
+                name: "testSuiteV2",
+                id: "ca637f77-03eb-4fd1-a473-7bcaaa54302f",
+                nextExecution: "2022-10-12 00:00:00",
+                frequency: "Weekly"
+        }
+    ]
+}
 
+const CREATE_TEST_SUITE = {
+    body:[
+        {
+            deviceType: "MS Teams",
+            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            totalExecutions: "2",
+            name: "testSuiteV2",
+            id: "ca637f77-03eb-4fd1-a473-7bcaaa54302f",
+            nextExecution: "2022-10-12 00:00:00",
+            frequency: "Weekly"
+        }
+    ]
+}
 export const TestSuitesMock = {
     getTestSuitesBySubAccount: () => {
         return new Observable((observer) => {
@@ -52,19 +78,9 @@ export const TestSuitesMock = {
     },
     updateTestSuite: (testSuite: any) => {
         return new Observable((observer) => {
-            observer.next({
-                body:[
-                    {
-                        deviceType: "MS Teams",
-                        subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-                        totalExecutions: "2",
-                        name: "testSuiteV2",
-                        id: "ca637f77-03eb-4fd1-a473-7bcaaa54302f",
-                        nextExecution: "2022-10-12 00:00:00",
-                        frequency: "Weekly"
-                    }
-                ]
-            });
+            observer.next(
+                JSON.parse(JSON.stringify(UPDATED_TEST_SUITE))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -74,19 +90,7 @@ export const TestSuitesMock = {
     createTestSuite: () => {
         return new Observable((observer) => {
             observer.next(
-                { 
-                    body:[
-                        {
-                            deviceType: "MS Teams",
-                            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-                            totalExecutions: "2",
-                            name: "testSuiteV2",
-                            id: "ca637f77-03eb-4fd1-a473-7bcaaa54302f",
-                            nextExecution: "2022-10-12 00:00:00",
-                            frequency: "Weekly"
-                        }
-                    ]
-                }
+                JSON.parse(JSON.stringify(CREATE_TEST_SUITE))
             );
             observer.complete();
             return {
