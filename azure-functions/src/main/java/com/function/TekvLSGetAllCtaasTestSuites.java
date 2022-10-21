@@ -1,16 +1,12 @@
 package com.function;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.Roles.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONArray;
@@ -65,10 +61,8 @@ public class TekvLSGetAllCtaasTestSuites {
 
         // Build SQL statement
         SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_test_suite");
-        String email = getEmailFromToken(tokenClaims, context);
 
         // adding conditions according to the role
-        String currentRole = evaluateRoles(roles);
 
         if (!subaccountId.isEmpty())
             queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
@@ -80,7 +74,6 @@ public class TekvLSGetAllCtaasTestSuites {
 
         try (
                 Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                Statement statement = connection.createStatement();
                 PreparedStatement selectStmt = queryBuilder.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
@@ -106,7 +99,7 @@ public class TekvLSGetAllCtaasTestSuites {
             }
 
             if (array.isEmpty()) {
-                context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID + email);
+                context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID);
                 json.put("error", MESSAGE_ID_NOT_FOUND);
             }
 

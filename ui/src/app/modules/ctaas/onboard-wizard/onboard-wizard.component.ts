@@ -226,7 +226,7 @@ export class OnboardWizardComponent implements OnInit {
      * update spotlight onboarding details
      */
     updateOnboardingStatus(): void {
-        const requestPayload = {onBoardingComplete: 't', ctaasSetupId: this.ctaasSetupId};
+        const requestPayload = {onBoardingComplete: true, ctaasSetupId: this.ctaasSetupId};
         this.ctaasSetupService.updateSubaccountCtaasDetails(requestPayload)
             .subscribe((response: any) => {
                 if (response?.error) {

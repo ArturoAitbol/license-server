@@ -2,7 +2,7 @@
 Feature: TestSuites
   Background: Login successfully with valid credentials
     Given I am on the landing page
-    When I try to login with email and password
+    When I try to login using a "FullAdministrator"
     Then I should see the "Customers" page
     
   @createTestSuitesCustomer
@@ -11,9 +11,9 @@ Feature: TestSuites
     When I create a customer with the following data
       | name          | SpotlightTestSuite                    |
       | type          | MSP                                   |
-      | adminEmail    | spotlight-test-suite@tekvizion.com    |
+#      | adminEmail    | spotlight-test-suite@tekvizion.com    |
       | subaccount    | Default                               |
-      | subAdminEmail | spotlight-test-suite-sa@tekvizion.com |
+#      | subAdminEmail | spotlight-test-suite-sa@tekvizion.com |
       | spotlight     | yes                                   |
       | testCustomer  | yes                                   |
     Then I see the customer "SpotlightTestSuite" in the table

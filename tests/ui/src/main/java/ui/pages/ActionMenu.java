@@ -38,10 +38,6 @@ public class ActionMenu extends AbstractPageObject {
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public String delete(String type) {
-        /*
-         * By deleteSelector = By.cssSelector("button#Delete");
-         * this.action.click(deleteSelector);
-         */
         String message;
         JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         if (type.equals("stakeholder")) {
@@ -64,30 +60,16 @@ public class ActionMenu extends AbstractPageObject {
         return message;
     }
 
-    public void edit() {
-        /*
-         * By editSelector = By.cssSelector("button#Edit");
-         * this.action.click(editSelector);
-         */
-        JavascriptExecutor executor = (JavascriptExecutor) this.driver;
-        executor.executeScript("arguments[0].click();", this.editButton);
-    }
-
-    public void editStakeholderForm() {
-        this.action.forceClick(this.spotlightUpdateStakeholderButton);
-        this.action.waitSpinner(this.spinnerSelector);
-    }
-
-    public void editForm() {
-        this.action.forceClick(this.editButton);
-        this.action.waitSpinner(this.spinnerSelector);
+    public void editForm(String type) {
+        if (!type.equals("stakeholder"))
+            this.action.forceClick(this.editButton);
+        else
+            this.action.forceClick(this.spotlightUpdateStakeholderButton);
+        if (!type.equals("customer") && !type.equals("stakeholder"))
+            this.action.waitSpinner(this.spinnerSelector);
     }
 
     public Projects goToProjects() {
-        /*
-         * By projectsSelector = By.xpath("//button[@id='View Projects List']");
-         * this.action.click(projectsSelector);
-         */
         JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.projectsButton);
         return new Projects();
@@ -102,6 +84,8 @@ public class ActionMenu extends AbstractPageObject {
     public Dashboard goToSpotlightDashboard() {
         JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.spotlightDashboardButton);
+        By messageSelector = By.xpath("//simple-snack-bar");
+        this.action.waitSpinner(messageSelector);
         return new Dashboard();
     }
 
@@ -111,10 +95,6 @@ public class ActionMenu extends AbstractPageObject {
     }
 
     public String close() {
-        /*
-         * By deleteSelector = By.cssSelector("button#Close");
-         * this.action.click(deleteSelector);
-         */
         JavascriptExecutor executor = (JavascriptExecutor) this.driver;
         executor.executeScript("arguments[0].click();", this.closeButton);
         Modal confirmModal = new Modal();

@@ -24,7 +24,7 @@ public class ProjectRow extends AbstractPageObject {
 
     public ActionMenu openActionMenu(){
         By actionMenuSelector = By.xpath(this.PROJECT_NAME_XPATH + "/following-sibling::td[@id='more_vert']/button");
-        this.action.click(actionMenuSelector);
+        this.action.forceClick(actionMenuSelector);
         return new ActionMenu();
     }
 }

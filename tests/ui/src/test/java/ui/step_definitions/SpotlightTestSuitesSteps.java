@@ -43,11 +43,10 @@ public class SpotlightTestSuitesSteps {
     }
 
     @When("I edit the test suite {string} with the following data")
-    public void iEditTheTestSuiteWithTheFollowingData(String currentTestSuite, DataTable dataTable)
-            throws InterruptedException {
+    public void iEditTheTestSuiteWithTheFollowingData(String currentTestSuite, DataTable dataTable) {
         this.testSuiteRow = new TestSuiteRow(currentTestSuite);
         ActionMenu actionMenu = this.testSuiteRow.openActionMenu();
-        actionMenu.editForm();
+        actionMenu.editForm("testSuite");
         this.testSuiteForm = new TestSuiteForm();
         Map<String, String> testSuite = dataTable.asMap(String.class, String.class);
         String name = testSuite.get("suiteName");
@@ -72,7 +71,7 @@ public class SpotlightTestSuitesSteps {
     @Then("I delete the {string} test suite")
     public void iDeleteATestSuite(String name) throws InterruptedException {
         this.testSuiteRow = new TestSuiteRow(name);
-        Thread.sleep(2500);
+//        Thread.sleep(2500);
         ActionMenu actionMenu = this.testSuiteRow.openActionMenu();
         this.actualMessage = actionMenu.delete("testSuite");
         DriverManager.getInstance().setMessage(this.actualMessage);

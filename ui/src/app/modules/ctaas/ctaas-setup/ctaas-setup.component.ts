@@ -58,13 +58,13 @@ export class CtaasSetupComponent implements OnInit {
 
   submit() {
     if (this.isEditing) {
-      if (this.setupForm.value.status != null) {
+      if (this.setupForm.value.status != null && this.setupForm.value.status === 'SETUP_READY') {
         let selectedLicenseId;
         this.isDataLoading = true;
         this.licenseService.getLicenseList(this.subaccountService.getSelectedSubAccount().id).subscribe(async (licenseList: any) => {
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
           if (activeLicenses.length === 0) {
-            this.snackBarService.openSnackBar("No active licenses found", "Error selecting a license");
+            this.snackBarService.openSnackBar("No active subscriptions found", "Error selecting a subscription");
             return;
           }
           if (activeLicenses.length === 1) {
@@ -77,32 +77,27 @@ export class CtaasSetupComponent implements OnInit {
             }).afterClosed().toPromise();
           }
           const ctaasSetup = this.generateUpdateBody(selectedLicenseId);
-          this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, ctaasSetup).subscribe((res: any) => {
-            if (!res?.error) {
-              this.snackBarService.openSnackBar('SpotLight Setup edited successfully!', '');
-              this.isEditing = false;
-              this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, ...this.setupForm.value };
-              this.disableForm();
-            } else {
-              this.snackBarService.openSnackBar(res.error, 'Error updating SpotLight Setup!');
-            }
-            this.isDataLoading = false;
-          });
+          this.editSetup(ctaasSetup);
         });
       } else {
         const ctaasSetup = this.generateUpdateBody();
-        this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, ctaasSetup).subscribe((res: any) => {
-          if (!res?.error) {
-            this.snackBarService.openSnackBar('SpotLight Setup edited successfully!', '');
-            this.isEditing = false;
-            this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, ...this.setupForm.value };
-            this.disableForm();
-          } else {
-            this.snackBarService.openSnackBar(res.error, 'Error updating SpotLight Setup!');
-          }
-        });
+        this.editSetup(ctaasSetup);
       }
     }
+  }
+
+  private editSetup(ctaasSetup: any) {
+    this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, ctaasSetup).subscribe((res: any) => {
+      if (!res?.error) {
+        this.snackBarService.openSnackBar('SpotLight Setup edited successfully!', '');
+        this.isEditing = false;
+        this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, ...this.setupForm.value };
+        this.disableForm();
+      } else {
+        this.snackBarService.openSnackBar(res.error, 'Error updating SpotLight Setup!');
+      }
+      this.isDataLoading = false;
+    });
   }
 
   cancelEdit() {
@@ -115,11 +110,14 @@ export class CtaasSetupComponent implements OnInit {
     this.isDataLoading = true;
     const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     const { id } = currentSubaccountDetails;
-    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id).pipe(map(res => res.ctaasSetups[0])).subscribe(res => {
-      this.originalCtaasSetupDetails = res;
-      res.onBoardingComplete = res.onBoardingComplete === 't';
-      this.setupForm.patchValue(res);
-      this.ctaasSetupId = res.id;
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id).pipe(map(res => res.ctaasSetups.length>0 ? res.ctaasSetups[0] : null )).subscribe(res => {
+      if(res!=null){
+        this.originalCtaasSetupDetails = res;
+        this.setupForm.patchValue(res);
+        this.ctaasSetupId = res.id;
+      }else{
+        this.snackBarService.openSnackBar("No initial setup found", 'Error getting SpotLight Setup!');
+      }
       this.isDataLoading = false;
     })
   }

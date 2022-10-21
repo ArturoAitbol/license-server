@@ -25,8 +25,7 @@ public class RoleAuthHandler {
     public static final String MESSAGE_ID_NOT_FOUND = "No results found for the provided provided Id.";
 
     public static final String LOG_MESSAGE_FOR_INVALID_EMAIL = "Invalid Request Error: The authenticated user provided does not belong to the account of: ";
-    public static final String MESSAGE_FOR_INVALID_AUTH_EMAIL = "The authenticated user does not exist in your account.";
-    public static final String MESSAGE_EMAIL_NOT_FOUND = "Authenticated user does not exist.";
+    public static final String MESSAGE_FOR_MISSING_CUSTOMER_EMAIL = "The authenticated user does not belong to any customer.";
 
     public static final String MESSAGE_SUBACCOUNT_ID_NOT_FOUND = "Subaccount id provided does not exist. ";
     public static final String LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID = "Invalid Request Error: Subaccount id provided does not belong to the account of: ";

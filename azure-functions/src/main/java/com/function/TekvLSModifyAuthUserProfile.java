@@ -61,7 +61,7 @@ public class TekvLSModifyAuthUserProfile {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSModifySubaccountStakeholderByEmail Azure function");
+		context.getLogger().info("Entering TekvLSModifyAuthUserProfile Azure function");
 		String authEmail = getEmailFromToken(tokenClaims,context);
 		// Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
@@ -101,7 +101,7 @@ public class TekvLSModifyAuthUserProfile {
 			if (!rs.next()) {
 				context.getLogger().info(LOG_MESSAGE_FOR_INVALID_EMAIL + authEmail);
 				JSONObject json = new JSONObject();
-				json.put("error", MESSAGE_FOR_INVALID_AUTH_EMAIL);
+				json.put("error", MESSAGE_FOR_MISSING_CUSTOMER_EMAIL);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			// Build the sql query
@@ -129,12 +129,6 @@ public class TekvLSModifyAuthUserProfile {
 			context.getLogger().info("Subaccount Admin email ( authenticated user ) updated successfully."); 
 			updateADUser(authEmail, jobj, context);
 			return request.createResponseBuilder(HttpStatus.OK).build();
-		}
-		catch (SQLException e) {
-			context.getLogger().info("SQL exception: " + e.getMessage());
-			JSONObject json = new JSONObject();
-			json.put("error", e.getMessage());
-			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 		catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());

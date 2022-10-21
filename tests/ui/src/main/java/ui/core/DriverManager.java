@@ -8,10 +8,12 @@ public class DriverManager {
     private WebDriver driver;
     private static DriverManager driverManager;
     private String message;
+    private boolean activeDirectory;
 
     private DriverManager(){
         Environment environment = ConfigFactory.create(Environment.class);
         String browser = environment.browser().toLowerCase();
+        this.activeDirectory = environment.activeDirectory();
         this.driver = DriverFactory.createDriver(browser);
         this.driver.manage().window().maximize();
     }
@@ -32,5 +34,8 @@ public class DriverManager {
     }
     public String getMessage(){
         return this.message;
+    }
+    public boolean getActiveDirectoryStatus(){
+        return this.activeDirectory;
     }
 }

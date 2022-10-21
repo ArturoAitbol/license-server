@@ -23,6 +23,11 @@ public class Config {
     private static final String postgresqlSecurityMode = "postgresql_security_mode";
     private static final String expiredToken = "expiredToken";
     private static final String environmentName = "environment_name";
+    private static final String emailInviteClientId = "email_invite_client_id";
+    private static final String emailInviteClientSecret = "email_invite_client_secret";
+    private static final String powerBiClientId = "power_bi_client_id";
+    private static final String powerBiClientSecret = "power_bi_client_secret";
+    private static final String tenantId = "tenant_id";
 //    private static final Logger LOGGER = LogManager.getLogger();
     public static Logger logger = Logger.getLogger(Config.class.getName());
 
@@ -77,6 +82,16 @@ public class Config {
     public String getExpiredToken() { return getConfig(expiredToken); }
 
     public String getEnvironmentName() { return getConfig(environmentName); }
+    public String getEmailInviteClientId() { return getConfig(emailInviteClientId); }
+
+    public String getEmailInviteClientSecret() { return getConfig(emailInviteClientSecret);}
+
+    public String getPowerBiClientId() { return getConfig(powerBiClientId);}
+
+    public String getPowerBiClientSecret() { return getConfig(powerBiClientSecret);}
+
+    public String getTenantId() { return getConfig(tenantId);}
+
 
     public String getToken(String role) {
         String roleId, roleSecret, accessToken="",username="",password="";
@@ -106,6 +121,12 @@ public class Config {
                 roleSecret = "fullAdminSecret";
                 username = "subaccountAdmin_user";
                 password = "subaccountAdmin_password";
+                break;
+            case "nonexistent_subaccountAdmin":
+                roleId = "fullAdminId";
+                roleSecret = "fullAdminSecret";
+                username = "nonexistent_subaccountAdmin_user";
+                password = "nonexistent_subaccountAdmin_password";
                 break;
             case "subaccountStakeholder":
             	roleId = "fullAdminId";

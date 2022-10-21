@@ -361,11 +361,9 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   private filterVendors(value: string, support = false): any[] {
     const filterValue = value.toLowerCase();
-    if (!support) {
-      return this.vendors.filter(option => option.toLowerCase().includes(filterValue));
-    } else {
-      return this.supportVendors.filter(option => option.toLowerCase().includes(filterValue) && option.supportType);
-    }
+    const vendorsList: string[] = support ? this.supportVendors : this.vendors;
+
+    return vendorsList.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   private filterModels(value: string, support = false): Device[] {
