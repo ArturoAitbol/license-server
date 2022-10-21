@@ -22,7 +22,7 @@ public class RoleAuthHandler {
 
     public static final String LOG_MESSAGE_FOR_INVALID_ID = "Invalid Request Error: Id provided does not belong to the account of: ";
     public static final String MESSAGE_FOR_INVALID_ID = "The id provided does not exist in your account.";
-    public static final String MESSAGE_ID_NOT_FOUND = "Id provided does not exist.";
+    public static final String MESSAGE_ID_NOT_FOUND = "No results found for the provided provided Id.";
 
     public static final String LOG_MESSAGE_FOR_INVALID_EMAIL = "Invalid Request Error: The authenticated user provided does not belong to the account of: ";
     public static final String MESSAGE_FOR_MISSING_CUSTOMER_EMAIL = "The authenticated user does not belong to any customer.";
