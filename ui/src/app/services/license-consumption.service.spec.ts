@@ -154,8 +154,8 @@ describe('Customer service http requests test', () => {
         });
         expect(httpClientSpy.get).toHaveBeenCalled();
 
-        const Summarydata = {view:'summary'}
-        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(Summarydata));
+        const summaryData = {view:'summary'}
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(summaryData));
         licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
             next: consumptions => {
                 expect(consumptions).toEqual(expectedSummaryConsumption);
@@ -165,8 +165,8 @@ describe('Customer service http requests test', () => {
         });
         expect(httpClientSpy.get).toHaveBeenCalled();
 
-        const equipmentdata = {view:'equipment'}
-        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(equipmentdata));
+        const equipmentData = {view:'equipment'}
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(equipmentData));
         licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
             next: consumptions => {
                 expect(consumptions).toEqual(expectedEquipmentConsumption);
