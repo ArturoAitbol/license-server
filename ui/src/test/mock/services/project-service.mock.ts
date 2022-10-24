@@ -53,7 +53,7 @@ const CLOSED_PROJECT = {
     body:[
         {
             id:'459cf3ca-7365-47a1-8d9b-1abee381545c',
-            status:'Open',
+            status:'Closed',
             closeDate:'2022-05-29 05:00:00'
         }
     ]
