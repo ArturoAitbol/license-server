@@ -16,7 +16,7 @@ For the UI read the README.md inside ui directory
 For the UI e2e functional tests:
 # go to the tests/ui and run the following command:
 # environment can be one of the following values: local, integration, production
-# local can be added copying tests/ui/src/main/resources/sample.local.properties to a file called local.properties placed in the same location
+# tests/ui/src/main/resources/local.properties contains the default set of configurations for the e2e testing
 gradle uiTests -Denv=[environment]
 # example: gradle uiTests -Denv=local
 # if you want to run specific tests, you can run by tags running the following command

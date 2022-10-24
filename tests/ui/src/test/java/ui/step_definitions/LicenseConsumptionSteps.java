@@ -24,8 +24,6 @@ public class LicenseConsumptionSteps {
             supportVendor, supportModel, usageDays;
     ConsumptionRow consumptionRow;
     private final String consumptionSummaryTableId = "tektokens-summary-table";
-    private final String projectConsumptionTableId = "project-consumption-table";
-    private final String detailedConsumptionTableId = "detailed-consumption-table";
 
     public LicenseConsumptionSteps(Customers customers) {
         this.customers = customers;

@@ -71,6 +71,30 @@ public class TekvLSCreateCtaasTestSuiteTest extends TekvLSTest {
     }
 
     @Test
+    public void createTestSuiteTestWithoutOptionalParams() {
+        // Given - Arrange
+        String name = "testSuiteTest" + LocalDateTime.now();
+        String bodyRequest = "{'name':'" + name + "','subaccountId':'0e2038ec-2b9b-493b-b3f2-6702e60b5b90','frequency':'Hourly','deviceType':'MS Teams'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        // When - Action
+        HttpResponseMessage response = createTestSuite.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("id"));
+        this.testSuiteId = jsonBody.getString("id");
+        assertNotNull(this.testSuiteId);
+    }
+
+    @Test
     public void createTestSuiteIncomplete() {
         String bodyRequest = "{'subaccountId':'0e2038ec-2b9b-493b-b3f2-6702e60b5b90','totalExecutions':'7','nextExecution':'2022-10-04 00:00:00','frequency':'Hourly'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
