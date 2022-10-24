@@ -70,4 +70,110 @@ describe('Customer service http requests test', () => {
         });
         expect(httpClientSpy.delete).toHaveBeenCalledWith(environment.apiEndpoint + '/licenseUsageDetails/' + updateLicenseConsumptionDetails.consumptionId);
     });
+
+    it('should make the proper http calls on getLicenseConsumptionDetails with years in the filters', (done: DoneFn) => {
+        const expectedConsumptions: any = ConsumptionServiceMock.mockDetailedInfo;
+        const expectedEquipmentConsumption: any = ConsumptionServiceMock.mockEquipmentInfo;
+        const expectedSummaryConsumption: any = ConsumptionServiceMock.mockSummaryInfo;
+        const filters = {year:"year", view: '', month: '', type:'', project: '', limit:'', offset:'', startDate: '', endDate: ''};
+        const data = {view:''}
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(data));
+        licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
+            next: consumptions => {
+                expect(consumptions).toEqual(expectedConsumptions);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+
+        filters.month = 'month';
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(data));
+        licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
+            next: consumptions => {
+                expect(consumptions).toEqual(expectedConsumptions);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+
+        filters.type = 'type';
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(data));
+        licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
+            next: consumptions => {
+                expect(consumptions).toEqual(expectedConsumptions);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+
+        filters.project= 'projectId'
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(data));
+        licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
+            next: consumptions => {
+                expect(consumptions).toEqual(expectedConsumptions);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+
+        filters.limit = 'limit'
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(data));
+        licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
+            next: consumptions => {
+                expect(consumptions).toEqual(expectedConsumptions);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+
+        filters.offset = 'offset'
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(data));
+        licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
+            next: consumptions => {
+                expect(consumptions).toEqual(expectedConsumptions);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+
+        filters.startDate = 'startDate'
+        filters.endDate = 'endDate'
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(data));
+        licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
+            next: consumptions => {
+                expect(consumptions).toEqual(expectedConsumptions);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+
+        const summaryData = {view:'summary'}
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(summaryData));
+        licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
+            next: consumptions => {
+                expect(consumptions).toEqual(expectedSummaryConsumption);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+
+        const equipmentData = {view:'equipment'}
+        httpClientSpy.get.and.returnValue(ConsumptionServiceMock.getLicenseConsumptionDetails(equipmentData));
+        licenseConsumptionService.getLicenseConsumptionDetails(filters).subscribe({
+            next: consumptions => {
+                expect(consumptions).toEqual(expectedEquipmentConsumption);
+                done();
+            },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalled();
+    });  
 });

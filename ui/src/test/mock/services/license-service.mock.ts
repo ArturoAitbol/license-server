@@ -288,7 +288,9 @@ export const LicenseServiceMock = {
                 licenseList = { licenses: MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.subaccountId === subaccountId)) };
             else
                 licenseList = MOCK_LICENSES_LIST;
-            observer.next(licenseList);
+            observer.next(
+                JSON.parse(JSON.stringify(licenseList))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -298,7 +300,9 @@ export const LicenseServiceMock = {
     getLicenseById: (id) => {
         return new Observable((observer) => {
             const license = MOCK_LICENSES_LIST.licenses.find((license: License) => (license.id === id));
-            observer.next(license);
+            observer.next(
+                JSON.parse(JSON.stringify(license))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -308,7 +312,9 @@ export const LicenseServiceMock = {
     getLicenseDetails: (id) => {
         return new Observable((observer) => {
             const licenses = MOCK_LICENSES_LIST.licenses.filter((license: License) => (license.id === id));
-            observer.next({ licenses: licenses });
+            observer.next(
+                JSON.parse(JSON.stringify({ licenses: licenses }))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -317,7 +323,9 @@ export const LicenseServiceMock = {
     },
     updateLicense: (license) => {
         return new Observable((observer) => {
-            observer.next(MOCK_UPDATED_LICENSE_D);
+            observer.next(
+                JSON.parse(JSON.stringify(MOCK_UPDATED_LICENSE_D))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -327,7 +335,9 @@ export const LicenseServiceMock = {
     deleteLicense: (licenseId) => {
         return new Observable((observer) => {
             const removedLicense = MOCK_LICENSES_LIST.licenses.find((license: License) => license.id === licenseId);
-            observer.next(removedLicense);
+            observer.next(
+                JSON.parse(JSON.stringify(removedLicense))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -336,7 +346,9 @@ export const LicenseServiceMock = {
     },
     createLicense: (license) => {
         return new Observable((observer) => {
-            observer.next(MOCK_CREATED_LICENSE);
+            observer.next(
+                JSON.parse(JSON.stringify(MOCK_CREATED_LICENSE))
+            );
             observer.complete();
             return {
                 unsubscribe() { }

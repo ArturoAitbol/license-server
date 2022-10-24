@@ -8,7 +8,9 @@ export const SubaccountAdminEmailServiceMock = {
     subaccountAdminEmail: SUBACCOUNT_ADMIN_EMAIL,
     createAdminEmail: () => {
         return new Observable((observer) => {
-            observer.next(SUBACCOUNT_ADMIN_EMAIL);
+            observer.next(
+                JSON.parse(JSON.stringify(SUBACCOUNT_ADMIN_EMAIL))
+            );
             observer.complete();
             return {
                 unsubscribe() { }

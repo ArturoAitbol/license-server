@@ -348,7 +348,7 @@ export const SubaccountServiceMock = {
     getSubAccountList: () => {
         return new Observable( (observer) => {
             observer.next(
-                SUBACCOUNT_LIST
+                JSON.parse(JSON.stringify(SUBACCOUNT_LIST))
             );
             observer.complete();
             return {
@@ -359,9 +359,9 @@ export const SubaccountServiceMock = {
     getSubAccountDetails: (subAccountId?: string) => {
         return new Observable( (observer) => {
             observer.next(
-                {
+                JSON.parse(JSON.stringify({
                     subaccounts: [ SUBACCOUNT_LIST.subaccounts.find( (subAccount) => subAccount.id === subAccountId ) ]
-                }
+                }))
             );
             observer.complete();
             return {
