@@ -10,9 +10,9 @@ Feature: Projects
     When I create a customer with the following data
       | name          | projectCustomerTest                   |
       | type          | MSP                                   |
-#      | adminEmail    | test-project@tekvizion.com            |
+      | adminEmail    | test-project@tekvizion.com            |
       | subaccount    | Default                               |
-#      | subAdminEmail | test-project@tekvizion.com            |
+      | subAdminEmail | test-project@tekvizion.com            |
       | testCustomer  | yes                                   |
     Then I see the customer "projectCustomerTest" in the table
     

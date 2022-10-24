@@ -8,11 +8,13 @@ Feature: Stakeholders
     Given I try to login using a "FullAdministrator"
     And I open the Add Customer form
     When I create a customer with the following data
-      | name          | stakeholderTestCustomer |
-      | type          | MSP                     |
-      | subaccount    | Default                 |
-      | spotlight     | yes                     |
-      | testCustomer  | yes                     |
+      | name          | stakeholderTestCustomer           |
+      | type          | MSP                               |
+      | adminEmail    | test-stakeholder@tekvizion.com    |
+      | subaccount    | Default                           |
+      | subAdminEmail | test-stakeholder@tekvizion.com    |
+      | spotlight     | yes                               |
+      | testCustomer  | yes                               |
     Then I see the customer "stakeholderTestCustomer" in the table
 
   @addStakeholder
