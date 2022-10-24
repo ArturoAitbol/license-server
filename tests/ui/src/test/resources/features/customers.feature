@@ -11,9 +11,9 @@ Feature: Customers
     When I create a customer with the following data
       | name          | customerTest                      |
       | type          | Reseller                          |
-#      | adminEmail    | test-customer@tekvizion.com       |
+      | adminEmail    | test-customer@tekvizion.com       |
       | subaccount    | subaccountTest                    |
-#      | subAdminEmail | test-customer@tekvizion.com       |
+      | subAdminEmail | test-customer@tekvizion.com       |
       | testCustomer  | yes                               |
     Then I see the customer "customerTest" in the table
 
