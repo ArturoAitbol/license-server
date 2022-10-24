@@ -11,9 +11,9 @@ Feature: CtaasSetup
     When I create a customer with the following data
       | name          | spotlightCustomerTest                 |
       | type          | MSP                                   |
-#        | adminEmail    | spotlight-test@tekvizion.com          |
+      | adminEmail    | spotlight-test-setup@tekvizion.com    |
       | subaccount    | Default                               |
-#        | subAdminEmail | spotlight-test@tekvizion.com          |
+      | subAdminEmail | spotlight-test-setup@tekvizion.com    |
       | spotlight     | yes                                   |
       | testCustomer  | yes                                   |
     Then I see the customer "spotlightCustomerTest" in the table
