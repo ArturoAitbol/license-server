@@ -59,7 +59,7 @@ Feature: Customers
     Then I am on the apps view
     And I logout
 
-  @deleteCustomer @ignore
+  @deleteCustomer @delete
   Scenario: Delete a test customer
     Given I try to login using a "FullAdministrator"
     And I see the customer "subAdminCustomerTest" in the table
