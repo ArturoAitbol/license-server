@@ -57,12 +57,9 @@ export class AdminEmailsComponent implements OnInit {
         customerId: this.data.id
       }))
       forkJoin(requestsArray).subscribe((res: any) => {
-        if (!res.error) {
           this.isDataLoading = false;
           this.snackBarService.openSnackBar('Customer admin emails edited successfully! ', '');
           this.dialogRef.close(false);
-        } else
-          this.snackBarService.openSnackBar('Error while editing administrator emails!', '');
       }, err => {
         this.isDataLoading = false;
         this.dialogRef.close(false);

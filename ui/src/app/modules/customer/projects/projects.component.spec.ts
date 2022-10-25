@@ -160,7 +160,7 @@ describe('Data collection and parsing tests', () => {
         expect(CurrentCustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(ProjectServiceMock.setSelectedSubAccount).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
-        expect(projectsComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects);
+        expect(projectsComponentTestInstance.projects).toEqual(ProjectServiceMock.projectsListValue.projects);
     });
 
     it('should change the loading-related variables if getProjects() got an error', () => {
@@ -339,6 +339,6 @@ describe('test customer false ', () => {
         fixture.detectChanges();
 
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
-        expect(projectsComponentTestInstance.projects).toBe(ProjectServiceMock.projectsListValue.projects);
+        expect(projectsComponentTestInstance.projects).toEqual(ProjectServiceMock.projectsListValue.projects);
     });
 });

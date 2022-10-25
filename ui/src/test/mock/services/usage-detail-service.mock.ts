@@ -23,6 +23,7 @@ const USAGE_DETAIL_LIST = {
         }
     ]
 };
+
 const USAGE_DETAIL ={
     consumptionId: "483b7876-9be9-4bfa-b097-275bea5ac9a0",
     dayOfWeek: 4,

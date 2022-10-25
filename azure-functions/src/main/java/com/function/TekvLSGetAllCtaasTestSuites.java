@@ -98,6 +98,11 @@ public class TekvLSGetAllCtaasTestSuites {
                 array.put(item);
             }
 
+            if (array.isEmpty()) {
+                context.getLogger().info(LOG_MESSAGE_FOR_INVALID_ID);
+                json.put("error", MESSAGE_ID_NOT_FOUND);
+            }
+
             json.put("ctaasTestSuites", array);
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
                     .body(json.toString()).build();
