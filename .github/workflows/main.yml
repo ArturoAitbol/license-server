@@ -10,13 +10,13 @@ env:
   AZURE_FUNCTIONAPP_NAME: tekvLicenseServerPOCFunction
   POM_XML_DIRECTORY: 'azure-functions/'
   POM_FUNCTIONAPP_NAME: myFunction-12345
-  JAVA_VERSION: '1.8.x'
+  JAVA_VERSION: '8'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -25,8 +25,9 @@ jobs:
           creds: ${{ secrets.AZURE_LICENSE_SERVER_CREDENTIALS }}
      
     - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v3
       with:
+        distribution: 'temurin'
         java-version: ${{ env.JAVA_VERSION }}
 
     - name: 'Restore Project Dependencies Using Mvn'
@@ -39,11 +40,13 @@ jobs:
 
     - name: Get current date
       id: date
-      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
     
     - name: Get Commit Short Hash
       id: hash
-      run: echo "::set-output name=hash::$(git rev-parse --short "$GITHUB_SHA")"
+      run: echo "hash=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_OUTPUT
+
     
     - name: Get Latest tag
       id: current_tag
