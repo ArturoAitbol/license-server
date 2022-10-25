@@ -146,20 +146,6 @@ describe('add admin email flow', () => {
     expect(AdminEmailTestInstance.dialogRef.close).toHaveBeenCalledWith(false);
   });
 
-  // it('should show an error when create an adminEmail fails after calling submit()', () => {
-  //   spyOn(AdminEmailTestInstance, 'addEmailForm').and.callThrough();
-  //   AdminEmailTestInstance.addEmailForm();
-  //   const res = {error: "some error"}
-  //   spyOn(CustomerAdminEmailServiceMock, 'createAdminEmail').and.returnValue(of(res));
-  //   spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
-
-  //   fixture.detectChanges();
-  //   AdminEmailTestInstance.submit();
-
-  //   expect(CustomerAdminEmailServiceMock.createAdminEmail).toHaveBeenCalled();
-  //   expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error while editing administrator emails!', '');
-  // });
-
   it('should show a message if an error ocurred while editing an administrator email', () => {
     spyOn(AdminEmailTestInstance, 'addEmailForm').and.callThrough();
     AdminEmailTestInstance.addEmailForm();

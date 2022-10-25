@@ -27,14 +27,4 @@ export class SubaccountAdminEmailService {
   public deleteAdminEmail(email: string) {
     return this.httpClient.delete(`${this.API_URL}/${email}`);
   }
-
-  /**
-   * set the header for the request
-   * @returns: HttpHeaders 
-   */
-  public getHeaders() {
-    const headers = new HttpHeaders();
-    headers.append('Content-Type', 'application/json');
-    return headers;
-  }
 }

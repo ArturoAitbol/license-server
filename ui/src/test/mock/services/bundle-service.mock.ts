@@ -53,7 +53,9 @@ export const BundleServiceMock = {
     customBundle: CUSTOM_BUNDLE,
     getBundleList: () => {
         return new Observable((observer) => {
-            observer.next(BUNDLE_LIST);
+            observer.next(
+                JSON.parse(JSON.stringify(BUNDLE_LIST))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -65,7 +67,9 @@ export const BundleServiceMock = {
             let bundle = CUSTOM_BUNDLE;
             if(bundleId)
                 bundle = BUNDLE_LIST.bundles.find((bundle) => (bundle.id === bundleId));
-            observer.next({customers:[bundle]});
+            observer.next(
+                JSON.parse(JSON.stringify({customers:[bundle]}))
+                );
             observer.complete();
             return {
                 unsubscribe() { }

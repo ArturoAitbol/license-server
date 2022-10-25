@@ -696,11 +696,15 @@ const VENDORS_LIST = {
 export const DevicesServiceMock = {
     devicesListValue: DEVICE_LIST,
     getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string ) => {
-        return of({ devices: DEVICE_LIST.devices.filter(device => device.vendor === vendor) });
+        return of(
+            JSON.parse(JSON.stringify({ devices: DEVICE_LIST.devices.filter(device => device.vendor === vendor) }))
+        );
     },
 
     getAllDeviceVendors: () => {
-        return of(VENDORS_LIST)
+        return of(
+            JSON.parse(JSON.stringify(VENDORS_LIST))
+        )
     },
 
     getDeviceById: (id: string) => {
