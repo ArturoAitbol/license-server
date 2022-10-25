@@ -3,150 +3,100 @@ package com.function.clients;
 import com.function.exceptions.ADException;
 import com.function.util.ActiveDirectory;
 import com.microsoft.azure.functions.ExecutionContext;
-import org.json.JSONArray;
+import com.microsoft.graph.core.ClientException;
+import com.microsoft.graph.models.AppRoleAssignment;
+import com.microsoft.graph.models.Invitation;
+import com.microsoft.graph.models.User;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.function.auth.Roles.*;
 
 public class GraphAPIClient {
 
-    static private final String baseURL = "https://graph.microsoft.com/v1.0/";
-
     static public void createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
-            String token = getAccessToken(context);
-            JSONObject user = getUserByEmail(userEmail,token,context);
-            String userId;
-            if(user != null ){
-                context.getLogger().info("Guest user with email "+ userEmail +" already exists in Active Directory (AD). Getting id to assign proper role");
-                userId = user.getString("id");
-            }else{
-                userId = createGuestUser(userName,userEmail,token,context);
-            }
-            assignRole(userId,role,token,context);
-    }
-
-    static public JSONObject getUserByEmail(String userEmail, String token, ExecutionContext context) throws Exception {
-        String url = baseURL+"users?$filter=mail%20eq%20'"+userEmail+"'";
-
-        HashMap<String,String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer "+ token);
-        JSONObject response = HttpClient.get(url,headers);
-
-        if(response.has("error") || !response.has("value")){
-            context.getLogger().severe("Request params: " + url);
-            context.getLogger().severe("Error response: " + response);
-            throw new ADException("Verify user by email failed (AD)");
+        User user = getUserByEmail(userEmail,context);
+        String userId;
+        if(user != null ){
+            context.getLogger().info("Guest user with email "+ userEmail +" already exists in Active Directory (AD). Getting id to assign proper role");
+            userId = user.id;
+        }else{
+            userId = createGuestUser(userName,userEmail,context);
         }
-        JSONArray usersList = response.getJSONArray("value");
-        return  usersList.length()>0 ? usersList.getJSONObject(0) : null;
+        assignRole(userId,role,context);
     }
 
-    static public String createGuestUser(String userName, String userEmail,String token,ExecutionContext context) throws Exception {
-            String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
+    static public User getUserByEmail(String userEmail, ExecutionContext context) throws ADException {
+        try{
+            return GraphAPIServiceClient.getInstance().getUserByEmail(userEmail);
+        }catch (ClientException e){
+            context.getLogger().severe("Graph Method Called: getUserByEmail, Email provided: " + userEmail);
+            context.getLogger().severe("Error response: " + e.getMessage());
+            throw new ADException("Verify user by email failed (AD): " + userEmail);
+        }
+    }
 
-            String customizedMessageBody = "You have requested access to the tekVizion 360 Portal. Please accept this invitation to complete the authentication process by clicking \"Accept Invitation\" below.";
+    static public String createGuestUser(String userName, String userEmail,ExecutionContext context) throws ADException {
+        String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
+        String invitationMessage = "You have requested access to the tekVizion 360 Portal. " +
+                "Please accept this invitation to complete the authentication process by clicking \"Accept Invitation\" below.";
 
+        try{
+            Invitation invitation = GraphAPIServiceClient.getInstance().inviteGuestUser(userName,userEmail,inviteRedirectUrl,invitationMessage);
+            User invitedUser = invitation.invitedUser;
+            if(invitedUser == null ) return null;
+            context.getLogger().info("Guest user created successfully: " + invitedUser.id);
+            return invitedUser.id;
+        }catch (ClientException e){
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("invitedUserDisplayName",userName);
-            jsonBody.put("invitedUserEmailAddress",userEmail);
-            jsonBody.put("sendInvitationMessage",true);
+            jsonBody.put("userName",userName);
+            jsonBody.put("userEmail",userEmail);
             jsonBody.put("inviteRedirectUrl",inviteRedirectUrl);
-
-            JSONObject messageInfo = new JSONObject();
-            messageInfo.put("messageLanguage","en-US");
-            messageInfo.put("customizedMessageBody",customizedMessageBody);
-            jsonBody.put("invitedUserMessageInfo",messageInfo);
-
-            String url = baseURL + "invitations";
-
-            HashMap<String,String> headers = new HashMap<>();
-            headers.put("Authorization", "Bearer "+ token);
-            JSONObject response = HttpClient.post(url,jsonBody.toString(),headers);
-
-            if(response.has("error")){
-                context.getLogger().severe("Request url: " + url +", Request params: "+ jsonBody);
-                context.getLogger().severe("Error response: " + response);
-                throw new ADException("Create a guest user failed (AD): " + response.getJSONObject("error").getString("message"));
-            }
-            JSONObject invitedUser = response.getJSONObject("invitedUser");
-            context.getLogger().info("Guest user created successfully: " + response);
-            return invitedUser.getString("id");
+            jsonBody.put("invitationMessage",invitationMessage);
+            context.getLogger().severe("Graph Method Called: inviteGuestUser, Request body: "+ jsonBody);
+            context.getLogger().severe("Error Response:" + e.getMessage());
+            throw new ADException("Create a guest user failed (AD): " + e.getMessage());
+        }
     }
 
-    static public void assignRole(String userId,String role,String token,ExecutionContext context) throws Exception {
-
+    static public void assignRole(String userId,String role,ExecutionContext context) throws ADException {
         List<HashMap<String,String>> azureApps = getAzureAppsInfo(role);
-
-        String url = baseURL + "users/"+userId+"/appRoleAssignments";
-
-        JSONObject appRoleAssignment = new JSONObject();
-        appRoleAssignment.put("principalId",userId);
-
-        HashMap<String,String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer "+ token);
-        JSONObject response;
         for (HashMap<String,String> app : azureApps) {
-            appRoleAssignment.put("resourceId",app.get("objectId"));
-            appRoleAssignment.put("appRoleId",app.get("roleId"));
-            //Assign-role request
-            response = HttpClient.post(url,appRoleAssignment.toString(),headers);
-            if(response.has("error") && response.getJSONObject("error").getString("code").equals("Request_ResourceNotFound")){
-                context.getLogger().info("Request_ResourceNotFound Error: Retrying... ("+url+")");
-                Thread.sleep(2000);
-                response = HttpClient.post(url,appRoleAssignment.toString(),headers);
+            try{
+                AppRoleAssignment response = GraphAPIServiceClient.getInstance().assignRole(userId,app.get("objectId"),app.get("roleId"));
+                JSONObject responseInfo = new JSONObject();
+                responseInfo.put("Azure Application Name",response.resourceDisplayName);
+                responseInfo.put("userName",response.principalDisplayName);
+                responseInfo.put("appRoleId",response.appRoleId);
+                context.getLogger().info("App role assigned successfully: " + responseInfo);
             }
+            catch (ClientException e){
+                String errorMessage = e.getMessage();
+                JSONObject requestBody = new JSONObject();
+                requestBody.put("principalId", userId);
+                requestBody.put("resourceId",app.get("objectId"));
+                requestBody.put("appRoleId",app.get("roleId"));
 
-            if(response.has("error")) {
-                if(!response.getJSONObject("error").getString("message").contains("Permission being assigned already exists")){
-                    context.getLogger().severe("Request url: " + url + "Request params: " + appRoleAssignment);
-                    context.getLogger().severe("Error response: " + response);
-                    throw new ADException("Assign role to guest user failed (AD): " + response.getJSONObject("error").getString("message"));
+                if(!errorMessage.contains("Permission being assigned already exists")){
+                    context.getLogger().severe("Graph Method Called: assignRole, Request body: " + requestBody);
+                    context.getLogger().severe("Error response: " + errorMessage);
+                    throw new ADException("Assign role to guest user failed (AD). " +errorMessage.split("\n")[1]);
                 }
-                context.getLogger().info("App role is already assigned: " + appRoleAssignment);
-            }else{
-                context.getLogger().info("App role assigned successfully: " + appRoleAssignment);
+                context.getLogger().info("IGNORING ERROR. App role is already assigned: " + requestBody);
             }
         }
     }
 
-    static public String getAccessToken(ExecutionContext context) throws Exception {
-        String url = "https://login.microsoftonline.com/"+System.getenv("TENANT_ID")+"/oauth2/v2.0/token";
-
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("client_id",System.getenv("EMAIL_INVITE_CLIENT_ID"));
-        parameters.put("client_secret",System.getenv("EMAIL_INVITE_CLIENT_SECRET"));
-        parameters.put("scope", "https://graph.microsoft.com/.default");
-        parameters.put("grant_type", "client_credentials");
-        String urlParameters = HttpClient.getDataString(context, parameters);
-
-
-        HashMap<String,String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/x-www-form-urlencoded");
-        JSONObject response = HttpClient.post(url,urlParameters,headers);
-
-        if (response.has("error") || !response.has("access_token")){
-            context.getLogger().severe("Request params: "+ urlParameters);
-            context.getLogger().severe("Error response: " + response);
-            throw new ADException("Error retrieving token from Microsoft identity platform");
-        }
-        return response.get("access_token").toString();
-    }
-
-    static public void deleteGuestUser(String userEmail, ExecutionContext context) throws Exception {
-        String token = getAccessToken(context);
-        JSONObject user = getUserByEmail(userEmail,token,context);
+    static public void deleteGuestUser(String userEmail, ExecutionContext context) throws ADException {
+        User user = getUserByEmail(userEmail,context);
         if(user!=null){
-            String url = baseURL + "users/"+user.getString("id");
-            HashMap<String,String> headers = new HashMap<>();
-            headers.put("Authorization", "Bearer "+ token);
-            boolean response = HttpClient.delete(url,headers);
-            if(!response){
-                throw new ADException("Delete a guest user failed (AD): " + url);
+            try{
+                GraphAPIServiceClient.getInstance().deleteGuestUser(user.id);
+            }catch (ClientException e){
+                context.getLogger().severe("Graph Method Called: deleteGuestUser, Request params: " + userEmail);
+                context.getLogger().severe("Error response: " + e.getMessage());
+                throw new ADException("Delete a guest user failed (AD): " + userEmail);
             }
         }else{
             context.getLogger().info("Ignoring Error (DELETE GUEST USER): User with email " + userEmail + " does not exist (AD)");
@@ -154,42 +104,41 @@ public class GraphAPIClient {
     }
 
     static public void removeRole(String userEmail,String role, ExecutionContext context) throws Exception {
-        String token = getAccessToken(context);
-        JSONObject user = getUserByEmail(userEmail,token,context);
+        User user = getUserByEmail(userEmail,context);
         if(user!=null){
             List<HashMap<String,String>> azureApps = getAzureAppsInfo(role);
 
-            String appRoleAssignmentsUrl = baseURL + "users/"+user.getString("id")+"/appRoleAssignments/";
-            HashMap<String,String> headers = new HashMap<>();
-            headers.put("Authorization", "Bearer "+ token);
-            JSONObject response = HttpClient.get(appRoleAssignmentsUrl,headers);
-
-            if(response.has("error")){
-                throw new Exception("App Role Assignments not found.");
+            List<AppRoleAssignment> appRoleAssignments = getUserAppRoleAssignments(user.id,context);
+            if(appRoleAssignments.isEmpty()){
+                throw new ADException("App Role Assignments not found for given user (AD): " + userEmail);
             }
 
-            JSONArray appRoleAssignments = response.getJSONArray("value");
-            String url;
             for (HashMap<String,String> app : azureApps) {
                 String appRoleAssignmentId = "";
-                for (int i = 0; i < appRoleAssignments.length(); i++) {
+                for (AppRoleAssignment appRoleAssignment : appRoleAssignments) {
 
-                    JSONObject appRoleAssignment = appRoleAssignments.getJSONObject(i);
-                    String resourceId = appRoleAssignment.getString("resourceId");
-                    String appRoleId = appRoleAssignment.getString("appRoleId");
+                    String resourceId = String.valueOf(appRoleAssignment.resourceId);
+                    String appRoleId = String.valueOf(appRoleAssignment.appRoleId);
 
-                    if(resourceId.equals(app.get("objectId")) && appRoleId.equals(app.get("roleId"))){
-                        appRoleAssignmentId = appRoleAssignment.getString("id");
+                    if (resourceId.equals(app.get("objectId")) && appRoleId.equals(app.get("roleId"))) {
+                        appRoleAssignmentId = appRoleAssignment.id != null ? appRoleAssignment.id : "";
                         break;
                     }
                 }
                 if(!appRoleAssignmentId.isEmpty()) {
-                    url = appRoleAssignmentsUrl + appRoleAssignmentId;
-                    if(!HttpClient.delete(url,headers)){
-                        throw new ADException("Remove guest user role failed (AD): " + url);
+                    try{
+                        GraphAPIServiceClient.getInstance().removeRole(user.id,appRoleAssignmentId);
+                    }catch (Exception e){
+                        JSONObject params = new JSONObject();
+                        params.put("userId",user.id);
+                        params.put("appRoleAssignmentId",appRoleAssignmentId);
+                        context.getLogger().severe("Graph method called: removeRole, Request params: " + params);
+                        context.getLogger().severe("Error response: " + e.getMessage());
+                        throw new ADException("Remove guest user role failed (AD)");
                     }
+
                 }else{
-                    context.getLogger().info("Ignoring Error: There is no App role assignment to delete (AD)");
+                    context.getLogger().info("Ignoring Error (REMOVE APP ROLE ASSIGNMENT): There is no App role assignment to delete (AD)");
                 }
             }
         }else{
@@ -226,28 +175,33 @@ public class GraphAPIClient {
         return azureAppsList;
     }
     
-    static public JSONObject getUserProfileByEmail(String userEmail, String token, ExecutionContext context) throws Exception {
-        String url = GraphAPIClient.baseURL+"users?$filter=mail%20eq%20'"+userEmail+"'%20or%20userPrincipalName%20eq%20'"+userEmail+"'&&$select=id,displayName,jobTitle,companyName,mobilePhone";
-        HashMap<String,String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer "+ token);
-        JSONObject response = HttpClient.get(url,headers);
+    static public User getUserProfileByEmail(String userEmail, ExecutionContext context) throws Exception {
+        String filter = "mail eq '"+userEmail+"' or userPrincipalName eq '"+userEmail+"'";
+        String select = "id,displayName,jobTitle,companyName,mobilePhone";
 
-        if(response.has("error") || !response.has("value")){
-            context.getLogger().severe("Request params: " + url);
-            context.getLogger().severe("Error response: " + response);
+        try{
+            return GraphAPIServiceClient.getInstance().getUserProfile(filter,select);
+        }
+        catch(Exception e){
+            context.getLogger().severe("Graph Method called: getUserProfileByEmail, Request params: {filter:" + filter + "select: " + select + "}");
+            context.getLogger().severe("Error response: " + e.getMessage());
             throw new ADException("Get user by email failed (AD)");
         }
-        JSONArray usersList = response.getJSONArray("value");
-        return usersList.length()>0 ? usersList.getJSONObject(0) : null;
     }
 	
 	static public JSONObject getUserProfileWithRoleByEmail(String userEmail, ExecutionContext context) throws Exception {
-		String token = GraphAPIClient.getAccessToken(context);
-        JSONObject user = getUserProfileByEmail(userEmail,token,context);
-        if(user!=null) {
-        	String role = "";
+        User userObject = getUserProfileByEmail(userEmail,context);
+        JSONObject user = null;
+        if(userObject!=null) {
+            user = new JSONObject();
+            user.put("id", userObject.id);
+            user.put("displayName", userObject.displayName !=null ? userObject.displayName : "");
+            user.put("jobTitle", userObject.jobTitle != null ? userObject.jobTitle : "");
+            user.put("companyName", userObject.companyName != null ? userObject.companyName : "");
+            user.put("mobilePhone", userObject.mobilePhone != null ? userObject.mobilePhone : "");
+        	String role;
         	try {
-        		role = getAppRole(user.getString("id"), userEmail, token, context);
+        		role = getAppRole(userObject.id,userEmail,context);
         		user.put("role", role);
         	}catch (Exception e) {
         		context.getLogger().severe("Failed to fetch app role of user (AD): " + userEmail+" | Exception : "+e.getMessage());
@@ -257,13 +211,12 @@ public class GraphAPIClient {
     } 
 	
 	static public void updateUserProfile(String userEmail, String displayName, String jobTitle, String companyName, String mobilePhone, ExecutionContext context) throws Exception {
-		 String token = GraphAPIClient.getAccessToken(context);
-	     JSONObject user = getUserProfileByEmail(userEmail,token,context);
+	     User user = getUserProfileByEmail(userEmail,context);
 	     if(user!=null){
 				  try {
-					  GraphAPIServiceClient.updateUserProfile(user.getString("id"), displayName, jobTitle, companyName, mobilePhone, context);
+					  GraphAPIServiceClient.getInstance().updateUserProfile(user.id, displayName, jobTitle, companyName, mobilePhone);
 				  }catch(Exception e) {
-					  context.getLogger().severe("Request url: GraphServiceClient, Request params: "+ user.getString("id")+", "+displayName+", "+jobTitle+", "+companyName+", "+mobilePhone);
+					  context.getLogger().severe("Request url: GraphServiceClient, Request params: "+ user.id+", "+displayName+", "+jobTitle+", "+companyName+", "+mobilePhone);
 					  context.getLogger().severe("Error response: " + e.getMessage()); 
 					  throw new	  ADException("Failed to update user details (AD): " + userEmail);
 				  }
@@ -273,22 +226,20 @@ public class GraphAPIClient {
 	     }
 	}
 	
-	static public String getAppRole(String id, String email, String token, ExecutionContext context) throws Exception {
+	static public String getAppRole(String userId,String userEmail, ExecutionContext context) throws Exception {
 		String role = "";
-	    JSONArray appRoleAssignments = getUserAppRoleAssignments(id, token, context);
+	    List<AppRoleAssignment> appRoleAssignments = getUserAppRoleAssignments(userId,context);
 	    if(appRoleAssignments.isEmpty()) {
-	    	context.getLogger().severe("No app roles assigned to given user (AD): " + email);
-	    	throw new ADException("No app roles assigned to given user (AD): " + email);
+	    	context.getLogger().severe("No app roles assigned to given user (AD): " + userEmail);
+	    	throw new ADException("No app roles assigned to given user (AD): " + userEmail);
 	    }
-	    JSONObject appRole = null;
-	    String appRoleId = "";
+	    String appRoleId;
 	    final String applicationCustomerFullAdminRoleId = ActiveDirectory.INSTANCE.getLicensePortalProperty("customer-role-id");
 	    final String applicationSubaccountAdminRoleId = ActiveDirectory.INSTANCE.getLicensePortalProperty("subaccount-role-id");
 	    final String applicationSubaccountStakeholderRoleId = ActiveDirectory.INSTANCE.getLicensePortalProperty("subaccount-stakeholder-role-id");
-	    context.getLogger().info("User app roles queried from (AD): " + email+" | "+appRoleAssignments);
-	    for (Object object : appRoleAssignments) {
-			appRole = (JSONObject) object;
-			appRoleId = appRole.getString("appRoleId");
+	    context.getLogger().info("User app roles queried from (AD): " + userEmail+" | "+appRoleAssignments);
+	    for (AppRoleAssignment appRoleAssignment : appRoleAssignments) {
+			appRoleId = String.valueOf(appRoleAssignment.appRoleId);
 			if(appRoleId.equals(applicationCustomerFullAdminRoleId)) {
 				role = CUSTOMER_FULL_ADMIN;
 				break;
@@ -301,27 +252,22 @@ public class GraphAPIClient {
 				role = SUBACCOUNT_STAKEHOLDER;
 				break;
 			}
-			if(!role.isEmpty())
-				break;
-		}
+        }
 	    if(role.isEmpty()) {
-	    	context.getLogger().severe("No license server portal app roles assigned to given user (AD): " + email);
-	    	throw new ADException("No license server portal app roles assigned to given user (AD): " + email);
+	    	context.getLogger().severe("No license server portal app roles assigned to given user (AD): " + userEmail);
+	    	throw new ADException("No license server portal app roles assigned to given user (AD): " + userEmail);
 	    }
-	    context.getLogger().info("License server portal app role queried from (AD): " + email+" | "+role);
+	    context.getLogger().info("License server portal app role queried from (AD): " + userEmail+" | "+role);
 		return role;
 	}
 	
-    static public JSONArray getUserAppRoleAssignments(String id, String token, ExecutionContext context) throws Exception {
-        String url = GraphAPIClient.baseURL+ "users/"+id+"/appRoleAssignments/";
-        HashMap<String,String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer "+ token);
-        JSONObject response = HttpClient.get(url,headers);
-        if(response.has("error") || !response.has("value")){
-            context.getLogger().severe("Request params: " + url);
-            context.getLogger().severe("Error response: " + response);
+    static public List<AppRoleAssignment> getUserAppRoleAssignments(String id, ExecutionContext context) throws Exception {
+        try {
+            return GraphAPIServiceClient.getInstance().getAppRoleAssignments(id);
+        }catch(Exception e){
+            context.getLogger().severe("Graph Method called: getAppRoleAssignment, Request params: { userId: " + id + " }");
+            context.getLogger().severe("Error response: " + e.getMessage());
             throw new ADException("No App roles assigned for user (AD): " + id);
         }
-        return response.getJSONArray("value");
     }	
 }
