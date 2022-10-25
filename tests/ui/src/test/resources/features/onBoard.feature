@@ -7,7 +7,8 @@ Feature: Customers
   Scenario: Create a test customer for subaccount admin
     Given I try to login using a "FullAdministrator"
     And I open the Add Customer form
-    When I create a spotlight customer with the following data
+#    When I create a spotlight customer with the following data
+    When I create a customer with the following data
       | name          | subAdminCustomerTest                              |
       | type          | Reseller                                          |
       | subaccount    | subAdminTest                                      |

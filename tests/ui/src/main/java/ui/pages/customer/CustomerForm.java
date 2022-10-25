@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
+import ui.core.DriverManager;
 
 public class CustomerForm extends AbstractPageObject {
     @FindBy(css = "input#customerName")
@@ -26,7 +27,8 @@ public class CustomerForm extends AbstractPageObject {
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
 
     public Customers createCustomer(String customerName, String type, String adminEmail, String subaccount, String subAdminEmail, String spotlightPermission, String testCustomer){
-        this.action.sendText(this.customerName, customerName);
+        String customer = customerName + DriverManager.getInstance().getTimeStamp();
+        this.action.sendText(this.customerName, customer);
         By optionType = By.cssSelector(String.format("mat-option[title='%s']", type));
         this.action.selectOption(this.customerType, optionType);
         this.action.sendText(this.adminEmail, adminEmail);

@@ -4,6 +4,9 @@ import org.aeonbits.owner.ConfigFactory;
 import ui.utils.Environment;
 import org.openqa.selenium.WebDriver;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
 public class DriverManager {
     private WebDriver driver;
     private static DriverManager driverManager;
@@ -37,5 +40,10 @@ public class DriverManager {
     }
     public boolean getActiveDirectoryStatus(){
         return this.activeDirectory;
+    }
+    public String getTimeStamp(){
+        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        return sdf1.format(timestamp);
     }
 }

@@ -54,6 +54,23 @@ public class CustomerSteps {
         // DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
+/*    @When("I create a spotlight customer with the following data")
+    public void iCreateASpotlightCustomerWithTheFollowingData(DataTable customerTable) {
+        Map<String, String> customer = customerTable.asMap(String.class, String.class);
+        String customerName = customer.get("name");
+        String type = customer.getOrDefault("type", "MSP");
+        String adminEmail = environment.subaccountAdminUser();
+        String subaccount = customer.getOrDefault("subaccount", "Default");
+        String subAdminEmail = environment.subaccountAdminUser();
+        String spotlightPermission = customer.getOrDefault("spotlight", "no").toLowerCase();
+        String testCustomer = customer.getOrDefault("testCustomer", "yes").toLowerCase();
+        this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,
+                spotlightPermission, testCustomer);
+        this.actualMessage = this.customers.getMessage();
+        System.out.println("Message: " + this.actualMessage);
+        // DriverManager.getInstance().setMessage(this.actualMessage);
+    }*/
+
     @Then("I see the customer {string} in the table")
     public void iShouldSeeTheCustomerInTheTable(String customerName) {
         this.customerRow = this.customers.getCustomer(customerName);
@@ -64,6 +81,7 @@ public class CustomerSteps {
 
     @When("I delete the customer {string}")
     public void iDeleteTheCustomer(String customerName) {
+        this.customerRow = this.customers.getCustomer(customerName);
         this.actionMenu = this.customerRow.openActionMenu();
         this.actualMessage = this.actionMenu.delete("customer");
         DriverManager.getInstance().setMessage(this.actualMessage);
@@ -85,9 +103,10 @@ public class CustomerSteps {
     @When("I edit the customer {string} with the following data")
     public void iEditTheCustomerWithTheFollowingData(String customerName, DataTable customerTable) {
         Map<String, String> customer = customerTable.asMap(String.class, String.class);
-        this.customerName = customer.get("name");
+        this.customerName = customer.get("name") + DriverManager.getInstance().getTimeStamp();
         this.type = customer.get("type");
         this.subaccount = customer.get("subaccount");
+        this.customerRow = this.customers.getCustomer(customerName);
         this.actionMenu = this.customerRow.openActionMenu();
         this.actionMenu.editForm("customer");
         this.customerForm = new CustomerForm();
@@ -159,22 +178,5 @@ public class CustomerSteps {
         this.customerRow = this.customers.getCustomer(customerName);
         this.actionMenu = this.customerRow.openActionMenu();
         this.adminEmails = this.actionMenu.goToSubaccountAdmins();
-    }
-
-    @When("I create a spotlight customer with the following data")
-    public void iCreateASpotlightCustomerWithTheFollowingData(DataTable customerTable) {
-        Map<String, String> customer = customerTable.asMap(String.class, String.class);
-        String customerName = customer.get("name");
-        String type = customer.getOrDefault("type", "MSP");
-        String adminEmail = environment.subaccountAdminUser();
-        String subaccount = customer.getOrDefault("subaccount", "Default");
-        String subAdminEmail = environment.subaccountAdminUser();
-        String spotlightPermission = customer.getOrDefault("spotlight", "no").toLowerCase();
-        String testCustomer = customer.getOrDefault("testCustomer", "yes").toLowerCase();
-        this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,
-                spotlightPermission, testCustomer);
-        this.actualMessage = this.customers.getMessage();
-        System.out.println("Message: " + this.actualMessage);
-        // DriverManager.getInstance().setMessage(this.actualMessage);
     }
 }
