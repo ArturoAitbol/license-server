@@ -27,6 +27,7 @@ public class CustomerSteps {
     private String customerName, type, subaccount;
     private AdminstratorEmails adminEmails;
     Environment environment = ConfigFactory.create(Environment.class);
+    private String timeStamp = DriverManager.getInstance().getTimeStamp();
 
     public CustomerSteps(Customers customers) {
         this.customers = customers;
@@ -42,9 +43,9 @@ public class CustomerSteps {
         Map<String, String> customer = customerTable.asMap(String.class, String.class);
         String customerName = customer.get("name");
         String type = customer.getOrDefault("type", "MSP");
-        String adminEmail = customer.getOrDefault("adminEmail", environment.subaccountAdminUser());
+        String adminEmail = customer.getOrDefault("adminEmail", "");
         String subaccount = customer.getOrDefault("subaccount", "Default");
-        String subAdminEmail = customer.getOrDefault("subAdminEmail", environment.subaccountAdminUser());
+        String subAdminEmail = customer.getOrDefault("subAdminEmail", "");
         String spotlightPermission = customer.getOrDefault("spotlight", "no").toLowerCase();
         String testCustomer = customer.getOrDefault("testCustomer", "yes").toLowerCase();
         this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,
@@ -73,9 +74,10 @@ public class CustomerSteps {
 
     @Then("I see the customer {string} in the table")
     public void iShouldSeeTheCustomerInTheTable(String customerName) {
+        String expectedCustomer = customerName + this.timeStamp;
         this.customerRow = this.customers.getCustomer(customerName);
         String actualCustomerName = this.customerRow.getCustomerColumn("Customer");
-        assertEquals("Customers table doesn't have the customer: ".concat(customerName), customerName,
+        assertEquals("Customers table doesn't have the customer: ".concat(expectedCustomer), expectedCustomer,
                 actualCustomerName);
     }
 
@@ -84,13 +86,6 @@ public class CustomerSteps {
         this.customerRow = this.customers.getCustomer(customerName);
         this.actionMenu = this.customerRow.openActionMenu();
         this.actualMessage = this.actionMenu.delete("customer");
-        DriverManager.getInstance().setMessage(this.actualMessage);
-    }
-
-    @When("I delete the subaccount {string} of the customer {string}")
-    public void iDeleteTheSubaccount(String subaccountName, String customerName) {
-        this.actionMenu = this.customerRow.openActionMenu();
-        this.actualMessage = this.actionMenu.delete("subaccount");
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
@@ -103,9 +98,9 @@ public class CustomerSteps {
     @When("I edit the customer {string} with the following data")
     public void iEditTheCustomerWithTheFollowingData(String customerName, DataTable customerTable) {
         Map<String, String> customer = customerTable.asMap(String.class, String.class);
-        this.customerName = customer.get("name") + DriverManager.getInstance().getTimeStamp();
+        this.customerName = customer.get("name") + this.timeStamp;
         this.type = customer.get("type");
-        this.subaccount = customer.get("subaccount");
+        this.subaccount = customer.get("subaccount") + this.timeStamp;
         this.customerRow = this.customers.getCustomer(customerName);
         this.actionMenu = this.customerRow.openActionMenu();
         this.actionMenu.editForm("customer");
@@ -120,33 +115,6 @@ public class CustomerSteps {
         String actualCustomerName = this.customerRow.getCustomerColumn("Customer");
         String actualSubaccountName = this.customerRow.getCustomerColumn("Subaccount");
         String actualType = this.customerRow.getCustomerColumn("Type");
-        assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
-                actualCustomerName);
-        assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
-                actualSubaccountName);
-        assertEquals("Customer isn't this type: ".concat(this.type), this.type, actualType);
-    }
-
-    @Then("I see in the table the customer {string} and its subaccount {string}")
-    public void iSeeInTheTableTheTheCustomerAndItsSubaccount(String customerName, String subaccountName) {
-        this.customerRow = this.customers.getCustomer(customerName);
-        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer", null);
-        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", subaccountName);
-
-        assertEquals(
-                String.format("Customer '%s' doesn't have the subaccount '%s'", customerName, subaccountName),
-                subaccountName, actualSubaccountName);
-        assertEquals(
-                String.format("Subaccount '%s' doesn't belong to the customer '%s'", subaccountName, customerName),
-                customerName, actualCustomerName);
-    }
-
-    @Then("I should see the modified data in Subaccounts table")
-    public void iShouldSeeTheModifiedDataInSubaccountsTable() {
-        this.customerRow = new CustomerRow(this.customerName);
-        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer", null);
-        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", this.subaccount);
-        String actualType = this.customerRow.getSubaccountColumn("Type", null);
         assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
                 actualCustomerName);
         assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
@@ -179,4 +147,41 @@ public class CustomerSteps {
         this.actionMenu = this.customerRow.openActionMenu();
         this.adminEmails = this.actionMenu.goToSubaccountAdmins();
     }
+
+    @Then("I see in the table the customer {string} and its subaccount {string}")
+    public void iSeeInTheTableTheTheCustomerAndItsSubaccount(String customerName, String subaccountName) {
+        this.customerRow = this.customers.getCustomer(customerName);
+        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer", null);
+        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", subaccountName + this.timeStamp);
+        String expectedCustomer = customerName + this.timeStamp;
+        String expectedSubaccount = subaccountName + this.timeStamp;
+        assertEquals(
+                String.format("Customer '%s' doesn't have the subaccount '%s'", expectedCustomer, expectedSubaccount),
+                expectedSubaccount, actualSubaccountName);
+        assertEquals(
+                String.format("Subaccount '%s' doesn't belong to the customer '%s'", expectedSubaccount, expectedCustomer),
+                expectedCustomer, actualCustomerName);
+    }
+
+    @Then("I should see the modified data in Subaccounts table")
+    public void iShouldSeeTheModifiedDataInSubaccountsTable() {
+        this.customerRow = new CustomerRow(this.customerName);
+        String actualCustomerName = this.customerRow.getSubaccountColumn("Customer", null);
+        String actualSubaccountName = this.customerRow.getSubaccountColumn("Subaccount", this.subaccount);
+        String actualType = this.customerRow.getSubaccountColumn("Type", null);
+        assertEquals("Customer doesn't have this name: ".concat(this.customerName), this.customerName,
+                actualCustomerName);
+        assertEquals("Customer doesn't have this subaccount: ".concat(this.subaccount), this.subaccount,
+                actualSubaccountName);
+        assertEquals("Customer isn't this type: ".concat(this.type), this.type, actualType);
+    }
+
+    @When("I delete the subaccount {string} of the customer {string}")
+    public void iDeleteTheSubaccount(String subaccountName, String customerName) {
+        this.customerRow = this.customers.getCustomer(customerName);
+        this.actionMenu = this.customerRow.openActionMenu();
+        this.actualMessage = this.actionMenu.delete("subaccount");
+        DriverManager.getInstance().setMessage(this.actualMessage);
+    }
+
 }

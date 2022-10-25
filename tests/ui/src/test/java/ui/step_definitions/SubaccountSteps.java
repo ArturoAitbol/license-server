@@ -38,7 +38,6 @@ public class SubaccountSteps {
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
-
 /*    @Then("I see in the table the customer {string} and its subaccount {string}")
     public void iSeeInTheTableTheTheCustomerAndItsSubaccount(String customerName, String subaccountName) {
         SubaccountRow subaccountRow = this.customers.getSubaccount(subaccountName);
