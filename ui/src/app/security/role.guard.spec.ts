@@ -39,7 +39,6 @@ const beforeEachFunction = async () => {
 describe('When roles are loaded for username@test.com', () => {
     beforeEach(beforeEachFunction);
     beforeEach(() => {
-        console.log(MsalServiceMock.mockIdTokenClaims);
         msalServiceMock.getActiveAccount.and.returnValue(MsalServiceMock.mockIdTokenClaims)
     });
 
