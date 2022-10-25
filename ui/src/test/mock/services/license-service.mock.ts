@@ -134,6 +134,17 @@ const MOCK_LICENSE_L: License = {
     startDate: "2022-07-10",
     status: "Expired"
 }
+const MOCK_LICENSE_M: License = {
+    subaccountId: "11111111-1111-1111-1111-111111111111",
+    tokensPurchased: 150,
+    description: 'DescriptionL',
+    id: "6524a6ab-b88b-49a8-aee5-624e86e24dcd",
+    renewalDate: "2022-07-18",
+    subscriptionType: "Small",
+    deviceLimit: "5000",
+    startDate: "2022-07-10",
+    status: "Expired"
+}
 
 const MOCK_UPDATED_LICENSE_D: License = {
     subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
@@ -160,7 +171,8 @@ const MOCK_LICENSES_LIST = {
         MOCK_LICENSE_I,
         MOCK_LICENSE_J,
         MOCK_LICENSE_K,
-        MOCK_LICENSE_L
+        MOCK_LICENSE_L,
+        MOCK_LICENSE_M
     ]
 };
 

@@ -21,8 +21,9 @@ import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { DialogService } from 'src/app/services/dialog.service';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { SubaccountAdminEmailServiceMock } from 'src/test/mock/services/subaccount-admin-email-service.mock';
 
 
 let CtaasSetupComponentTestInstance: CtaasSetupComponent;
@@ -220,11 +221,31 @@ describe('dailog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     it('should update setup details on "Update" button click, if case of one license', () => {
-        const licenseList = LicenseServiceMock.licensesList.licenses;
         const subaccount = SubaccountServiceMock.testSubaccount3;
-        const activeLicensesOfSubAccount = licenseList.filter(license => license.subaccountId === subaccount.id && license.status === 'Active');
-        activeLicensesOfSubAccount.length === 1;
-
+        
+        spyOn(LicenseServiceMock, 'getLicenseList').and.callFake( () => {
+            return new Observable((observer) => {
+                observer.next({
+                    licenses: [
+                        {
+                            subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
+                            id: '16f4f014-5bed-4166-b10a-808b2e6655e3',
+                            description: 'DescriptionA',
+                            status: 'Active',
+                            deviceLimit: '',
+                            tokensPurchased: 150,
+                            startDate: '2022-08-01',
+                            renewalDate: '2022-09-30',
+                            subscriptionType: ''
+                        }
+                    ]
+                });
+                observer.complete();
+                return {
+                    unsubscribe() {}
+                };
+            });
+        });
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
         fixture.detectChanges();
@@ -233,8 +254,8 @@ describe('dailog calls and interactions', () => {
         ctaasSetups.find(setup => setup.subaccountId === subaccount.id);
         CtaasSetupComponentTestInstance.editForm();
         
-        const form = CtaasSetupComponentTestInstance.setupForm.get('status');
-        form.setValue('SETUP_READY');
+        const form = CtaasSetupComponentTestInstance.setupForm
+        form.value.status = 'SETUP_READY';
         fixture.detectChanges();
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
@@ -242,17 +263,17 @@ describe('dailog calls and interactions', () => {
 
     it('should update setup details on "Update" button click, if case of more the one license', () => {
         const licenseList = LicenseServiceMock.licensesList.licenses;
-        const subaccount = SubaccountServiceMock.testSubaccount3;
+        const subaccount = SubaccountServiceMock.testSubaccount2;
         const activeLicensesOfSubAccount = licenseList.filter(license => license.subaccountId === subaccount.id && license.status === 'Active');
         activeLicensesOfSubAccount.length > 1;
+        console.log(activeLicensesOfSubAccount);
+
 
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
         spyOn(CtaasSetupComponentTestInstance, 'openDialog').and.callThrough(); 
         spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(LicenseServiceMock.licensesList));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
-        
-        const ctaasSetups = CtaasSetupServiceMock.usersListValue.setups;
-        ctaasSetups.find(setup => setup.subaccountId === subaccount.id);
+
         CtaasSetupComponentTestInstance.editForm();
         
         const form = CtaasSetupComponentTestInstance.setupForm.get('status');
@@ -264,23 +285,46 @@ describe('dailog calls and interactions', () => {
         CtaasSetupComponentTestInstance.openDialog(activeLicensesOfSubAccount);
         expect(CtaasSetupComponentTestInstance.openDialog).toHaveBeenCalled();
     });
-    it('should update setup details on "Update" button click, if case of more the one license', () => {
-        const licenseList = LicenseServiceMock.licensesList.licenses;
-        const subaccount = SubaccountServiceMock.testSubaccount3;
-        const activeLicensesOfSubAccount = licenseList.filter(license => license.subaccountId === subaccount.id && license.status === 'Active');
-        activeLicensesOfSubAccount.length === 0;
-        const response = {error:'some error'}
-        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of(response));
+    it('should show error message if case zero licenses', () => {
+        spyOn(LicenseServiceMock, 'getLicenseList').and.callFake( () => {
+            return new Observable((observer) => {
+                observer.next({
+                    licenses: []
+                });
+                observer.complete();
+                return {
+                    unsubscribe() {}
+                };
+            });
+        });
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
-        
-        const ctaasSetups = CtaasSetupServiceMock.usersListValue.setups;
-        ctaasSetups.find(setup => setup.subaccountId === subaccount.id);
-        CtaasSetupComponentTestInstance.editForm();
-        LicenseServiceMock.getLicenseList();
-        SnackBarServiceMock.openSnackBar(response.error, 'Error selecting a subscription');
-        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error selecting a subscription');
-    });
 
+        CtaasSetupComponentTestInstance.editForm();
+        const form = CtaasSetupComponentTestInstance.setupForm
+        form.value.status = 'SETUP_READY';
+        fixture.detectChanges();
+        CtaasSetupComponentTestInstance.submit();
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith("No active subscriptions found", 'Error selecting a subscription');
+    });
+    it('should save form when status is in-progress',()=>{
+        spyOn<any>(CtaasSetupComponentTestInstance, 'generateUpdateBody').and.returnValue({testValue:'test'});
+        spyOn<any>(CtaasSetupComponentTestInstance, 'editSetup');
+
+        CtaasSetupComponentTestInstance.editForm();
+        const form = CtaasSetupComponentTestInstance.setupForm;
+        form.setValue({
+            azureResourceGroup: 'abc',
+            tapUrl: 'www.tap.com',
+            status: 'SETUP_INPROGRESS',
+            onBoardingComplete: true,
+            powerBiWorkspaceId: '123',
+            powerBiReportId: '321'
+        });
+        fixture.detectChanges();
+        CtaasSetupComponentTestInstance.submit();
+        expect(CtaasSetupComponentTestInstance['generateUpdateBody']).toHaveBeenCalled();
+        expect(CtaasSetupComponentTestInstance['editSetup']).toHaveBeenCalled();
+    })
 });
