@@ -410,7 +410,7 @@ export const CustomerServiceMock = {
     getCustomerList: () => {
         return new Observable((observer) => {
             observer.next(
-                CUSTOMER_LIST
+                JSON.parse(JSON.stringify(CUSTOMER_LIST))
             );
             observer.complete();
             return {
@@ -435,7 +435,9 @@ export const CustomerServiceMock = {
             let customer = EMAIL_CUSTOMER;
             if(customerId)
                 customer = CUSTOMER_WITH_EMAILS_LIST.customers.find((customer) => (customer.id === customerId));
-            observer.next({customers:[customer]});
+            observer.next(
+                JSON.parse(JSON.stringify({customers:[customer]}))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -445,7 +447,9 @@ export const CustomerServiceMock = {
 
     updateCustomer: (customer: any) => {
         return new Observable((observer) => {
-            observer.next(MOCK_UPDATED_CUSTOMER);
+            observer.next(
+                JSON.parse(JSON.stringify(MOCK_UPDATED_CUSTOMER))
+            );
             observer.complete();
             return {
                 unsubscribe() {}
@@ -453,14 +457,16 @@ export const CustomerServiceMock = {
         });
     },
     getSelectedCustomer: () => {
-        return SELECTED_CUSTOMER;
+        return JSON.parse(JSON.stringify(SELECTED_CUSTOMER));
     },
     getEmailList: () => {
-        return EMAIL_CUSTOMER.adminEmails;
+        return JSON.parse(JSON.stringify(EMAIL_CUSTOMER.adminEmails));
     },
     createAdminEmail: (data) =>{
         return new Observable((observer) => {
-            observer.next(MOCK_ADMINEMAILS_CREATED);
+            observer.next(
+                JSON.parse(JSON.stringify(MOCK_ADMINEMAILS_CREATED))
+            );
             observer.complete();
             return {
                 unsubscribe() { }

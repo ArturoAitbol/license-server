@@ -208,7 +208,9 @@ export const ConsumptionServiceMock = {
                     consumptionInfo = JSON.parse(JSON.stringify(MOCK_DETAILED_INFO));
                     break;
            }
-            observer.next(consumptionInfo);
+            observer.next(
+                JSON.parse(JSON.stringify(consumptionInfo))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -217,7 +219,9 @@ export const ConsumptionServiceMock = {
     },
     updateLicenseConsumptionDetails: (data) => {
         return new Observable((observer) => {
-            observer.next(MOCK_UPDATED_CONSUMPTION);
+            observer.next(
+                JSON.parse(JSON.stringify(MOCK_UPDATED_CONSUMPTION))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -227,7 +231,9 @@ export const ConsumptionServiceMock = {
     deleteLicenseConsumptionDetails: (consumptionId) => {
         return new Observable((observer) => {
             const removedConsumption = MOCK_CONSUMPTIONS_LIST.find((consumption: any) => consumption.id === consumptionId);
-            observer.next(removedConsumption);
+            observer.next(
+                JSON.parse(JSON.stringify(removedConsumption))
+            );
             observer.complete();
             return {
                 unsubscribe() { }
@@ -236,7 +242,9 @@ export const ConsumptionServiceMock = {
     },
     addLicenseConsumptionDetails: (data) =>{
         return new Observable((observer) => {
-            observer.next(MOCK_CREATED_CONSUMPTION);
+            observer.next(
+                JSON.parse(JSON.stringify(MOCK_CREATED_CONSUMPTION))
+            );
             observer.complete();
             return {
                 unsubscribe() { }

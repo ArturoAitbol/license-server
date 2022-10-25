@@ -10,9 +10,9 @@ Feature: Subaccounts
     When I create a customer with the following data
       | name          | subaccountCustomerTest              |
       | type          | MSP                                 |
-#      | adminEmail    | test-sub-custom@tekvizion.com       |
+      | adminEmail    | test-subaccount@tekvizion.com       |
       | subaccount    | Default                             |
-#      | subAdminEmail | test-sub-custom@tekvizion.com       |
+      | subAdminEmail | test-subaccount@tekvizion.com       |
       | testCustomer  | yes                                 |
     Then I see the customer "subaccountCustomerTest" in the table
 

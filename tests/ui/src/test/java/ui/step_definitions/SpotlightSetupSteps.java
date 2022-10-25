@@ -3,7 +3,6 @@ package ui.step_definitions;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import ui.core.DriverManager;
 import ui.pages.spotlight.Setup;
 
 import java.util.Map;
