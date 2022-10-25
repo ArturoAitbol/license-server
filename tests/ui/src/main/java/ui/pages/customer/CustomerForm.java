@@ -45,16 +45,15 @@ public class CustomerForm extends AbstractPageObject {
         return new Customers();
     }
 
-    public String editCustomer(String customerName, String type, String subaccount)
-    {
+    public String editCustomer(String customerName, String type, String subaccount) {
         if (customerName != null)
-            this.action.replaceText(this.customerName, customerName);
+            this.action.replaceText(this.customerName, customerName + DriverManager.getInstance().getTimeStamp());
         if (type != null) {
             By optionType = By.cssSelector(String.format("mat-option[title='%s']", type));
             this.action.selectOption(this.customerType, optionType);
         }
         if (subaccount != null)
-            this.action.replaceText(this.subaccountName, subaccount);
+            this.action.replaceText(this.subaccountName, subaccount + DriverManager.getInstance().getTimeStamp());
         this.action.click(this.submitButton);
         return this.action.getText(this.messageSelector);
     }

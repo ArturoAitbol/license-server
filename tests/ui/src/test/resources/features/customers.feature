@@ -41,7 +41,7 @@ Feature: Customers
     Then I should see the message "Customer and subaccount edited successfully!"
     And I should see the modified data in Customers table
 
-  @deleteCustomer @ignore
+  @deleteCustomer @delete
   Scenario: Delete a test customer
     Given I see the customer "customerModified" in the table
     When I delete the customer "customerModified"

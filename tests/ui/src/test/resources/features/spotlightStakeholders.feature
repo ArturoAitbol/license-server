@@ -18,7 +18,7 @@ Feature: Stakeholders
     Then I see the customer "stakeholderTestCustomer" in the table
 
   @addStakeholder
-  Scenario: Add a Test Spotlight for customer
+  Scenario: Add a Stakeholder
     Given I see the customer "stakeholderTestCustomer" in the table
     And I go to the spotlight dashboard for "stakeholderTestCustomer"
     And I go to the spotlight "Stakeholders" tab
