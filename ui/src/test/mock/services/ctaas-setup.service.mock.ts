@@ -65,8 +65,8 @@ const ERROR_MSG = 'Expected setupDetails response error';
 
 export const CtaasSetupServiceMock = {
     usersListValue: CTAAS_SETUP_LIST,
-    testuser1: TEST_SETUP_1,
-    testuser2: TEST_SETUP_5,
+    testSetup1: TEST_SETUP_1,
+    testSetup2: TEST_SETUP_5,
 
     getSubaccountCtaasSetupDetails: (id) => {
         return new Observable( (observer) => {
@@ -82,14 +82,14 @@ export const CtaasSetupServiceMock = {
         });
     },
 
-    updateCtaasSetupDetailsById: () => {
-        return new Observable((setupDetails) => {
-            setupDetails.next(()=>{
+    updateCtaasSetupDetailsById: (id) => {
+        return new Observable((observer) => {
+            observer.next(()=>{
                 const updateSetup = CTAAS_SETUP_LIST.setups.find(user =>
-                user.azureResourceGroup === 'd973456e-049a-4490-ad4c-c3fc9205d50f');
+                user.subaccountId === id);
                 updateSetup.status = 'SETUP_READY';
             });
-            setupDetails.complete();
+            observer.complete();
             return {
                 unsubscribe() {}
             };
