@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
+import ui.core.DriverManager;
 import ui.pages.subaccounts.SubaccountForm;
 import ui.pages.subaccounts.SubaccountRow;
 
@@ -28,7 +29,8 @@ public class Customers extends AbstractPageObject {
     }
 
     public CustomerRow getCustomer(String customerName) {
-        return new CustomerRow(customerName);
+        String customer = customerName + DriverManager.getInstance().getTimeStamp();
+        return new CustomerRow(customer);
     }
 
     public SubaccountRow getSubaccount(String subaccountName) {

@@ -58,7 +58,7 @@ Feature: CtaasSetup
       | model             | Base SpotLight platform ready |
       | tekTokensUsed     | 0                             |
 
-  @deleteSpotLightCustomer @ignore
+  @deleteSpotLightCustomer @delete
   Scenario: Delete test spotlightSetup customer
     Given I see the customer "spotlightCustomerTest" in the table
     When I delete the customer "spotlightCustomerTest"
