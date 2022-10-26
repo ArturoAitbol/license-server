@@ -60,7 +60,7 @@ export class SubaccountAdminEmailsComponent implements OnInit {
         const responseErrors = res.filter(response => response !== null);
         if (responseErrors.length === 0) {
           this.isDataLoading = false;
-          this.snackBarService.openSnackBar('Customer admin emails edited successfully! ', '');
+          this.snackBarService.openSnackBar('Subaccount admin emails edited successfully! ', '');
           this.dialogRef.close(true);
         } else {
           responseErrors.forEach((response) => {

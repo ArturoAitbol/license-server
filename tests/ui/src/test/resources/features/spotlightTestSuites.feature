@@ -43,7 +43,7 @@ Feature: TestSuites
       | frequency     | Monthly       |
     Then I should see the message "Test Suite successfully edited!"
 
-  @deleteTestSuite
+  @deleteTestSuite @delete
   Scenario: Delete Test Suite A Updated
       Given I see the customer "SpotlightTestSuite" in the table
       And I go to the spotlight dashboard for "SpotlightTestSuite"
@@ -52,7 +52,7 @@ Feature: TestSuites
       When I delete the "Test Suite A Updated" test suite
       Then I should see the message "Test suite deleted successfully!"
 
-  @deleteTestSuitesCustomer @ignore
+  @deleteTestSuitesCustomer @delete
   Scenario: Delete the test suites customer
     Given I see the customer "SpotlightTestSuite" in the table
     When I delete the customer "SpotlightTestSuite"

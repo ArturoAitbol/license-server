@@ -2,6 +2,7 @@ package ui.pages.customer;
 
 import org.openqa.selenium.By;
 import ui.core.AbstractPageObject;
+import ui.core.DriverManager;
 import ui.pages.ActionMenu;
 
 public class CustomerRow extends AbstractPageObject {
@@ -32,7 +33,7 @@ public class CustomerRow extends AbstractPageObject {
         if(column.equals("Customer"))
             columnSelector = By.xpath(this.CUSTOMER_NAME_XPATH);
         else if (column.equals("Subaccount"))
-            columnSelector = By.xpath(String.format(this.CUSTOMER_NAME_XPATH + "/following-sibling::td[span[text()='%s']]",subaccountName));
+            columnSelector = By.xpath(String.format(this.CUSTOMER_NAME_XPATH + "/following-sibling::td[span[text()='%s']]", subaccountName));
         else
             columnSelector = By.xpath(String.format(this.CUSTOMER_NAME_XPATH + "/following-sibling::td[@id='%s']/span", column));
         return this.action.getText(columnSelector);

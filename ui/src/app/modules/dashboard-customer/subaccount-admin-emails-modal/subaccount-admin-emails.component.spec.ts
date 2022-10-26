@@ -168,7 +168,7 @@ describe('UnitTest', () => {
             subaccountModalComponentInstance.emailForms.push(new FormBuilder().group({ email: ['', [Validators.required, Validators.email]] }));
             subaccountModalComponentInstance.submit();
             expect(SubaccountAdminEmailServiceMock.createAdminEmail).toHaveBeenCalledTimes(2);
-            expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Customer admin emails edited successfully! ', '');
+            expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount admin emails edited successfully! ', '');
         });
 
         it('should display snackbar error message if the service call fails', () => {
