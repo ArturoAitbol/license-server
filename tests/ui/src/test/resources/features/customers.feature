@@ -37,11 +37,11 @@ Feature: Customers
     When I edit the customer "customerTest" with the following data
       | name          | customerModified        |
       | type          | MSP                     |
-      | subaccount    | subaccountModified      |
+      | subaccount    | subCustomModified       |
     Then I should see the message "Customer and subaccount edited successfully!"
     And I should see the modified data in Customers table
 
-  @deleteCustomer
+  @deleteCustomer @delete
   Scenario: Delete a test customer
     Given I see the customer "customerModified" in the table
     When I delete the customer "customerModified"
