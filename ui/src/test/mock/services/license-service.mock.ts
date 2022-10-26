@@ -282,6 +282,7 @@ export const LicenseServiceMock = {
     filteredSubAccountNameList: MOCK_FILTERED_NAME_LICENSES_LIST,
     mockLicenseA: MOCK_LICENSE_A,
     mockLicenseB: MOCK_LICENSE_B,
+    mockLicenseC: MOCK_LICENSE_C,
     mockLicenseL: MOCK_LICENSE_L,
     updatedMockLicenseD: MOCK_UPDATED_LICENSE_D,
     mockDeletedLicense: MOCK_DELETED_LICENSE,
