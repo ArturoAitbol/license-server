@@ -61,9 +61,9 @@ export class CtaasSetupComponent implements OnInit {
       if (this.setupForm.value.status != null && this.setupForm.value.status === 'SETUP_READY') {
         let selectedLicenseId;
         this.isDataLoading = true;
-        this.licenseService.getLicenseList(this.subaccountService.getSelectedSubAccount().id).subscribe(async (licenseList: any) => {          
+        this.licenseService.getLicenseList(this.subaccountService.getSelectedSubAccount().id).subscribe(async (licenseList: any) => {
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
-          
+
           if (activeLicenses.length === 0) {
             this.snackBarService.openSnackBar("No active subscriptions found", "Error selecting a subscription");
             return;
@@ -106,15 +106,13 @@ export class CtaasSetupComponent implements OnInit {
   private fetchSetupInfo() {
     this.isDataLoading = true;
     const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-    console.log(currentSubaccountDetails);
-
     const { id } = currentSubaccountDetails;
-    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id).pipe(map(res => res.ctaasSetups.length>0 ? res.ctaasSetups[0] : null )).subscribe(res => {
-      if(res!=null){
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id).pipe(map(res => res.ctaasSetups.length > 0 ? res.ctaasSetups[0] : null)).subscribe(res => {
+      if (res != null) {
         this.originalCtaasSetupDetails = res;
         this.setupForm.patchValue(res);
         this.ctaasSetupId = res.id;
-      }else{
+      } else {
         this.snackBarService.openSnackBar("No initial setup found", 'Error getting SpotLight Setup!');
       }
       this.isDataLoading = false;
@@ -134,12 +132,12 @@ export class CtaasSetupComponent implements OnInit {
   }
 
   // opens a popup when update is clicked
-  openDialog(activeLicenses){
+  openDialog(activeLicenses) {
     return this.dialog.open(LicenseConfirmationModalComponent, {
-        width: 'auto',
-        data: activeLicenses,
-        disableClose: true
-      }).afterClosed().toPromise();
-  }  
+      width: 'auto',
+      data: activeLicenses,
+      disableClose: true
+    }).afterClosed().toPromise();
+  }
 
 }

@@ -90,12 +90,12 @@ describe('UI verification test', () => {
         fixture.detectChanges();
         const h1 = fixture.nativeElement.querySelector('#setup-title');
         const editButton = fixture.nativeElement.querySelector('#edit-details-button');
-        
+
         expect(h1.textContent).toBe('SpotLight Setup Details');
         expect(editButton.textContent).toBe(' Edit Setup Details ');
-        
+
     });
-    
+
     it('should display all form fields', () => {
         fixture.detectChanges();
         const setupForm = fixture.nativeElement.querySelector('#setup-form');
@@ -140,7 +140,7 @@ describe('make method calls', () => {
     });
 
     it('should update setup details on "Update" button click', () => {
-        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
+        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
         fixture.detectChanges();
 
         CtaasSetupComponentTestInstance.submit();
@@ -156,7 +156,7 @@ describe('make method calls', () => {
         CtaasSetupComponentTestInstance.cancelEdit();
         dialogService.close()
         CtaasSetupComponentTestInstance.setupForm.disable();
-        fixture.detectChanges(); 
+        fixture.detectChanges();
 
         expect(dialogService.close).toHaveBeenCalled();
         expect(CtaasSetupComponentTestInstance.cancelEdit).toHaveBeenCalled();
@@ -188,7 +188,7 @@ describe('setup form verifications', () => {
             powerBiReportId: ''
         });
         expect(setup.hasError('required')).toBeTruthy;
-        
+
         expect(setup.get('azureResourceGroup').valid).toBeFalse();
         expect(setup.get('tapUrl').valid).toBeFalse();
         expect(setup.get('status').valid).toBeFalse();
@@ -200,55 +200,57 @@ describe('setup form verifications', () => {
 
 });
 
-describe('dailog calls and interactions', () => {
+describe('dialog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     it('should update setup details on "Update" button click, if case of one license', () => {
-        
-        spyOn(LicenseServiceMock, 'getLicenseList').and.callFake( () => {
+        const response = { ctaasSetups: [CtaasSetupServiceMock.testuser1] };
+        spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(of(response));
+
+        spyOn(LicenseServiceMock, 'getLicenseList').and.callFake(() => {
             return new Observable((observer) => {
                 observer.next({
-                    licenses: [ LicenseServiceMock.mockLicenseA ]
+                    licenses: [LicenseServiceMock.mockLicenseA]
                 });
                 observer.complete();
                 return {
-                    unsubscribe() {}
+                    unsubscribe() { }
                 };
             });
         });
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
-        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
+        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
         fixture.detectChanges();
-        
+
         CtaasSetupComponentTestInstance.editForm();
-        
-        const form = CtaasSetupComponentTestInstance.setupForm
+
+        const form = CtaasSetupComponentTestInstance.setupForm;
         form.value.status = 'SETUP_READY';
         fixture.detectChanges();
+        expect(CtaasSetupServiceMock.getSubaccountCtaasSetupDetails).toHaveBeenCalled();
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
     });
     it('should update setup details on "Update" button click, if case of more the one license', () => {
-        
-        spyOn(LicenseServiceMock, 'getLicenseList').and.callFake( () => {
+        spyOn(LicenseServiceMock, 'getLicenseList').and.callFake(() => {
             return new Observable((observer) => {
                 observer.next({
-                    licenses: [ LicenseServiceMock.mockLicenseB, LicenseServiceMock.mockLicenseC ]
+                    licenses: [LicenseServiceMock.mockLicenseB, LicenseServiceMock.mockLicenseC]
                 });
                 observer.complete();
                 return {
-                    unsubscribe() {}
+                    unsubscribe() { }
                 };
             });
         });
         spyOn(CtaasSetupComponentTestInstance, 'editForm').and.callThrough();
-        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough(); 
+        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
         fixture.detectChanges();
-        
+
         // const ctaasSetups = CtaasSetupServiceMock.usersListValue.setups;
         // ctaasSetups.find(setup => setup.subaccountId === subaccount.id);
         CtaasSetupComponentTestInstance.editForm();
-        
+
         const form = CtaasSetupComponentTestInstance.setupForm
         form.value.status = 'SETUP_READY';
         fixture.detectChanges();
@@ -257,14 +259,14 @@ describe('dailog calls and interactions', () => {
     });
 
     it('should show error message if case zero licenses', () => {
-        spyOn(LicenseServiceMock, 'getLicenseList').and.callFake( () => {
+        spyOn(LicenseServiceMock, 'getLicenseList').and.callFake(() => {
             return new Observable((observer) => {
                 observer.next({
                     licenses: []
                 });
                 observer.complete();
                 return {
-                    unsubscribe() {}
+                    unsubscribe() { }
                 };
             });
         });
@@ -282,20 +284,68 @@ describe('dailog calls and interactions', () => {
 
 });
 
-describe('', () =>{
+describe('update the setup details', () => {
     beforeEach(beforeEachFunction);
 
-    it('should save form when status is in-progress',()=>{
+    it('should save form when status is in-progress', () => {
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
-        
+
         CtaasSetupComponentTestInstance.editForm();
-        const license = CtaasSetupServiceMock.testuser2
+        const setupDetails = CtaasSetupServiceMock.testuser2
         const form = CtaasSetupComponentTestInstance.setupForm;
-        form.patchValue(license);
+        form.patchValue(setupDetails);
         fixture.detectChanges();
-        console.log('form', form.value);
-        
+
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
+    });
+});
+describe('check for error messages', () => {
+    beforeEach(beforeEachFunction);
+    it('should display snackbar when an error occured while fetching setup details', () => {
+        const response = { ctaasSetups: [] };
+        const errorResponse = { error: 'No initial setup found' };
+        spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(of(response));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        fixture.detectChanges();
+
+        expect(CtaasSetupServiceMock.getSubaccountCtaasSetupDetails).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error getting SpotLight Setup!');
+    });
+
+    it('should display snackbar when an error occured while updating setup details', () => {
+        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
+        const errorResponse = { error: 'some error' };
+        spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(of(errorResponse));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+        CtaasSetupComponentTestInstance.editForm();
+        const setupDetails = CtaasSetupServiceMock.testuser2;
+        const form = CtaasSetupComponentTestInstance.setupForm;
+        form.patchValue(setupDetails);
+        fixture.detectChanges();
+
+        CtaasSetupComponentTestInstance.submit();
+        expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
+        expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error updating SpotLight Setup!');
+    });
+
+    it('should display snackbar when an error occured while updating setup details', () => {
+        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
+        const errorResponse = { error: 'some error' };
+        spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(of(errorResponse));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+        CtaasSetupComponentTestInstance.editForm();
+        const setupDetails = CtaasSetupServiceMock.testuser2;
+        const form = CtaasSetupComponentTestInstance.setupForm;
+        form.patchValue(setupDetails);
+        fixture.detectChanges();
+
+        CtaasSetupComponentTestInstance.submit();
+        expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
+        expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error updating SpotLight Setup!');
     });
 });
