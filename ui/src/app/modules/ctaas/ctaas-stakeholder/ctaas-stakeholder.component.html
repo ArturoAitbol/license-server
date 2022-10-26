@@ -4,11 +4,11 @@
         <h2 id="main-title">Stakeholders</h2>
     </div>
     <div>
-        <span class="fw-500" *ngIf="isLoggedInUserAdmin">Stake Holder</span>
+        <span class="fw-500" *lcCheckAccessFor="'showUserToggle'">Stake Holder</span>
         &nbsp;
-        <mat-slide-toggle *ngIf="isLoggedInUserAdmin" id="mat-toggle" [color]="'primary'" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
+        <mat-slide-toggle *lcCheckAccessFor="'showUserToggle'" id="mat-toggle" [color]="'primary'" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
         &nbsp;
-        <span class="fw-500" *ngIf="isLoggedInUserAdmin">Subaccount Admin</span>
+        <span class="fw-500" *lcCheckAccessFor="'showUserToggle'">Subaccount Admin</span>
         &nbsp;
         <button style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addStakeholder()">
             Add Stakeholder

@@ -26,7 +26,6 @@ export class CtaasStakeholderComponent implements OnInit {
   actionMenuOptions: any = [];
   isLoadingResults = false;
   isRequestCompleted = false;
-  isLoggedInUserAdmin: boolean = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
@@ -73,9 +72,6 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   private getActionMenuOptions() {
     const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    if (roles && roles.length > 0) {
-      this.isLoggedInUserAdmin = !(roles.includes(Constants.SUBACCOUNT_ADMIN));
-    }
     this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions")
   }
   /**

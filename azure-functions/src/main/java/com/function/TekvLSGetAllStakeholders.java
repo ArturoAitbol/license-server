@@ -175,13 +175,8 @@ public class TekvLSGetAllStakeholders {
                     continue;
                 }
                 String userRole = userProfile.getString("role");
-                switch (loggedInUserRole) {
-                    case CUSTOMER_FULL_ADMIN:
-                    case SUBACCOUNT_ADMIN:
-                        if (!userRole.equals(SUBACCOUNT_STAKEHOLDER)) {
-                            continue;
-                        }
-                        break;
+                if (loggedInUserRole.equals(CUSTOMER_FULL_ADMIN) || loggedInUserRole.equals(SUBACCOUNT_ADMIN) && (!userRole.equals(SUBACCOUNT_STAKEHOLDER))) {
+                    continue;
                 }
                 json.put("name", userProfile.get("displayName"));
                 json.put("jobTitle", userProfile.get("jobTitle"));
