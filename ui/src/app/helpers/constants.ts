@@ -20,5 +20,10 @@ export class Constants {
     //Phone number Validation
     public static readonly PHONE_NUMBER_PATTERN = '^[+]*[0-9]*$';
 
+    // User roles
+    public static readonly SUBACCOUNT_ADMIN = 'customer.SubaccountAdmin';
+    public static readonly SUBACCOUNT_STAKEHOLDER = 'customer.SubaccountStakeholder';
+
+
 }
 

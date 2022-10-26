@@ -37,7 +37,8 @@ export const permissions = {
             'deleteSubAccAdminEmail',
             'auditInfo',
             'addTestSuite',
-            'showBanner'
+            'showBanner',
+            'showUserToggle'
         ],
         tables: {
             customerOptions: [
@@ -91,7 +92,10 @@ export const permissions = {
             'addAdminEmail',
             'deleteAdminEmail',
             'addSubAccAdminEmail',
-            'deleteSubAccAdminEmail', 'showBanner'],
+            'deleteSubAccAdminEmail',
+            'showBanner',
+            'showUserToggle'
+        ],
         tables: {
             customerOptions: [
                 'VIEW_LICENSES',
@@ -132,7 +136,8 @@ export const permissions = {
             'addProject',
             'addLicenseConsumption',
             'addTestSuite',
-            'showBanner'
+            'showBanner',
+            'showUserToggle'
         ],
         tables: {
             customerOptions: [
@@ -175,7 +180,10 @@ export const permissions = {
             'spotlight',
             'report-dashboards'
         ],
-        elements: ['showBanner'],
+        elements: [
+            'showBanner',
+            'showUserToggle'
+        ],
         tables: {
             customerOptions: [
                 'VIEW_LICENSES',

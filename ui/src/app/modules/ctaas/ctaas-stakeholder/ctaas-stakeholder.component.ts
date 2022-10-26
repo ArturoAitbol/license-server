@@ -12,6 +12,7 @@ import { map } from 'rxjs/operators';
 import { IStakeholder } from 'src/app/model/stakeholder.model';
 import { Report } from 'src/app/helpers/report';
 import { Utility } from 'src/app/helpers/utils';
+import { Constants } from 'src/app/helpers/constants';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -21,6 +22,7 @@ export class CtaasStakeholderComponent implements OnInit {
   tableMaxHeight: number;
   displayedColumns: any[] = [];
   stakeholdersData: any = [];
+  stakeholdersDataBk: any = [];
   actionMenuOptions: any = [];
   isLoadingResults = false;
   isRequestCompleted = false;
@@ -29,8 +31,8 @@ export class CtaasStakeholderComponent implements OnInit {
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
 
   readonly options = {
-    MODIFY_STAKEHOLDER : this.MODIFY_STAKEHOLDER,
-    DELETE_STAKEHOLDER : this.DELETE_STAKEHOLDER
+    MODIFY_STAKEHOLDER: this.MODIFY_STAKEHOLDER,
+    DELETE_STAKEHOLDER: this.DELETE_STAKEHOLDER
   }
   constructor(
     private msalService: MsalService,
@@ -69,8 +71,8 @@ export class CtaasStakeholderComponent implements OnInit {
    * get action menu options
    */
   private getActionMenuOptions() {
-   const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-   this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions")
+    const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions")
   }
   /**
    * fetch stakeholder data
@@ -109,12 +111,13 @@ export class CtaasStakeholderComponent implements OnInit {
           }
         })
       )
-      .subscribe((response: any) => { 
+      .subscribe((response: any) => {
         this.isRequestCompleted = true;
         this.isLoadingResults = false;
         const { stakeHolders } = response;
         if (stakeHolders) {
-          this.stakeholdersData = stakeHolders;
+          this.stakeholdersDataBk = this.stakeholdersData = stakeHolders;
+          this.onChangeToggle(false);
         }
       }, (error) => {
         this.snackBarService.openSnackBar(error, 'Error while loading stake holders');
@@ -176,7 +179,7 @@ export class CtaasStakeholderComponent implements OnInit {
     }
     dialogRef.afterClosed().subscribe((res: any) => {
       if (res) {
-        this.stakeholdersData = [];
+        this.stakeholdersDataBk = this.stakeholdersData = [];
         this.fetchStakeholderList();
       }
     });
@@ -224,12 +227,12 @@ export class CtaasStakeholderComponent implements OnInit {
         if (error) {
           this.snackBarService.openSnackBar(response.error, 'Error while deleting Stakeholder');
         } else {
-          this.stakeholdersData = [];
+          this.stakeholdersDataBk = this.stakeholdersData = [];
           this.fetchStakeholderList();
         }
       } else {
         this.snackBarService.openSnackBar('Deleted Stakeholder successfully', '');
-        this.stakeholdersData = [];
+        this.stakeholdersDataBk = this.stakeholdersData = [];
         this.fetchStakeholderList();
       }
     });
@@ -245,5 +248,16 @@ export class CtaasStakeholderComponent implements OnInit {
       { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
   }
+  /**
+   * get when slide toggle state is changed
+   * @param e: boolean 
+   */
+  onChangeToggle(flag: boolean): void {
+    if (flag) {
+      this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN);
+    } else {
+      this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER);
 
+    }
+  }
 }
