@@ -58,24 +58,29 @@ public class TekvLSDeleteSubaccountAdminEmail {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-            if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
-                String searchAdminEmailSql = "SELECT admin_email FROM customer_admin WHERE admin_email = ?;";
-                try(PreparedStatement emailStatement = connection.prepareStatement(searchAdminEmailSql)){
-                        emailStatement.setString(1, email);
-                        context.getLogger().info("Execute SQL statement: " + emailStatement);
-                        ResultSet rs = emailStatement.executeQuery();
-                        if(rs.next()){
-                            GraphAPIClient.removeRole(email,SUBACCOUNT_ADMIN,context);
-                            context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+email+").");
-                        }else{
-                            GraphAPIClient.deleteGuestUser(email,context);
-                            context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+email+").");
-                        }
-                }catch (Exception e){
-                    context.getLogger().info("AD exception: " + e.getMessage());
-                    JSONObject json = new JSONObject();
-                    json.put("error", "AD Exception: " + e.getMessage());
-                    return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+            if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+                if (FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")) {
+                    String searchAdminEmailSql = "SELECT admin_email FROM customer_admin WHERE admin_email = ?;";
+                    try (PreparedStatement emailStatement = connection.prepareStatement(searchAdminEmailSql)) {
+                            emailStatement.setString(1, email);
+                            context.getLogger().info("Execute SQL statement: " + emailStatement);
+                            ResultSet rs = emailStatement.executeQuery();
+                            if (rs.next()) {
+                                GraphAPIClient.removeRole(email,SUBACCOUNT_ADMIN,context);
+                                context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+email+").");
+                            } else {
+                                GraphAPIClient.deleteGuestUser(email,context);
+                                context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+email+").");
+                            }
+                    } catch (Exception e) {
+                        context.getLogger().info("AD exception: " + e.getMessage());
+                        JSONObject json = new JSONObject();
+                        json.put("error", "AD Exception: " + e.getMessage());
+                        return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+                    }
+                } else {
+                    GraphAPIClient.deleteGuestUser(email,context);
+                    context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+email+").");
                 }
             }
             statement.setString(1, email);
