@@ -61,7 +61,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
                 "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
                 "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
-                "'onBoardingComplete': 'true'}";
+                "'onBoardingComplete': true}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -99,7 +99,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
     @Test
     public void modifyOnBoardingTest(){
         //Given
-        String bodyRequest = "{'onBoardingComplete': 'true'}";
+        String bodyRequest = "{'onBoardingComplete': true}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -333,7 +333,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
                 "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
                 "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
-                "'onBoardingComplete': 'true'}";
+                "'onBoardingComplete': true}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -354,7 +354,7 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
                 "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'," +
                 "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'," +
                 "'tapUrl': 'http://tekvizionTAP.com',"+ 
-                "'onBoardingComplete': 'true'}";
+                "'onBoardingComplete': true}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 

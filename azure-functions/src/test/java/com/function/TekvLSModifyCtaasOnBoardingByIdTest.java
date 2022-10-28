@@ -56,7 +56,7 @@ public class TekvLSModifyCtaasOnBoardingByIdTest extends TekvLSTest {
     @Test
     public void modifyCtaasOnBoarding(){
         //Given
-        String bodyRequest = "{'onBoardingComplete': 'true'}";
+        String bodyRequest = "{'onBoardingComplete': true}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -139,7 +139,7 @@ public class TekvLSModifyCtaasOnBoardingByIdTest extends TekvLSTest {
     @Test
     public void incorrectBodyTest(){
         //Given
-        String bodyRequest = "{'onBoardingComplete': 'correct'}";
+        String bodyRequest = "{'onBoardingCom': true}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -148,7 +148,7 @@ public class TekvLSModifyCtaasOnBoardingByIdTest extends TekvLSTest {
 
         //Then
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
@@ -204,7 +204,7 @@ public class TekvLSModifyCtaasOnBoardingByIdTest extends TekvLSTest {
     public void invalidSQLTest(){
         //Given
         String invalidId = "invalid-id";
-        String bodyRequest = "{'onBoardingComplete': 'true'}";
+        String bodyRequest = "{'onBoardingComplete': true}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When
@@ -220,7 +220,7 @@ public class TekvLSModifyCtaasOnBoardingByIdTest extends TekvLSTest {
     @Test
     public void genericExceptionTest(){
         //Given
-    	String bodyRequest = "{'onBoardingComplete': 'true'}";
+    	String bodyRequest = "{'onBoardingComplete': true}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 
