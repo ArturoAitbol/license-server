@@ -13,7 +13,8 @@
       "report-dashboards": true,
       "test-suites": true,
       "stakeholders": true,
-      "setup": true
+      "setup": true,
+      "subscriptions-overview": true
     },
     "features": {
       "testFeature1": true,
@@ -37,7 +38,8 @@
       "report-dashboards": true,
       "test-suites": true,
       "stakeholders": true,
-      "setup": true
+      "setup": true,
+      "subscriptions-overview": true
     },
     "features": {
       "testFeature1": true,
@@ -60,7 +62,8 @@
       "report-dashboards": false,
       "test-suites": false,
       "stakeholders": false,
-      "setup": false
+      "setup": false,
+      "subscriptions-overview": false
     },
     "features": {
       "testFeature1": false,

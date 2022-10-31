@@ -9,6 +9,7 @@ import { FeatureToggleGuard } from "./modules/shared/feature-toggle.guard";
 import { MyAppsComponent } from './my-apps/my-apps.component';
 import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
 import { RedirectPageComponent } from './redirect-page/redirect-page.component';
+import { SubscriptionsOverviewComponent } from "./subscriptions-overview/subscriptions-overview.component";
 // set default route based on the feature toggle
 const defaultRoute = FeatureToggleHelper.isFeatureEnabled("ctaasFeature") ? 'redirect' : 'dashboard';
 
@@ -23,6 +24,7 @@ const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'no-permissions', component: NoPermissionsPageComponent, canActivate: [MsalGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
+  { path: 'subscriptions-overview', component: SubscriptionsOverviewComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   // example for a path not added in the feature toggle definition
   { path: 'testFeature1', component: NoPermissionsPageComponent, canActivate: [MsalGuard, FeatureToggleGuard] },
   { path: 'apps', component: MyAppsComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },

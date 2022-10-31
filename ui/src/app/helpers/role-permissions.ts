@@ -23,7 +23,8 @@ export const permissions = {
             'report-dashboards',
             'test-suites',
             'stakeholders',
-            "setup"
+            "setup",
+            'subscriptions-overview'
         ],
         elements: [
             'addCustomer',
@@ -83,7 +84,8 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards'
+            'report-dashboards',
+            'subscriptions-overview'
         ],
         elements: [
             'addCustomer',
@@ -131,6 +133,7 @@ export const permissions = {
             'test-suites',
             'stakeholders',
             'setup',
+            'subscriptions-overview'
         ],
         elements: [
             'addProject',
