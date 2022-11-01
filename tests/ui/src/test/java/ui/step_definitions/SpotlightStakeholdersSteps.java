@@ -73,7 +73,7 @@ public class SpotlightStakeholdersSteps {
     }
 
     @Then("I see the {string} stakeholder in the table")
-    public void iShouldSeeTheStakeholderInTheTable(String currentStakeholder) {
+    public void iSeeTheStakeholderInTheTable(String currentStakeholder) {
         String expectedName = "";
         if (DriverManager.getInstance().getActiveDirectoryStatus()){
             System.out.println("Active Directory enabled");
