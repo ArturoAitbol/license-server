@@ -116,7 +116,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
 
         //Retrieve possible actions for each row
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "subscriptionOptions");
+        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "subscriptionsOverviewOptions");
     }
 
     /**
