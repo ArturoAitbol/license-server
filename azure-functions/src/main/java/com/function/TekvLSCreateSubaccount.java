@@ -205,7 +205,7 @@ public class TekvLSCreateSubaccount
 	private String subaccountUnique(String errorMessage){
 		String response = errorMessage;
 		
-		if(errorMessage.contains("subaccount_unique") && errorMessage.contains("already exists"))
+		if(errorMessage.contains("subaccount_unique"))
 			response = "Subaccount already exists";
 		return response;
 	}

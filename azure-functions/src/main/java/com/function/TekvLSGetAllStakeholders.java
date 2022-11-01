@@ -146,7 +146,7 @@ public class TekvLSGetAllStakeholders {
 
 			if(!email.equals("EMPTY") && array.isEmpty()){
 				context.getLogger().info( LOG_MESSAGE_FOR_INVALID_ID + authEmail);
-				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN,CUSTOMER_FULL_ADMIN,SUBACCOUNT_ADMIN , SUBACCOUNT_STAKEHOLDER);
+				List<String> customerRoles = Arrays.asList(DISTRIBUTOR_FULL_ADMIN, CUSTOMER_FULL_ADMIN, SUBACCOUNT_ADMIN, SUBACCOUNT_STAKEHOLDER);
 				json.put("error",customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}

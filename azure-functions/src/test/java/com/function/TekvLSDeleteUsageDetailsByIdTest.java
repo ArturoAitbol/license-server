@@ -116,6 +116,32 @@ class TekvLSDeleteUsageDetailsByIdTest extends TekvLSTest {
     }
 
     @Test
+    public void withoutListBodyTest() {
+        //Given - Arrange
+        String bodyRequest = "{\n" +
+                "}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When - Action
+        HttpResponseMessage response = deleteUsageDetailsByIdApi.run(this.request, this.consumptionId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = "Missing mandatory parameter: deletedDays";
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Test
     public void invalidBodyTest() {
         //Given - Arrange
         String bodyRequest = "Something";

@@ -70,6 +70,28 @@ public class TekvLSGetCtaasDashboardTest extends TekvLSTest {
         assertEquals(expectedMessage,jsonBody.getString("error"));
     }
 
+    @Tag("acceptance")
+    @Test
+    public void getDashboardWithoutSubaccountId(){
+        //Given
+        String subaccountId = "";
+
+        // When
+        HttpResponseMessage response = tekvLSGetCtaasDashboard.run(this.request,subaccountId,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus, "HTTP Status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_SUBACCOUNT_ID_NOT_FOUND;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
 
     @Tag("acceptance")
     @Test
