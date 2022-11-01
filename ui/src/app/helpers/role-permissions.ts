@@ -142,7 +142,6 @@ export const permissions = {
             'test-suites',
             'stakeholders',
             'setup',
-            'subscriptions-overview'
         ],
         elements: [
             'addProject',
@@ -178,10 +177,7 @@ export const permissions = {
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
             ],
-            subscriptionsOverviewOptions: [
-                'VIEW_LICENSES',
-                'VIEW_CONSUMPTION',
-            ],
+            subscriptionsOverviewOptions: [],
         }
     },
     'distributor.FullAdmin': {
