@@ -1,0 +1,3 @@
+- Current data source for the reports is the Project_Report.xlsx excel file.
+  After checkout, the path to the excel file needs to be changed to reflect
+  the local path.

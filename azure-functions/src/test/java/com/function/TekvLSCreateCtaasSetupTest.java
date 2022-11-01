@@ -78,7 +78,7 @@ public class TekvLSCreateCtaasSetupTest extends TekvLSTest {
         //Given
         String bodyRequest = "{" +
                 "'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
-                "'onBoardingComplete': 'true'," +
+                "'onBoardingComplete': true," +
                 "'status': '" + Constants.CTaaSSetupStatus.INPROGRESS + "'}";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();

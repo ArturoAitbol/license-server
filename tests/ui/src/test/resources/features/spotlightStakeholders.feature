@@ -18,7 +18,7 @@ Feature: Stakeholders
     Then I see the customer "stakeholderTestCustomer" in the table
 
   @addStakeholder
-  Scenario: Add a Test Spotlight for customer
+  Scenario: Add a Stakeholder
     Given I see the customer "stakeholderTestCustomer" in the table
     And I go to the spotlight dashboard for "stakeholderTestCustomer"
     And I go to the spotlight "Stakeholders" tab
@@ -54,7 +54,7 @@ Feature: Stakeholders
       | type                  | High level                      |
     Then I should see the message "Updated stake holder details successfully"
 
-  @deleteStakeholder
+  @deleteStakeholder @delete
   Scenario: Delete Stakeholder Test
     Given I see the customer "stakeholderTestCustomer" in the table
     And I go to the spotlight dashboard for "stakeholderTestCustomer"
@@ -63,7 +63,7 @@ Feature: Stakeholders
     When I delete the "stakeholderTestModified" stakeholder
     Then I should see the message "Deleted Stakeholder successfully"
 
-  @deleteStakeholdersTestCustomer @ignore
+  @deleteStakeholdersTestCustomer @delete
   Scenario: Delete the test spotlight customer
     Given I see the customer "stakeholderTestCustomer" in the table
     When I delete the customer "stakeholderTestCustomer"
