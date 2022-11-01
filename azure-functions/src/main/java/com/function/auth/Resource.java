@@ -48,7 +48,7 @@ public enum Resource {
         GET_ALL_SUBACCOUNT_STAKEHOLDER,//TekvLSGetAllStakeholders
         GET_AUTH_USER_PROFILE,//TekvLSGetAuthUserProfile
         GET_CTAAS_DASHBOARD,//TekvLSGetCtaasDashboard
-        GET_SUBSCRIPTIONS_OVERVEIW, //TeTekvLSGetSubscriptionsOverview
+        GET_SUBSCRIPTIONS_OVERVIEW, //TeTekvLSGetSubscriptionsOverview
         
         //UPDATE
         MODIFY_CUSTOMER,//TekvLSModifyCustomerById

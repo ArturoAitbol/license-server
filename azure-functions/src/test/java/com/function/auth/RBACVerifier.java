@@ -422,9 +422,9 @@ public class RBACVerifier {
                 true,
                 true,
                 true));
-        verifiers.put(GET_SUBSCRIPTIONS_OVERVEIW, new ExpectedPermissions(true,
+        verifiers.put(GET_SUBSCRIPTIONS_OVERVIEW, new ExpectedPermissions(true,
                 true,
-                true,
+                false,
                 false,
                 false,
                 true,
