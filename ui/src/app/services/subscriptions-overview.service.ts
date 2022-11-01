@@ -2,7 +2,7 @@ import { HttpClient, HttpParams, HttpHeaders, HttpResponse } from '@angular/comm
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Subscription } from "../model/subscription.model";
+import { SubscriptionOverview } from "../model/subscription-overview.model";
 
 @Injectable({
     providedIn: 'root'
@@ -15,9 +15,9 @@ export class SubscriptionsOverviewService {
      * get subscriptions list
      * @returns: Observable
      */
-    public getSubscriptionsList(): Observable<Subscription[]> {
+    public getSubscriptionsList(): Observable<SubscriptionOverview[]> {
         const headers = this.getHeaders();
-        return this.httpClient.get<Subscription[]>(this.API_URL, { headers });
+        return this.httpClient.get<SubscriptionOverview[]>(this.API_URL, { headers });
     }
 
     /**

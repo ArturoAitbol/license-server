@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
-import { Subscription } from "../model/subscription.model";
+import { SubscriptionOverview } from "../model/subscription-overview.model";
 import { SubscriptionsOverviewService } from "../services/subscriptions-overview.service";
 import { Utility } from "../helpers/utils";
 import { MsalService } from "@azure/msal-angular";
@@ -39,8 +39,8 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
         renewalDateFilterControl: [''],
     });
 
-    allSubscriptions: Subscription[] = [];
-    filteredSubscriptions: Subscription[] = [];
+    allSubscriptions: SubscriptionOverview[] = [];
+    filteredSubscriptions: SubscriptionOverview[] = [];
     tableMaxHeight: number;
     displayedColumns: any[] = [];
     isLoadingResults = true;

@@ -1,4 +1,4 @@
-export interface Subscription {
+export interface SubscriptionOverview {
     customerId: string,
     customerName: string,
     subaccountId?: string,
