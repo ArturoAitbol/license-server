@@ -5,15 +5,14 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import ui.pages.SideBar;
 import static org.junit.Assert.assertEquals;
 
 import org.aeonbits.owner.ConfigFactory;
 import ui.core.DriverManager;
 import ui.pages.*;
-import ui.pages.customer.AdminstratorEmails;
-import ui.pages.customer.CustomerForm;
-import ui.pages.customer.CustomerRow;
-import ui.pages.customer.Customers;
+import ui.pages.customer.*;
+import ui.pages.spotlight.Dashboard;
 import ui.utils.Environment;
 
 import java.util.Map;
@@ -23,6 +22,8 @@ public class CustomerSteps {
     private CustomerForm customerForm;
     private CustomerRow customerRow;
     private ActionMenu actionMenu;
+
+    private Dashboard customerDashboard;
     private String actualMessage = "none";
     private String customerName, type, subaccount;
     private AdminstratorEmails adminEmails;
@@ -188,4 +189,14 @@ public class CustomerSteps {
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
+    @And("I go to dashboard {string} tab")
+    public void iGoToTheDashboardSubscriptionsTab(String tabName){
+        SideBar sideBar = new SideBar();
+        sideBar.clickOnOption(tabName);
+    }
+
+    @And("I see the {string} placeholder")
+    public void iSeeTheplaceholder(String placehodler){
+        this.customers.getPlaceholder(placehodler);
+    }
 }

@@ -5,7 +5,7 @@
     <div class="row align-items-center">
         <div [formGroup]="filterForm" class="row align-items-center col-auto">
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                <mat-label>Name Filter</mat-label>
+                <mat-label id="name-label">Name Filter</mat-label>
                 <input matInput type="text" formControlName="customerFilterControl">
                 <button *ngIf="filterForm.get('customerFilterControl').value" matSuffix mat-icon-button
                         aria-label="Clear" (click)="filterForm.get('customerFilterControl').setValue('')">
@@ -13,7 +13,7 @@
                 </button>
             </mat-form-field>
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                <mat-label>Subscription Status Filter</mat-label>
+                <mat-label id="subscription-label">Subscription Status Filter</mat-label>
                 <mat-select formControlName="subStatusFilterControl">
                     <mat-option>None</mat-option>
                     <mat-option *ngFor="let subStatus of subscriptionStatus" [value]="subStatus">
@@ -22,7 +22,7 @@
                 </mat-select>
             </mat-form-field>
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                <mat-label>Date Range Filter</mat-label>
+                <mat-label id="date-label">Date Range Filter</mat-label>
                 <mat-date-range-input [disabled]="filterForm.disabled" [rangePicker]="picker">
                     <input matStartDate formControlName="startDateFilterControl" placeholder="Start date">
                     <input matEndDate formControlName="renewalDateFilterControl" placeholder="Renewal date">

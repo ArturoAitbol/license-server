@@ -28,6 +28,11 @@ public class Customers extends AbstractPageObject {
         return title;
     }
 
+    public boolean getPlaceholder(String option) {
+        By placeholder = By.xpath("//mat-label[@id='" + option + "']");
+        this.action.forceClick(placeholder);
+        return true;
+    }
     public CustomerRow getCustomer(String customerName) {
         String customer = customerName + DriverManager.getInstance().getTimeStamp();
         return new CustomerRow(customer);

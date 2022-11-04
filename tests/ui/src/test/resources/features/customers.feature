@@ -24,6 +24,15 @@ Feature: Customers
     When I add an administrator with email "admintest@tekvizion.com"
     Then I should see the message "Customer admin emails edited successfully!"
 
+  @subscriptionsView
+  Scenario: Go to the subcriptions tab
+    Given I see the customer "customerTest" in the table
+    And I go to dashboard "Subscriptions" tab
+    And I see the "name-label" placeholder
+    And I see the "subscription-label" placeholder
+    And I see the "date-label" placeholder
+    Then I should see the "Subscriptions Overview" page
+
   @deleteCustomerAdmin
   Scenario: Delete a customer administrator
     Given I see the customer "customerTest" in the table
