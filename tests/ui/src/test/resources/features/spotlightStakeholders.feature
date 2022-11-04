@@ -64,7 +64,7 @@ Feature: Stakeholders
     Then I should see the message "Deleted Stakeholder successfully"
 
   @deleteStakeholdersTestCustomer @delete
-  Scenario: Delete the test spotlight customer
+  Scenario: Delete the test customer for stakeholder
     Given I see the customer "stakeholderTestCustomer" in the table
     When I delete the customer "stakeholderTestCustomer"
     Then I should see the message "Customer deleted successfully!"
