@@ -283,6 +283,30 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
 
     @Tag("security")
     @Test
+    public void getForSubaccountRoleIncorrectIdTest2(){
+        //Given
+        String email = "test-customer-subaccount-stakeholder1@tekvizionlabs.com";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("configTester"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllStakeholders.run(this.request,email,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_ID_NOT_FOUND;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Tag("security")
+    @Test
     public void getForSubaccountRoleIncorrectSubaccountIdTest() {
         //Given
         String email = "EMPTY";

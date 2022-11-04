@@ -137,7 +137,7 @@ public class TekvLSCreateProject
 	}
 	private String projectUnique(String errorMessage){
 		String response = errorMessage;
-		if(errorMessage.contains("project_unique") && errorMessage.contains("already exists"))
+		if(errorMessage.contains("project_unique"))
 			response = "Project already exists";
 		return response;
 	}
