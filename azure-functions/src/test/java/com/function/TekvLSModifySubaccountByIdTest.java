@@ -112,6 +112,37 @@ class TekvLSModifySubaccountByIdTest extends TekvLSTest {
     }
 
     @Test
+    public void modifySubaccountServicesTest2() {
+        if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+            //Given - Arrange
+            String services = Constants.SubaccountServices.TOKEN_CONSUMPTION.value();
+            String bodyRequest = "{\n" +
+                    "    \"services\": \"" + services + "\"\n" +
+                    "}";
+            doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+            //When - Action
+            HttpResponseMessage response = modifySubaccountApi.run(this.request, this.subaccountId, this.context);
+
+            //Then - Assert
+            HttpStatusType actualStatus = response.getStatus();
+            HttpStatus expected = HttpStatus.OK;
+            assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+            //Given - Arrange
+            doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+            //When - Action
+            response = modifySubaccountApi.run(this.request, this.subaccountId, this.context);
+
+            //Then - Assert
+            actualStatus = response.getStatus();
+            expected = HttpStatus.OK;
+            assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+        }
+    }
+
+    @Test
     public void noParamsTest() {
         //Given - Arrange
         String bodyRequest = "{}";

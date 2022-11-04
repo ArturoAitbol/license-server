@@ -105,7 +105,7 @@ public class TekvLSCreateUsageDetails
 			statement.setString(7, emailId);
 
 			final JSONArray usageDays = jobj.getJSONArray(MANDATORY_PARAMS.ADDED_DAYS.value);
-			if (usageDays != null && usageDays.length() > 0) {
+			if (usageDays.length() > 0) {
 				int usage;
 				//Iterating the contents of the array
 				for (Object usageDay: usageDays) {
