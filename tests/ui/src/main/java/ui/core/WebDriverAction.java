@@ -133,11 +133,13 @@ public class WebDriverAction {
     public boolean checkTitle(String title) {
         boolean response = false;
         try {
+            wait = new WebDriverWait(driver, Duration.ofSeconds(this.maxTimeout));
             wait.until(ExpectedConditions.titleIs(title));
             response = true;
         } catch (Exception e) {
             System.out.println("Window didn't get the title:" + title);
         }
+        wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
         return response;
     }
     public boolean checkText(By selector, String text) {

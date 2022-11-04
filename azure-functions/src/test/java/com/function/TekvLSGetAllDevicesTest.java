@@ -31,7 +31,6 @@ class TekvLSGetAllDevicesTest extends TekvLSTest {
     public void getAllDevicesTest() {
         //Given - Arrange
         String id = "EMPTY";
-
         //When - Action
         HttpResponseMessage response = getAllDevicesApi.run(this.request, id, this.context);
         this.context.getLogger().info(response.getBody().toString());
@@ -61,6 +60,75 @@ class TekvLSGetAllDevicesTest extends TekvLSTest {
         assertTrue(device.has("tokensToConsume"));
     }
 
+    @Tag("acceptance")
+    @Test
+    public void getAllDevicesWithEmptyLimitTest() {
+        //Given - Arrange
+        String id = "EMPTY";
+        this.queryParams.put("limit", "2");
+        //When - Action
+        HttpResponseMessage response = getAllDevicesApi.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("devices"));
+
+        Object devices = jsonBody.get("devices");
+        assertTrue(devices instanceof JSONArray);
+
+        JSONArray devicesArray = (JSONArray) devices;
+        assertTrue(devicesArray.length() > 0);
+
+        JSONObject device = devicesArray.getJSONObject(0);
+        assertTrue(device.has("supportType"));
+        assertTrue(device.has("product"));
+        assertTrue(device.has("vendor"));
+        assertTrue(device.has("id"));
+        assertTrue(device.has("version"));
+        assertTrue(device.has("tokensToConsume"));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getAllDevicesWithEmptyOffsetTest() {
+        //Given - Arrange
+        String id = "EMPTY";
+        this.queryParams.put("offset", "1");
+        //When - Action
+        HttpResponseMessage response = getAllDevicesApi.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("devices"));
+
+        Object devices = jsonBody.get("devices");
+        assertTrue(devices instanceof JSONArray);
+
+        JSONArray devicesArray = (JSONArray) devices;
+        assertTrue(devicesArray.length() > 0);
+
+        JSONObject device = devicesArray.getJSONObject(0);
+        assertTrue(device.has("supportType"));
+        assertTrue(device.has("product"));
+        assertTrue(device.has("vendor"));
+        assertTrue(device.has("id"));
+        assertTrue(device.has("version"));
+        assertTrue(device.has("tokensToConsume"));
+    }
     @Test
     public void getDeviceById() {
         String expectedId = "c49a3148-1e74-4090-9876-d062011d9bcb";

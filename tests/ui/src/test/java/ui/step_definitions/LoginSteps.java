@@ -39,6 +39,7 @@ public class LoginSteps {
     @Given("I try to login using a {string}")
     public void iTryToLoginUsingA(String role) throws Exception {
         if (this.logged.equals("error")){
+            System.out.println("User needs to login");
             String email, password;
             this.loginForm = this.landing.openLoginForm();
             switch (role){
@@ -60,6 +61,7 @@ public class LoginSteps {
             this.customers = this.loginForm.SignIn(email, password, role);
         }
         if (this.logged.equals("ok")){
+            System.out.println("User has already logged into the Portal");
             switch (role){
                 case "FullAdministrator":
                     this.customers = new Customers();

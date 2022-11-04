@@ -334,6 +334,80 @@ class TekvLSGetAllLicenseUsageDetailsTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
+    public void emptyStartDateFilterTest(){
+        //Given
+        this.queryParams.put("subaccountId",subaccountId);
+        this.queryParams.put("startDate","");
+        this.queryParams.put("endDate","2022-06-01");
+
+        //When
+        HttpResponseMessage response = getAllLicenseUsageDetails.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("usageTotalCount"));
+
+        assertTrue(jsonBody.has("tokenConsumption"));
+
+        assertTrue(jsonBody.has("usage"));
+        JSONArray usage = jsonBody.getJSONArray("usage");
+        assertTrue(usage.length()>=0);
+
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertTrue(weeklyConsumption.length()>=0);
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertTrue(projectConsumption.length()>=0);
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void emptyEndDateFilterTest(){
+        //Given
+        this.queryParams.put("subaccountId",subaccountId);
+        this.queryParams.put("startDate","2022-06-01");
+        this.queryParams.put("endDate","");
+
+        //When
+        HttpResponseMessage response = getAllLicenseUsageDetails.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus,actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("usageTotalCount"));
+
+        assertTrue(jsonBody.has("tokenConsumption"));
+
+        assertTrue(jsonBody.has("usage"));
+        JSONArray usage = jsonBody.getJSONArray("usage");
+        assertTrue(usage.length()>=0);
+
+        assertTrue(jsonBody.has("weeklyConsumption"));
+        JSONArray weeklyConsumption = jsonBody.getJSONArray("weeklyConsumption");
+        assertTrue(weeklyConsumption.length()>=0);
+
+        assertTrue(jsonBody.has("projectConsumption"));
+        JSONArray projectConsumption= jsonBody.getJSONArray("projectConsumption");
+        assertTrue(projectConsumption.length()>=0);
+    }
+
+    @Tag("acceptance")
+    @Test
     public void specialFiltersTest(){
         //Given
         this.queryParams.put("subaccountId",subaccountId);
