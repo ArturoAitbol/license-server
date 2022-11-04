@@ -1397,8 +1397,8 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"subaccounts\");\r",
-							"    pm.expect(pm.response.json().subaccounts).to.be.an(\"array\")\r",
+							"    pm.response.to.have.jsonBody(\"subscriptions\");\r",
+							"    pm.expect(pm.response.json().subscriptions).to.be.an(\"array\")\r",
 							"});\r",
 							""
 						],
@@ -1410,12 +1410,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/subaccounts",
+					"raw": "{{HOST}}/subscriptions",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
-						"subaccounts"
+						"subscriptions"
 					]
 				}
 			},

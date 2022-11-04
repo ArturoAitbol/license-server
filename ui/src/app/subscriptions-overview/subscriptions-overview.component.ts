@@ -77,7 +77,6 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
             this.isLoadingResults = true;
             this.filteredSubscriptions = this.allSubscriptions.filter(customer => filters.every(filter => filter(customer)));
             this.isLoadingResults = false;
-            console.log(this.filteredSubscriptions)
         })
     }
 
