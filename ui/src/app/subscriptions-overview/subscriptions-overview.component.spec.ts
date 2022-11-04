@@ -114,7 +114,6 @@ describe('Subscriptions Overview - UI verification tests', () => {
             customerId: 'b062d227-5b26-4343-930a-9f3693d47c8a',
             licenseTokensConsumed: 0,
             customerName: 'Test Customer 4',
-            licenseStatus: 'Inactive'
         }, {
             subaccountId: '966b6161-e28d-497b-8244-e3880b142584',
             licenseTokens: 0,
@@ -194,7 +193,6 @@ describe('Subscriptions Overview - UI verification tests', () => {
             customerId: 'b062d227-5b26-4343-930a-9f3693d47c8a',
             licenseTokensConsumed: 0,
             customerName: 'Test Customer 4',
-            licenseStatus: 'Inactive'
         } ]);
     });
 });

@@ -127,7 +127,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
         this.isRequestCompleted = false;
         this.subscriptionsOverviewService.getSubscriptionsList().subscribe((res: any) => {
             res.subscriptions.forEach(sub => {
-                if (sub.licenseStatus == null) sub.licenseStatus = 'Inactive';
+                if (sub.licenseStatus == null && sub.subaccountId != null) sub.licenseStatus = 'Inactive';
             });
             this.allSubscriptions = res.subscriptions;
             this.filteredSubscriptions = res.subscriptions;
@@ -209,7 +209,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
                 break;
             case 'Status':
-                if (object.selectedRow.licenseStatus !== undefined && object.selectedRow.licenseStatus !== 'Inactive')
+                if (object.selectedRow.licenseStatus !== undefined)
                     this.openLicenseDetails(this.getCustomerFromRow(object.selectedRow));
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
