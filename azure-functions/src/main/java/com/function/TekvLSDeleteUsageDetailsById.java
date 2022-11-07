@@ -74,10 +74,10 @@ public class TekvLSDeleteUsageDetailsById
 			jobj = new JSONObject(requestBody);
 			// Check mandatory params to be present
 			for (MANDATORY_PARAMS mandatoryParam: MANDATORY_PARAMS.values()) {
-				if (!jobj.has(mandatoryParam.value)) throw new Exception("Missing Missing mandatory parameter: " + mandatoryParam.value);
+				if (!jobj.has(mandatoryParam.value)) throw new Exception("Missing mandatory parameter: " + mandatoryParam.value);
 			}
 			JSONArray deletedDays = jobj.getJSONArray(MANDATORY_PARAMS.DELETED_DAYS.value);
-			if (deletedDays == null || deletedDays.length() < 1) throw new Exception("Missing mandatory parameter: " + MANDATORY_PARAMS.DELETED_DAYS.value);
+			if (deletedDays.length() < 1) throw new Exception("Missing mandatory parameter: " + MANDATORY_PARAMS.DELETED_DAYS.value);
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			json.put("error", e.getMessage());
