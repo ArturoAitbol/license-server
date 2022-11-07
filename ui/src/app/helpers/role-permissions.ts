@@ -250,7 +250,9 @@ export const permissions = {
             'report-dashboards',
             'stakeholders'
         ],
-        elements: [],
+        elements: [,
+            'view-profile'
+        ],
         tables: {
             customerOptions: [
                 'VIEW_LICENSES',

@@ -16,6 +16,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { Constants } from './helpers/constants';
 import { Utility } from './helpers/utils';
 import { MediaMatcher } from '@angular/cdk/layout';
+import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
 
 
 @Component({
@@ -92,13 +93,13 @@ export class AppComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         private broadcastService: MsalBroadcastService,
         private autoLogoutService: AutoLogoutService,
-        changeDetectorRef: ChangeDetectorRef, 
+        changeDetectorRef: ChangeDetectorRef,
         media: MediaMatcher
     ) {
 
         this.mobileQuery = media.matchMedia('(max-width: 600px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-        this.mobileQuery.addEventListener("change",this._mobileQueryListener);
+        this.mobileQuery.addEventListener("change", this._mobileQueryListener);
 
         const angularPlugin = new AngularPlugin();
         const appInsights = new ApplicationInsights({
@@ -193,7 +194,7 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     initalizeSidebarItems(): void {
         const accountDetails = this.getAccountDetails();
-        const { roles }  = accountDetails.idTokenClaims;
+        const { roles } = accountDetails.idTokenClaims;
         this.displayedSideBarItems = Utility.getNavbarOptions(roles, this.fullSideBarItems);
     }
     /**
@@ -255,6 +256,15 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
     /**
+     * Show User profile Modal
+     */
+    viewProfile(): void {
+        const dialogRef = this.dialog.open(ViewProfileComponent, {
+            width: '450px',
+            disableClose: false
+        });
+    }
+    /**
      * mark the selected nav item here as active to apply styles
      * @param item: any 
      */
@@ -268,7 +278,7 @@ export class AppComponent implements OnInit, OnDestroy {
         const { path } = item;
         const componentRoute = this.baseCtaasURL + path;
         this.router.navigate([componentRoute]);
-        if(this.mobileQuery.matches) this.snav.toggle();
+        if (this.mobileQuery.matches) this.snav.toggle();
     }
     /**
      * enable side bar based on the service and this feature is enabled only when CTaaS_Feature is enabled
@@ -301,7 +311,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private getAccountDetails(): any | null {
         return this.msalService.instance.getActiveAccount() || null;
     }
-
     ngOnDestroy(): void {
         this._destroying$.next(undefined);
         this._destroying$.complete();
