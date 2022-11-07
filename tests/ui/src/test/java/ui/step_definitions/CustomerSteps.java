@@ -7,6 +7,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import ui.pages.SideBar;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.aeonbits.owner.ConfigFactory;
 import ui.core.DriverManager;
@@ -189,14 +190,14 @@ public class CustomerSteps {
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
-    @And("I go to dashboard {string} tab")
+    @When("I go to dashboard {string} tab")
     public void iGoToTheDashboardSubscriptionsTab(String tabName){
         SideBar sideBar = new SideBar();
         sideBar.clickOnOption(tabName);
     }
 
-    @And("I see the {string} placeholder")
-    public void iSeeTheplaceholder(String placehodler){
-        this.customers.getPlaceholder(placehodler);
+    @And("I should see the {string} placeholder")
+    public void iSeeTheplaceholder(String placeholder){
+        assertTrue(this.customers.isPlaceholderPresent(placeholder));
     }
 }

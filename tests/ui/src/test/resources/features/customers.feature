@@ -27,11 +27,11 @@ Feature: Customers
   @subscriptionsView
   Scenario: Go to the subcriptions tab
     Given I see the customer "customerTest" in the table
-    And I go to dashboard "Subscriptions" tab
-    And I see the "name-label" placeholder
-    And I see the "subscription-label" placeholder
-    And I see the "date-label" placeholder
+    When I go to dashboard "Subscriptions" tab
     Then I should see the "Subscriptions Overview" page
+    And I should see the "name-label" placeholder
+    And I should see the "subscription-label" placeholder
+    And I should see the "date-label" placeholder
 
   @deleteCustomerAdmin
   Scenario: Delete a customer administrator

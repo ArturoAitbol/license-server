@@ -28,10 +28,16 @@ public class Customers extends AbstractPageObject {
         return title;
     }
 
-    public boolean getPlaceholder(String option) {
-        By placeholder = By.xpath("//mat-label[@id='" + option + "']");
-        this.action.forceClick(placeholder);
-        return true;
+    public boolean isPlaceholderPresent(String option) {
+        try{
+            By placeholder = By.xpath("//mat-label[@id='" + option + "']");
+            this.action.forceClick(placeholder);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Couldn't find the placeholder with id: " + option);
+            System.out.println(e.toString());
+            return false;
+        }
     }
     public CustomerRow getCustomer(String customerName) {
         String customer = customerName + DriverManager.getInstance().getTimeStamp();
