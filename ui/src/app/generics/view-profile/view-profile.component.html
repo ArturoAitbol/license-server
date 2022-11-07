@@ -61,7 +61,7 @@
                                 </label>
                             </div>
                             <div class="col-2 text-right">
-                                <mat-checkbox id="notification_checkbox_{{i}}" formArrayName="notifications"
+                                <mat-checkbox id="notification_checkbox_{{i}}"
                                     [checked]="selectedNotifications.isSelected(item)" [color]="'primary'"
                                     (click)="setNotifications(item,$event)">
                                 </mat-checkbox>
@@ -73,9 +73,9 @@
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
-            <button type="button" id="cancelBtn" mat-stroked-button (click)="onCancel()">Cancel</button>
-            <button id="submitBtn" mat-raised-button color="primary" [disabled]="viewProfileForm.invalid"
-                type="submit">Update</button>
+            <button type="button" id="cancelBtn" mat-stroked-button (click)="onCancel('cancel')" [disabled]="isUpdatedClicked">Cancel</button>
+            <button id="submitBtn" mat-raised-button color="primary"
+                [disabled]="viewProfileForm.invalid || isUpdatedClicked" type="submit">Update</button>
         </mat-dialog-actions>
     </form>
 </div>

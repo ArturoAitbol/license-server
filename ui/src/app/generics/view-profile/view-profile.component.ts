@@ -23,6 +23,7 @@ export class ViewProfileComponent implements OnInit {
   isDataLoading = false;
   notifications: any = [];
   reports: any = [];
+  isUpdatedClicked: boolean = false;
   selectedNotifications = new SelectionModel<INotification[]>(true, []);
 
   constructor(private formBuilder: FormBuilder,
@@ -37,7 +38,7 @@ export class ViewProfileComponent implements OnInit {
     this.fetchUserProfileDetails();
   }
   /**
-   * initialize the Profile Form details
+   * initialize the Profile Form details and required list
    */
   initializeFormDetails(): void {
     this.viewProfileForm = this.formBuilder.group({
@@ -48,7 +49,8 @@ export class ViewProfileComponent implements OnInit {
       phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
       type: ['', Validators.required],
       notifications: this.formBuilder.array([])
-    })
+    });
+    this.reports = this.getReports();
   }
   /**
    * get reports
@@ -62,41 +64,38 @@ export class ViewProfileComponent implements OnInit {
     ];
   }
   /**
-   * on cancel dialog
+   * fetch user profile details and save it in local storage
    */
-  onCancel(): void {
-    this.dialogRef.close();
-  }
-  /**
-   * fetch user profile details
-   */
-  fetchUserProfileDetails() {
+  async fetchUserProfileDetails(): Promise<void> {
     try {
-      const subaccountDetails = this.userProfileService.getSubaccountUserProfileDetails();
-      this.isDataLoading = false;
-      this.reports = this.getReports();
-      console.debug('res | ', subaccountDetails);
-      let mappedNotifications = [];
-      if (subaccountDetails) {
-        const { notifications } = subaccountDetails;
-        if (notifications && notifications.includes(',')) {
-          const splittedNotifications = notifications.split(',');
-          mappedNotifications = splittedNotifications.map((e: string) => {
-            const obj = this.reports.find((x: { label: string, value: string }) => x.label.toLowerCase() === e.toLowerCase());
-            if (obj) {
-              return obj;
-            }
-          });
-          subaccountDetails.type = splittedNotifications[0];
-          subaccountDetails.notifications = mappedNotifications;
-        } else {
-          subaccountDetails.type = notifications;
-          subaccountDetails.notifications = [];
+      const res: any = await this.userProfileService.getUserProfileDetails().toPromise();
+      if (res) {
+        const { userProfile } = res;
+        this.userProfileService.setSubaccountUserProfileDetails(userProfile);
+        this.isDataLoading = false;
+        let mappedNotifications: any[] = [];
+        if (userProfile) {
+          const { notifications } = userProfile;
+          if (notifications && notifications.includes(',')) { // check if we have notifications details in the user profile object
+            const splittedNotifications = notifications.split(',');
+            mappedNotifications = splittedNotifications.map((e: string) => {
+              const obj = this.reports.find((x: { label: string, value: string }) => x.value.toLowerCase() === e.toLowerCase());
+              if (obj) {
+                return obj;
+              }
+            }).filter(e => e !== undefined && e !== null);
+            userProfile.type = splittedNotifications[0];
+            this.selectedNotifications = new SelectionModel<INotification[]>(true, [...mappedNotifications]);
+            userProfile.notifications = null;
+          } else {
+            userProfile.type = notifications;
+            userProfile.notifications = [];
+          }
+          this.viewProfileForm.patchValue(userProfile);
         }
-        this.viewProfileForm.patchValue(subaccountDetails);
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error while fetching user profile details | ', error);
     }
   }
   /**
@@ -107,7 +106,6 @@ export class ViewProfileComponent implements OnInit {
   setNotifications(item: INotification | any, event?: Event): void {
     if (event)
       event.preventDefault();
-    console.log('item | ', item);
     this.selectedNotifications.toggle(item);
   }
   /**
@@ -122,15 +120,37 @@ export class ViewProfileComponent implements OnInit {
    */
   updateProfile(): void {
     try {
+      this.isUpdatedClicked = true;
       const requestPayload = { ...this.viewProfileForm.value };
-      requestPayload.notifications = [...this.getSelectedNotifications()].map(e => e.value).filter(e => e !== false);
-      console.log('updated profile details | ', requestPayload);
-      this.userProfileService.updateUserProfile(requestPayload).subscribe((res: any) => {
-        console.log('update user profile details | ', res);
-      });
-    } catch (e) {
-      console.error('e ', e);
+      let { type } = requestPayload;
+      const mappedNotifications = [...this.getSelectedNotifications()].map(e => e.value).filter(e => e !== false);
+      requestPayload.notifications = type + ((mappedNotifications.length === 0) ? '' : ',' + mappedNotifications.toString());
+      delete requestPayload.type;
+      this.userProfileService.updateUserProfile(requestPayload)
+        .toPromise()
+        .then((response: any) => {
+          this.isDataLoading = false;
+          if (response?.error) {
+            this.snackBarService.openSnackBar(response.error, 'Error updating profile details');
+            this.onCancel('error');
+          } else {
+            this.snackBarService.openSnackBar('Updated Profile successfully', '');
+            this.onCancel('closed');
+          }
+        });
+    } catch (err) {
+      this.snackBarService.openSnackBar(err.error, 'Error updating profile details');
+      console.error('error while updating profile details', err);
+      this.isDataLoading = false;
+      this.onCancel('error');
     }
+  }
+  /**
+   * close the open dialog 
+   * @param type: string [optional] 
+   */
+  onCancel(type?: string): void {
+    this.dialogRef.close(type);
   }
 
 }
