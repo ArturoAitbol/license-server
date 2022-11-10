@@ -8,7 +8,8 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [],
             ctaasTestSuiteOptions: [],
-            stakeholderOptions: []
+            stakeholderOptions: [],
+            subscriptionsOverviewOptions: [],
         }
     },
     'tekvizion.FullAdmin': {
@@ -23,7 +24,8 @@ export const permissions = {
             'report-dashboards',
             'test-suites',
             'stakeholders',
-            "setup"
+            "setup",
+            'subscriptions-overview'
         ],
         elements: [
             'addCustomer',
@@ -70,7 +72,11 @@ export const permissions = {
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
-            ]
+            ],
+            subscriptionsOverviewOptions: [
+                'VIEW_LICENSES',
+                'VIEW_CONSUMPTION',
+            ],
         }
     },
     'tekvizion.SalesAdmin': {
@@ -83,7 +89,8 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards'
+            'report-dashboards',
+            'subscriptions-overview'
         ],
         elements: [
             'addCustomer',
@@ -114,7 +121,11 @@ export const permissions = {
                 'VIEW_CONSUMPTION'
             ],
             stakeholderOptions: [],
-            ctaasTestSuiteOptions: []
+            ctaasTestSuiteOptions: [],
+            subscriptionsOverviewOptions: [
+                'VIEW_LICENSES',
+                'VIEW_CONSUMPTION',
+            ],
         }
     },
     'tekvizion.ConfigTester': {
@@ -165,7 +176,8 @@ export const permissions = {
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
-            ]
+            ],
+            subscriptionsOverviewOptions: [],
         }
     },
     'distributor.FullAdmin': {
