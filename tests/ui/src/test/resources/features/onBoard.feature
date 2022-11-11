@@ -17,13 +17,13 @@ Feature: Customers
     Then I see the customer "subAdminCustomerTest" in the table
     And I logout
 
-  @rejectOnBoard
+  @rejectOnBoard @login
   Scenario: Reject On Board Wizard
     Given I try to login using a "SubaccountAdministrator"
     When I click on "Not right now" button
     Then I should see the logout page
 
-  @completeOnBoard
+  @completeOnBoard @login
   Scenario: Complete On Board Wizard
     Given I try to login using a "SubaccountAdministrator"
     When I click on "Sure. Let's do it!" button
@@ -39,7 +39,7 @@ Feature: Customers
     Then I click on "No, I'm done" button
     And I logout
 
-  @spotLightNavigation
+  @spotLightNavigation @login
   Scenario: Test SpotLight Navigation
     Given I try to login using a "SubaccountAdministrator"
     And I am on the apps view
@@ -50,7 +50,7 @@ Feature: Customers
       | Stakeholders  |
 #    And I logout
 
-  @tokenNavigation
+  @tokenNavigation @login
   Scenario: Test tekToken Usage Navigation
     Given I am on the apps view
     When I click on "tekToken Usage" button
