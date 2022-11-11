@@ -16,6 +16,8 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { Constants } from './helpers/constants';
 import { Utility } from './helpers/utils';
 import { MediaMatcher } from '@angular/cdk/layout';
+import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
+import { UserProfileService } from './services/user-profile.service';
 
 
 @Component({
@@ -123,13 +125,14 @@ export class AppComponent implements OnInit, OnDestroy {
         public dialog: MatDialog,
         private broadcastService: MsalBroadcastService,
         private autoLogoutService: AutoLogoutService,
-        changeDetectorRef: ChangeDetectorRef, 
-        media: MediaMatcher
+        changeDetectorRef: ChangeDetectorRef,
+        media: MediaMatcher,
+        private userProfileService: UserProfileService
     ) {
 
         this.mobileQuery = media.matchMedia('(max-width: 600px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-        this.mobileQuery.addEventListener("change",this._mobileQueryListener);
+        this.mobileQuery.addEventListener("change", this._mobileQueryListener);
 
         const angularPlugin = new AngularPlugin();
         const appInsights = new ApplicationInsights({
@@ -307,6 +310,20 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Show User profile Modal
+     */
+    viewProfile(): void {
+        const dialogRef = this.dialog.open(ViewProfileComponent, {
+            width: '450px',
+            disableClose: false
+        });
+
+        dialogRef.afterClosed().subscribe((closedType: string) => {
+            if (closedType === 'closed')
+                this.fetchUserProfileDetails();
+        });
+    }
+    /**
      * mark the selected nav item here as active to apply styles
      * @param item: any 
      */
@@ -320,7 +337,7 @@ export class AppComponent implements OnInit, OnDestroy {
         const { baseUrl, path } = item;
         const componentRoute = baseUrl + path;
         this.router.navigate([componentRoute]);
-        if(this.mobileQuery.matches) this.snav.toggle();
+        if (this.mobileQuery.matches) this.snav.toggle();
     }
 
     /**
@@ -356,6 +373,20 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     private getAccountDetails(): any | null {
         return this.msalService.instance.getActiveAccount() || null;
+    }
+    /**
+     * fetch user profile details and save it in local storage
+     */
+    async fetchUserProfileDetails(): Promise<void> {
+        try {
+            const res: any = await this.userProfileService.getUserProfileDetails().toPromise()
+            if (res) {
+                const { userProfile } = res;
+                this.userProfileService.setSubaccountUserProfileDetails(userProfile);
+            }
+        } catch (error) {
+            console.error('Error while fetching user profile details | ', error);
+        }
     }
 
     ngOnDestroy(): void {

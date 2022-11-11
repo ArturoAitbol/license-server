@@ -5,4 +5,6 @@ export interface IUserProfile {
     jobTitle?: string;
     phoneNumber?: string;
     subaccountId?: string;
+    type?: string;
+    notifications?: string | [] | any;
 }
