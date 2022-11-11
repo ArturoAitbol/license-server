@@ -38,36 +38,64 @@ export class AppComponent implements OnInit, OnDestroy {
     // tabName: string = 'tekVizion 360 Portal';
     tabName: string = Constants.TEK_TOKEN_TOOL_BAR;
     @ViewChild('sidenav') sidenav: MatSidenav;
-    fullSideBarItems: any = [
-        {
-            name: 'Dashboard',
-            iconName: "assets\\images\\dashboard_3.png",
-            path: 'report-dashboards',
-            active: true,
-            materialIcon: 'dashboard'
-        },
-        {
-            name: 'Test Suites',
-            iconName: "assets\\images\\project_3.png",
-            path: 'test-suites',
-            active: false,
-            materialIcon: 'folder_open'
-        },
-        {
-            name: 'Stakeholders',
-            iconName: "assets\\images\\multiple-users.png",
-            path: 'stakeholders',
-            active: false,
-            materialIcon: 'groups'
-        },
-        {
-            name: 'Configuration',
-            iconName: "assets\\images\\tune.png",
-            path: 'setup',
-            active: false,
-            materialIcon: 'tune'
-        }
-    ];
+    fullSideBarItems: any = {
+        spotlight: [
+            {
+                name: 'Dashboard',
+                iconName: "assets\\images\\dashboard_3.png",
+                path: 'report-dashboards',
+                active: true,
+                materialIcon: 'dashboard',
+                baseUrl: '/spotlight/'
+            },
+            {
+                name: 'Test Suites',
+                iconName: "assets\\images\\project_3.png",
+                path: 'test-suites',
+                active: false,
+                materialIcon: 'folder_open',
+                baseUrl: '/spotlight/'
+            },
+            {
+                name: 'Stakeholders',
+                iconName: "assets\\images\\multiple-users.png",
+                path: 'stakeholders',
+                active: false,
+                materialIcon: 'groups',
+                baseUrl: '/spotlight/'
+            },
+            {
+                name: 'Configuration',
+                iconName: "assets\\images\\tune.png",
+                path: 'setup',
+                active: false,
+                materialIcon: 'tune',
+                baseUrl: '/spotlight/'
+            }
+        ],
+        main: [
+            {
+                name: 'Dashboard',
+                iconName: "assets\\images\\dashboard_3.png",
+                path: 'dashboard',
+                active: true,
+                materialIcon: 'dashboard',
+                baseUrl: '/'
+            },
+            {
+                name: 'Subscriptions',
+                iconName: "assets\\images\\dashboard_3.png",
+                path: 'subscriptions-overview',
+                active: false,
+                materialIcon: 'event_repeat',
+                baseUrl: '/'
+            },
+        ]
+    };
+    allowedSideBarItems: any = {
+        spotlight: [],
+        main: []
+    };
     displayedSideBarItems: any[] = [
         {
             name: 'Dashboard',
@@ -77,6 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
             materialIcon: 'dashboard'
         }
     ];
+
     currentRoutePath = '';
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
@@ -85,6 +114,8 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
+    readonly MAIN_DASHBOARD = '/dashboard';
+    readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
 
     private _mobileQueryListener: () => void;
 
@@ -152,18 +183,29 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.tabName = Constants.CTAAS_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
+                        this.displayedSideBarItems = this.allowedSideBarItems.spotlight;
+                        this.enableSidebar();
+                        break;
+                    case this.MAIN_DASHBOARD:
+                    case this.SUBSCRIPTIONS_OVERVIEW:
+                        this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
+                        this.hideToolbar = false;
+                        this.isTransparentToolbar = false;
+                        this.displayedSideBarItems = this.allowedSideBarItems.main;
                         this.enableSidebar();
                         break;
                     default:
                         this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
+                        this.displayedSideBarItems = this.allowedSideBarItems.main;
                         this.enableSidebar();
                         break;
                 }
             }
         });
     }
+
     ngOnInit() {
         // example for a feature toggle in typescript logic code
         if (FeatureToggleHelper.isFeatureEnabled("testFeature1", this.msalService))
@@ -173,6 +215,7 @@ export class AppComponent implements OnInit, OnDestroy {
         } else {
             this.currentUser = this.isLoggedIn();
             this.autoLogoutService.validateLastActivityTime();
+            this.initalizeSidebarItems();
         }
         this.broadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS),
@@ -191,14 +234,17 @@ export class AppComponent implements OnInit, OnDestroy {
             this.onRouteChanges();
         });
     }
+
     /**
      * initalize the items required for side nav bar
      */
     initalizeSidebarItems(): void {
         const accountDetails = this.getAccountDetails();
-        const { roles } = accountDetails.idTokenClaims;
-        this.displayedSideBarItems = Utility.getNavbarOptions(roles, this.fullSideBarItems);
+        const { roles }  = accountDetails.idTokenClaims;
+        this.allowedSideBarItems.spotlight = Utility.getNavbarOptions(roles, this.fullSideBarItems.spotlight);
+        this.allowedSideBarItems.main = Utility.getNavbarOptions(roles, this.fullSideBarItems.main);
     }
+
     /**
      * perform changes on Toolbar on refresh
      */
@@ -218,6 +264,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.isTransparentToolbar = transparentToolbar;
         }
     }
+
     /**
      * check whether user logged in
      * @returns: boolean 
@@ -225,12 +272,14 @@ export class AppComponent implements OnInit, OnDestroy {
     isLoggedIn(): boolean {
         return this.msalService.instance.getActiveAccount() != null;
     }
+
     /**
      * navigate to main view
      */
     navigateToMainView(): void {
         this.router.navigate(['/']);
     }
+
     /**
      * logout 
      */
@@ -241,6 +290,7 @@ export class AppComponent implements OnInit, OnDestroy {
             console.error('error while logout: ', error);
         }
     }
+
     /**
      * get logged in user name
      * @returns: string 
@@ -248,6 +298,7 @@ export class AppComponent implements OnInit, OnDestroy {
     getUserName(): string {
         return this.msalService.instance.getActiveAccount().name;
     }
+
     /**
      * Show About Modal
      */
@@ -257,6 +308,7 @@ export class AppComponent implements OnInit, OnDestroy {
             disableClose: false
         });
     }
+
     /**
      * Show User profile Modal
      */
@@ -282,19 +334,21 @@ export class AppComponent implements OnInit, OnDestroy {
             else
                 e.active = false;
         });
-        const { path } = item;
-        const componentRoute = this.baseCtaasURL + path;
+        const { baseUrl, path } = item;
+        const componentRoute = baseUrl + path;
         this.router.navigate([componentRoute]);
         if (this.mobileQuery.matches) this.snav.toggle();
     }
+
     /**
      * enable side bar based on the service and this feature is enabled only when CTaaS_Feature is enabled
      * @returns: boolean 
      */
     enableSidebar(): boolean {
-        if (this.isCtaasFeatureEnabled() && this.currentRoutePath.includes(this.baseCtaasURL)) {
-            this.fullSideBarItems.forEach((e: any) => {
-                if (this.baseCtaasURL + e.path === this.currentRoutePath)
+        if ((this.isCtaasFeatureEnabled() && this.currentRoutePath.includes(this.baseCtaasURL)) ||
+            this.currentRoutePath === this.MAIN_DASHBOARD || this.currentRoutePath == this.SUBSCRIPTIONS_OVERVIEW) {
+            this.displayedSideBarItems.forEach((e: any) => {
+                if (e.baseUrl + e.path === this.currentRoutePath)
                     e.active = true;
                 else
                     e.active = false;
@@ -304,6 +358,7 @@ export class AppComponent implements OnInit, OnDestroy {
             return false;
         }
     }
+
     /**
      * check whether 
      * @returns: boolean CTaaS_Feature is enabled or not
@@ -311,6 +366,7 @@ export class AppComponent implements OnInit, OnDestroy {
     isCtaasFeatureEnabled(): boolean {
         return FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService);
     }
+
     /**
      * get logged in account details 
      * @returns: any | null 

@@ -44,6 +44,7 @@ public class Permissions {
             GET_ALL_CTAAS_TEST_SUITES,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_CTAAS_DASHBOARD,
+            GET_SUBSCRIPTIONS_OVERVIEW,
             // UPDATE
             MODIFY_CUSTOMER,
             MODIFY_SUBACCOUNT,
@@ -72,6 +73,7 @@ public class Permissions {
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
             GET_CTAAS_DASHBOARD,
+            GET_SUBSCRIPTIONS_OVERVIEW,
             // UPDATE
             MODIFY_CUSTOMER,
             MODIFY_SUBACCOUNT,
@@ -146,6 +148,7 @@ public class Permissions {
             GET_ALL_LICENSES,
             GET_ALL_LICENSE_USAGE_DETAILS,
             GET_CONSUMPTION_USAGE_DETAILS,
+            GET_SUBSCRIPTIONS_OVERVIEW,
             // UPDATE
             MODIFY_CUSTOMER,
             MODIFY_SUBACCOUNT,
