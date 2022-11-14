@@ -458,8 +458,16 @@ public class RBACVerifier {
                 false,
                 false
         ));
-
-
+        verifiers.put(GET_SUBSCRIPTIONS_OVERVIEW, new ExpectedPermissions(true,
+                true,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false));
         verifiers.put(MODIFY_CUSTOMER, new ExpectedPermissions(true,
                 true,
                 false,

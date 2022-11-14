@@ -31,6 +31,8 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapte
 import { AboutModalComponent } from './generics/about-modal/about-modal.component';
 import { MyAppsComponent } from './my-apps/my-apps.component';
 import { RedirectPageComponent } from './redirect-page/redirect-page.component';
+import { SubscriptionsOverviewComponent } from './subscriptions-overview/subscriptions-overview.component';
+import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
 
 @NgModule({
     declarations: [
@@ -48,6 +50,8 @@ import { RedirectPageComponent } from './redirect-page/redirect-page.component';
         AboutModalComponent,
         MyAppsComponent,
         RedirectPageComponent,
+        ViewProfileComponent,
+        SubscriptionsOverviewComponent
     ],
     imports: [
         AppRoutingModule,
@@ -56,7 +60,6 @@ import { RedirectPageComponent } from './redirect-page/redirect-page.component';
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
-        MaterialModule,
         FlexLayoutModule,
         MsalModule.forRoot(new PublicClientApplication({
             auth: {

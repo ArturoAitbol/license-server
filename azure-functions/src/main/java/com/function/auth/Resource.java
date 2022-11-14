@@ -51,7 +51,8 @@ public enum Resource {
         GET_AUTH_USER_PROFILE,//TekvLSGetAuthUserProfile
         GET_CTAAS_DASHBOARD,//TekvLSGetCtaasDashboard
         GET_ALL_FEATURE_TOGGLES,//TekvLSGetAllFeatureToggles
-        
+        GET_SUBSCRIPTIONS_OVERVIEW, //TeTekvLSGetSubscriptionsOverview
+
         //UPDATE
         MODIFY_CUSTOMER,//TekvLSModifyCustomerById
         MODIFY_DEVICE,//TekvLSModifyDeviceById

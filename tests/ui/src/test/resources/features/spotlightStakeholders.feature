@@ -32,7 +32,7 @@ Feature: Stakeholders
     Then I should see the message "Created Stakeholder successfully"
     And I logout
 
-  @loginStakeholder
+  @loginStakeholder @login @onBoardTest
   Scenario: Stakeholder login
     Given I try to login using a "Stakeholder"
     Then I should see the "SpotLight" view
