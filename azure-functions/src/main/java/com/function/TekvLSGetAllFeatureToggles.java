@@ -24,10 +24,6 @@ public class TekvLSGetAllFeatureToggles {
      * 2. curl "{your host}/v1.0/featureToggles"
      */
 
-    private final String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
-            + "&user=" + System.getenv("POSTGRESQL_USER")
-            + "&password=" + System.getenv("POSTGRESQL_PWD");
-
     @FunctionName("TekvLSGetAllFeatureToggles")
     public HttpResponseMessage run(
             @HttpTrigger(
@@ -54,7 +50,7 @@ public class TekvLSGetAllFeatureToggles {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetAllCustomers Azure function");
+        context.getLogger().info("Entering TekvLSGetAllFeatureToggles Azure function");
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 
@@ -64,6 +60,10 @@ public class TekvLSGetAllFeatureToggles {
         if (!id.equals("EMPTY")) {
             selectFTQueryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
         }
+
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
+                + "&user=" + System.getenv("POSTGRESQL_USER")
+                + "&password=" + System.getenv("POSTGRESQL_PWD");
 
         // Connect to the database
         try (
@@ -84,8 +84,8 @@ public class TekvLSGetAllFeatureToggles {
                 item.put("id", rs.getString("id"));
                 item.put("name", rs.getString("name"));
                 item.put("customerName", rs.getString("customer_name"));
-                item.put("author", rs.getBoolean("author"));
-                item.put("description", rs.getBoolean("description"));
+                item.put("author", rs.getString("author"));
+                item.put("description", rs.getString("description"));
                 array.put(item);
             }
 
