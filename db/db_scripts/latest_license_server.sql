@@ -150,6 +150,14 @@ CREATE TYPE public.usage_type_enum AS ENUM (
     'AutomationPlatform'
 );
 
+--
+-- Name: usage_type_enum; Type: TYPE; Schema: public; Owner: -
+--
+CREATE TYPE public.feature_toggle_status_type_enum AS ENUM (
+    'On',
+    'Off'
+);
+
 
 SET default_tablespace = '';
 
@@ -334,6 +342,15 @@ CREATE TABLE public.ctaas_setup
     subaccount_id uuid NOT NULL,
 	powerbi_workspace_id character varying,
 	powerbi_report_id character varying
+);
+
+CREATE TABLE public.feature_toggle (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    customer_name character varying,
+    status public.feature_toggle_status_type_enum DEFAULT 'Off'::public.feature_toggle_status_type_enum NOT NULL,
+    author character varying,
+    description character varying,
+    name character varying NOT NULL
 );
 
 --
@@ -883,6 +900,13 @@ ALTER TABLE IF EXISTS public.subaccount_admin
 
 ALTER TYPE public.usage_type_enum
     ADD VALUE 'Ctaas' AFTER 'AutomationPlatform';
+
+ALTER TABLE ONLY public.feature_toggle
+    ADD CONSTRAINT feature_toggle_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY public.feature_toggle
+    ADD CONSTRAINT ft_name_unique UNIQUE (name);
+
 --
 -- PostgreSQL database dump complete
 --
