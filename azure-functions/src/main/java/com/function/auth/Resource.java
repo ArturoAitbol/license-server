@@ -17,6 +17,7 @@ public enum Resource {
         CREATE_CTAAS_SETUP,//TekvLSCreateCtaasSetup
         CREATE_CTAAS_TEST_SUITE,//TekvLSCreateCtaasTestSuite
         CREATE_SUBACCOUNT_STAKEHOLDER,//TekvLSCreateSubaccountStakeHolder
+        CREATE_FEATURE_TOGGLE,//TekvLSCreateFeatureToggle
 
         // DELETE
         DELETE_ADMIN_EMAIL,//TekvLSDeleteAdminEmail
@@ -32,6 +33,7 @@ public enum Resource {
         DELETE_CTAAS_SETUP,//TekvLSDeleteCtaasSetupById
         DELETE_CTAAS_TEST_SUITE,//TekvLSDeleteCtaasTestSuiteById
         DELETE_SUBACCOUNT_STAKEHOLDER,//TekvLSDeleteSubaccountStakeHolderByEmail
+        DELETE_FEATURE_TOGGLE,//TekvLSDeleteFeatureToggleById
 
         // READ
         GET_ALL_BUNDLES,//TekvLSGetAllBundles
@@ -48,6 +50,7 @@ public enum Resource {
         GET_ALL_SUBACCOUNT_STAKEHOLDER,//TekvLSGetAllStakeholders
         GET_AUTH_USER_PROFILE,//TekvLSGetAuthUserProfile
         GET_CTAAS_DASHBOARD,//TekvLSGetCtaasDashboard
+        GET_ALL_FEATURE_TOGGLES,//TekvLSGetAllFeatureToggles
         
         //UPDATE
         MODIFY_CUSTOMER,//TekvLSModifyCustomerById
@@ -61,5 +64,6 @@ public enum Resource {
         MODIFY_CTAAS_TEST_SUITE,//TekvLSModifyCtaasTestSuiteById
         MODIFY_CTAAS_ONBOARDING,//TekvLSModifyCtaasOnBoardingById
         MODIFY_SUBACCOUNT_STAKEHOLDER,//TekvLSModifySubaccountStakeholderByEmail
-        MODIFY_AUTH_USER_PROFILE//TekvLSModifyAuthUserProfile;
+        MODIFY_AUTH_USER_PROFILE,//TekvLSModifyAuthUserProfile
+        MODIFY_FEATURE_TOGGLE//TekvLSModifyFeatureToggleById
 }

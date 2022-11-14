@@ -148,6 +148,18 @@ public class RBACVerifier {
                 true,
                 true,
                 false));
+        verifiers.put(CREATE_FEATURE_TOGGLE, new ExpectedPermissions(
+                true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
 
 
         verifiers.put(DELETE_ADMIN_EMAIL, new ExpectedPermissions(true,
@@ -280,6 +292,18 @@ public class RBACVerifier {
                 true,
                 true,
                 false));
+        verifiers.put(DELETE_FEATURE_TOGGLE, new ExpectedPermissions(
+                true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
 
 
         verifiers.put(GET_ALL_BUNDLES, new ExpectedPermissions(true,
@@ -422,6 +446,20 @@ public class RBACVerifier {
                 true,
                 true,
                 true));
+        verifiers.put(GET_ALL_FEATURE_TOGGLES, new ExpectedPermissions(
+                true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
+
+
         verifiers.put(MODIFY_CUSTOMER, new ExpectedPermissions(true,
                 true,
                 false,
@@ -542,5 +580,17 @@ public class RBACVerifier {
                 false,
                 true,
                 true));
+        verifiers.put(MODIFY_FEATURE_TOGGLE, new ExpectedPermissions(
+                true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
     }
 }
