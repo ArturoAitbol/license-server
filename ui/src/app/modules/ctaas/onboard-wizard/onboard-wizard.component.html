@@ -71,29 +71,6 @@
             </div>
         </div>
         <br>
-        <div>
-            <h2>What information do you want to receive?</h2>
-            <div>
-                <mat-form-field appearance="outline">
-                    <mat-label>Select Type</mat-label>
-                    <mat-select formControlName="type" id = "type">
-                        <mat-option value="TYPE:High level"> High level </mat-option>
-                        <mat-option value="TYPE:Detailed"> Detailed </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-            <div *ngFor="let item of reportsNotificationsList;">
-                <div class="row">
-                    <div class="col-10 me-auto">
-                        <label class="form-check-label" [for]="item.value">{{item.label}}</label>
-                    </div>
-                    <div class="col-1">
-                        <input class="form-check-input float-end" type="checkbox" [value]="item.checked"
-                            [id]="item.value" (change)="onFormCheckboxChange($event,item)">
-                    </div>
-                </div>
-            </div>
-        </div>
         <button class="btn btn-custom btn-sm float-end mt-4 px-3" type="submit"
             [disabled]="!userProfileForm.valid">Save</button>
     </form>
@@ -164,29 +141,6 @@
                 </div>
             </div>
             <br>
-            <div>
-                <h2>What information do you want this person to receive?</h2>
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Select Type</mat-label>
-                        <mat-select formControlName="type" id = "type">
-                            <mat-option value="TYPE:High level"> High level </mat-option>
-                            <mat-option value="TYPE:Detailed"> Detailed </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div *ngFor="let item of reportsNotificationsList;">
-                    <div class="row">
-                        <div class="col-10 me-auto">
-                            <label class="form-check-label" [for]="item.value">{{item.label}}</label>
-                        </div>
-                        <div class="col-1">
-                            <input class="form-check-input float-end" type="checkbox" [value]="item.checked"
-                                [id]="item.value" (change)="onFormCheckboxChange($event,item)">
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div>
                 <span *ngIf="errorMsg!==''">{{errorMsg}}</span>
                 <button class="btn btn-custom btn-sm float-end mt-4 px-3" type="submit"
