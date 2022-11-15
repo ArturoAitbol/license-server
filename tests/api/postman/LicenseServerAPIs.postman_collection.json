@@ -1937,8 +1937,8 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"devices\");\r",
-							"    pm.expect(pm.response.json().devices).to.be.an(\"array\")\r",
+							"    pm.response.to.have.jsonBody(\"featureToggles\");\r",
+							"    pm.expect(pm.response.json().featureToggles).to.be.an(\"array\")\r",
 							"});"
 						],
 						"type": "text/javascript"
