@@ -33,7 +33,7 @@ public class TekvLSGetAllFeatureTogglesTest extends TekvLSTest {
     public void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
-        String name = "featureToggleTest" + LocalDateTime.now();
+        String name = "1featureToggleTest" + LocalDateTime.now();
         String bodyRequest = "{" +
                     " 'status' : 'On'," +
                     " 'name' : '" + name + "'," +
@@ -87,6 +87,7 @@ public class TekvLSGetAllFeatureTogglesTest extends TekvLSTest {
         JSONObject featureToggle = featureToggles.getJSONObject(0);
         assertTrue(featureToggle.has("id"));
         assertTrue(featureToggle.has("author"));
+        assertTrue(featureToggle.has("status"));
         assertTrue(featureToggle.has("name"));
         assertTrue(featureToggle.has("description"));
         assertTrue(featureToggle.has("customerName"));
@@ -115,6 +116,7 @@ public class TekvLSGetAllFeatureTogglesTest extends TekvLSTest {
         JSONObject featureToggle = featureToggles.getJSONObject(0);
         assertTrue(featureToggle.has("id"));
         assertTrue(featureToggle.has("author"));
+        assertTrue(featureToggle.has("status"));
         assertTrue(featureToggle.has("name"));
         assertTrue(featureToggle.has("description"));
         assertTrue(featureToggle.has("customerName"));
