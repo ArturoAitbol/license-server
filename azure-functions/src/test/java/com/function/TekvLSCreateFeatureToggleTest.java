@@ -49,7 +49,7 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
     @Test
     public void createFeatureToggleTest() {
         // Given - Arrange
-        String name = "featureToggleTest" + LocalDateTime.now();
+        String name = "NewfeatureToggleTest" + LocalDateTime.now();
         String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -72,7 +72,7 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
 
     @Test
     public void createFeatureToggleWithOptionalParamsTest() {
-        String name = "featureToggleTest" + LocalDateTime.now();
+        String name = "NewfeatureToggleTest" + LocalDateTime.now();
         String bodyRequest = "{" +
                 "    'status' : 'On'," +
                 "    'name' : '" + name + "'," +
@@ -124,7 +124,7 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
 
     @Test
     public void createFeatureToggleIncompleteWithoutStatus() {
-        String name = "featureToggleTest" + LocalDateTime.now();
+        String name = "NewfeatureToggleTest" + LocalDateTime.now();
         String bodyRequest = "{ 'name' : '" + name + "' }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
@@ -185,7 +185,7 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
 
     @Test
     public void createFeatureToggleSQLExceptionTest() {
-        String name = "featureToggleTest" + LocalDateTime.now();
+        String name = "NewfeatureToggleTest" + LocalDateTime.now();
         String bodyRequest = "{ 'status' : 'XXXX', 'name' : '" + name + "' }";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -207,8 +207,8 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
 
     @Test
     public void createFeatureToggleGenericExceptionTest() {
-        String name = "featureToggleTest" + LocalDateTime.now();
-        String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
+        String name = "NewfeatureToggleTest" + LocalDateTime.now();
+        String bodyRequest = "{ 'status' : 'Off', 'name' : '" + name + "' }";
         String expectedResponse = "Generic error";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -231,7 +231,7 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
     @Test
     public void duplicatedFeatureToggleNameTest() {
         // Given - Arrange
-        String name = "featureToggleTest" + LocalDateTime.now();
+        String name = "NewfeatureToggleTest" + LocalDateTime.now();
         String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
 
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -244,6 +244,13 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("id"));
+        this.featureToggleId = jsonBody.getString("id");
+        assertNotNull(this.featureToggleId);
 
         // Given - Arrange
         String newBodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
@@ -259,8 +266,8 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
         expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
+        body = (String) response.getBody();
+        jsonBody = new JSONObject(body);
 
         assertTrue(jsonBody.has("error"));
 
@@ -291,7 +298,7 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
     public void createFeatureToggleWithForbiddenRoleTokenTest() {
         // Given - Arrange
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
-        String name = "featureToggleTest" + LocalDateTime.now();
+        String name = "NewfeatureToggleTest" + LocalDateTime.now();
         String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
