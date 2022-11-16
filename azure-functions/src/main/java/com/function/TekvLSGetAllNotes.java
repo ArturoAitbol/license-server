@@ -50,7 +50,7 @@ public class TekvLSGetAllNotes {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if (!hasPermission(roles, Resource.GET_ALL_SUBACCOUNT_STAKEHOLDER)) {
+        if (!hasPermission(roles, Resource.GET_ALL_NOTES)) {
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
