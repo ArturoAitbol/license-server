@@ -34,7 +34,7 @@
                 <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker></mat-date-range-picker>
-                <button *ngIf="filterForm.get('startDateFilterControl').value || filterForm.get('startDateFilterControl').value"
+                <button *ngIf="filterForm.get('startDateFilterControl').value || filterForm.get('endDateFilterControl').value"
                     matSuffix mat-icon-button aria-label="Clear"
                     (click)="filterForm.get('startDateFilterControl').setValue(''); filterForm.get('endDateFilterControl').setValue('');"> 
                     <mat-icon>close</mat-icon>
