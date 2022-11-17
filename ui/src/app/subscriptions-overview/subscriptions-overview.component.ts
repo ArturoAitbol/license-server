@@ -36,7 +36,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
         customerFilterControl: [''],
         subStatusFilterControl: [''],
         startDateFilterControl: [''],
-        renewalDateFilterControl: [''],
+        endDateFilterControl: [''],
     });
 
     allSubscriptions: SubscriptionOverview[] = [];
@@ -67,13 +67,14 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
         ).subscribe(value => {
             const filters = [];
             if (value.customerFilterControl != '')
-                filters.push(subscription => subscription.customerName.includes(value.customerFilterControl) || subscription.subaccountName?.includes(value.customerFilterControl));
+                filters.push(subscription => subscription.customerName.toLowerCase().includes(value.customerFilterControl.toLowerCase()) || 
+                    subscription.subaccountName?.toLowerCase().includes(value.customerFilterControl.toLowerCase()));
             if (value.subStatusFilterControl != '' && value.subStatusFilterControl != null)
                 filters.push(subscription => subscription.licenseStatus && subscription.licenseStatus === value.subStatusFilterControl);
             if (value.startDateFilterControl != '' && value.startDateFilterControl != null)
                 filters.push(subscription => subscription.licenseStartDate != null && moment(subscription.licenseStartDate, 'YYYY-MM-DD').isSameOrAfter(value.startDateFilterControl));
-            if (value.renewalDateFilterControl != '' && value.renewalDateFilterControl != null)
-                filters.push(subscription => subscription.licenseRenewalDate != null && moment(subscription.licenseRenewalDate, 'YYYY-MM-DD').isSameOrBefore(value.renewalDateFilterControl));
+            if (value.endDateFilterControl != '' && value.endDateFilterControl != null)
+                filters.push(subscription => subscription.licenseRenewalDate != null && moment(subscription.licenseStartDate, 'YYYY-MM-DD').isSameOrBefore(value.endDateFilterControl));
             this.isLoadingResults = true;
             this.filteredSubscriptions = this.allSubscriptions.filter(customer => filters.every(filter => filter(customer)));
             this.isLoadingResults = false;
