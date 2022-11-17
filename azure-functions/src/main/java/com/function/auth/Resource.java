@@ -18,6 +18,7 @@ public enum Resource {
         CREATE_CTAAS_TEST_SUITE,//TekvLSCreateCtaasTestSuite
         CREATE_SUBACCOUNT_STAKEHOLDER,//TekvLSCreateSubaccountStakeHolder
         CREATE_FEATURE_TOGGLE,//TekvLSCreateFeatureToggle
+        CREATE_NOTE,//TekvLSCreateNote
 
         // DELETE
         DELETE_ADMIN_EMAIL,//TekvLSDeleteAdminEmail
@@ -34,6 +35,7 @@ public enum Resource {
         DELETE_CTAAS_TEST_SUITE,//TekvLSDeleteCtaasTestSuiteById
         DELETE_SUBACCOUNT_STAKEHOLDER,//TekvLSDeleteSubaccountStakeHolderByEmail
         DELETE_FEATURE_TOGGLE,//TekvLSDeleteFeatureToggleById
+        DELETE_NOTE,//TekvLSDeleteNoteById
 
         // READ
         GET_ALL_BUNDLES,//TekvLSGetAllBundles
