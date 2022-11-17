@@ -9,7 +9,7 @@ mvn test
 mvn clean package
 # code coverage generation, more information in https://github.com/ryanluker/vscode-coverage-gutters/tree/master/example/java
 mvn jacoco:report
-cp mv target/site/jacoco/jacoco.xml cov.xml
+cp target/site/jacoco/jacoco.xml cov.xml
 
 For the UI read the README.md inside ui directory
 
