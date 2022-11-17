@@ -159,6 +159,16 @@ CREATE TYPE public.feature_toggle_status_type_enum AS ENUM (
 );
 
 
+--
+-- Name: note_status_type_enum; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.note_status_type_enum AS ENUM (
+    'Open',
+    'Closed'
+);
+
+
 SET default_tablespace = '';
 
 --
@@ -351,6 +361,20 @@ CREATE TABLE public.feature_toggle (
     author character varying,
     description character varying,
     name character varying NOT NULL
+);
+
+
+--
+-- Name: note; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.note (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    subaccount_id uuid NOT NULL,
+    content character varying NOT NULL,
+    status public.note_status_type_enum DEFAULT 'Open'::public.note_status_type_enum NOT NULL,
+    open_date timestamp without time zone,
+    close_date timestamp without time zone
 );
 
 --
@@ -789,6 +813,14 @@ ALTER TABLE ONLY public.ctaas_setup
 
 
 --
+-- Name: note note_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.note
+    ADD CONSTRAINT note_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: subaccount fk_customer; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -906,6 +938,14 @@ ALTER TABLE ONLY public.feature_toggle
 
 ALTER TABLE ONLY public.feature_toggle
     ADD CONSTRAINT ft_name_unique UNIQUE (name);
+
+
+--
+-- Name: note fk_subaccount; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.note
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
 
 --
 -- PostgreSQL database dump complete

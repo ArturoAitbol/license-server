@@ -50,6 +50,7 @@ public class Permissions {
             GET_CTAAS_DASHBOARD,
             GET_ALL_FEATURE_TOGGLES,
             GET_SUBSCRIPTIONS_OVERVIEW,
+            GET_ALL_NOTES,
             // UPDATE
             MODIFY_CUSTOMER,
             MODIFY_SUBACCOUNT,
@@ -199,6 +200,7 @@ public class Permissions {
             GET_ALL_CTAAS_SETUPS,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_CTAAS_DASHBOARD,
+            GET_ALL_NOTES,
             // MODIFY
             MODIFY_CTAAS_ONBOARDING,
             MODIFY_SUBACCOUNT_STAKEHOLDER
@@ -222,6 +224,7 @@ public class Permissions {
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_AUTH_USER_PROFILE,
             GET_CTAAS_DASHBOARD,
+            GET_ALL_NOTES,
             // MODIFY
             MODIFY_CTAAS_ONBOARDING,
             MODIFY_SUBACCOUNT_STAKEHOLDER,
@@ -235,6 +238,7 @@ public class Permissions {
             GET_ALL_CTAAS_SETUPS,
             GET_AUTH_USER_PROFILE,
             GET_CTAAS_DASHBOARD,
+            GET_ALL_NOTES,
             // MODIFY
             MODIFY_AUTH_USER_PROFILE
     );

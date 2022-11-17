@@ -54,6 +54,7 @@ public enum Resource {
         GET_CTAAS_DASHBOARD,//TekvLSGetCtaasDashboard
         GET_ALL_FEATURE_TOGGLES,//TekvLSGetAllFeatureToggles
         GET_SUBSCRIPTIONS_OVERVIEW, //TeTekvLSGetSubscriptionsOverview
+        GET_ALL_NOTES, //TeTekvLSGetAllNotes
 
         //UPDATE
         MODIFY_CUSTOMER,//TekvLSModifyCustomerById
