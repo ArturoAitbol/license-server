@@ -124,7 +124,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
             takeUntil(this.unsubscribe)
         ).subscribe(value => {
             const filters = [];
-            if (value.customerFilterControl != '') filters.push(customer => customer.name.includes(value.customerFilterControl) || customer.subaccountName?.includes(value.customerFilterControl));
+            if (value.customerFilterControl != '')
+                filters.push(customer => customer.name.toLowerCase().includes(value.customerFilterControl.toLowerCase()) || customer.subaccountName?.toLowerCase().includes(value.customerFilterControl.toLowerCase()));
             if (value.typeFilterControl != '' && value.typeFilterControl != undefined) filters.push(customer => customer.customerType === value.typeFilterControl);
             if (value.subStatusFilterControl != '' && value.subStatusFilterControl != undefined) filters.push(customer => customer.status && customer.status === value.subStatusFilterControl);
             this.isLoadingResults = true;
