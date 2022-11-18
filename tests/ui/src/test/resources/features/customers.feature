@@ -24,7 +24,7 @@ Feature: Customers
     When I add an administrator with email "admintest@tekvizion.com"
     Then I should see the message "Customer admin emails edited successfully!"
 
-  @subscriptionsView
+  @subscriptionsView @CTaaSFeature
   Scenario: Go to the subcriptions tab
     Given I see the customer "customerTest" in the table
     When I go to dashboard "Subscriptions" tab
