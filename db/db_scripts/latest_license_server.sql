@@ -374,7 +374,9 @@ CREATE TABLE public.note (
     content character varying NOT NULL,
     status public.note_status_type_enum DEFAULT 'Open'::public.note_status_type_enum NOT NULL,
     open_date timestamp without time zone,
-    close_date timestamp without time zone
+    opened_by character varying,
+    close_date timestamp without time zone,
+    closed_by character varying
 );
 
 --

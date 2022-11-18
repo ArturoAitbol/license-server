@@ -180,9 +180,9 @@ a8654484-1cb2-4fec-adf4-ee7ddc17375d	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	5	2022
 -- Data for Name: note; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.note (id, subaccount_id, content, status, open_date, close_date) FROM stdin;
-f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	app development	Open	2022-10-20 18:30:00	2022-11-02 18:30:00
-2bdaf2af-838f-4053-b3fa-ef22aaa10b0d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 2	Open	2022-10-20 18:30:00	\N
-7564aab0-5331-4ab5-85f7-e37acbdfd90d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 3	Open	2022-10-04 18:30:00	\N
-be612704-c26e-48ea-ab9b-19312f03d644	96234b32-32d3-45a4-af26-4c912c0d6a06	note 1	Open	2022-10-03 04:00:00	\N
+COPY public.note (id, subaccount_id, content, status, open_date, opened_by, close_date, closed_by) FROM stdin;
+f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	app development	Closed	2022-10-02 18:30:00	opener@email.com	2022-11-02 18:30:00	opener@email.com
+2bdaf2af-838f-4053-b3fa-ef22aaa10b0d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 2	Open	2022-10-20 18:30:00	opener@email.com	\N	\N
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 3	Open	2022-10-04 18:30:00	opener@email.com	\N	\N
+be612704-c26e-48ea-ab9b-19312f03d644	96234b32-32d3-45a4-af26-4c912c0d6a06	note 1	Open	2022-10-03 04:00:00	opener@email.com	\N	\N
 \.
