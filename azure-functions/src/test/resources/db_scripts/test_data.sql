@@ -174,3 +174,15 @@ a8654484-1cb2-4fec-adf4-ee7ddc17375d	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	5	2022
 89eeb522-157f-4125-96e6-b4cc900fa9d1	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	10	2022-10-04 00:00:00	Weekly	MS Teams	Execution E
 5798ecd9-6db9-43a6-a521-b21f065e7879	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	15	2022-10-05 00:00:00	Monthly	MS Teams	Execution F
 \.
+
+
+--
+-- Data for Name: note; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.note (id, subaccount_id, content, status, open_date, close_date) FROM stdin;
+f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	app development	Open	2022-10-20 18:30:00	2022-11-02 18:30:00
+2bdaf2af-838f-4053-b3fa-ef22aaa10b0d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 2	Open	2022-10-20 18:30:00	\N
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 3	Open	2022-10-04 18:30:00	\N
+be612704-c26e-48ea-ab9b-19312f03d644	96234b32-32d3-45a4-af26-4c912c0d6a06	note 1	Open	2022-10-03 04:00:00	\N
+\.

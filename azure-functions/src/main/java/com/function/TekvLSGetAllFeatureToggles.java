@@ -3,6 +3,7 @@ package com.function;
 import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
+import com.function.db.SelectQueryBuilder.ORDER_DIRECTION;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
@@ -57,9 +58,10 @@ public class TekvLSGetAllFeatureToggles {
         // Build SQL statement
         SelectQueryBuilder selectFTQueryBuilder = new SelectQueryBuilder("SELECT * FROM feature_toggle");
 
-        if (!id.equals("EMPTY")) {
+        if (!id.equals("EMPTY"))
             selectFTQueryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
-        }
+            
+        selectFTQueryBuilder.appendOrderBy("name", ORDER_DIRECTION.ASC);
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
@@ -84,6 +86,7 @@ public class TekvLSGetAllFeatureToggles {
                 item.put("id", rs.getString("id"));
                 item.put("name", rs.getString("name"));
                 item.put("customerName", rs.getString("customer_name"));
+                item.put("status", rs.getString("status"));
                 item.put("author", rs.getString("author"));
                 item.put("description", rs.getString("description"));
                 array.put(item);
