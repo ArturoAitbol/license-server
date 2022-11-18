@@ -74,7 +74,7 @@ public class TekvLSCreateNote {
                 //Parameter not found
                 context.getLogger().info("Missing mandatory parameter: "+ mandatoryParam.value);
                 JSONObject json = new JSONObject();
-                json.put("error"," Missing mandatory parameter: " + mandatoryParam.value);
+                json.put("error","Missing mandatory parameter: " + mandatoryParam.value);
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
@@ -91,7 +91,7 @@ public class TekvLSCreateNote {
         try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
             PreparedStatement statement = connection.prepareStatement(sql)){
 
-            context.getLogger().info("Succesfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Set statement parameters
             statement.setString(1,jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
