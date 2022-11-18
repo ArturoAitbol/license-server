@@ -127,8 +127,6 @@ describe('modify stakeholder interactions', () => {
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('companyName').setValue('testC');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('phoneNumber').setValue('1111111111');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('Detailed');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([true, true, false]);
        
         modifyStakeholderComponentTestInstance.updateStakeholderDetails();
         await fixture.whenStable();
@@ -145,8 +143,6 @@ describe('modify stakeholder interactions', () => {
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('companyName').setValue('testC');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('phoneNumber').setValue('1111111111');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('Detailed');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([true, true, false]);
 
         modifyStakeholderComponentTestInstance.updateStakeholderDetails();
         modifyStakeholderComponentTestInstance.onCancel();
@@ -164,8 +160,6 @@ describe('modify stakeholder interactions', () => {
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('companyName').setValue('testC');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('phoneNumber').setValue('1111111111');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('type').setValue('Detailed');
-        modifyStakeholderComponentTestInstance.updateStakeholderForm.get('notifications').setValue([false, false, false]);
        
         modifyStakeholderComponentTestInstance.updateStakeholderDetails();
         await fixture.whenStable();
@@ -193,17 +187,13 @@ describe('modify stakeholder - FromGroup verification test', () => {
             jobTitle:'',
             companyName:'',
             subaccountAdminEmail:'',
-            phoneNumber:'',
-            type:'',
-            notifications: ['','','']
+            phoneNumber:''
         });
         expect(modifyStakeholder.get('name').valid).toBeFalse();
         expect(modifyStakeholder.get('jobTitle').valid).toBeFalse();
         expect(modifyStakeholder.get('companyName').valid).toBeFalse();
         expect(modifyStakeholder.get('subaccountAdminEmail').valid).toBeFalse();
         expect(modifyStakeholder.get('phoneNumber').valid).toBeFalse();
-        expect(modifyStakeholder.get('type').valid).toBeFalse();
-        expect(modifyStakeholder.get('notifications').valid).toBeTrue();
     });
 
     it('it should enable the submit button', () => {
@@ -215,9 +205,7 @@ describe('modify stakeholder - FromGroup verification test', () => {
             jobTitle:'testJf',
             companyName:'testCf',
             subaccountAdminEmail:'teststakeholder11@gmail.com',
-            phoneNumber:'+919898989809',
-            type:'Detailed',
-            notifications:[true, true, false],
+            phoneNumber:'+919898989809'
         });
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').enable();
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('teststakeholder11@gmail.com');
@@ -234,9 +222,7 @@ describe('modify stakeholder - FromGroup verification test', () => {
             jobTitle:'',
             companyName:'',
             subaccountAdminEmail:'',
-            phoneNumber:'',
-            type:'',
-            notifications:['', '', ''],
+            phoneNumber:''
         });
         fixture.detectChanges();
         expect(fixture.nativeElement.querySelector('#submit-stakeholder-button').disabled).toBeTrue();

@@ -21,7 +21,7 @@ export class OnboardWizardComponent implements OnInit {
     interaction: string;
     readonly pattern = "/[0-9]{3}-[0-9]{3}-[0-9]{4}$/";
     readonly type = 'TYPE:Detailed';
-    readonly notifications = 'DAILY_REPORTS'
+    readonly notifications = 'DAILY_REPORTS';
     reportsNotificationsList: any = [];
     errorCreatingStakeholder = false;
     isDataLoading = false;

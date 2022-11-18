@@ -28,7 +28,6 @@ Feature: Stakeholders
       | jobTitle      | Manager                 |
       | companyName   | stakeholderCompany      |
       | phoneNumber   | 6524352354              |
-      | type          | High level              |
     Then I should see the message "Created Stakeholder successfully"
     And I logout
 
@@ -51,7 +50,6 @@ Feature: Stakeholders
       | jobTitle              | Senior                          |
       | companyName           | testCompany                     |
       | phoneNumber           | 6524352354                      |
-      | type                  | High level                      |
     Then I should see the message "Updated stake holder details successfully"
 
   @deleteStakeholder @delete

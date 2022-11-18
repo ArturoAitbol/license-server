@@ -24,6 +24,8 @@ export class AddStakeHolderComponent implements OnInit {
     public dialogRef: MatDialogRef<AddStakeHolderComponent>,
     private subaccountService: SubAccountService
   ) { }
+  readonly type = 'TYPE:Detailed';
+  readonly notifications = 'DAILY_REPORTS';
   /**
    * initialize update stake holder form
    */
@@ -32,14 +34,7 @@ export class AddStakeHolderComponent implements OnInit {
     jobTitle: ['', Validators.required],
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
     companyName: ['', Validators.required],
-    phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
-    type: ['', Validators.required],
-    notifications: new FormArray([ 
-      new FormControl(false),
-      new FormControl(false),
-      new FormControl(false)
-    ])
-    
+    phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]]
   });
 
   reports: any =  [
@@ -86,17 +81,12 @@ export class AddStakeHolderComponent implements OnInit {
       this.isDataLoading = true;
       const { subaccountId } = this.userprofileDetails;
       const stakeholderDetails = { ... this.addStakeholderForm.value };
-      const { type, notifications } = stakeholderDetails;
-      let mappedNotifications = notifications.filter(notification => notification).map((notification, index) => this.reports[index].value);
-      stakeholderDetails.subaccountId = subaccountId;
-      // stakeholderDetails.notifications = type;
-      if (mappedNotifications.length > 0) {
-        stakeholderDetails.notifications = type + ',' + mappedNotifications.join(',');
+      let stakeholderNotificationsAndtype = {...stakeholderDetails, type: this.type, notifications: this.notifications}
+      stakeholderNotificationsAndtype.subaccountId = subaccountId;
+      if (stakeholderNotificationsAndtype.notifications.length > 0) {
+        stakeholderNotificationsAndtype.notifications = stakeholderNotificationsAndtype.type + ',' + stakeholderNotificationsAndtype.notifications;
       }
-      else {
-        stakeholderDetails.notifications = type;
-      }
-      this.stakeholderService.createStakeholder(stakeholderDetails).subscribe((response: any) => {
+      this.stakeholderService.createStakeholder(stakeholderNotificationsAndtype).subscribe((response: any) => {
         const { error } = response;
         if (error) {
           this.snackBarService.openSnackBar(response.error, 'Error adding stakeholder');
