@@ -17,25 +17,21 @@ public class StakeholderForm extends AbstractPageObject {
     WebElement subaccountAdminEmailInput;
     @FindBy(css = "[formcontrolname='phoneNumber']")
     WebElement phoneNumberInput;
-    @FindBy(css = "[formcontrolname='type']")
-    WebElement typeInput;
     @FindBy(css = "#submit-stakeholder-button")
     WebElement submitButton;
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
-    public Stakeholders addStakeholder(String name, String jobTitle, String companyName, String subaccountAdminEmail, String phoneNumber, String type) {
+    public Stakeholders addStakeholder(String name, String jobTitle, String companyName, String subaccountAdminEmail, String phoneNumber) {
         this.action.sendText(this.nameInput, name);
         this.action.sendText(this.jobTitleInput, jobTitle);
         this.action.sendText(this.companyNameInput, companyName);
         this.action.sendText(this.subaccountAdminEmailInput, subaccountAdminEmail);
         this.action.sendText(this.phoneNumberInput, phoneNumber);
-        By typeSelector = By.cssSelector(String.format("mat-option[value='TYPE:%s']", type));
-        this.action.selectOption(this.typeInput, typeSelector);
         this.action.click(this.submitButton);
         return new Stakeholders();
     }
 
-    public Stakeholders editStakeholder(String name, String jobTitle, String companyName, String phoneNumber, String type) {
+    public Stakeholders editStakeholder(String name, String jobTitle, String companyName, String phoneNumber) {
         if (!name.equals("none"))
             this.action.replaceText(this.nameInput, name);
         if (!jobTitle.equals("none"))
@@ -44,10 +40,6 @@ public class StakeholderForm extends AbstractPageObject {
             this.action.replaceText(this.companyNameInput, companyName);
         if (!phoneNumber.equals("none"))
             this.action.replaceText(this.phoneNumberInput, phoneNumber);
-        if (!type.equals("none")) {
-            By typeSelector = By.cssSelector(String.format("mat-option[value='%s']", type));
-            this.action.selectOption(this.typeInput, typeSelector);
-        }
         this.action.click(this.submitButton);
         waitSpinner();
         return new Stakeholders();

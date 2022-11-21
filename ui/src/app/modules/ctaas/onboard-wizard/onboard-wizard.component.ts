@@ -20,6 +20,8 @@ export class OnboardWizardComponent implements OnInit {
     addAnotherStakeHolder = false;
     interaction: string;
     readonly pattern = "/[0-9]{3}-[0-9]{3}-[0-9]{4}$/";
+    readonly type = 'TYPE:Detailed';
+    readonly notifications = 'DAILY_REPORTS';
     reportsNotificationsList: any = [];
     errorCreatingStakeholder = false;
     isDataLoading = false;
@@ -56,11 +58,6 @@ export class OnboardWizardComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.reportsNotificationsList = [
-            {label: "Daily Reports", value: Report.DAILY_REPORTS},
-            {label: "Weekly Reports", value: Report.WEEKLY_REPORTS},
-            {label: "Monthly Summaries", value: Report.MONTHLY_REPORTS}
-        ];
         this.interaction = '1';
         // initialize report form
         this.initFormModel();
@@ -78,8 +75,6 @@ export class OnboardWizardComponent implements OnInit {
             companyName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
-            type: ['', Validators.required],
-            notifications: new FormArray([]),
         });
         // add stake holder form
         this.stakeholderForm = this.formbuilder.group({
@@ -88,8 +83,6 @@ export class OnboardWizardComponent implements OnInit {
             companyName: ['', Validators.required],
             subaccountAdminEmail: ['', [Validators.required, Validators.email]],
             phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
-            type: ['', Validators.required],
-            notifications: new FormArray([]),
         });
     }
 
@@ -120,14 +113,11 @@ export class OnboardWizardComponent implements OnInit {
         this.configuredReports = true;
         this.interaction = '3';
         const userProfileObj = this.userProfileForm.value;
-        const {type, notifications} = userProfileObj;
-        // userProfileObj.notifications = type;
-        if (notifications.length > 0) {
-            userProfileObj.notifications = type + ',' + notifications.join(',');
-        } else {
-            userProfileObj.notifications = type;
+        let detailedUserProfileObj = {...userProfileObj, type: this.type, notifications: this.notifications};
+        if (detailedUserProfileObj.notifications.length > 0) {
+            detailedUserProfileObj.notifications = detailedUserProfileObj.type + ',' + detailedUserProfileObj.notifications;
         }
-        this.userprofileService.updateUserProfile(userProfileObj)
+        this.userprofileService.updateUserProfile(detailedUserProfileObj)
             .subscribe((response: any) => {
                 if (response?.error) {
                     this.snackBarService.openSnackBar('Error updating User profile details !', '');
@@ -165,17 +155,13 @@ export class OnboardWizardComponent implements OnInit {
         this.configuredReports = true;
         this.isDataLoading = true;
         const requestPayload = this.stakeholderForm.value;
-        let {type, notifications} = requestPayload;
+        let detailedRequestPayload = {...requestPayload,  type: this.type, notifications: this.notifications}
         const {subaccountId} = this.subaccountUserProfileDetails;
-        requestPayload.subaccountId = subaccountId;
-        // requestPayload.notifications = type
-        notifications = notifications.filter((e: string) => e !== null && e !== undefined);
-        if (notifications.length > 0) {
-            requestPayload.notifications = type + ',' + notifications.join(',');
-        } else {
-            requestPayload.notifications = type;
+        detailedRequestPayload.subaccountId = subaccountId;
+        if (detailedRequestPayload.notifications.length > 0) {
+            detailedRequestPayload.notifications = detailedRequestPayload.type + ',' + detailedRequestPayload.notifications;
         }
-        this.stakeholderService.createStakeholder(requestPayload).subscribe((response: any) => {
+        this.stakeholderService.createStakeholder(detailedRequestPayload).subscribe((response: any) => {
             this.isDataLoading = false;
             if (response) {
                 const {error} = response;
