@@ -80,8 +80,8 @@ public class TekvLSCreateNote {
         }
 
         //Build the sql query
-        String sql = "INSERT INTO note (subaccount_id, content, status, open_date)" +
-                    " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP) RETURNING id;";
+        String sql = "INSERT INTO note (subaccount_id, content, status, open_date, opened_by)" +
+                    " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP, ?) RETURNING id;";
 
         //Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -94,8 +94,10 @@ public class TekvLSCreateNote {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Set statement parameters
+            String userEmail = getEmailFromToken(tokenClaims,context);
             statement.setString(1,jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
             statement.setString(2,jobj.getString(MANDATORY_PARAMS.CONTENT.value));
+            statement.setString(3,userEmail);
 
             //Insert
             String userId = getUserIdFromToken(tokenClaims,context);

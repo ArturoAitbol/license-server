@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import com.function.auth.Resource;
@@ -52,8 +53,12 @@ public class TekvLSDeleteNoteById {
         }
 
         context.getLogger().info("Entering TekvLSDeleteProjectById Azure function");
-
-        String sql = "UPDATE note SET status = 'Closed' WHERE id = ?::uuid;";
+        String userEmail = getEmailFromToken(tokenClaims,context);
+        UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("note");
+        queryBuilder.appendValueModification("status","Closed","note_status_type_enum");
+        queryBuilder.appendValueModification("close_date",LocalDateTime.now().toString(),QueryBuilder.DATA_TYPE.TIMESTAMP);
+        queryBuilder.appendValueModification("closed_by",userEmail, QueryBuilder.DATA_TYPE.VARCHAR);
+        queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -61,12 +66,9 @@ public class TekvLSDeleteNoteById {
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try (
                 Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+                PreparedStatement statement = queryBuilder.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-
-            statement.setString(1, id);
-
             // Delete project
             String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
