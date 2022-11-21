@@ -114,9 +114,7 @@ describe('UI verification test', () => {
             jobTitle:'testJob11',
             companyName:'testComp11',
             subaccountAdminEmail:'tests1takeholder@gmail.com',
-            phoneNumber:'+919898989809',
-            notifications:['TYPE:High level','DAILY_REPORTS','WEEKLY_REPORTS'],
-            type:'High level'
+            phoneNumber:'+919898989809'
         });
         fixture.detectChanges();
         expect(submitButton.disabled).toBeFalse();
@@ -130,9 +128,7 @@ describe('UI verification test', () => {
             jobTitle:'',
             companyName:'',
             subaccountAdminEmail:'',
-            phoneNumber:'',
-            notifications:['','',''],
-            type:''
+            phoneNumber:''
         });
         expect(submitButton.disabled).toBeTrue();
     });
@@ -149,8 +145,6 @@ describe('add stakeholder interactions', () => {
         addStakeholderComponentTestInstance.addStakeholderForm.get('companyName').setValue('testC');
         addStakeholderComponentTestInstance.addStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
         addStakeholderComponentTestInstance.addStakeholderForm.get('phoneNumber').setValue('1111111111');
-        addStakeholderComponentTestInstance.addStakeholderForm.get('type').setValue('Detailed');
-        addStakeholderComponentTestInstance.addStakeholderForm.get('notifications').setValue(['TYPE:Detailed','DAILY_REPORTS','WEEKLY_REPORTS']);
 
         addStakeholderComponentTestInstance.addStakeholder();
 
@@ -167,7 +161,6 @@ describe('add stakeholder interactions', () => {
         addStakeholderComponentTestInstance.addStakeholderForm.get('companyName').setValue('testC');
         addStakeholderComponentTestInstance.addStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
         addStakeholderComponentTestInstance.addStakeholderForm.get('phoneNumber').setValue('1111111111');
-        addStakeholderComponentTestInstance.addStakeholderForm.get('type').setValue('Detailed');
 
         addStakeholderComponentTestInstance.addStakeholder();
 
@@ -241,7 +234,6 @@ describe('addStakeholder - without subaccount id', () => {
         addStakeholderComponentTestInstance.addStakeholderForm.get('companyName').setValue('testC');
         addStakeholderComponentTestInstance.addStakeholderForm.get('subaccountAdminEmail').setValue('vb@gmail.com');
         addStakeholderComponentTestInstance.addStakeholderForm.get('phoneNumber').setValue('1111111111');
-        addStakeholderComponentTestInstance.addStakeholderForm.get('type').setValue('Detailed');
 
         addStakeholderComponentTestInstance.addStakeholder();
 

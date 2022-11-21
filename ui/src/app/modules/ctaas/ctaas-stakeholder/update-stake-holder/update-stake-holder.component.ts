@@ -19,6 +19,8 @@ export class UpdateStakeHolderComponent implements OnInit {
   previousFormValue: any;
   notificationsList: any;
   mappedNotificationsList: string[] = [];
+  readonly type = 'TYPE:Detailed';
+  readonly notifications = 'TYPE:Detailed,DAILY_REPORTS';
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
@@ -36,8 +38,6 @@ export class UpdateStakeHolderComponent implements OnInit {
       companyName: [{ value: '' }, Validators.required],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
-      type: ['', Validators.required],
-      notifications: new FormArray([])
     });
     try {
       const { email } = this.data;
@@ -59,20 +59,11 @@ export class UpdateStakeHolderComponent implements OnInit {
       console.error('some error | ', e);
     }
   }
-  /**
-   * initialize checkboxes
-   */
-  private initializeCheckboxes() {
-    this.reports.map((e: { label: string, value: string }) => {
-      const control = new FormControl(this.mappedNotificationsList.includes(e.value));
-      (this.updateStakeholderForm.controls.notifications as FormArray).push(control);
-    });
-  }
 
   ngOnInit(): void {
+    console.log(this.data)
     this.reports = this.getReports();
     this.initializeForm();
-    this.initializeCheckboxes();
   }
   /**
    * get reports
@@ -117,16 +108,9 @@ export class UpdateStakeHolderComponent implements OnInit {
    * @returns: any 
    */
   preparePayload(): any {
-    const selectedNotifications = this.updateStakeholderForm.value.notifications
-      .map((v, i) => v ? this.reports[i].value : null)
-      .filter(v => v !== null);
-    this.updateStakeholderForm.get('subaccountAdminEmail').enable();
-    if (selectedNotifications.length > 0) {
-      this.updateStakeholderForm.value.notifications = 'TYPE:' + this.updateStakeholderForm.value.type + ',' + selectedNotifications.join(',');
-    } else {
-      this.updateStakeholderForm.value.notifications = 'TYPE:' + this.updateStakeholderForm.value.type;
-    }
-    return this.updateStakeholderForm.value;
+    let extraData = {...this.updateStakeholderForm.value, notifications:this.notifications, type:this.type, subaccountAdminEmail: this.data.email}
+    console.log(extraData);
+    return extraData;
   }
   // /**
   //  * on change checkbox

@@ -1174,6 +1174,43 @@
 			"response": []
 		},
 		{
+			"name": "notes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"notes\");\r",
+							"    pm.expect(pm.response.json().notes).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/notes?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"notes"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "projects",
 			"event": [
 				{
@@ -1937,8 +1974,8 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"devices\");\r",
-							"    pm.expect(pm.response.json().devices).to.be.an(\"array\")\r",
+							"    pm.response.to.have.jsonBody(\"featureToggles\");\r",
+							"    pm.expect(pm.response.json().featureToggles).to.be.an(\"array\")\r",
 							"});"
 						],
 						"type": "text/javascript"

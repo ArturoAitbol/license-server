@@ -22,6 +22,10 @@
                         {{type}}
                     </mat-option>
                 </mat-select>
+                <button *ngIf="filterForm.get('typeFilterControl').value" matSuffix mat-icon-button
+                    aria-label="Clear" (click)="filterForm.get('typeFilterControl').setValue('')">
+                    <mat-icon>close</mat-icon>
+                </button>
             </mat-form-field>
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
                 <mat-label>Subscription Status Filter</mat-label>
@@ -31,6 +35,10 @@
                         {{subStatus}}
                     </mat-option>
                 </mat-select>
+                <button *ngIf="filterForm.get('subStatusFilterControl').value" matSuffix mat-icon-button
+                    aria-label="Clear" (click)="filterForm.get('subStatusFilterControl').setValue('')">
+                    <mat-icon>close</mat-icon>
+                </button>
             </mat-form-field>
         </div>
         <div class="col-auto ms-auto justify-content-end gy-3">
