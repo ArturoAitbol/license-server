@@ -19,6 +19,7 @@ public class Permissions {
             CREATE_CTAAS_TEST_SUITE,
             CREATE_SUBACCOUNT_STAKEHOLDER,
             CREATE_FEATURE_TOGGLE,
+            CREATE_NOTE,
             // DELETE
             DELETE_CUSTOMER,
             DELETE_SUB_ACCOUNT,
@@ -32,6 +33,7 @@ public class Permissions {
             DELETE_CTAAS_TEST_SUITE,
             DELETE_SUBACCOUNT_STAKEHOLDER,
             DELETE_FEATURE_TOGGLE,
+            DELETE_NOTE,
             // READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -184,8 +186,10 @@ public class Permissions {
     public static final EnumSet<Resource> customerAdminPermissions = EnumSet.of(
             // CREATE
             CREATE_SUBACCOUNT_STAKEHOLDER,
+            CREATE_NOTE,
             // DELETE
             DELETE_SUBACCOUNT_STAKEHOLDER,
+            DELETE_NOTE,
             // READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -207,8 +211,10 @@ public class Permissions {
     public static final EnumSet<Resource> SubAccountAdminPermissions = EnumSet.of(
             // CREATE
             CREATE_SUBACCOUNT_STAKEHOLDER,
+            CREATE_NOTE,
             // DELETE
             DELETE_SUBACCOUNT_STAKEHOLDER,
+            DELETE_NOTE,
             // READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,

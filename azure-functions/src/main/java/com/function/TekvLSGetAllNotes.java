@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
+import com.function.db.SelectQueryBuilder.ORDER_DIRECTION;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -101,6 +102,7 @@ public class TekvLSGetAllNotes {
 
         if (!status.isEmpty())
             queryBuilder.appendEqualsCondition("status", status, "note_status_type_enum");
+        queryBuilder.appendOrderBy("open_date", ORDER_DIRECTION.ASC);
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -130,15 +132,19 @@ public class TekvLSGetAllNotes {
             // Return a JSON array of notes
             JSONArray notes = new JSONArray();
 			String closeDate;
+			String closedBy;
             while (rs.next()) {
                 JSONObject item = new JSONObject();
                 item.put("id", rs.getString("id"));
                 item.put("subaccountId", rs.getString("subaccount_id"));
                 item.put("content", rs.getString("content"));
 				item.put("status", rs.getString("status"));
-				item.put("openDate", rs.getString("open_date").split(" ")[0]);
+				item.put("openDate", rs.getString("open_date"));
+				item.put("openedBy", rs.getString("opened_by").split(" ")[0]);
 				closeDate = rs.getString("close_date");
-				item.put("closeDate", closeDate != null ? closeDate.split(" ")[0] : JSONObject.NULL);
+				item.put("closeDate", closeDate != null ? closeDate.split(" ") : JSONObject.NULL);
+				closedBy = rs.getString("closed_by");
+				item.put("closedBy", closedBy != null ? closedBy : JSONObject.NULL);
                 notes.put(item);
             }
             context.getLogger().info("List total " + notes.length() + " notes");
