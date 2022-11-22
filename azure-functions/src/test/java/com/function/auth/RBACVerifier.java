@@ -160,6 +160,18 @@ public class RBACVerifier {
                 false,
                 false
         ));
+        verifiers.put(CREATE_NOTE, new ExpectedPermissions(
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
+                true,
+                false
+        ));
 
 
         verifiers.put(DELETE_ADMIN_EMAIL, new ExpectedPermissions(true,
@@ -302,6 +314,18 @@ public class RBACVerifier {
                 false,
                 false,
                 false,
+                false
+        ));
+        verifiers.put(DELETE_NOTE, new ExpectedPermissions(
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
+                true,
                 false
         ));
 

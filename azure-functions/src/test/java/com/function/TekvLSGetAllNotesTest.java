@@ -55,7 +55,9 @@ public class TekvLSGetAllNotesTest extends TekvLSTest {
         assertTrue(firstFound.has("content"));
         assertTrue(firstFound.has("status"));
         assertTrue(firstFound.has("openDate"));
+        assertTrue(firstFound.has("openedBy"));
         assertTrue(firstFound.has("closeDate"));
+        assertTrue(firstFound.has("closedBy"));
     }
 
     @Test
