@@ -1,4 +1,4 @@
-@CTaaSFeature @onBoardTest
+@CTaaSFeature @onBoardTest @feature-toggle
 Feature: Customers
   Background: Login successfully with valid credentials
     Given I am on the landing page
