@@ -136,7 +136,7 @@ jobs:
         - name: Run UI tests
           run: |
             cd tests/ui
-            gradle uiTests -Denv=production
+            gradle uiTests -Denv=production -D"cucumber.filter.tags=not @CTaaSFeature"
         
         - name: Publish Cucumber Report
           uses: deblockt/cucumber-report-annotations-action@v1.7
