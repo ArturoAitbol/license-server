@@ -29,7 +29,7 @@ Feature: Stakeholders
       | companyName   | stakeholderCompany      |
       | phoneNumber   | 6524352354              |
     Then I should see the message "Created Stakeholder successfully"
-    And I logout
+#    And I logout
 
   @loginStakeholder @login @onBoardTest
   Scenario: Stakeholder login
