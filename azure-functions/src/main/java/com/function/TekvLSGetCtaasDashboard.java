@@ -21,8 +21,8 @@ import static com.function.auth.Roles.*;
 
 public class TekvLSGetCtaasDashboard {
     /**
-     * This function listens at endpoint "/v1.0/ctaasDashboard?subaccountId={subaccountId}". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasDashboard?subaccountId={subaccountId}
+     * This function listens at endpoint "/v1.0/ctaasDashboard/subaccountId={subaccountId}/reportType={reportType}". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasDashboard/subaccountId={subaccountId}/reportType={reportType}
      * 2. curl "{your host}/v1.0/ctaasDashboard"
      */
     @FunctionName("TekvLSGetCtaasDashboard")
@@ -31,9 +31,10 @@ public class TekvLSGetCtaasDashboard {
                     name = "req",
                     methods = {HttpMethod.GET},
                     authLevel = AuthorizationLevel.ANONYMOUS,
-                    route = "ctaasDashboard/{subaccountId=EMPTY}")
+                    route = "ctaasDashboard/{subaccountId=EMPTY}/{reportType=EMPTY}")
             HttpRequestMessage<Optional<String>> request,
             @BindingName("subaccountId") String subaccountId,
+            @BindingName("reportType") String reportType,
             final ExecutionContext context) {
 
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
@@ -52,17 +53,25 @@ public class TekvLSGetCtaasDashboard {
         }
 
         context.getLogger().info("Entering TekvLSGetCtaasDashboard Azure function");
-
+        // Check if subaccount is empty
         if (subaccountId.equals("EMPTY") || subaccountId.isEmpty()) {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
+        // Check if reportType is empty
+        if (reportType.equals("EMPTY") || reportType.isEmpty()) {
+            context.getLogger().info("Report type cannot be empty");
+            JSONObject json = new JSONObject();
+            json.put("error", "Report type cannot be empty");
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+        }
 
 
         // Build SQL statement
-        SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_setup");
+        SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT c.name as customerName, s.name as subaccountName  FROM customer c LEFT JOIN subaccount s ON c.id = s.customer_id");
+        queryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
         SelectQueryBuilder verificationQueryBuilder = null;
         String email = getEmailFromToken(tokenClaims, context);
 
@@ -79,8 +88,6 @@ public class TekvLSGetCtaasDashboard {
                 verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
                 break;
         }
-
-        queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 
         if (verificationQueryBuilder != null) {
             if (currentRole.equals(SUBACCOUNT_ADMIN) || currentRole.equals(SUBACCOUNT_STAKEHOLDER))
@@ -116,23 +123,31 @@ public class TekvLSGetCtaasDashboard {
             // Retrieve SpotLight setup.
             context.getLogger().info("Execute SQL statement: " + selectStmt);
             rs = selectStmt.executeQuery();
-            // Return a JSON array of ctaas_setups
-            JSONObject item = null;
+            String customerName = null;
+            String subaccountName = null;
+
             if (rs.next()) {
-                item = new JSONObject();
-                item.put("powerBiWorkspaceId", rs.getString("powerbi_workspace_id"));
-                item.put("powerBiReportId", rs.getString("powerbi_report_id"));
+                customerName = rs.getString("customerName");
+                subaccountName = rs.getString("subaccountName");
+                context.getLogger().info("customer name - " + customerName + " - subaccount name - " + subaccountName);
             }
 
-            if (item == null) {
+            if ((customerName == null || customerName.isEmpty()) || (subaccountName == null || subaccountName.isEmpty())) {
                 context.getLogger().info(LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
                 json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
-            final String SAS_TOKEN = StorageBlobClient.generateSASToken(context);
-            if (SAS_TOKEN != null) {
-                json.put("token", SAS_TOKEN);
+            String base64Response = StorageBlobClient.getBlobAsBase64(context, customerName, subaccountName, reportType);
+            // Fetch last modified blob date
+            String lastModifiedDateStr = StorageBlobClient.getLastModifiedBlobDate();
+            if (base64Response == null) {
+                json.put("error", "Cannot found the image with " + reportType + " in the storage blob");
+            } else {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("lastUpdatedTS", lastModifiedDateStr);
+                jsonObject.put("imageBase64", base64Response);
+                json.put("response", jsonObject);
             }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (SQLException e) {

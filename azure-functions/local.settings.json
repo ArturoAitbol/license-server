@@ -3,7 +3,7 @@
   "Values": {
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "java",
-    "TENANT_ID":"e3a46007-31cb-4529-b8cc-1e59b97ebdbd",
+    "TENANT_ID": "e3a46007-31cb-4529-b8cc-1e59b97ebdbd",
     "ISSUER": "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/v2.0",
     "POSTGRESQL_SERVER": "localhost:5432",
     "POSTGRESQL_USER": "postgres",
@@ -12,9 +12,9 @@
     "ENVIRONMENT_NAME": "dev",
     "EMAIL_INVITE_CLIENT_ID": "353f505a-d4be-442f-bc22-c016c59132c9",
     "EMAIL_INVITE_CLIENT_SECRET": "atz8Q~ulS1qtMGUeOM-RLpjg7o-gTWrK5LLiVau5",
-    "POWER_BI_CLIENT_ID": "928c5e82-089b-4c3d-8080-29a4008bcccb",
-    "POWER_BI_CLIENT_SECRET": "72h8Q~eEuk1F6ZhZ6z1xmtGQd_-r94a3QuPMaday",
-    "STORAGE_BLOB_CONNECTION_STRING": "DefaultEndpointsProtocol=https;AccountName=lswebappstorage;AccountKey=HeEcLhLHlvxpDX8QP1HPwDkK+30tTUtpr34TxJqMEE88b6qbvyGUZsSU4MhJ+Ll0UOdMbT/bZbSZn9o7LmI3tA==;EndpointSuffix=core.windows.net",
+    "DASHBOARD_APP_CLIENT_ID": "928c5e82-089b-4c3d-8080-29a4008bcccb",
+    "DASHBOARD_APP_SECRET_ID": "72h8Q~eEuk1F6ZhZ6z1xmtGQd_-r94a3QuPMaday",
+    "STORAGE_ACCOUNT_NAME": "lswebappstorage",
     "STORAGE_CONTAINER_NAME": "spotlight"
   },
   "Host": {
