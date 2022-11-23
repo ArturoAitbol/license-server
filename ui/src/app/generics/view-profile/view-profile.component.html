@@ -41,35 +41,6 @@
                         <input matInput required formControlName="phoneNumber">
                     </mat-form-field>
                 </div>
-                <!-- type -->
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Select Type</mat-label>
-                        <mat-select formControlName="type" id="type">
-                            <mat-option value="TYPE:High level"> High level </mat-option>
-                            <mat-option value="TYPE:Detailed"> Detailed </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <!-- notifications -->
-                <div>
-                    <ul>
-                        <div class="row" *ngFor="let item of reports;let i=index;">
-                            <div class="col-10 text-left">
-                                <label for="notification_{{i}}">
-                                    {{item.label}}
-                                </label>
-                            </div>
-                            <div class="col-2 text-right">
-                                <mat-checkbox id="notification_checkbox_{{i}}"
-                                    [checked]="selectedNotifications.isSelected(item)" [color]="'primary'"
-                                    (click)="setNotifications(item,$event)">
-                                </mat-checkbox>
-                            </div>
-                        </div>
-                    </ul>
-                </div>
-
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
