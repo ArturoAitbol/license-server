@@ -1,27 +1,16 @@
-import {Component, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {OnboardWizardComponent} from '../onboard-wizard/onboard-wizard.component';
-import {MsalService} from '@azure/msal-angular';
-import {CtaasSetupService} from 'src/app/services/ctaas-setup.service';
-import {ICtaasSetup} from 'src/app/model/ctaas-setup.model';
-import {IReportEmbedConfiguration, models, service} from 'powerbi-client';
-import {CtaasDashboardService} from 'src/app/services/ctaas-dashboard.service';
-import {SnackBarService} from 'src/app/services/snack-bar.service';
-import {SubAccountService} from 'src/app/services/sub-account.service';
-
-// Handles the embed config response for embedding
-export interface ConfigResponse {
-    Id: string;
-    EmbedUrl: string;
-    EmbedToken: {
-        Token: string;
-    };
-}
-
-export interface IPowerBiReponse {
-    embedUrl: string;
-    embedToken: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.component';
+import { MsalService } from '@azure/msal-angular';
+import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
+import { ICtaasSetup } from 'src/app/model/ctaas-setup.model';
+import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
+import { ReportType } from 'src/app/helpers/report-type';
+import { forkJoin, interval, Observable, Subscription } from 'rxjs';
+import { Constants } from 'src/app/helpers/constants';
+import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -37,44 +26,11 @@ export class CtaasDashboardComponent implements OnInit {
     subaccountId = '';
     hasDashboardDetails = false;
     isLoadingResults = false;
-    // CSS Class to be passed to the wrapper
-    // Hide the report container initially
-    reportClass = 'report-container-hidden';
-
-    // Flag which specify the type of embedding
-    phasedEmbeddingFlag = false;
-    reportConfig: IReportEmbedConfiguration;
-    /**
-     * Map of event handlers to be applied to the embedded report
-     */
-        // Update event handlers for the report by redefining the map using this.eventHandlersMap
-        // Set event handler to null if event needs to be removed
-        // More events can be provided from here
-        // https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/handle-events#report-events
-    eventHandlersMap = new Map<string, (event?: service.ICustomEvent<any>) => void>([
-        ['loaded', () => console.log('Report has loaded')],
-        [
-            'rendered',
-            () => {
-                console.log('Report has rendered');
-            },
-        ],
-        [
-            'error',
-            (event?: service.ICustomEvent<any>) => {
-                if (event) {
-                    console.error(event.detail);
-                    const {detail: {message, errorCode}} = event;
-                    if (message && errorCode && message === 'TokenExpired' && errorCode === '403') {
-                        this.fetchCtaasDashboardDetailsBySubaccount();
-                    }
-                }
-            },
-        ],
-        ['visualClicked', () => console.log('visual clicked')],
-        ['pageChanged', (event) => console.log(event)],
-    ]);
-
+    imagesList: string[] = [];
+    refreshIntervalSubscription: Subscription;
+    lastModifiedDate: string;
+    fontStyleControl = new FormControl('');
+    fontStyle?: string;
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
@@ -92,14 +48,26 @@ export class CtaasDashboardComponent implements OnInit {
     private getAccountDetails(): any | null {
         return this.msalService.instance.getActiveAccount() || null;
     }
-
     ngOnInit(): void {
+        this.fontStyleControl.setValue('daily');
         this.isOnboardingComplete = false;
         this.fetchCtaasSetupDetails();
         const accountDetails = this.getAccountDetails();
-        const {idTokenClaims: {roles}} = accountDetails;
+        const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
-        this.fetchCtaasDashboardDetailsBySubaccount();
+        this.fetchCtaasDashboardDetailsBySubaccount(this.fontStyleControl.value);
+        // fetch dashboard report for every 15 minutes interval
+        this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
+            .subscribe(() => {
+                this.fetchCtaasDashboardDetailsBySubaccount(this.fontStyleControl.value);
+            });
+    }
+    /**
+     * on change button group
+     */
+    onChangeButtonGroup(): void {
+        this.isLoadingResults = true;
+        this.fetchCtaasDashboardDetailsBySubaccount(this.fontStyleControl.value);
     }
 
     /**
@@ -107,12 +75,12 @@ export class CtaasDashboardComponent implements OnInit {
      */
     fetchCtaasSetupDetails(): void {
         const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-        const {id, subaccountId} = currentSubaccountDetails;
+        const { id, subaccountId } = currentSubaccountDetails;
         this.subaccountId = subaccountId ? subaccountId : id;
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountId)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
-                const {onBoardingComplete, status} = this.ctaasSetupDetails;
+                const { onBoardingComplete, status } = this.ctaasSetupDetails;
                 this.isOnboardingComplete = onBoardingComplete;
                 this.onboardSetupStatus = status;
                 this.setupCustomerOnboardDetails();
@@ -126,7 +94,7 @@ export class CtaasDashboardComponent implements OnInit {
         const index = this.loggedInUserRoles.findIndex(e => e.includes('customer.SubaccountAdmin'));
         // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
         if ((!this.isOnboardingComplete && index !== -1)) {
-            const {id} = this.ctaasSetupDetails;
+            const { id } = this.ctaasSetupDetails;
             this.dialog.open(OnboardWizardComponent, {
                 width: '700px',
                 maxHeight: '80vh',
@@ -139,30 +107,28 @@ export class CtaasDashboardComponent implements OnInit {
     /**
      * fetch SpotLight Power BI dashboard required details
      */
-    fetchCtaasDashboardDetailsBySubaccount(): void {
+    fetchCtaasDashboardDetailsBySubaccount(reportType: string): void {
         this.isLoadingResults = true;
-        this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId).subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
-            this.isLoadingResults = false;
-            const {powerBiInfo} = response;
-            if (powerBiInfo) {
-                const {embedUrl, embedToken} = powerBiInfo;
-                this.reportConfig = {
-                    type: 'report',
-                    embedUrl,
-                    tokenType: models.TokenType.Embed,
-                    accessToken: embedToken,
-                    settings: {
-                        filterPaneEnabled: false,
-                        navContentPaneEnabled: true,
-                        layoutType: models.LayoutType.Custom,
-                        customLayout: {
-                            displayOption: models.DisplayOption.FitToPage
-                        }
-                    }
-                };
-                this.hasDashboardDetails = true;
-            } else {
-                this.hasDashboardDetails = false;
+        const requests: Observable<any>[] = [];
+        for (const key in ReportType) {
+            const reportType: string = ReportType[key];
+            if (reportType.toLowerCase().includes(reportType))
+                // push all the request to an array
+                requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId, reportType));
+        }
+        forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
+            if (res) {
+                const result = [...res]
+                    .filter((e: any) => !e.error)
+                    .map((e: { response: { lastUpdatedTS: string, imageBase64: string } }) => e.response);
+                this.imagesList = result.map(e => e.imageBase64);
+                const length = this.imagesList.length - 1;
+                this.lastModifiedDate = result[length].lastUpdatedTS;
+                this.isLoadingResults = false;
+                if (this.imagesList.length > 0)
+                    this.hasDashboardDetails = true;
+                else
+                    this.hasDashboardDetails = false;
             }
         }, (err) => {
             this.hasDashboardDetails = false;
