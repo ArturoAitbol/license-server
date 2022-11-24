@@ -64,8 +64,6 @@ export class CtaasStakeholderComponent implements OnInit {
       { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
       { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
       { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
-      { name: 'Type', dataKey: 'type', position: 'left', isSortable: true },
-      { name: 'Notifications', dataKey: 'notifications', position: 'left', isSortable: false }
     ];
   }
   /**

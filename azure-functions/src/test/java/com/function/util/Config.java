@@ -25,10 +25,14 @@ public class Config {
     private static final String environmentName = "environment_name";
     private static final String emailInviteClientId = "email_invite_client_id";
     private static final String emailInviteClientSecret = "email_invite_client_secret";
-    private static final String powerBiClientId = "power_bi_client_id";
-    private static final String powerBiClientSecret = "power_bi_client_secret";
+    private static final String dashboardAppClientId = "dashboard_app_client_id";
+    private static final String dashboardAppClientSecret = "dashboard_app_client_secret";
     private static final String tenantId = "tenant_id";
-//    private static final Logger LOGGER = LogManager.getLogger();
+    private static final String storageAccountName="storage_account_name";
+
+    private static final String storageContainerName="storage_container_name";
+
+    //    private static final Logger LOGGER = LogManager.getLogger();
     public static Logger logger = Logger.getLogger(Config.class.getName());
 
     private static final Config instance = new Config();
@@ -74,7 +78,7 @@ public class Config {
     public String getPassword() {
         return getConfig(postgresqlPwd);
     }
-    
+
     public String getSecurityMode() {
         return getConfig(postgresqlSecurityMode);
     }
@@ -86,11 +90,14 @@ public class Config {
 
     public String getEmailInviteClientSecret() { return getConfig(emailInviteClientSecret);}
 
-    public String getPowerBiClientId() { return getConfig(powerBiClientId);}
+    public String getDashboardAppClientId() { return getConfig(dashboardAppClientId);}
 
-    public String getPowerBiClientSecret() { return getConfig(powerBiClientSecret);}
+    public String getDashboardAppClientSecret() { return getConfig(dashboardAppClientSecret);}
 
     public String getTenantId() { return getConfig(tenantId);}
+
+    public String getStorageAccountName(){ return getConfig(storageAccountName);}
+    public String getStorageContainerName(){ return getConfig(storageContainerName);}
 
 
     public String getToken(String role) {

@@ -75,11 +75,11 @@ export class AppComponent implements OnInit, OnDestroy {
         ],
         main: [
             {
-                name: 'Dashboard',
+                name: 'Home',
                 iconName: "assets\\images\\dashboard_3.png",
                 path: 'dashboard',
                 active: true,
-                materialIcon: 'dashboard',
+                materialIcon: 'home',
                 baseUrl: '/'
             },
             {
@@ -207,9 +207,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        // example for a feature toggle in typescript logic code
-        if (FeatureToggleHelper.isFeatureEnabled("testFeature1", this.msalService))
-            console.log("Feature toggle 'testFeature1' enabled");
         if (!this.isLoggedIn()) {
             this.router.navigate(['/login']);
         } else {

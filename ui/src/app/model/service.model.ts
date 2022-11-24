@@ -6,5 +6,5 @@ export interface IService {
     routePath: string;
     imagePath: string;
     tabName: string;
-    featureName: string;
+    featureName?: string;
 }

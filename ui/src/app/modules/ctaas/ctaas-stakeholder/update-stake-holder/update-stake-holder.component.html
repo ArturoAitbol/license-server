@@ -36,25 +36,6 @@
                         <input required matInput value="" formControlName="phoneNumber" id="phoneNumber" placeholder="ex: +919898989809">
                     </mat-form-field>
                 </div>
-                <h2 style="text-align: left;">Report preferences</h2>
-                <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Select Type</mat-label>
-                        <mat-select formControlName="type" id="type">
-                            <mat-option value="High level"> High level </mat-option>
-                            <mat-option value="Detailed"> Detailed</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div formArrayName="notifications"
-                    *ngFor="let item of updateStakeholderForm.get('notifications')['controls']; let i = index">
-                    <div class="list-container">
-                        <span class="item">
-                            {{reports[i]['label']}}
-                        </span>
-                        <mat-checkbox color="primary" [formControlName]="i"> </mat-checkbox>
-                    </div>
-                </div>
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>

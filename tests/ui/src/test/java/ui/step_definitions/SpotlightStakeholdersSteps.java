@@ -41,8 +41,7 @@ public class SpotlightStakeholdersSteps {
         String companyName = stakeholder.get("companyName");
         String subaccountAdminEmail = environment.stakeholderUser();
         String phoneNumber = stakeholder.get("phoneNumber");
-        String type = stakeholder.get("type");
-        this.stakeholders = stakeholderForm.addStakeholder(name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type);
+        this.stakeholders = stakeholderForm.addStakeholder(name, jobTitle, companyName, subaccountAdminEmail, phoneNumber);
         this.actualMessage = this.stakeholders.getMessage();
         System.out.println("Message: " + this.actualMessage);
         DriverManager.getInstance().setMessage(this.actualMessage);
@@ -65,8 +64,7 @@ public class SpotlightStakeholdersSteps {
         String jobTitle = stakeholder.get("jobTitle");
         String companyName = stakeholder.get("companyName");
         String phoneNumber = stakeholder.get("phoneNumber");
-        String type = stakeholder.get("type");
-        this.stakeholders = stakeholderForm.editStakeholder(name, jobTitle, companyName, phoneNumber, type);
+        this.stakeholders = stakeholderForm.editStakeholder(name, jobTitle, companyName, phoneNumber);
         this.actualMessage = this.stakeholders.getMessage();
         this.stakeholders.waitData();
         DriverManager.getInstance().setMessage(this.actualMessage);

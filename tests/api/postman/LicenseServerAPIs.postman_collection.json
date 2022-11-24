@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "632babdd-c8d9-42e3-89c5-ef80af5d4c87",
+		"_postman_id": "03392b88-9f10-4c5d-b523-d6d378ba8d6c",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "8463466"
@@ -442,6 +442,47 @@
 			"response": []
 		},
 		{
+			"name": "notes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"noteId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"content\": \"note content Test\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/notes",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "projects",
 			"event": [
 				{
@@ -835,7 +876,6 @@
 					}
 				}
 			],
-
 			"request": {
 				"method": "PUT",
 				"header": [],
@@ -874,14 +914,13 @@
 					}
 				}
 			],
-
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n    \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
-						"options": {
+					"options": {
 						"raw": {
 							"language": "json"
 						}
@@ -913,14 +952,13 @@
 					}
 				}
 			],
-
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"status test\",\r\n     \"onBoardingComplete\": \"false\"\r\n}",
-						"options": {
+					"options": {
 						"raw": {
 							"language": "json"
 						}
@@ -1165,6 +1203,43 @@
 					],
 					"path": [
 						"licenseUsageDetails"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "notes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"notes\");\r",
+							"    pm.expect(pm.response.json().notes).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/notes?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"notes"
 					],
 					"query": [
 						{
@@ -1605,6 +1680,24 @@
 			"response": []
 		},
 		{
+			"name": "notes",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/notes/{{noteId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"notes",
+						"{{noteId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "projects",
 			"event": [
 				{
@@ -1812,6 +1905,185 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"featureToggleId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");\r",
+							"\r",
+							"const clientId = pm.variables.get(\"CLIENTID_FULLADMIN\");\r",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_FULLADMIN\");\r",
+							"const grantType = pm.variables.get(\"grant_type\");\r",
+							"const scope = pm.variables.get(\"SCOPE\");\r",
+							"\r",
+							"const getTokenRequest = {\r",
+							"  method: 'POST',\r",
+							"  url: tokenUrl,\r",
+							"  body: {\r",
+							"      mode: 'formdata',\r",
+							"      formdata: [\r",
+							"          { key: 'client_id', value: clientId },\r",
+							"          { key: 'client_secret', value: clientSecret },\r",
+							"          { key: 'grant_type', value: grantType },\r",
+							"          { key: 'scope', value: scope}\r",
+							"      ]\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
+							"  pm.collectionVariables.set('access_token', response.json().access_token);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"var currentDateTime = new Date().getTime();\r",
+							"pm.collectionVariables.set('name', 'CICDTest'+currentDateTime);\r",
+							"pm.collectionVariables.set('todayDate', currentDateTime);\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\" : \"On\",\r\n    \"name\" : \"Test FT{{todayDate}}\",\r\n    \"customerName\" : \"(optional)\",\r\n    \"author\" : \"(optional)Test User\",\r\n    \"description\" : \"(optional)This is test data for the FT api\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/featureToggles",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"featureToggles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}Modified\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/featureToggles/{{featureToggleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"featureToggles",
+						"{{featureToggleId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"featureToggles\");\r",
+							"    pm.expect(pm.response.json().featureToggles).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/featureToggles",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"featureToggles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/featureToggles/{{featureToggleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"featureToggles",
+						"{{featureToggleId}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
@@ -1874,6 +2146,11 @@
 			"value": ""
 		},
 		{
+			"key": "noteId",
+			"value": "",
+			"type": "string"
+		},
+		{
 			"key": "licenseId",
 			"value": ""
 		},
@@ -1917,6 +2194,15 @@
 			"key": "access_token_DA",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "featureToggleId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "todayDate",
+			"value": ""
 		}
 	]
 }

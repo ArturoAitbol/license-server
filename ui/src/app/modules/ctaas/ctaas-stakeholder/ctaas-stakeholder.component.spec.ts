@@ -101,7 +101,6 @@ describe('UI verification test', () => {
         expect(headers[2].innerText).toBe('Job Title');
         expect(headers[3].innerText).toBe('Email');
         expect(headers[4].innerText).toBe('Phone Number');
-        expect(headers[5].innerText).toBe('Type');
     });
 
     it('should execute sortData()', () => {

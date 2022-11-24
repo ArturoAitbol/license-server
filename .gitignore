@@ -17,6 +17,7 @@ azure-functions/logs/logger.*
 # Ignore test reports
 ui/coverage
 coverage/*
+*/coverage/
 azure-functions/coverage/*
 ui/fe-coverage/*
 ui/test-results
