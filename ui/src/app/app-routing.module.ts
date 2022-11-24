@@ -25,8 +25,6 @@ const routes: Routes = [
   { path: 'no-permissions', component: NoPermissionsPageComponent, canActivate: [MsalGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   { path: 'subscriptions-overview', component: SubscriptionsOverviewComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
-  // example for a path not added in the feature toggle definition
-  { path: 'testFeature1', component: NoPermissionsPageComponent, canActivate: [MsalGuard, FeatureToggleGuard] },
   { path: 'apps', component: MyAppsComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   { path: 'redirect', component: RedirectPageComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   {

@@ -63,14 +63,6 @@ export class RedirectPageComponent implements OnInit {
           const { services } = e['subaccounts'][0];
           if (services) {
             e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
-          } else if (this.isAllServicesFeatureEnabled() && this.loggedInUserRoles.length > 0) {
-            // check if logged in user is stakeholder
-            // hard-coded this values for dev
-            // future we're going to remove this
-            if (this.loggedInUserRoles.includes("customer.SubaccountStakeholder")) {
-              e['subaccounts'][0]['services'] = [tekVizionServices.SpotLight];
-            } else
-              e['subaccounts'][0]['services'] = [tekVizionServices.SpotLight, tekVizionServices.tekTokenConstumption];
           } else {
             e['subaccounts'][0]['services'] = [];
           }
@@ -151,9 +143,4 @@ export class RedirectPageComponent implements OnInit {
       this.navigateToDashboard();
     }
   }
-  /**
-   * check whether Enable_All_Service_Feature toggle feature is enabled or not
-   * @returns: boolean 
-   */
-  isAllServicesFeatureEnabled(): boolean { return FeatureToggleHelper.isFeatureEnabled(Features.Enable_All_Service_Feature, this.msalService); }
 }
