@@ -1,7 +1,6 @@
 <div>
   <div>
-    <app-banner [stylesflag]="'dashboard'"
-    *lcCheckAccessFor="'showBanner'">
+    <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'">
     </app-banner>
     <div class="container-fluid controls" id="reportContainer">
       <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
@@ -19,12 +18,20 @@
       </div>
     </ng-template>
 
-    <!-- power bi report view -->
+    <!-- pbrs report images view -->
     <div>
       <ng-template #reportView>
-        <powerbi-report [embedConfig]="reportConfig" [cssClassName]="reportClass"
-          [phasedEmbedding]="phasedEmbeddingFlag" [eventHandlers]="eventHandlersMap">
-        </powerbi-report>
+        <div class="container-fluid controls" id="reportContainer">
+          <br>
+          <section>
+            <div class="row">
+              <div class="col-6 p-1 bg-light" *ngFor="let item of imagesList;let i=index;">
+                <img [src]="item" class="img-fluid" [id]="i">
+                <br>
+              </div>
+            </div>
+          </section>
+        </div>
       </ng-template>
     </div>
   </div>

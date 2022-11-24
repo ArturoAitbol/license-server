@@ -40,14 +40,17 @@ public class TekvLSTest {
             "POSTGRESQL_USER", Config.getInstance().getUser(),
             "POSTGRESQL_PWD", Config.getInstance().getPassword(),
             "POSTGRESQL_SECURITY_MODE", Config.getInstance().getSecurityMode(),
-            "ENVIRONMENT_NAME",Config.getInstance().getEnvironmentName(),
-            "TENANT_ID",Config.getInstance().getTenantId(),
-            "EMAIL_INVITE_CLIENT_ID",Config.getInstance().getEmailInviteClientId(),
-            "EMAIL_INVITE_CLIENT_SECRET",Config.getInstance().getEmailInviteClientSecret(),
-            "POWER_BI_CLIENT_ID",Config.getInstance().getPowerBiClientId(),
-            "POWER_BI_CLIENT_SECRET",Config.getInstance().getPowerBiClientSecret());
+            "ENVIRONMENT_NAME", Config.getInstance().getEnvironmentName(),
+            "TENANT_ID", Config.getInstance().getTenantId(),
+            "EMAIL_INVITE_CLIENT_ID", Config.getInstance().getEmailInviteClientId(),
+            "EMAIL_INVITE_CLIENT_SECRET", Config.getInstance().getEmailInviteClientSecret(),
+            "DASHBOARD_APP_CLIENT_ID", Config.getInstance().getDashboardAppClientId(),
+            "DASHBOARD_APP_SECRET_ID", Config.getInstance().getDashboardAppClientSecret(),
+            "STORAGE_ACCOUNT_NAME", Config.getInstance().getStorageAccountName(),
+            "STORAGE_CONTAINER_NAME", Config.getInstance().getStorageContainerName()
+    );
 
-    public void initTestParameters(){
+    public void initTestParameters() {
         doReturn(this.headers).when(request).getHeaders();
         doReturn(this.queryParams).when(request).getQueryParameters();
         doAnswer(new Answer<HttpResponseMessage.Builder>() {
