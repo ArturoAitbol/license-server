@@ -6,7 +6,6 @@
       "consumption": true,
       "projects": true,
       "licenses": true,
-      "testFeature1": true,
       "redirect": true,
       "apps": true,
       "spotlight": true,
@@ -17,10 +16,7 @@
       "subscriptions-overview": true
     },
     "features": {
-      "testFeature1": true,
-      "testFeature2": false,
       "ctaasFeature": true,
-      "enableAllServiceFeature": true,
       "notificationFeature": false
     }
   },
@@ -31,7 +27,6 @@
       "consumption": true,
       "projects": true,
       "licenses": true,
-      "testFeature1": true,
       "redirect": true,
       "apps": true,
       "spotlight": true,
@@ -42,9 +37,7 @@
       "subscriptions-overview": true
     },
     "features": {
-      "testFeature1": true,
       "ctaasFeature": true,
-      "enableAllServiceFeature": false,
       "notificationFeature": false
     }
   },
@@ -55,7 +48,6 @@
       "consumption": true,
       "projects": true,
       "licenses": true,
-      "testFeature1": false,
       "redirect": true,
       "apps": true,
       "spotlight": true,
@@ -66,9 +58,7 @@
       "subscriptions-overview": true
     },
     "features": {
-      "testFeature1": false,
       "ctaasFeature": true,
-      "enableAllServiceFeature": false,
       "notificationFeature": false
     }
   }
