@@ -26,6 +26,7 @@ export class CtaasStakeholderComponent implements OnInit {
   actionMenuOptions: any = [];
   isLoadingResults = false;
   isRequestCompleted = false;
+  stakeholdersCount: number; 
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
@@ -84,6 +85,7 @@ export class CtaasStakeholderComponent implements OnInit {
       .pipe(
         map((e: { stakeHolders: IStakeholder[] }) => {
           const { stakeHolders } = e;
+          this.stakeholdersCount = e.stakeHolders.length;
           try {
             stakeHolders.forEach((x: IStakeholder) => {
               if (x.notifications) {
@@ -151,7 +153,11 @@ export class CtaasStakeholderComponent implements OnInit {
    * open add stake holder component in dialog
    */
   addStakeholder(): void {
-    this.openDialog(this.ADD_STAKEHOLDER);
+    if(this.stakeholdersCount <= 10){
+      this.openDialog(this.ADD_STAKEHOLDER);
+    } else {
+      this.snackBarService.openSnackBar('The maximum amount of stakeholders was exceeded', '');
+    }
   }
   /**
    * open dialog

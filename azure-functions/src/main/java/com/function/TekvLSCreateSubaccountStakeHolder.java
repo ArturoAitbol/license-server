@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.function.auth.Resource;
@@ -83,62 +85,104 @@ public class TekvLSCreateSubaccountStakeHolder {
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 		}
+
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM subaccount_admin");
+		queryBuilder.appendEqualsCondition("subaccount_id", jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value), QueryBuilder.DATA_TYPE.UUID);
+		String authEmail = getEmailFromToken(tokenClaims, context);
 		
 		String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid) RETURNING subaccount_admin_email;";
 		if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
 			sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id, notifications) VALUES (?, ?::uuid, ?) RETURNING subaccount_admin_email;";
 		}
+
+		queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id FROM subaccount s, customer_admin ca " +
+                "WHERE s.customer_id = ca.customer_id AND admin_email = ?)", authEmail);
 		
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 		+ "&user=" + System.getenv("POSTGRESQL_USER")
 		+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		
+
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-		     PreparedStatement statement = connection.prepareStatement(sql)) {
-		
-		    context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-		
-		    // Set statement parameters
-		    statement.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
-		    statement.setString(2, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
-		    if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
-		    	statement.setString(3, jobj.getString(OPTIONAL_PARAMS.NOTIFICATIONS.value));
-		    }
-		
-		    String userId = getUserIdFromToken(tokenClaims,context);
-		    context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
-		    ResultSet rs = statement.executeQuery();
-		    context.getLogger().info("Subaccount Admin email (stakeHolder) inserted successfully.");
-		    rs.next();
-			JSONObject json = new JSONObject();
-			json.put("subaccountAdminEmail", rs.getString("subaccount_admin_email"));
-			
-		    if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
-		    	try {
-		    		context.getLogger().info("Adding user to Azure AD : "+jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
-		    		GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context);
-		    		context.getLogger().info("Updating user profile at Azure AD : "+jobj);
-		    		GraphAPIClient.updateUserProfile(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), jobj.getString(MANDATORY_PARAMS.NAME.value), 
-		    				jobj.getString(MANDATORY_PARAMS.JOB_TITLE.value), jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value), jobj.getString(MANDATORY_PARAMS.PHONE_NUMBER.value), context);
-		    		context.getLogger().info("Updated user profile at Azure AD : "+jobj);
-		    	}catch(Exception e) {
-		    		context.getLogger().info("Failed to add user at azure AD.  Exception: " + e.getMessage());
-		    	}
-		    }
-		    return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+		     PreparedStatement statement = connection.prepareStatement(sql);
+			 PreparedStatement subaccountStakeholders = queryBuilder.build(connection);) {
+				ResultSet stakeholderset;
+				stakeholderset = subaccountStakeholders.executeQuery();
+				JSONArray array = new JSONArray();
+				while (stakeholderset.next()){
+					JSONObject item = new JSONObject();
+					item.put("email", stakeholderset.getString("subaccount_admin_email"));
+					array.put(item);
+				}
+				int actualStakholdersCount = countStakeholders(array, context);
+			if(actualStakholdersCount <= 10) {
+				context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+				// Set statement parameters
+				statement.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+				statement.setString(2, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+				if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
+					statement.setString(3, jobj.getString(OPTIONAL_PARAMS.NOTIFICATIONS.value));
+				}
+
+				String userId = getUserIdFromToken(tokenClaims, context);
+				context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
+				ResultSet rs = statement.executeQuery();
+				context.getLogger().info("Subaccount Admin email (stakeHolder) inserted successfully.");
+				rs.next();
+				JSONObject json = new JSONObject();
+				json.put("subaccountAdminEmail", rs.getString("subaccount_admin_email"));
+
+				if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+					try {
+						context.getLogger().info("Adding user to Azure AD : " + jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+						GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context);
+						context.getLogger().info("Updating user profile at Azure AD : " + jobj);
+						GraphAPIClient.updateUserProfile(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), jobj.getString(MANDATORY_PARAMS.NAME.value),
+								jobj.getString(MANDATORY_PARAMS.JOB_TITLE.value), jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value), jobj.getString(MANDATORY_PARAMS.PHONE_NUMBER.value), context);
+						context.getLogger().info("Updated user profile at Azure AD : " + jobj);
+					} catch (Exception e) {
+						context.getLogger().info("Failed to add user at azure AD.  Exception: " + e.getMessage());
+					}
+				}
+				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			} else {
+				context.getLogger().info("The amount of stakeholders created was exceeded");
+				JSONObject json = new JSONObject();
+				json.put("error", "The amount of stakeholders created was exceeded");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 		} catch (SQLException e) {
-		    context.getLogger().info("SQL exception: " + e.getMessage());
-		    JSONObject json = new JSONObject();
-		    json.put("error", e.getMessage());
-		    return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+			context.getLogger().info("SQL exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		} catch (Exception e) {
-		    context.getLogger().info("Caught exception: " + e.getMessage());
-		    JSONObject json = new JSONObject();
-		    json.put("error", e.getMessage());
-		    return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+			context.getLogger().info("Caught exception: " + e.getMessage());
+			JSONObject json = new JSONObject();
+			json.put("error", e.getMessage());
+			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
+
 	}
 	
+	private int countStakeholders(JSONArray array, ExecutionContext context){
+		int stakeholdersCount = 0; 
+		JSONObject json = null;
+		JSONObject subaccountProfile = null;
+		for(Object obj: array) {
+			json = (JSONObject) obj;
+			try {
+				subaccountProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"), context);
+				String subaccountRole = subaccountProfile.getString("role");
+				if(subaccountRole.equals(SUBACCOUNT_STAKEHOLDER)){
+					stakeholdersCount = stakeholdersCount + 1;
+				}
+			} catch (Exception e) {
+				context.getLogger().info("Caught exception: " + e.getMessage());
+			}
+		}
+		return stakeholdersCount;
+	}
+
 	private enum MANDATORY_PARAMS {
 		SUBACCOUNT_ID("subaccountId"),
 		SUBACCOUNT_ADMIN_EMAIL("subaccountAdminEmail"),
