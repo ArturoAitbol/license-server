@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class CtaasDashboardService {
   private readonly API_URL: string = environment.apiEndpoint + '/ctaasDashboard';
-  private readonly FETCH_DASHBOARD_URL: string = this.API_URL + '/{subaccountId}';
+  private readonly FETCH_DASHBOARD_URL: string = this.API_URL + '/{subaccountId}/{reportType}';
   constructor(private httpClient: HttpClient) { }
   /**
    * fetch SpotLight Power BI reports

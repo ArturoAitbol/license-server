@@ -37,9 +37,8 @@ export class CtaasDashboardComponent implements OnInit {
         private ctaasSetupService: CtaasSetupService,
         private ctaasDashboardService: CtaasDashboardService,
         private subaccountService: SubAccountService,
-        private snackBarService: SnackBarService
-    ) {
-    }
+        private snackBarService: SnackBarService,
+    ) { }
 
     /**
      * get logged in account details
@@ -105,7 +104,7 @@ export class CtaasDashboardComponent implements OnInit {
     }
 
     /**
-     * fetch SpotLight Power BI dashboard required details
+     * fetch PBRS images SpotLight dashboard required details
      */
     fetchCtaasDashboardDetailsBySubaccount(reportType: string): void {
         this.isLoadingResults = true;
@@ -130,12 +129,16 @@ export class CtaasDashboardComponent implements OnInit {
                 else
                     this.hasDashboardDetails = false;
             }
-        }, (err) => {
+        }, (e) => {
             this.hasDashboardDetails = false;
             this.isLoadingResults = false;
-            console.error('Error | ', err);
+            console.error('Error loading dashboard reports - ', e.error);
             this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
         });
     }
 
+    ngOnDestory(): void {
+        if (this.refreshIntervalSubscription)
+            this.refreshIntervalSubscription.unsubscribe();
+    }
 }

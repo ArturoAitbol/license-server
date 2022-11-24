@@ -17,6 +17,7 @@ Feature: CtaasSetup
       | spotlight     | yes                                   |
       | testCustomer  | yes                                   |
     Then I see the customer "spotlightCustomerTest" in the table
+    #Then I see the customer "spotlightCustomerTest" in the table
 
   @addLicense
   Scenario: Add Basic license
