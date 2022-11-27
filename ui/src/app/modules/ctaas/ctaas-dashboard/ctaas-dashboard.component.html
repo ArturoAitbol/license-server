@@ -25,22 +25,22 @@
           <br>
           <div class="flex-container">
             <div>
-              <mat-button-toggle-group [formControl]="fontStyleControl" name="fontStyle" aria-label="Font Style"
-                (change)="onChangeButtonGroup()">
-                <mat-button-toggle value="daily">Daily</mat-button-toggle>
-                <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
-              </mat-button-toggle-group>
             </div>
-            <div class="right">
+            <div class="right" *ngIf="lastModifiedDate">
               Last Updated: {{lastModifiedDate}}
             </div>
           </div>
           <br>
           <section>
-            <div class="row">
-              <div class="col-6 p-2 bg-light" *ngFor="let item of imagesList;let i=index;">
-                <img [src]="item" class="img-fluid" [id]="i">
-                <br>
+            <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
+              <h1 class="display-4 report-title banner-container">
+                {{item.reportType | titlecase}} Report
+              </h1>
+              <div [ngClass]="{'col-4':item.reportType===DAILY,'col-6':item.reportType===WEEKLY}" class="p-1 mb-1"
+                *ngFor="let url of item.imagesList;let i1=index;">
+                <mat-card style="border-radius: 5px">
+                  <img [src]="url" class="img-fluid header-image" [id]="i">
+                </mat-card>
               </div>
             </div>
           </section>

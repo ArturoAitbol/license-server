@@ -129,3 +129,15 @@ button:hover {
   font-size: 12px;
   font-weight: 500;
 }
+
+.header-image {
+  background-size: cover;
+}
+.report-title {
+  display: inline-block;
+  color: #203c66;
+  font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
+  letter-spacing: normal;
+  padding: 6px 6px 6px 12px;
+  text-align: left !important;
+}

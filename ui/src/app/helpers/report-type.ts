@@ -1,7 +1,7 @@
 export enum ReportType {
-    DailyFeatureFunctionality = 'Daily-FeatureFunctionality',
-    DailyCallingReliability = 'Daily-CallingReliability',
-    DailyPESQ = 'Daily-PESQ',
-    WeeklyFeatureFunctionality = 'Weekly-FeatureFunctionality',
-    WeeklyPESQ = 'Weekly-PESQ'
+    DAILY_FEATURE_FUNCTIONALITY = 'Daily-FeatureFunctionality',
+    DAILY_CALLING_REALIABILITY = 'Daily-CallingReliability',
+    DAILY_PESQ = 'Daily-PESQ',
+    WEEKLY_FEATURE_FUNCTIONALITY = 'Weekly-FeatureFunctionality',
+    WEEKLY_PESQ = 'Weekly-PESQ'
 }
