@@ -88,15 +88,11 @@ public class TekvLSCreateSubaccountStakeHolder {
 
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM subaccount_admin");
 		queryBuilder.appendEqualsCondition("subaccount_id", jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value), QueryBuilder.DATA_TYPE.UUID);
-		String authEmail = getEmailFromToken(tokenClaims, context);
 		
 		String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid) RETURNING subaccount_admin_email;";
 		if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
 			sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id, notifications) VALUES (?, ?::uuid, ?) RETURNING subaccount_admin_email;";
 		}
-
-		queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id FROM subaccount s, customer_admin ca " +
-                "WHERE s.customer_id = ca.customer_id AND admin_email = ?)", authEmail);
 		
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 		+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -114,7 +110,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 					array.put(item);
 				}
 				int actualStakholdersCount = countStakeholders(array, context);
-			if(actualStakholdersCount <= 10) {
+			if(actualStakholdersCount < 10) {
 				context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 				// Set statement parameters
 				statement.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
