@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Welcome to Spotlight</title>
-    <link href="https://fonts.googleapis.com/css?family=Open Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Abel" rel="stylesheet">
     <style>
         body {
@@ -22,6 +22,7 @@
         table {
             color: #000000;
             background-color: #203c66;
+            border: solid 56px #203c66
         }
 
         td {
@@ -30,7 +31,6 @@
         }
 
         .card {
-            margin: 4em;
             background: #ffffff;
             padding: 2em;
         }
@@ -55,9 +55,9 @@
 </head>
 <body>
   <table>
-    <td>
-      <div class="card">
-        <img class="img" height="60" src='https://admin.tekvizion360.com/assets/images/tekVizion.png'></a>
+    <tr>
+      <td class="card">
+        <img class="img" height="60" src='https://admin.tekvizion360.com/assets/images/tekVizion.png'>
         <p class="title">
           Hello %STAKE_HOLDER_NAME%!
         </p>
@@ -96,8 +96,8 @@
 <!--          <br>-->
 <!--          <a href="https://www.google.com/">Spotlight service customer support</a>-->
 <!--        </p>-->
-      </div>
-    </td>
+      </td>
+    </tr>
   </table>
 </body>
 </html>
