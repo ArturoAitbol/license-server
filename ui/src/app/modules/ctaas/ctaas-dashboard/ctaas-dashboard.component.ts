@@ -114,83 +114,56 @@ export class CtaasDashboardComponent implements OnInit {
      */
     fetchCtaasDashboardDetailsBySubaccount(): void {
         this.isLoadingResults = true;
-        if (localStorage.getItem('dev')) {
-            this.resultantImagesList = JSON.parse(localStorage.getItem('dev'));
-            this.isLoadingResults = false;
-            this.hasDashboardDetails = true;
-            this.lastModifiedDate = this.resultantImagesList[0]['lastUpdatedTS'];
-        } else {
-            const requests: Observable<any>[] = [];
-            for (const key in ReportType) {
-                const reportType: string = ReportType[key];
-                // push all the request to an array
-                requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId, reportType));
-            }
-            forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
-                if (res) {
-                    const result: { lastUpdatedTS: string, imageBase64: string, reportType: string }[] = [...res]
-                        .filter((e: any) => !e.error)
-                        .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string } }) => e.response);
-                    // this.resultantImagesList = result;
-                    // const length = this.resultantImagesList.length - 1;
-                    // this.lastModifiedDate = result[length].lastUpdatedTS;
-                    this.isLoadingResults = false;
-                    // const sampleResponse = result
-                    //     .filter((e: any) => {
-                    //         if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                    //             return { reportType: this.DAILY, imageBase64: e.imageBase64 };
-                    //         } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
-                    //             return { reportType: this.WEEKLY, imageBase64: e.imageBase64 };
-                    //         }
-                    //     });
-                    // console.log(sampleResponse)
-                    if (result.length > 0) {
-                        this.hasDashboardDetails = true;
-                        const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
-                        result.forEach((e) => {
-                            if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                                // dailyImages.push(e.imageBase64);
-                                resultant.daily.push(e.imageBase64);
-                                resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
-                            } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
-                                // weeklyImages.push(e.imageBase64);
-                                resultant.weekly.push(e.imageBase64);
-                                resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
-                            }
-                        });
-                        // this.resultant = { daily: dailyImages, weekly: weeklyImages };
-                        const { daily, weekly, lastUpdatedDateList } = resultant;
-                        console.log('lastUpdatedDateList ', lastUpdatedDateList);
-                        this.lastModifiedDate = lastUpdatedDateList[0];
-                        this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
-                        this.resultantImagesList.push({ reportType: this.WEEKLY, imagesList: weekly });
-                        // this.resultantImagesList
-                        //     .filter((e: any) => e.reportType.toLowerCase().includes(this.fontStyleControl.value))
-                        //     .map((e: any) => e.imageBase64);
-                        // this.resultantImagesList = result
-                        //     .filter((e: any) => {
-                        //         if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                        //             return { reportType: this.DAILY, imageBase64: e.imageBase64 };
-                        //         } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
-                        //             return { reportType: this.WEEKLY, imageBase64: e.imageBase64 };
-                        //         }
-                        //     });
-                        localStorage.setItem('dev', JSON.stringify(this.resultantImagesList));
-                        console.log('this.resultantImagesList ', this.resultantImagesList);
-                        // .map((e: any) => e.imageBase64);
-                    } else {
-                        this.hasDashboardDetails = false;
-                    }
-                }
-            }, (e) => {
-                this.hasDashboardDetails = false;
-                this.isLoadingResults = false;
-                console.error('Error loading dashboard reports - ', e.error);
-                this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
-            });
+        const requests: Observable<any>[] = [];
+        // iterate through dashboard reports
+        for (const key in ReportType) {
+            const reportType: string = ReportType[key];
+            // push all the request to an array
+            requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId, reportType));
         }
+        // get all the request response in an array
+        forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
+            if (res) {
+                // get all response without any error messages
+                const result: { lastUpdatedTS: string, imageBase64: string, reportType: string }[] = [...res]
+                    .filter((e: any) => !e.error)
+                    .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string } }) => e.response);
+                this.isLoadingResults = false;
+                if (result.length > 0) {
+                    this.hasDashboardDetails = true;
+                    const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
+                    result.forEach((e) => {
+                        if (e.reportType.toLowerCase().includes(this.DAILY)) {
+                            resultant.daily.push(e.imageBase64);
+                            resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
+                        } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
+                            resultant.weekly.push(e.imageBase64);
+                            resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
+                        }
+                    });
+                    const { daily, weekly, lastUpdatedDateList } = resultant;
+                    this.lastModifiedDate = lastUpdatedDateList[0];
+                    this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
+                    this.resultantImagesList.push({ reportType: this.WEEKLY, imagesList: weekly });
+                } else {
+                    this.hasDashboardDetails = false;
+                }
+            }
+        }, (e) => {
+            this.hasDashboardDetails = false;
+            this.isLoadingResults = false;
+            console.error('Error loading dashboard reports | ', e.error);
+            this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+        });
     }
-
+    /**
+     * show/hide last updated element by condition
+     * @param index: string 
+     * @returns: boolean 
+     */
+    showLastUpdatedTSByCondition(index: string): boolean {
+        return this.lastModifiedDate && (+index) === 0;
+    }
     ngOnDestory(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
