@@ -1,6 +1,6 @@
 .banner-container {
-    /* background: #f0f0f0; */
-    background: lightgrey;
+    background: #f0f0f0;
+    /* background: lightgrey; */
     padding: 6px 6px 6px 12px;
 }
 ul {
@@ -8,6 +8,8 @@ ul {
     /* display: inline-flex; */
     margin: 0;
     padding: 0;
+    justify-content: center;
+    text-align: center;
 }
 ul li {
     display: inline-block;

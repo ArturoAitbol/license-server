@@ -1,9 +1,9 @@
 <div class="banner-container" [ngClass]="{'alignment' : stylesflag === 'dashboard' || stylesflag === 'setup'}">
-    <ul class="breadcrumb d-flex align-content-center" *ngIf="getLoginUserDetails.customerName !== getLoginUserDetails.name; else elseBlock">
+    <ul class="breadcrumb d-flex align-content-center" *ngIf="isCustomerNameAndSubaccountNameIsSame; else elseBlock">
         <li class="breadcrumb-item"> {{getLoginUserDetails.customerName}} </li>
         <li class="breadcrumb-item"> {{getLoginUserDetails.name}} </li>
     </ul>
-    <ng-template #elseBlock> 
+    <ng-template #elseBlock>
         <ul>
             <li> {{getLoginUserDetails.customerName}} </li>
         </ul>

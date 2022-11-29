@@ -34,8 +34,10 @@
               </div>
               <div [ngClass]="{'col-4':item.reportType===DAILY,'col-6':item.reportType===WEEKLY}" class="p-1 mb-1"
                 *ngFor="let url of item.imagesList;let i1=index;">
-                <mat-card style="border-radius: 5px">
-                  <img [src]="url" class="img-fluid header-image" [id]="i">
+                <mat-card style="border-radius: 5px">            
+                  <mat-card-content>
+                    <img [src]="url" class="img-fluid header-image" [id]="i">
+                  </mat-card-content>
                 </mat-card>
               </div>
             </div>

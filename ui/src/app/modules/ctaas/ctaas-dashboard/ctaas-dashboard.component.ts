@@ -124,6 +124,7 @@ export class CtaasDashboardComponent implements OnInit {
         // get all the request response in an array
         forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
             if (res) {
+                this.resultantImagesList = [];
                 // get all response without any error messages
                 const result: { lastUpdatedTS: string, imageBase64: string, reportType: string }[] = [...res]
                     .filter((e: any) => !e.error)
@@ -150,6 +151,7 @@ export class CtaasDashboardComponent implements OnInit {
                 }
             }
         }, (e) => {
+            this.resultantImagesList = [];
             this.hasDashboardDetails = false;
             this.isLoadingResults = false;
             console.error('Error loading dashboard reports | ', e.error);
