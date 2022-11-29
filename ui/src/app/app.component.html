@@ -13,10 +13,8 @@
 </ng-template>
 <ng-template #sidebarTemplate>
     <mat-sidenav-container class="mat-drawer-container">
-        <mat-sidenav #snav class="text-center sidenav-color" 
-        [mode]="mobileQuery.matches ? 'over' : 'side'" 
-        [opened]="!mobileQuery.matches"
-        [fixedInViewport]="mobileQuery.matches">
+        <mat-sidenav #snav class="text-center sidenav-color" [mode]="mobileQuery.matches ? 'over' : 'side'"
+            [opened]="!mobileQuery.matches" [fixedInViewport]="mobileQuery.matches">
             <div class="sidebar-content">
                 <div class="d-flex flex-column mt-3" *ngFor="let item of displayedSideBarItems">
                     <div class="logo-hvr">
@@ -41,7 +39,8 @@
             <div class="content-clr">
                 <div class="main-container" style="padding:0px 0px 0px 6px !important;">
                     <div>
-                        <mat-card class="shadow-backdrop">
+                        <!-- #F9F9F9; -->
+                        <mat-card class="shadow-backdrop" style="background: whitesmoke">
                             <router-outlet></router-outlet>
                         </mat-card>
                     </div>
@@ -67,7 +66,9 @@
 <ng-template #showToolbar>
     <div>
         <mat-toolbar color="primary" class="position-fixed">
-            <button mat-icon-button *ngIf="snav && mobileQuery.matches" (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+            <button mat-icon-button *ngIf="snav && mobileQuery.matches" (click)="snav.toggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
             <!-- logo -->
             <div *lcFeatureToggle="'ctaasFeature'">
                 <span class="logo-changes" (click)="navigateToMainView()" title="tekVizion">

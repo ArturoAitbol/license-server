@@ -10,7 +10,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 import { ReportType } from 'src/app/helpers/report-type';
 import { forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
-
+import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -26,9 +26,16 @@ export class CtaasDashboardComponent implements OnInit {
     subaccountId = '';
     hasDashboardDetails = false;
     isLoadingResults = false;
-
-    imagesList: string[] = [];
+    dailyImagesList: string[] = [];
+    weeklyImagesList: string[] = [];
     refreshIntervalSubscription: Subscription;
+    lastModifiedDate: string;
+    fontStyleControl = new FormControl('');
+    fontStyle?: string;
+    resultantImagesList: any[] = [];
+    resultant: any;
+    readonly DAILY: string = 'daily';
+    readonly WEEKLY: string = 'weekly';
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
@@ -45,8 +52,8 @@ export class CtaasDashboardComponent implements OnInit {
     private getAccountDetails(): any | null {
         return this.msalService.instance.getActiveAccount() || null;
     }
-
     ngOnInit(): void {
+        this.fontStyleControl.setValue('daily');
         this.isOnboardingComplete = false;
         this.fetchCtaasSetupDetails();
         const accountDetails = this.getAccountDetails();
@@ -58,6 +65,14 @@ export class CtaasDashboardComponent implements OnInit {
             .subscribe(() => {
                 this.fetchCtaasDashboardDetailsBySubaccount();
             });
+    }
+    /**
+     * on change button group
+     */
+    onChangeButtonGroup(): void {
+        // this.imagesList = this.resultantImagesList
+        //     .filter((e: any) => e.reportType.toLowerCase().includes(this.fontStyleControl.value))
+        //     .map((e: any) => e.imageBase64);
     }
 
     /**
@@ -100,30 +115,61 @@ export class CtaasDashboardComponent implements OnInit {
     fetchCtaasDashboardDetailsBySubaccount(): void {
         this.isLoadingResults = true;
         const requests: Observable<any>[] = [];
+        // iterate through dashboard reports
         for (const key in ReportType) {
             const reportType: string = ReportType[key];
             // push all the request to an array
             requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId, reportType));
         }
-        forkJoin([...requests]).subscribe((res: [{ response?: string, error?: string }]) => {
+        // get all the request response in an array
+        forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
             if (res) {
-                this.imagesList = [...res]
+                this.resultantImagesList = [];
+                // get all response without any error messages
+                const result: { lastUpdatedTS: string, imageBase64: string, reportType: string }[] = [...res]
                     .filter((e: any) => !e.error)
-                    .map((e: { response: string }) => e.response);
+                    .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string } }) => e.response);
                 this.isLoadingResults = false;
-                if (this.imagesList.length > 0)
+                if (result.length > 0) {
                     this.hasDashboardDetails = true;
-                else
+                    const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
+                    result.forEach((e) => {
+                        if (e.reportType.toLowerCase().includes(this.DAILY)) {
+                            resultant.daily.push(e.imageBase64);
+                            resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
+                        } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
+                            resultant.weekly.push(e.imageBase64);
+                            resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
+                        }
+                    });
+                    const { daily, weekly, lastUpdatedDateList } = resultant;
+                    this.lastModifiedDate = lastUpdatedDateList[0];
+                    if (daily.length > 0)
+                        this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
+                    if (weekly.length > 0)
+                        this.resultantImagesList.push({ reportType: this.WEEKLY, imagesList: weekly });
+                    // check whether we have a dashboard report images or not
+                    this.hasDashboardDetails = this.resultantImagesList.length > 0;
+                } else {
                     this.hasDashboardDetails = false;
+                }
             }
         }, (e) => {
+            this.resultantImagesList = [];
             this.hasDashboardDetails = false;
             this.isLoadingResults = false;
-            console.error('Error loading dashboard reports - ', e.error);
+            console.error('Error loading dashboard reports | ', e.error);
             this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
         });
     }
-
+    /**
+     * show/hide last updated element by condition
+     * @param index: string 
+     * @returns: boolean 
+     */
+    showLastUpdatedTSByCondition(index: string): boolean {
+        return this.lastModifiedDate && (+index) === 0;
+    }
     ngOnDestory(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
