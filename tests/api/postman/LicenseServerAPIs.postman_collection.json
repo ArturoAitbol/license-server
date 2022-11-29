@@ -565,47 +565,6 @@
 			"response": []
 		},
 		{
-			"name": "ctaasSubaccountStakeHolders",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"subaccountAdminEmail\");\r",
-							"    pm.expect(pm.response.json().subaccountAdminEmail).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"subaccountAdminEmail\", pm.response.json().subaccountAdminEmail);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/subaccountStakeHolders",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccountStakeHolders"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "ctaasSetups",
 			"event": [
 				{
@@ -902,6 +861,85 @@
 			"response": []
 		},
 		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"SETUP_READY\",\r\n    \"onBoardingComplete\": \"false\",\r\n    \"licenseId\": \"{{licenseId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/ctaasSetups/{{ctaasSetupId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasSetups",
+						"{{ctaasSetupId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSubaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"subaccountAdminEmail\");\r",
+							"    pm.expect(pm.response.json().subaccountAdminEmail).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"subaccountAdminEmail\", pm.response.json().subaccountAdminEmail);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/subaccountStakeHolders",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccountStakeHolders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "ctaasSubaccountStakeHolders",
 			"event": [
 				{
@@ -934,44 +972,6 @@
 					"path": [
 						"subaccountStakeHolders",
 						"{{subaccountAdminEmail}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "ctaasSetups",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"status test\",\r\n     \"onBoardingComplete\": \"false\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/ctaasSetups/{{ctaasSetupId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"ctaasSetups",
-						"{{ctaasSetupId}}"
 					]
 				}
 			},

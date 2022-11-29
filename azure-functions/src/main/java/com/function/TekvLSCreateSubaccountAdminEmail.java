@@ -2,6 +2,7 @@ package com.function;
 
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
+import com.function.util.Constants;
 import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
@@ -12,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -82,13 +84,23 @@ public class TekvLSCreateSubaccountAdminEmail {
             statement.executeUpdate();
             context.getLogger().info("Subaccount Admin email inserted successfully.");
 
-            if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
-                final String subaccountNameSql = "SELECT name FROM subaccount WHERE id = ?::uuid;";
-                try(PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql)){
-                    subaccountNameStmt.setString(1,createSubaccountAdminRequest.getSubaccountId());
-                    ResultSet rs = subaccountNameStmt.executeQuery();
-                    if(rs.next())
-                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),createSubaccountAdminRequest.getAdminEmail(),SUBACCOUNT_ADMIN,context);
+            if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+                final String subaccountNameSql = "SELECT name, customer_id FROM subaccount WHERE id = ?::uuid;";
+                final String ctaasSetupSql = "SELECT * FROM ctaas_setup WHERE subaccount_id = ?::uuid";
+                try (PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql);
+                     PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql)) {
+                    ctaasSetupStmt.setString(1, createSubaccountAdminRequest.subaccountId);
+                    ResultSet rs = ctaasSetupStmt.executeQuery();
+                    boolean setupExists = rs.next();
+
+                    // Only create the user when the setup does not exist or when it exists and the status is Ready
+                    if (setupExists && !Objects.equals(rs.getString("status"), Constants.CTaaSSetupStatus.READY.value()))
+                        return request.createResponseBuilder(HttpStatus.OK).build();
+                    subaccountNameStmt.setString(1, createSubaccountAdminRequest.getSubaccountId());
+                    rs = subaccountNameStmt.executeQuery();
+                    if (rs.next()) {
+                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"), createSubaccountAdminRequest.getAdminEmail(), SUBACCOUNT_ADMIN, context);
+                    }
                 }
             }
 

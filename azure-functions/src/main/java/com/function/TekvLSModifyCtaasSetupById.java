@@ -14,6 +14,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import com.function.clients.EmailClient;
 import com.function.clients.GraphAPIClient;
 import com.function.util.FeatureToggles;
 import org.json.JSONArray;
@@ -183,9 +184,7 @@ public class TekvLSModifyCtaasSetupById {
                 TekvLSCreateLicenseUsageDetail licenseUsageDetailCreator = new TekvLSCreateLicenseUsageDetail();
                 licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
 
-                // adding users if feature toggle 'ad-ctaas-user-creation-after-setup-ready' enabled
-                if (FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
-                    this.ADUserCreation(jobj, context, connection);
+                this.ADUserCreation(jobj, context, connection);
 
                 return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
             }
@@ -209,12 +208,19 @@ public class TekvLSModifyCtaasSetupById {
         String subaccountId = jobj.getString(subaccountIdParam);
         final String subaccountEmailsSql = "SELECT s.name, sa.subaccount_admin_email " +
                 "FROM subaccount s, subaccount_admin sa WHERE sa.subaccount_id = s.id AND s.id = ?::uuid;";
-        try (PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountEmailsSql)) {
+        final String customerNameSql = "SELECT c.name FROM customer c, subaccount s WHERE c.id = s.customer_id AND s.id = ?::uuid";
+        try (PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountEmailsSql);
+             PreparedStatement customerNameStmt = connection.prepareStatement(customerNameSql)) {
             subaccountEmailsStmt.setString(1, subaccountId);
+            customerNameStmt.setString(1, subaccountId);
+            ResultSet customerNameRs = customerNameStmt.executeQuery();
+            customerNameRs.next();
+            String customerName = customerNameRs.getString("name");
             ResultSet rs = subaccountEmailsStmt.executeQuery();
             while (rs.next()) {
-                GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
-                        rs.getString("subaccount_admin_email"), SUBACCOUNT_ADMIN, context);
+                if (GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"), rs.getString("subaccount_admin_email"), SUBACCOUNT_ADMIN, context))
+                    // Send second email with link to portal
+                    EmailClient.sendSpotlightReadyEmail(rs.getString("subaccount_admin_email"), customerName, context);
             }
         }
     }

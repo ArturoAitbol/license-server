@@ -15,16 +15,28 @@ import static com.function.auth.Roles.*;
 
 public class GraphAPIClient {
 
-    static public void createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
+    /**
+     *
+     * @param userName username of the new user
+     * @param userEmail email of the new user
+     * @param role AD role to assign the user
+     * @param context Azure function execution context
+     * @return true if the user is created, false if the user already existed
+     * @throws Exception
+     */
+    static public boolean createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
         User user = getUserByEmail(userEmail,context);
         String userId;
+        boolean res = false;
         if(user != null ){
             context.getLogger().info("Guest user with email "+ userEmail +" already exists in Active Directory (AD). Getting id to assign proper role");
             userId = user.id;
         }else{
             userId = createGuestUser(userName,userEmail,context);
+            res = true;
         }
         assignRole(userId,role,context);
+        return res;
     }
 
     static public User getUserByEmail(String userEmail, ExecutionContext context) throws ADException {
@@ -39,11 +51,9 @@ public class GraphAPIClient {
 
     static public String createGuestUser(String userName, String userEmail,ExecutionContext context) throws ADException {
         String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
-        String invitationMessage = "You have requested access to the tekVizion 360 Portal. " +
-                "Please accept this invitation to complete the authentication process by clicking \"Accept Invitation\" below.";
 
         try{
-            Invitation invitation = GraphAPIServiceClient.getInstance().inviteGuestUser(userName,userEmail,inviteRedirectUrl,invitationMessage);
+            Invitation invitation = GraphAPIServiceClient.getInstance().inviteGuestUser(userName,userEmail,inviteRedirectUrl);
             User invitedUser = invitation.invitedUser;
             if(invitedUser == null ) return null;
             context.getLogger().info("Guest user created successfully: " + invitedUser.id);
@@ -53,7 +63,6 @@ public class GraphAPIClient {
             jsonBody.put("userName",userName);
             jsonBody.put("userEmail",userEmail);
             jsonBody.put("inviteRedirectUrl",inviteRedirectUrl);
-            jsonBody.put("invitationMessage",invitationMessage);
             context.getLogger().severe("Graph Method Called: inviteGuestUser, Request body: "+ jsonBody);
             context.getLogger().severe("Error Response:" + e.getMessage());
             throw new ADException("Create a guest user failed (AD): " + e.getMessage());
