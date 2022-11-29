@@ -309,4 +309,36 @@ public class TekvLSCreateSubaccountStakeHolderTest  extends TekvLSTest {
 
         this.initTestParameters();
     }
+
+    @Tag("acceptance")
+    @Test
+    void createStakeHolderWhenSetupIsNotReady() {
+        //Given
+        String stakeHolderEmail = "test-customer-subaccount-stakeholder1@tekvizion.com";
+        String bodyRequest = "{'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb00cefa981'," +
+                "'subaccountAdminEmail': '"+stakeHolderEmail+"'," +
+                "'notifications': 'email,text'," +
+                "'name': 'test-customer-subaccount-stakeholder'," +
+                "'jobTitle': 'Software Engineer'," +
+                "'companyName': 'tekVizion'," +
+                "'phoneNumber': '+12142425968'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "Spotlight Setup does not exist or is not ready";
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
 }
