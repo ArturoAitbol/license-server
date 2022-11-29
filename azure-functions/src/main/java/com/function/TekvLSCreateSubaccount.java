@@ -169,9 +169,6 @@ public class TekvLSCreateSubaccount
 					context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
 					insertCtassSetupStmt.executeUpdate();
 					context.getLogger().info("SpotLight setup default values inserted successfully.");
-
-					if (!FeatureToggles.INSTANCE.isFeatureActive("ad-ctaas-user-creation-after-setup-ready"))
-						this.ADUserCreation(jobj,context);
 				} else {
 					this.ADUserCreation(jobj,context);
 				}
