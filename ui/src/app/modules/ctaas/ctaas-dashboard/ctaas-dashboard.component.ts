@@ -144,8 +144,12 @@ export class CtaasDashboardComponent implements OnInit {
                     });
                     const { daily, weekly, lastUpdatedDateList } = resultant;
                     this.lastModifiedDate = lastUpdatedDateList[0];
-                    this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
-                    this.resultantImagesList.push({ reportType: this.WEEKLY, imagesList: weekly });
+                    if (daily.length > 0)
+                        this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
+                    if (weekly.length > 0)
+                        this.resultantImagesList.push({ reportType: this.WEEKLY, imagesList: weekly });
+                    // check whether we have a dashboard report images or not
+                    this.hasDashboardDetails = this.resultantImagesList.length > 0;
                 } else {
                     this.hasDashboardDetails = false;
                 }
