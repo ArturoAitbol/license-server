@@ -62,15 +62,12 @@ public class GraphAPIServiceClient {
 		return null;
 	}
 
-	public Invitation inviteGuestUser(String userName, String userEmail,String inviteRedirectUrl, String customizedMessage) throws ClientException {
+	public Invitation inviteGuestUser(String userName, String userEmail,String inviteRedirectUrl) throws ClientException {
 		Invitation invitation = new Invitation();
 		invitation.invitedUserDisplayName=userName;
 		invitation.invitedUserEmailAddress=userEmail;
-		invitation.sendInvitationMessage=true;
+		invitation.sendInvitationMessage=false;
 		invitation.inviteRedirectUrl= inviteRedirectUrl;
-		invitation.invitedUserMessageInfo = new InvitedUserMessageInfo();
-		invitation.invitedUserMessageInfo.messageLanguage ="en-US";
-		invitation.invitedUserMessageInfo.customizedMessageBody=customizedMessage;
 		return graphClient.invitations().buildRequest().post(invitation);
 	}
 

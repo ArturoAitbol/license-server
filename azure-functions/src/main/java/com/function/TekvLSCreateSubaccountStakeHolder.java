@@ -7,8 +7,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Optional;
 
+import com.function.clients.EmailClient;
+import com.function.util.Constants;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.function.auth.Resource;
@@ -88,44 +91,62 @@ public class TekvLSCreateSubaccountStakeHolder {
 		if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
 			sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id, notifications) VALUES (?, ?::uuid, ?) RETURNING subaccount_admin_email;";
 		}
+
+		final String ctaasSetupSql = "SELECT * FROM ctaas_setup WHERE subaccount_id = ?:: uuid";
 		
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 		+ "&user=" + System.getenv("POSTGRESQL_USER")
 		+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-		     PreparedStatement statement = connection.prepareStatement(sql)) {
+		     PreparedStatement statement = connection.prepareStatement(sql);
+			 PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql)) {
 		
 		    context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-		
-		    // Set statement parameters
-		    statement.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
-		    statement.setString(2, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
-		    if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
-		    	statement.setString(3, jobj.getString(OPTIONAL_PARAMS.NOTIFICATIONS.value));
-		    }
-		
-		    String userId = getUserIdFromToken(tokenClaims,context);
-		    context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
-		    ResultSet rs = statement.executeQuery();
-		    context.getLogger().info("Subaccount Admin email (stakeHolder) inserted successfully.");
-		    rs.next();
-			JSONObject json = new JSONObject();
-			json.put("subaccountAdminEmail", rs.getString("subaccount_admin_email"));
-			
-		    if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
-		    	try {
-		    		context.getLogger().info("Adding user to Azure AD : "+jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
-		    		GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context);
-		    		context.getLogger().info("Updating user profile at Azure AD : "+jobj);
-		    		GraphAPIClient.updateUserProfile(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), jobj.getString(MANDATORY_PARAMS.NAME.value), 
-		    				jobj.getString(MANDATORY_PARAMS.JOB_TITLE.value), jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value), jobj.getString(MANDATORY_PARAMS.PHONE_NUMBER.value), context);
-		    		context.getLogger().info("Updated user profile at Azure AD : "+jobj);
-		    	}catch(Exception e) {
-		    		context.getLogger().info("Failed to add user at azure AD.  Exception: " + e.getMessage());
-		    	}
-		    }
-		    return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+
+			// Check if ctaas_setup exists and is on Ready status else return Bad Request
+			ctaasSetupStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+			ResultSet ctaasRs = ctaasSetupStmt.executeQuery();
+
+			if (ctaasRs.next() && Objects.equals(ctaasRs.getString("status"), Constants.CTaaSSetupStatus.READY.value())) {
+
+				// Set statement parameters
+				statement.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+				statement.setString(2, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+				if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
+					statement.setString(3, jobj.getString(OPTIONAL_PARAMS.NOTIFICATIONS.value));
+				}
+
+				String userId = getUserIdFromToken(tokenClaims, context);
+				context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
+				ResultSet rs = statement.executeQuery();
+				context.getLogger().info("Subaccount Admin email (stakeHolder) inserted successfully.");
+				rs.next();
+				JSONObject json = new JSONObject();
+				json.put("subaccountAdminEmail", rs.getString("subaccount_admin_email"));
+
+				if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+					try {
+						context.getLogger().info("Adding user to Azure AD : " + jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+						if (GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context))
+							EmailClient.sendStakeholderWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value),
+																	jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value),
+																	jobj.getString(MANDATORY_PARAMS.NAME.value),
+																	context);
+						context.getLogger().info("Updating user profile at Azure AD : " + jobj);
+						GraphAPIClient.updateUserProfile(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), jobj.getString(MANDATORY_PARAMS.NAME.value),
+														 jobj.getString(MANDATORY_PARAMS.JOB_TITLE.value), jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value), jobj.getString(MANDATORY_PARAMS.PHONE_NUMBER.value), context);
+						context.getLogger().info("Updated user profile at Azure AD : " + jobj);
+					} catch (Exception e) {
+						context.getLogger().info("Failed to add user at azure AD.  Exception: " + e.getMessage());
+					}
+				}
+				return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+			} else {
+				JSONObject json = new JSONObject();
+				json.put("error", "Spotlight Setup does not exist or is not ready");
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 		} catch (SQLException e) {
 		    context.getLogger().info("SQL exception: " + e.getMessage());
 		    JSONObject json = new JSONObject();
