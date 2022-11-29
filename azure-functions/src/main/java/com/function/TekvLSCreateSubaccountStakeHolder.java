@@ -159,21 +159,19 @@ public class TekvLSCreateSubaccountStakeHolder {
 		}
 
 	}
-	
-	private int countStakeholders(JSONArray array, ExecutionContext context){
-		int stakeholdersCount = 0; 
+
+	private int countStakeholders(JSONArray array, ExecutionContext context) throws Exception{
+		int stakeholdersCount = 0;
 		JSONObject json = null;
 		JSONObject subaccountProfile = null;
 		for(Object obj: array) {
 			json = (JSONObject) obj;
-			try {
-				subaccountProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"), context);
+			subaccountProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"), context);
+			if (subaccountProfile != null) {
 				String subaccountRole = subaccountProfile.getString("role");
-				if(subaccountRole.equals(SUBACCOUNT_STAKEHOLDER)){
+				if (subaccountRole.equals(SUBACCOUNT_STAKEHOLDER)) {
 					stakeholdersCount = stakeholdersCount + 1;
 				}
-			} catch (Exception e) {
-				context.getLogger().info("Caught exception: " + e.getMessage());
 			}
 		}
 		return stakeholdersCount;
