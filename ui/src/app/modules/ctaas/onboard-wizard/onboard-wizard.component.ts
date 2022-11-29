@@ -134,9 +134,16 @@ export class OnboardWizardComponent implements OnInit {
     addStakeholdersConfirmation(value: string): void {
         switch (value) {
             case 'yes':
-                this.addAnotherStakeHolder = true;
-                this.interaction = '4';
-                this.stakeholderForm.reset();
+                this.stakeholderService.getStakeholderList().subscribe(res => {
+                    const {stakeHolders} = res;
+                    if(res.stakeHolders.length < 10){
+                        this.addAnotherStakeHolder = true;
+                        this.interaction = '4';
+                        this.stakeholderForm.reset();
+                    } else {
+                        this.snackBarService.openSnackBar('The maximum amount of stakeholders per subaccount was exceeded', '');
+                    }
+                });
                 break;
             default:
                 this.addAnotherStakeHolder = false;
