@@ -104,15 +104,11 @@ describe('UI verification test', () => {
         const azureResouceGroup = fixture.nativeElement.querySelector('#azure-resource-group-label');
         const tapUrl = fixture.nativeElement.querySelector('#tap-url-label');
         const status = fixture.nativeElement.querySelector('#status-label');
-        const powerBiWorkspace = fixture.nativeElement.querySelector('#powerbi-workspace-label');
-        const powerBiReport = fixture.nativeElement.querySelector('#powerbi-report-label');
         
         expect(setupForm).toBeTruthy();
         expect(azureResouceGroup.innerText).toBe('Azure Resource Group');
         expect(tapUrl.innerText).toBe('TAP URL');
         expect(status.innerText).toBe('Status');
-        expect(powerBiWorkspace.innerText).toBe('Power BI Workspace ID');
-        expect(powerBiReport.innerText).toBe('Power BI Report ID');
     });
 });
 
@@ -164,7 +160,7 @@ describe('make method calls', () => {
 
         CtaasSetupComponentTestInstance.editForm();
         CtaasSetupComponentTestInstance.cancelEdit();
-        dialogService.close()
+        dialogService.close();
         CtaasSetupComponentTestInstance.setupForm.disable();
         fixture.detectChanges();
 
@@ -183,8 +179,6 @@ describe('setup form verifications', () => {
         expect(CtaasSetupComponentTestInstance.setupForm.get('tapUrl')).toBeTruthy();
         expect(CtaasSetupComponentTestInstance.setupForm.get('status')).toBeTruthy();
         expect(CtaasSetupComponentTestInstance.setupForm.get('onBoardingComplete')).toBeTruthy();
-        expect(CtaasSetupComponentTestInstance.setupForm.get('powerBiWorkspaceId')).toBeTruthy();
-        expect(CtaasSetupComponentTestInstance.setupForm.get('powerBiReportId')).toBeTruthy();
     });
 
     // test 8
@@ -196,8 +190,6 @@ describe('setup form verifications', () => {
             tapUrl: '',
             status: '',
             onBoardingComplete: '',
-            powerBiWorkspaceId: '',
-            powerBiReportId: ''
         });
         expect(setup.hasError('required')).toBeTruthy;
 
@@ -205,8 +197,6 @@ describe('setup form verifications', () => {
         expect(setup.get('tapUrl').valid).toBeFalse();
         expect(setup.get('status').valid).toBeFalse();
         expect(setup.get('onBoardingComplete').valid).toBeFalse();
-        expect(setup.get('powerBiWorkspaceId').valid).toBeFalse();
-        expect(setup.get('powerBiReportId').valid).toBeFalse();
         expect(setup.valid).toBeFalsy();
     });
 

@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 public class SpotlightSetupSteps {
     Setup setup;
-    String azureResourceGroup,tapUrl,status,powerBiWorkspaceId,powerBiReportId;
+    String azureResourceGroup,tapUrl,status;
 
     public SpotlightSetupSteps(Setup setup){
         this.setup = setup;
@@ -23,10 +23,8 @@ public class SpotlightSetupSteps {
         this.azureResourceGroup = setupDetails.get("azureResourceGroup");
         this.tapUrl = setupDetails.get("tapUrl");
         this.status = setupDetails.get("status");
-        this.powerBiWorkspaceId = setupDetails.get("powerBiWorkspaceId");
-        this.powerBiReportId = setupDetails.get("powerBiReportId");
         this.setup.enableFieldsToEdit();
-        this.setup.editSetupDetails(azureResourceGroup,tapUrl,status,powerBiWorkspaceId,powerBiReportId);
+        this.setup.editSetupDetails(azureResourceGroup,tapUrl,status);
     }
 
     @Then("I should see the modified data in spotlight configuration view")
@@ -42,14 +40,6 @@ public class SpotlightSetupSteps {
         if (!this.status.equals("none")){
             String actualStatus = this.setup.getSelectedOption("status");
             assertEquals("Spotlight doesn't have this status: ".concat(this.status),this.status,actualStatus);
-        }
-        if (!this.powerBiWorkspaceId.equals("none")) {
-            String actualPowerBiWorkspaceId = this.setup.getInputValue("powerbi-workspace");
-            assertEquals("Spotlight doesn't have this powerBiWorkspaceId: ".concat(this.powerBiWorkspaceId),this.powerBiWorkspaceId,actualPowerBiWorkspaceId);
-        }
-        if (!this.powerBiReportId.equals("none")){
-            String actualPowerBiReportId = this.setup.getInputValue("powerbi-report");
-            assertEquals("Spotlight doesn't have this powerBiReportId: ".concat(this.powerBiReportId),this.powerBiReportId,actualPowerBiReportId);
         }
     }
 }
