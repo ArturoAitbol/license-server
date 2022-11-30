@@ -9,6 +9,7 @@ import { SharedModule } from '../shared/shared.module';
 import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.component';
 import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.component';
 import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component';
+import { CtaasNotesComponent } from './ctaas-notes/ctaas-notes.component';
 import { AddStakeHolderComponent } from './ctaas-stakeholder/add-stake-holder/add-stake-holder.component';
 import { UpdateStakeHolderComponent } from './ctaas-stakeholder/update-stake-holder/update-stake-holder.component';
 import { AddTestSuiteComponent } from './ctaas-test-suites/add-test-suite/add-test-suite.component';
@@ -30,8 +31,8 @@ import { BannerComponent } from './banner/banner.component';
     CtaasSetupComponent,
     LicenseConfirmationModalComponent,
     ModifyTestSuiteComponent,
-    BannerComponent
-
+    BannerComponent,
+    CtaasNotesComponent
   ],
   imports: [
     CommonModule,
