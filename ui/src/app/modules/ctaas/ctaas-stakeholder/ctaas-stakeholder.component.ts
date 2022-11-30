@@ -26,7 +26,7 @@ export class CtaasStakeholderComponent implements OnInit {
   actionMenuOptions: any = [];
   isLoadingResults = false;
   isRequestCompleted = false;
-  stakeholdersCount: number; 
+  stakeholdersCount: number = 0; 
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
   private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
