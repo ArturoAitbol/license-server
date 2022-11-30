@@ -147,6 +147,7 @@ public class TekvLSGetCtaasDashboard {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("lastUpdatedTS", lastModifiedDateStr);
                 jsonObject.put("imageBase64", base64Response);
+                jsonObject.put("reportType", reportType);
                 json.put("response", jsonObject);
             }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();

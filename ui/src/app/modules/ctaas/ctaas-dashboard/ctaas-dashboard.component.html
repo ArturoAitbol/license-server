@@ -22,12 +22,23 @@
     <div>
       <ng-template #reportView>
         <div class="container-fluid controls" id="reportContainer">
-          <br>
           <section>
-            <div class="row">
-              <div class="col-6 p-1 bg-light" *ngFor="let item of imagesList;let i=index;">
-                <img [src]="item" class="img-fluid" [id]="i">
-                <br>
+            <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
+              <div class="flex-container" style="padding: 0px;">
+                <div class="display-4 report-title banner-container">
+                  {{item.reportType | titlecase}} Report
+                </div>
+                <div class="right" *ngIf="showLastUpdatedTSByCondition(i)">
+                  Last Updated: {{lastModifiedDate}}
+                </div>
+              </div>
+              <div [ngClass]="{'col-4':item.reportType===DAILY,'col-6':item.reportType===WEEKLY}" class="p-1 mb-1"
+                *ngFor="let url of item.imagesList;let i1=index;">
+                <mat-card style="border-radius: 5px">            
+                  <mat-card-content>
+                    <img [src]="url" class="img-fluid header-image" [id]="i">
+                  </mat-card-content>
+                </mat-card>
               </div>
             </div>
           </section>
