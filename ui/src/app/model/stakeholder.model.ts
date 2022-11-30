@@ -7,4 +7,5 @@ export interface IStakeholder {
     notifications: string;
     subaccountId?: string;
     type:string;
+    role:string;
 }
