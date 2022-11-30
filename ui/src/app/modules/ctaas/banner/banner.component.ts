@@ -8,13 +8,16 @@ import { SubAccountService } from '../../../services/sub-account.service'
 })
 export class BannerComponent implements OnInit {
 
-  getLoginUserDetails:any = {};
-  @Input() stylesflag:any;
+  getLoginUserDetails: any = {};
+  @Input() stylesflag: any;
 
-  constructor(private subaccountservice: SubAccountService) {}
+  isCustomerNameAndSubaccountNameIsSame: boolean = false;
+  constructor(private subaccountservice: SubAccountService) { }
 
   ngOnInit(): void {
     this.getLoginUserDetails = this.subaccountservice.getSelectedSubAccount();
+    const { customerName, name } = this.getLoginUserDetails;
+    this.isCustomerNameAndSubaccountNameIsSame = (customerName !== name);
   }
 
 }

@@ -24,7 +24,8 @@ export const permissions = {
             'report-dashboards',
             'test-suites',
             'stakeholders',
-            "setup",
+            'setup',
+            'notes',
             'subscriptions-overview'
         ],
         elements: [
@@ -77,6 +78,9 @@ export const permissions = {
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
             ],
+            noteOptions: [
+                'CLOSE_NOTE',
+            ]
         }
     },
     'tekvizion.SalesAdmin': {
@@ -225,7 +229,8 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
-            'stakeholders'
+            'stakeholders',
+            'notes',
         ],
         elements: ['showBanner'],
         tables: {
@@ -246,7 +251,10 @@ export const permissions = {
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
             ],
-            ctaasTestSuiteOptions: []
+            ctaasTestSuiteOptions: [],
+            noteOptions: [
+                'CLOSE_NOTE',
+            ]
         }
     },
     'customer.SubaccountAdmin': {
@@ -260,9 +268,10 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
-            'stakeholders'
+            'stakeholders',
+            'notes',
         ],
-        elements: [,
+        elements: [
             'view-profile'
         ],
         tables: {
@@ -283,7 +292,10 @@ export const permissions = {
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
             ],
-            ctaasTestSuiteOptions: []
+            ctaasTestSuiteOptions: [],
+            noteOptions: [
+                'CLOSE_NOTE',
+            ]
         }
     },
     'customer.SubaccountStakeholder': {
