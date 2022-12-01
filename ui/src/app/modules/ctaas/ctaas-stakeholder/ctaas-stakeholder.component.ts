@@ -84,7 +84,7 @@ export class CtaasStakeholderComponent implements OnInit {
         map((e: { stakeHolders: IStakeholder[] }) => {
           const { stakeHolders } = e;
           try {
-            this.stakeholdersCount = e.stakeHolders.length;
+            this.stakeholdersCount = this.countStakeholders(e.stakeHolders);
             stakeHolders.forEach((x: IStakeholder) => {
               if (x.notifications) {
                 const reports = this.getReports();
@@ -217,6 +217,7 @@ export class CtaasStakeholderComponent implements OnInit {
       if (confirmed) {
         const { email } = selectedRow;
         this.deleteStakeholder(email);
+        this.stakeholdersCount = this.stakeholdersCount - 1
       }
     });
   }
@@ -263,5 +264,9 @@ export class CtaasStakeholderComponent implements OnInit {
       this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER);
 
     }
+  }
+
+  private countStakeholders(stakholdersList: IStakeholder[]): number {
+    return stakholdersList.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER).length;
   }
 }
