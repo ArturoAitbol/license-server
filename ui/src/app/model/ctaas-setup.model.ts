@@ -5,6 +5,4 @@ export interface ICtaasSetup {
     status: string;
     subaccountId: string;
     tapUrl: string;
-    powerbiWorkspaceId: string;
-    powerbiReportId: string;
 }
