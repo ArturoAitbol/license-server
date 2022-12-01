@@ -12,7 +12,7 @@
     </main>
 </ng-template>
 <ng-template #sidebarTemplate>
-    <mat-sidenav-container class="mat-drawer-container">
+    <mat-sidenav-container class="mat-drawer-container" autosize="true">
         <mat-sidenav #snav class="text-center sidenav-color" [mode]="mobileQuery.matches ? 'over' : 'side'"
             [opened]="!mobileQuery.matches" [fixedInViewport]="mobileQuery.matches">
             <div class="sidebar-content">
