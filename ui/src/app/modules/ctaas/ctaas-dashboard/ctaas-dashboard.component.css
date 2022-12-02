@@ -141,3 +141,15 @@ button:hover {
   padding: 6px 6px 6px 12px;
   text-align: left !important;
 }
+.card-title {
+  display: inline-block;
+  color: #203c66;
+  font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
+  letter-spacing: normal;
+  padding: 10px 0px;
+  text-align: left !important;
+}
+.card {
+  border-radius: 5px;
+  padding: 10px 0px;
+}

@@ -135,10 +135,10 @@ export class CtaasDashboardComponent implements OnInit {
                     const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
                     result.forEach((e) => {
                         if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                            resultant.daily.push(e.imageBase64);
+                            resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
                             resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                         } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
-                            resultant.weekly.push(e.imageBase64);
+                            resultant.weekly.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
                             resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                         }
                     });
@@ -170,6 +170,20 @@ export class CtaasDashboardComponent implements OnInit {
     showLastUpdatedTSByCondition(index: string): boolean {
         return this.lastModifiedDate && (+index) === 0;
     }
+    /**
+     * get report name by report type
+     * @param reportType: string 
+     * @returns: string 
+     */
+    getReportNameByType(reportType: string): string {
+        switch (reportType) {
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY: case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return "Feature Functionality";
+            case ReportType.DAILY_CALLING_RELIABILITY: return "Calling Reliability";
+            case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return "PESQ";
+
+        }
+    }
+
     ngOnDestory(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
