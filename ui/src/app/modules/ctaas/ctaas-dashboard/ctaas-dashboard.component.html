@@ -22,17 +22,24 @@
     <div>
       <ng-template #reportView>
         <div class="container-fluid controls" id="reportContainer">
+          <br>
           <section>
-            <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
-              <div class="flex-container" style="padding: 0px;">
-                <div class="display-4 report-title banner-container">
-                  {{item.reportType | titlecase}} Report
-                </div>
-                <div class="right" *ngIf="showLastUpdatedTSByCondition(i)">
-                  Last Updated: {{lastModifiedDate}}
-                </div>
+            <div class="flex-container">
+              <div class="banner-container">
+                <mat-button-toggle-group [formControl]="fontStyleControl" aria-label="Font Style"
+                  (change)="onChangeButtonToggle()">
+                  <mat-button-toggle [value]="DAILY">{{DAILY | titlecase}}</mat-button-toggle>
+                  <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
+                </mat-button-toggle-group>
               </div>
-              <div [ngClass]="{'col-6':item.reportType===DAILY,'col-12':item.reportType===WEEKLY}" class="p-1 mb-1" *ngFor="let image of item.imagesList;let i1=index;">
+              <div class="right">
+                Last Updated: {{lastModifiedDate}}
+              </div>
+            </div>
+
+            <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
+              <div [ngClass]="{'col-6':item.reportType===DAILY,'col-12':item.reportType===WEEKLY}" class="p-1 mb-1"
+                *ngFor="let image of item.imagesList;let i1=index;">
                 <mat-card class="card">
                   <mat-card-header>
                     <mat-card-title class="card-title">{{image.reportType}}</mat-card-title>

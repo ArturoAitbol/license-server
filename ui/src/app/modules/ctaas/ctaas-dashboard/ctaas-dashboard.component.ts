@@ -11,7 +11,15 @@ import { ReportType } from 'src/app/helpers/report-type';
 import { forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { FormControl } from '@angular/forms';
-
+export interface IImagesList {
+    imageBase64: string;
+    reportType: string
+}
+export interface IResultant {
+    lastUpdatedTS: string;
+    reportType: string;
+    imagesList: IImagesList[]
+}
 @Component({
     selector: 'app-ctaas-dashboard',
     templateUrl: './ctaas-dashboard.component.html',
@@ -31,8 +39,8 @@ export class CtaasDashboardComponent implements OnInit {
     refreshIntervalSubscription: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
-    fontStyle?: string;
-    resultantImagesList: any[] = [];
+    resultantImagesList: IResultant[] = [];
+    resultantImagesListBk: IResultant[] = [];
     resultant: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
@@ -53,7 +61,7 @@ export class CtaasDashboardComponent implements OnInit {
         return this.msalService.instance.getActiveAccount() || null;
     }
     ngOnInit(): void {
-        this.fontStyleControl.setValue('daily');
+        this.fontStyleControl.setValue(this.DAILY);
         this.isOnboardingComplete = false;
         this.fetchCtaasSetupDetails();
         const accountDetails = this.getAccountDetails();
@@ -67,14 +75,12 @@ export class CtaasDashboardComponent implements OnInit {
             });
     }
     /**
-     * on change button group
-     */
-    onChangeButtonGroup(): void {
-        // this.imagesList = this.resultantImagesList
-        //     .filter((e: any) => e.reportType.toLowerCase().includes(this.fontStyleControl.value))
-        //     .map((e: any) => e.imageBase64);
+    * on change button toggle
+    */
+    onChangeButtonToggle(): void {
+        const { value } = this.fontStyleControl;
+        this.resultantImagesList = this.resultantImagesListBk.filter(e => e.reportType.toLowerCase().includes(value));
     }
-
     /**
      * fetch SpotLight Setup details by subaccount id
      */
@@ -124,7 +130,7 @@ export class CtaasDashboardComponent implements OnInit {
         // get all the request response in an array
         forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
             if (res) {
-                this.resultantImagesList = [];
+                this.resultantImagesList = this.resultantImagesListBk = [];
                 // get all response without any error messages
                 const result: { lastUpdatedTS: string, imageBase64: string, reportType: string }[] = [...res]
                     .filter((e: any) => !e.error)
@@ -147,7 +153,11 @@ export class CtaasDashboardComponent implements OnInit {
                     if (daily.length > 0)
                         this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
                     if (weekly.length > 0)
-                        this.resultantImagesList.push({ reportType: this.WEEKLY, imagesList: weekly });
+                        this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.WEEKLY, imagesList: weekly });
+                    this.resultantImagesListBk = [...this.resultantImagesList];
+                    if (this.resultantImagesListBk.length > 0) {
+                        this.onChangeButtonToggle();
+                    }
                     // check whether we have a dashboard report images or not
                     this.hasDashboardDetails = this.resultantImagesList.length > 0;
                 } else {
@@ -155,7 +165,7 @@ export class CtaasDashboardComponent implements OnInit {
                 }
             }
         }, (e) => {
-            this.resultantImagesList = [];
+            this.resultantImagesList = this.resultantImagesListBk = [];
             this.hasDashboardDetails = false;
             this.isLoadingResults = false;
             console.error('Error loading dashboard reports | ', e.error);
