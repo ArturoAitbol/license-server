@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -53,6 +54,11 @@ public class TekvLSGetCtaasDashboard {
         }
 
         context.getLogger().info("Entering TekvLSGetCtaasDashboard Azure function");
+
+        // Get query parameters
+        context.getLogger().info("URL parameters are: " + request.getQueryParameters());
+        String timestamp = request.getQueryParameters().getOrDefault("timestamp", "");
+
         // Check if subaccount is empty
         if (subaccountId.equals("EMPTY") || subaccountId.isEmpty()) {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
@@ -138,15 +144,16 @@ public class TekvLSGetCtaasDashboard {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
-            String base64Response = StorageBlobClient.getBlobAsBase64(context, customerName, subaccountName, reportType);
-            // Fetch last modified blob date
-            String lastModifiedDateStr = StorageBlobClient.getLastModifiedBlobDate();
+            Map<String,String> base64Response = timestamp.isEmpty() ? StorageBlobClient.getBlobAsBase64(context, customerName, subaccountName, reportType):
+                                                    StorageBlobClient.getBlobAsBase64(context, customerName, subaccountName, reportType, timestamp);
             if (base64Response == null) {
                 json.put("error", "Cannot found the image with " + reportType + " in the storage blob");
             } else {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("lastUpdatedTS", lastModifiedDateStr);
-                jsonObject.put("imageBase64", base64Response);
+                jsonObject.put("type",reportType);
+                jsonObject.put("lastUpdatedTS", base64Response.get("lastModifiedDate"));
+                jsonObject.put("timestampId", base64Response.get("timestampId"));
+                jsonObject.put("imageBase64", base64Response.get("base64String"));
                 json.put("response", jsonObject);
             }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
