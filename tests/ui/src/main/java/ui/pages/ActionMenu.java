@@ -29,7 +29,7 @@ public class ActionMenu extends AbstractPageObject {
     WebElement customerAdminButton;
     @FindBy(xpath = "//button[@id='View Subaccount Admin Emails']")
     WebElement subaccountAdminButton;
-    @FindBy(xpath = "//button[@id='View SpotLight Dashboard']")
+    @FindBy(xpath = "//button[@id='View Spotlight Dashboard']")
     WebElement spotlightDashboardButton;
     @FindBy(xpath = "//button[@id='Delete Stakeholder Account']")
     WebElement spotlightStakeholderButton;
