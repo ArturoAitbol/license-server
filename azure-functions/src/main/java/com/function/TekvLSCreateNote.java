@@ -80,8 +80,8 @@ public class TekvLSCreateNote {
         }
 
         //Build the sql query
-        String sql = "INSERT INTO note (subaccount_id, content, status, open_date, opened_by)" +
-                    " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP, ?) RETURNING id;";
+        String sql = "INSERT INTO note (subaccount_id, content, status, open_date, opened_by, reports)" +
+                    " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP, ?, ?) RETURNING id;";
 
         //Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -98,6 +98,7 @@ public class TekvLSCreateNote {
             statement.setString(1,jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
             statement.setString(2,jobj.getString(MANDATORY_PARAMS.CONTENT.value));
             statement.setString(3,userEmail);
+            statement.setString(4,jobj.getJSONArray(MANDATORY_PARAMS.REPORTS.value).toString());
 
             //Insert
             String userId = getUserIdFromToken(tokenClaims,context);
@@ -123,7 +124,8 @@ public class TekvLSCreateNote {
 
     private enum MANDATORY_PARAMS {
         SUBACCOUNT_ID("subaccountId"),
-        CONTENT("content");
+        CONTENT("content"),
+        REPORTS("reports");
 
         private final String value;
 

@@ -102,7 +102,7 @@ public class TekvLSGetAllNotes {
 
         if (!status.isEmpty())
             queryBuilder.appendEqualsCondition("status", status, "note_status_type_enum");
-        queryBuilder.appendOrderBy("open_date", ORDER_DIRECTION.ASC);
+        queryBuilder.appendOrderBy("open_date", ORDER_DIRECTION.DESC);
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -131,8 +131,7 @@ public class TekvLSGetAllNotes {
             rs = selectStmt.executeQuery();
             // Return a JSON array of notes
             JSONArray notes = new JSONArray();
-			String closeDate;
-			String closedBy;
+			String closeDate,closedBy,reports;
             while (rs.next()) {
                 JSONObject item = new JSONObject();
                 item.put("id", rs.getString("id"));
@@ -145,6 +144,8 @@ public class TekvLSGetAllNotes {
 				item.put("closeDate", closeDate != null ? closeDate.split(" ") : JSONObject.NULL);
 				closedBy = rs.getString("closed_by");
 				item.put("closedBy", closedBy != null ? closedBy : JSONObject.NULL);
+                reports = rs.getString("reports");
+                item.put("reports",reports != null ? new JSONArray(reports) : JSONObject.NULL);
                 notes.put(item);
             }
             context.getLogger().info("List total " + notes.length() + " notes");
