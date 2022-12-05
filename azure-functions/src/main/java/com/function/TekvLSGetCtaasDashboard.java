@@ -150,7 +150,7 @@ public class TekvLSGetCtaasDashboard {
                 json.put("error", "Cannot found the image with " + reportType + " in the storage blob");
             } else {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("type",reportType);
+                jsonObject.put("reportType",reportType);
                 jsonObject.put("lastUpdatedTS", base64Response.get("lastModifiedDate"));
                 jsonObject.put("timestampId", base64Response.get("timestampId"));
                 jsonObject.put("imageBase64", base64Response.get("base64String"));

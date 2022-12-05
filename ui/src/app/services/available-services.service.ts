@@ -19,7 +19,7 @@ export class AvailableServicesService {
       "tabName": "tekVizion 360 Portal"
     },
     {
-      "label": "SpotLight",
+      "label": "Spotlight",
       "value": tekVizionServices.SpotLight,
       "enabled": false,
       "access": false,

@@ -6,7 +6,7 @@
         </div>
         <div class="setup-container flex-sm-row flex-column">
             <div>
-                <h1 mat-dialig-title id="setup-title">SpotLight Setup Details</h1>
+                <h1 mat-dialig-title id="setup-title">Spotlight Setup Details</h1>
             </div>
             <div>
                 <ng-container *ngIf="!isEditing">
@@ -66,20 +66,6 @@
                                     {{status.value.label}}
                                 </mat-option>
                             </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-md-6">
-                        <mat-form-field appearance="outline">
-                            <mat-label id="powerbi-workspace-label">Power BI Workspace ID</mat-label>
-                            <input matInput formControlName="powerBiWorkspaceId" id="powerbi-workspace">
-                        </mat-form-field>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <mat-form-field appearance="outline">
-                            <mat-label id="powerbi-report-label">Power BI Report ID</mat-label>
-                            <input matInput formControlName="powerBiReportId" id="powerbi-report">
                         </mat-form-field>
                     </div>
                 </div>
