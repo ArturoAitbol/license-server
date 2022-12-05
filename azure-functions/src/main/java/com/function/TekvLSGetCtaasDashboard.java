@@ -144,8 +144,8 @@ public class TekvLSGetCtaasDashboard {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
-            Map<String,String> base64Response = timestamp.isEmpty() ? StorageBlobClient.getBlobAsBase64(context, customerName, subaccountName, reportType):
-                                                    StorageBlobClient.getBlobAsBase64(context, customerName, subaccountName, reportType, timestamp);
+            Map<String,String> base64Response = timestamp.isEmpty() ? StorageBlobClient.getInstance().getBlobAsBase64(context, customerName, subaccountName, reportType):
+                                                    StorageBlobClient.getInstance().getBlobAsBase64(context, customerName, subaccountName, reportType, timestamp);
             if (base64Response == null) {
                 json.put("error", "Cannot found the image with " + reportType + " in the storage blob");
             } else {

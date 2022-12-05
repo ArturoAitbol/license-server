@@ -20,29 +20,41 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class StorageBlobClient {
-    //    should add final key word before the System variables before commit
-    final private static String DASHBOARD_APP_CLIENT_ID = System.getenv("DASHBOARD_APP_CLIENT_ID");
-    final private static String DASHBOARD_APP_SECRET_ID = System.getenv("DASHBOARD_APP_SECRET_ID");
-    final private static String TENANT_ID = System.getenv("TENANT_ID");
-    final private static String STORAGE_ACCOUNT_NAME = System.getenv("STORAGE_ACCOUNT_NAME");
-    final private static String CONTAINER_NAME = System.getenv("STORAGE_CONTAINER_NAME");
-    final private static String ENCODING_TYPE = "data:image/jpg;base64,";
 
-    /**
-     *  Authenticate with client secret.
-     */
-    final private static ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
-            .clientId(DASHBOARD_APP_CLIENT_ID)
-            .clientSecret(DASHBOARD_APP_SECRET_ID)
-            .tenantId(TENANT_ID)
-            .build();
 
-    final private static String ENDPOINT_URL = String.format("https://%s.blob.core.windows.net", STORAGE_ACCOUNT_NAME);
+    private final BlobContainerClient blobContainerClient;
 
-    final private static BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-            .endpoint(ENDPOINT_URL)
-            .credential(clientSecretCredential)
-            .buildClient();
+    private static final StorageBlobClient instance = new StorageBlobClient();
+
+    public static StorageBlobClient getInstance() {
+        return instance;
+    }
+
+    private StorageBlobClient() {
+        /**
+         *  Authenticate with client secret.
+         */
+        //    should add final key word before the System variables before commit
+        String DASHBOARD_APP_CLIENT_ID = System.getenv("DASHBOARD_APP_CLIENT_ID");
+        String DASHBOARD_APP_SECRET_ID = System.getenv("DASHBOARD_APP_SECRET_ID");
+        String TENANT_ID = System.getenv("TENANT_ID");
+        final ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
+                .clientId(DASHBOARD_APP_CLIENT_ID)
+                .clientSecret(DASHBOARD_APP_SECRET_ID)
+                .tenantId(TENANT_ID)
+                .build();
+
+        String STORAGE_ACCOUNT_NAME = System.getenv("STORAGE_ACCOUNT_NAME");
+        String ENDPOINT_URL = String.format("https://%s.blob.core.windows.net", STORAGE_ACCOUNT_NAME);
+        final BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                .endpoint(ENDPOINT_URL)
+                .credential(clientSecretCredential)
+                .buildClient();
+
+        // Get the container
+        String CONTAINER_NAME = System.getenv("STORAGE_CONTAINER_NAME");
+        blobContainerClient = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
+    }
 
     /**
      * Get the blob from Azure Storage Blob if exist and return Base64 String
@@ -53,7 +65,7 @@ public class StorageBlobClient {
      * @param type:           String
      * @return Map<String,String>
      */
-    public static Map<String,String> getBlobAsBase64(ExecutionContext context, final String customerName, final String subaccountName, final String type) {
+    public Map<String,String> getBlobAsBase64(ExecutionContext context, final String customerName, final String subaccountName, final String type) {
         return getBlobAsBase64(context,customerName,subaccountName,type,"");
     }
 
@@ -68,10 +80,8 @@ public class StorageBlobClient {
      * @param timestamp:      String
      * @return Map<String,String>
      */
-    public static Map<String,String> getBlobAsBase64(ExecutionContext context, final String customerName, final String subaccountName, final String type, final String timestamp) {
+    public Map<String,String> getBlobAsBase64(ExecutionContext context, final String customerName, final String subaccountName, final String type, final String timestamp) {
         try {
-            // Get the container
-            BlobContainerClient blobContainerClient = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
             // Check if container exist or not
             if (!blobContainerClient.exists()) {
                 context.getLogger().info("Container doesn't exist");
@@ -113,7 +123,8 @@ public class StorageBlobClient {
                     blobClient.download(outputStream);
                     byte[] bytes = outputStream.toByteArray();
                     // Encode byte array to Base64 String
-                    base64Image.put("base64String",ENCODING_TYPE + Base64.getEncoder().encodeToString(bytes));
+                    String ENCODING_TYPE = "data:image/jpg;base64,";
+                    base64Image.put("base64String", ENCODING_TYPE + Base64.getEncoder().encodeToString(bytes));
                     return base64Image;
                 }
             }
@@ -123,7 +134,7 @@ public class StorageBlobClient {
         return null;
     }
 
-    public static String getTimestampFromBlobName(String blobName){
+    public String getTimestampFromBlobName(String blobName){
         Pattern pattern = Pattern.compile("\\d{12}");
         Matcher matcher = pattern.matcher(blobName);
         if(matcher.find())
@@ -131,7 +142,7 @@ public class StorageBlobClient {
         return null;
     }
 
-    public static String getLastModifiedBlobDateStr(OffsetDateTime lastModifiedDate) {
+    public String getLastModifiedBlobDateStr(OffsetDateTime lastModifiedDate) {
         if (lastModifiedDate != null) {
             String pattern = "E, dd MMM yyyy HH:mm:ss z";
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
