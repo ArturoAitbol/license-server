@@ -49,6 +49,31 @@ public class TekvLSGetCtaasDashboardTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
+    public void getDashboardWithEmptyReportType() {
+        //Given
+        String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
+
+        // When
+        HttpResponseMessage response = tekvLSGetCtaasDashboard.run(this.request, subaccountId, "", this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus, "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        this.context.getLogger().info("body " + body);
+
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = "Report type cannot be empty";
+        assertEquals(expectedMessage, jsonBody.getString("error"));
+    }
+
+    @Tag("acceptance")
+    @Test
     public void getDashboardWithEmptySubaccountId() {
         //Given
         String subaccountId = "EMPTY";
