@@ -92,7 +92,7 @@ describe('UI verification test', () => {
         const h1 = fixture.nativeElement.querySelector('#setup-title');
         const editButton = fixture.nativeElement.querySelector('#edit-details-button');
 
-        expect(h1.textContent).toBe('SpotLight Setup Details');
+        expect(h1.textContent).toBe('Spotlight Setup Details');
         expect(editButton.textContent).toBe(' Edit Setup Details ');
 
     });
@@ -304,7 +304,7 @@ describe('check for error and success messages', () => {
         fixture.detectChanges();
 
         expect(CtaasSetupServiceMock.getSubaccountCtaasSetupDetails).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error getting SpotLight Setup!');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error getting Spotlight Setup!');
     });
 
     // test 13
@@ -319,7 +319,7 @@ describe('check for error and success messages', () => {
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error updating SpotLight Setup!');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error updating Spotlight Setup!');
     });
 
     // test 14
@@ -343,6 +343,6 @@ describe('check for error and success messages', () => {
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('SpotLight Setup edited successfully!','');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight Setup edited successfully!','');
     });
 });

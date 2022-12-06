@@ -374,7 +374,8 @@ CREATE TABLE public.note (
     open_date timestamp without time zone,
     opened_by character varying,
     close_date timestamp without time zone,
-    closed_by character varying
+    closed_by character varying,
+    reports character varying
 );
 
 --
