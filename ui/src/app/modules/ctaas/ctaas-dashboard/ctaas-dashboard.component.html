@@ -36,23 +36,35 @@
                 Last Updated: {{lastModifiedDate}}
               </div>
             </div>
-
-            <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
-              <div [ngClass]="{'col-6':item.reportType===DAILY,'col-12':item.reportType===WEEKLY}" class="p-1 mb-1"
-                *ngFor="let image of item.imagesList;let i1=index;">
-                <mat-card class="card">
-                  <mat-card-header>
-                    <mat-card-title class="card-title">{{image.reportType}}</mat-card-title>
-                  </mat-card-header>
-                  <mat-card-content>
-                    <img [src]="image.imageBase64" class="img-fluid header-image" [id]="i">
-                  </mat-card-content>
-                </mat-card>
-              </div>
-            </div>
+            <ng-container *ngIf="checkForDashboardDetails(); then withReport;else noReport"> </ng-container>
           </section>
         </div>
       </ng-template>
     </div>
   </div>
 </div>
+
+<ng-template #withReport>
+  <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
+    <div [ngClass]="{'col-6':item.reportType===DAILY,'col-12':item.reportType===WEEKLY}" class="p-1 mb-1"
+      *ngFor="let image of item.imagesList;let i1=index;">
+      <mat-card class="card">
+        <mat-card-header>
+          <mat-card-title class="card-title">{{image.reportType}}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <img [src]="image.imageBase64" class="img-fluid header-image" [id]="i">
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+</ng-template>
+
+<ng-template #noReport>
+  <div class="jumbotron d-flex align-items-center bg-transparent justify-content-center">
+    <h2>
+      No Reports available
+    </h2>
+  </div>
+</ng-template>
