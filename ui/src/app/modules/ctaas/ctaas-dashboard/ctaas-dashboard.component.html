@@ -22,28 +22,49 @@
     <div>
       <ng-template #reportView>
         <div class="container-fluid controls" id="reportContainer">
+          <br>
           <section>
-            <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
-              <div class="flex-container" style="padding: 0px;">
-                <div class="display-4 report-title banner-container">
-                  {{item.reportType | titlecase}} Report
-                </div>
-                <div class="right" *ngIf="showLastUpdatedTSByCondition(i)">
-                  Last Updated: {{lastModifiedDate}}
-                </div>
+            <div class="flex-container">
+              <div class="banner-container">
+                <mat-button-toggle-group [formControl]="fontStyleControl" aria-label="Font Style"
+                  (change)="onChangeButtonToggle()">
+                  <mat-button-toggle [value]="DAILY">{{DAILY | titlecase}}</mat-button-toggle>
+                  <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
+                </mat-button-toggle-group>
               </div>
-              <div [ngClass]="{'col-4':item.reportType===DAILY,'col-6':item.reportType===WEEKLY}" class="p-1 mb-1"
-                *ngFor="let url of item.imagesList;let i1=index;">
-                <mat-card style="border-radius: 5px">            
-                  <mat-card-content>
-                    <img [src]="url" class="img-fluid header-image" [id]="i">
-                  </mat-card-content>
-                </mat-card>
+              <div class="right">
+                Last Updated: {{lastModifiedDate}}
               </div>
             </div>
+            <ng-container *ngIf="checkForDashboardDetails(); then withReport;else noReport"> </ng-container>
           </section>
         </div>
       </ng-template>
     </div>
   </div>
 </div>
+
+<ng-template #withReport>
+  <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
+    <div [ngClass]="{'col-6':item.reportType===DAILY,'col-12':item.reportType===WEEKLY}" class="p-1 mb-1"
+      *ngFor="let image of item.imagesList;let i1=index;">
+      <mat-card class="card">
+        <mat-card-header>
+          <mat-card-title class="card-title">{{image.reportType}}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <img [src]="image.imageBase64" class="img-fluid header-image" [id]="i">
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+</ng-template>
+
+<ng-template #noReport>
+  <div class="jumbotron d-flex align-items-center bg-transparent justify-content-center">
+    <h2>
+      No Reports available
+    </h2>
+  </div>
+</ng-template>

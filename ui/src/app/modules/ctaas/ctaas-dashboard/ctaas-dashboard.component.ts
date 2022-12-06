@@ -11,7 +11,15 @@ import { ReportType } from 'src/app/helpers/report-type';
 import { forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { FormControl } from '@angular/forms';
-
+export interface IImagesList {
+    imageBase64: string;
+    reportType: string
+}
+export interface IResultant {
+    lastUpdatedTS: string;
+    reportType: string;
+    imagesList: IImagesList[]
+}
 @Component({
     selector: 'app-ctaas-dashboard',
     templateUrl: './ctaas-dashboard.component.html',
@@ -31,8 +39,8 @@ export class CtaasDashboardComponent implements OnInit {
     refreshIntervalSubscription: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
-    fontStyle?: string;
-    resultantImagesList: any[] = [];
+    resultantImagesList: IResultant[] = [];
+    resultantImagesListBk: IResultant[] = [];
     resultant: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
@@ -53,7 +61,7 @@ export class CtaasDashboardComponent implements OnInit {
         return this.msalService.instance.getActiveAccount() || null;
     }
     ngOnInit(): void {
-        this.fontStyleControl.setValue('daily');
+        this.fontStyleControl.setValue(this.DAILY);
         this.isOnboardingComplete = false;
         this.fetchCtaasSetupDetails();
         const accountDetails = this.getAccountDetails();
@@ -67,14 +75,12 @@ export class CtaasDashboardComponent implements OnInit {
             });
     }
     /**
-     * on change button group
-     */
-    onChangeButtonGroup(): void {
-        // this.imagesList = this.resultantImagesList
-        //     .filter((e: any) => e.reportType.toLowerCase().includes(this.fontStyleControl.value))
-        //     .map((e: any) => e.imageBase64);
+    * on change button toggle
+    */
+    onChangeButtonToggle(): void {
+        const { value } = this.fontStyleControl;
+        this.resultantImagesList = this.resultantImagesListBk.filter(e => e.reportType.toLowerCase().includes(value));
     }
-
     /**
      * fetch SpotLight Setup details by subaccount id
      */
@@ -114,6 +120,7 @@ export class CtaasDashboardComponent implements OnInit {
      */
     fetchCtaasDashboardDetailsBySubaccount(): void {
         this.isLoadingResults = true;
+        this.resultantImagesList = this.resultantImagesListBk = [];
         const requests: Observable<any>[] = [];
         // iterate through dashboard reports
         for (const key in ReportType) {
@@ -124,7 +131,6 @@ export class CtaasDashboardComponent implements OnInit {
         // get all the request response in an array
         forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
             if (res) {
-                this.resultantImagesList = [];
                 // get all response without any error messages
                 const result: { lastUpdatedTS: string, imageBase64: string, reportType: string }[] = [...res]
                     .filter((e: any) => !e.error)
@@ -135,10 +141,10 @@ export class CtaasDashboardComponent implements OnInit {
                     const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
                     result.forEach((e) => {
                         if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                            resultant.daily.push(e.imageBase64);
+                            resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
                             resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                         } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
-                            resultant.weekly.push(e.imageBase64);
+                            resultant.weekly.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
                             resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                         }
                     });
@@ -147,16 +153,17 @@ export class CtaasDashboardComponent implements OnInit {
                     if (daily.length > 0)
                         this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
                     if (weekly.length > 0)
-                        this.resultantImagesList.push({ reportType: this.WEEKLY, imagesList: weekly });
-                    // check whether we have a dashboard report images or not
-                    this.hasDashboardDetails = this.resultantImagesList.length > 0;
-                } else {
-                    this.hasDashboardDetails = false;
+                        this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.WEEKLY, imagesList: weekly });
+                    this.resultantImagesListBk = [...this.resultantImagesList];
+                    if (this.resultantImagesListBk.length > 0) {
+                        this.onChangeButtonToggle();
+                    }
                 }
+                this.hasDashboardDetails = this.checkForDashboardDetails();
             }
         }, (e) => {
-            this.resultantImagesList = [];
-            this.hasDashboardDetails = false;
+            this.resultantImagesList = this.resultantImagesListBk = [];
+            this.hasDashboardDetails = this.checkForDashboardDetails();
             this.isLoadingResults = false;
             console.error('Error loading dashboard reports | ', e.error);
             this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
@@ -170,6 +177,27 @@ export class CtaasDashboardComponent implements OnInit {
     showLastUpdatedTSByCondition(index: string): boolean {
         return this.lastModifiedDate && (+index) === 0;
     }
+    /**
+     * get report name by report type
+     * @param reportType: string 
+     * @returns: string 
+     */
+    getReportNameByType(reportType: string): string {
+        switch (reportType) {
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY: case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return 'Feature Functionality';
+            case ReportType.DAILY_CALLING_RELIABILITY: return 'Calling Reliability';
+            case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';
+
+        }
+    }
+    /**
+     * check whether dashboard has any data to display or not
+     * @returns: boolean 
+     */
+    checkForDashboardDetails(): boolean {
+        return this.resultantImagesList.length > 0;
+    }
+
     ngOnDestory(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
