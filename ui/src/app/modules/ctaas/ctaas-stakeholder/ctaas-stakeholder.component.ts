@@ -26,15 +26,17 @@ export class CtaasStakeholderComponent implements OnInit {
   actionMenuOptions: any = [];
   isLoadingResults = false;
   isRequestCompleted = false;
-  stakeholdersCount: number = 0; 
+  stakeholdersCount = 0;
+  toggleStatus = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
-  private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
-  private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
+  private readonly MODIFY_STAKEHOLDER = 'Update Details';
+  private readonly DELETE_STAKEHOLDER = 'Delete Account';
 
   readonly options = {
     MODIFY_STAKEHOLDER: this.MODIFY_STAKEHOLDER,
     DELETE_STAKEHOLDER: this.DELETE_STAKEHOLDER
-  }
+  };
+
   constructor(
     private msalService: MsalService,
     public dialog: MatDialog,
@@ -208,6 +210,12 @@ export class CtaasStakeholderComponent implements OnInit {
    * @param selectedRow: any
    */
   onDeleteStakeholderAccount(selectedRow: any): void {
+    if (this.toggleStatus && this.msalService.instance.getActiveAccount()?.idTokenClaims?.roles.includes(Constants.SUBACCOUNT_ADMIN)) {
+      if (this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN).length <= 1) {
+        this.snackBarService.openSnackBar("Error deleting administrator email, at least one administrator must remain");
+        return;
+      }
+    }
     this.dialogService.confirmDialog({
       title: 'Confirm Action',
       message: 'Do you want to confirm this action?',
@@ -258,6 +266,7 @@ export class CtaasStakeholderComponent implements OnInit {
    * @param e: boolean 
    */
   onChangeToggle(flag: boolean): void {
+    this.toggleStatus = flag;
     if (flag) {
       this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN);
     } else {
