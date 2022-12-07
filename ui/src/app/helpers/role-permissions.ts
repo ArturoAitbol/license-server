@@ -147,7 +147,6 @@ export const permissions = {
             'addTestSuite',
             'showBanner',
             'showUserToggle',
-            'changeSpotlightRole'
         ],
         tables: {
             customerOptions: [
