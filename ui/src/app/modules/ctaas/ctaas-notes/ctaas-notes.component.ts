@@ -7,6 +7,8 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Utility } from 'src/app/helpers/utils';
 import {NoteService} from '../../../services/notes.service';
 import {SubAccountService} from '../../../services/sub-account.service';
+import {AddStakeHolderComponent} from '../ctaas-stakeholder/add-stake-holder/add-stake-holder.component';
+import {AddNotesComponent} from './add-notes/add-notes.component';
 
 @Component({
     selector: 'spotlight-notes',
@@ -22,6 +24,7 @@ export class CtaasNotesComponent implements OnInit {
     isLoadingResults = false;
     isRequestCompleted = false;
     readonly CLOSE_NOTE = 'Close Note';
+    readonly ADD_NOTE = 'Close Note';
 
     readonly options = {
         CLOSE_NOTE: this.CLOSE_NOTE
@@ -155,5 +158,27 @@ export class CtaasNotesComponent implements OnInit {
                 this.fetchNoteList();
             }
         });
+    }
+
+    openDialog(type: string){
+        let dialogRef;
+        switch (type) {
+            case this.ADD_NOTE:
+                dialogRef = this.dialog.open(AddNotesComponent, {
+                    width: '400px',
+                    disableClose: false
+                });
+                break;
+        }
+        dialogRef.afterClosed().subscribe((res: any) => {
+            if (res) {
+                this.notesDataBk = this.notesData = [];
+                this.fetchNoteList();
+            }
+        });
+    }
+
+    addNote() {
+        this.openDialog(this.ADD_NOTE);
     }
 }
