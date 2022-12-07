@@ -99,17 +99,8 @@ export const permissions = {
             'subscriptions-overview'
         ],
         elements: [
-            'addCustomer',
-            'addSubaccount',
-            'addLicense',
-            'addAdminEmail',
-            'deleteAdminEmail',
-            'addSubAccAdminEmail',
-            'deleteSubAccAdminEmail',
             'showBanner',
             'showUserToggle',
-            'addStakeholderBtn',
-            'changeSpotlightRole'
         ],
         tables: {
             customerOptions: [
@@ -119,9 +110,8 @@ export const permissions = {
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS',
                 'VIEW_CTAAS_DASHBOARD',
-                'MODIFY_ACCOUNT'],
+                ],
             licenseOptions: [
-                'MODIFY_LICENSE'
             ],
             licConsumptionOptions: [
             ],
@@ -237,7 +227,13 @@ export const permissions = {
             'stakeholders',
             'notes',
         ],
-        elements: ['showBanner'],
+        elements: [
+            'view-profile',
+            'showUserToggle',
+            'addStakeholderBtn',
+            'changeSpotlightRole',
+            'addSpotlightNote'
+        ],
         tables: {
             customerOptions: [
                 'VIEW_LICENSES',
