@@ -8,6 +8,8 @@ import static com.function.auth.RoleAuthHandler.getRolesFromToken;
 import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
 import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 import static com.function.auth.RoleAuthHandler.hasPermission;
+import static com.function.auth.Roles.SUBACCOUNT_ADMIN;
+import static com.function.auth.Roles.SUBACCOUNT_STAKEHOLDER;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import com.microsoft.graph.models.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -156,8 +159,23 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 		 }
 		try {
 			context.getLogger().info("Updating user profile at Azure AD : "+email);
-			GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"),getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
+			User user = GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"), getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
 			context.getLogger().info("Updated user profile at Azure AD : "+jobj);
+			String newRole = getValue(jobj, "role");
+			if (newRole != null && user != null) {
+				context.getLogger().info("Updating user role at Azure AD : " + email);
+				if (newRole.equals(SUBACCOUNT_ADMIN)) {
+					GraphAPIClient.removeRoleByUserId(user.id, SUBACCOUNT_STAKEHOLDER, context);
+					GraphAPIClient.assignRole(user.id, SUBACCOUNT_ADMIN, context);
+					context.getLogger().info("Removed stakeholder role and assigned subaccount admin role");
+				} else if (newRole.equals(SUBACCOUNT_STAKEHOLDER)) {
+					GraphAPIClient.removeRoleByUserId(user.id, SUBACCOUNT_ADMIN, context);
+					GraphAPIClient.assignRole(user.id, SUBACCOUNT_STAKEHOLDER, context);
+					context.getLogger().info("Removed subaccount admin role and assigned stakeholder role");
+				} else {
+					context.getLogger().info("New role is invalid, will skip role update");
+				}
+			}
 		} catch(Exception e) {
 			context.getLogger().info("Failed to update user profile at Azure AD. Exception: " + e.getMessage());
 		}
