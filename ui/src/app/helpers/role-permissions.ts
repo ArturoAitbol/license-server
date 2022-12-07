@@ -41,7 +41,9 @@ export const permissions = {
             'auditInfo',
             'addTestSuite',
             'showBanner',
-            'showUserToggle'
+            'showUserToggle',
+            'addStakeholderBtn',
+            'changeSpotlightRole'
         ],
         tables: {
             customerOptions: [
@@ -105,7 +107,9 @@ export const permissions = {
             'addSubAccAdminEmail',
             'deleteSubAccAdminEmail',
             'showBanner',
-            'showUserToggle'
+            'showUserToggle',
+            'addStakeholderBtn',
+            'changeSpotlightRole'
         ],
         tables: {
             customerOptions: [
@@ -152,7 +156,8 @@ export const permissions = {
             'addLicenseConsumption',
             'addTestSuite',
             'showBanner',
-            'showUserToggle'
+            'showUserToggle',
+            'changeSpotlightRole'
         ],
         tables: {
             customerOptions: [
@@ -272,7 +277,11 @@ export const permissions = {
             'notes',
         ],
         elements: [
-            'view-profile'
+            'view-profile',
+            'showUserToggle',
+            'addStakeholderBtn',
+            'changeSpotlightRole',
+            'addSpotlightNote'
         ],
         tables: {
             customerOptions: [
@@ -303,9 +312,13 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards'
+            'report-dashboards',
+            'stakeholders',
+            'notes',
         ],
-        elements: [],
+        elements: [
+            'showUserToggle'
+        ],
         tables: {
             customerOptions: [],
             licenseOptions: [],
