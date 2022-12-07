@@ -64,12 +64,6 @@ public class Permissions {
     );
 
     public static final EnumSet<Resource> SaleAdminPermissions = EnumSet.of(
-            // CREATE
-            CREATE_CUSTOMER,
-            CREATE_SUBACCOUNT,
-            CREATE_SUBACCOUNT_ADMIN_MAIL,
-            CREATE_ADMIN_EMAIL,
-            CREATE_LICENSE,
             // READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -81,11 +75,7 @@ public class Permissions {
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
             GET_CTAAS_DASHBOARD,
-            GET_SUBSCRIPTIONS_OVERVIEW,
-            // UPDATE
-            MODIFY_CUSTOMER,
-            MODIFY_SUBACCOUNT,
-            MODIFY_LICENSE
+            GET_SUBSCRIPTIONS_OVERVIEW
     );
 
     public static final EnumSet<Resource> ConfigTesterPermissions = EnumSet.of(
