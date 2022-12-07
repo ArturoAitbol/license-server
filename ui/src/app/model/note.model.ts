@@ -3,10 +3,10 @@ export interface Note {
     subaccountId: string;
     content: string;
     status: string;
-    openDate: string;
-    openedBy: string;
-    closeDate: string;
-    closedBy: string;
+    openDate?: string;
+    openedBy?: string;
+    closeDate?: string;
+    closedBy?: string;
 }
 
 export interface NoteAPIResponse {

@@ -1,0 +1,24 @@
+<div class="container" style="text-align: center;">
+    <h1 id="page-title" mat-dialog-title>Add Note</h1>
+    <form [formGroup]="noteForm" (ngSubmit)="addNote()">
+        <div class="flex-container">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
+            <mat-dialog-content>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label id="name-label"> Note content</mat-label>
+                        <input required matInput value="" formControlName="content" id="content" maxlength="80">
+                    </mat-form-field>
+                </div>
+            </mat-dialog-content>
+        </div>
+        <mat-dialog-actions>
+            <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Cancel</button>
+            <button mat-raised-button color="primary" [disabled]="!noteForm.valid" type="submit"
+                    id="submit-note-button" title="note-form">Submit
+            </button>
+        </mat-dialog-actions>
+    </form>
+</div>

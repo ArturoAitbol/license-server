@@ -11,14 +11,14 @@ export class NoteService {
 
     constructor(private httpClient: HttpClient) { }
 
-    // /**
-    //  * purchase new Note
-    //  * @param data: Note
-    //  * @returns: Observable
-    //  */
-    // public createNote(data: Note) {
-    //     return this.httpClient.post(this.API_URL, data);
-    // }
+    /**
+     * purchase new Note
+     * @param data: Note
+     * @returns: Observable
+     */
+    public createNote(data: Note) {
+        return this.httpClient.post(this.API_URL, data);
+    }
 
     /**
      * fetch Note details list
