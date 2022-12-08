@@ -1,6 +1,7 @@
 package com.function;
 
 import com.function.auth.Resource;
+import com.function.clients.EmailClient;
 import com.function.clients.GraphAPIClient;
 import com.function.exceptions.ADException;
 import com.function.util.Constants;
@@ -101,6 +102,7 @@ public class TekvLSCreateSubaccount
 		String verifyEmailsSql = "SELECT count(*) FROM subaccount_admin WHERE subaccount_admin_email=?;";
 		String adminEmailSql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid);";
 		String adminCtassSetupSql = "INSERT INTO ctaas_setup (subaccount_id, status, on_boarding_complete) VALUES (?::uuid, ?, ?::boolean);";
+		String customerNameSql = "SELECT name FROM customer WHERE id = ?::uuid";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -111,7 +113,8 @@ public class TekvLSCreateSubaccount
 			PreparedStatement insertStmt = connection.prepareStatement(insertSql);
 			PreparedStatement verifyEmailStmt = connection.prepareStatement(verifyEmailsSql);
 			PreparedStatement insertEmailStmt = connection.prepareStatement(adminEmailSql);
-			PreparedStatement insertCtassSetupStmt = connection.prepareStatement(adminCtassSetupSql)) {
+			PreparedStatement insertCtassSetupStmt = connection.prepareStatement(adminCtassSetupSql);
+			PreparedStatement customerNameStmt = connection.prepareStatement(customerNameSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
@@ -169,6 +172,17 @@ public class TekvLSCreateSubaccount
 					context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
 					insertCtassSetupStmt.executeUpdate();
 					context.getLogger().info("SpotLight setup default values inserted successfully.");
+
+					// Get customer name to send spotlight invitation
+					customerNameStmt.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ID.value));
+					rs = customerNameStmt.executeQuery();
+					rs.next();
+					String customerName = rs.getString("name");
+
+					if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+						EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName, context);
+					}
+
 				} else {
 					this.ADUserCreation(jobj,context);
 				}
