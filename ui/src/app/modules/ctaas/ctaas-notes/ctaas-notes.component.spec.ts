@@ -19,6 +19,8 @@ import { NoteService } from '../../../services/notes.service';
 import { SubAccountService } from '../../../services/sub-account.service';
 import { SubaccountServiceMock } from '../../../../test/mock/services/subaccount-service.mock';
 import { Note } from '../../../model/note.model';
+import { AddNotesComponent } from "./add-notes/add-notes.component";
+import { CtaasHistoricalDashboardComponent } from "../ctaas-historical-dashboard/ctaas-historical-dashboard.component";
 
 let spotlightNotesComponentTestInstance: CtaasNotesComponent;
 let fixture : ComponentFixture<CtaasNotesComponent>;
@@ -103,7 +105,7 @@ describe('Notes data collection and parsing tests',()=>{
         expect(SubaccountServiceMock.getSelectedSubAccount).toHaveBeenCalled();
         expect(NoteServiceMock.getNoteList).toHaveBeenCalled();
         expect(MsalServiceMock.instance.getActiveAccount).toHaveBeenCalled();
-        expect(spotlightNotesComponentTestInstance.actionMenuOptions).toEqual(['Close Note']);
+        expect(spotlightNotesComponentTestInstance.actionMenuOptions).toEqual(['Close Note','View Dashboard']);
     });
 
     it('should change the loading-related variables if getNotes() got an error',()=>{
@@ -142,12 +144,18 @@ describe('Notes dialog calls and interactions', ()=>{
 
     it('should execute rowAction() with expected data given set arguments',()=>{
         spyOn(spotlightNotesComponentTestInstance,'onCloseNote');
+        spyOn(spotlightNotesComponentTestInstance,'viewDashboard');
+
         const note: Note = NoteServiceMock.mockNoteA;
         const selectedTestData = { selectedRow: note, selectedOption: undefined, selectedIndex: 'selectedTestItem'};
 
         selectedTestData.selectedOption = spotlightNotesComponentTestInstance.CLOSE_NOTE;
         spotlightNotesComponentTestInstance.rowAction(selectedTestData);
         expect(spotlightNotesComponentTestInstance.onCloseNote).toHaveBeenCalledWith(note);
+
+        selectedTestData.selectedOption = spotlightNotesComponentTestInstance.VIEW_DASHBOARD;
+        spotlightNotesComponentTestInstance.rowAction(selectedTestData);
+        expect(spotlightNotesComponentTestInstance.viewDashboard).toHaveBeenCalledWith(note);
 
     });
 
@@ -177,5 +185,44 @@ describe('Notes dialog calls and interactions', ()=>{
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
         expect(NoteServiceMock.closeNote).not.toHaveBeenCalled();
         expect(spotlightNotesComponentTestInstance.fetchNoteList).not.toHaveBeenCalled();
+    });
+
+    it('should not delete note if the call deleteNote() throws an error',()=>{
+        const responseWithError = {error:"some error"};
+        spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+        spyOn(NoteServiceMock,'closeNote').and.returnValue(throwError(responseWithError));
+        spyOn(spotlightNotesComponentTestInstance,'fetchNoteList');
+
+        spotlightNotesComponentTestInstance.deleteNote(NoteServiceMock.mockNoteA.id);
+
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(responseWithError.error, 'Error while deleting Note');
+        expect(NoteServiceMock.closeNote).toHaveBeenCalled();
+        expect(spotlightNotesComponentTestInstance.fetchNoteList).not.toHaveBeenCalled();
+    });
+
+    it('should open a dialog with the AddNote component after calling addNote()',()=>{
+        spyOn(MatDialogMock,'open').and.callThrough();
+        spyOn(spotlightNotesComponentTestInstance,'fetchNoteList');
+        spyOn(spotlightNotesComponentTestInstance,'addNote').and.callThrough();
+        spyOn(spotlightNotesComponentTestInstance,'openDialog').and.callThrough();
+
+        spotlightNotesComponentTestInstance.addNote();
+
+        expect(spotlightNotesComponentTestInstance.openDialog).toHaveBeenCalledWith(spotlightNotesComponentTestInstance.ADD_NOTE);
+        expect(MatDialogMock.open).toHaveBeenCalledWith(AddNotesComponent,jasmine.any(Object));
+        expect(spotlightNotesComponentTestInstance.fetchNoteList).toHaveBeenCalled();
+    });
+
+    it('should show the historical dashboard when calling viewDashboard()',()=>{
+        spyOn(MatDialogMock,'open').and.callThrough();
+        spyOn(spotlightNotesComponentTestInstance,'fetchNoteList');
+        spyOn(spotlightNotesComponentTestInstance,'viewDashboard').and.callThrough();
+        spyOn(spotlightNotesComponentTestInstance,'openDialog').and.callThrough();
+        const note: Note = NoteServiceMock.mockNoteA;
+
+        spotlightNotesComponentTestInstance.viewDashboard(note);
+
+        expect(spotlightNotesComponentTestInstance.openDialog).toHaveBeenCalledWith(spotlightNotesComponentTestInstance.VIEW_DASHBOARD,note);
+        expect(MatDialogMock.open).toHaveBeenCalledWith(CtaasHistoricalDashboardComponent,jasmine.any(Object));
     });
 });

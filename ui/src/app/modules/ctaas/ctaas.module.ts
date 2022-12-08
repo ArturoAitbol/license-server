@@ -18,6 +18,7 @@ import { LicenseConfirmationModalComponent } from './ctaas-setup/license-confirm
 import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/modify-test-suite.component';
 import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
+import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
     ModifyTestSuiteComponent,
     BannerComponent,
     CtaasNotesComponent,
-    AddNotesComponent
+    AddNotesComponent,
+    CtaasHistoricalDashboardComponent
   ],
   imports: [
     CommonModule,

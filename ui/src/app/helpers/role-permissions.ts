@@ -80,6 +80,7 @@ export const permissions = {
             ],
             noteOptions: [
                 'CLOSE_NOTE',
+                'VIEW_DASHBOARD'
             ]
         }
     },
@@ -254,6 +255,7 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'CLOSE_NOTE',
+                'VIEW_DASHBOARD'
             ]
         }
     },
@@ -295,6 +297,7 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'CLOSE_NOTE',
+                'VIEW_DASHBOARD'
             ]
         }
     },
@@ -312,7 +315,10 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [],
             stakeholderOptions: [],
-            ctaasTestSuiteOptions: []
+            ctaasTestSuiteOptions: [],
+            noteOptions: [
+                'VIEW_DASHBOARD'
+            ]
         }
     }
 };

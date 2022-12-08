@@ -121,6 +121,7 @@ export class CtaasDashboardComponent implements OnInit {
     fetchCtaasDashboardDetailsBySubaccount(): void {
         this.isLoadingResults = true;
         this.resultantImagesList = this.resultantImagesListBk = [];
+        this.ctaasDashboardService.setReports(null);
         const requests: Observable<any>[] = [];
         // iterate through dashboard reports
         for (const key in ReportType) {
@@ -132,14 +133,18 @@ export class CtaasDashboardComponent implements OnInit {
         forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
             if (res) {
                 // get all response without any error messages
-                const result: { lastUpdatedTS: string, imageBase64: string, reportType: string }[] = [...res]
+                const result: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string }[] = [...res]
                     .filter((e: any) => !e.error)
-                    .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string } }) => e.response);
+                    .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string } }) => e.response);
                 this.isLoadingResults = false;
                 if (result.length > 0) {
                     this.hasDashboardDetails = true;
                     const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
+                    const reportsIdentifiers: any[] = []; 
                     result.forEach((e) => {
+                        let reportIdentifier = (({ timestampId, reportType }) => ({ timestampId, reportType }))(e);
+                        reportsIdentifiers.push(reportIdentifier);
+
                         if (e.reportType.toLowerCase().includes(this.DAILY)) {
                             resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
                             resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
@@ -148,6 +153,7 @@ export class CtaasDashboardComponent implements OnInit {
                             resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                         }
                     });
+                    this.ctaasDashboardService.setReports(reportsIdentifiers.length>0 ? reportsIdentifiers : null);
                     const { daily, weekly, lastUpdatedDateList } = resultant;
                     this.lastModifiedDate = lastUpdatedDateList[0];
                     if (daily.length > 0)

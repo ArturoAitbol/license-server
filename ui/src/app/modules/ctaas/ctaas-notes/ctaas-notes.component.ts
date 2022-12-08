@@ -7,8 +7,9 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Utility } from 'src/app/helpers/utils';
 import {NoteService} from '../../../services/notes.service';
 import {SubAccountService} from '../../../services/sub-account.service';
-import {AddStakeHolderComponent} from '../ctaas-stakeholder/add-stake-holder/add-stake-holder.component';
 import {AddNotesComponent} from './add-notes/add-notes.component';
+import { Note } from 'src/app/model/note.model';
+import { CtaasHistoricalDashboardComponent } from '../ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 
 @Component({
     selector: 'spotlight-notes',
@@ -25,9 +26,11 @@ export class CtaasNotesComponent implements OnInit {
     isRequestCompleted = false;
     readonly CLOSE_NOTE = 'Close Note';
     readonly ADD_NOTE = 'Close Note';
+    readonly VIEW_DASHBOARD = 'View Dashboard';
 
     readonly options = {
-        CLOSE_NOTE: this.CLOSE_NOTE
+        CLOSE_NOTE: this.CLOSE_NOTE,
+        VIEW_DASHBOARD: this.VIEW_DASHBOARD
     }
     constructor(
         private msalService: MsalService,
@@ -114,13 +117,24 @@ export class CtaasNotesComponent implements OnInit {
      */
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
         const { selectedRow, selectedOption, selectedIndex } = object;
-        console.log(selectedRow);
         switch (selectedOption) {
             case this.CLOSE_NOTE:
                 this.onCloseNote(selectedRow);
                 break;
+            case this.VIEW_DASHBOARD:
+                this.viewDashboard(selectedRow);
+                break;
         }
     }
+
+    /**
+     * on click view dashboard
+     * @param note: Note
+     */
+    viewDashboard(note: Note): void{
+        this.openDialog(this.VIEW_DASHBOARD,note);
+    }
+
     /**
      * on click delete note
      * @param selectedRow: any
@@ -143,29 +157,28 @@ export class CtaasNotesComponent implements OnInit {
      * @param noteId: string
      */
     deleteNote(noteId: string): void {
-        this.noteService.closeNote(noteId).subscribe((response: any) => {
-            if (response) {
-                const { error } = response;
-                if (error) {
-                    this.snackBarService.openSnackBar(response.error, 'Error while deleting Note');
-                } else {
-                    this.notesDataBk = this.notesData = [];
-                    this.fetchNoteList();
-                }
-            } else {
-                this.snackBarService.openSnackBar('Closed Note successfully', '');
-                this.notesDataBk = this.notesData = [];
-                this.fetchNoteList();
-            }
+        this.noteService.closeNote(noteId).subscribe(() => {
+            this.snackBarService.openSnackBar('Closed Note successfully', '');
+            this.notesDataBk = this.notesData = [];
+            this.fetchNoteList();
+        },(err)=>{
+            this.snackBarService.openSnackBar(err.error, 'Error while deleting Note');
         });
     }
 
-    openDialog(type: string){
+    openDialog(type: string, selectedItemData?: any){
         let dialogRef;
         switch (type) {
             case this.ADD_NOTE:
                 dialogRef = this.dialog.open(AddNotesComponent, {
                     width: '400px',
+                    disableClose: false
+                });
+                break;
+            case this.VIEW_DASHBOARD:
+                dialogRef = this.dialog.open(CtaasHistoricalDashboardComponent, {
+                    data: selectedItemData,
+                    width: '1000px',
                     disableClose: false
                 });
                 break;
