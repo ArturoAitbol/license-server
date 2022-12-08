@@ -3,7 +3,7 @@
     <div class="note-heading">
         <h2 id="main-title">Notes</h2>
     </div>
-    <div>
+    <div *lcCheckAccessFor="'addSpotlightNote'">
         <button style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addNote()">
             Add Note
         </button>

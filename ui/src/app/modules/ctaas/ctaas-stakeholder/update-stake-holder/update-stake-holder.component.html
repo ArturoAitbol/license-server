@@ -36,6 +36,15 @@
                         <input required matInput value="" formControlName="phoneNumber" id="phoneNumber" placeholder="ex: +919898989809">
                     </mat-form-field>
                 </div>
+                <div *lcCheckAccessFor="'changeSpotlightRole'">
+                    <mat-form-field appearance="outline">
+                        <mat-label>User Role</mat-label>
+                        <mat-select formControlName="role">
+                            <mat-option [value]="SUBACCOUNT_STAKEHOLDER_ROLE" title="Stakeholder}">Stakeholder</mat-option>
+                            <mat-option [value]="SUBACCOUNT_ADMIN_ROLE" title="Stakeholder}">Subaccount Admin</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
