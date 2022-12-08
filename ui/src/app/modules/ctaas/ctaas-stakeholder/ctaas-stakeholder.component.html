@@ -10,7 +10,7 @@
         &nbsp;
         <span class="fw-500" *lcCheckAccessFor="'showUserToggle'">Subaccount Admin</span>
         &nbsp;
-        <button style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addStakeholder()">
+        <button *lcCheckAccessFor="'addStakeholderBtn'" style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addStakeholder()">
             Add Stakeholder
         </button>
     </div>

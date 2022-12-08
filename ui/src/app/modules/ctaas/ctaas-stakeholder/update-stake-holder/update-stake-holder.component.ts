@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Report } from 'src/app/helpers/report';
 import { Constants } from 'src/app/helpers/constants';
@@ -21,6 +21,8 @@ export class UpdateStakeHolderComponent implements OnInit {
   mappedNotificationsList: string[] = [];
   readonly type = 'TYPE:Detailed';
   readonly notifications = 'TYPE:Detailed,DAILY_REPORTS';
+  readonly SUBACCOUNT_STAKEHOLDER_ROLE = Constants.SUBACCOUNT_STAKEHOLDER;
+  readonly SUBACCOUNT_ADMIN_ROLE = Constants.SUBACCOUNT_ADMIN;
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
@@ -38,11 +40,12 @@ export class UpdateStakeHolderComponent implements OnInit {
       companyName: [{ value: '' }, Validators.required],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
+      role: [''],
     });
     try {
       const { email } = this.data;
       this.data = { ...this.data, ...{ subaccountAdminEmail: email } };
-      const { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications } = this.data;
+      const { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, notifications, role } = this.data;
       if (notifications) {
         const mappedNotifications = notifications.split(',').map((e: string) => {
           const obj = this.reports.find((x: { label: string, value: string }) => x.label.toLowerCase() === e.toLowerCase());
@@ -52,16 +55,15 @@ export class UpdateStakeHolderComponent implements OnInit {
         });
         this.mappedNotificationsList = mappedNotifications;
       }
-      const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type };
+      const payload = { name, jobTitle, companyName, subaccountAdminEmail, phoneNumber, type, role };
       this.updateStakeholderForm.patchValue(payload);
-      this.previousFormValue = { ...this.updateStakeholderForm };
+      this.previousFormValue = { ...payload };
     } catch (e) {
       console.error('some error | ', e);
     }
   }
 
   ngOnInit(): void {
-    console.log(this.data)
     this.reports = this.getReports();
     this.initializeForm();
   }
@@ -108,8 +110,10 @@ export class UpdateStakeHolderComponent implements OnInit {
    * @returns: any 
    */
   preparePayload(): any {
-    let extraData = {...this.updateStakeholderForm.value, notifications:this.notifications, type:this.type, subaccountAdminEmail: this.data.email}
-    console.log(extraData);
+    const extraData = {...this.updateStakeholderForm.value, notifications:this.notifications, type:this.type, subaccountAdminEmail: this.data.email};
+    if (this.previousFormValue.role === extraData.role) {
+      extraData.role = null;
+    }
     return extraData;
   }
   // /**

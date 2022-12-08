@@ -187,7 +187,8 @@ describe('modify stakeholder - FromGroup verification test', () => {
             jobTitle:'',
             companyName:'',
             subaccountAdminEmail:'',
-            phoneNumber:''
+            phoneNumber:'',
+            role: '',
         });
         expect(modifyStakeholder.get('name').valid).toBeFalse();
         expect(modifyStakeholder.get('jobTitle').valid).toBeFalse();
@@ -205,7 +206,8 @@ describe('modify stakeholder - FromGroup verification test', () => {
             jobTitle:'testJf',
             companyName:'testCf',
             subaccountAdminEmail:'teststakeholder11@gmail.com',
-            phoneNumber:'+919898989809'
+            phoneNumber:'+919898989809',
+            role: '',
         });
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').enable();
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').setValue('teststakeholder11@gmail.com');
@@ -222,7 +224,8 @@ describe('modify stakeholder - FromGroup verification test', () => {
             jobTitle:'',
             companyName:'',
             subaccountAdminEmail:'',
-            phoneNumber:''
+            phoneNumber:'',
+            role: '',
         });
         fixture.detectChanges();
         expect(fixture.nativeElement.querySelector('#submit-stakeholder-button').disabled).toBeTrue();
