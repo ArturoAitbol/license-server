@@ -1,6 +1,7 @@
 package com.function;
 
 import com.function.auth.Resource;
+import com.function.clients.EmailClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.Constants;
@@ -105,6 +106,9 @@ public class TekvLSModifySubaccountById
 		String verifyCtassSetupSql = "SELECT count(*) FROM ctaas_setup WHERE subaccount_id=?::uuid;";
 		String adminCtassSetupSql = "INSERT INTO ctaas_setup (subaccount_id, status, on_boarding_complete) VALUES (?::uuid, ?, ?::boolean);";
 
+		String customerNameSql = "SELECT c.name FROM customer c, subaccount s WHERE s.customer_id = c.id AND s.id = ?::uuid";
+		String adminEmailSql = "SELECT subaccount_admin_email FROM subaccount_admin WHERE subaccount_id = ?::uuid LIMIT 1";
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -112,7 +116,9 @@ public class TekvLSModifySubaccountById
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			PreparedStatement statement = queryBuilder.build(connection);
 			PreparedStatement verifyCtassSetupStmt = connection.prepareStatement(verifyCtassSetupSql);
-			PreparedStatement insertCtassSetupStmt = connection.prepareStatement(adminCtassSetupSql)) {
+			PreparedStatement insertCtassSetupStmt = connection.prepareStatement(adminCtassSetupSql);
+			PreparedStatement customerNameStmt = connection.prepareStatement(customerNameSql);
+			PreparedStatement adminEmailStmt = connection.prepareStatement(adminEmailSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			String userId = getUserIdFromToken(tokenClaims,context);
@@ -135,6 +141,20 @@ public class TekvLSModifySubaccountById
 						context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
 						insertCtassSetupStmt.executeUpdate();
 						context.getLogger().info("SpotLight setup default values inserted successfully.");
+
+						// Query the database for customer name and first subacc admin email
+						customerNameStmt.setString(1, id);
+						ResultSet rs = customerNameStmt.executeQuery();
+						rs.next();
+						final String  customerName = rs.getString("name");
+						adminEmailStmt.setString(1, id);
+						rs = adminEmailStmt.executeQuery();
+						rs.next();
+						final String adminEmail = rs.getString("subaccount_admin_email");
+
+						if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+							EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
+						}
 					}
 				}
 			}
