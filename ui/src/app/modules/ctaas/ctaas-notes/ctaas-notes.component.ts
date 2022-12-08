@@ -136,7 +136,7 @@ export class CtaasNotesComponent implements OnInit {
     }
 
     /**
-     * on click delete note
+     * on click close note
      * @param selectedRow: any
      */
     onCloseNote(selectedRow: any): void {
@@ -148,17 +148,17 @@ export class CtaasNotesComponent implements OnInit {
         }).subscribe((confirmed) => {
             if (confirmed) {
                 const noteId = selectedRow.id;
-                this.deleteNote(noteId);
+                this.closeNote(noteId);
             }
         });
     }
     /**
-     * delete selected note details by id
+     * close selected note by id
      * @param noteId: string
      */
-    deleteNote(noteId: string): void {
+    closeNote(noteId: string): void {
         this.noteService.closeNote(noteId).subscribe(() => {
-            this.snackBarService.openSnackBar('Closed Note successfully', '');
+            this.snackBarService.openSnackBar('Note closed successfully', '');
             this.notesDataBk = this.notesData = [];
             this.fetchNoteList();
         },(err)=>{

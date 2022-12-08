@@ -25,7 +25,6 @@ export const permissions = {
             'test-suites',
             'stakeholders',
             'setup',
-            'notes',
             'subscriptions-overview'
         ],
         elements: [
@@ -80,10 +79,7 @@ export const permissions = {
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
             ],
-            noteOptions: [
-                'CLOSE_NOTE',
-                'VIEW_DASHBOARD'
-            ]
+            noteOptions: []
         }
     },
     'tekvizion.SalesAdmin': {
