@@ -98,7 +98,7 @@ describe('Notes data collection and parsing tests',()=>{
     it('should make a call to get selected Customer, notes and actionMenuOptions',()=>{
         spyOn(NoteServiceMock,'getNoteList').and.callThrough();
         spyOn(SubaccountServiceMock,'getSelectedSubAccount').and.callThrough();
-        spyOn(MsalServiceMock.instance,'getActiveAccount').and.callThrough();
+        spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsSubaccountRole);
 
         fixture.detectChanges();
 
@@ -187,13 +187,13 @@ describe('Notes dialog calls and interactions', ()=>{
         expect(spotlightNotesComponentTestInstance.fetchNoteList).not.toHaveBeenCalled();
     });
 
-    it('should not delete note if the call deleteNote() throws an error',()=>{
+    it('should not delete note if the call closeNote() throws an error',()=>{
         const responseWithError = {error:"some error"};
         spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
         spyOn(NoteServiceMock,'closeNote').and.returnValue(throwError(responseWithError));
         spyOn(spotlightNotesComponentTestInstance,'fetchNoteList');
 
-        spotlightNotesComponentTestInstance.deleteNote(NoteServiceMock.mockNoteA.id);
+        spotlightNotesComponentTestInstance.closeNote(NoteServiceMock.mockNoteA.id);
 
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(responseWithError.error, 'Error while deleting Note');
         expect(NoteServiceMock.closeNote).toHaveBeenCalled();
