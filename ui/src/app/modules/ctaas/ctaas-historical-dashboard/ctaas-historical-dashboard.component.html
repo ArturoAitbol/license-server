@@ -1,0 +1,66 @@
+<div>
+  <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'"></app-banner>
+  <div class="container-fluid controls" id="reportContainer">
+    <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
+  </div>
+
+  <!-- blank view -->
+  <ng-template #blankView>
+    <div class="jumbotron d-flex align-items-center bg-transparent">
+      <div class="container">
+        <img *ngIf="isLoadingResults" height="80" width="80" src="assets/images/spinner.gif"
+          alt="loading spinner gif">
+        <h2 *ngIf="!isLoadingResults">
+          Failed to load the dashboard. Please reach out to tekVizion support.
+        </h2>
+      </div>
+    </div>
+  </ng-template>
+
+    <!-- pbrs report images view -->
+  <ng-template #reportView>
+    <div class="container-fluid controls" id="reportContainer">
+      <br>
+      <section>
+        <div class="flex-container mb-2 justify-content-center">
+          <div>
+            <mat-button-toggle-group id="toggle-button" [formControl]="fontStyleControl" aria-label="Font Style"
+              (change)="onChangeButtonToggle()">
+              <mat-button-toggle [value]="DAILY">{{DAILY | titlecase}}</mat-button-toggle>
+              <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="right">
+            Last Updated: {{lastModifiedDate}}
+          </div>
+        </div>
+        <ng-container *ngIf="checkForDashboardDetails(); then withReport;else noReport"> </ng-container>
+      </section>
+    </div>
+  </ng-template>
+
+</div>
+  
+<ng-template #withReport>
+  <mat-dialog-content>
+    <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
+        <div [ngClass]="{'col-md-6':item.reportType===DAILY,'col-md-12':item.reportType===WEEKLY}" class="p-1 mb-1"
+            *ngFor="let image of item.imagesList;let i1=index;">
+            <mat-card class="card">
+                <mat-card-header>
+                <mat-card-title class="card-title">{{image.reportType}}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                <img [src]="image.imageBase64" class="img-fluid header-image" [id]="i">
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>
+
+<ng-template #noReport>
+  <div class="jumbotron d-flex align-items-center bg-transparent justify-content-center">
+    <h2>No Reports available</h2>
+  </div>
+</ng-template>

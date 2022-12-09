@@ -25,7 +25,6 @@ export const permissions = {
             'test-suites',
             'stakeholders',
             'setup',
-            'notes',
             'subscriptions-overview'
         ],
         elements: [
@@ -80,9 +79,7 @@ export const permissions = {
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
             ],
-            noteOptions: [
-                'CLOSE_NOTE',
-            ]
+            noteOptions: []
         }
     },
     'tekvizion.SalesAdmin': {
@@ -254,6 +251,7 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'CLOSE_NOTE',
+                'VIEW_DASHBOARD'
             ]
         }
     },
@@ -299,6 +297,7 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'CLOSE_NOTE',
+                'VIEW_DASHBOARD'
             ]
         }
     },
@@ -320,7 +319,10 @@ export const permissions = {
             licConsumptionOptions: [],
             projectOptions: [],
             stakeholderOptions: [],
-            ctaasTestSuiteOptions: []
+            ctaasTestSuiteOptions: [],
+            noteOptions: [
+                'VIEW_DASHBOARD'
+            ]
         }
     }
 };

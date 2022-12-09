@@ -8,7 +8,8 @@ const NOTE_A = {
     openedBy: 'test@unit.test',
     closedBy: 'test@unit.test',
     status: 'Closed',
-    content: 'Test content 1'
+    content: 'Test content 1',
+    reports: [{timestampId:"221207090048",reportType:"Daily-FeatureFunctionality"}]
 };
 
 const NOTE_B = {
@@ -19,7 +20,8 @@ const NOTE_B = {
     openedBy: 'test@unit.test',
     closedBy: '',
     status: 'Open',
-    content: 'Test content 2'
+    content: 'Test content 2',
+    reports: [{timestampId:"221207090048",reportType:"Daily-FeatureFunctionality"}]
 };
 
 const NOTE_C = {
@@ -30,7 +32,8 @@ const NOTE_C = {
     openedBy: 'test@unit.test',
     closedBy: '',
     status: 'Closed',
-    content: 'Test content 3'
+    content: 'Test content 3',
+    reports: [{timestampId:"221207090048",reportType:"Daily-FeatureFunctionality"}]
 };
 
 const NOTES_LIST = {

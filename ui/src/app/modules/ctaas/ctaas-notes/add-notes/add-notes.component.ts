@@ -1,10 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { FormBuilder, Validators } from "@angular/forms";
 import { SubAccountService } from "src/app/services/sub-account.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
 import { NoteService } from "src/app/services/notes.service";
 import { MatDialogRef } from '@angular/material/dialog';
 import { Note } from '../../../../model/note.model';
+import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 
 @Component({
     selector: 'add-notes-modal',
@@ -24,28 +25,34 @@ export class AddNotesComponent implements OnInit {
         private snackBarService: SnackBarService,
         private subaccountService: SubAccountService,
         private notesService: NoteService,
+        private ctaasDashboardService: CtaasDashboardService,
         public dialogRef: MatDialogRef<AddNotesComponent>) { }
 
     ngOnInit(): void {
     }
 
     addNote() {
-        console.log(this.noteForm.get('content').value);
-        let noteToAdd: Note = {
-            content: this.noteForm.get('content').value,
-            subaccountId: this.subaccountService.getSelectedSubAccount().id,
-            status: 'Open'
-        };
-        this.notesService.createNote(noteToAdd).subscribe((res: any) => {
-            if (!res.error) {
-                this.snackBarService.openSnackBar('Note added successfully!', '');
-                this.isDataLoading = false;
-                this.dialogRef.close(res);
-            } else {
-                this.snackBarService.openSnackBar(res.error, 'Error adding note!');
-                this.isDataLoading = false;
-            }
-        });
+        const currentReports = this.ctaasDashboardService.getReports();
+        if(currentReports!==null){
+            let noteToAdd: Note = {
+                content: this.noteForm.get('content').value,
+                subaccountId: this.subaccountService.getSelectedSubAccount().id,
+                status: 'Open',
+                reports: currentReports
+            };
+            this.notesService.createNote(noteToAdd).subscribe((res: any) => {
+                if (!res.error) {
+                    this.snackBarService.openSnackBar('Note added successfully!', '');
+                    this.isDataLoading = false;
+                    this.dialogRef.close(res);
+                } else {
+                    this.snackBarService.openSnackBar(res.error, 'Error adding note!');
+                    this.isDataLoading = false;
+                }
+            });
+        }else{
+            this.snackBarService.openSnackBar("Reports are missing", 'Error adding note!');
+        }
     }
 
     onCancel() {
