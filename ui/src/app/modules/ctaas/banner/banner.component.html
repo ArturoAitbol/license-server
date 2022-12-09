@@ -1,4 +1,4 @@
-<div class="banner-container" [ngClass]="{'alignment' : stylesflag === 'dashboard' || stylesflag === 'setup'}">
+<div class="banner-container">
     <ul class="breadcrumb d-flex align-content-center" *ngIf="isCustomerNameAndSubaccountNameIsSame; else elseBlock">
         <li class="breadcrumb-item"> {{getLoginUserDetails.customerName}} </li>
         <li class="breadcrumb-item"> {{getLoginUserDetails.name}} </li>

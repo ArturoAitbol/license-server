@@ -71,6 +71,7 @@ p {
 .controls {
   /* margin-top: 1%; */
   text-align: center;
+  padding: 0px !important;
 }
 
 button {
@@ -152,4 +153,11 @@ button:hover {
 .card {
   border-radius: 5px;
   padding: 10px 0px;
+}
+.mat-button-toggle-group {
+  height: 36px;
+  align-items: center;
+}
+.plr {
+  padding: 0px 6px;
 }

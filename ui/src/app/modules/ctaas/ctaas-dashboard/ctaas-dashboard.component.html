@@ -45,7 +45,7 @@
 </div>
 
 <ng-template #withReport>
-  <div class="row" *ngFor="let item of resultantImagesList;let i=index;">
+  <div class="row plr" *ngFor="let item of resultantImagesList;let i=index;">
     <div [ngClass]="{'col-6':item.reportType===DAILY,'col-12':item.reportType===WEEKLY}" class="p-1 mb-1"
       *ngFor="let image of item.imagesList;let i1=index;">
       <mat-card class="card">
