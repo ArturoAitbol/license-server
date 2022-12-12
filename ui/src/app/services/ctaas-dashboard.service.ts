@@ -30,12 +30,13 @@ export class CtaasDashboardService {
    * fetch SpotLight Power BI reports
    * @param subaccountId: string 
    * @param reportType: string 
+   * @param timestampId: string
    * @returns: Observable<any> 
    */
-  public getCtaasDashboardDetails(subaccountId: string, reportType: string, timestamp?: string): Observable<any> {
+  public getCtaasDashboardDetails(subaccountId: string, reportType: string, timestampId?: string): Observable<any> {
     let params;
-    if(timestamp)
-      params = new HttpParams().append('timestamp', timestamp);
+    if(timestampId)
+      params = new HttpParams().append('timestampId', timestampId);
     const url = this.FETCH_DASHBOARD_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
     return this.httpClient.get(url,{params});
   }
