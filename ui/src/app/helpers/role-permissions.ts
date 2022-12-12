@@ -107,7 +107,7 @@ export const permissions = {
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS',
                 'VIEW_CTAAS_DASHBOARD',
-                ],
+            ],
             licenseOptions: [
             ],
             licConsumptionOptions: [
@@ -326,4 +326,3 @@ export const permissions = {
         }
     }
 };
-
