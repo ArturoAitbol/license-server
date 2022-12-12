@@ -24,6 +24,7 @@ export class CtaasNotesComponent implements OnInit {
     actionMenuOptions: any = [];
     isLoadingResults = false;
     isRequestCompleted = false;
+    toggleStatus = false;
     readonly CLOSE_NOTE = 'Close Note';
     readonly ADD_NOTE = 'Close Note';
     readonly VIEW_DASHBOARD = 'View Dashboard';
@@ -80,7 +81,8 @@ export class CtaasNotesComponent implements OnInit {
         this.isLoadingResults = true;
         this.noteService.getNoteList(this.subAccountService.getSelectedSubAccount().id).subscribe((res) => {
             this.isRequestCompleted = true;
-            this.notesData = res.notes;
+            this.notesDataBk = res.notes;
+            this.notesData = res.notes.filter(x => x.status === 'Open');
             this.isLoadingResults = false;
         }, err => {
             console.debug('error', err);
@@ -193,5 +195,14 @@ export class CtaasNotesComponent implements OnInit {
 
     addNote() {
         this.openDialog(this.ADD_NOTE);
+    }
+
+    onChangeToggle(flag: boolean): void {
+        this.toggleStatus = flag;
+        if (flag) {
+            this.notesData = this.notesDataBk;
+        } else {
+            this.notesData = this.notesDataBk.filter(x => x.status === 'Open');
+        }
     }
 }

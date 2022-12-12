@@ -3,11 +3,17 @@
     <div class="note-heading">
         <h2 id="main-title">Notes</h2>
     </div>
-    <div *lcCheckAccessFor="'addSpotlightNote'">
-        <button style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addNote()">
+    <div>
+        <span class="fw-500" >Show Closed Notes</span>
+        &nbsp;
+        <mat-slide-toggle id="mat-toggle" [color]="'primary'" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
+        &nbsp;
+        <button *lcCheckAccessFor="'addSpotlightNote'" style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addNote()">
             Add Note
         </button>
     </div>
+
+
 </div>
 
 <section class="table-section">
