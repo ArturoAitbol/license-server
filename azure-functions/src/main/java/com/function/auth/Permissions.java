@@ -233,6 +233,7 @@ public class Permissions {
             GET_AUTH_USER_PROFILE,
             GET_CTAAS_DASHBOARD,
             GET_ALL_NOTES,
+            GET_ALL_SUBACCOUNT_STAKEHOLDER,
             // MODIFY
             MODIFY_AUTH_USER_PROFILE
     );

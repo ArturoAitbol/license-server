@@ -119,7 +119,7 @@ export class CtaasStakeholderComponent implements OnInit {
         const { stakeHolders } = response;
         if (stakeHolders) {
           this.stakeholdersDataBk = this.stakeholdersData = stakeHolders;
-          this.onChangeToggle(false);
+          this.onChangeToggle(this.toggleStatus);
         }
       }, (error) => {
         this.snackBarService.openSnackBar(error, 'Error while loading stake holders');

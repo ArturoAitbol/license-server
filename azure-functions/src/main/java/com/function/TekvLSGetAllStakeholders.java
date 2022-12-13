@@ -146,7 +146,7 @@ public class TekvLSGetAllStakeholders {
                 json.put("error", customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
-            JSONArray stakeHolders = filterStakeHolders(array, context, currentRole);
+            JSONArray stakeHolders = filterStakeHolders(array, context);
             context.getLogger().info("List total " + stakeHolders.length() + " stakeholders");
             json.put("stakeHolders", stakeHolders);
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
@@ -163,7 +163,7 @@ public class TekvLSGetAllStakeholders {
         }
     }
 
-    private JSONArray filterStakeHolders(JSONArray array, ExecutionContext context, String loggedInUserRole) {
+    private JSONArray filterStakeHolders(JSONArray array, ExecutionContext context) {
         JSONArray stakeHolders = new JSONArray();
         JSONObject json = null;
         JSONObject userProfile = null;
@@ -175,9 +175,6 @@ public class TekvLSGetAllStakeholders {
                     continue;
                 }
                 String userRole = userProfile.getString("role");
-                if (loggedInUserRole.equals(CUSTOMER_FULL_ADMIN) || loggedInUserRole.equals(SUBACCOUNT_ADMIN) && (!userRole.equals(SUBACCOUNT_STAKEHOLDER))) {
-                    continue;
-                }
                 json.put("name", userProfile.get("displayName"));
                 json.put("jobTitle", userProfile.get("jobTitle"));
                 json.put("companyName", userProfile.get("companyName"));
