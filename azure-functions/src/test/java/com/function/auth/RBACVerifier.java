@@ -449,7 +449,7 @@ public class RBACVerifier {
                 false,
                 true,
                 true,
-                false));
+                true));
         verifiers.put(GET_AUTH_USER_PROFILE, new ExpectedPermissions(false,
                 false,
                 false,
