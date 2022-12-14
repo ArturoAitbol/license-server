@@ -3,9 +3,9 @@ export interface Note {
     subaccountId: string;
     content: string;
     status: string;
-    openDate?: string;
+    openDate?: Date;
     openedBy?: string;
-    closeDate?: string;
+    closeDate?: Date;
     closedBy?: string;
     reports: any[];
     current?: string;
