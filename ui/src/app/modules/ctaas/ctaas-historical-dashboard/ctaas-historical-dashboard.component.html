@@ -2,8 +2,8 @@
   <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'"></app-banner>
   <div class="container-fluid controls" id="reportContainer">
     <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
-    <mat-dialog-actions align="center">
-        <button id="closeBtn" mat-raised-button (click)="onClose()" color="primary" type="button">Close</button>
+    <mat-dialog-actions>
+        <button mat-stroked-button type="button" id="cancel-button" (click)="onClose()">Close</button>
     </mat-dialog-actions>
   </div>
 
