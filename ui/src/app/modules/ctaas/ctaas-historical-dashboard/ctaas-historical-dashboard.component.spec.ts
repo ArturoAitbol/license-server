@@ -74,10 +74,10 @@ describe('Historical-Dashboard UI verification tests', () => {
     fixture.detectChanges();
     expect(ctaasHistoricalDashboardComponentTestInstance).toBeTruthy();
     const toggleButton: HTMLElement = fixture.nativeElement.querySelector('#toggle-button');
-    const rigthText: HTMLElement = fixture.nativeElement.querySelector('.right');
-
     expect(toggleButton.childNodes.length).toBe(2);
-    expect(rigthText.textContent).toContain("Last Updated:");
+    
+    // const rigthText: HTMLElement = fixture.nativeElement.querySelector('.right');
+    // expect(rigthText.textContent).toContain("Last Updated:");
 
     const titleCasePipe = new TitleCasePipe();
     expect(toggleButton.firstChild.textContent).toBe(titleCasePipe.transform(ctaasHistoricalDashboardComponentTestInstance.DAILY));

@@ -32,9 +32,6 @@
                   <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
                 </mat-button-toggle-group>
               </div>
-              <div class="right">
-                Last Updated: {{lastModifiedDate}}
-              </div>
             </div>
             <ng-container *ngIf="checkForDashboardDetails(); then withReport;else noReport"> </ng-container>
           </section>

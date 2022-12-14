@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { forkJoin, Observable } from 'rxjs';
 import { ReportType } from 'src/app/helpers/report-type';
 import { Note } from 'src/app/model/note.model';
@@ -36,6 +36,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
       private subaccountService: SubAccountService,
       private ctaasDashboardService: CtaasDashboardService,
       private snackBarService: SnackBarService,
+      public dialogRef: MatDialogRef<CtaasHistoricalDashboardComponent>,
       @Inject(MAT_DIALOG_DATA) public note: Note
   ) { }
 
@@ -130,5 +131,13 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
    */
   checkForDashboardDetails(): boolean {
       return this.resultantImagesList.length > 0;
+  }
+
+  /**
+   * Close modal
+   */
+
+  onClose(): void {
+    this.dialogRef.close();
   }
 }
