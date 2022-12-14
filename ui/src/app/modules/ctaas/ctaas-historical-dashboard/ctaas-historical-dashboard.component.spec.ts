@@ -1,6 +1,6 @@
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MsalService } from '@azure/msal-angular';
 import { throwError } from 'rxjs';
 import { ReportType } from 'src/app/helpers/report-type';
@@ -35,6 +35,12 @@ const note = {
   subaccountId:"b5b91753-4c2b-43f5-afa0-feb00cefa981"
 }
 
+const MatDialogRefMock = {
+    close: () => {
+        return null
+    }
+};
+
 
 const beforeEachFunction = async () => {
   await TestBed.configureTestingModule({
@@ -55,6 +61,9 @@ const beforeEachFunction = async () => {
       },{
         provide:SubAccountService,
         useValue:SubaccountServiceMock 
+      },{
+          provide: MatDialogRef,
+          useValue: MatDialogRefMock
       },
       {
         provide: MAT_DIALOG_DATA,
