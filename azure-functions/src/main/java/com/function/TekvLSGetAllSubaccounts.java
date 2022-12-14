@@ -1,6 +1,7 @@
 package com.function;
 
 import com.function.auth.Resource;
+import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.util.FeatureToggles;
@@ -164,11 +165,24 @@ public class TekvLSGetAllSubaccounts
 			context.getLogger().info("Execute SQL statement: " + statement);
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
-				emailsMap.computeIfAbsent(rs.getString("subaccount_id"), k -> new ArrayList<>()).add(rs.getString("subaccount_admin_email"));
+				if(isSubaccountAdmin(rs.getString("subaccount_admin_email"), context)){
+					emailsMap.computeIfAbsent(rs.getString("subaccount_id"), k -> new ArrayList<>()).add(rs.getString("subaccount_admin_email"));
+				}
 			}
 		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 		}
 		return emailsMap;
+	}
+
+	private boolean isSubaccountAdmin(String subaccountEmail, ExecutionContext context) throws Exception {
+		JSONObject userProfile = null;
+		userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(subaccountEmail, context);
+		String userRole = userProfile.getString("role");
+		if(userRole.equals(SUBACCOUNT_ADMIN)) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 }
