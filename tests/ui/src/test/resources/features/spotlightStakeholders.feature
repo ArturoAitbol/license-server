@@ -55,7 +55,7 @@ Feature: Stakeholders
     Then I should see the message "Created Stakeholder successfully"
     And I logout
 
-  @loginStakeholder @login @onBoardTest
+  @loginStakeholder @login @onBoardTest @adCreationToggle
   Scenario: Stakeholder login
     Given I try to login using a "Stakeholder"
     Then I should see the "SpotLight" view
@@ -63,7 +63,7 @@ Feature: Stakeholders
       | Dashboard     |
     And I logout
 
-  @editStakeholder
+  @editStakeholder @adCreationToggle
   Scenario: Edit a StakeHolder
     Given I try to login using a "FullAdministrator"
     And I see the customer "stakeholderTestCustomer" in the table
@@ -76,7 +76,7 @@ Feature: Stakeholders
       | phoneNumber           | 6524352354                      |
     Then I should see the message "Updated stake holder details successfully"
 
-  @deleteStakeholder @delete
+  @deleteStakeholder @delete @adCreationToggle
   Scenario: Delete Stakeholder Test
     Given I see the customer "stakeholderTestCustomer" in the table
     And I go to the spotlight dashboard for "stakeholderTestCustomer"
@@ -85,7 +85,7 @@ Feature: Stakeholders
     When I delete the "stakeholderTestModified" stakeholder
     Then I should see the message "Deleted Stakeholder successfully"
 
-  @deleteStakeholdersTestCustomer @delete
+  @deleteStakeholdersTestCustomer @delete @adCreationToggle
   Scenario: Delete the test customer for stakeholder
     Given I see the customer "stakeholderTestCustomer" in the table
     When I delete the customer "stakeholderTestCustomer"
