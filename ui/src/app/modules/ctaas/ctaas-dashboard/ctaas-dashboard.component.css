@@ -161,3 +161,34 @@ button:hover {
 .plr {
   padding: 0px 6px;
 }
+
+.note-panel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: var(--bs-card-height);
+  word-wrap: break-word;
+}
+
+.note-body {
+  margin-top: 1rem;
+  background-clip: border-box;
+  border: 0 solid rgba(0,0,0,.125);
+  border-radius: 0.5rem;
+  box-shadow: 2px 2px 5px #cbcbcb, 2px -1px 5px #cbcbcb;
+  cursor: hand;
+}
+
+.note-icon {
+  text-align: center;
+  position: relative;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.light-text {
+  color: #8a8a8a;
+}

@@ -2,6 +2,9 @@
   <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'"></app-banner>
   <div class="container-fluid controls" id="reportContainer">
     <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
+    <mat-dialog-actions>
+        <button mat-stroked-button type="button" id="cancel-button" (click)="onClose()">Close</button>
+    </mat-dialog-actions>
   </div>
 
   <!-- blank view -->
@@ -29,9 +32,6 @@
               <mat-button-toggle [value]="DAILY">{{DAILY | titlecase}}</mat-button-toggle>
               <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
             </mat-button-toggle-group>
-          </div>
-          <div class="right">
-            Last Updated: {{lastModifiedDate}}
           </div>
         </div>
         <ng-container *ngIf="checkForDashboardDetails(); then withReport;else noReport"> </ng-container>

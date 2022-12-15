@@ -42,7 +42,7 @@ export const permissions = {
             'showBanner',
             'showUserToggle',
             'addStakeholderBtn',
-            'changeSpotlightRole'
+            'changeSpotlightRole',
         ],
         tables: {
             customerOptions: [
@@ -228,7 +228,8 @@ export const permissions = {
             'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
-            'addSpotlightNote'
+            'addSpotlightNote',
+            'showLatestNote',
         ],
         tables: {
             customerOptions: [
@@ -274,7 +275,8 @@ export const permissions = {
             'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
-            'addSpotlightNote'
+            'addSpotlightNote',
+            'showLatestNote',
         ],
         tables: {
             customerOptions: [
@@ -312,7 +314,8 @@ export const permissions = {
         ],
         elements: [
             'showUserToggle',
-            'view-profile'
+            'view-profile',
+            'showLatestNote'
         ],
         tables: {
             customerOptions: [],
