@@ -32,8 +32,6 @@ export class CtaasSetupComponent implements OnInit {
     tapUrl: [null, Validators.required],
     status: ['SETUP_INPROGRESS', Validators.required],
     onBoardingComplete: [{ value: false, disabled: true }, Validators.required],
-    powerBiWorkspaceId: [null],
-    powerBiReportId: [null],
   });
 
   constructor(
@@ -86,12 +84,12 @@ export class CtaasSetupComponent implements OnInit {
   private editSetup(ctaasSetup: any) {
     this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, ctaasSetup).subscribe((res: any) => {
       if (!res?.error) {
-        this.snackBarService.openSnackBar('SpotLight Setup edited successfully!', '');
+        this.snackBarService.openSnackBar('Spotlight Setup edited successfully!', '');
         this.isEditing = false;
         this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, ...this.setupForm.value };
         this.disableForm();
       } else {
-        this.snackBarService.openSnackBar(res.error, 'Error updating SpotLight Setup!');
+        this.snackBarService.openSnackBar(res.error, 'Error updating Spotlight Setup!');
       }
       this.isDataLoading = false;
     });
@@ -113,7 +111,7 @@ export class CtaasSetupComponent implements OnInit {
         this.setupForm.patchValue(res);
         this.ctaasSetupId = res.id;
       } else {
-        this.snackBarService.openSnackBar("No initial setup found", 'Error getting SpotLight Setup!');
+        this.snackBarService.openSnackBar("No initial setup found", 'Error getting Spotlight Setup!');
       }
       this.isDataLoading = false;
     })

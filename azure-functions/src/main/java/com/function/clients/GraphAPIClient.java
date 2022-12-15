@@ -15,16 +15,28 @@ import static com.function.auth.Roles.*;
 
 public class GraphAPIClient {
 
-    static public void createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
+    /**
+     *
+     * @param userName username of the new user
+     * @param userEmail email of the new user
+     * @param role AD role to assign the user
+     * @param context Azure function execution context
+     * @return true if the user is created, false if the user already existed
+     * @throws Exception
+     */
+    static public boolean createGuestUserWithProperRole(String userName, String userEmail, String role, ExecutionContext context) throws Exception {
         User user = getUserByEmail(userEmail,context);
         String userId;
+        boolean res = false;
         if(user != null ){
             context.getLogger().info("Guest user with email "+ userEmail +" already exists in Active Directory (AD). Getting id to assign proper role");
             userId = user.id;
         }else{
             userId = createGuestUser(userName,userEmail,context);
+            res = true;
         }
         assignRole(userId,role,context);
+        return res;
     }
 
     static public User getUserByEmail(String userEmail, ExecutionContext context) throws ADException {
@@ -39,11 +51,9 @@ public class GraphAPIClient {
 
     static public String createGuestUser(String userName, String userEmail,ExecutionContext context) throws ADException {
         String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
-        String invitationMessage = "You have requested access to the tekVizion 360 Portal. " +
-                "Please accept this invitation to complete the authentication process by clicking \"Accept Invitation\" below.";
 
         try{
-            Invitation invitation = GraphAPIServiceClient.getInstance().inviteGuestUser(userName,userEmail,inviteRedirectUrl,invitationMessage);
+            Invitation invitation = GraphAPIServiceClient.getInstance().inviteGuestUser(userName,userEmail,inviteRedirectUrl);
             User invitedUser = invitation.invitedUser;
             if(invitedUser == null ) return null;
             context.getLogger().info("Guest user created successfully: " + invitedUser.id);
@@ -53,7 +63,6 @@ public class GraphAPIClient {
             jsonBody.put("userName",userName);
             jsonBody.put("userEmail",userEmail);
             jsonBody.put("inviteRedirectUrl",inviteRedirectUrl);
-            jsonBody.put("invitationMessage",invitationMessage);
             context.getLogger().severe("Graph Method Called: inviteGuestUser, Request body: "+ jsonBody);
             context.getLogger().severe("Error Response:" + e.getMessage());
             throw new ADException("Create a guest user failed (AD): " + e.getMessage());
@@ -106,43 +115,47 @@ public class GraphAPIClient {
     static public void removeRole(String userEmail,String role, ExecutionContext context) throws Exception {
         User user = getUserByEmail(userEmail,context);
         if(user!=null){
-            List<HashMap<String,String>> azureApps = getAzureAppsInfo(role);
-
-            List<AppRoleAssignment> appRoleAssignments = getUserAppRoleAssignments(user.id,context);
-            if(appRoleAssignments.isEmpty()){
-                throw new ADException("App Role Assignments not found for given user (AD): " + userEmail);
-            }
-
-            for (HashMap<String,String> app : azureApps) {
-                String appRoleAssignmentId = "";
-                for (AppRoleAssignment appRoleAssignment : appRoleAssignments) {
-
-                    String resourceId = String.valueOf(appRoleAssignment.resourceId);
-                    String appRoleId = String.valueOf(appRoleAssignment.appRoleId);
-
-                    if (resourceId.equals(app.get("objectId")) && appRoleId.equals(app.get("roleId"))) {
-                        appRoleAssignmentId = appRoleAssignment.id != null ? appRoleAssignment.id : "";
-                        break;
-                    }
-                }
-                if(!appRoleAssignmentId.isEmpty()) {
-                    try{
-                        GraphAPIServiceClient.getInstance().removeRole(user.id,appRoleAssignmentId);
-                    }catch (Exception e){
-                        JSONObject params = new JSONObject();
-                        params.put("userId",user.id);
-                        params.put("appRoleAssignmentId",appRoleAssignmentId);
-                        context.getLogger().severe("Graph method called: removeRole, Request params: " + params);
-                        context.getLogger().severe("Error response: " + e.getMessage());
-                        throw new ADException("Remove guest user role failed (AD)");
-                    }
-
-                }else{
-                    context.getLogger().info("Ignoring Error (REMOVE APP ROLE ASSIGNMENT): There is no App role assignment to delete (AD)");
-                }
-            }
+            removeRoleByUserId(user.id, role, context);
         }else{
             context.getLogger().info("Ignoring Error (REMOVE APP ROLE ASSIGNMENT): User with email " + userEmail + " does not exist (AD)");
+        }
+    }
+
+    public static void removeRoleByUserId(String userId, String role, ExecutionContext context) throws Exception {
+        List<HashMap<String,String>> azureApps = getAzureAppsInfo(role);
+
+        List<AppRoleAssignment> appRoleAssignments = getUserAppRoleAssignments(userId, context);
+        if(appRoleAssignments.isEmpty()){
+            throw new ADException("App Role Assignments not found for given user (AD): " + userId);
+        }
+
+        for (HashMap<String,String> app : azureApps) {
+            String appRoleAssignmentId = "";
+            for (AppRoleAssignment appRoleAssignment : appRoleAssignments) {
+
+                String resourceId = String.valueOf(appRoleAssignment.resourceId);
+                String appRoleId = String.valueOf(appRoleAssignment.appRoleId);
+
+                if (resourceId.equals(app.get("objectId")) && appRoleId.equals(app.get("roleId"))) {
+                    appRoleAssignmentId = appRoleAssignment.id != null ? appRoleAssignment.id : "";
+                    break;
+                }
+            }
+            if(!appRoleAssignmentId.isEmpty()) {
+                try{
+                    GraphAPIServiceClient.getInstance().removeRole(userId, appRoleAssignmentId);
+                }catch (Exception e){
+                    JSONObject params = new JSONObject();
+                    params.put("userId", userId);
+                    params.put("appRoleAssignmentId",appRoleAssignmentId);
+                    context.getLogger().severe("Graph method called: removeRole, Request params: " + params);
+                    context.getLogger().severe("Error response: " + e.getMessage());
+                    throw new ADException("Remove guest user role failed (AD)");
+                }
+
+            }else{
+                context.getLogger().info("Ignoring Error (REMOVE APP ROLE ASSIGNMENT): There is no App role assignment to delete (AD)");
+            }
         }
     }
 
@@ -210,7 +223,7 @@ public class GraphAPIClient {
         return  user;
     } 
 	
-	static public void updateUserProfile(String userEmail, String displayName, String jobTitle, String companyName, String mobilePhone, ExecutionContext context) throws Exception {
+	static public User updateUserProfile(String userEmail, String displayName, String jobTitle, String companyName, String mobilePhone, ExecutionContext context) throws Exception {
 	     User user = getUserProfileByEmail(userEmail,context);
 	     if(user!=null){
 				  try {
@@ -224,6 +237,7 @@ public class GraphAPIClient {
              context.getLogger().severe("No user found with given email (AD): " + userEmail);
              throw new ADException("No user found with given email (AD): " + userEmail);
 	     }
+         return user;
 	}
 	
 	static public String getAppRole(String userId,String userEmail, ExecutionContext context) throws Exception {

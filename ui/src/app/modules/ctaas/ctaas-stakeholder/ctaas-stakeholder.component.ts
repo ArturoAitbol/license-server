@@ -26,14 +26,17 @@ export class CtaasStakeholderComponent implements OnInit {
   actionMenuOptions: any = [];
   isLoadingResults = false;
   isRequestCompleted = false;
+  stakeholdersCount = 0;
+  toggleStatus = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
-  private readonly MODIFY_STAKEHOLDER = 'Update Stakeholder Details';
-  private readonly DELETE_STAKEHOLDER = 'Delete Stakeholder Account';
+  private readonly MODIFY_STAKEHOLDER = 'Update Details';
+  private readonly DELETE_STAKEHOLDER = 'Delete Account';
 
   readonly options = {
     MODIFY_STAKEHOLDER: this.MODIFY_STAKEHOLDER,
     DELETE_STAKEHOLDER: this.DELETE_STAKEHOLDER
-  }
+  };
+
   constructor(
     private msalService: MsalService,
     public dialog: MatDialog,
@@ -63,8 +66,6 @@ export class CtaasStakeholderComponent implements OnInit {
       { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
       { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
       { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
-      { name: 'Type', dataKey: 'type', position: 'left', isSortable: true },
-      { name: 'Notifications', dataKey: 'notifications', position: 'left', isSortable: false }
     ];
   }
   /**
@@ -85,6 +86,7 @@ export class CtaasStakeholderComponent implements OnInit {
         map((e: { stakeHolders: IStakeholder[] }) => {
           const { stakeHolders } = e;
           try {
+            this.stakeholdersCount = this.countStakeholders(e.stakeHolders);
             stakeHolders.forEach((x: IStakeholder) => {
               if (x.notifications) {
                 const reports = this.getReports();
@@ -117,7 +119,7 @@ export class CtaasStakeholderComponent implements OnInit {
         const { stakeHolders } = response;
         if (stakeHolders) {
           this.stakeholdersDataBk = this.stakeholdersData = stakeHolders;
-          this.onChangeToggle(false);
+          this.onChangeToggle(this.toggleStatus);
         }
       }, (error) => {
         this.snackBarService.openSnackBar(error, 'Error while loading stake holders');
@@ -151,7 +153,11 @@ export class CtaasStakeholderComponent implements OnInit {
    * open add stake holder component in dialog
    */
   addStakeholder(): void {
-    this.openDialog(this.ADD_STAKEHOLDER);
+    if(this.stakeholdersCount < 10){
+      this.openDialog(this.ADD_STAKEHOLDER);
+    } else {
+      this.snackBarService.openSnackBar('The maximum amount of stakeholders per subaccount was exceeded', '');
+    }
   }
   /**
    * open dialog
@@ -204,6 +210,12 @@ export class CtaasStakeholderComponent implements OnInit {
    * @param selectedRow: any
    */
   onDeleteStakeholderAccount(selectedRow: any): void {
+    if (this.toggleStatus && this.msalService.instance.getActiveAccount()?.idTokenClaims?.roles.includes(Constants.SUBACCOUNT_ADMIN)) {
+      if (this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN).length <= 1) {
+        this.snackBarService.openSnackBar("Error deleting administrator email, at least one administrator must remain");
+        return;
+      }
+    }
     this.dialogService.confirmDialog({
       title: 'Confirm Action',
       message: 'Do you want to confirm this action?',
@@ -213,6 +225,7 @@ export class CtaasStakeholderComponent implements OnInit {
       if (confirmed) {
         const { email } = selectedRow;
         this.deleteStakeholder(email);
+        this.stakeholdersCount = this.stakeholdersCount - 1
       }
     });
   }
@@ -253,11 +266,16 @@ export class CtaasStakeholderComponent implements OnInit {
    * @param e: boolean 
    */
   onChangeToggle(flag: boolean): void {
+    this.toggleStatus = flag;
     if (flag) {
       this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN);
     } else {
       this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER);
 
     }
+  }
+
+  private countStakeholders(stakholdersList: IStakeholder[]): number {
+    return stakholdersList.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER).length;
   }
 }

@@ -45,6 +45,7 @@ describe('Stakeholder service http requests test', () => {
             notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
             type:'Detailed',
+            role:'customer.SubaccountStakeholder',
             subaccountAdminEmail: "test@mail.com"
         };
         httpClientSpy.put.and.returnValue(StakeHolderServiceMock.updateStakeholderDetails());
@@ -64,6 +65,7 @@ describe('Stakeholder service http requests test', () => {
             notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
             type:'Detailed',
+            role:'customer.SubaccountStakeholder',
             subaccountAdminEmail: "test@mail.com"
         };
         httpClientSpy.delete.and.returnValue(StakeHolderServiceMock.deleteStakeholder());
@@ -83,6 +85,7 @@ describe('Stakeholder service http requests test', () => {
           notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
           subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
           type:'Detailed',
+          role:'customer.SubaccountStakeholder',
           subaccountAdminEmail: "test@mail.com"
         };
         httpClientSpy.post.and.returnValue(StakeHolderServiceMock.createStakeholder());

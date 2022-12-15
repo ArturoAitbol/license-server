@@ -69,8 +69,9 @@ p {
 }
 
 .controls {
-  margin-top: 1%;
+  /* margin-top: 1%; */
   text-align: center;
+  padding: 0px !important;
 }
 
 button {
@@ -116,4 +117,78 @@ button:hover {
 }
 ::ng-deep powerbi-report > div {
   height: 90vh !important;
+}
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: space-between;
+}
+.right {
+  margin-left: auto;
+  color: #203c66;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.header-image {
+  background-size: cover;
+}
+.report-title {
+  display: inline-block;
+  color: #203c66;
+  font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
+  letter-spacing: normal;
+  padding: 6px 6px 6px 12px;
+  text-align: left !important;
+}
+.card-title {
+  display: inline-block;
+  color: #203c66;
+  font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
+  letter-spacing: normal;
+  padding: 10px 0px;
+  text-align: left !important;
+}
+.card {
+  border-radius: 5px;
+  padding: 10px 0px;
+}
+.mat-button-toggle-group {
+  height: 36px;
+  align-items: center;
+}
+.plr {
+  padding: 0px 6px;
+}
+
+.note-panel{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: var(--bs-card-height);
+  word-wrap: break-word;
+}
+
+.note-body {
+  margin-top: 1rem;
+  background-clip: border-box;
+  border: 0 solid rgba(0,0,0,.125);
+  border-radius: 0.5rem;
+  box-shadow: 2px 2px 5px #cbcbcb, 2px -1px 5px #cbcbcb;
+  cursor: hand;
+}
+
+.note-icon {
+  text-align: center;
+  position: relative;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.light-text {
+  color: #8a8a8a;
 }

@@ -49,6 +49,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/spotlight/'
             },
             {
+                name: 'Notes',
+                iconName: "assets\\images\\note.png",
+                path: 'notes',
+                active: false,
+                materialIcon: 'description',
+                baseUrl: '/spotlight/'
+            },
+            {
                 name: 'Test Suites',
                 iconName: "assets\\images\\project_3.png",
                 path: 'test-suites',
@@ -71,7 +79,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 active: false,
                 materialIcon: 'tune',
                 baseUrl: '/spotlight/'
-            }
+            },
         ],
         main: [
             {
@@ -114,6 +122,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
+    readonly SPOTLIGHT_NOTES_PATH: string = '/spotlight/notes';
     readonly MAIN_DASHBOARD = '/dashboard';
     readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
 
@@ -180,6 +189,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
                     case this.CTAAS_SETUP_PATH:
+                    case this.SPOTLIGHT_NOTES_PATH:
                         this.tabName = Constants.CTAAS_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
@@ -207,9 +217,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        // example for a feature toggle in typescript logic code
-        if (FeatureToggleHelper.isFeatureEnabled("testFeature1", this.msalService))
-            console.log("Feature toggle 'testFeature1' enabled");
         if (!this.isLoggedIn()) {
             this.router.navigate(['/login']);
         } else {
@@ -341,7 +348,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * enable side bar based on the service and this feature is enabled only when CTaaS_Feature is enabled
+     * enable sidebar based on the service and this feature is enabled only when CTaaS_Feature is enabled
      * @returns: boolean 
      */
     enableSidebar(): boolean {

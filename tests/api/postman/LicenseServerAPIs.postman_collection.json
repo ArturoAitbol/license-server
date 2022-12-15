@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "03392b88-9f10-4c5d-b523-d6d378ba8d6c",
+		"_postman_id": "fa8eb1f5-723b-4d17-ae6d-b29599b78ca1",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "8463466"
@@ -463,7 +463,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"content\": \"note content Test\"\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"content\": \"note content Test\",\r\n    \"reports\": [{\"timestampId\":\"20220102000000\",\"reportType\":\"Daily-FeatureFunctionality\"},\r\n                {\"timestampId\":\"20220102000001\",\"reportType\":\"Daily-CallingReliability\"},\r\n                {\"timestampId\":\"20220102000002\",\"reportType\":\"Daily-PESQ\"}\r\n                ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -559,47 +559,6 @@
 					],
 					"path": [
 						"ctaasTestSuites"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "ctaasSubaccountStakeHolders",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"subaccountAdminEmail\");\r",
-							"    pm.expect(pm.response.json().subaccountAdminEmail).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"subaccountAdminEmail\", pm.response.json().subaccountAdminEmail);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/subaccountStakeHolders",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"subaccountStakeHolders"
 					]
 				}
 			},
@@ -902,6 +861,85 @@
 			"response": []
 		},
 		{
+			"name": "ctaasSetups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"SETUP_READY\",\r\n    \"onBoardingComplete\": \"false\",\r\n    \"licenseId\": \"{{licenseId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/ctaasSetups/{{ctaasSetupId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasSetups",
+						"{{ctaasSetupId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasSubaccountStakeHolders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"subaccountAdminEmail\");\r",
+							"    pm.expect(pm.response.json().subaccountAdminEmail).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"subaccountAdminEmail\", pm.response.json().subaccountAdminEmail);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/subaccountStakeHolders",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"subaccountStakeHolders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "ctaasSubaccountStakeHolders",
 			"event": [
 				{
@@ -934,44 +972,6 @@
 					"path": [
 						"subaccountStakeHolders",
 						"{{subaccountAdminEmail}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "ctaasSetups",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"status test\",\r\n     \"onBoardingComplete\": \"false\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/ctaasSetups/{{ctaasSetupId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"ctaasSetups",
-						"{{ctaasSetupId}}"
 					]
 				}
 			},
@@ -1426,6 +1426,40 @@
 							"key": "subaccountId",
 							"value": "{{subaccountId}}"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ctaasDashboards",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"response\");\r",
+							"    pm.expect(pm.response.json().response).to.be.an(\"object\");\r",
+							"    pm.expect(pm.response.json().response.imageBase64).to.be.a(\"string\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/ctaasDashboard/2c8e386b-d1bd-48b3-b73a-12bfa5d00805/Daily-FeatureFunctionality",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"ctaasDashboard",
+						"2c8e386b-d1bd-48b3-b73a-12bfa5d00805",
+						"Daily-FeatureFunctionality"
 					]
 				}
 			},

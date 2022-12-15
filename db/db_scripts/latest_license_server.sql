@@ -349,9 +349,7 @@ CREATE TABLE public.ctaas_setup
     tap_url character varying,
     status character varying,
     on_boarding_complete boolean,
-    subaccount_id uuid NOT NULL,
-	powerbi_workspace_id character varying,
-	powerbi_report_id character varying
+    subaccount_id uuid NOT NULL
 );
 
 CREATE TABLE public.feature_toggle (
@@ -376,7 +374,8 @@ CREATE TABLE public.note (
     open_date timestamp without time zone,
     opened_by character varying,
     close_date timestamp without time zone,
-    closed_by character varying
+    closed_by character varying,
+    reports character varying
 );
 
 --

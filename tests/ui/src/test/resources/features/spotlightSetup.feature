@@ -17,6 +17,7 @@ Feature: CtaasSetup
       | spotlight     | yes                                   |
       | testCustomer  | yes                                   |
     Then I see the customer "spotlightCustomerTest" in the table
+    #Then I see the customer "spotlightCustomerTest" in the table
 
   @addLicense
   Scenario: Add Basic license
@@ -40,8 +41,6 @@ Feature: CtaasSetup
       | azureResourceGroup  | az_tap_rg                                  |
       | tapUrl              | http://tekvizionTap.com                    |
       | status              | READY                                |
-      | powerBiWorkspaceId  | 3036896b-185c-4480-8574-858845b48675       |
-      | powerBiReportId     | 287846f9-d707-4fc9-bbbe-f11db4de53bbHourly |
     Then I should see the modified data in spotlight configuration view
 
   @verifyLicenseConsumption

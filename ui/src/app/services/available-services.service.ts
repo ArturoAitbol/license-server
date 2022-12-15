@@ -12,15 +12,14 @@ export class AvailableServicesService {
     {
       "label": "tekToken Usage",
       "value": tekVizionServices.tekTokenConstumption,
-      "enabled": false,
+      "enabled": true,
       "access": false,
       "routePath": "/dashboard",
       "imagePath": "assets/images/tokens.png",
-      "tabName": "tekVizion 360 Portal",
-      "featureName": "Test_Feature_1"
+      "tabName": "tekVizion 360 Portal"
     },
     {
-      "label": "SpotLight",
+      "label": "Spotlight",
       "value": tekVizionServices.SpotLight,
       "enabled": false,
       "access": false,
@@ -38,10 +37,9 @@ export class AvailableServicesService {
    */
   public fetchAllAvailabeServices(): IService[] {
     return this.availableServices.map((e: IService) => {
-      if (FeatureToggleHelper.isFeatureEnabled(Features[e.featureName])) {
+      if (e.featureName && FeatureToggleHelper.isFeatureEnabled(Features[e.featureName]))
         e.enabled = true;
-        return e;
-      }
+      return e;
     });
   }
 }

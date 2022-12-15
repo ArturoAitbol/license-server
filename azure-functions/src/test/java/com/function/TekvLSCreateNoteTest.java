@@ -47,7 +47,7 @@ class TekvLSCreateNoteTest extends TekvLSTest {
     @Test
     public void createNoteTest() {
         //Given
-        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content'}";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content', 'reports':[{},{}]}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         //When
@@ -172,7 +172,7 @@ class TekvLSCreateNoteTest extends TekvLSTest {
     @Test
     public void invalidSubaccountIdTest() {
         //Given
-        this.bodyRequest = "{'subaccountId':'1', 'content':'note content'}";
+        this.bodyRequest = "{'subaccountId':'1', 'content':'note content','reports':[{},{}]}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         //When
@@ -196,7 +196,7 @@ class TekvLSCreateNoteTest extends TekvLSTest {
     @Test
     public void genericExceptionTest() {
         //Given
-        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content'}'";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content','reports':[{},{}]}'";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
         //When

@@ -101,7 +101,6 @@ describe('UI verification test', () => {
         expect(headers[2].innerText).toBe('Job Title');
         expect(headers[3].innerText).toBe('Email');
         expect(headers[4].innerText).toBe('Phone Number');
-        expect(headers[5].innerText).toBe('Type');
     });
 
     it('should execute sortData()', () => {
@@ -148,19 +147,19 @@ describe('dialog calls and interactions',() => {
         ctaasStakeholderComponentTestInstance.addStakeholder();
         expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith('Add Stakeholder');
            
-        selectedTestData.selectedOption = 'Update Stakeholder Details';
+        selectedTestData.selectedOption = 'Update Details';
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
         expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedTestData.selectedOption, selectedTestData.selectedRow);
         dialogService.afterClosed();
             
-        selectedTestData.selectedOption = 'Delete Stakeholder Account';
+        selectedTestData.selectedOption = 'Delete Account';
         dialogService.setExpectedConfirmDialogValue(true);
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Deleted Stakeholder successfully', '');
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
 
-        selectedTestData.selectedOption = 'Delete Stakeholder Account';
+        selectedTestData.selectedOption = 'Delete Account';
         dialogService.setExpectedConfirmDialogValue(true);
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
@@ -177,7 +176,7 @@ describe('dialog calls and interactions',() => {
         spyOn(StakeHolderServiceMock, 'deleteStakeholder').and.returnValue(of(response));
         spyOn(dialogService, 'confirmDialog').and.callThrough();
 
-        selectedTestData.selectedOption = 'Delete Stakeholder Account';
+        selectedTestData.selectedOption = 'Delete Account';
         dialogService.setExpectedConfirmDialogValue(true);
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
@@ -194,7 +193,7 @@ describe('dialog calls and interactions',() => {
         spyOn(StakeHolderServiceMock, 'deleteStakeholder').and.returnValue(of(response));
         spyOn(dialogService, 'confirmDialog').and.callThrough();
 
-        selectedTestData.selectedOption = 'Delete Stakeholder Account';
+        selectedTestData.selectedOption = 'Delete Account';
         dialogService.setExpectedConfirmDialogValue(true);
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);

@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     readonly VIEW_PROJECTS: string = 'View Projects List';
     readonly VIEW_ADMIN_EMAILS: string = 'View Customer Admin Emails';
     readonly VIEW_SUBACC_ADMIN_EMAILS: string = 'View Subaccount Admin Emails';
-    readonly VIEW_CTAAS_DASHBOARD: string = 'View SpotLight Dashboard';
+    readonly VIEW_CTAAS_DASHBOARD: string = 'View Spotlight Dashboard';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
 
@@ -416,7 +416,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 if (hasCtaasService)
                     this.router.navigate(['/spotlight/report-dashboards']);
                 else
-                    this.snackBarService.openSnackBar('SpotLight service is not available for this Subaccount', '');
+                    this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
 
                 break;
             case this.MODIFY_ACCOUNT:

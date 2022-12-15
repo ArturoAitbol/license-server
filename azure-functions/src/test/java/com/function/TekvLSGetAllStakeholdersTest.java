@@ -164,7 +164,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(jsonBody.has("stakeHolders"));
 
         JSONArray stakeHolders = jsonBody.getJSONArray("stakeHolders");
-        assertEquals(0,stakeHolders.length());
+        assertEquals(1,stakeHolders.length());
 
 //        JSONObject stakeHolder = stakeHolders.getJSONObject(0);
 //        assertTrue(stakeHolder.has("email"));
@@ -246,7 +246,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
         assertTrue(jsonBody.has("stakeHolders"));
 
         JSONArray stakeHolders = jsonBody.getJSONArray("stakeHolders");
-        assertEquals(1, stakeHolders.length());
+        assertEquals(2, stakeHolders.length());
 
         JSONObject stakeHolder = stakeHolders.getJSONObject(0);
         assertTrue(stakeHolder.has("email"));

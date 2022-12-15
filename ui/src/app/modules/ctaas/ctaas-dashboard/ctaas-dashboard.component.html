@@ -1,8 +1,27 @@
 <div>
   <div>
-    <app-banner [stylesflag]="'dashboard'"
-    *lcCheckAccessFor="'showBanner'">
+    <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'">
     </app-banner>
+    <ng-container *lcCheckAccessFor="'showLatestNote'">
+      <div class="p-2" *ngIf="latestNoteLoaded">
+        <div class="row">
+          <a class="col-md-6 offset-md-3 col-sm-12 note-body p-3">
+           <div class="row">
+             <div class="col-11">
+               <span class="text-sm mb-1 light-text">{{latestNoteData.note.openDate | date: 'MMM, d, YYYY hh:mm:ss'}}</span>
+               <h3 class="font-weight-bolder mb-0">
+                 {{latestNoteData.note.content}}
+               </h3>
+               <p class="text-sm mb-0 font-weight-bold">{{latestNoteData.subaccountName}}</p>
+             </div>
+             <div class="col-1 pl-1">
+               <mat-icon class="note-icon">description</mat-icon>
+             </div>
+           </div>
+          </a>
+        </div>
+      </div>
+    </ng-container>
     <div class="container-fluid controls" id="reportContainer">
       <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
     </div>
@@ -19,13 +38,50 @@
       </div>
     </ng-template>
 
-    <!-- power bi report view -->
+    <!-- pbrs report images view -->
     <div>
       <ng-template #reportView>
-        <powerbi-report [embedConfig]="reportConfig" [cssClassName]="reportClass"
-          [phasedEmbedding]="phasedEmbeddingFlag" [eventHandlers]="eventHandlersMap">
-        </powerbi-report>
+        <div class="container-fluid controls" id="reportContainer">
+          <br>
+          <section>
+            <div class="flex-container">
+              <div class="banner-container">
+                <mat-button-toggle-group [formControl]="fontStyleControl" aria-label="Font Style"
+                  (change)="onChangeButtonToggle()">
+                  <mat-button-toggle [value]="DAILY">{{DAILY | titlecase}}</mat-button-toggle>
+                  <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
+                </mat-button-toggle-group>
+              </div>
+            </div>
+            <ng-container *ngIf="checkForDashboardDetails(); then withReport;else noReport"> </ng-container>
+          </section>
+        </div>
       </ng-template>
     </div>
   </div>
 </div>
+
+<ng-template #withReport>
+  <div class="row plr" *ngFor="let item of resultantImagesList;let i=index;">
+    <div [ngClass]="{'col-6':item.reportType===DAILY,'col-12':item.reportType===WEEKLY}" class="p-1 mb-1"
+      *ngFor="let image of item.imagesList;let i1=index;">
+      <mat-card class="card">
+        <mat-card-header>
+          <mat-card-title class="card-title">{{image.reportType}}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <img [src]="image.imageBase64" class="img-fluid header-image" [id]="i">
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+</ng-template>
+
+<ng-template #noReport>
+  <div class="jumbotron d-flex align-items-center bg-transparent justify-content-center">
+    <h2>
+      No Reports available
+    </h2>
+  </div>
+</ng-template>

@@ -31,9 +31,9 @@ public class ActionMenu extends AbstractPageObject {
     WebElement subaccountAdminButton;
     @FindBy(xpath = "//button[@id='View Spotlight Dashboard']")
     WebElement spotlightDashboardButton;
-    @FindBy(xpath = "//button[@id='Delete Stakeholder Account']")
+    @FindBy(xpath = "//button[@id='Delete Account']")
     WebElement spotlightStakeholderButton;
-    @FindBy(xpath = "//button[@id='Update Stakeholder Details']")
+    @FindBy(xpath = "//button[@id='Update Details']")
     WebElement spotlightUpdateStakeholderButton;
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 

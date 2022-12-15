@@ -6,6 +6,7 @@ export class Constants {
     public static readonly SUBACCOUNT_USER_PROFILE: string = 'subAccountUserProfile';
     public static readonly CURRENT_ENABLED_SERVICES: string = 'currentEnabledServices';
     public static readonly TOOLBAR_DETAILS: string = 'toolbarDetails';
+    public static readonly CURRENT_REPORTS: string = 'currentReports';
 
     // Session Storage Keys
     public static readonly ACCESS_TOKEN: string = 'access_token';
@@ -15,7 +16,7 @@ export class Constants {
 
     // Tool bar constants
     public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekVizion 360 Portal';
-    public static readonly CTAAS_TOOL_BAR: string = 'SpotLight';
+    public static readonly CTAAS_TOOL_BAR: string = 'Spotlight';
 
     //Phone number Validation
     public static readonly PHONE_NUMBER_PATTERN = '^[+]*[0-9]*$';
@@ -24,6 +25,9 @@ export class Constants {
     public static readonly SUBACCOUNT_ADMIN = 'customer.SubaccountAdmin';
     public static readonly SUBACCOUNT_STAKEHOLDER = 'customer.SubaccountStakeholder';
 
+    // Timer constants
+    public static readonly DASHBOARD_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes * 60 seconds * 1000 milliseconds
+    public static readonly DASHBOARD_NOTE_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes * 60 seconds * 1000 milliseconds
 
 }
 

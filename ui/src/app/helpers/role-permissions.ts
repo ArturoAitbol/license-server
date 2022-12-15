@@ -24,7 +24,7 @@ export const permissions = {
             'report-dashboards',
             'test-suites',
             'stakeholders',
-            "setup",
+            'setup',
             'subscriptions-overview'
         ],
         elements: [
@@ -40,7 +40,9 @@ export const permissions = {
             'auditInfo',
             'addTestSuite',
             'showBanner',
-            'showUserToggle'
+            'showUserToggle',
+            'addStakeholderBtn',
+            'changeSpotlightRole',
         ],
         tables: {
             customerOptions: [
@@ -77,6 +79,7 @@ export const permissions = {
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
             ],
+            noteOptions: []
         }
     },
     'tekvizion.SalesAdmin': {
@@ -93,15 +96,8 @@ export const permissions = {
             'subscriptions-overview'
         ],
         elements: [
-            'addCustomer',
-            'addSubaccount',
-            'addLicense',
-            'addAdminEmail',
-            'deleteAdminEmail',
-            'addSubAccAdminEmail',
-            'deleteSubAccAdminEmail',
             'showBanner',
-            'showUserToggle'
+            'showUserToggle',
         ],
         tables: {
             customerOptions: [
@@ -111,9 +107,8 @@ export const permissions = {
                 'VIEW_ADMIN_EMAILS',
                 'VIEW_SUBACC_ADMIN_EMAILS',
                 'VIEW_CTAAS_DASHBOARD',
-                'MODIFY_ACCOUNT'],
+            ],
             licenseOptions: [
-                'MODIFY_LICENSE'
             ],
             licConsumptionOptions: [
             ],
@@ -148,7 +143,7 @@ export const permissions = {
             'addLicenseConsumption',
             'addTestSuite',
             'showBanner',
-            'showUserToggle'
+            'showUserToggle',
         ],
         tables: {
             customerOptions: [
@@ -225,9 +220,17 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
-            'stakeholders'
+            'stakeholders',
+            'notes',
         ],
-        elements: ['showBanner'],
+        elements: [
+            'view-profile',
+            'showUserToggle',
+            'addStakeholderBtn',
+            'changeSpotlightRole',
+            'addSpotlightNote',
+            'showLatestNote',
+        ],
         tables: {
             customerOptions: [
                 'VIEW_LICENSES',
@@ -246,7 +249,11 @@ export const permissions = {
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
             ],
-            ctaasTestSuiteOptions: []
+            ctaasTestSuiteOptions: [],
+            noteOptions: [
+                'CLOSE_NOTE',
+                'VIEW_DASHBOARD'
+            ]
         }
     },
     'customer.SubaccountAdmin': {
@@ -260,10 +267,16 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
-            'stakeholders'
+            'stakeholders',
+            'notes',
         ],
-        elements: [,
-            'view-profile'
+        elements: [
+            'view-profile',
+            'showUserToggle',
+            'addStakeholderBtn',
+            'changeSpotlightRole',
+            'addSpotlightNote',
+            'showLatestNote',
         ],
         tables: {
             customerOptions: [
@@ -283,7 +296,11 @@ export const permissions = {
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
             ],
-            ctaasTestSuiteOptions: []
+            ctaasTestSuiteOptions: [],
+            noteOptions: [
+                'CLOSE_NOTE',
+                'VIEW_DASHBOARD'
+            ]
         }
     },
     'customer.SubaccountStakeholder': {
@@ -291,17 +308,25 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards'
+            'report-dashboards',
+            'stakeholders',
+            'notes',
         ],
-        elements: [],
+        elements: [
+            'showUserToggle',
+            'view-profile',
+            'showLatestNote'
+        ],
         tables: {
             customerOptions: [],
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
             stakeholderOptions: [],
-            ctaasTestSuiteOptions: []
+            ctaasTestSuiteOptions: [],
+            noteOptions: [
+                'VIEW_DASHBOARD'
+            ]
         }
     }
 };
-

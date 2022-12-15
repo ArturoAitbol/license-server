@@ -317,7 +317,7 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
 
             selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
             dashboardComponentTestInstance.rowAction(selectedTestData);
-            expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('SpotLight service is not available for this Subaccount', '');
+            expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight service is not available for this Subaccount', '');
         });
     };
 });
