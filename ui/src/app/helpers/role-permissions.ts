@@ -311,7 +311,8 @@ export const permissions = {
             'notes',
         ],
         elements: [
-            'showUserToggle'
+            'showUserToggle',
+            'view-profile'
         ],
         tables: {
             customerOptions: [],
