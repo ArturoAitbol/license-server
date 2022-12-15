@@ -175,14 +175,19 @@ public class TekvLSGetAllSubaccounts
 		return emailsMap;
 	}
 
-	private boolean isSubaccountAdmin(String subaccountEmail, ExecutionContext context) throws Exception {
-		JSONObject userProfile = null;
-		userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(subaccountEmail, context);
-		String userRole = userProfile.getString("role");
-		if(userRole.equals(SUBACCOUNT_ADMIN)) {
+	private boolean isSubaccountAdmin(String subaccountEmail, ExecutionContext context) {
+		try{
+			JSONObject userProfile = null;
+			userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(subaccountEmail, context);
+			String userRole = userProfile.getString("role");
+			if(userRole.equals(SUBACCOUNT_ADMIN)) {
+				return true;
+			}else {
+				return false;
+			}
+		} catch (Exception e) {
+			context.getLogger().info("Caught exception: " + e.getMessage());
 			return true;
-		}else {
-			return false;
 		}
 	}
 }
