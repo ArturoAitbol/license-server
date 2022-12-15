@@ -1,5 +1,5 @@
-@CTaaSFeature @onBoardTest
-Feature: Customers
+@CTaaSFeature @onBoardTest @feature-toggle
+Feature: OnBoard
   Background: Login successfully with valid credentials
     Given I am on the landing page
 
@@ -32,10 +32,6 @@ Feature: Customers
       | jobTitle        | Manager                                           |
       | company         | TestComp                                          |
       | phoneNumber     | +12064563059                                      |
-      | type            | Detailed                                          |
-      | dailyReports    | yes                                               |
-      | weeklyReports   | yes                                               |
-      | monthlyReports  | yes                                               |
     Then I click on "No, I'm done" button
     And I logout
 
@@ -43,8 +39,8 @@ Feature: Customers
   Scenario: Test SpotLight Navigation
     Given I try to login using a "SubaccountAdministrator"
     And I am on the apps view
-    When I click on "SpotLight" button
-    Then I should see the "SpotLight" view
+    When I click on "Spotlight" button
+    Then I should see the "Spotlight" view
     And I should see the following buttons
       | Dashboard     |
       | Stakeholders  |
