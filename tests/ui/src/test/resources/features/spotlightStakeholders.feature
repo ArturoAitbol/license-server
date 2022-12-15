@@ -55,7 +55,7 @@ Feature: Stakeholders
     Then I should see the message "Created Stakeholder successfully"
 #    And I logout
 
-  @loginStakeholder @feature-toggle
+  @loginStakeholder @ignore @feature-toggle
   Scenario: Stakeholder login
     Given I try to login using a "Stakeholder"
     Then I should see the "SpotLight" view
@@ -85,7 +85,7 @@ Feature: Stakeholders
     When I delete the "stakeholderTestModified" stakeholder
     Then I should see the message "Deleted Stakeholder successfully"
 
-  @deleteStakeholdersTestCustomer @delete @adCreationToggle
+  @deleteStakeholdersTestCustomer @delete
   Scenario: Delete the test customer for stakeholder
     Given I see the customer "stakeholderTestCustomer" in the table
     When I delete the customer "stakeholderTestCustomer"
