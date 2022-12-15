@@ -26,8 +26,8 @@ public class StakeholderForm extends AbstractPageObject {
         this.action.sendText(this.nameInput, name);
         this.action.sendText(this.jobTitleInput, jobTitle);
         this.action.sendText(this.companyNameInput, companyName);
-        if (!DriverManager.getInstance().getActiveDirectoryStatus())
-            subaccountAdminEmail = DriverManager.getInstance().addTimeStampToEmail(subaccountAdminEmail);
+/*        if (!DriverManager.getInstance().getActiveDirectoryStatus())
+            subaccountAdminEmail = DriverManager.getInstance().addTimeStampToEmail(subaccountAdminEmail);*/
         this.action.sendText(this.subaccountAdminEmailInput, subaccountAdminEmail);
         this.action.sendText(this.phoneNumberInput, phoneNumber);
         this.action.click(this.submitButton);

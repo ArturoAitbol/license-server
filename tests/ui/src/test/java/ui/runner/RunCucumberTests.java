@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
         },
         features = "src/test/resources/features/",
         glue = "ui",
-        tags = "not @feature-toggle") //use this tag when you want to ignore tests by default
+        tags = "@spotLightStakeholdersTest") //use this tag when you want to ignore tests by default
 public class RunCucumberTests {
     @AfterClass
     public static void close() {
