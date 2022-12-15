@@ -29,20 +29,12 @@ public class OnBoardWizard extends AbstractPageObject {
     WebElement submitButton;
 
 
-    public void acceptForm(String name, String jobTitle, String email, String companyName, String phoneNumber, String type, String dailyReports, String weeklyReports, String monthlyReports) {
+    public void acceptForm(String name, String jobTitle, String email, String companyName, String phoneNumber) {
         this.action.replaceText(this.name, name);
         this.action.replaceText(this.jobTitle, jobTitle);
         this.action.replaceText(this.email, email);
         this.action.replaceText(this.companyName, companyName);
         this.action.replaceText(this.phoneNumber, phoneNumber);
-        By typeSelector = By.cssSelector(String.format("[value='TYPE:%s']", type));
-        this.action.selectOption(this.type, typeSelector);
-        if (!dailyReports.isEmpty())
-            this.action.click(this.dailyReports);
-        if (!weeklyReports.isEmpty())
-            this.action.click(this.weeklyReports);
-        if (!monthlyReports.isEmpty())
-            this.action.click(this.monthlyReports);
         this.action.click(this.submitButton);
         String message = getMessage();
         System.out.println("Complete On Board : " + message);
