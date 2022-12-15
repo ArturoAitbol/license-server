@@ -11,6 +11,9 @@ import { ReportType } from 'src/app/helpers/report-type';
 import { forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { FormControl } from '@angular/forms';
+import { NoteService } from '../../../services/notes.service';
+import { Note, NoteAPIResponse } from '../../../model/note.model';
+
 export interface IImagesList {
     imageBase64: string;
     reportType: string
@@ -33,15 +36,18 @@ export class CtaasDashboardComponent implements OnInit {
     ctaasSetupDetails: any = {};
     subaccountId = '';
     hasDashboardDetails = false;
+    latestNoteLoaded = false;
     isLoadingResults = false;
     dailyImagesList: string[] = [];
     weeklyImagesList: string[] = [];
     refreshIntervalSubscription: Subscription;
+    refreshNotesIntervalSubscription: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
     resultantImagesList: IResultant[] = [];
     resultantImagesListBk: IResultant[] = [];
     resultant: any;
+    latestNoteData: { subaccountName: string, note: Note };
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
     constructor(
@@ -51,6 +57,7 @@ export class CtaasDashboardComponent implements OnInit {
         private ctaasDashboardService: CtaasDashboardService,
         private subaccountService: SubAccountService,
         private snackBarService: SnackBarService,
+        private noteService: NoteService
     ) { }
 
     /**
@@ -68,10 +75,15 @@ export class CtaasDashboardComponent implements OnInit {
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
         this.fetchCtaasDashboardDetailsBySubaccount();
+        this.fetchLatestNote();
         // fetch dashboard report for every 15 minutes interval
         this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
             .subscribe(() => {
                 this.fetchCtaasDashboardDetailsBySubaccount();
+            });
+        this.refreshNotesIntervalSubscription = interval(Constants.DASHBOARD_NOTE_REFRESH_INTERVAL)
+            .subscribe(() => {
+                this.fetchLatestNote();
             });
     }
     /**
@@ -204,8 +216,26 @@ export class CtaasDashboardComponent implements OnInit {
         return this.resultantImagesList.length > 0;
     }
 
-    ngOnDestory(): void {
+    fetchLatestNote(): void {
+        this.noteService.getNoteList(this.subaccountService.getSelectedSubAccount().id).subscribe((res: NoteAPIResponse) => {
+            let lastOpenNoteIndex = res.notes.filter(x => x.status === 'Open').length - 1;
+            if(lastOpenNoteIndex != -1) {
+                this.latestNoteLoaded = true;
+                this.latestNoteData = {
+                    note: res.notes.filter(x => x.status === 'Open')[lastOpenNoteIndex],
+                    subaccountName: this.subaccountService.getSelectedSubAccount().name
+                };
+            }
+        }, err => {
+            console.debug('error', err);
+            this.latestNoteLoaded = false;
+        });
+    }
+
+    ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
+        if (this.refreshNotesIntervalSubscription)
+            this.refreshNotesIntervalSubscription.unsubscribe();
     }
 }

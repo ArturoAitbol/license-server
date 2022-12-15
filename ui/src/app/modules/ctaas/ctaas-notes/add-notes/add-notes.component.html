@@ -9,7 +9,8 @@
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label id="name-label"> Note content</mat-label>
-                        <input required matInput value="" formControlName="content" id="content" maxlength="80">
+                        <input required matInput #noteInput value="" formControlName="content" id="content" maxlength="80">
+                        <mat-hint align="end">{{noteInput.value?.length || 0}}/80</mat-hint>
                     </mat-form-field>
                 </div>
             </mat-dialog-content>
