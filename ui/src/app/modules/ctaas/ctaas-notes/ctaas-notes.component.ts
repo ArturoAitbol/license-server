@@ -10,11 +10,13 @@ import {SubAccountService} from '../../../services/sub-account.service';
 import {AddNotesComponent} from './add-notes/add-notes.component';
 import { Note } from 'src/app/model/note.model';
 import { CtaasHistoricalDashboardComponent } from '../ctaas-historical-dashboard/ctaas-historical-dashboard.component';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'spotlight-notes',
     templateUrl: './ctaas-notes.component.html',
-    styleUrls: ['./ctaas-notes.component.css']
+    styleUrls: ['./ctaas-notes.component.css'],
+    providers: [ DatePipe ]
 })
 export class CtaasNotesComponent implements OnInit {
     tableMaxHeight: number;
@@ -39,7 +41,8 @@ export class CtaasNotesComponent implements OnInit {
         private snackBarService: SnackBarService,
         private dialogService: DialogService,
         private noteService: NoteService,
-        private subAccountService: SubAccountService
+        private subAccountService: SubAccountService,
+        private datePipe: DatePipe
     ) { }
     /**
      * calculate table height based on the window height
@@ -81,8 +84,14 @@ export class CtaasNotesComponent implements OnInit {
         this.isLoadingResults = true;
         this.noteService.getNoteList(this.subAccountService.getSelectedSubAccount().id).subscribe((res) => {
             this.isRequestCompleted = true;
-            this.notesDataBk = res.notes;
-            this.notesData = res.notes.filter(x => x.status === 'Open');
+            this.notesDataBk = res.notes.map(note => {
+                note.openDate = this.datePipe.transform(new Date(note.openDate), 'yyyy-MM-dd  h:mm:ss');
+                if(note.closeDate) {
+                    note.closeDate = this.datePipe.transform(new Date(note.closeDate), 'yyyy-MM-dd  h:mm:ss');
+                }
+                return note;
+            });
+            this.notesData = this.notesDataBk.filter(x => x.status === 'Open');
             this.isLoadingResults = false;
         }, err => {
             console.debug('error', err);
@@ -200,8 +209,13 @@ export class CtaasNotesComponent implements OnInit {
     onChangeToggle(flag: boolean): void {
         this.toggleStatus = flag;
         if (flag) {
-            this.notesData = this.notesDataBk;
+            console.log(this.actionMenuOptions);
+            let closeNoteIndex = this.actionMenuOptions.indexOf('Close Note');
+            if (closeNoteIndex != -1)
+                this.actionMenuOptions.splice(closeNoteIndex, 1);
+            this.notesData = this.notesDataBk.filter(x => x.status === 'Closed');
         } else {
+            this.getActionMenuOptions();
             this.notesData = this.notesDataBk.filter(x => x.status === 'Open');
         }
     }
