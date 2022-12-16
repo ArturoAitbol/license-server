@@ -76,7 +76,7 @@ jobs:
       id: uiTests
       run: |
         cd tests/ui
-        gradle uiTests -Denv=production -D"cucumber.filter.tags=not @CTaaSFeature"
+        gradle uiTests -Denv=production -D"cucumber.filter.tags=not @feature-toggle"
     - uses: deblockt/cucumber-report-annotations-action@v1.10
       if: success() || failure()
       name: Publish Cucumber Report

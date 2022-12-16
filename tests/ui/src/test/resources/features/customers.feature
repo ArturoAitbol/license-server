@@ -25,7 +25,7 @@ Feature: Customers
     Then I should see the message "Customer admin emails edited successfully!"
 
   @subscriptionsView @CTaaSFeature
-  Scenario: Go to the subcriptions tab
+  Scenario: Go to the subscriptions tab
     Given I see the customer "customerTest" in the table
     When I go to dashboard "Subscriptions" tab
     Then I should see the "Subscriptions Overview" page
