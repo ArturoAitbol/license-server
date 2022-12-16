@@ -46,7 +46,7 @@
     <div [ngClass]="{'col-6':item.reportType===DAILY,'col-12':item.reportType===WEEKLY}" class="p-1 mb-1"
       *ngFor="let image of item.imagesList;let i1=index;">
       <mat-card class="card">
-        <mat-card-header>
+        <mat-card-header id="cardHeader">
           <mat-card-title class="card-title">{{image.reportType}}</mat-card-title>
         </mat-card-header>
         <mat-card-content>

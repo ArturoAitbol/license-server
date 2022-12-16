@@ -192,3 +192,7 @@ button:hover {
 .light-text {
   color: #8a8a8a;
 }
+
+#cardHeader {
+  justify-content: center;
+}
