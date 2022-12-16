@@ -193,6 +193,6 @@ button:hover {
   color: #8a8a8a;
 }
 
-#cardHeader {
+.card-main-header {
   justify-content: center;
 }
