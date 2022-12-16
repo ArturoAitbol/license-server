@@ -314,6 +314,7 @@ export const permissions = {
         ],
         elements: [
             'showUserToggle',
+            'view-profile',
             'showLatestNote'
         ],
         tables: {

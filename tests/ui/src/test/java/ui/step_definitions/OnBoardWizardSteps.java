@@ -26,11 +26,7 @@ public class OnBoardWizardSteps {
         this.email = environment.subaccountAdminUser();
         this.company = onBoard.get("company");
         this.phoneNumber = onBoard.get("phoneNumber");
-        this.type = onBoard.get("type");
-        this.dailyReports = onBoard.getOrDefault("dailyReports", "");
-        this.weeklyReports = onBoard.getOrDefault("weeklyReports", "");
-        this.monthlyReports = onBoard.getOrDefault("monthlyReports", "");
-        this.onBoardWizard.acceptForm(name, jobTitle, email, company, phoneNumber, type, dailyReports, weeklyReports, monthlyReports);
+        this.onBoardWizard.acceptForm(name, jobTitle, email, company, phoneNumber);
 //        this.actualMessage = this.onBoardWizard.getMessage();
     }
 }
