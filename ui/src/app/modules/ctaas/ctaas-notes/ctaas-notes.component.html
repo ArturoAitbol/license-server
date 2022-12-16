@@ -4,9 +4,11 @@
         <h2 id="main-title">Notes</h2>
     </div>
     <div>
-        <span class="fw-500" >Show Closed Notes</span>
+        <span class="fw-500" >Open</span>
         &nbsp;
         <mat-slide-toggle id="mat-toggle" [color]="'primary'" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
+        &nbsp;
+        <span class="fw-500 p-2" >Closed</span>
         &nbsp;
         <button *lcCheckAccessFor="'addSpotlightNote'" style="margin-left: auto;" mat-raised-button id="add-customer-button" (click)="addNote()">
             Add Note
