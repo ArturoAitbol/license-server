@@ -113,7 +113,7 @@ export class CtaasDashboardComponent implements OnInit {
                 width: '700px',
                 maxHeight: '80vh',
                 disableClose: true,
-                data: id
+                data: {ctaasSetupId: id, ctaasSetupSubaccountId: this.subaccountId}
             });
         }
     }
