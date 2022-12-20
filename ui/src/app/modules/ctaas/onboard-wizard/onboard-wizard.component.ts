@@ -32,6 +32,7 @@ export class OnboardWizardComponent implements OnInit {
     subaccountUserProfileDetails: any = {};
 
     ctaasSetupId: string;
+    subaccountId: string;
 
     constructor(
         private userprofileService: UserProfileService,
@@ -41,9 +42,10 @@ export class OnboardWizardComponent implements OnInit {
         private autoLogoutService: AutoLogoutService,
         private ctaasSetupService: CtaasSetupService,
         private snackBarService: SnackBarService,
-        @Inject(MAT_DIALOG_DATA) public data: string
+        @Inject(MAT_DIALOG_DATA) public data: any
     ) {
-        this.ctaasSetupId = data;
+        this.ctaasSetupId = data.ctaasSetupId;
+        this.subaccountId = data.ctaasSetupSubaccountId;
     }
 
     /**
@@ -163,8 +165,7 @@ export class OnboardWizardComponent implements OnInit {
         this.isDataLoading = true;
         const requestPayload = this.stakeholderForm.value;
         let detailedRequestPayload = {...requestPayload,  type: this.type, notifications: this.notifications}
-        const {subaccountId} = this.subaccountUserProfileDetails;
-        detailedRequestPayload.subaccountId = subaccountId;
+        detailedRequestPayload.subaccountId = this.subaccountId;
         if (detailedRequestPayload.notifications.length > 0) {
             detailedRequestPayload.notifications = detailedRequestPayload.type + ',' + detailedRequestPayload.notifications;
         }

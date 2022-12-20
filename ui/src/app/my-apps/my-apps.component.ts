@@ -22,6 +22,7 @@ export class MyAppsComponent implements OnInit {
     loggedInUserRoles: string[] = [];
     ctaasSetupDetails: any = {};
     currentSubaccountDetails: any = {};
+    subaccountId: any;
 
     constructor(
         private router: Router,
@@ -90,6 +91,7 @@ export class MyAppsComponent implements OnInit {
     fetchCtaasSetupDetails(): void {
         const {id, subaccountId} = this.currentSubaccountDetails;
         const SUB_ACCOUNT_ID = (id) ? id : subaccountId;
+        this.subaccountId = SUB_ACCOUNT_ID;
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(SUB_ACCOUNT_ID)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
                 if (response) {
@@ -114,7 +116,7 @@ export class MyAppsComponent implements OnInit {
                 width: '700px',
                 maxHeight: '80vh',
                 disableClose: true,
-                data: id
+                data: {ctaasSetupId:id, ctaasSetupSubaccountId:this.subaccountId}
             });
         }
     }
