@@ -179,3 +179,7 @@ button:hover {
 .light-text {
   color: #8a8a8a;
 }
+
+.mat-dialog-content {
+  max-height: 42vh;
+}
