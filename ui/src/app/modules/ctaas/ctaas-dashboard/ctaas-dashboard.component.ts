@@ -113,7 +113,7 @@ export class CtaasDashboardComponent implements OnInit {
                 width: '700px',
                 maxHeight: '80vh',
                 disableClose: true,
-                data: {ctaasSetupId: id, ctaasSetupSubaccountId: this.subaccountId}
+                data: { ctaasSetupId: id, ctaasSetupSubaccountId: this.subaccountId }
             });
         }
     }
@@ -143,7 +143,7 @@ export class CtaasDashboardComponent implements OnInit {
                 if (result.length > 0) {
                     this.hasDashboardDetails = true;
                     const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
-                    const reportsIdentifiers: any[] = []; 
+                    const reportsIdentifiers: any[] = [];
                     result.forEach((e) => {
                         let reportIdentifier = (({ timestampId, reportType }) => ({ timestampId, reportType }))(e);
                         reportsIdentifiers.push(reportIdentifier);
@@ -156,7 +156,7 @@ export class CtaasDashboardComponent implements OnInit {
                             resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                         }
                     });
-                    this.ctaasDashboardService.setReports(reportsIdentifiers.length>0 ? reportsIdentifiers : null);
+                    this.ctaasDashboardService.setReports(reportsIdentifiers.length > 0 ? reportsIdentifiers : null);
                     const { daily, weekly, lastUpdatedDateList } = resultant;
                     this.lastModifiedDate = lastUpdatedDateList[0];
                     if (daily.length > 0)
@@ -193,10 +193,10 @@ export class CtaasDashboardComponent implements OnInit {
      */
     getReportNameByType(reportType: string): string {
         switch (reportType) {
-            case ReportType.DAILY_FEATURE_FUNCTIONALITY: case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return 'Feature Functionality';
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY: return 'Feature Functionality';
             case ReportType.DAILY_CALLING_RELIABILITY: return 'Calling Reliability';
             case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';
-
+            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return 'Feature Functionality & Calling Reliability'
         }
     }
     /**
