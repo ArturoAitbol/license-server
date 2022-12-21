@@ -123,6 +123,7 @@ export class CtaasDashboardComponent implements OnInit {
      */
     fetchCtaasDashboardDetailsBySubaccount(): void {
         this.isLoadingResults = true;
+        this.hasDashboardDetails = false;
         this.resultantImagesList = this.resultantImagesListBk = [];
         this.ctaasDashboardService.setReports(null);
         const requests: Observable<any>[] = [];
@@ -134,13 +135,13 @@ export class CtaasDashboardComponent implements OnInit {
         }
         // get all the request response in an array
         forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
+            this.isLoadingResults = false;
             if (res) {
                 // get all response without any error messages
                 const result: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string }[] = [...res]
                     .filter((e: any) => !e.error)
                     .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string } }) => e.response);
-                this.isLoadingResults = false;
-                if (result.length > 0) {
+                if ((result.length > 0)) {
                     this.hasDashboardDetails = true;
                     const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
                     const reportsIdentifiers: any[] = [];
@@ -168,6 +169,9 @@ export class CtaasDashboardComponent implements OnInit {
                         this.onChangeButtonToggle();
                     }
                 }
+                this.hasDashboardDetails = this.checkForDashboardDetails();
+            } else {
+                this.resultantImagesList = this.resultantImagesListBk = [];
                 this.hasDashboardDetails = this.checkForDashboardDetails();
             }
         }, (e) => {
