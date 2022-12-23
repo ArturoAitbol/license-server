@@ -180,6 +180,7 @@ button:hover {
   color: #8a8a8a;
 }
 
-.mat-dialog-content {
-  max-height: 42vh;
+.mat-content{
+  max-height: 85vh;
+  align-self: center;
 }
