@@ -91,33 +91,42 @@ public class TekvLSDeleteCustomerById
 					getAllEmailsStmt.setString(2, id);
 					ResultSet resultSet = getAllEmailsStmt.executeQuery();
 					while (resultSet.next()){
-						String customerId =  resultSet.getString("customer_id");
+						String adminCustomerId =  resultSet.getString("customer_id");
 						String adminEmail = resultSet.getString("admin_email");
-						String subaccountCustomerId =  resultSet.getString("subaccount_customer_id");
+						String subaccountAdminCustomerId =  resultSet.getString("subaccount_customer_id");
 						String subaccountAdminEmail = resultSet.getString("subaccount_admin_email");
 
-						if (subaccountCustomerId == null || (!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation") && adminEmail != null)) {
+						// if adminCustomerId IS selected id AND (email IS NOT used as subaccount admin OR ad-subaccount-user-creation toggle IS NOT enabled)
+						if (adminCustomerId.equals(id) && (subaccountAdminCustomerId == null || !FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation"))) {
+							// if ad-customer-user-creation toggle IS enabled => delete user
 							if (FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")) {
 								GraphAPIClient.deleteGuestUser(adminEmail, context);
 								context.getLogger().info("Guest User deleted successfully from Active Directory (email: " + adminEmail + ").");
-							}
-							continue;
-						}
-
-						if (subaccountCustomerId.equals(id) && FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-							if (adminEmail == null || subaccountCustomerId.equals(customerId)) {
-								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, context);
-								context.getLogger().info("Guest User deleted successfully from Active Directory (email: " + subaccountAdminEmail + ").");
 								continue;
 							}
-							GraphAPIClient.removeRole(subaccountAdminEmail, SUBACCOUNT_ADMIN, context);
-							context.getLogger().info("Guest User Role (Subaccount Admin) removed successfully from Active Directory (email: " + subaccountAdminEmail + ").");
+						}
+
+						// if subaccountAdminCustomerId IS selected id and ad-subaccount-user-creation toggle IS enabled
+						if (subaccountAdminCustomerId.equals(id) && FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+							// if adminCustomerId IS null IS selected id, ad-customer-user-creation toggle IS NOT enabled => delete user
+							if (adminCustomerId == null || adminCustomerId.equals(id) || !FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")) {
+								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, context);
+								context.getLogger().info("Guest User deleted successfully from Active Directory (email: " + subaccountAdminEmail + ").");
+							} else {
+								// else delete subaccount admin role 
+								GraphAPIClient.removeRole(subaccountAdminEmail, SUBACCOUNT_ADMIN, context);
+								context.getLogger().info("Guest User Role (Subaccount Admin) removed successfully from Active Directory (email: " + subaccountAdminEmail + ").");
+							}
 							continue;
 						}
 
-						if (FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")) {
+						// if adminCustomerId IS selected id AND ad-customer-user-creation toggle IS enabled
+						// but there IS a subaccountAdmin with diferent Customer ID AND ad-subaccount-user-creation toggle IS enabled
+						// then delete customer admin role 
+						if (adminCustomerId.equals(id) && FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")) {
 							GraphAPIClient.removeRole(adminEmail, CUSTOMER_FULL_ADMIN, context);
 							context.getLogger().info("Guest User Role (Customer Admin) removed successfully from Active Directory (email: " + adminEmail + ").");
+							continue;
 						}
 					}
 				}
