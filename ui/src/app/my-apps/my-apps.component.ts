@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Router} from '@angular/router';
 import {MsalService} from '@azure/msal-angular';
+import { Constants } from '../helpers/constants';
 import {tekVizionServices} from '../helpers/tekvizion-services';
 import {ICtaasSetup} from '../model/ctaas-setup.model';
 import {IService} from '../model/service.model';
@@ -108,7 +109,7 @@ export class MyAppsComponent implements OnInit {
      * setup customer onboarding details
      */
     setupCustomerOnboardDetails(): void {
-        const index = this.loggedInUserRoles.findIndex(e => e.includes('customer.SubaccountAdmin'));
+        const index = this.loggedInUserRoles.findIndex(e => e.includes(Constants.SUBACCOUNT_ADMIN));
         // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
         if ((!this.isOnboardingComplete && index !== -1)) {
             const {id} = this.ctaasSetupDetails;
