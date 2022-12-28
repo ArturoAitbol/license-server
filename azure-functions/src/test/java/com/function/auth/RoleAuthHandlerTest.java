@@ -222,6 +222,48 @@ class RoleAuthHandlerTest extends TekvLSTest {
         //When
         String role = evaluateRoles(roles);
         //Then
+        assertEquals(FULL_ADMIN,role);
+    }
+
+    @Tag("security")
+    @Test
+    public void evaluateTekvizionRolesTest2(){
+        //Given
+        JSONArray roles = new JSONArray();
+        roles.put(DEVICES_ADMIN);
+        roles.put(CONFIG_TESTER);
+
+        //When
+        String role = evaluateRoles(roles);
+        //Then
         assertEquals(CONFIG_TESTER,role);
+    }
+
+    @Tag("security")
+    @Test
+    public void evaluateTekvizionRolesTest3(){
+        //Given
+        JSONArray roles = new JSONArray();
+        roles.put(DEVICES_ADMIN);
+        roles.put(SALES_ADMIN);
+
+        //When
+        String role = evaluateRoles(roles);
+        //Then
+        assertEquals(DEVICES_ADMIN,role);
+    }
+
+    @Tag("security")
+    @Test
+    public void evaluateTekvizionRolesOverCustomerRolesTest(){
+        //Given
+        JSONArray roles = new JSONArray();
+        roles.put(CONFIG_TESTER);
+        roles.put(FULL_ADMIN);
+
+        //When
+        String role = evaluateRoles(roles);
+        //Then
+        assertEquals(FULL_ADMIN,role);
     }
 }
