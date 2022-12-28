@@ -98,11 +98,8 @@ export class RedirectPageComponent implements OnInit {
    * check point where based on roles, it will redirect to apps/tekToken Consumption portal
    */
   private navigationCheckPoint(): void {
-    let subaccountRoles = 0;
-    if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN)) subaccountRoles++;
-    if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER)) subaccountRoles++;
-    // checking that user only has subaccount privileges to send it to apps page 
-    if (this.loggedInUserRoles.length === subaccountRoles) {
+    // checking that user has subaccount role to send it to apps page 
+    if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER)) {
       this.navigateToMyApps();
     } else {
       this.navigateToDashboard();

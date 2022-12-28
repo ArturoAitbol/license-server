@@ -105,9 +105,8 @@ export class CtaasDashboardComponent implements OnInit {
      * setup customer onboarding details
      */
     setupCustomerOnboardDetails(): void {
-        const index = this.loggedInUserRoles.findIndex(e => e.includes(Constants.SUBACCOUNT_ADMIN));
         // only open onboarding wizard dialog/modal when onboardingcomplete is f and user is SUBACCOUNT_ADMIN
-        if ((!this.isOnboardingComplete && index !== -1)) {
+        if ((!this.isOnboardingComplete && this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN))) {
             const { id } = this.ctaasSetupDetails;
             this.dialog.open(OnboardWizardComponent, {
                 width: '700px',
