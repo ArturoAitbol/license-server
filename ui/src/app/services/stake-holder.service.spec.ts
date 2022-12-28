@@ -5,6 +5,7 @@ import {environment} from '../../environments/environment';
 import {IStakeholder} from "../model/stakeholder.model";
 import {SubAccount} from "../model/subaccount.model";
 import {StakeHolderServiceMock} from '../../test/mock/services/ctaas-stakeholder-service.mock';
+import { Constants } from '../helpers/constants';
 
 let httpClientSpy: jasmine.SpyObj<HttpClient>;
 let stakeHolderService: StakeHolderService;
@@ -44,8 +45,8 @@ describe('Stakeholder service http requests test', () => {
             phoneNumber: '1111111111',
             notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'Detailed',
-            role:'customer.SubaccountStakeholder',
+            type: 'Detailed',
+            role: Constants.SUBACCOUNT_STAKEHOLDER,
             subaccountAdminEmail: "test@mail.com"
         };
         httpClientSpy.put.and.returnValue(StakeHolderServiceMock.updateStakeholderDetails());
@@ -64,8 +65,8 @@ describe('Stakeholder service http requests test', () => {
             phoneNumber: '1111111111',
             notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'Detailed',
-            role:'customer.SubaccountStakeholder',
+            type: 'Detailed',
+            role: Constants.SUBACCOUNT_STAKEHOLDER,
             subaccountAdminEmail: "test@mail.com"
         };
         httpClientSpy.delete.and.returnValue(StakeHolderServiceMock.deleteStakeholder());
@@ -84,8 +85,8 @@ describe('Stakeholder service http requests test', () => {
           phoneNumber: '1111111111',
           notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
           subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-          type:'Detailed',
-          role:'customer.SubaccountStakeholder',
+          type: 'Detailed',
+          role: Constants.SUBACCOUNT_STAKEHOLDER,
           subaccountAdminEmail: "test@mail.com"
         };
         httpClientSpy.post.and.returnValue(StakeHolderServiceMock.createStakeholder());
