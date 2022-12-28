@@ -77,10 +77,9 @@ public class RoleAuthHandler {
         return rolePermissions.contains(resource);
     }
 
-    public static String evaluateRoles(JSONArray roles) {
-        if (roles.length() == 1) {
+    public static String evaluateCustomerRoles(JSONArray roles) {
+        if (roles.length() == 1)
             return roles.getString(0);
-        }
         List<String> customerRoles = getCustomerRoles();
         String role;
         for (String customerRole : customerRoles) {
@@ -88,6 +87,31 @@ public class RoleAuthHandler {
                 role = roles.getString(i);
                 if (role.equals(customerRole))
                     return role;
+            }
+        }
+        return roles.getString(0);
+    }
+
+    public static String evaluateRoles(JSONArray roles) {
+        if (roles.length() == 1)
+            return roles.getString(0);
+        String roleIt;
+        boolean configTesterFound = false;
+        for (int i = 0; i < roles.length(); i++) {
+            roleIt = roles.getString(i);
+            if (roleIt.equals(FULL_ADMIN))
+                return FULL_ADMIN;
+            if (roleIt.equals(CONFIG_TESTER))
+                configTesterFound = true;
+        }
+        if (configTesterFound)
+            return CONFIG_TESTER;
+        List<String> customerRoles = getCustomerRoles();
+        for (String customerRole : customerRoles) {
+            for (int i = 0; i < roles.length(); i++) {
+                roleIt = roles.getString(i);
+                if (roleIt.equals(customerRole))
+                    return roleIt;
             }
         }
         return roles.getString(0);
