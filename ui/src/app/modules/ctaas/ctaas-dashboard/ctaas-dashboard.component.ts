@@ -105,9 +105,8 @@ export class CtaasDashboardComponent implements OnInit {
      * setup customer onboarding details
      */
     setupCustomerOnboardDetails(): void {
-        const index = this.loggedInUserRoles.findIndex(e => e.includes('customer.SubaccountAdmin'));
-        // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
-        if ((!this.isOnboardingComplete && index !== -1)) {
+        // only open onboarding wizard dialog/modal when onboardingcomplete is f and user is SUBACCOUNT_ADMIN
+        if ((!this.isOnboardingComplete && this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN))) {
             const { id } = this.ctaasSetupDetails;
             this.dialog.open(OnboardWizardComponent, {
                 width: '700px',
@@ -199,7 +198,7 @@ export class CtaasDashboardComponent implements OnInit {
         switch (reportType) {
             case ReportType.DAILY_FEATURE_FUNCTIONALITY: return 'Feature Functionality';
             case ReportType.DAILY_CALLING_RELIABILITY: return 'Calling Reliability';
-            case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';
+            // case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';  // as media injection is not ready yet, hence disabling PESQ for now.
             case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return 'Feature Functionality & Calling Reliability'
         }
     }

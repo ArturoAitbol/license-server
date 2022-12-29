@@ -37,7 +37,7 @@ export class RedirectPageComponent implements OnInit {
       const accountDetails = this.getAccountDetails();
       const { idTokenClaims: { roles } } = accountDetails;
       this.loggedInUserRoles = roles;
-      if (this.loggedInUserRoles.includes("customer.SubaccountAdmin")) {
+      if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
         this.fetchUserProfileDetails();
       }
       this.getSubAccountDetails();
@@ -73,7 +73,6 @@ export class RedirectPageComponent implements OnInit {
         if (res) {
           const { subaccounts } = res;
           this.currentSubaccountDetails = subaccounts[0];
-          // if (this.loggedInUserRoles.includes("customer.SubaccountAdmin"))
           this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
           // enable/disable the available services
           this.availableServices.forEach((e: { label: string, value: string, access: boolean }) => {
@@ -99,8 +98,8 @@ export class RedirectPageComponent implements OnInit {
    * check point where based on roles, it will redirect to apps/tekToken Consumption portal
    */
   private navigationCheckPoint(): void {
-    const subaccountCheck: boolean = this.loggedInUserRoles.some(e => e === 'customer.SubaccountAdmin' || e === 'customer.SubaccountStakeholder');
-    if (subaccountCheck) {
+    // checking that user has subaccount role to send it to apps page 
+    if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER)) {
       this.navigateToMyApps();
     } else {
       this.navigateToDashboard();
@@ -111,9 +110,7 @@ export class RedirectPageComponent implements OnInit {
    */
   private navigateToMyApps(): void {
     const { services } = this.currentSubaccountDetails;
-    const stakeholderCheck: number = this.loggedInUserRoles.findIndex(e => e === 'customer.SubaccountStakeholder');
-    // checkpoint for stake holder, navigate to spotlight dashboard
-    if (stakeholderCheck !== -1 && services.length > 0) {
+    if (!this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) && services.length > 0) {
       const serviceObj: IService = this.availableServices.find((e: any) => e.value === tekVizionServices.SpotLight);
       const { routePath } = serviceObj;
       this.router.navigate([routePath]);

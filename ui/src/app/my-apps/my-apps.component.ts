@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Router} from '@angular/router';
 import {MsalService} from '@azure/msal-angular';
+import { Constants } from '../helpers/constants';
 import {tekVizionServices} from '../helpers/tekvizion-services';
 import {ICtaasSetup} from '../model/ctaas-setup.model';
 import {IService} from '../model/service.model';
@@ -61,9 +62,8 @@ export class MyAppsComponent implements OnInit {
             // get the current logged in subaccount details
             if (this.currentSubaccountDetails) {
                 let {services} = this.currentSubaccountDetails;
-                if ((services === undefined || services === null) && roles) {
-                    services = roles.includes('customer.SubaccountStakeholder') ? [tekVizionServices.SpotLight] : [];
-                }
+                if ((services === undefined || services === null) && roles)
+                    services = roles.includes(Constants.SUBACCOUNT_STAKEHOLDER) ? [tekVizionServices.SpotLight] : [];
                 // enable respective access to activated service here
                 this.availableServices = this.availableServices.map(e => {
                     if (services.includes(e.value))
@@ -108,9 +108,8 @@ export class MyAppsComponent implements OnInit {
      * setup customer onboarding details
      */
     setupCustomerOnboardDetails(): void {
-        const index = this.loggedInUserRoles.findIndex(e => e.includes('customer.SubaccountAdmin'));
         // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
-        if ((!this.isOnboardingComplete && index !== -1)) {
+        if ((!this.isOnboardingComplete && this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN))) {
             const {id} = this.ctaasSetupDetails;
             this.dialog.open(OnboardWizardComponent, {
                 width: '700px',

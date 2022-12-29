@@ -1,3 +1,5 @@
+import { Constants } from "src/app/helpers/constants";
+
 const TEST_ID_TOKEN_CLAIMS_WITHOUT_ROLES = {
     idTokenClaims: {
         'aud': '11111111-1111-1111-1111-111111111111',
@@ -60,7 +62,7 @@ const TEST_ID_TOKEN_SUBACCOUNT_ROLE = {
             'preferred_username': 'preferred_username',
             'rh': '',
             roles: [
-                'customer.SubaccountAdmin'
+                Constants.SUBACCOUNT_ADMIN
             ],
             'sub': 'sub',
             'tid': '11111111-1111-1111-1111-111111111111',

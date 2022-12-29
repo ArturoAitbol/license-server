@@ -76,7 +76,7 @@ public class TekvLSGetAllNotes {
         String authEmail = getEmailFromToken(tokenClaims, context);
 
         // adding conditions according to the role
-        String currentRole = evaluateRoles(roles);
+        String currentRole = evaluateCustomerRoles(roles);
         switch (currentRole) {
             case CUSTOMER_FULL_ADMIN:
                 queryBuilder.appendCustomCondition("subaccount_id IN (SELECT s.id FROM subaccount s, customer_admin ca " +
