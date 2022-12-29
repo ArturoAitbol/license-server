@@ -122,7 +122,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
       switch (reportType) {
           case ReportType.DAILY_FEATURE_FUNCTIONALITY: case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return 'Feature Functionality';
           case ReportType.DAILY_CALLING_RELIABILITY: return 'Calling Reliability';
-          case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';
+        //   case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';   // as media injection is not ready yet, hence disabling PESQ for now.
       }
   }
   /**
