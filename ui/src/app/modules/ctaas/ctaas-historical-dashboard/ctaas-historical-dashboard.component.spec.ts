@@ -140,11 +140,12 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
     reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_CALLING_RELIABILITY);
     expect(reportName).toBe("Calling Reliability");
 
-    reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_PESQ);
-    expect(reportName).toBe("PESQ");
+    // as media injection is not ready yet, hence disabling PESQ for now.
+    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_PESQ);
+    // expect(reportName).toBe("PESQ");
 
-    reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.WEEKLY_PESQ);
-    expect(reportName).toBe("PESQ");
+    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.WEEKLY_PESQ);
+    // expect(reportName).toBe("PESQ");
   })
 
   it('should heck whether dashboard has any data to display or not when calling checkForDashboardDetails()',()=>{
