@@ -205,6 +205,15 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.enableSidebar();
                         break;
                     default:
+                        // if route contains spotlight details
+                        if (this.currentRoutePath.includes('/spotlight/details')) {
+                            this.tabName = Constants.CTAAS_TOOL_BAR;
+                            this.hideToolbar = false;
+                            this.isTransparentToolbar = false;
+                            this.displayedSideBarItems = this.allowedSideBarItems.spotlight;
+                            this.enableSidebar();
+                            break;
+                        }
                         this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
@@ -247,7 +256,7 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     initalizeSidebarItems(): void {
         const accountDetails = this.getAccountDetails();
-        const { roles }  = accountDetails.idTokenClaims;
+        const { roles } = accountDetails.idTokenClaims;
         this.allowedSideBarItems.spotlight = Utility.getNavbarOptions(roles, this.fullSideBarItems.spotlight);
         this.allowedSideBarItems.main = Utility.getNavbarOptions(roles, this.fullSideBarItems.main);
     }

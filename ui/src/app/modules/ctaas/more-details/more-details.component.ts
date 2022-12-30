@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import { Constants } from 'src/app/helpers/constants';
 import { ReportType } from 'src/app/helpers/report-type';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
@@ -27,6 +27,8 @@ export class MoreDetailsComponent implements OnInit {
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
     private subaccountService: SubAccountService,
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
   /**
    * get logged in account details
@@ -43,7 +45,9 @@ export class MoreDetailsComponent implements OnInit {
     const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     const { id, subaccountId } = currentSubaccountDetails;
     this.subaccountId = subaccountId ? subaccountId : id;
-    this.type = localStorage.getItem(Constants.SELECTED_REPORT_TYPE);
+    this.route.queryParams.subscribe(params => {
+      this.type = params['type'];
+    });
     this.initColumns();
     this.calculateTableHeight();
     this.fetchDashboardReportDetails();

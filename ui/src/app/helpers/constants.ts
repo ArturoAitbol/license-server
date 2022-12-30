@@ -8,7 +8,6 @@ export class Constants {
     public static readonly CURRENT_ENABLED_SERVICES: string = 'currentEnabledServices';
     public static readonly TOOLBAR_DETAILS: string = 'toolbarDetails';
     public static readonly CURRENT_REPORTS: string = 'currentReports';
-    public static readonly SELECTED_REPORT_TYPE: string = 'selectedReportType';
 
     // Session Storage Keys
     public static readonly ACCESS_TOKEN: string = 'access_token';
