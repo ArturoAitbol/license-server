@@ -208,16 +208,13 @@ export class AppComponent implements OnInit, OnDestroy {
                         // if route contains spotlight details
                         if (this.currentRoutePath.includes('/spotlight/details')) {
                             this.tabName = Constants.CTAAS_TOOL_BAR;
-                            this.hideToolbar = false;
-                            this.isTransparentToolbar = false;
                             this.displayedSideBarItems = this.allowedSideBarItems.spotlight;
-                            this.enableSidebar();
-                            break;
+                        } else {
+                            this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
+                            this.displayedSideBarItems = this.allowedSideBarItems.main;
                         }
-                        this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
-                        this.displayedSideBarItems = this.allowedSideBarItems.main;
                         this.enableSidebar();
                         break;
                 }
