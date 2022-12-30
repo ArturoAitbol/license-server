@@ -6,33 +6,39 @@ import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.
 import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component';
 import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
 import { CtaasNotesComponent } from './ctaas-notes/ctaas-notes.component';
+import { MoreDetailsComponent } from './more-details/more-details.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'report-dashboards', pathMatch: 'full' },
   {
     path: 'report-dashboards',
     component: CtaasDashboardComponent,
-    canActivate:[RoleGuard]
+    canActivate: [RoleGuard]
   },
   {
     path: 'test-suites',
     component: CtaasTestSuitesComponent,
-    canActivate:[RoleGuard]
+    canActivate: [RoleGuard]
   },
   {
     path: 'stakeholders',
     component: CtaasStakeholderComponent,
-    canActivate:[RoleGuard]
+    canActivate: [RoleGuard]
   },
   {
     path: 'setup',
     component: CtaasSetupComponent,
-    canActivate:[RoleGuard]
+    canActivate: [RoleGuard]
   },
   {
     path: 'notes',
     component: CtaasNotesComponent,
-    canActivate:[RoleGuard]
+    canActivate: [RoleGuard]
+  },
+  {
+    path: 'details',
+    component: MoreDetailsComponent,
+    // canActivate: [RoleGuard]
   }
 ];
 

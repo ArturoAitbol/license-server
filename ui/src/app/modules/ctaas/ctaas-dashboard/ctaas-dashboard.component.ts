@@ -53,7 +53,7 @@ export class CtaasDashboardComponent implements OnInit {
         private ctaasSetupService: CtaasSetupService,
         private ctaasDashboardService: CtaasDashboardService,
         private subaccountService: SubAccountService,
-        private snackBarService: SnackBarService,
+        private snackBarService: SnackBarService
     ) { }
 
     /**
@@ -210,6 +210,19 @@ export class CtaasDashboardComponent implements OnInit {
         return this.resultantImagesList.length > 0;
     }
 
+    onClickMoreDetails(index: string): void {
+        const obj = this.resultantImagesList[0];
+        const { imagesList } = obj;
+        const { reportType } = imagesList[index];
+        const type = (reportType === 'Feature Functionality') ? 'LTS' : (reportType === 'Calling Reliability') ? 'STS' : 'PESQ';
+        localStorage.setItem('more-details', type);
+
+        //  window.open('http://localhost:4200/#/spotlight/details', 'Independent Window');
+        // window.close();
+        // window.open(`https://window-open-with-angular.stackblitz.io`, 'Independent Window');
+        window.open(`http://localhost:4200/#/spotlight/details`,);
+
+    }
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();

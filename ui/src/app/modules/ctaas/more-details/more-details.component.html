@@ -1,0 +1,90 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-right">
+            <button mat-button (click)="downloadTextFile()">Download Report
+                <mat-icon>download</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-4">
+            <h1 class="text-center">Summary of Test Execution</h1>
+            <mat-card class="card">
+                <mat-card-content style="padding: 1%;">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Test Cases Executed</th>
+                                <td> {{sampleJsonData.summary.total }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Passed</th>
+                                <td> {{sampleJsonData.summary.passed }} </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Failed</th>
+                                <td>{{sampleJsonData.summary.failed }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Start Time</th>
+                                <td>{{sampleJsonData.summary. startTime }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">End Time</th>
+                                <td>{{sampleJsonData.summary. endTime }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </mat-card-content>
+            </mat-card>
+        </div>
+        <div class="col-8">
+            <h1 class="text-center">Endpoint Reosurces</h1>
+            <section class="table-section">
+                <mat-card class="card">
+                    <mat-card-content [style.max-height.px]="tableMaxHeight">
+                        <app-data-table class="table-container mat-elevation-z8" [tableData]="sampleJsonData.endpoints"
+                            [tableColumns]="endpointDisplayedColumns"></app-data-table>
+                    </mat-card-content>
+                </mat-card>
+
+            </section>
+        </div>
+    </div>
+    <br>
+    <h1 class="text-center" *ngIf="type==='LTS'">Feature Functionality</h1>
+    <section class="table-section" *ngIf="type==='LTS'">
+        <mat-card class="card">
+            <mat-card-content [style.max-height.px]="tableMaxHeight">
+                <app-data-table class="table-container mat-elevation-z8"
+                    [tableData]="sampleJsonData.featureFunctionality"
+                    [tableColumns]="featureFunctionalityDisplayedColumns">
+                </app-data-table>
+            </mat-card-content>
+        </mat-card>
+    </section>
+    <br *ngIf="type==='STS'">
+    <h1 class="text-center" *ngIf="type==='STS'">Call Reliability</h1>
+    <section class="table-section" *ngIf="type==='STS'">
+        <mat-card class="card">
+            <mat-card-content [style.max-height.px]="tableMaxHeight">
+                <app-data-table class="table-container mat-elevation-z8" [tableData]="sampleJsonData.callReliability"
+                    [tableColumns]="featureFunctionalityDisplayedColumns">
+                </app-data-table>
+            </mat-card-content>
+        </mat-card>
+    </section>
+    <br *ngIf="type==='PESQ'">
+    <h1 class="text-center" *ngIf="type==='PESQ'">PESQ</h1>
+    <section class="table-section" *ngIf="type==='PESQ'">
+        <mat-card class="card">
+            <mat-card-content [style.max-height.px]="tableMaxHeight">
+                <app-data-table class="table-container mat-elevation-z8" [tableData]="sampleJsonData.callReliability"
+                    [tableColumns]="featureFunctionalityDisplayedColumns">
+                </app-data-table>
+            </mat-card-content>
+        </mat-card>
+    </section>
+
+</div>

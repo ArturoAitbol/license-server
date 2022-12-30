@@ -25,7 +25,8 @@ export const permissions = {
             'test-suites',
             'stakeholders',
             'setup',
-            'subscriptions-overview'
+            'subscriptions-overview',
+            'details'
         ],
         elements: [
             'addCustomer',
@@ -137,6 +138,7 @@ export const permissions = {
             'test-suites',
             'stakeholders',
             'setup',
+            'details'
         ],
         elements: [
             'addProject',
@@ -222,6 +224,7 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
+            'details'
         ],
         elements: [
             'view-profile',
@@ -269,6 +272,7 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
+            'details'
         ],
         elements: [
             'view-profile',
@@ -311,6 +315,7 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
+            'details'
         ],
         elements: [
             'showUserToggle',
