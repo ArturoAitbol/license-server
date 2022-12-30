@@ -52,6 +52,10 @@
         <mat-card-content>
           <img [src]="image.imageBase64" class="img-fluid header-image" [id]="i">
         </mat-card-content>
+        <mat-card-actions>
+          <!-- <p (click)="onClickMoreDetails(i1)">More Details</p> -->
+          <a *ngIf="item.reportType===DAILY" class="clickable-item" (click)="onClickMoreDetails(i1)">Click here for detailed report</a>
+        </mat-card-actions>
       </mat-card>
     </div>
   </div>

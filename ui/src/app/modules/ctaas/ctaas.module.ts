@@ -19,6 +19,7 @@ import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/
 import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
+import { MoreDetailsComponent } from './more-details/more-details.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/
     BannerComponent,
     CtaasNotesComponent,
     AddNotesComponent,
-    CtaasHistoricalDashboardComponent
+    CtaasHistoricalDashboardComponent,
+    MoreDetailsComponent
   ],
   imports: [
     CommonModule,
