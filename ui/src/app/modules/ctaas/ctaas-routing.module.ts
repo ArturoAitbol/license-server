@@ -38,7 +38,7 @@ const routes: Routes = [
   {
     path: 'details',
     component: MoreDetailsComponent,
-    // canActivate: [RoleGuard]
+    canActivate: [RoleGuard]
   }
 ];
 
