@@ -214,8 +214,8 @@ export class CtaasDashboardComponent implements OnInit {
         const obj = this.resultantImagesList[0];
         const { imagesList } = obj;
         const { reportType } = imagesList[index];
-        const type = (reportType === 'Feature Functionality') ? 'LTS' : (reportType === 'Calling Reliability') ? 'STS' : 'PESQ';
-        localStorage.setItem('more-details', type);
+        const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
+        localStorage.setItem(Constants.SELECTED_REPORT_TYPE, type);
 
         //  window.open('http://localhost:4200/#/spotlight/details', 'Independent Window');
         // window.close();

@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { MsalService } from '@azure/msal-angular';
+import { Constants } from 'src/app/helpers/constants';
+import { ReportType } from 'src/app/helpers/report-type';
+import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 @Component({
   selector: 'app-more-details',
   templateUrl: './more-details.component.html',
@@ -8,122 +13,57 @@ export class MoreDetailsComponent implements OnInit {
   endpointDisplayedColumns: any = [];
   featureFunctionalityDisplayedColumns: any = [];
   downloadUrl: any;
-  filename: string = 'report';
+  filename: string = '';
   tableMaxHeight: number;
   type: string = '';
-  readonly FEATURE_FUNCTIONALITY: string = 'LTS';
-  readonly CALL_RELIABILITY: string = 'STS';
-  readonly PESQ: string = 'PESQ';
-
-  constructor() { }
-
-  readonly sampleJsonDataBk: any = {
-    summary: {
-      total: 200,
-      passed: 189,
-      failed: 11,
-      startTime: '04-03-22 11:16:31   CST',
-      endTime: '04-03-22 15:41:28   CST'
-    },
-    featureFunctionality: [
-      {
-        testCaseName: '43. Call Forward Always - External call - Teams CFA to PSTN',
-        startTime: '04-03-22 12:37:31',
-        endTime: '04-03-22 12:39:15',
-        from: '+12142421234',
-        to: '+12142421235',
-        otherParties: ['+12142421236'],
-        status: 'FAILED',
-        errorCategory: 'Call Routing',
-        errorReason: 'P1 - Line 1 - Call state ringback | Error reason: Mismatch>>  Response Call State Expected:ringback Got:idle'
-      },
-      {
-        testCaseName: '48.Group call - PSTN to Teams - Teams 2 pickup',
-        startTime: '04-03-22 12:46:38',
-        endTime: '04-03-22 12:47:44',
-        from: '+12142421234',
-        to: '+12142421235',
-        otherParties: ['+12142421236'],
-        status: 'FAILED',
-        errorCategory: 'Client Error',
-        errorReason: 'Call Group created is validated and is incorrect'
-      }
-    ],
-    endpoints: [
-      {
-        vendor: 'Microsoft',
-        model: 'MS-Teams',
-        did: '9721112222',
-        firmwareVersion: '1.5.00.4689'
-      },
-      {
-        vendor: 'Microsoft',
-        model: 'MS-Teams',
-        did: '9721112223',
-        firmwareVersion: '1.5.00.4689'
-      },
-      {
-        vendor: 'Microsoft',
-        model: 'MS-Teams',
-        did: '9721112224',
-        firmwareVersion: '1.5.00.4689'
-      }
-    ],
-    callReliability: [
-      {
-        testCaseName: 'Teams users calls PSTN via DID',
-        startTime: '04-03-22 12:37:31',
-        endTime: '04-03-22 12:39:15',
-        from: '+12142421234',
-        to: '+12142421235',
-        otherParties: ['+12142421236'],
-        status: 'FAILED',
-        errorCategory: 'Call Routing',
-        errorReason: 'P1 - Line 1 - Call state ringback | Error reason: Mismatch>>  Response Call State Expected:ringback Got:idle'
-      },
-      {
-        testCaseName: 'PSTN user calls Teams via DID',
-        startTime: '04-03-22 12:46:38',
-        endTime: '04-03-22 12:47:44',
-        from: '+12142421234',
-        to: '+12142421235',
-        otherParties: ['+12142421236'],
-        status: 'FAILED',
-        errorCategory: 'Client Error',
-        errorReason: 'Call Group created is validated and is incorrect'
-      }
-    ],
-    pesq: [
-      {
-        testCaseName: 'Teams users calls PSTN via DID',
-        startTime: '04-03-22 12:37:31',
-        endTime: '04-03-22 12:39:15',
-        from: '+12142421234',
-        to: '+12142421235',
-        otherParties: ['+12142421236'],
-        status: 'FAILED',
-        errorCategory: 'Call Routing',
-        errorReason: 'P1 - Line 1 - Call state ringback | Error reason: Mismatch>>  Response Call State Expected:ringback Got:idle'
-      },
-      {
-        testCaseName: 'PSTN user calls Teams via DID',
-        startTime: '04-03-22 12:46:38',
-        endTime: '04-03-22 12:47:44',
-        from: '+12142421234',
-        to: '+12142421235',
-        otherParties: ['+12142421236'],
-        status: 'FAILED',
-        errorCategory: 'Client Error',
-        errorReason: 'Call Group created is validated and is incorrect'
-      }
-    ]
-  }
+  loggedInUserRoles: string[] = [];
+  subaccountId: string = '';
+  readonly FEATURE_FUNCTIONALITY: string = ReportType.DAILY_FEATURE_FUNCTIONALITY;
+  readonly CALL_RELIABILITY: string = ReportType.DAILY_CALLING_RELIABILITY;
+  hasDashboardDetails: boolean = false;
+  isLoadingResults = true;
   sampleJsonData: any = {};
+  constructor(
+    private msalService: MsalService,
+    private ctaasDashboardService: CtaasDashboardService,
+    private subaccountService: SubAccountService,
+  ) { }
+  /**
+   * get logged in account details
+   * @returns: any | null
+   */
+  private getAccountDetails(): any | null {
+    return this.msalService.instance.getActiveAccount() || null;
+  }
+
   ngOnInit(): void {
-    this.sampleJsonData = this.sampleJsonDataBk;
-    this.type = localStorage.getItem('more-details');
+    const accountDetails = this.getAccountDetails();
+    const { idTokenClaims: { roles } } = accountDetails;
+    this.loggedInUserRoles = roles;
+    const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+    const { id, subaccountId } = currentSubaccountDetails;
+    this.subaccountId = subaccountId ? subaccountId : id;
+    this.type = localStorage.getItem(Constants.SELECTED_REPORT_TYPE);
+    this.fetchDashboardReportDetails();
     this.initColumns();
     this.calculateTableHeight();
+  }
+  /**
+   * fetch detailed dashboard report
+   */
+  public fetchDashboardReportDetails(): void {
+    this.hasDashboardDetails = false;
+    this.isLoadingResults = true;
+    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type).subscribe((response: any) => {
+      const { response: { report, reportType } } = response;
+      this.sampleJsonData = report;
+      this.filename = reportType;
+      this.hasDashboardDetails = true;
+      this.isLoadingResults = true;
+    }, (error) => {
+      this.hasDashboardDetails = true;
+      this.isLoadingResults = false;
+    })
   }
   /**
    * calculate table height based on the window height
