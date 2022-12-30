@@ -98,8 +98,10 @@ public class TekvLSCreateNote {
             statement.setString(1,jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
             statement.setString(2,jobj.getString(MANDATORY_PARAMS.CONTENT.value));
             statement.setString(3,userEmail);
-            statement.setString(4,jobj.getJSONArray(MANDATORY_PARAMS.REPORTS.value).toString());
-
+            if(jobj.has(OPTIONAL_PARAMS.REPORTS.value))
+                statement.setString(4,jobj.getJSONArray(OPTIONAL_PARAMS.REPORTS.value).toString());
+            else
+                statement.setString(4,null);
             //Insert
             String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
@@ -124,12 +126,21 @@ public class TekvLSCreateNote {
 
     private enum MANDATORY_PARAMS {
         SUBACCOUNT_ID("subaccountId"),
-        CONTENT("content"),
-        REPORTS("reports");
+        CONTENT("content");
 
         private final String value;
 
         MANDATORY_PARAMS(String value){
+            this.value = value;
+        }
+    }
+
+    private enum OPTIONAL_PARAMS {
+        REPORTS("reports");
+
+        private final String value;
+
+        OPTIONAL_PARAMS(String value){
             this.value = value;
         }
     }
