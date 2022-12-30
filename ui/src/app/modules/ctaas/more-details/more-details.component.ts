@@ -44,9 +44,9 @@ export class MoreDetailsComponent implements OnInit {
     const { id, subaccountId } = currentSubaccountDetails;
     this.subaccountId = subaccountId ? subaccountId : id;
     this.type = localStorage.getItem(Constants.SELECTED_REPORT_TYPE);
-    this.fetchDashboardReportDetails();
     this.initColumns();
     this.calculateTableHeight();
+    this.fetchDashboardReportDetails();
   }
   /**
    * fetch detailed dashboard report
@@ -54,16 +54,26 @@ export class MoreDetailsComponent implements OnInit {
   public fetchDashboardReportDetails(): void {
     this.hasDashboardDetails = false;
     this.isLoadingResults = true;
-    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type).subscribe((response: any) => {
-      const { response: { report, reportType } } = response;
-      this.sampleJsonData = report;
-      this.filename = reportType;
-      this.hasDashboardDetails = true;
-      this.isLoadingResults = true;
-    }, (error) => {
-      this.hasDashboardDetails = true;
-      this.isLoadingResults = false;
-    })
+    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type)
+      .subscribe((res: any) => {
+        this.isLoadingResults = false;
+        try {
+          const { response: { report, reportType } } = res;
+          if (report && reportType) {
+            this.sampleJsonData = report;
+            this.filename = reportType;
+            this.hasDashboardDetails = true;
+          } else {
+            this.hasDashboardDetails = false;
+            this.sampleJsonData = {};
+          }
+        } catch (error) {
+          console.error("Error while fetching dashboard report: " + error);
+        }
+      }, (error) => {
+        this.hasDashboardDetails = false;
+        this.isLoadingResults = false;
+      });
   }
   /**
    * calculate table height based on the window height
