@@ -11,6 +11,7 @@ import { ReportType } from 'src/app/helpers/report-type';
 import { forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { FormControl } from '@angular/forms';
+import { environment } from 'src/environments/environment';
 export interface IImagesList {
     imageBase64: string;
     reportType: string
@@ -217,7 +218,7 @@ export class CtaasDashboardComponent implements OnInit {
         const { imagesList } = obj;
         const { reportType } = imagesList[index];
         const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-        const url = window.location.origin + '/#/spotlight/details?type=' + type;
+        const url = environment.BASE_URL + '/#/spotlight/details?type=' + type;
         window.open(url);
         window.close();
     }
