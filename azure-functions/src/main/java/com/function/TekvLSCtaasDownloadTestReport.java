@@ -147,10 +147,12 @@ public class TekvLSCtaasDownloadTestReport {
 
             JSONObject jsonObject = StorageBlobClient.getInstance().fetchJsonFileFromBlob(context, customerName, subaccountName, reportType);
             byte[] bytes = null;
+            final String REPORT_NOT_FOUNT = "Cannot found the report json file with " + reportType+ " in the storage blob";
             if (jsonObject == null) {
-                json.put("error", "Cannot found the report json file with " + reportType + " in the storage blob");
+                json.put("error", REPORT_NOT_FOUNT);
+                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             } else {
-                XSSFWorkbook workbook = new GenerateExcelReport().generateRunReport(context, jsonObject);
+                XSSFWorkbook workbook = new GenerateExcelReport().generateDetailedTestReport(context, jsonObject);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 try {
                     workbook.write(bos);
@@ -159,10 +161,9 @@ public class TekvLSCtaasDownloadTestReport {
                     bos.close();
                 }
             }
-            if (bytes == null) {
-                String msg = "Cannot found the " + reportType + " json response file in the storage blob";
-                context.getLogger().info(msg);
-                json.put("error", msg);
+            if (bytes == null) { 
+                context.getLogger().info(REPORT_NOT_FOUNT);
+                json.put("error", REPORT_NOT_FOUNT);
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/vnd.ms-excel").body(bytes).build();

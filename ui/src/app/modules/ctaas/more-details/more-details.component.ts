@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportType } from 'src/app/helpers/report-type';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 @Component({
   selector: 'app-more-details',
@@ -28,7 +29,8 @@ export class MoreDetailsComponent implements OnInit {
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
     private subaccountService: SubAccountService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBarService: SnackBarService
   ) { }
   /**
    * get logged in account details
@@ -131,9 +133,15 @@ export class MoreDetailsComponent implements OnInit {
    */
   public downloadDetailedTestReportByType(): void {
     this.canDisableDownloadBtn = true;
+    this.snackBarService.openSnackBar('Downloading report is in progress.Please wait', '', 3000);
     this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(this.subaccountId, this.type).subscribe((res) => {
-      if (res)
+      if (res) {
         this.downloadExcelFile(res);
+      }
+    }, (error) => {
+      this.canDisableDownloadBtn = false;
+      console.error('Error while downloading report:' + error);
+      this.snackBarService.openSnackBar('Error loading downloading report', 'Ok');
     })
   }
 }

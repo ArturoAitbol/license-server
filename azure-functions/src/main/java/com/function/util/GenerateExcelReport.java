@@ -10,10 +10,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class GenerateExcelReport {
@@ -24,19 +21,34 @@ public class GenerateExcelReport {
     }
 
 
-    public XSSFWorkbook generateRunReport(ExecutionContext context, JSONObject jsonObject) {
-        context.getLogger().info("Creating Xss Workbook");
-        XSSFWorkbook workbook = new XSSFWorkbook();
+    private static List<String> iterationTestResultHeaders = new ArrayList<String>();
 
-//        response.setContentType("application/vnd.openxml");
-//
-//        response.setHeader("Cache-Control", "public");
-//        response.setContentType("application/vnd.ms-excel");
-//        response.setHeader("Content-disposition", "attachment; filename=\"" + fileName + ".xlsx" + "\"");
+    static {
+        iterationTestResultHeaders.add("Test Case");
+        iterationTestResultHeaders.add("Start Time");
+        iterationTestResultHeaders.add("End Time");
+        iterationTestResultHeaders.add("From");
+        iterationTestResultHeaders.add("To");
+        iterationTestResultHeaders.add("Other parties");
+        iterationTestResultHeaders.add("Status");
+        iterationTestResultHeaders.add("Error Category");
+        iterationTestResultHeaders.add("Reason");
+    }
+
+    /**
+     * parse the JSONObject and generate Spreadsheet with the data
+     *
+     * @param context:    ExecutionContext
+     * @param jsonObject: JSONObject
+     * @return: XSSFWorkbook
+     */
+    public XSSFWorkbook generateDetailedTestReport(ExecutionContext context, JSONObject jsonObject) {
         try {
+            context.getLogger().info("Creating Xss Workbook");
+            XSSFWorkbook workbook = new XSSFWorkbook();
             context.getLogger().info("Before Creating Summary Sheet");
             if (jsonObject != null) {
-                this.createRunSummarySheet(context, workbook, jsonObject);
+                this.createSpotlightSummarySheet(context, workbook, jsonObject);
                 context.getLogger().info("Writing report into OutputStream");
                 return workbook;
             }
@@ -47,26 +59,32 @@ public class GenerateExcelReport {
         return null;
     }
 
-    //Summary Sheet
-    public void createRunSummarySheet(ExecutionContext context, XSSFWorkbook workbook, JSONObject jsonObject) {
+    /**
+     * create a sheet in a spreadsheet and add Test Summary details
+     *
+     * @param context:    ExecutionContext
+     * @param workbook:   XSSFWorkbook
+     * @param jsonObject: JSONObject
+     */
+    private void createSpotlightSummarySheet(ExecutionContext context, XSSFWorkbook workbook, JSONObject jsonObject) {
+        context.getLogger().info("Creating Sheet and adding Summary details");
 
         Row row = null;
         Cell cell = null;
         int index = 0;
         int count = 0;
-        context.getLogger().info("Creating Summary sheet");
         XSSFSheet summarySheet = workbook.createSheet("Summary");
         summarySheet.setDefaultColumnWidth(16);
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A1:F1"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A2:F2"));
-        context.getLogger().info("Setting title styles");
-        XSSFCellStyle titleStyle = this.getStyle(context, workbook, true);
-        titleStyle.setAlignment(HorizontalAlignment.CENTER);
-        XSSFCellStyle imageStyle = this.getImageStyle(workbook, false);
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A1:D1"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A2:D2"));
 
+        XSSFCellStyle titleStyle = this.getStyle(workbook, true);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        XSSFCellStyle imageStyle = this.getImageStyle(workbook);
+        imageStyle.setAlignment(HorizontalAlignment.CENTER);
         row = summarySheet.createRow(index++);
         row.setHeightInPoints((float) 50.0);
-        drawImage(workbook, summarySheet);
+        drawImage(context, workbook, summarySheet);
         addCell(row, cell, imageStyle, count++, "");
 
         count = 0;
@@ -75,156 +93,189 @@ public class GenerateExcelReport {
         row.setHeightInPoints((float) 20.0);
         addCell(row, cell, titleStyle, count++, "Summary of Test Execution");
 
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B3:F3"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B4:F4"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B5:F5"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B6:F6"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B7:F7"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B8:F8"));
-        // summarySheet.addMergedRegion(CellRangeAddress.valueOf("B9:F9"));
-        // summarySheet.addMergedRegion(CellRangeAddress.valueOf("B10:F10"));
-        // summarySheet.addMergedRegion(CellRangeAddress.valueOf("B11:F11"));
-        // summarySheet.addMergedRegion(CellRangeAddress.valueOf("B12:F12"));
-        XSSFCellStyle whiteUnboldLabel = this.getStyle(context, workbook, false);
-        XSSFCellStyle whiteLabel = this.getStyle(context, workbook, true);
-        XSSFCellStyle blackLabel = this.getStyle(context, workbook, false);
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B3:D3"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B4:D4"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B5:D5"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B6:D6"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B7:D7"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B8:D8"));
+
+        XSSFCellStyle redLabel = this.getRedHeaderStyle(workbook);
+
+        XSSFCellStyle whiteUnboldLabel = this.getStyle(workbook, false);
+        XSSFCellStyle whiteLabel = this.getStyle(workbook, true);
+        XSSFCellStyle blackLabel = this.getStyle(workbook, false);
         Font blackFontHeader = workbook.createFont();
         blackFontHeader.setBold(true);
         blackLabel.setFont(blackFontHeader);
-        context.getLogger().info("Adding Summary response to the rows");
         JSONObject summaryResponse = (JSONObject) jsonObject.get("summary");
-        createRunSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Test Cases Executed", summaryResponse.get("total").toString());
-        createRunSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Passed", summaryResponse.get("passed").toString());
-        createRunSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Failed", summaryResponse.get("failed").toString());
-        createRunSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Start Time", summaryResponse.get("startTime").toString());
-        createRunSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "End Time", summaryResponse.get("endTime").toString());
-        context.getLogger().info("Creating Endpoint Resources Table in Report");
-        //To Create Endpoint Resources Table in Report
-        getEndpointResourcesForRunReport(context, summarySheet, row, cell, blackLabel, whiteLabel, whiteUnboldLabel, index, jsonObject);
+        final String total = summaryResponse.get("total") == null ? "" : summaryResponse.get("total").toString();
+        final String passed = summaryResponse.get("passed") == null ? "" : summaryResponse.get("passed").toString();
+        final String failed = summaryResponse.get("failed") == null ? "" : summaryResponse.get("failed").toString();
+        final String startTime = summaryResponse.get("startTime") == null ? "" : summaryResponse.get("startTime").toString();
+        final String endTime = summaryResponse.get("endTime") == null ? "" : summaryResponse.get("endTime").toString();
+
+        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Test Cases Executed", total);
+        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Passed", passed);
+        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Failed", failed);
+        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Start Time", startTime);
+        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "End Time", endTime);
+
+        getEndpointResources(context, summarySheet, row, cell, blackLabel, whiteLabel, redLabel, whiteUnboldLabel, index, jsonObject);
+
     }
 
-    private void createRunSummaryRow(int index, XSSFSheet workSheet, XSSFCellStyle whiteLabel, XSSFCellStyle blackLabel, String key, String value) {
+    private void createSpotlightSummaryRow(int index, XSSFSheet workSheet, XSSFCellStyle whiteLabel, XSSFCellStyle blackLabel, String key, String value) {
         Row row = workSheet.createRow(index);
         addCell(row, null, whiteLabel, 0, key);
         addCell(row, null, blackLabel, 1, value);
         addCell(row, null, blackLabel, 2, null);
         addCell(row, null, blackLabel, 3, null);
-        addCell(row, null, blackLabel, 4, null);
-        addCell(row, null, blackLabel, 5, null);
     }
 
-    private void getEndpointResourcesForRunReport(ExecutionContext context, XSSFSheet summarySheet, Row row, Cell cell, XSSFCellStyle blackLabel, XSSFCellStyle whiteLabel, XSSFCellStyle whiteUnboldStyle, int index, JSONObject jsonObject) {
-        context.getLogger().info("Before Creating Endpoint Resources Table in Report");
+    /**
+     * create a table for Endpoint resources
+     *
+     * @param context
+     * @param summarySheet
+     * @param row
+     * @param cell
+     * @param blackLabel
+     * @param whiteLabel
+     * @param redLabel
+     * @param whiteUnboldStyle
+     * @param index
+     * @param jsonObject
+     */
+    private void getEndpointResources(ExecutionContext context, XSSFSheet summarySheet, Row row, Cell cell, XSSFCellStyle blackLabel, XSSFCellStyle whiteLabel, XSSFCellStyle redLabel, XSSFCellStyle whiteUnboldStyle, int index, JSONObject jsonObject) {
+        context.getLogger().info("Generating Endpoint Resources for Run Report");
         int count = 0;
         index++;
 
         row = summarySheet.createRow(index++);
         int num = row.getRowNum() + 1;
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + num + ":" + "F" + num));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + num + ":" + "D" + num));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
         addCell(row, cell, whiteLabel, count++, "EndPoint Resources");
 
         row = summarySheet.createRow(index++);
         int num1 = row.getRowNum() + 1;
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("D" + num1 + ":" + "F" + num1));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("C" + num1 + ":" + "D" + num1));
         blackLabel.setAlignment(HorizontalAlignment.CENTER);
         count = 0;
-        addCell(row, cell, blackLabel, count++, "End Point\nVendor / Model");
+        addCell(row, cell, blackLabel, count++, "Vendor / Model");
         addCell(row, cell, blackLabel, count++, "DID");
         addCell(row, cell, blackLabel, count++, "Firmware Version");
         addCell(row, cell, blackLabel, count++, null);
-        addCell(row, cell, blackLabel, count++, null);
-        //addCell(row, cell, blackLabel, count++, null);
-        context.getLogger().info("Creating Endpoint Resources Table in Report");
+        //addCell(row, cell, blackLabel,count++, null);
+
         JSONArray endpointsResponse = (JSONArray) jsonObject.get("endpoints");
         for (int i = 0; i < endpointsResponse.length(); i++) {
             JSONObject endPointResource = (JSONObject) endpointsResponse.get(i);
-            createEndPointDataRow(index++, summarySheet, blackLabel, whiteUnboldStyle, endPointResource);
+            generateEndpointsReport(context, index++, summarySheet, blackLabel, whiteUnboldStyle, endPointResource);
         }
 
+        //To Create Test Result Table in Report
+        generateTestReportByType(context, summarySheet, row, cell, blackLabel, whiteLabel, redLabel, index, jsonObject);
     }
 
-    private void createEndPointDataRow(int index, XSSFSheet workSheet, XSSFCellStyle blackLabel, XSSFCellStyle whiteUnboldStyle, JSONObject endPointResource) {
+    /**
+     * @param context
+     * @param summarySheet
+     * @param row
+     * @param cell
+     * @param blackLabel
+     * @param whiteLabel
+     * @param redLabel
+     * @param index
+     * @param jsonObject
+     */
+    private void generateTestReportByType(ExecutionContext context, XSSFSheet summarySheet, Row row, Cell cell, XSSFCellStyle blackLabel, XSSFCellStyle whiteLabel, XSSFCellStyle redLabel, int index, JSONObject jsonObject) {
+        context.getLogger().info("Generating Test Cases Details Report");
+        index++;
+        int count = 0;
+        row = summarySheet.createRow(index++);
+        int columnnum = row.getRowNum() + 1;
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + columnnum + ":" + "I" + columnnum));
+        whiteLabel.setAlignment(HorizontalAlignment.CENTER);
+        if ((JSONArray) jsonObject.get("featureFunctionality") != null)
+            addCell(row, null, whiteLabel, count++, "Feature Functionality");
+        else if ((JSONArray) jsonObject.get("callReliability") != null)
+            addCell(row, null, whiteLabel, count++, "callReliability");
+
+        count = 0;
+        row = summarySheet.createRow(index++);
+        for (String header : iterationTestResultHeaders) {
+            cell = addCell(row, cell, whiteLabel, count++, header);
+        }
+        JSONArray testResult = (JSONArray) jsonObject.get("featureFunctionality") == null ? (JSONArray) jsonObject.get("callReliability") : (JSONArray) jsonObject.get("featureFunctionality");
+        for (int i = 0; i < testResult.length(); i++) {
+            count = 0;
+            row = summarySheet.createRow(index++);
+            JSONObject testResultResponse = (JSONObject) testResult.get(i);
+            final String status = testResultResponse.get("status").toString();
+            if ((status.equalsIgnoreCase("FAILED")) || (status.equalsIgnoreCase("INTERRUPTED"))) {
+                getIterationWiseTestResultsDetails(context, i, cell, row, index, count, redLabel, testResultResponse);
+            } else {
+                getIterationWiseTestResultsDetails(context, i, cell, row, index, count, blackLabel, testResultResponse);
+            }
+        }
+    }
+
+    private void generateEndpointsReport(ExecutionContext context, int index, XSSFSheet workSheet, XSSFCellStyle blackLabel, XSSFCellStyle whiteUnboldStyle, JSONObject endPointResource) {
+        context.getLogger().info("inside method of createEndPointDataRow. ");
         int count = 0;
         Row row = workSheet.createRow(index);
         int num = row.getRowNum() + 1;
-        workSheet.addMergedRegion(CellRangeAddress.valueOf("D" + num + ":" + "F" + num));
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("C" + num + ":" + "D" + num));
         whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
+        final String vendorName = endPointResource.get("vendor") == null ? "" : endPointResource.get("vendor").toString();
+        final String modelName = endPointResource.get("model") == null ? "" : endPointResource.get("model").toString();
+        final String did = endPointResource.get("did") == null ? "" : endPointResource.get("did").toString();
+        final String firmwareVersion = endPointResource.get("firmwareVersion") == null ? "" : endPointResource.get("firmwareVersion").toString();
 
-        addCell(row, null, blackLabel, count++, (String) endPointResource.get("vendor") + " / " + (String) endPointResource.get("model"));
-        addCell(row, null, whiteUnboldStyle, count++, (String) endPointResource.get("did"));
-        addCell(row, null, whiteUnboldStyle, count++, (String) endPointResource.get("firmwareVersion"));
+        addCell(row, null, blackLabel, count++, vendorName + " / " + modelName);
+        addCell(row, null, whiteUnboldStyle, count++, did);
+        addCell(row, null, whiteUnboldStyle, count++, firmwareVersion);
         addCell(row, null, whiteUnboldStyle, count++, null);
-        addCell(row, null, whiteUnboldStyle, count++, null);
-        //addCell(row, null, whiteUnboldStyle, count++, null);
-    }
-
-    public void createRunIterationSheets(ExecutionContext context, XSSFWorkbook workbook, JSONObject jsonObject, org.apache.logging.log4j.Logger applicationLogger, String fileName) {
-        applicationLogger.info("Creating Test result sheet. ");
-        XSSFSheet testCaseIterationSheet = null;
-        int count = 0;
-        int index = 0;
-        Row row = null;
-        Cell cell = null;
-        XSSFCellStyle whiteLabel = this.getStyle(context, workbook, true);
-        XSSFCellStyle blackLabel = this.getStyle(context, workbook, false);
-        XSSFCellStyle redLabel = this.getRedHeaderStyle(workbook);
-        XSSFCellStyle imageStyle = this.getImageStyle(workbook, false);
-        Font newFont = workbook.createFont();
-        newFont.setBold(true);
-        JSONArray testResult = (JSONArray) jsonObject.get("featureFunctionality") == null ? (JSONArray) jsonObject.get("callReliability") : (JSONArray) jsonObject.get("featureFunctionality");
-        for (int i = 1; i <= testResult.length(); i++) {
-            count = 0;
-            index = 0;
-            row = null;
-            cell = null;
-            testCaseIterationSheet.addMergedRegion(CellRangeAddress.valueOf("A1:F1"));
-            row = testCaseIterationSheet.createRow(index++);
-            row.setHeightInPoints((float) 65.0);
-            drawImage(workbook, testCaseIterationSheet);
-            addCell(row, cell, imageStyle, count++, "");
-            count = 0;
-            row = testCaseIterationSheet.createRow(index++);
-            for (String header : iterationTestResultHeaders) {
-                cell = addCell(row, cell, whiteLabel, count++, header);
-            }
-            JSONObject testResultResponse = (JSONObject) testResult.get(i);
-            createTestResultDataRow(index++, testCaseIterationSheet, redLabel, testResultResponse);
-
-        }
-    }
-
-    private void createTestResultDataRow(int index, XSSFSheet workSheet, XSSFCellStyle cellStyle, JSONObject testResultResponse) {
-        int count = 0;
-        Row row = workSheet.createRow(index);
-        addCell(row, null, cellStyle, count++, (String) testResultResponse.get("testCaseName"));
-
-        addCell(row, null, cellStyle, count++, (String) testResultResponse.get("startTime"));
-        addCell(row, null, cellStyle, count++, (String) testResultResponse.get("endTime"));
-        addCell(row, null, cellStyle, count++, (String) testResultResponse.get("Status"));
-        addCell(row, null, cellStyle, count++, (String) testResultResponse.get("From"));
-        addCell(row, null, cellStyle, count++, (String) testResultResponse.get("To"));
-        addCell(row, null, cellStyle, count++, (String) testResultResponse.get("otherParties"));
-        addCell(row, null, cellStyle, count++, (String) testResultResponse.get("errorCategory"));
-        addCell(row, null, cellStyle, count++, (String) testResultResponse.get("errorReason"));
     }
 
 
-    private XSSFCellStyle getImageStyle(XSSFWorkbook workbook, boolean isHeader) {
+    private void getIterationWiseTestResultsDetails(ExecutionContext context, int i, Cell cell, Row row, int index, int count, XSSFCellStyle cellStyle, JSONObject testResultResponse) {
+        context.getLogger().info("Generating iteration wise run count details ");
+        final String tcName = testResultResponse.get("testCaseName") == null ? "" : testResultResponse.get("testCaseName").toString();
+        final String tcStartTime = testResultResponse.get("startTime") == null ? "" : testResultResponse.get("startTime").toString();
+        final String tcEndTime = testResultResponse.get("endTime") == null ? "" : testResultResponse.get("endTime").toString();
+        final String fromParticipant = testResultResponse.get("from") == null ? "" : testResultResponse.get("from").toString();
+        final String toParticipant = testResultResponse.get("to") == null ? "" : testResultResponse.get("to").toString();
+        final String otherParticipants = testResultResponse.get("otherParties") == null ? "" : testResultResponse.get("otherParties").toString();
+        final String tcStatus = testResultResponse.get("status") == null ? "" : testResultResponse.get("status").toString();
+        final String errorCategory = testResultResponse.get("errorCategory") == null ? "" : testResultResponse.get("errorCategory").toString();
+        final String errorReason = testResultResponse.get("errorReason") == null ? "" : testResultResponse.get("errorReason").toString();
+
+        addCell(row, cell, cellStyle, count++, tcName);
+        addCell(row, cell, cellStyle, count++, tcStartTime);
+        addCell(row, cell, cellStyle, count++, tcEndTime);
+        addCell(row, cell, cellStyle, count++, fromParticipant);
+        addCell(row, cell, cellStyle, count++, toParticipant);
+        addCell(row, cell, cellStyle, count++, otherParticipants);
+        addCell(row, cell, cellStyle, count++, tcStatus);
+        addCell(row, cell, cellStyle, count++, errorCategory);
+        addCell(row, cell, cellStyle, count++, errorReason);
+        index++;
+    }
+
+    private XSSFCellStyle getImageStyle(XSSFWorkbook workbook) {
         XSSFCellStyle newstyle = workbook.createCellStyle(); // style for normal lines of Summary
-//        newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 255, 255)));
         newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 255, 255), new DefaultIndexedColorMap()));
-
         newstyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         newstyle.setBorderRight(BorderStyle.THICK);
         return newstyle;
     }
 
-    private XSSFCellStyle getStyle(ExecutionContext context, XSSFWorkbook workbook, boolean isHeader) {
-        context.getLogger().info("Creating Cell styles");
+    private XSSFCellStyle getStyle(XSSFWorkbook workbook, boolean isHeader) {
         XSSFCellStyle newstyle = workbook.createCellStyle(); // style for normal lines of Summary
         if (isHeader) {
-            context.getLogger().info("Set Header styles");
             newstyle.setBorderTop(BorderStyle.THIN);
             newstyle.setBorderRight(BorderStyle.THIN);
             newstyle.setTopBorderColor(IndexedColors.BLACK.getIndex());
@@ -232,16 +283,13 @@ public class GenerateExcelReport {
             newstyle.setWrapText(true);
             newstyle.setVerticalAlignment(VerticalAlignment.TOP);
             newstyle.setAlignment(HorizontalAlignment.LEFT);
-//            newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 102)));
             newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 0, 102), new DefaultIndexedColorMap()));
-
             newstyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             Font newFont = workbook.createFont();
             newFont.setBold(true);
             newFont.setColor(IndexedColors.WHITE.getIndex());
             newstyle.setFont(newFont);
         } else {
-            context.getLogger().info("Set Body styles");
             newstyle.setBorderTop(BorderStyle.THIN);
             newstyle.setBorderLeft(BorderStyle.THIN);
             newstyle.setBorderRight(BorderStyle.THIN);
@@ -253,10 +301,8 @@ public class GenerateExcelReport {
             newstyle.setWrapText(true);
             newstyle.setVerticalAlignment(VerticalAlignment.TOP);
             newstyle.setAlignment(HorizontalAlignment.LEFT);
-//            newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(242, 245, 243)));
             newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(242, 245, 243), new DefaultIndexedColorMap()));
             newstyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            //newstyle.setBorderRight(BorderStyle.NONE);
         }
         return newstyle;
     }
@@ -274,7 +320,6 @@ public class GenerateExcelReport {
         newstyle.setWrapText(true);
         newstyle.setVerticalAlignment(VerticalAlignment.TOP);
         newstyle.setAlignment(HorizontalAlignment.LEFT);
-//        newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(242, 245, 243)));
         newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(242, 245, 243), new DefaultIndexedColorMap()));
         newstyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         Font newFont = workbook.createFont();
@@ -291,23 +336,16 @@ public class GenerateExcelReport {
         return cell;
     }
 
-    private static Cell addCell(Row row, Cell cell, XSSFCellStyle style, int count, long value) {
-        cell = row.createCell(count);
-        cell.setCellValue(value);
-        cell.setCellStyle(style);
-        return cell;
-    }
-
-    public String drawImage(XSSFWorkbook workbook, XSSFSheet summarySheet) {
+    public String drawImage(ExecutionContext context, XSSFWorkbook workbook, XSSFSheet summarySheet) {
         InputStream inputStream = null;
         //Get file from resources folder
         ClassLoader classLoader = (new GenerateExcelReport()).getClass().getClassLoader();
         inputStream = classLoader.getResourceAsStream("headerLogo.png");
         if (inputStream == null) {
             try {
-               throw new Exception("Cannot find file ");
+                throw new Exception("Cannot find header logo.png");
             } catch (Exception e) {
-//                applicationLogger.error(" Failed to get the image path - " + e.getMessage());
+                context.getLogger().severe("Caught Exception: " + e.getMessage());
             }
         }
         //Get the contents of an InputStream as a byte[].
@@ -315,7 +353,7 @@ public class GenerateExcelReport {
         try {
             bytes = IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
-//            applicationLogger.error(" Failed parse input streem of image path  - " + e.getMessage());
+            context.getLogger().severe("Failed parse image path: " + e.getMessage());
         }
         //Adds a picture to the workbook
         int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
@@ -323,7 +361,7 @@ public class GenerateExcelReport {
         try {
             inputStream.close();
         } catch (IOException e) {
-//            applicationLogger.error(" Failed parse input streem of image path  - " + e.getMessage());
+            context.getLogger().severe("Failed parse image path: " + e.getMessage());
         }
         //Returns an object that handles instantiating concrete classes
         CreationHelper helper = workbook.getCreationHelper();
@@ -338,60 +376,8 @@ public class GenerateExcelReport {
         //Creates a picture
         Picture pict = drawing.createPicture(anchor, pictureIdx);
         //Reset the image to the original size
-        //pict.resize(0.8, 0.5);
         pict.resize(1.0, 0.8);
         return pict.toString();
-
-    }
-
-    private String getDurationOfProjectRun(Date endDate, Date startDate) {
-
-        String timeDuration = "";
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-        Date d1 = null;
-        Date d2 = null;
-        if (endDate == null)
-            return "0";
-        try {
-            d1 = format.parse(startDate.toString());
-            d2 = format.parse(endDate.toString());
-
-            //in milliseconds
-            long diff = d2.getTime() - d1.getTime();
-
-            long diffSeconds = diff / 1000 % 60;
-            long diffMinutes = diff / (60 * 1000) % 60;
-            long diffHours = diff / (60 * 60 * 1000) % 24;
-            //long diffDays = diff / (24 * 60 * 60 * 1000);
-            if (diffHours > 0)
-                timeDuration = diffHours + " hours " + diffMinutes + " minutes " + diffSeconds + " seconds";
-            else
-                timeDuration = diffMinutes + " minutes " + diffSeconds + " seconds";
-
-            return timeDuration;
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private static List<String> iterationTestResultHeaders = new ArrayList<String>();
-
-    static {
-        iterationTestResultHeaders.add("Test Case");
-        iterationTestResultHeaders.add("Start Time");
-        iterationTestResultHeaders.add("End Time");
-        iterationTestResultHeaders.add("From");
-        iterationTestResultHeaders.add("To");
-        iterationTestResultHeaders.add("Other parties");
-        iterationTestResultHeaders.add("Status");
-        iterationTestResultHeaders.add("Error Category");
-        iterationTestResultHeaders.add("Reason");
-
-    }
-
-    public static void main(String[] args) {
 
     }
 }
