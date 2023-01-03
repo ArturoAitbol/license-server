@@ -11,7 +11,7 @@ import { ReportType } from 'src/app/helpers/report-type';
 import { forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { FormControl } from '@angular/forms';
-
+import { environment } from 'src/environments/environment';
 export interface IImagesList {
     imageBase64: string;
     reportType: string
@@ -53,7 +53,7 @@ export class CtaasDashboardComponent implements OnInit {
         private ctaasSetupService: CtaasSetupService,
         private ctaasDashboardService: CtaasDashboardService,
         private subaccountService: SubAccountService,
-        private snackBarService: SnackBarService,
+        private snackBarService: SnackBarService
     ) { }
 
     /**
@@ -209,7 +209,19 @@ export class CtaasDashboardComponent implements OnInit {
     checkForDashboardDetails(): boolean {
         return this.resultantImagesList.length > 0;
     }
-
+    /**
+     * on click more details
+     * @param index: string 
+     */
+    onClickMoreDetails(index: string): void {
+        const obj = this.resultantImagesList[0];
+        const { imagesList } = obj;
+        const { reportType } = imagesList[index];
+        const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
+        const url = environment.BASE_URL + '/#/spotlight/details?type=' + type;
+        window.open(url);
+        window.close();
+    }
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();

@@ -10,7 +10,9 @@ import { Constants } from '../helpers/constants';
 export class CtaasDashboardService {
   private readonly API_URL: string = environment.apiEndpoint + '/ctaasDashboard';
   private readonly FETCH_DASHBOARD_URL: string = this.API_URL + '/{subaccountId}/{reportType}';
-  
+  private readonly FETCH_DASHBOARD_REPORT_URL: string = this.API_URL + '/report/{subaccountId}/{reportType}';
+
+
   private currentReports: any;
 
   constructor(private httpClient: HttpClient) { }
@@ -22,7 +24,7 @@ export class CtaasDashboardService {
   }
 
   //get current reports identifiers
-  getReports() : any {
+  getReports(): any {
     return (this.currentReports) ? this.currentReports : JSON.parse(localStorage.getItem(Constants.CURRENT_REPORTS));
   }
 
@@ -35,9 +37,19 @@ export class CtaasDashboardService {
    */
   public getCtaasDashboardDetails(subaccountId: string, reportType: string, timestampId?: string): Observable<any> {
     let params;
-    if(timestampId)
+    if (timestampId)
       params = new HttpParams().append('timestampId', timestampId);
     const url = this.FETCH_DASHBOARD_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
-    return this.httpClient.get(url,{params});
+    return this.httpClient.get(url, { params });
+  }
+  /**
+   * fetch Dashboard Report by type
+   * @param subaccountId: string 
+   * @param reportType: string 
+   * @returns: Observable<any>  
+   */
+  public getCtaasDashboardDetailedReport(subaccountId: string, reportType: string): Observable<any> {
+    const url = this.FETCH_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
+    return this.httpClient.get(url);
   }
 }

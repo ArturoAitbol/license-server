@@ -162,7 +162,7 @@ button:hover {
   padding: 0px 6px;
 }
 
-.note-panel{
+.note-panel {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -174,7 +174,7 @@ button:hover {
 .note-body {
   margin-top: 1rem;
   background-clip: border-box;
-  border: 0 solid rgba(0,0,0,.125);
+  border: 0 solid rgba(0, 0, 0, 0.125);
   border-radius: 0.5rem;
   box-shadow: 2px 2px 5px #cbcbcb, 2px -1px 5px #cbcbcb;
   cursor: hand;
@@ -195,4 +195,9 @@ button:hover {
 
 .card-main-header {
   justify-content: center;
+}
+.clickable-item {
+  cursor: pointer;
+  color: darkblue !important;
+  text-decoration: underline !important;
 }

@@ -14,7 +14,8 @@
       "stakeholders": true,
       "setup": true,
       "subscriptions-overview": true,
-      "notes": true
+      "notes": true,
+      "details": true
     },
     "features": {
       "ctaasFeature": true,
@@ -36,7 +37,8 @@
       "stakeholders": true,
       "setup": true,
       "subscriptions-overview": true,
-      "notes": true
+      "notes": true,
+      "details": true
     },
     "features": {
       "ctaasFeature": true,
@@ -58,7 +60,8 @@
       "stakeholders": true,
       "setup": true,
       "subscriptions-overview": true,
-      "notes": true
+      "notes": true,
+      "details": true
     },
     "features": {
       "ctaasFeature": true,

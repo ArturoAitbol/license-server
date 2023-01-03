@@ -65,7 +65,7 @@ import { ViewProfileComponent } from './generics/view-profile/view-profile.compo
             auth: {
                 clientId: environment.UI_CLIENT_ID,
                 authority: environment.AUTHORITY,
-                redirectUri: environment.REDIRECT_URL_AFTER_LOGIN
+                redirectUri: environment.BASE_URL + '/login' // always redirect to login view just in case there is an issue with login
             },
             cache: {
                 cacheLocation: 'localStorage'

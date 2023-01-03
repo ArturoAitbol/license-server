@@ -9,6 +9,7 @@ import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
 import com.microsoft.azure.functions.ExecutionContext;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -34,17 +35,16 @@ public class StorageBlobClient {
         /**
          *  Authenticate with client secret.
          */
-        //    should add final key word before the System variables before commit
-        String DASHBOARD_APP_CLIENT_ID = System.getenv("DASHBOARD_APP_CLIENT_ID");
-        String DASHBOARD_APP_SECRET_ID = System.getenv("DASHBOARD_APP_SECRET_ID");
-        String TENANT_ID = System.getenv("TENANT_ID");
+        final String DASHBOARD_APP_CLIENT_ID = System.getenv("DASHBOARD_APP_CLIENT_ID");
+        final String DASHBOARD_APP_SECRET_ID = System.getenv("DASHBOARD_APP_SECRET_ID");
+        final String TENANT_ID = System.getenv("TENANT_ID");
         final ClientSecretCredential clientSecretCredential = new ClientSecretCredentialBuilder()
                 .clientId(DASHBOARD_APP_CLIENT_ID)
                 .clientSecret(DASHBOARD_APP_SECRET_ID)
                 .tenantId(TENANT_ID)
                 .build();
 
-        String STORAGE_ACCOUNT_NAME = System.getenv("STORAGE_ACCOUNT_NAME");
+        final String STORAGE_ACCOUNT_NAME = System.getenv("STORAGE_ACCOUNT_NAME");
         String ENDPOINT_URL = String.format("https://%s.blob.core.windows.net", STORAGE_ACCOUNT_NAME);
         final BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
                 .endpoint(ENDPOINT_URL)
@@ -52,7 +52,7 @@ public class StorageBlobClient {
                 .buildClient();
 
         // Get the container
-        String CONTAINER_NAME = System.getenv("STORAGE_CONTAINER_NAME");
+        final String CONTAINER_NAME = System.getenv("STORAGE_CONTAINER_NAME");
         blobContainerClient = blobServiceClient.getBlobContainerClient(CONTAINER_NAME);
     }
 
@@ -63,10 +63,10 @@ public class StorageBlobClient {
      * @param customerName:   String
      * @param subaccountName: String
      * @param type:           String
-     * @return Map<String,String>
+     * @return Map<String, String>
      */
-    public Map<String,String> getBlobAsBase64(ExecutionContext context, final String customerName, final String subaccountName, final String type) {
-        return getBlobAsBase64(context,customerName,subaccountName,type,"");
+    public Map<String, String> getBlobAsBase64(ExecutionContext context, final String customerName, final String subaccountName, final String type) {
+        return getBlobAsBase64(context, customerName, subaccountName, type, "");
     }
 
 
@@ -78,9 +78,9 @@ public class StorageBlobClient {
      * @param subaccountName: String
      * @param type:           String
      * @param timestamp:      String
-     * @return Map<String,String>
+     * @return Map<String, String>
      */
-    public Map<String,String> getBlobAsBase64(ExecutionContext context, final String customerName, final String subaccountName, final String type, final String timestamp) {
+    public Map<String, String> getBlobAsBase64(ExecutionContext context, final String customerName, final String subaccountName, final String type, final String timestamp) {
         try {
             // Check if container exist or not
             if (!blobContainerClient.exists()) {
@@ -89,7 +89,7 @@ public class StorageBlobClient {
             }
             // Form the filter string to fetch only that particular customer-subaccount images from blob
             final String filterImageString = timestamp.isEmpty() ? String.format("%s/%s-%s-Image", customerName, subaccountName, type) :
-                                                            String.format("%s/%s-%s-Image %s.jpg", customerName, subaccountName, type, timestamp);
+                    String.format("%s/%s-%s-Image %s.jpg", customerName, subaccountName, type, timestamp);
             Iterator<BlobItem> iterator = blobContainerClient.listBlobs().iterator();
             List<BlobItem> blobItemList = StreamSupport
                     .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
@@ -97,27 +97,27 @@ public class StorageBlobClient {
                     .collect(Collectors.toList());
 
             int blobItemListSize = blobItemList.size();
-            blobItemList = blobItemList.subList(Math.max(blobItemListSize-2,0),blobItemListSize);
+            blobItemList = blobItemList.subList(Math.max(blobItemListSize - 2, 0), blobItemListSize);
 
-            Map<String,String> base64Image = new HashMap<>();
-            if(!timestamp.isEmpty())
-                base64Image.put("timestampId",timestamp);
+            Map<String, String> base64Image = new HashMap<>();
+            if (!timestamp.isEmpty())
+                base64Image.put("timestampId", timestamp);
 
             for (BlobItem blobItem : blobItemList) {
 
                 String blobItemName = blobItem.getName();
 
-                if(timestamp.isEmpty()){
+                if (timestamp.isEmpty()) {
                     String timestampID = getTimestampFromBlobName(blobItemName);
-                    if(timestampID!=null){
-                        base64Image.put("timestampId",timestampID);
+                    if (timestampID != null) {
+                        base64Image.put("timestampId", timestampID);
                         continue;
                     }
                 }
 
                 BlobClient blobClient = blobContainerClient.getBlobClient(blobItemName);
                 OffsetDateTime lastModifiedDate = blobItem.getProperties().getLastModified();
-                base64Image.put("lastModifiedDate",getLastModifiedBlobDateStr(lastModifiedDate));
+                base64Image.put("lastModifiedDate", getLastModifiedBlobDateStr(lastModifiedDate));
                 if (blobClient != null) {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     blobClient.download(outputStream);
@@ -134,10 +134,10 @@ public class StorageBlobClient {
         return null;
     }
 
-    public String getTimestampFromBlobName(String blobName){
+    public String getTimestampFromBlobName(String blobName) {
         Pattern pattern = Pattern.compile("\\d{12}");
         Matcher matcher = pattern.matcher(blobName);
-        if(matcher.find())
+        if (matcher.find())
             return matcher.group();
         return null;
     }
@@ -148,6 +148,52 @@ public class StorageBlobClient {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
             Date d = Date.from(lastModifiedDate.toInstant());
             return simpleDateFormat.format(d);
+        }
+        return null;
+    }
+
+    /**
+     * Get the blob from Azure Storage Blob if exist and return JSONObject
+     * @param context:        ExecutionContext
+     * @param customerName:   String
+     * @param subAccountName: String
+     * @param type:           String
+     * @return:               JSONObject
+     */
+    public JSONObject fetchJsonFileFromBlob(ExecutionContext context, final String customerName, final String subAccountName, final String type) {
+        try {
+            // Check if container exist or not
+            if (!blobContainerClient.exists()) {
+                context.getLogger().info("Container doesn't exist");
+            }
+            // eg: Customer01/Customer01-Daily-CallingReliability-Detailed-Report
+            final String filterFileString = String.format("%s/%s-%s-Detailed-Report", customerName, subAccountName, type);
+            context.getLogger().info("Search for File name "+filterFileString);
+            Iterator<BlobItem> iterator = blobContainerClient.listBlobs().iterator();
+            List<BlobItem> blobItemList = StreamSupport
+                    .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
+                    .filter(x -> x.getName().contains(filterFileString))
+                    .collect(Collectors.toList());
+            for (BlobItem blobItem : blobItemList) {
+                context.getLogger().info("blobItem " + blobItem.getName());
+                String blobItemName = blobItem.getName();
+                BlobClient blobClient = blobContainerClient.getBlobClient(blobItemName);
+                if (blobClient.exists()) {
+                    context.getLogger().info("Blob exists: " + blobItem.getName());
+                    //creating an object of output stream to receive the file's content from azure blob.
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    blobClient.download(outputStream);
+                    //converting it to the inputStream to return
+                    final byte[] bytes = outputStream.toByteArray();
+                    if ((bytes != null) && (bytes.length > 0)) {
+                        String str = new String(bytes);
+                        JSONObject jsonObj = new JSONObject(str);
+                        return jsonObj;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            context.getLogger().info("Caught exception: " + e.getMessage());
         }
         return null;
     }
