@@ -1,13 +1,13 @@
 package com.function;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.function.auth.Resource;
+import com.function.clients.HttpClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.microsoft.azure.functions.annotation.*;
@@ -60,20 +60,62 @@ public class TekvLSDeleteNoteById {
         queryBuilder.appendValueModification("closed_by",userEmail, QueryBuilder.DATA_TYPE.VARCHAR);
         queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
+        // Sql query to get the subaccount_id of the note
+        String subaccountIdSql = "SELECT subaccount_id FROM note WHERE id = ?::uuid";
+        // Sql query to get all user that need to be notified
+        String deviceTokensSql = "SELECT sad.device_token FROM subaccount_admin_device sad, subaccount_admin sae WHERE sae.subaccount_id = ?::uuid";
+
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try (
                 Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                PreparedStatement statement = queryBuilder.build(connection)) {
+                PreparedStatement statement = queryBuilder.build(connection);
+                PreparedStatement subaccountIdStmt = connection.prepareStatement(subaccountIdSql);
+                PreparedStatement deviceTokensStmt = connection.prepareStatement(deviceTokensSql)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+            subaccountIdStmt.setString(1, id);
+            ResultSet rs = subaccountIdStmt.executeQuery();
+            rs.next();
+            String subaccountId = rs.getString("subaccount_id");
+
             // Delete project
             String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Note deleted successfully.");
+
+            // Send notifications to subaccount users
+            String NOTIFICATIONS_ENDPOINT = System.getenv("NOTIFICATIONS_ENDPOINT");
+            String NOTIFICATIONS_AUTH_KEY = System.getenv("NOTIFICATIONS_KEY");
+
+            deviceTokensStmt.setString(1, subaccountId);
+            rs = deviceTokensStmt.executeQuery();
+
+            String deviceToken;
+            JSONObject body = new JSONObject();
+            JSONObject notification = new JSONObject();
+            notification.put("title", "A note was closed");
+            notification.put("body", userEmail + "closed a note");
+            body.put("notification", notification);
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put("authorization", NOTIFICATIONS_AUTH_KEY);
+
+            while (rs.next()) {
+                deviceToken = rs.getString("device_token");
+                ExecutorService executor = Executors.newCachedThreadPool();
+                String finalDeviceToken = deviceToken;
+                executor.submit(() -> {
+                    body.put("to", finalDeviceToken);
+                    try {
+                        HttpClient.post(NOTIFICATIONS_ENDPOINT, body.toString(), headers);
+                    } catch (Exception e) {
+                        context.getLogger().warning("Could not send notification to " + finalDeviceToken);
+                    }
+                });
+            }
 
             return request.createResponseBuilder(HttpStatus.OK).build();
         }

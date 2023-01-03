@@ -363,6 +363,16 @@ CREATE TABLE public.feature_toggle (
 
 
 --
+-- Name: subaccount_admin_device; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE subaccount_admin_device
+(
+    subaccount_admin_email varchar not null,
+    device_token           varchar not null
+);
+
+--
 -- Name: note; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -377,6 +387,7 @@ CREATE TABLE public.note (
     closed_by character varying,
     reports character varying
 );
+
 
 --
 -- Data for Name: bundle; Type: TABLE DATA; Schema: public; Owner: -
@@ -812,6 +823,9 @@ ALTER TABLE ONLY public.ctaas_run_instance
 ALTER TABLE ONLY public.ctaas_setup
     ADD CONSTRAINT ctaas_setup_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY public.subaccount_admin_device
+    ADD CONSTRAINT subaccount_admin_device_pkey PRIMARY KEY (subaccount_admin_email, device_token);
+
 
 --
 -- Name: note note_pkey; Type: CONSTRAINT; Schema: public; Owner: -
@@ -947,6 +961,14 @@ ALTER TABLE ONLY public.feature_toggle
 
 ALTER TABLE ONLY public.note
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+
+
+--
+-- Name: note subaccount_admin_device_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subaccount_admin_device
+    ADD CONSTRAINT subaccount_admin_device_fk FOREIGN KEY (subaccount_admin_email) REFERENCES public.subaccount_admin(subaccount_admin_email) ON DELETE CASCADE;
 
 --
 -- PostgreSQL database dump complete
