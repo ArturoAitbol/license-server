@@ -2,9 +2,9 @@
   <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'"></app-banner>
   <div class="container-fluid controls" id="reportContainer">
     <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
-    <mat-dialog-actions>
+    <div mat-dialog-actions id="custom-button">
         <button mat-stroked-button type="button" id="cancel-button" (click)="onClose()">Close</button>
-    </mat-dialog-actions>
+    </div>
   </div>
 
   <!-- blank view -->
@@ -66,7 +66,7 @@
   
 <ng-template #withReport>
     <div class="row" id="images-row" *ngFor="let item of resultantImagesList;let i=index; ">
-        <div [ngClass]="{'col-md-6 custom-col':item.reportType===DAILY,'col-md-12':item.reportType===WEEKLY}"
+        <div [ngClass]="{'col-md-6 custom-col':item.reportType===DAILY,'col-md-12 offset-lg-1':item.reportType===WEEKLY}"
             *ngFor="let image of item.imagesList;let i1=index;">
             <mat-card class="card">
                 <mat-card-header class="card-main-header">

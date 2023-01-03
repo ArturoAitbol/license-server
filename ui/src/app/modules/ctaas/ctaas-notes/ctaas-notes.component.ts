@@ -190,7 +190,7 @@ export class CtaasNotesComponent implements OnInit {
                 dialogRef = this.dialog.open(CtaasHistoricalDashboardComponent, {
                     data: selectedItemData,
                     width: '100vw',
-                    height: '99vh',
+                    height: '100vh',
                     maxWidth: '100vw',
                     disableClose: false
                 });
