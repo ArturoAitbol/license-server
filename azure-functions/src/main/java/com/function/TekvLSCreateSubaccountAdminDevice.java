@@ -24,7 +24,7 @@ public class TekvLSCreateSubaccountAdminDevice {
                     name = "req",
                     methods = {HttpMethod.POST},
                     authLevel = AuthorizationLevel.ANONYMOUS,
-                    route = "subaccountAdminDevice")
+                    route = "subaccountAdminDevices")
             HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
 
