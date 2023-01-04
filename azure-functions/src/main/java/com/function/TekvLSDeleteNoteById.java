@@ -61,9 +61,9 @@ public class TekvLSDeleteNoteById {
         queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
         // Sql query to get the subaccount_id of the note
-        String subaccountIdSql = "SELECT subaccount_id FROM note WHERE id = ?::uuid";
+        String subaccountIdSql = "SELECT subaccount_id, content FROM note WHERE id = ?::uuid";
         // Sql query to get all user that need to be notified
-        String deviceTokensSql = "SELECT sad.device_token FROM subaccount_admin_device sad, subaccount_admin sae WHERE sae.subaccount_id = ?::uuid";
+        String deviceTokensSql = "SELECT sad.* FROM subaccount_admin_device sad, subaccount_admin sae WHERE sad.subaccount_admin_email = sae.subaccount_admin_email and sae.subaccount_id = ?::uuid;";
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -80,6 +80,7 @@ public class TekvLSDeleteNoteById {
             ResultSet rs = subaccountIdStmt.executeQuery();
             rs.next();
             String subaccountId = rs.getString("subaccount_id");
+            String noteContent = rs.getString("content");
 
             // Delete project
             String userId = getUserIdFromToken(tokenClaims,context);
@@ -89,7 +90,7 @@ public class TekvLSDeleteNoteById {
 
             // Send notifications to subaccount users
             String NOTIFICATIONS_ENDPOINT = System.getenv("NOTIFICATIONS_ENDPOINT");
-            String NOTIFICATIONS_AUTH_KEY = System.getenv("NOTIFICATIONS_KEY");
+            String NOTIFICATIONS_AUTH_KEY = System.getenv("NOTIFICATIONS_AUTH_KEY");
 
             deviceTokensStmt.setString(1, subaccountId);
             rs = deviceTokensStmt.executeQuery();
@@ -97,24 +98,23 @@ public class TekvLSDeleteNoteById {
             String deviceToken;
             JSONObject body = new JSONObject();
             JSONObject notification = new JSONObject();
-            notification.put("title", "A note was closed");
-            notification.put("body", userEmail + "closed a note");
+            notification.put("title", "Closed note!");
+            notification.put("body", userEmail + ": " + noteContent);
             body.put("notification", notification);
             HashMap<String, String> headers = new HashMap<>();
             headers.put("authorization", NOTIFICATIONS_AUTH_KEY);
 
             while (rs.next()) {
-                deviceToken = rs.getString("device_token");
-                ExecutorService executor = Executors.newCachedThreadPool();
-                String finalDeviceToken = deviceToken;
-                executor.submit(() -> {
-                    body.put("to", finalDeviceToken);
-                    try {
-                        HttpClient.post(NOTIFICATIONS_ENDPOINT, body.toString(), headers);
-                    } catch (Exception e) {
-                        context.getLogger().warning("Could not send notification to " + finalDeviceToken);
-                    }
-                });
+                String finalDeviceToken = rs.getString("device_token");
+                body.put("to", finalDeviceToken);
+                String bodyString = body.toString();
+                try {
+                    context.getLogger().info("Sending notification to: " + finalDeviceToken);
+                    JSONObject response = HttpClient.post(NOTIFICATIONS_ENDPOINT, bodyString, headers);
+                } catch (Exception e) {
+                    context.getLogger().warning("Could not send notification to " + finalDeviceToken);
+                    context.getLogger().warning("Notification exception: " + e.getMessage());
+                }
             }
 
             return request.createResponseBuilder(HttpStatus.OK).build();
