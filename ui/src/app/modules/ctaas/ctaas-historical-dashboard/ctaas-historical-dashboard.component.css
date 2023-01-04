@@ -214,8 +214,18 @@ button:hover {
 
 @media (orientation: landscape) and (max-width: 1281px){
   .custom-col {
-    width: 88%;
+    width: 83%;
     margin-bottom: 2%;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 1281px){
+  .mat-card-actions {
+    padding-top: 0% ;
+    font-size: 3vh;
+    position: absolute;
+    left: 36%;
+    bottom: 3%;
   }
 }
 
@@ -254,4 +264,10 @@ button:hover {
   ::ng-deep #images-row{
     justify-content: center !important;
   }
+}
+
+.clickable-item {
+  cursor: pointer;
+  color: darkblue !important;
+  text-decoration: underline !important;
 }
