@@ -87,7 +87,7 @@ public class TekvLSCreateNote {
                     " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP, ?, ?) RETURNING id;";
 
         // Sql query to get all user that need to be notified
-        String deviceTokensSql = "SELECT sad.device_token FROM subaccount_admin_device sad, subaccount_admin sae WHERE sae.subaccount_id = ?::uuid";
+        String deviceTokensSql = "SELECT sad.* FROM subaccount_admin_device sad, subaccount_admin sae WHERE sad.subaccount_admin_email = sae.subaccount_admin_email and sae.subaccount_id = ?::uuid;";
 
         //Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -123,24 +123,27 @@ public class TekvLSCreateNote {
             String NOTIFICATIONS_AUTH_KEY = System.getenv("NOTIFICATIONS_KEY");
 
             deviceTokensStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+            context.getLogger().info("Execute SQL statement: " + deviceTokensStmt);
             rs = deviceTokensStmt.executeQuery();
 
-            String deviceToken;
             JSONObject body = new JSONObject();
             JSONObject notification = new JSONObject();
             notification.put("title", "A new note was created");
-            notification.put("body", userEmail + "created a new note");
+            notification.put("subtitle", userEmail + "created a new note");
+            notification.put("body", jobj.getString(MANDATORY_PARAMS.CONTENT.value));
             body.put("notification", notification);
             HashMap<String, String> headers = new HashMap<>();
-            headers.put("authorization", NOTIFICATIONS_AUTH_KEY);
+            headers.put("Content-Type", "application/json");
+            headers.put("Authorization", NOTIFICATIONS_AUTH_KEY);
 
             while (rs.next()) {
-                deviceToken = rs.getString("device_token");
+                String finalDeviceToken = rs.getString("device_token");
+                String finalUser = rs.getString("subaccount_admin_email");
                 ExecutorService executor = Executors.newCachedThreadPool();
-                String finalDeviceToken = deviceToken;
                 executor.submit(() -> {
                     body.put("to", finalDeviceToken);
                     try {
+                        context.getLogger().info("Sending notification to : " + finalUser);
                         HttpClient.post(NOTIFICATIONS_ENDPOINT, body.toString(), headers);
                     } catch (Exception e) {
                         context.getLogger().warning("Could not send notification to " + finalDeviceToken);

@@ -90,7 +90,7 @@ public class TekvLSGetAllStakeholdersTest  extends TekvLSTest {
     public void getBySubaccountIdTest() {
         //Given
         String id = "EMPTY";
-        String subaccountId = "96234b32-32d3-45a4-af26-4c912c0d6a06";
+        String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
         this.queryParams.put("subaccountId",subaccountId);
 
         //When

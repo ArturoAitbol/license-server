@@ -366,7 +366,7 @@ CREATE TABLE public.feature_toggle (
 -- Name: subaccount_admin_device; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE subaccount_admin_device
+CREATE TABLE public.subaccount_admin_device
 (
     subaccount_admin_email varchar not null,
     device_token           varchar not null

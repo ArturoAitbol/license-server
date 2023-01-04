@@ -252,7 +252,7 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
         assertTrue(ctaasSetup.has("tapUrl"));
         assertTrue(ctaasSetup.has("onBoardingComplete"));
 
-        String expectedCtaasSetupId = "fee9374f-2c18-4feb-9dc2-fa1280651802";
+        String expectedCtaasSetupId = "c079c3a9-66c7-424f-aa1b-fdc2565d617a";
         assertEquals(expectedCtaasSetupId,ctaasSetup.getString("id"));
     }
     
@@ -518,7 +518,7 @@ public class TekvLSGetAllCtaasSetupsTest extends TekvLSTest {
         assertTrue(ctaasSetup.has("tapUrl"));
         assertTrue(ctaasSetup.has("onBoardingComplete"));
 
-        String expectedCtaasSetupId = "fee9374f-2c18-4feb-9dc2-fa1280651802";
+        String expectedCtaasSetupId = "c079c3a9-66c7-424f-aa1b-fdc2565d617a";
         assertEquals(expectedCtaasSetupId,ctaasSetup.getString("id"));
     }
     

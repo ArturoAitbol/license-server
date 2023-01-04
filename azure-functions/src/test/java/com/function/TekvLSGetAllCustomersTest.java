@@ -351,7 +351,7 @@ class TekvLSGetAllCustomersTest extends TekvLSTest {
         assertEquals(1,customers.length());
 
         JSONObject customer = customers.getJSONObject(0);
-        String expectedCustomerId = "f1b695b5-b7d9-4245-86ca-9a2a9ccbe460";
+        String expectedCustomerId = "950f47c7-a477-455b-b65b-331ecacc88dd";
         assertEquals(expectedCustomerId,customer.getString("id"));
     }
 
@@ -360,8 +360,8 @@ class TekvLSGetAllCustomersTest extends TekvLSTest {
     public void subaccountAdminRoleGetCustomerByIdTest() {
         //Given - Arrange
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
-        this.id = "f1b695b5-b7d9-4245-86ca-9a2a9ccbe460";
-        String expectedName = "Test Subaccount";
+        this.id = "950f47c7-a477-455b-b65b-331ecacc88dd";
+        String expectedName = "Customer01";
 
         //When - Action
         HttpResponseMessage response = getAllCustomersApi.run(this.request, this.id, this.context);
