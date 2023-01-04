@@ -11,6 +11,7 @@ export class CtaasDashboardService {
   private readonly API_URL: string = environment.apiEndpoint + '/ctaasDashboard';
   private readonly FETCH_DASHBOARD_URL: string = this.API_URL + '/{subaccountId}/{reportType}';
   private readonly FETCH_DASHBOARD_REPORT_URL: string = this.API_URL + '/report/{subaccountId}/{reportType}';
+  private readonly DOWNLOAD_DASHBOARD_REPORT_URL: string = this.API_URL + '/downloadReport/{subaccountId}/{reportType}';
 
 
   private currentReports: any;
@@ -51,5 +52,10 @@ export class CtaasDashboardService {
   public getCtaasDashboardDetailedReport(subaccountId: string, reportType: string): Observable<any> {
     const url = this.FETCH_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
     return this.httpClient.get(url);
+  }
+
+  public downloadCtaasDashboardDetailedReport(subaccountId: string, reportType: string): Observable<any> {
+    const url = this.DOWNLOAD_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
+    return this.httpClient.get(url, { responseType: 'blob' });
   }
 }
