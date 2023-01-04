@@ -128,8 +128,7 @@ public class TekvLSCreateNote {
 
             JSONObject body = new JSONObject();
             JSONObject notification = new JSONObject();
-            notification.put("title", "A new note was created");
-            notification.put("subtitle", userEmail + "created a new note");
+            notification.put("title", userEmail + "created a new note");
             notification.put("body", jobj.getString(MANDATORY_PARAMS.CONTENT.value));
             body.put("notification", notification);
             HashMap<String, String> headers = new HashMap<>();
@@ -139,16 +138,29 @@ public class TekvLSCreateNote {
             while (rs.next()) {
                 String finalDeviceToken = rs.getString("device_token");
                 String finalUser = rs.getString("subaccount_admin_email");
-                ExecutorService executor = Executors.newCachedThreadPool();
-                executor.submit(() -> {
-                    body.put("to", finalDeviceToken);
-                    try {
-                        context.getLogger().info("Sending notification to : " + finalUser);
-                        HttpClient.post(NOTIFICATIONS_ENDPOINT, body.toString(), headers);
-                    } catch (Exception e) {
-                        context.getLogger().warning("Could not send notification to " + finalDeviceToken);
-                    }
-                });
+                body.put("to", finalDeviceToken);
+                String bodyString = body.toString();
+                headers.put("Content-Length", Integer.toString(bodyString.length()));
+                try {
+                    context.getLogger().info("Sending notification to: " + finalUser);
+                    context.getLogger().info("Sending notification body: " + bodyString);
+                    JSONObject response = HttpClient.post(NOTIFICATIONS_ENDPOINT, bodyString, headers);
+                    context.getLogger().info("Notification response: " + response.toString());
+                } catch (Exception e) {
+                    context.getLogger().warning("Could not send notification to " + finalUser);
+                    context.getLogger().warning("Notification exception: " + e.getMessage());
+                }
+                // ExecutorService executor = Executors.newCachedThreadPool();
+                // executor.submit(() -> {
+                //     body.put("to", finalDeviceToken);
+                //     try {
+                //         context.getLogger().info("Sending notification to : " + finalUser);
+                //         JSONObject response = HttpClient.post(NOTIFICATIONS_ENDPOINT, body.toString(), headers);
+                //         context.getLogger().info("Notification response: " + response.toString());
+                //     } catch (Exception e) {
+                //         context.getLogger().warning("Could not send notification to " + finalDeviceToken);
+                //     }
+                // });
             }
 
             return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
