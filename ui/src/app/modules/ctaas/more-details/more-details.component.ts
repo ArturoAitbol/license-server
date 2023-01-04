@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportType } from 'src/app/helpers/report-type';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 @Component({
   selector: 'app-more-details',
@@ -23,12 +24,13 @@ export class MoreDetailsComponent implements OnInit {
   hasDashboardDetails: boolean = false;
   isLoadingResults = true;
   sampleJsonData: any = {};
+  canDisableDownloadBtn: boolean = false;
   constructor(
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
     private subaccountService: SubAccountService,
-    private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBarService: SnackBarService
   ) { }
   /**
    * get logged in account details
@@ -56,12 +58,12 @@ export class MoreDetailsComponent implements OnInit {
    * fetch detailed dashboard report
    */
   public fetchDashboardReportDetails(): void {
-    this.hasDashboardDetails = false;
-    this.isLoadingResults = true;
-    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type)
-      .subscribe((res: any) => {
-        this.isLoadingResults = false;
-        try {
+    try {
+      this.hasDashboardDetails = false;
+      this.isLoadingResults = true;
+      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type)
+        .subscribe((res: any) => {
+          this.isLoadingResults = false;
           const { response: { report, reportType } } = res;
           if (report && reportType) {
             this.sampleJsonData = report;
@@ -71,13 +73,13 @@ export class MoreDetailsComponent implements OnInit {
             this.hasDashboardDetails = false;
             this.sampleJsonData = {};
           }
-        } catch (error) {
-          console.error("Error while fetching dashboard report: " + error);
-        }
-      }, (error) => {
-        this.hasDashboardDetails = false;
-        this.isLoadingResults = false;
-      });
+        }, (error) => {
+          this.hasDashboardDetails = false;
+          this.isLoadingResults = false;
+        });
+    } catch (error) {
+      console.error("Error while fetching dashboard report: " + error);
+    }
   }
   /**
    * calculate table height based on the window height
@@ -114,24 +116,36 @@ export class MoreDetailsComponent implements OnInit {
       { name: 'Reason', dataKey: 'errorReason', position: 'center', isSortable: true },
     ];
   }
-
-  downloadResponseAsJson() {
-    const data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.sampleJsonData));
+  /**
+   * download file as excel
+   * @param data: any 
+   */
+  private downloadExcelFile(data: any): void {
+    const name = this.type + '-' + Date.now().toString() + '.xlsx';
     const a = document.createElement('a');
-    a.href = 'data:' + data;
-    a.download = 'data.json';
-    a.innerHTML = 'download JSON';
-    const container = document.getElementById('container');
-    container.appendChild(a);
-  }
-
-  downloadTextFile() {
-    const name = this.filename + '-' + Date.now().toString() + '.xlsx';
-    const data = JSON.stringify(this.sampleJsonData);
-    const a = document.createElement('a');
-    const type = name.split(".").pop();
-    a.href = URL.createObjectURL(new Blob([data], { type }));
+    a.href = URL.createObjectURL(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
     a.download = name;
     a.click();
+    this.canDisableDownloadBtn = false;
+  }
+  /**
+   * fetch detailed test report excel sheet 
+   */
+  public downloadDetailedTestReportByType(): void {
+    try {
+      this.canDisableDownloadBtn = true;
+      this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
+      this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(this.subaccountId, this.type).subscribe((res) => {
+        const { error } = res;
+        if (!error) this.downloadExcelFile(res);
+
+      }, (error) => {
+        this.canDisableDownloadBtn = false;
+        this.snackBarService.openSnackBar('Error loading downloading report', 'Ok');
+      })
+    } catch (e) {
+      console.error('Error while downloading report:' + e);
+      this.snackBarService.openSnackBar('Error loading downloading report', 'Ok');
+    }
   }
 }

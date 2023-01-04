@@ -17,7 +17,8 @@
 <ng-template #reportView>
     <div class="row">
         <div class="col-12 text-right">
-            <button mat-button (click)="downloadTextFile()">Download Report
+            <button mat-raised-button [disabled]="canDisableDownloadBtn" (click)="downloadDetailedTestReportByType()">
+                Download Report
                 <mat-icon>download</mat-icon>
             </button>
         </div>
