@@ -7,6 +7,7 @@ import { Note } from 'src/app/model/note.model';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+import { environment } from 'src/environments/environment';
 import { IResultant } from '../ctaas-dashboard/ctaas-dashboard.component';
 
 @Component({
@@ -141,4 +142,14 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
   onClose(): void {
     this.dialogRef.close();
   }
+  
+  onClickMoreDetails(index: string): void {
+        const obj = this.resultantImagesList[0];
+        const { imagesList } = obj;
+        const { reportType } = imagesList[index];
+        const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
+        const url = environment.BASE_URL + '/#/spotlight/details?type=' + type;
+        window.open(url);
+        window.close();
+    }
 }

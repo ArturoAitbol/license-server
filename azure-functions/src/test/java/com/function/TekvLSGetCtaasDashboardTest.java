@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
@@ -342,7 +343,7 @@ public class TekvLSGetCtaasDashboardTest extends TekvLSTest {
     @Test
     public void getForSubaccountStakeHolderRoleTest() {
         //Given
-        String subaccountId = "96234b32-32d3-45a4-af26-4c912c0d6a06";
+        String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
         // When
         HttpResponseMessage response = tekvLSGetCtaasDashboard.run(this.request, subaccountId, DAILY_FEATURE_FUNCTIONALITY, this.context);
@@ -355,7 +356,7 @@ public class TekvLSGetCtaasDashboardTest extends TekvLSTest {
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("error"));
+        assertFalse(jsonBody.has("error"));
     }
 
     @Tag("security")

@@ -19,6 +19,7 @@ public enum Resource {
         CREATE_SUBACCOUNT_STAKEHOLDER,//TekvLSCreateSubaccountStakeHolder
         CREATE_FEATURE_TOGGLE,//TekvLSCreateFeatureToggle
         CREATE_NOTE,//TekvLSCreateNote
+        CREATE_SUBACCOUNT_ADMIN_DEVICE, //TekvLSCreateSubaccountAdminDevice
 
         // DELETE
         DELETE_ADMIN_EMAIL,//TekvLSDeleteAdminEmail
@@ -36,6 +37,7 @@ public enum Resource {
         DELETE_SUBACCOUNT_STAKEHOLDER,//TekvLSDeleteSubaccountStakeHolderByEmail
         DELETE_FEATURE_TOGGLE,//TekvLSDeleteFeatureToggleById
         DELETE_NOTE,//TekvLSDeleteNoteById
+        DELETE_SUBACCOUNT_ADMIN_DEVICE, // TekvLSDeleteSubaccountAdminDevice
 
         // READ
         GET_ALL_BUNDLES,//TekvLSGetAllBundles
