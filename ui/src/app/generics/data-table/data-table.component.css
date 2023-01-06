@@ -15,6 +15,9 @@ mat-form-field {
   color: darkblue;
   text-decoration: underline !important;
 }
+::ng-deep .call .mat-table tbody {
+  display: none !important;
+}
 
 /* ul {
   list-style-type: none;

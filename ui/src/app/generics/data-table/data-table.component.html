@@ -9,7 +9,8 @@
     </ng-container>
 
     <!-- Table -->
-    <table mat-table [dataSource]="tableDataSource" matSort (matSortChange)="sortTable($event)">
+    <table mat-table [dataSource]="tableDataSource" matSort (matSortChange)="sortTable($event)"
+        *ngIf="nestedKey !== 'call-reliability'">
         <!--Checkbox column-->
         <ng-container *ngIf="selectable" matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef>
@@ -57,8 +58,8 @@
 
             <!-- column data -->
             <!-- <ng-template > -->
-            <div *ngIf="nestedKey !== 'call-reliability'">
-                <ng-container>
+            <div>
+                <ng-container *ngIf="nestedKey !== 'call-reliability'">
                     <td mat-cell *matCellDef="let element;let index=index;"
                         [class.text-right]="tableColumn.position === 'right'"
                         [ngClass]="{'clickable-item':tableColumn.isClickable}"
@@ -100,204 +101,237 @@
     </div>
 </ng-container>
 
-
-<ng-container *ngIf="nestedKey === 'call-reliability'">
-    <mat-accordion *ngFor="let key of data; let i = index" class="accordian-container">
-        <mat-expansion-panel hideToggle>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    {{key.testCaseName}}
-                </mat-panel-title>
-                <mat-panel-title>
-                    {{key.status}}
-                </mat-panel-title>
-                <mat-panel-title>
-                    {{key.errorCategory}}
-                </mat-panel-title>
-            </mat-expansion-panel-header>
-            <div style="padding: 1%;">
-                <!-- <mat-card class="card">
+<div style="overflow: auto;" [style.height] = "openFlag ? '60vh' : 'auto'">
+    <ng-container *ngIf="nestedKey === 'call-reliability'">
+        <!-- <table>
+        <tr style="height: 52px;background-color: #e4e5e5;">
+            <th> Test Case </th>
+            <th> Start Date </th>
+            <th> Status </th>
+            <th> Error Category </th>
+        </tr>
+    </table> -->
+        <mat-accordion>
+            <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
+                <mat-expansion-panel-header>
+                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Test Case </mat-panel-title>
+                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Start Date </mat-panel-title>
+                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Status </mat-panel-title>
+                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Error Category </mat-panel-title>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
+        </mat-accordion>
+        <mat-accordion *ngFor="let key of data; let i = index" class="accordian-container">
+            <mat-expansion-panel hideToggle>
+                <mat-expansion-panel-header>
+                    <mat-panel-title style="width:25%">
+                        <!-- <span> -->
+                        {{key.testCaseName}}
+                        <!-- </span> -->
+                    </mat-panel-title>
+                    <mat-panel-title style="width:25%">
+                        <!-- <span style="position: absolute;left: -30px;"> -->
+                        {{key.startTime}}
+                        <!-- </span> -->
+                    </mat-panel-title>
+                    <mat-panel-title style="width:25%">
+                        <!-- <span style="position: absolute;left: -30px;"> -->
+                        {{key.status}}
+                        <!-- </span> -->
+                    </mat-panel-title>
+                    <mat-panel-title style="width:25%">
+                        <!-- <span style="position: absolute;left: -145px;"> -->
+                        {{key.errorCategory}}
+                        <!-- </span> -->
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div style="padding: 1%;">
+                    <!-- <mat-card class="card">
                     <mat-card-content style="padding: 1%;"> -->
-                <div class="row">
-                    <div class="col-6">
-                        <table class="table table-hover">
-                            <tbody>
-                                <tr>
-                                    <th scope="row"> Start Date </th>
-                                    <td> {{key.nestedData.startTime}}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"> End Date </th>
-                                    <td> {{key.nestedData.endTime}} </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"> Status </th>
-                                    <td>{{key.nestedData.status}}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"> Reason </th>
-                                    <td>{{key.nestedData.reason}}</td>
-                                </tr>
-                                <!-- <tr>
-                                    <th scope="row">End Time</th>
-                                    <td>{{sampleJsonData.summary. endTime }}</td>
-                                </tr> -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-6">
-                        <table class="table table-hover">
-                            <tbody>
-                                <tr>
-                                    <!-- <th scope="row"> From </th> -->
-                                    <td>
-                                        <mat-accordion>
-                                            <mat-expansion-panel hideToggle>
-                                                <mat-expansion-panel-header style="background-color: white;">
-                                                    <mat-panel-title>
-                                                        <ul class="inner-accor">
-                                                            <li> From </li>
-                                                            <li> {{key.duts.from}} </li>
-                                                        </ul>
-                                                    </mat-panel-title>
-                                                </mat-expansion-panel-header>
-                                                <!-- <p>{{key.duts.from}}</p> -->
-                                                <table class="table table-hover">
-                                                    <tbody>
-                                                        <tr>
-                                                            <th scope="row"> Received packet loss </th>
-                                                            <td> 0 </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Sent bitrate </th>
-                                                            <td> 47.2 Kbps </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Received Jitter </th>
-                                                            <td> 8.89 ms </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Round trip time </th>
-                                                            <td>--</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Sent codec </th>
-                                                            <td>SATIN</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Received packets </th>
-                                                            <td>1249</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Received codec </th>
-                                                            <td>SATIN</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Sent packets </th>
-                                                            <td>1248</td>
-                                                        </tr>
-                                                        <!-- <tr>
-                                                            <th scope="row">End Time</th>
-                                                            <td>{{sampleJsonData.summary. endTime }}</td>
-                                                        </tr> -->
-                                                    </tbody>
-                                                </table>
-                                            </mat-expansion-panel>
-                                        </mat-accordion>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <!-- <th scope="row"> To </th> -->
-                                    <td>
-                                        <mat-accordion>
-                                            <mat-expansion-panel hideToggle>
-                                                <mat-expansion-panel-header style="background-color: white;">
-                                                    <mat-panel-title>
-                                                        <ul class="inner-accor">
-                                                            <li> From </li>
-                                                            <li> {{key.duts.to}} </li>
-                                                        </ul>
-                                                    </mat-panel-title>
-                                                </mat-expansion-panel-header>
-                                                <!-- <p> {{key.duts.to}} </p> -->
-                                                <table class="table table-hover">
-                                                    <tbody>
-                                                        <tr>
-                                                            <th scope="row"> Received packet loss </th>
-                                                            <td> 0 </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Sent bitrate </th>
-                                                            <td> 47.2 Kbps </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Received Jitter </th>
-                                                            <td> 8.89 ms </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Round trip time </th>
-                                                            <td>--</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Sent codec </th>
-                                                            <td>SATIN</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Received packets </th>
-                                                            <td>1249</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Received codec </th>
-                                                            <td>SATIN</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th scope="row"> Sent packets </th>
-                                                            <td>1248</td>
-                                                        </tr>
-                                                        <!-- <tr>
-                                                            <th scope="row">End Time</th>
-                                                            <td>{{sampleJsonData.summary. endTime }}</td>
-                                                        </tr> -->
-                                                    </tbody>
-                                                </table>
-                                            </mat-expansion-panel>
+                    <div class="row">
+                        <div class="col-6">
+                            <table class="table table-hover">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row" style="width: 50%;"> Start Date </th>
+                                        <td> {{key.nestedData.startTime}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="width: 50%;"> End Date </th>
+                                        <td> {{key.nestedData.endTime}} </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="width: 50%;"> Status </th>
+                                        <td>{{key.nestedData.status}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Error Category</th>
+                                        <td>{{key.nestedData.errorCategory}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" style="width: 50%;"> Reason </th>
+                                        <td>{{key.nestedData.reason}}</td>
+                                    </tr>
 
-                                        </mat-accordion>
-                                    </td>
-                                </tr>
-                                <tr *ngFor="let data of key.duts.otherParties">
-                                    <!-- <th scope="row"> Other Parties </th> -->
-                                    <td>
-                                        <mat-accordion>
-                                            <mat-expansion-panel hideToggle>
-                                                <mat-expansion-panel-header style="background-color: white;">
-                                                    <mat-panel-title>
-                                                        <ul class="inner-accor">
-                                                            <li> Other parties </li>
-                                                            <li> {{data}} </li>
-                                                        </ul>
-                                                    </mat-panel-title>
-                                                </mat-expansion-panel-header>
-                                                <!-- {{key.duts.otherParties}} -->
-                                            </mat-expansion-panel>
-                                        </mat-accordion>
-                                    </td>
-                                </tr>
-                                <!-- <tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table class="table table-hover">
+                                <tbody>
+                                    <tr>
+                                        <!-- <th scope="row"> From </th> -->
+                                        <td>
+                                            <mat-accordion>
+                                                <mat-expansion-panel hideToggle [expanded]="obj['key' + i] === 1"
+                                                    (opened)="setStep(1, i)">
+                                                    <mat-expansion-panel-header style="background-color: white;">
+                                                        <mat-panel-title>
+                                                            <ul class="inner-accor">
+                                                                <li> From </li>
+                                                                <li> {{key.duts.from}} </li>
+                                                            </ul>
+                                                        </mat-panel-title>
+                                                    </mat-expansion-panel-header>
+                                                    <!-- <p>{{key.duts.from}}</p> -->
+                                                    <table class="table table-hover">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th scope="row"> Received packet loss </th>
+                                                                <td> 0 </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Sent bitrate </th>
+                                                                <td> 47.2 Kbps </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Received Jitter </th>
+                                                                <td> 8.89 ms </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Round trip time </th>
+                                                                <td>--</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Sent codec </th>
+                                                                <td>SATIN</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Received packets </th>
+                                                                <td>1249</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Received codec </th>
+                                                                <td>SATIN</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Sent packets </th>
+                                                                <td>1248</td>
+                                                            </tr>
+                                                            <!-- <tr>
+                                                            <th scope="row">End Time</th>
+                                                            <td>{{sampleJsonData.summary. endTime }}</td>
+                                                        </tr> -->
+                                                        </tbody>
+                                                    </table>
+                                                </mat-expansion-panel>
+                                            </mat-accordion>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <!-- <th scope="row"> To </th> -->
+                                        <td>
+                                            <mat-accordion>
+                                                <mat-expansion-panel hideToggle [expanded]="obj['key' + i] === 2"
+                                                    (opened)="setStep(2, i)">
+                                                    <mat-expansion-panel-header style="background-color: white;">
+                                                        <mat-panel-title>
+                                                            <ul class="inner-accor">
+                                                                <li> To </li>
+                                                                <li> {{key.duts.to}} </li>
+                                                            </ul>
+                                                        </mat-panel-title>
+                                                    </mat-expansion-panel-header>
+                                                    <!-- <p> {{key.duts.to}} </p> -->
+                                                    <table class="table table-hover">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th scope="row"> Received packet loss </th>
+                                                                <td> 0 </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Sent bitrate </th>
+                                                                <td> 47.2 Kbps </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Received Jitter </th>
+                                                                <td> 8.89 ms </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Round trip time </th>
+                                                                <td>--</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Sent codec </th>
+                                                                <td>SATIN</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Received packets </th>
+                                                                <td>1249</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Received codec </th>
+                                                                <td>SATIN</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th scope="row"> Sent packets </th>
+                                                                <td>1248</td>
+                                                            </tr>
+                                                            <!-- <tr>
+                                                            <th scope="row">End Time</th>
+                                                            <td>{{sampleJsonData.summary. endTime }}</td>
+                                                        </tr> -->
+                                                        </tbody>
+                                                    </table>
+                                                </mat-expansion-panel>
+
+                                            </mat-accordion>
+                                        </td>
+                                    </tr>
+                                    <tr *ngFor="let data of key.duts.otherParties; let j = index">
+                                        <!-- <th scope="row"> Other Parties </th> -->
+                                        <td>
+                                            <mat-accordion>
+                                                <mat-expansion-panel hideToggle [expanded]="obj['key' + i] === (3 + j)"
+                                                    (opened)="setStep((3 + j), i)" hideToggle>
+                                                    <mat-expansion-panel-header style="background-color: white;">
+                                                        <mat-panel-title>
+                                                            <ul class="inner-accor">
+                                                                <li> Other party </li>
+                                                                <li> {{data}} </li>
+                                                            </ul>
+                                                        </mat-panel-title>
+                                                    </mat-expansion-panel-header>
+                                                    <!-- {{key.duts.otherParties}} -->
+                                                </mat-expansion-panel>
+                                            </mat-accordion>
+                                        </td>
+                                    </tr>
+                                    <!-- <tr>
                                     <th scope="row"> Reason </th>
                                     <td>{{key.nestedData.reason}}</td>
                                 </tr> -->
-                                <!-- <tr>
+                                    <!-- <tr>
                                     <th scope="row">End Time</th>
                                     <td>{{sampleJsonData.summary. endTime }}</td>
                                 </tr> -->
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <!-- </mat-card-content>
+                    <!-- </mat-card-content>
                 </mat-card> -->
-                <!-- <div style="width: 30%;">
+                    <!-- <div style="width: 30%;">
                     <table class="innerTable">
                         <tr>
                             <th> Reason </th>
@@ -307,7 +341,7 @@
                         </tr>
                     </table>
                 </div> -->
-                <!-- <div style="width: 30%;">
+                    <!-- <div style="width: 30%;">
                     <table class="innerTable">
                         <tr>
                             <th> From </th>
@@ -321,7 +355,7 @@
                         </tr>
                     </table>
                 </div> -->
-                <!-- <div style="width: 30%;">
+                    <!-- <div style="width: 30%;">
                     <table class="innerTable">
                         <tr>
                             <th> Start Date </th>
@@ -335,7 +369,8 @@
                         </tr>
                     </table>
                 </div> -->
-            </div>
-        </mat-expansion-panel>
-    </mat-accordion>
-</ng-container>
+                </div>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </ng-container>
+</div>

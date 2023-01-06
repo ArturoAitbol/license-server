@@ -17,6 +17,8 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   public displayedColumns: string[];
   public selection = new SelectionModel(true, []);
   public selectable = false;
+  openFlag:any = false;
+  obj:any = {}
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) matSort: MatSort;
 
@@ -66,8 +68,16 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-
+  setStep(index: number, rowIndex) {
+    this.openFlag = true
+    this.obj['key' + rowIndex] = index;
+    // console.log(this.obj['key' + index])
+  }
+  close() {
+    this.openFlag = false;
+  }
   ngOnInit(): void {
+    this.obj['key' + 0] = 0;
     console.log('nested', this.nestedKey)
     // this.nestedKey = 'endpoint-resources'
     const columnNames = this.tableColumns.map((tableColumn: TableColumn) => tableColumn.name);
@@ -102,7 +112,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
         subdata.nestedData =
         {
           "endTime": subdata.endTime, "startTime": subdata.startTime, "status": subdata.status,
-          "reason": subdata.errorReason
+          "reason": subdata.errorReason, "errorCategory": subdata.errorCategory
         }
       })
       this.data = data
