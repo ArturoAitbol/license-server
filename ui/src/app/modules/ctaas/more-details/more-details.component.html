@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
+    <ng-container *ngIf="hasDashboardDetails; then reportView; else blankView"></ng-container>
 </div>
 <!-- blank view -->
 <ng-template #blankView>
@@ -23,10 +23,9 @@
             </button>
         </div>
     </div>
-
     <div class="row">
         <div class="col-4">
-            <h1 class="text-center">Summary of Test Execution</h1>
+            <h1 class="text-start fw-bold">Summary of Test Execution</h1>
             <mat-card class="card">
                 <mat-card-content style="padding: 1%;">
                     <table class="table table-hover">
@@ -57,7 +56,7 @@
             </mat-card>
         </div>
         <div class="col-8">
-            <h1 class="text-center">Endpoint Reosurces</h1>
+            <h1 class="text-start fw-bold">Endpoint Resources</h1>
             <section class="table-section">
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
@@ -65,12 +64,11 @@
                             [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
-
             </section>
         </div>
     </div>
     <br>
-    <h1 class="text-center" *ngIf="type===FEATURE_FUNCTIONALITY">Feature Functionality</h1>
+    <h1 class="text-start fw-bold" *ngIf="type===FEATURE_FUNCTIONALITY">Feature Functionality</h1>
     <section class="table-section" *ngIf="type===FEATURE_FUNCTIONALITY">
         <mat-card class="card">
             <mat-card-content [style.max-height.px]="tableMaxHeight">
@@ -81,7 +79,7 @@
             </mat-card-content>
         </mat-card>
     </section>
-    <h1 class="text-center" *ngIf="type===CALL_RELIABILITY">Call Reliability</h1>
+    <h1 class="text-start fw-bold" *ngIf="type===CALL_RELIABILITY">Call Reliability</h1>
     <section class="table-section" *ngIf="type===CALL_RELIABILITY">
         <mat-card class="card">
             <mat-card-content [style.max-height.px]="tableMaxHeight">

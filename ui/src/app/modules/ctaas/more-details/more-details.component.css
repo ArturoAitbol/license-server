@@ -64,3 +64,22 @@ th.mat-sort-header-sorted {
 .fw-500 {
   font-weight: 500 !important;
 }
+
+mat-card {
+  max-height: 215px;
+}
+
+::ng-deep tr.mat-header-row {
+  background: #e4e5e5;
+}
+
+::ng-deep #Address {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+} 
+
+h1.text-start {
+  font-size: 18px;
+}
