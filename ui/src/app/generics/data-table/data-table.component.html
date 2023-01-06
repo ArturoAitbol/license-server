@@ -43,6 +43,10 @@
                     [arrowPosition]="tableColumn.position === 'right' ? 'before' : 'after'">
                     {{tableColumn.name }}
                 </th>
+                <!-- <ng-container *ngIf="nestedKey === 'call-reliability'">
+                    <td mat-cell *matCellDef="let element"> {{element |
+                        dataPropertyGetter: tableColumn.dataKey | na}} </td>
+                </ng-container> -->
             </ng-container>
             <!-- else not sortable -->
             <ng-template #notSortable>
@@ -52,18 +56,31 @@
             </ng-template>
 
             <!-- column data -->
-            <td mat-cell *matCellDef="let element;let index=index;"
-                [class.text-right]="tableColumn.position === 'right'"
-                [ngClass]="{'clickable-item':tableColumn.isClickable}"
-                (click)="onClickableRow(element,index,tableColumn.isClickable,tableColumn.name)"
-                title="{{element | titleGetter: tableColumn.dataKey | na}}" id="{{tableColumn.name}}">
-                <span [ngClass]="{'clickable-item':tableColumn.isClickable}"
-                    [ngStyle]="{'color':getColor(element,tableColumn)}"
-                    (click)="onClickableRow(element,index,tableColumn.isClickable,tableColumn.name)">{{element | dataPropertyGetter: tableColumn.dataKey | na}}</span>
-            </td>
+            <!-- <ng-template > -->
+            <div *ngIf="nestedKey !== 'call-reliability'">
+                <ng-container>
+                    <td mat-cell *matCellDef="let element;let index=index;"
+                        [class.text-right]="tableColumn.position === 'right'"
+                        [ngClass]="{'clickable-item':tableColumn.isClickable}"
+                        (click)="onClickableRow(element,index,tableColumn.isClickable,tableColumn.name)"
+                        title="{{element | titleGetter: tableColumn.dataKey | na}}" id="{{tableColumn.name}}">
+                        <span [ngClass]="{'clickable-item':tableColumn.isClickable}"
+                            [ngStyle]="{'color':getColor(element,tableColumn)}"
+                            (click)="onClickableRow(element,index,tableColumn.isClickable,tableColumn.name)">{{element
+                            |
+                            dataPropertyGetter: tableColumn.dataKey | na}}</span>
+                    </td>
+                </ng-container>
+            </div>
+            <!-- </ng-template> -->
         </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleRow(row)"></tr>
+        </ng-container>
+        <!-- <tr mat-header-row *matHeaderRowDef="innerDisplayedColumns; sticky:true"></tr>
+        <tr mat-row *matRowDef="let row; columns: innerDisplayedColumns;"></tr> -->
+        <!-- <tr mat-row *matRowDef="let row;let i = index columns: innerDisplayedColumns;"></tr> -->
     </table>
     <!-- table for no data -->
     <table>
@@ -81,4 +98,244 @@
             [length]="length" (page)="onPageChange($event)" showFirstLastButtons>
         </mat-paginator>
     </div>
+</ng-container>
+
+
+<ng-container *ngIf="nestedKey === 'call-reliability'">
+    <mat-accordion *ngFor="let key of data; let i = index" class="accordian-container">
+        <mat-expansion-panel hideToggle>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    {{key.testCaseName}}
+                </mat-panel-title>
+                <mat-panel-title>
+                    {{key.status}}
+                </mat-panel-title>
+                <mat-panel-title>
+                    {{key.errorCategory}}
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div style="padding: 1%;">
+                <!-- <mat-card class="card">
+                    <mat-card-content style="padding: 1%;"> -->
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <th scope="row"> Start Date </th>
+                                    <td> {{key.nestedData.startTime}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"> End Date </th>
+                                    <td> {{key.nestedData.endTime}} </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"> Status </th>
+                                    <td>{{key.nestedData.status}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"> Reason </th>
+                                    <td>{{key.nestedData.reason}}</td>
+                                </tr>
+                                <!-- <tr>
+                                    <th scope="row">End Time</th>
+                                    <td>{{sampleJsonData.summary. endTime }}</td>
+                                </tr> -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <!-- <th scope="row"> From </th> -->
+                                    <td>
+                                        <mat-accordion>
+                                            <mat-expansion-panel hideToggle>
+                                                <mat-expansion-panel-header style="background-color: white;">
+                                                    <mat-panel-title>
+                                                        <ul class="inner-accor">
+                                                            <li> From </li>
+                                                            <li> {{key.duts.from}} </li>
+                                                        </ul>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <!-- <p>{{key.duts.from}}</p> -->
+                                                <table class="table table-hover">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th scope="row"> Received packet loss </th>
+                                                            <td> 0 </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Sent bitrate </th>
+                                                            <td> 47.2 Kbps </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Received Jitter </th>
+                                                            <td> 8.89 ms </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Round trip time </th>
+                                                            <td>--</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Sent codec </th>
+                                                            <td>SATIN</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Received packets </th>
+                                                            <td>1249</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Received codec </th>
+                                                            <td>SATIN</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Sent packets </th>
+                                                            <td>1248</td>
+                                                        </tr>
+                                                        <!-- <tr>
+                                                            <th scope="row">End Time</th>
+                                                            <td>{{sampleJsonData.summary. endTime }}</td>
+                                                        </tr> -->
+                                                    </tbody>
+                                                </table>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <!-- <th scope="row"> To </th> -->
+                                    <td>
+                                        <mat-accordion>
+                                            <mat-expansion-panel hideToggle>
+                                                <mat-expansion-panel-header style="background-color: white;">
+                                                    <mat-panel-title>
+                                                        <ul class="inner-accor">
+                                                            <li> From </li>
+                                                            <li> {{key.duts.to}} </li>
+                                                        </ul>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <!-- <p> {{key.duts.to}} </p> -->
+                                                <table class="table table-hover">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th scope="row"> Received packet loss </th>
+                                                            <td> 0 </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Sent bitrate </th>
+                                                            <td> 47.2 Kbps </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Received Jitter </th>
+                                                            <td> 8.89 ms </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Round trip time </th>
+                                                            <td>--</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Sent codec </th>
+                                                            <td>SATIN</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Received packets </th>
+                                                            <td>1249</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Received codec </th>
+                                                            <td>SATIN</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> Sent packets </th>
+                                                            <td>1248</td>
+                                                        </tr>
+                                                        <!-- <tr>
+                                                            <th scope="row">End Time</th>
+                                                            <td>{{sampleJsonData.summary. endTime }}</td>
+                                                        </tr> -->
+                                                    </tbody>
+                                                </table>
+                                            </mat-expansion-panel>
+
+                                        </mat-accordion>
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let data of key.duts.otherParties">
+                                    <!-- <th scope="row"> Other Parties </th> -->
+                                    <td>
+                                        <mat-accordion>
+                                            <mat-expansion-panel hideToggle>
+                                                <mat-expansion-panel-header style="background-color: white;">
+                                                    <mat-panel-title>
+                                                        <ul class="inner-accor">
+                                                            <li> Other parties </li>
+                                                            <li> {{data}} </li>
+                                                        </ul>
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <!-- {{key.duts.otherParties}} -->
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </td>
+                                </tr>
+                                <!-- <tr>
+                                    <th scope="row"> Reason </th>
+                                    <td>{{key.nestedData.reason}}</td>
+                                </tr> -->
+                                <!-- <tr>
+                                    <th scope="row">End Time</th>
+                                    <td>{{sampleJsonData.summary. endTime }}</td>
+                                </tr> -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- </mat-card-content>
+                </mat-card> -->
+                <!-- <div style="width: 30%;">
+                    <table class="innerTable">
+                        <tr>
+                            <th> Reason </th>
+                        </tr>
+                        <tr>
+                            <td>{{key.errorReason}}</td>
+                        </tr>
+                    </table>
+                </div> -->
+                <!-- <div style="width: 30%;">
+                    <table class="innerTable">
+                        <tr>
+                            <th> From </th>
+                            <th> To </th>
+                            <th> OtherParties </th>
+                        </tr>
+                        <tr *ngFor="let dut of key.duts">
+                            <td> {{dut.from}} </td>
+                            <td> {{dut.to}} </td>
+                            <td> {{dut.otherParties}} </td>
+                        </tr>
+                    </table>
+                </div> -->
+                <!-- <div style="width: 30%;">
+                    <table class="innerTable">
+                        <tr>
+                            <th> Start Date </th>
+                            <th> End Date </th>
+                            <th> Status </th>
+                        </tr>
+                        <tr *ngFor="let data of key.nestedData">
+                            <td> {{data.startTime}} </td>
+                            <td> {{data.endTime}} </td>
+                            <td> {{data.status}} </td>
+                        </tr>
+                    </table>
+                </div> -->
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
 </ng-container>
