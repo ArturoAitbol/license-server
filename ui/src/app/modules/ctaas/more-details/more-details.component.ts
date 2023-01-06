@@ -103,7 +103,7 @@ export class MoreDetailsComponent implements OnInit {
       { name: 'Model', dataKey: 'model', position: 'center', isSortable: true },
       { name: 'DID', dataKey: 'did', position: 'center', isSortable: true },
       { name: 'Firmware', dataKey: 'firmwareVersion', position: 'center', isSortable: true },
-      { name: 'Address', dataKey: 'city', position: 'center', isSortable: true },
+      { name: 'Region', dataKey: '', position: 'center', isSortable: true },
       // { name: 'State', dataKey: 'state', position: 'center', isSortable: true },
       // { name: 'Country', dataKey: 'country', position: 'center', isSortable: true },
       // { name: 'ZipCode', dataKey: 'zipcode', position: 'center', isSortable: true },
