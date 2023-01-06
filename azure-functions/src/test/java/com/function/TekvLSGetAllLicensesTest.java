@@ -313,7 +313,7 @@ class TekvLSGetAllLicensesTest extends TekvLSTest {
         assertTrue(license.has("status"));
         assertTrue(license.has("description"));
 
-        String expectedLicenseId = "d9cb5f93-c4d0-427e-8133-77905abd8487";
+        String expectedLicenseId = "b84852d7-0f04-4e9a-855c-7b2f01f61592";
         assertEquals(expectedLicenseId,license.getString("id"));
     }
 

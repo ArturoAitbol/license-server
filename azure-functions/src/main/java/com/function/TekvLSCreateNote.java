@@ -2,8 +2,11 @@ package com.function;
 
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.function.auth.Resource;
+import com.function.clients.HttpClient;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 import io.jsonwebtoken.Claims;
@@ -83,13 +86,17 @@ public class TekvLSCreateNote {
         String sql = "INSERT INTO note (subaccount_id, content, status, open_date, opened_by, reports)" +
                     " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP, ?, ?) RETURNING id;";
 
+        // Sql query to get all user that need to be notified
+        String deviceTokensSql = "SELECT sad.* FROM subaccount_admin_device sad, subaccount_admin sae WHERE sad.subaccount_admin_email = sae.subaccount_admin_email and sae.subaccount_id = ?::uuid;";
+
         //Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
 
         try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            PreparedStatement statement = connection.prepareStatement(sql)){
+            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement deviceTokensStmt = connection.prepareStatement(deviceTokensSql)){
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
@@ -110,6 +117,37 @@ public class TekvLSCreateNote {
             rs.next();
             JSONObject json = new JSONObject();
             json.put("id", rs.getString("id"));
+
+            // Send notifications to subaccount users
+            String NOTIFICATIONS_ENDPOINT = System.getenv("NOTIFICATIONS_ENDPOINT");
+            String NOTIFICATIONS_AUTH_KEY = System.getenv("NOTIFICATIONS_AUTH_KEY");
+
+            deviceTokensStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+            context.getLogger().info("Execute SQL statement: " + deviceTokensStmt);
+            rs = deviceTokensStmt.executeQuery();
+
+            JSONObject body = new JSONObject();
+            JSONObject notification = new JSONObject();
+            notification.put("title", "New Note!");
+            notification.put("body", userEmail + ": " + jobj.getString(MANDATORY_PARAMS.CONTENT.value));
+            body.put("notification", notification);
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+            headers.put("Authorization", NOTIFICATIONS_AUTH_KEY);
+
+            while (rs.next()) {
+                String finalDeviceToken = rs.getString("device_token");
+                body.put("to", finalDeviceToken);
+                String bodyString = body.toString();
+                try {
+                    context.getLogger().info("Sending notification to: " + finalDeviceToken);
+                    JSONObject response = HttpClient.post(NOTIFICATIONS_ENDPOINT, bodyString, headers);
+                } catch (Exception e) {
+                    context.getLogger().warning("Could not send notification to " + finalDeviceToken);
+                    context.getLogger().warning("Notification exception: " + e.getMessage());
+                }
+            }
+
             return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
         } catch(SQLException e){
             context.getLogger().info("SQL exception: " + e.getMessage());
