@@ -52,7 +52,7 @@
                 [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                 [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
                 [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'" (rowAction)="rowAction($event)"
-                [actionMenuList]="actionMenuOptions" (clickableRow)="columnAction($event)">
+                [actionMenuList]="actionMenuOptions" (clickableRow)="columnAction($event)" [nestedKey] = "'dashboard'">
             </app-data-table>
         </div>
     </section>

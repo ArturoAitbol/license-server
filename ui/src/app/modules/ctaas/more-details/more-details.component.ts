@@ -63,8 +63,11 @@ export class MoreDetailsComponent implements OnInit {
       this.isLoadingResults = true;
       this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type)
         .subscribe((res: any) => {
+          console.log('res', res)
           this.isLoadingResults = false;
           const { response: { report, reportType } } = res;
+          report.callReliability.nestedKey = 'callReliability';
+          report.endpoints.nestedKey = 'endpoints'
           if (report && reportType) {
             this.sampleJsonData = report;
             this.filename = reportType;
@@ -110,14 +113,14 @@ export class MoreDetailsComponent implements OnInit {
     ];
     this.featureFunctionalityDisplayedColumns = [
       { name: 'Test Case', dataKey: 'testCaseName', position: 'left', isSortable: true },
-      { name: 'Start Time', dataKey: 'startTime', position: 'center', isSortable: true },
-      { name: 'End Time', dataKey: 'endTime', position: 'center', isSortable: true },
-      { name: 'From', dataKey: 'from', position: 'center', isSortable: true },
-      { name: 'To', dataKey: 'to', position: 'center', isSortable: true },
-      { name: 'Other Parties', dataKey: 'otherParties', position: 'center', isSortable: true },
+      // { name: 'Start Time', dataKey: 'startTime', position: 'center', isSortable: true },
+      // { name: 'End Time', dataKey: 'endTime', position: 'center', isSortable: true },
+      // { name: 'From', dataKey: 'from', position: 'center', isSortable: true },
+      // { name: 'To', dataKey: 'to', position: 'center', isSortable: true },
+      // { name: 'Other Parties', dataKey: 'otherParties', position: 'center', isSortable: true },
       { name: 'Status', dataKey: 'status', position: 'center', isSortable: true },
       { name: 'Error Category', dataKey: 'errorCategory', position: 'center', isSortable: true },
-      { name: 'Reason', dataKey: 'errorReason', position: 'center', isSortable: true },
+      // { name: 'Reason', dataKey: 'errorReason', position: 'center', isSortable: true },
     ];
   }
   /**

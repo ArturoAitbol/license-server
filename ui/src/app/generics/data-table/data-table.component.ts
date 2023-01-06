@@ -15,7 +15,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   data: any = [];
   public tableDataSource = new MatTableDataSource([]);
   public displayedColumns: string[];
-  public selection = new SelectionModel(true,[]);
+  public selection = new SelectionModel(true, []);
   public selectable = false;
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) matSort: MatSort;
@@ -37,6 +37,19 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output() rowAction: EventEmitter<any> = new EventEmitter<any>();
   @Output() clickableRow: EventEmitter<any> = new EventEmitter<any>();
   @Output() pageChanged = new EventEmitter<{ pageIndex: number, pageSize: number }>();
+  @Input() nestedKey: any
+  // expandedElement = false;
+  expandedElement: any = false;
+  cd: any;
+  innerTables: any;
+  innerSort: any;
+  innerDisplayedColumns = [
+    { name: 'Start Time', dataKey: 'startTime', position: 'center', isSortable: true },
+    { name: 'End Time', dataKey: 'endTime', position: 'center', isSortable: true },
+    { name: 'From', dataKey: 'from', position: 'center', isSortable: true },
+    { name: 'To', dataKey: 'to', position: 'center', isSortable: true },
+    { name: 'Other Parties', dataKey: 'otherParties', position: 'center', isSortable: true },
+  ]
 
   // this property needs to have a setter, to dynamically get changes from parent component
   @Input() set tableData(data: any[]) {
@@ -55,6 +68,8 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    console.log('nested', this.nestedKey)
+    // this.nestedKey = 'endpoint-resources'
     const columnNames = this.tableColumns.map((tableColumn: TableColumn) => tableColumn.name);
     this.displayedColumns = columnNames;
     if (this.selectable) this.displayedColumns = ['select', ...this.displayedColumns];
@@ -77,12 +92,34 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param data: any
    */
   setTableDataSource(data: any) {
-    this.data = data;
+    console.log(data)
+    if (data.nestedKey === 'callReliability') {
+      data.forEach(subdata => {
+        console.log(subdata)
+        subdata.otherParties.push('+563636377333')
+        subdata.duts =
+          { "from": subdata.from, "to": subdata.to, "otherParties": subdata.otherParties }
+        subdata.nestedData =
+        {
+          "endTime": subdata.endTime, "startTime": subdata.startTime, "status": subdata.status,
+          "reason": subdata.errorReason
+        }
+      })
+      this.data = data
+    }
+    else {
+      this.data = data;
+    }
+
     this.tableDataSource = new MatTableDataSource<any>(data);
     this.tableDataSource.sort = this.matSort;
     if (!this.serverSidePagination) {
       this.tableDataSource.paginator = this.matPaginator;
     }
+  }
+
+  toggleRow(element) {
+    element.expandedElement = !element.expandedElement
   }
   /**
    * apply filter to the table
@@ -139,7 +176,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   onPageChange(event: PageEvent) {
     if (this.isPageable && this.serverSidePagination)
-      this.pageChanged.emit({pageIndex: event.pageIndex, pageSize: event.pageSize })
+      this.pageChanged.emit({ pageIndex: event.pageIndex, pageSize: event.pageSize })
   }
 
   /**
