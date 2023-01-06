@@ -73,7 +73,7 @@ mat-card {
   background: #e4e5e5;
 }
 
-::ng-deep #Address {
+::ng-deep #Region {
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
