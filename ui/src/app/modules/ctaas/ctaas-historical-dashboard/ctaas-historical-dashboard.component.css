@@ -191,41 +191,83 @@ button:hover {
 }
 
 .col-md-12 {
-  padding-left: 0%;
-  padding-right: 0%;
+  margin-bottom: 2%;
+  width: 85%;
+}
+
+.custom-col {
   margin-bottom: 2%;
 }
 
 @media (orientation: landscape) and (min-width: 480px){
   ::ng-deep .mat-dialog-container {
     max-width: 100vw;
-    width: 100vw;
+    width: 80% !important;
+  }
+}
+
+@media (orientation: landscape) and (min-width: 480px){
+  ::ng-deep .cdk-overlay-pane{
+    justify-content: center;
   }
 }
 
 @media (orientation: landscape) and (max-width: 1281px){
   .custom-col {
-    width: 65%;
+    width: 83%;
+    margin-bottom: 2%;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 1281px){
+  .mat-card-actions {
+    padding-top: 0% ;
+    font-size: 3vh;
+    position: absolute;
+    left: 36%;
+    bottom: 3%;
   }
 }
 
 @media (orientation: landscape) and (max-width: 1281px){
   .col-md-12 {
-    width: 65%;
+    width: 89%;
     max-width: 90vw;
+    margin-left: 0%;
+  }
+}
+
+@media (orientation: landscape) and (max-width: 1281px){
+  ::ng-deep .mat-dialog-container{
+    max-width: 100vw;
+    width: 80%; 
+    padding-bottom: 0%;
+    padding-top: 0%;
   }
 }
 
 @media (orientation: landscape) and (max-width: 1281px){
   #images-row {
+    justify-content: center;
+    margin-left: 0%;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 1281px){
+  .col-md-12 {
+    width: 100%;
+    max-width: 90vw;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 767px){
+  ::ng-deep #images-row{
     justify-content: center !important;
   }
 }
 
-
-@media (orientation: landscape) and (min-width: 1200px){
-  ::ng-deep .mat-dialog-container{
-    max-width: 100vw;
-    width: 100vw; 
-  }
+.clickable-item {
+  cursor: pointer;
+  color: darkblue !important;
+  text-decoration: underline !important;
 }
