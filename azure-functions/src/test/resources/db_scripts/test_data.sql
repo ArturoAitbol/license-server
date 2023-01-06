@@ -87,10 +87,10 @@ eb2e8d89-b5a0-4e6c-8b11-83aad2674d7f	TestV	TestPhone1	1	PBX	week	100	2022-06-22 
 
 COPY public.subaccount_admin (subaccount_admin_email, subaccount_id) FROM stdin;
 test-customer-full-admin@tekvizionlabs.com	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
-test-customer-subaccount-admin@tekvizionlabs.com	96234b32-32d3-45a4-af26-4c912c0d6a06
+test-customer-subaccount-admin@tekvizionlabs.com	2c8e386b-d1bd-48b3-b73a-12bfa5d00805
 test1@tekvizion.com	ac7a78c2-d0b2-4c81-9538-321562d426c7
 test2@tekvizion.com	069dc3aa-dcb1-45e6-886f-be8f2345080f
-test-customer-subaccount-stakeholder@tekvizionlabs.com	96234b32-32d3-45a4-af26-4c912c0d6a06
+test-customer-subaccount-stakeholder@tekvizionlabs.com	2c8e386b-d1bd-48b3-b73a-12bfa5d00805
 \.
 
 
@@ -101,6 +101,7 @@ test-customer-subaccount-stakeholder@tekvizionlabs.com	96234b32-32d3-45a4-af26-4
 COPY public.license (id, subaccount_id, start_date, package_type, renewal_date, tokens, device_access_limit, status, description) FROM stdin;
 1d1bf1e8-6522-4ab9-956a-864041f890e2	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-01 04:00:00	Basic	2022-07-31 04:00:00	55	5000	Active	License1
 6524a6ab-b88b-49a8-aee5-624e86e24dcd	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-07-10 04:00:00	Small	2022-07-18 04:00:00	150	5000	Active	License2
+b84852d7-0f04-4e9a-855c-7b2f01f61592	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	2023-01-01 05:00:00	Small	2024-01-01 05:00:00	150	5000	Active	License1
 b84852d7-0f04-4e9a-855c-7b2f01f61591	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2022-03-14 05:00:00	Small	2023-03-13 05:00:00	150	5000	Active	License3
 a3475bf9-41d5-432a-ae2d-ccf7681385cf	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2022-10-04 04:00:00	Small	2022-11-04 04:00:00	150	5000	Active	License6
 16f4f014-5bed-4166-b10a-808b2e6655e3	ac7a78c2-d0b2-4c81-9538-321562d426c7	2022-08-01 04:00:00	Small	2022-09-30 04:00:00	150	5000	Active	License4
@@ -120,7 +121,7 @@ f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	00	app
 2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	01	test 2	Open	2022-03-20 18:30:00	\N	powner@email.com	b84852d7-0f04-4e9a-855c-7b2f01f61591
 7564aab0-5331-4ab5-85f7-e37acbdfd90d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	02	test 3	Open	2022-10-04 18:30:00	\N	powner@email.com	a3475bf9-41d5-432a-ae2d-ccf7681385cf
 a42edf7f-9b38-472f-afa3-10a4632acca1	cebe6542-2032-4398-882e-ffb44ade169d	0022	Project 2	Open	2022-08-01 04:00:00	\N	\N	ebc71e49-4f63-44b2-9c90-7750d3ccca05
-be612704-c26e-48ea-ab9b-19312f03d644	96234b32-32d3-45a4-af26-4c912c0d6a06	0011	Project 1	Open	2022-07-03 04:00:00	\N	\N	d9cb5f93-c4d0-427e-8133-77905abd8487
+be612704-c26e-48ea-ab9b-19312f03d644	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	0011	Project 1	Open	2022-07-03 04:00:00	\N	\N	b84852d7-0f04-4e9a-855c-7b2f01f61592
 \.
 
 
@@ -132,7 +133,7 @@ COPY public.license_consumption (id, subaccount_id, project_id, consumption_date
 c323f5f8-cd49-4b0b-ac74-fe2113b658b8	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	2022-07-16 00:00:00	Configuration	d41126e1-53eb-473f-b011-9bd0ac44644a	2	2022-07-18 00:00:00	conf_eng@email.com
 0cba280f-06fa-47c2-9782-c16d8bf8ed05	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	7564aab0-5331-4ab5-85f7-e37acbdfd90d	2022-10-10 00:00:00	Configuration	1922a5fb-228c-4a90-b2d3-ec517d7a3f9a	3	2022-10-10 00:00:00	\N
 9285ca9e-04c3-49df-9d59-085322a13319	cebe6542-2032-4398-882e-ffb44ade169d	a42edf7f-9b38-472f-afa3-10a4632acca1	2022-07-03 00:00:00	Configuration	ef7a4bcd-fc3f-4f87-bf87-ae934799690b	2	2022-07-26 00:00:00	\N
-9c0cc4a5-a773-46f3-b73e-a09c55080b1f	96234b32-32d3-45a4-af26-4c912c0d6a06	be612704-c26e-48ea-ab9b-19312f03d644	2021-12-26 00:00:00	Configuration	ef7a4bcd-fc3f-4f87-bf87-ae934799690b	2	2022-07-26 00:00:00	\N
+9c0cc4a5-a773-46f3-b73e-a09c55080b1f	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	be612704-c26e-48ea-ab9b-19312f03d644	2021-12-26 00:00:00	Configuration	ef7a4bcd-fc3f-4f87-bf87-ae934799690b	2	2022-07-26 00:00:00	\N
 \.
 
 
@@ -163,7 +164,7 @@ fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	http://tekvizionTap.com	SETUP_INP
 b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	http://tekvizionTap.com	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981
 a079c3a9-66c7-424f-aa1b-fdc2565d615a	\N	\N	SETUP_INPROGRESS	false	b5b91753-4c2b-43f5-afa0-feb22cefa901
 b079c3a9-66c7-424f-aa1b-fdc2565d616a	\N	\N	SETUP_INPROGRESS	false	0e2038ec-2b9b-493b-b3f2-6702e60b5b90
-c079c3a9-66c7-424f-aa1b-fdc2565d617a	\N	\N	SETUP_INPROGRESS	false	2c8e386b-d1bd-48b3-b73a-12bfa5d00805
+c079c3a9-66c7-424f-aa1b-fdc2565d617a	az_tap_rg	http://tekvizionTap.com	SETUP_READY	true	2c8e386b-d1bd-48b3-b73a-12bfa5d00805
 \.
 
 COPY public.ctaas_test_suite (id, subaccount_id, total_executions, next_execution_ts, frequency, device_type, name) FROM stdin;
@@ -184,5 +185,5 @@ COPY public.note (id, subaccount_id, content, status, open_date, opened_by, clos
 f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	app development	Closed	2022-10-02 18:30:00	opener@email.com	2022-11-02 18:30:00	opener@email.com
 2bdaf2af-838f-4053-b3fa-ef22aaa10b0d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 2	Open	2022-10-20 18:30:00	opener@email.com	\N	\N
 7564aab0-5331-4ab5-85f7-e37acbdfd90d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 3	Open	2022-10-04 18:30:00	opener@email.com	\N	\N
-be612704-c26e-48ea-ab9b-19312f03d644	96234b32-32d3-45a4-af26-4c912c0d6a06	note 1	Open	2022-10-03 04:00:00	opener@email.com	\N	\N
+be612704-c26e-48ea-ab9b-19312f03d644	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	note 1	Open	2022-10-03 04:00:00	opener@email.com	\N	\N
 \.

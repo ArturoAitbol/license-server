@@ -202,9 +202,11 @@ public class Permissions {
             // CREATE
             CREATE_SUBACCOUNT_STAKEHOLDER,
             CREATE_NOTE,
+            CREATE_SUBACCOUNT_ADMIN_DEVICE,
             // DELETE
             DELETE_SUBACCOUNT_STAKEHOLDER,
             DELETE_NOTE,
+            DELETE_SUBACCOUNT_ADMIN_DEVICE,
             // READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,
@@ -226,6 +228,10 @@ public class Permissions {
     );
 
     public static final EnumSet<Resource> SubAccountStakeholderPermissions = EnumSet.of(
+            //CREATE
+            CREATE_SUBACCOUNT_ADMIN_DEVICE,
+            //DELETE
+            DELETE_SUBACCOUNT_ADMIN_DEVICE,
             // READ
             GET_ALL_CUSTOMERS,
             GET_ALL_SUBACCOUNTS,

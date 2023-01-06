@@ -280,7 +280,7 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         assertEquals(1, subaccounts.length());
 
         JSONObject subaccount = subaccounts.getJSONObject(0);
-        String expectedSubaccountId = "96234b32-32d3-45a4-af26-4c912c0d6a06";
+        String expectedSubaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
         assertEquals(expectedSubaccountId,subaccount.getString("id"));
     }
 
@@ -423,7 +423,7 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         assertEquals(1, subaccounts.length());
 
         JSONObject subaccount = subaccounts.getJSONObject(0);
-        String expectedSubaccountId = "96234b32-32d3-45a4-af26-4c912c0d6a06";
+        String expectedSubaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
         assertEquals(expectedSubaccountId,subaccount.getString("id"));
     }
 

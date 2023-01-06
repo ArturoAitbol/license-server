@@ -173,6 +173,18 @@ public class RBACVerifier {
                 false
         ));
 
+        verifiers.put(CREATE_SUBACCOUNT_ADMIN_DEVICE, new ExpectedPermissions(
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
+                true
+        ));
 
         verifiers.put(DELETE_ADMIN_EMAIL, new ExpectedPermissions(true,
                 false,
@@ -327,6 +339,19 @@ public class RBACVerifier {
                 true,
                 true,
                 false
+        ));
+
+        verifiers.put(DELETE_SUBACCOUNT_ADMIN_DEVICE, new ExpectedPermissions(
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
+                true
         ));
 
 
