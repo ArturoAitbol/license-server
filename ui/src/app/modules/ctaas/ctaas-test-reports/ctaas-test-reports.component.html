@@ -1,0 +1,53 @@
+<app-banner [stylesflag]="'test-reports'" *lcCheckAccessFor="'showBanner'"></app-banner>
+<div class="btn-container">
+    <div class="test-reports-heading">
+        <h2 id="main-title">Test Reports</h2>
+    </div>
+    <div class="row justify-content-end">
+        <div class="col-auto" id="customCol">   
+            <span class="fw-500" *lcCheckAccessFor="'showUserToggle'">Failed</span>
+            &nbsp;
+            <mat-slide-toggle *lcCheckAccessFor="'showUserToggle'" id="mat-toggle" [color]="'primary'" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
+            &nbsp;
+            <span class="fw-500" *lcCheckAccessFor="'showUserToggle'">Successfull</span>
+            &nbsp;
+        </div>
+        <div class="col-auto ms-auto">
+            <div [formGroup]="filterForm" class="row" id="form" >
+                <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                    <mat-label>Report Type Filter</mat-label>
+                    <mat-select formControlName="typeFilterControl">
+                        <mat-option>None</mat-option>
+                        <!-- <mat-option *ngFor="let type of reportType" [value]="type">
+                            {{type}}
+                        </mat-option> -->
+                    </mat-select>
+                    <button *ngIf="filterForm.get('typeFilterControl').value" matSuffix mat-icon-button
+                        aria-label="Clear" (click)="filterForm.get('typeFilterControl').setValue('')">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="table-section">
+    <div id="test-reports-table" class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
+        <app-data-table 
+        [tableData]="testReportsData" 
+        [tableColumns]="displayedColumns" 
+        [isFilterable]="false"
+        [isPageable]="false" 
+        [paginationSizes]="[5,10,20]" 
+        [isLoadingResults]="isLoadingResults" 
+        [isRequestCompleted]="isRequestCompleted"
+        [defaultPageSize]="5"
+        (sort)="sortData($event)"
+        (rowAction)="rowAction($event)"
+        [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"
+        [actionMenuList]="actionMenuOptions">
+        </app-data-table>
+    </div>
+</section>
+

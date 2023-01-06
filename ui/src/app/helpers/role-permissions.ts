@@ -26,7 +26,8 @@ export const permissions = {
             'stakeholders',
             'setup',
             'subscriptions-overview',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'addCustomer',
@@ -80,7 +81,11 @@ export const permissions = {
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
             ],
-            noteOptions: []
+            noteOptions: [],
+            testReportsOptions: [
+                'VIEW_REPORT',
+                'VIEW_CHARTS'
+            ]
         }
     },
     'tekvizion.SalesAdmin': {
@@ -138,7 +143,8 @@ export const permissions = {
             'test-suites',
             'stakeholders',
             'setup',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'addProject',
@@ -175,6 +181,10 @@ export const permissions = {
                 'DELETE_STAKEHOLDER'
             ],
             subscriptionsOverviewOptions: [],
+            testReportsOptions: [
+                'VIEW_REPORT',
+                'VIEW_CHARTS'
+            ]
         }
     },
     'distributor.FullAdmin': {
@@ -224,7 +234,8 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'view-profile',
@@ -256,6 +267,10 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
+                'VIEW_CHARTS'
             ]
         }
     },
@@ -272,7 +287,8 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'view-profile',
@@ -304,6 +320,10 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
+                'VIEW_CHARTS'
             ]
         }
     },
@@ -315,7 +335,8 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'showUserToggle',
@@ -331,6 +352,10 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
+                'VIEW_CHARTS'
             ]
         }
     }
