@@ -33,16 +33,3 @@ ul li a {
 .innerTable th,td {
   border: 1px solid black;
 } */
-.accordian-container .mat-expanded .mat-expansion-panel-header {
-  background: lightgray;
-}
-
-.inner-accor {
-  list-style-type: none !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  flex: 1 1 auto !important;
-  align-items: center !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}

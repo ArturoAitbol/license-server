@@ -65,7 +65,7 @@
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
                         <app-data-table class="table-container mat-elevation-z8" [tableData]="sampleJsonData.endpoints"
-                            [tableColumns]="endpointDisplayedColumns" [nestedKey] = "'endpoint-resources'"></app-data-table>
+                            [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
             </section>
@@ -84,10 +84,216 @@
     </section>
     <section class="table-section" *ngIf="type===CALL_RELIABILITY">
         <mat-card class="card" style="overflow: hidden;height: auto;">
-            <mat-card-content [style.max-height.px]="tableMaxHeight">
-                <app-data-table class="table-container mat-elevation-z8" [tableData]="sampleJsonData.callReliability"
+            <mat-card-content>
+                <!-- <app-data-table class="table-container mat-elevation-z8" [tableData]="sampleJsonData.callReliability"
                     [tableColumns]="featureFunctionalityDisplayedColumns" [nestedKey] = "'call-reliability'">
-                </app-data-table>
+                </app-data-table> -->
+                <div style="overflow: auto;" [style.height]="openFlag ? '60vh' : 'auto'">
+                    <ng-container>
+                        <mat-accordion>
+                            <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Test Case
+                                    </mat-panel-title>
+                                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Start Date
+                                    </mat-panel-title>
+                                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Status
+                                    </mat-panel-title>
+                                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Error Category
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                        <mat-accordion *ngFor="let key of callReliabilityDetails; let i = index"
+                            class="accordian-container">
+                            <mat-expansion-panel (closed) = "close(i)" hideToggle>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title style="width:25%">
+                                        {{key.testCaseName}}
+                                    </mat-panel-title>
+                                    <mat-panel-title style="width:25%">
+                                        {{key.startTime}}
+                                    </mat-panel-title>
+                                    <mat-panel-title style="width:25%">
+                                        {{key.status}}
+                                    </mat-panel-title>
+                                    <mat-panel-title style="width:25%">
+                                        {{key.errorCategory}}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <div style="padding: 1%;">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <table class="table table-hover">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row" style="width: 50%;"> Start Date </th>
+                                                        <td> {{key.nestedData.startTime}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row" style="width: 50%;"> End Date </th>
+                                                        <td> {{key.nestedData.endTime}} </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row" style="width: 50%;"> Status </th>
+                                                        <td>{{key.nestedData.status}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Error Category</th>
+                                                        <td>{{key.nestedData.errorCategory}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row" style="width: 50%;"> Reason </th>
+                                                        <td>{{key.nestedData.reason}}</td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-6">
+                                            <table class="table table-hover">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <mat-accordion>
+                                                                <mat-expansion-panel hideToggle
+                                                                    [expanded]="obj['key' + i] === 1"
+                                                                    (opened)="setStep(1, i)">
+                                                                    <mat-expansion-panel-header
+                                                                        style="background-color: white;">
+                                                                        <mat-panel-title>
+                                                                            <ul class="inner-accor">
+                                                                                <li> From </li>
+                                                                                <li> {{key.duts.from}} </li>
+                                                                            </ul>
+                                                                        </mat-panel-title>
+                                                                    </mat-expansion-panel-header>
+                                                                    <table class="table table-hover">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <th scope="row"> Received packet loss
+                                                                                </th>
+                                                                                <td> 0 </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Sent bitrate </th>
+                                                                                <td> 47.2 Kbps </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Received Jitter </th>
+                                                                                <td> 8.89 ms </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Round trip time </th>
+                                                                                <td>--</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Sent codec </th>
+                                                                                <td>SATIN</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Received packets </th>
+                                                                                <td>1249</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Received codec </th>
+                                                                                <td>SATIN</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Sent packets </th>
+                                                                                <td>1248</td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </mat-expansion-panel>
+                                                            </mat-accordion>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <mat-accordion>
+                                                                <mat-expansion-panel hideToggle
+                                                                    [expanded]="obj['key' + i] === 2"
+                                                                    (opened)="setStep(2, i)">
+                                                                    <mat-expansion-panel-header
+                                                                        style="background-color: white;">
+                                                                        <mat-panel-title>
+                                                                            <ul class="inner-accor">
+                                                                                <li> To </li>
+                                                                                <li> {{key.duts.to}} </li>
+                                                                            </ul>
+                                                                        </mat-panel-title>
+                                                                    </mat-expansion-panel-header>
+                                                                    <table class="table table-hover">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <th scope="row"> Received packet loss
+                                                                                </th>
+                                                                                <td> 0 </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Sent bitrate </th>
+                                                                                <td> 47.2 Kbps </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Received Jitter </th>
+                                                                                <td> 8.89 ms </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Round trip time </th>
+                                                                                <td>--</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Sent codec </th>
+                                                                                <td>SATIN</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Received packets </th>
+                                                                                <td>1249</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Received codec </th>
+                                                                                <td>SATIN</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th scope="row"> Sent packets </th>
+                                                                                <td>1248</td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </mat-expansion-panel>
+
+                                                            </mat-accordion>
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngFor="let data of key.duts.otherParties; let j = index">
+                                                        <td>
+                                                            <mat-accordion>
+                                                                <mat-expansion-panel hideToggle
+                                                                    [expanded]="obj['key' + i] === (3 + j)"
+                                                                    (opened)="setStep((3 + j), i)" hideToggle>
+                                                                    <mat-expansion-panel-header
+                                                                        style="background-color: white;">
+                                                                        <mat-panel-title>
+                                                                            <ul class="inner-accor">
+                                                                                <li> Other party </li>
+                                                                                <li> {{data}} </li>
+                                                                            </ul>
+                                                                        </mat-panel-title>
+                                                                    </mat-expansion-panel-header>
+                                                                </mat-expansion-panel>
+                                                            </mat-accordion>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </ng-container>
+                </div>
             </mat-card-content>
         </mat-card>
     </section>

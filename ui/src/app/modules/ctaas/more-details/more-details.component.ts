@@ -25,6 +25,9 @@ export class MoreDetailsComponent implements OnInit {
   isLoadingResults = true;
   sampleJsonData: any = {};
   canDisableDownloadBtn: boolean = false;
+  callReliabilityDetails: any = [];
+  openFlag:any = false;
+  obj:any = {};
   constructor(
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
@@ -66,12 +69,23 @@ export class MoreDetailsComponent implements OnInit {
           console.log('res', res)
           this.isLoadingResults = false;
           const { response: { report, reportType } } = res;
-          report.callReliability.nestedKey = 'callReliability';
-          report.endpoints.nestedKey = 'endpoints'
+          // report.callReliability.nestedKey = 'callReliability';
+          // report.endpoints.nestedKey = 'endpoints'
           if (report && reportType) {
             this.sampleJsonData = report;
             this.filename = reportType;
             this.hasDashboardDetails = true;
+            this.callReliabilityDetails = this.sampleJsonData.callReliability;
+            this.callReliabilityDetails.forEach(subdata => {
+              subdata.duts =
+                { "from": subdata.from, "to": subdata.to, "otherParties": subdata.otherParties }
+              subdata.nestedData =
+              {
+                "endTime": subdata.endTime, "startTime": subdata.startTime, "status": subdata.status,
+                "reason": subdata.errorReason, "errorCategory": subdata.errorCategory
+              }
+              subdata.closeKey = false;
+            })
           } else {
             this.hasDashboardDetails = false;
             this.sampleJsonData = {};
@@ -82,6 +96,19 @@ export class MoreDetailsComponent implements OnInit {
         });
     } catch (error) {
       console.error("Error while fetching dashboard report: " + error);
+    }
+  }
+
+  setStep(index: number, rowIndex) {
+    this.openFlag = true
+    this.obj['key' + rowIndex] = index;
+    // console.log(this.obj['key' + index])
+  }
+  close(index) {
+    this.callReliabilityDetails[index].closeKey = true;
+    const trueKey = this.callReliabilityDetails.every(e => e.closeKey);
+    if (trueKey) {
+      this.openFlag = false;
     }
   }
   /**
