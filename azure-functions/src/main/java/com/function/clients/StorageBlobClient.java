@@ -88,44 +88,62 @@ public class StorageBlobClient {
                 return null;
             }
             // Form the filter string to fetch only that particular customer-subaccount images from blob
-            final String filterImageString = timestamp.isEmpty() ? String.format("%s/%s-%s-Image", customerName, subaccountName, type) :
+            final String filterImageString = timestamp.isEmpty() ? String.format("%s/%s-%s-Image-", customerName, subaccountName, type) :
                     String.format("%s/%s-%s-Image %s.jpg", customerName, subaccountName, type, timestamp);
             Iterator<BlobItem> iterator = blobContainerClient.listBlobs().iterator();
             List<BlobItem> blobItemList = StreamSupport
                     .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
                     .filter(x -> x.getName().contains(filterImageString))
-                    .collect(Collectors.toList());
-
-            int blobItemListSize = blobItemList.size();
-            blobItemList = blobItemList.subList(Math.max(blobItemListSize - 2, 0), blobItemListSize);
-
-            Map<String, String> base64Image = new HashMap<>();
+                    .collect(Collectors.toList());            
+            int BLOB_LIST_SIZE = blobItemList.size();
+            int MAX_VALUE = Math.max(BLOB_LIST_SIZE - 1, 0);
+            context.getLogger().info("Max value: " + MAX_VALUE+" | Blob List size: " +BLOB_LIST_SIZE);
+            // sort the list by ascending order with file name 
+            Collections.sort(blobItemList,(blobItem1,blobItem2)-> blobItem1.getName().compareTo(blobItem2.getName()));          
+            blobItemList = blobItemList.subList(MAX_VALUE, BLOB_LIST_SIZE);                        
+            Map<String, String> blobMap = new HashMap<>();
             if (!timestamp.isEmpty())
-                base64Image.put("timestampId", timestamp);
+                blobMap.put("timestampId", timestamp);
 
             for (BlobItem blobItem : blobItemList) {
 
                 String blobItemName = blobItem.getName();
-
-                if (timestamp.isEmpty()) {
-                    String timestampID = getTimestampFromBlobName(blobItemName);
-                    if (timestampID != null) {
-                        base64Image.put("timestampId", timestampID);
-                        continue;
+                context.getLogger().info("File name: "+blobItemName);
+                if (timestamp.isEmpty()) {                    
+                    // split the string
+                    String[] splittedStr = blobItemName.replace(".jpg", "").split("-");
+                    String start_date = splittedStr[4];
+                    String end_date = splittedStr[5];
+                    if (start_date != null && end_date != null) {
+                        final String REQUIRED_DATE_TIME_FORMAT = "MM-dd-yyyy HH:mm:ss"; // required date-time format
+                        final String FILE_DATE_TIME_FORMAT = "yyMMddHHmmss"; // format in which we save the blob
+                        SimpleDateFormat requiredSDateFormat = new SimpleDateFormat(FILE_DATE_TIME_FORMAT);
+                        SimpleDateFormat sDateFormat = new SimpleDateFormat(REQUIRED_DATE_TIME_FORMAT);
+                        Date start_date_format = requiredSDateFormat.parse(start_date);
+                        String parsed_start_date = sDateFormat.format(start_date_format);
+                        Date end_date_format = requiredSDateFormat.parse(end_date);
+                        String parsed_end_date = sDateFormat.format(end_date_format);
+                        context.getLogger().info("Start date " + parsed_start_date + " | End date " + parsed_end_date);
+                        blobMap.put("startDate", parsed_start_date);
+                        blobMap.put("endDate", parsed_end_date);
                     }
+                    // String timestampID = getTimestampFromBlobName(blobItemName);                   
+                    // if (timestampID != null) {
+                    //     blobMap.put("timestampId", timestampID);
+                    //     continue;
+                    // }
                 }
-
                 BlobClient blobClient = blobContainerClient.getBlobClient(blobItemName);
                 OffsetDateTime lastModifiedDate = blobItem.getProperties().getLastModified();
-                base64Image.put("lastModifiedDate", getLastModifiedBlobDateStr(lastModifiedDate));
+                blobMap.put("lastModifiedDate", getLastModifiedBlobDateStr(lastModifiedDate));
                 if (blobClient != null) {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     blobClient.download(outputStream);
                     byte[] bytes = outputStream.toByteArray();
                     // Encode byte array to Base64 String
                     String ENCODING_TYPE = "data:image/jpg;base64,";
-                    base64Image.put("base64String", ENCODING_TYPE + Base64.getEncoder().encodeToString(bytes));
-                    return base64Image;
+                    blobMap.put("base64String", ENCODING_TYPE + Base64.getEncoder().encodeToString(bytes));
+                    return blobMap;
                 }
             }
         } catch (Exception e) {
@@ -168,7 +186,7 @@ public class StorageBlobClient {
             }
             // eg: Customer01/Customer01-Daily-CallingReliability-Detailed-Report
             final String filterFileString = String.format("%s/%s-%s-Detailed-Report", customerName, subAccountName, type);
-            context.getLogger().info("Search for File name "+filterFileString);
+            context.getLogger().info("Search for File name " + filterFileString);
             Iterator<BlobItem> iterator = blobContainerClient.listBlobs().iterator();
             List<BlobItem> blobItemList = StreamSupport
                     .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
