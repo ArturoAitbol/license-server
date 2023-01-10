@@ -58,8 +58,10 @@ export class CtaasTestReportsComponent implements OnInit {
   initColumns(): void {
     this.displayedColumns = [
       { name: 'Report Type', dataKey: 'reportType', position: 'left', isSortable: true },
-      { name: 'Time Stamp', dataKey: 'timeStamp', position: 'left', isSortable: true },
-      { name: 'Status', dataKey: 'status', position: 'left', isSortable: true },
+      { name: 'Start Time', dataKey: 'startTime', position: 'left', isSortable: true },
+      { name: 'End Time', dataKey: 'endTime', position: 'left', isSortable: true },
+      { name: 'Status', dataKey: 'status', position: 'left', isSortable: true }
+
     ];
   }
 
