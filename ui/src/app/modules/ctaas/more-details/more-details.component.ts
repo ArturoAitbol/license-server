@@ -72,11 +72,12 @@ export class MoreDetailsComponent implements OnInit {
       this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type, this.startDateStr, this.endDateStr)
         .subscribe((res: any) => {
           this.isLoadingResults = false;
-          const { response: { report, reportType } } = res;
-          // report.callReliability.nestedKey = 'callReliability';
-          // report.endpoints.nestedKey = 'endpoints'
+          const { response: { report, reportType } } = res;        
           if (report && reportType) {
             this.sampleJsonData = report;
+            const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
+            detailedResponseObj[this.type] = JSON.parse(JSON.stringify(report));
+            this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
             this.filename = reportType;
             this.hasDashboardDetails = true;
             this.callReliabilityDetails = this.sampleJsonData.callReliability;
@@ -185,12 +186,14 @@ export class MoreDetailsComponent implements OnInit {
     try {
       this.canDisableDownloadBtn = true;
       this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
-      this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(this.subaccountId, this.type).subscribe((res) => {
+      const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
+      const reportResponse = detailedResponseObj[this.type];
+      this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(this.subaccountId, this.type,reportResponse).subscribe((res) => {
         const { error } = res;
         if (!error) this.downloadExcelFile(res);
-
       }, (error) => {
         this.canDisableDownloadBtn = false;
+        console.error('Error with download report request: ' + error);
         this.snackBarService.openSnackBar('Error loading downloading report', 'Ok');
       })
     } catch (e) {

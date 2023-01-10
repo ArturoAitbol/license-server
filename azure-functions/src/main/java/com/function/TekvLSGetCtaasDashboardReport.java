@@ -14,8 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -171,16 +169,12 @@ public class TekvLSGetCtaasDashboardReport {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
             context.getLogger().info("Requesting TAP for detailed report. URL: " + tapURL);
+            // Make a http call to TAP and get the access token
             String accessToken = TAPClient.getAccessToken(tapURL, context);
-            SimpleDateFormat sDateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-            Date parsedStartDate = sDateFormat.parse(startDate);
-            Date parsedEndDate = sDateFormat.parse(endDate);
-            context.getLogger().info("Start Date: " + parsedStartDate + " | End Date: " + parsedEndDate);
-            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, reportType, parsedStartDate,
-                    parsedEndDate, context);
+            context.getLogger().info("Start Date: " + startDate + " | End Date: " + endDate);
+            // Make a http call to North Bound API to fetch detailed test report by reportType
+            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, reportType, startDate, endDate, context);
             context.getLogger().info("Response from TAP: " + response);
-            // we don't need this with new design implementation
-            // JSONObject reportJsonObject = StorageBlobClient.getInstance().fetchJsonFileFromBlob(context, customerName, subaccountName, reportType);
             if (response == null) {
                 json.put("error", "Error with fetching detailed test report from TAP");
                 context.getLogger().info("Error with fetching detailed test report from TAP");

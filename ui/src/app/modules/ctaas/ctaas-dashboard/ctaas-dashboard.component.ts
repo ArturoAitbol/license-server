@@ -129,6 +129,7 @@ export class CtaasDashboardComponent implements OnInit {
         // iterate through dashboard reports
         for (const key in ReportType) {
             const reportType: string = ReportType[key];
+            // if(key==='WEEKLY_FEATURE_FUNCTIONALITY')
             // push all the request to an array
             requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId, reportType));
         }

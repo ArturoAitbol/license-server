@@ -15,6 +15,7 @@ export class CtaasDashboardService {
 
 
   private currentReports: any;
+  private detailedReportObj: any = {};
 
   constructor(private httpClient: HttpClient) { }
 
@@ -28,6 +29,16 @@ export class CtaasDashboardService {
   getReports(): any {
     return (this.currentReports) ? this.currentReports : JSON.parse(localStorage.getItem(Constants.CURRENT_REPORTS));
   }
+  /**
+   * set detailed report response by type
+   * @param obj: any 
+   */
+  setDetailedReportObject(obj: any): void { this.detailedReportObj = obj; }
+  /**
+   * get detailed report response object
+   * @returns: any 
+   */
+  getDetailedReportyObject(): any { return this.detailedReportObj; }
 
   /**
    * fetch SpotLight Power BI reports
@@ -54,8 +65,8 @@ export class CtaasDashboardService {
     return this.httpClient.get(url);
   }
 
-  public downloadCtaasDashboardDetailedReport(subaccountId: string, reportType: string): Observable<any> {
+  public downloadCtaasDashboardDetailedReport(subaccountId: string, reportType: string, detailedResponseObj: any): Observable<any> {
     const url = this.DOWNLOAD_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
-    return this.httpClient.get(url, { responseType: 'blob' });
+    return this.httpClient.post(url, { detailedReport: detailedResponseObj }, { responseType: 'blob' });
   }
 }
