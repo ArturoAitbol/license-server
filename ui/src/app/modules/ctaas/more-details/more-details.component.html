@@ -64,8 +64,11 @@
             <section class="table-section">
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
-                        <app-data-table class="table-container mat-elevation-z8" [tableData]="sampleJsonData.endpoints"
-                            [tableColumns]="endpointDisplayedColumns"></app-data-table>
+                        <app-data-table class="table-container mat-elevation-z8" 
+                        [tableData]="sampleJsonData.endpoints"
+                        [isLoadingResults]="isLoadingResults"
+                        [isRequestCompleted]="isRequestCompleted"
+                        [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
             </section>
@@ -77,6 +80,8 @@
             <mat-card-content [style.max-height.px]="tableMaxHeight">
                 <app-data-table class="table-container mat-elevation-z8"
                     [tableData]="sampleJsonData.featureFunctionality"
+                    [isLoadingResults]="isLoadingResults"
+                    [isRequestCompleted]="isRequestCompleted"
                     [tableColumns]="featureFunctionalityDisplayedColumns">
                 </app-data-table>
             </mat-card-content>
@@ -85,7 +90,10 @@
     <section class="table-section" *ngIf="type===CALL_RELIABILITY">
         <mat-card class="card" style="overflow: hidden;height: auto;">
             <mat-card-content>
-                <!-- <app-data-table class="table-container mat-elevation-z8" [tableData]="sampleJsonData.callReliability"
+                <!-- <app-data-table class="table-container mat-elevation-z8"
+                    [tableData]="sampleJsonData.callReliability"
+                    [isLoadingResults]="isLoadingResults"
+                    [isRequestCompleted]="isRequestCompleted"
                     [tableColumns]="featureFunctionalityDisplayedColumns" [nestedKey] = "'call-reliability'">
                 </app-data-table> -->
                 <div style="overflow: auto;" [style.height]="openFlag ? '60vh' : 'auto'">
