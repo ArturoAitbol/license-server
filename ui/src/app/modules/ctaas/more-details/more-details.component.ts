@@ -81,7 +81,20 @@ export class MoreDetailsComponent implements OnInit {
             this.hasDashboardDetails = true;
             this.callReliabilityDetails = this.sampleJsonData.callReliability;
             this.callReliabilityDetails.forEach(subdata => {
-              subdata.duts =
+              subdata.from = {
+                "DID": "9725989023",
+                "mediaStats": [
+                  {
+                    "avgAudioDegradation": "xxxxx",
+                    "streamDirection": "xxxxx",
+                    "audioCodec": "xxxxx",
+                    "avgJitter": "xxxxx",
+                    "connectionType": "Wired",
+                    "networkTransportProtocol": "Tcp"
+                  }
+                ],
+              },
+                subdata.duts =
                 { "from": subdata.from, "to": subdata.to, "otherParties": subdata.otherParties }
               subdata.nestedData =
               {
@@ -106,7 +119,6 @@ export class MoreDetailsComponent implements OnInit {
   setStep(index: number, rowIndex) {
     this.openFlag = true
     this.obj['key' + rowIndex] = index;
-    // console.log(this.obj['key' + index])
   }
   close(index) {
     this.callReliabilityDetails[index].closeKey = true;
