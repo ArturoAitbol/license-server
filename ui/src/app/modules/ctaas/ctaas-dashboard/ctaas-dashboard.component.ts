@@ -137,9 +137,9 @@ export class CtaasDashboardComponent implements OnInit {
             this.isLoadingResults = false;
             if (res) {
                 // get all response without any error messages
-                const result: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string }[] = [...res]
+                const result: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string, startDateStr: string, endDateStr: string }[] = [...res]
                     .filter((e: any) => !e.error)
-                    .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string } }) => e.response);
+                    .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string, startDateStr: string, endDateStr: string } }) => e.response);
                 if ((result.length > 0)) {
                     this.hasDashboardDetails = true;
                     const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
@@ -149,7 +149,7 @@ export class CtaasDashboardComponent implements OnInit {
                         reportsIdentifiers.push(reportIdentifier);
 
                         if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                            resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
+                            resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType), startDate: e.startDateStr, endDate: e.endDateStr });
                             resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                         } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
                             resultant.weekly.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
@@ -216,9 +216,9 @@ export class CtaasDashboardComponent implements OnInit {
     onClickMoreDetails(index: string): void {
         const obj = this.resultantImagesList[0];
         const { imagesList } = obj;
-        const { reportType } = imagesList[index];
+        const { reportType, startDate, endDate } = imagesList[index];
         const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-        const url = environment.BASE_URL + '/#/spotlight/details?type=' + type;
+        const url = `${environment.BASE_URL}/#/spotlight/details?type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
         window.close();
     }

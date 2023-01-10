@@ -17,6 +17,8 @@ export class MoreDetailsComponent implements OnInit {
   filename: string = '';
   tableMaxHeight: number;
   type: string = '';
+  startDateStr: string = '';
+  endDateStr: string = '';
   loggedInUserRoles: string[] = [];
   subaccountId: string = '';
   readonly FEATURE_FUNCTIONALITY: string = ReportType.DAILY_FEATURE_FUNCTIONALITY;
@@ -26,8 +28,8 @@ export class MoreDetailsComponent implements OnInit {
   sampleJsonData: any = {};
   canDisableDownloadBtn: boolean = false;
   callReliabilityDetails: any = [];
-  openFlag:any = false;
-  obj:any = {};
+  openFlag: any = false;
+  obj: any = {};
   constructor(
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
@@ -50,8 +52,11 @@ export class MoreDetailsComponent implements OnInit {
     const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     const { id, subaccountId } = currentSubaccountDetails;
     this.subaccountId = subaccountId ? subaccountId : id;
-    this.route.queryParams.subscribe(params => {
-      this.type = params['type'];
+    this.route.queryParams.subscribe((params: any) => {
+      const { type, start, end } = params;
+      this.type = type;
+      this.startDateStr = start;
+      this.endDateStr = end;
     });
     this.initColumns();
     this.calculateTableHeight();
@@ -64,9 +69,8 @@ export class MoreDetailsComponent implements OnInit {
     try {
       this.hasDashboardDetails = false;
       this.isLoadingResults = true;
-      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type)
+      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type, this.startDateStr, this.endDateStr)
         .subscribe((res: any) => {
-          console.log('res', res)
           this.isLoadingResults = false;
           const { response: { report, reportType } } = res;
           // report.callReliability.nestedKey = 'callReliability';
