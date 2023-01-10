@@ -85,26 +85,6 @@ export class MoreDetailsComponent implements OnInit {
             this.hasDashboardDetails = true;
             this.callReliabilityDetails = this.sampleJsonData.callReliability;
             this.callReliabilityDetails.forEach(subdata => {
-              subdata.from = {
-                "DID": "9725989023",
-                "mediaStats": [
-                  {
-                    "avgAudioDegradation": "xxxxx",
-                    "streamDirection": "xxxxx",
-                    "audioCodec": "xxxxx",
-                    "avgJitter": "xxxxx",
-                    "connectionType": "Wired",
-                    "networkTransportProtocol": "Tcp"
-                  }
-                ],
-              },
-                subdata.duts =
-                { "from": subdata.from, "to": subdata.to, "otherParties": subdata.otherParties }
-              subdata.nestedData =
-              {
-                "endTime": subdata.endTime, "startTime": subdata.startTime, "status": subdata.status,
-                "reason": subdata.errorReason, "errorCategory": subdata.errorCategory
-              }
               subdata.closeKey = false;
             })
           } else {
