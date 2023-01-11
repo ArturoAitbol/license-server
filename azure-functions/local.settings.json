@@ -20,7 +20,7 @@
     "SMTP_PWD": "G9um3XGr",
     "SMTP_HOST": "exchange.tekvizion.com",
     "NOTIFICATIONS_ENDPOINT": "https://fcm.googleapis.com/fcm/send",
-    "NOTIFICATIONS_AUTH_KEY": "key=AAAAy5_b-do:APA91bE88orbSvggkg2yI_cY-97Q84OuS7YwKachYhaFtJaH99cQD3sFwUzCFLuRa9ywoUth_TWU7jv66n5HDu4c9uVBz7CoTIj4JlmAYcL_4f5Ir26dUewfrLry5safWHvVYImc5FeY",
+    "NOTIFICATIONS_AUTH_KEY": "key=AAAAZQriFSg:APA91bEaRPdifNydaU1p88GVMXOsempGA7DeNl27zpt9941BJnyeXWwz8OYpKKd7nbuLXred8q5R5P0DmGsPA9Q3MXo8Lxk_RhpzaM3sUsZsB1tNeSG9D70PIl_eP5ilSanm-N4cU-Rs",
     "TAP_USERNAME": "administrator@tekvizion.com",
     "TAP_PASSWORD": "admin123"
   },
