@@ -48,6 +48,7 @@ public class Permissions {
             GET_ALL_CTAAS_TEST_SUITES,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_CTAAS_DASHBOARD,
+            GET_ALL_REPORTS,
             GET_ALL_FEATURE_TOGGLES,
             GET_SUBSCRIPTIONS_OVERVIEW,
             GET_ALL_NOTES,
@@ -75,6 +76,7 @@ public class Permissions {
             GET_ALL_BUNDLES,
             GET_ALL_CTAAS_SETUPS,
             GET_CTAAS_DASHBOARD,
+            GET_ALL_REPORTS,
             GET_SUBSCRIPTIONS_OVERVIEW
     );
 
@@ -105,6 +107,7 @@ public class Permissions {
             GET_ALL_CTAAS_TEST_SUITES,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_CTAAS_DASHBOARD,
+            GET_ALL_REPORTS,
             // UPDATE
             MODIFY_PROJECT,
             MODIFY_LICENSE_USAGE,
@@ -192,6 +195,7 @@ public class Permissions {
             GET_ALL_CTAAS_SETUPS,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_CTAAS_DASHBOARD,
+            GET_ALL_REPORTS,
             GET_ALL_NOTES,
             // MODIFY
             MODIFY_CTAAS_ONBOARDING,
@@ -220,6 +224,7 @@ public class Permissions {
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             GET_AUTH_USER_PROFILE,
             GET_CTAAS_DASHBOARD,
+            GET_ALL_REPORTS,
             GET_ALL_NOTES,
             // MODIFY
             MODIFY_CTAAS_ONBOARDING,
@@ -238,6 +243,7 @@ public class Permissions {
             GET_ALL_CTAAS_SETUPS,
             GET_AUTH_USER_PROFILE,
             GET_CTAAS_DASHBOARD,
+            GET_ALL_REPORTS,
             GET_ALL_NOTES,
             GET_ALL_SUBACCOUNT_STAKEHOLDER,
             // MODIFY
