@@ -18,9 +18,9 @@
                     <mat-label>Report Type Filter</mat-label>
                     <mat-select formControlName="typeFilterControl">
                         <mat-option>None</mat-option>
-                        <!-- <mat-option *ngFor="let type of reportType" [value]="type">
+                        <mat-option *ngFor="let type of reportsTypes" [value]="type">
                             {{type}}
-                        </mat-option> -->
+                        </mat-option>
                     </mat-select>
                     <button *ngIf="filterForm.get('typeFilterControl').value" matSuffix mat-icon-button
                         aria-label="Clear" (click)="filterForm.get('typeFilterControl').setValue('')">
