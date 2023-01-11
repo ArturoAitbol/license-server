@@ -109,10 +109,19 @@ mat-card {
   margin: 0 !important;
   padding: 0 !important;
 }
+
 .summary {
   padding: 12px 0px;
   overflow: hidden;
 }
+
 .summary-card-content {
   padding: 1%;
+}
+
+.testcasename {
+  width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

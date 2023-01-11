@@ -71,7 +71,7 @@ export class MoreDetailsComponent implements OnInit {
     ],
     "featureFunctionality": [
       {
-        "errorCategory": "",
+        "errorCategory": null,
         "errorReason": "Media actions not enabled in the property file",
         "startTime": "01-10-23 11:20:37",
         "from": {
