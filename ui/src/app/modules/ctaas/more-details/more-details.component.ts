@@ -39,369 +39,369 @@ export class MoreDetailsComponent implements OnInit {
   otherPartiesMediaStats: any = {};
   detailedTestFeatureandCallReliability: any = [];
   mediaStatsDisplayedColumns: any = [];
-  fakeResponse: any = {
-    "summary": {
-      "total": 4,
-      "startTime": "01-09-23 18:30:00 IST",
-      "passed": 2,
-      "failed": 2,
-      "endTime": "01-09-23 18:30:00 IST"
-    },
-    "endpoints": [
-      {
-        "zipcode": "700085",
-        "country": "America",
-        "city": "Plano",
-        "vendor": "Microsoft",
-        "model": "MS-TEAMS",
-        "state": "Plano",
-        "firmwareVersion": "1.5.00.33362",
-        "did": "9725989023"
-      },
-      {
-        "zipcode": "700089",
-        "country": "India",
-        "city": "Hyderabad",
-        "vendor": "Microsoft",
-        "model": "MS-TEAMS",
-        "state": "Telangana",
-        "firmwareVersion": "1.5.00.33362",
-        "did": "9725989024"
-      }
-    ],
-    "featureFunctionality": [
-      {
-        "errorCategory": null,
-        "errorReason": "Media actions not enabled in the property file",
-        "startTime": "01-10-23 11:20:37",
-        "from": {
-          "mediaStats": [
-            {
-              "timestamp": "2023-01-10 17:25:06.688",
-              "data": {
-                "sent packets": "xxxxx",
-                "received codec": "xxxxx",
-                "Sent bitrate": "Tcp",
-                "received packet loss": "Wired",
-                "received Jitter": "xxxxx",
-                "sent codec": "xxxxx",
-                "round trip time": "xxxxx",
-                "received packets": "xxxxx"
-              }
-            },
-            {
-              "timestamp": "2023-01-10 17:27:06.688",
-              "data": {
-                "sent packets": "xxxxx",
-                "received codec": "xxxxx",
-                "Sent bitrate": "Tcp",
-                "received packet loss": "Wired2",
-                "received Jitter": "xxxxx",
-                "sent codec": "xxxxx",
-                "round trip time": "xxxxx",
-                "received packets": "xxxxx"
-              }
-            }
-          ],
-          "DID": "9725989023"
-        },
-        "testCaseName": "TC003- Media injection M1 call M2 _ validate media parameter in M1 M2",
-        "endTime": "01-10-23 11:21:55",
-        "to": {
-          "mediaStats": [
-            {
-              "timestamp": "2023-01-10 17:27:06.688",
-              "data": {
-                "sent packets": "xxxxx",
-                "received codec": "xxxxx",
-                "Sent bitrate": "Tcp",
-                "received packet loss": "Wired",
-                "received Jitter": "xxxxx",
-                "sent codec": "xxxxx",
-                "round trip time": "xxxxx",
-                "received packets": "xxxxx"
-              }
-            },
-            {
-              "timestamp": "2023-01-10 17:27:06.688",
-              "data": {
-                "sent packets": "xxxxx",
-                "received codec": "xxxxx",
-                "Sent bitrate": "Tcp",
-                "received packet loss": "Wired",
-                "received Jitter": "xxxxx",
-                "sent codec": "xxxxx",
-                "round trip time": "xxxxx",
-                "received packets": "xxxxx"
-              }
-            }
-          ],
-          "DID": "9725989024"
-        },
-        "otherParties": [
-          {
-            "mediaStats": [
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              },
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              }
-            ],
-            "DID": "9725989026"
-          },
-          {
-            "mediaStats": [
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              },
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              }
-            ],
-            "DID": "9725989027"
-          },
-          {
-            "mediaStats": [
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              },
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              }
-            ],
-            "DID": "9725989028"
-          }
-        ],
-        "status": "FAILED"
-      },
-      {
-        "errorCategory": null,
-        "errorReason": null,
-        "startTime": "01-10-23 11:54:07",
-        "from": {
-          "mediaStats": [
-            {
-              "timestamp": "2023-01-10 17:27:06.688",
-              "data": {
-                "sent packets": "xxxxx",
-                "received codec": "xxxxx",
-                "Sent bitrate": "Tcp",
-                "received packet loss": "Wired",
-                "received Jitter": "xxxxx",
-                "sent codec": "xxxxx",
-                "round trip time": "xxxxx",
-                "received packets": "xxxxx"
-              }
-            },
-            {
-              "timestamp": "2023-01-10 17:27:06.688",
-              "data": {
-                "sent packets": "xxxxx",
-                "received codec": "xxxxx",
-                "Sent bitrate": "Tcp",
-                "received packet loss": "Wired",
-                "received Jitter": "xxxxx",
-                "sent codec": "xxxxx",
-                "round trip time": "xxxxx",
-                "received packets": "xxxxx"
-              }
-            }
-          ],
-          "DID": "9725989023"
-        },
-        "testCaseName": "TC003- Media injection M1 call M2 _ validate media parameter in M1 M2",
-        "endTime": "01-10-23 11:56:08",
-        "to": {
-          "mediaStats": [
-            {
-              "timestamp": "2023-01-10 17:27:06.688",
-              "data": {
-                "sent packets": "xxxxx",
-                "received codec": "xxxxx",
-                "Sent bitrate": "Tcp",
-                "received packet loss": "Wired",
-                "received Jitter": "xxxxx",
-                "sent codec": "xxxxx",
-                "round trip time": "xxxxx",
-                "received packets": "xxxxx"
-              }
-            },
-            {
-              "timestamp": "2023-01-10 17:27:06.688",
-              "data": {
-                "sent packets": "xxxxx",
-                "received codec": "xxxxx",
-                "Sent bitrate": "Tcp",
-                "received packet loss": "Wired",
-                "received Jitter": "xxxxx",
-                "sent codec": "xxxxx",
-                "round trip time": "xxxxx",
-                "received packets": "xxxxx"
-              }
-            }
-          ],
-          "DID": "9725989024"
-        },
-        "otherParties": [
-          {
-            "mediaStats": [
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              },
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              }
-            ],
-            "DID": "9725989026"
-          },
-          {
-            "mediaStats": [
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              },
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              }
-            ],
-            "DID": "9725989027"
-          },
-          {
-            "mediaStats": [
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              },
-              {
-                "timestamp": "2023-01-10 17:27:06.688",
-                "data": {
-                  "sent packets": "xxxxx",
-                  "received codec": "xxxxx",
-                  "Sent bitrate": "Tcp",
-                  "received packet loss": "Wired",
-                  "received Jitter": "xxxxx",
-                  "sent codec": "xxxxx",
-                  "round trip time": "xxxxx",
-                  "received packets": "xxxxx"
-                }
-              }
-            ],
-            "DID": "9725989028"
-          }
-        ],
-        "status": "PASSED"
-      }
-    ]
-  };
+  // fakeResponse: any = {
+  //   "summary": {
+  //     "total": 4,
+  //     "startTime": "01-09-23 18:30:00 IST",
+  //     "passed": 2,
+  //     "failed": 2,
+  //     "endTime": "01-09-23 18:30:00 IST"
+  //   },
+  //   "endpoints": [
+  //     {
+  //       "zipcode": "700085",
+  //       "country": "America",
+  //       "city": "Plano",
+  //       "vendor": "Microsoft",
+  //       "model": "MS-TEAMS",
+  //       "state": "Plano",
+  //       "firmwareVersion": "1.5.00.33362",
+  //       "did": "9725989023"
+  //     },
+  //     {
+  //       "zipcode": "700089",
+  //       "country": "India",
+  //       "city": "Hyderabad",
+  //       "vendor": "Microsoft",
+  //       "model": "MS-TEAMS",
+  //       "state": "Telangana",
+  //       "firmwareVersion": "1.5.00.33362",
+  //       "did": "9725989024"
+  //     }
+  //   ],
+  //   "featureFunctionality": [
+  //     {
+  //       "errorCategory": null,
+  //       "errorReason": "Media actions not enabled in the property file",
+  //       "startTime": "01-10-23 11:20:37",
+  //       "from": {
+  //         "mediaStats": [
+  //           {
+  //             "timestamp": "2023-01-10 17:25:06.688",
+  //             "data": {
+  //               "sent packets": "xxxxx",
+  //               "received codec": "xxxxx",
+  //               "Sent bitrate": "Tcp",
+  //               "received packet loss": "Wired",
+  //               "received Jitter": "xxxxx",
+  //               "sent codec": "xxxxx",
+  //               "round trip time": "xxxxx",
+  //               "received packets": "xxxxx"
+  //             }
+  //           },
+  //           {
+  //             "timestamp": "2023-01-10 17:27:06.688",
+  //             "data": {
+  //               "sent packets": "xxxxx",
+  //               "received codec": "xxxxx",
+  //               "Sent bitrate": "Tcp",
+  //               "received packet loss": "Wired2",
+  //               "received Jitter": "xxxxx",
+  //               "sent codec": "xxxxx",
+  //               "round trip time": "xxxxx",
+  //               "received packets": "xxxxx"
+  //             }
+  //           }
+  //         ],
+  //         "DID": "9725989023"
+  //       },
+  //       "testCaseName": "TC003- Media injection M1 call M2 _ validate media parameter in M1 M2",
+  //       "endTime": "01-10-23 11:21:55",
+  //       "to": {
+  //         "mediaStats": [
+  //           {
+  //             "timestamp": "2023-01-10 17:27:06.688",
+  //             "data": {
+  //               "sent packets": "xxxxx",
+  //               "received codec": "xxxxx",
+  //               "Sent bitrate": "Tcp",
+  //               "received packet loss": "Wired",
+  //               "received Jitter": "xxxxx",
+  //               "sent codec": "xxxxx",
+  //               "round trip time": "xxxxx",
+  //               "received packets": "xxxxx"
+  //             }
+  //           },
+  //           {
+  //             "timestamp": "2023-01-10 17:27:06.688",
+  //             "data": {
+  //               "sent packets": "xxxxx",
+  //               "received codec": "xxxxx",
+  //               "Sent bitrate": "Tcp",
+  //               "received packet loss": "Wired",
+  //               "received Jitter": "xxxxx",
+  //               "sent codec": "xxxxx",
+  //               "round trip time": "xxxxx",
+  //               "received packets": "xxxxx"
+  //             }
+  //           }
+  //         ],
+  //         "DID": "9725989024"
+  //       },
+  //       "otherParties": [
+  //         {
+  //           "mediaStats": [
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             },
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             }
+  //           ],
+  //           "DID": "9725989026"
+  //         },
+  //         {
+  //           "mediaStats": [
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             },
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             }
+  //           ],
+  //           "DID": "9725989027"
+  //         },
+  //         {
+  //           "mediaStats": [
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             },
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             }
+  //           ],
+  //           "DID": "9725989028"
+  //         }
+  //       ],
+  //       "status": "FAILED"
+  //     },
+  //     {
+  //       "errorCategory": null,
+  //       "errorReason": null,
+  //       "startTime": "01-10-23 11:54:07",
+  //       "from": {
+  //         "mediaStats": [
+  //           {
+  //             "timestamp": "2023-01-10 17:27:06.688",
+  //             "data": {
+  //               "sent packets": "xxxxx",
+  //               "received codec": "xxxxx",
+  //               "Sent bitrate": "Tcp",
+  //               "received packet loss": "Wired",
+  //               "received Jitter": "xxxxx",
+  //               "sent codec": "xxxxx",
+  //               "round trip time": "xxxxx",
+  //               "received packets": "xxxxx"
+  //             }
+  //           },
+  //           {
+  //             "timestamp": "2023-01-10 17:27:06.688",
+  //             "data": {
+  //               "sent packets": "xxxxx",
+  //               "received codec": "xxxxx",
+  //               "Sent bitrate": "Tcp",
+  //               "received packet loss": "Wired",
+  //               "received Jitter": "xxxxx",
+  //               "sent codec": "xxxxx",
+  //               "round trip time": "xxxxx",
+  //               "received packets": "xxxxx"
+  //             }
+  //           }
+  //         ],
+  //         "DID": "9725989023"
+  //       },
+  //       "testCaseName": "TC003- Media injection M1 call M2 _ validate media parameter in M1 M2",
+  //       "endTime": "01-10-23 11:56:08",
+  //       "to": {
+  //         "mediaStats": [
+  //           {
+  //             "timestamp": "2023-01-10 17:27:06.688",
+  //             "data": {
+  //               "sent packets": "xxxxx",
+  //               "received codec": "xxxxx",
+  //               "Sent bitrate": "Tcp",
+  //               "received packet loss": "Wired",
+  //               "received Jitter": "xxxxx",
+  //               "sent codec": "xxxxx",
+  //               "round trip time": "xxxxx",
+  //               "received packets": "xxxxx"
+  //             }
+  //           },
+  //           {
+  //             "timestamp": "2023-01-10 17:27:06.688",
+  //             "data": {
+  //               "sent packets": "xxxxx",
+  //               "received codec": "xxxxx",
+  //               "Sent bitrate": "Tcp",
+  //               "received packet loss": "Wired",
+  //               "received Jitter": "xxxxx",
+  //               "sent codec": "xxxxx",
+  //               "round trip time": "xxxxx",
+  //               "received packets": "xxxxx"
+  //             }
+  //           }
+  //         ],
+  //         "DID": "9725989024"
+  //       },
+  //       "otherParties": [
+  //         {
+  //           "mediaStats": [
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             },
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             }
+  //           ],
+  //           "DID": "9725989026"
+  //         },
+  //         {
+  //           "mediaStats": [
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             },
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             }
+  //           ],
+  //           "DID": "9725989027"
+  //         },
+  //         {
+  //           "mediaStats": [
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             },
+  //             {
+  //               "timestamp": "2023-01-10 17:27:06.688",
+  //               "data": {
+  //                 "sent packets": "xxxxx",
+  //                 "received codec": "xxxxx",
+  //                 "Sent bitrate": "Tcp",
+  //                 "received packet loss": "Wired",
+  //                 "received Jitter": "xxxxx",
+  //                 "sent codec": "xxxxx",
+  //                 "round trip time": "xxxxx",
+  //                 "received packets": "xxxxx"
+  //               }
+  //             }
+  //           ],
+  //           "DID": "9725989028"
+  //         }
+  //       ],
+  //       "status": "PASSED"
+  //     }
+  //   ]
+  // };
   summaryDisplayedColumns: any = [];
   fromMediaStats: any;
   toMediaStats: any;
@@ -453,17 +453,14 @@ export class MoreDetailsComponent implements OnInit {
           this.isLoadingResults = false;
           const { response: { report, reportType } } = res;
           if (report && reportType) {
-            // this.reportResponse = report;
-            // Need to remove this statement, when we create PR
-            this.reportResponse = this.fakeResponse;
-            console.log('sample json ', this.reportResponse);
+            this.reportResponse = report;
             const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
             detailedResponseObj[this.type] = JSON.parse(JSON.stringify(report));
             this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
             this.filename = reportType;
             this.hasDashboardDetails = true;
-            const { summary, callReliability, featureFunctionality, endpoints } = this.reportResponse;
-            this.detailedTestReport = (callReliability && callReliability.length > 0) ? callReliability : featureFunctionality;
+            const { summary, endpoints, results, type } = this.reportResponse;
+            this.detailedTestReport = (results && results.length > 0) ? results : [];
             console.log('this.detailedTestReport ', this.detailedTestReport);
             this.detailedTestReport.forEach((obj: any) => {
               obj.closeKey = false;

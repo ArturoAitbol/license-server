@@ -174,11 +174,11 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info("Start Date: " + startDate + " | End Date: " + endDate);
             // Make a http call to North Bound API to fetch detailed test report by reportType
             JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, reportType, startDate, endDate, context);
-            context.getLogger().info("Response from TAP: " + response);
             if (response == null) {
-                json.put("error", "Error with fetching detailed test report from TAP");
-                context.getLogger().info("Error with fetching detailed test report from TAP");
+                json.put("error", "Error with fetching detailed test report from Automation Platform");
+                context.getLogger().info("Error with fetching detailed test report from Automation Platform");
             } else {
+                context.getLogger().info("Received detailed test report response from Automation Platform");
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("reportType", reportType);
                 jsonObject.put("report", response);

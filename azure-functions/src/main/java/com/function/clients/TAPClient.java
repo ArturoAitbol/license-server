@@ -17,7 +17,7 @@ public class TAPClient {
      * @throws Exception
      */
     static public String getAccessToken(String tapURL, ExecutionContext context) throws Exception {
-        String url = tapURL + "/api/login";
+        String url = tapURL + "/api/login"; 
         JSONObject body = new JSONObject();
         body.put("username", System.getenv("TAP_USERNAME"));
         body.put("password", System.getenv("TAP_PASSWORD"));
@@ -25,7 +25,6 @@ public class TAPClient {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
         JSONObject response = HttpClient.post(url, bodyAsString, headers);
-        context.getLogger().info("JSON response: " + response);
         if (response.has("error") || (response.has("success") && !response.getBoolean("success"))) {
             context.getLogger().severe("Request params: " + bodyAsString);
             context.getLogger().severe("Error response: " + response);
@@ -37,6 +36,7 @@ public class TAPClient {
             context.getLogger().severe("Error response: " + response);
             throw new ADException("Error retrieving token from Automation Platform");
         }
+        context.getLogger().info("Received Bearer token from Automation Platform");
         return responseObj.get("accessToken").toString();
     }
 
@@ -52,18 +52,20 @@ public class TAPClient {
      * @return
      * @throws Exception
      */
-    static public JSONObject getDetailedReport(final String tapURL, String token, String type, String startDate, String endDate, ExecutionContext context) throws Exception {
-//        String url = tapURL + "/v1/spotlight/" + type + "/report?startDate=" + startDate + "&endDate=" + endDate;
-        String url = String.format("%s/v1/spotlight/%s/report?startDate=%s&endDate=%s", tapURL, type, startDate, endDate);
+    static public JSONObject getDetailedReport(final String tapURL, String token, String type, String startDate,
+            String endDate, ExecutionContext context) throws Exception {
+        String url = String.format("%s/v1/spotlight/%s/report?startDate=%s&endDate=%s", tapURL, type, startDate,
+                endDate);
         context.getLogger().info("url: " + url);
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);
         JSONObject response = HttpClient.get(url, headers);
-        context.getLogger().info("TAP response " + response);
         if (response != null && (response.has("error"))) {
-            context.getLogger().severe("Error response: " + response);
+            context.getLogger()
+                    .severe("Error while retrieving detailed test report from Automation Platform: " + response);
             throw new ADException("Error retrieving " + type + " detailed report from Automation Platform");
         }
+        context.getLogger().info("Received detailed test report response from Automation Platform");
         return response;
     }
 

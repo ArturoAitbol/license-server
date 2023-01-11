@@ -49,6 +49,11 @@ public class HttpClient {
         while ((responseLine = in.readLine()) != null) {
             response.append(responseLine.trim());
         }
+        if (response == null || response.toString().isEmpty()) {
+            JSONObject jObject = new JSONObject();
+            jObject.put("error", "HTTP client request failed");
+            return jObject;
+        }
         return new JSONObject(response.toString());
     }
     

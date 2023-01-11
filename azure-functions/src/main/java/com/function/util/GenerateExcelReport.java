@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GenerateExcelReport {
     private static final GenerateExcelReport instance = new GenerateExcelReport();
@@ -75,8 +77,8 @@ public class GenerateExcelReport {
         int count = 0;
         XSSFSheet summarySheet = workbook.createSheet("Summary");
         summarySheet.setDefaultColumnWidth(16);
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A1:D1"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A2:D2"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A1:E1"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A2:E2"));
 
         XSSFCellStyle titleStyle = this.getStyle(workbook, true);
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -93,12 +95,12 @@ public class GenerateExcelReport {
         row.setHeightInPoints((float) 20.0);
         addCell(row, cell, titleStyle, count++, "Summary of Test Execution");
 
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B3:D3"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B4:D4"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B5:D5"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B6:D6"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B7:D7"));
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B8:D8"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B3:E3"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B4:E4"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B5:E5"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B6:E6"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B7:E7"));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("B8:E8"));
 
         XSSFCellStyle redLabel = this.getRedHeaderStyle(workbook);
 
@@ -109,11 +111,11 @@ public class GenerateExcelReport {
         blackFontHeader.setBold(true);
         blackLabel.setFont(blackFontHeader);
         JSONObject summaryResponse = (JSONObject) jsonObject.get("summary");
-        final String total = summaryResponse.get("total") == null ? "" : summaryResponse.get("total").toString();
-        final String passed = summaryResponse.get("passed") == null ? "" : summaryResponse.get("passed").toString();
-        final String failed = summaryResponse.get("failed") == null ? "" : summaryResponse.get("failed").toString();
-        final String startTime = summaryResponse.get("startTime") == null ? "" : summaryResponse.get("startTime").toString();
-        final String endTime = summaryResponse.get("endTime") == null ? "" : summaryResponse.get("endTime").toString();
+        final String total = summaryResponse.get("total").toString() == "null" ? "" : summaryResponse.get("total").toString();
+        final String passed = summaryResponse.get("passed").toString() == "null" ? "" : summaryResponse.get("passed").toString();
+        final String failed = summaryResponse.get("failed").toString() == "null" ? "" : summaryResponse.get("failed").toString();
+        final String startTime = summaryResponse.get("startTime").toString() == "null" ? "" : summaryResponse.get("startTime").toString();
+        final String endTime = summaryResponse.get("endTime").toString() == "null" ? "" : summaryResponse.get("endTime").toString();
 
         createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Test Cases Executed", total);
         createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Passed", passed);
@@ -131,6 +133,7 @@ public class GenerateExcelReport {
         addCell(row, null, blackLabel, 1, value);
         addCell(row, null, blackLabel, 2, null);
         addCell(row, null, blackLabel, 3, null);
+        addCell(row, null, blackLabel, 4, null);
     }
 
     /**
@@ -154,20 +157,24 @@ public class GenerateExcelReport {
 
         row = summarySheet.createRow(index++);
         int num = row.getRowNum() + 1;
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + num + ":" + "D" + num));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + num + ":" + "I" + num));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
         addCell(row, cell, whiteLabel, count++, "EndPoint Resources");
 
         row = summarySheet.createRow(index++);
         int num1 = row.getRowNum() + 1;
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("C" + num1 + ":" + "D" + num1));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("C" + num1 + ":" + "E" + num1));
         blackLabel.setAlignment(HorizontalAlignment.CENTER);
         count = 0;
         addCell(row, cell, blackLabel, count++, "Vendor / Model");
         addCell(row, cell, blackLabel, count++, "DID");
         addCell(row, cell, blackLabel, count++, "Firmware Version");
         addCell(row, cell, blackLabel, count++, null);
-        //addCell(row, cell, blackLabel,count++, null);
+        addCell(row, cell, blackLabel, count++, null);
+        addCell(row, cell, blackLabel, count++, "Country");
+        addCell(row, cell, blackLabel, count++, "State");
+        addCell(row, cell, blackLabel, count++, "City");
+        addCell(row, cell, blackLabel, count++, "Zipcode");
 
         JSONArray endpointsResponse = (JSONArray) jsonObject.get("endpoints");
         for (int i = 0; i < endpointsResponse.length(); i++) {
@@ -227,32 +234,61 @@ public class GenerateExcelReport {
         int count = 0;
         Row row = workSheet.createRow(index);
         int num = row.getRowNum() + 1;
-        workSheet.addMergedRegion(CellRangeAddress.valueOf("C" + num + ":" + "D" + num));
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("C" + num + ":" + "E" + num));
         whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
-        final String vendorName = endPointResource.get("vendor") == null ? "" : endPointResource.get("vendor").toString();
-        final String modelName = endPointResource.get("model") == null ? "" : endPointResource.get("model").toString();
-        final String did = endPointResource.get("did") == null ? "" : endPointResource.get("did").toString();
-        final String firmwareVersion = endPointResource.get("firmwareVersion") == null ? "" : endPointResource.get("firmwareVersion").toString();
+        final String vendorName = endPointResource.get("vendor").toString() == "null" ? "" : endPointResource.get("vendor").toString();
+        final String modelName = endPointResource.get("model").toString() == "null" ? "" : endPointResource.get("model").toString();
+        final String did = endPointResource.get("did").toString() == "null" ? "" : endPointResource.get("did").toString();
+        final String firmwareVersion = endPointResource.get("firmwareVersion").toString() == "null" ? "" : endPointResource.get("firmwareVersion").toString();
+        final String country = endPointResource.get("country").toString() == "null" ? "" : endPointResource.get("country").toString();
+        final String state = endPointResource.get("state").toString() == "null" ? "" : endPointResource.get("state").toString();
+        final String city = endPointResource.get("city").toString() == "null" ? "" : endPointResource.get("city").toString();
+        final String zipcode = endPointResource.get("zipcode").toString() == "null" ? "" : endPointResource.get("zipcode").toString();
 
         addCell(row, null, blackLabel, count++, vendorName + " / " + modelName);
         addCell(row, null, whiteUnboldStyle, count++, did);
         addCell(row, null, whiteUnboldStyle, count++, firmwareVersion);
         addCell(row, null, whiteUnboldStyle, count++, null);
+        addCell(row, null, whiteUnboldStyle, count++, null);
+        addCell(row, null, whiteUnboldStyle, count++, country);
+        addCell(row, null, whiteUnboldStyle, count++, state);
+        addCell(row, null, whiteUnboldStyle, count++, city);
+        addCell(row, null, whiteUnboldStyle, count++, zipcode);
     }
 
 
-    private void getIterationWiseTestResultsDetails(ExecutionContext context, int i, Cell cell, Row row, int index, int count, XSSFCellStyle cellStyle, JSONObject testResultResponse) {
+    private void getIterationWiseTestResultsDetails(ExecutionContext context, int i, Cell cell, Row row, int index,
+                                                    int count, XSSFCellStyle cellStyle, JSONObject testResultResponse) {
         context.getLogger().info("Generating iteration wise run count details ");
-        final String tcName = testResultResponse.get("testCaseName") == null ? "" : testResultResponse.get("testCaseName").toString();
-        final String tcStartTime = testResultResponse.get("startTime") == null ? "" : testResultResponse.get("startTime").toString();
-        final String tcEndTime = testResultResponse.get("endTime") == null ? "" : testResultResponse.get("endTime").toString();
-        final String fromParticipant = testResultResponse.get("from") == null ? "" : testResultResponse.get("from").toString();
-        final String toParticipant = testResultResponse.get("to") == null ? "" : testResultResponse.get("to").toString();
-        final String otherParticipants = testResultResponse.get("otherParties") == null ? "" : testResultResponse.get("otherParties").toString();
-        final String tcStatus = testResultResponse.get("status") == null ? "" : testResultResponse.get("status").toString();
-        final String errorCategory = testResultResponse.get("errorCategory") == null ? "" : testResultResponse.get("errorCategory").toString();
-        final String errorReason = testResultResponse.get("errorReason") == null ? "" : testResultResponse.get("errorReason").toString();
-
+        final String tcName = testResultResponse.get("testCaseName").toString() == "null" ? ""
+                : testResultResponse.get("testCaseName").toString();
+        final String tcStartTime = testResultResponse.get("startTime").toString() == "null" ? ""
+                : testResultResponse.get("startTime").toString();
+        final String tcEndTime = testResultResponse.get("endTime").toString() == "null" ? ""
+                : testResultResponse.get("endTime").toString();
+        JSONObject fromDidParticipant = (JSONObject) testResultResponse.get("from");
+        final String fromParticipant = testResultResponse.get("from").toString() == "null" ? ""
+                : fromDidParticipant.get("DID").toString();
+        JSONObject toDidParticipant = (JSONObject) testResultResponse.get("to");
+        final String toParticipant = testResultResponse.get("to").toString() == "null" ? "" : toDidParticipant.get("DID").toString();
+        JSONArray jsonArray = (JSONArray) testResultResponse.get("otherParties");
+        List<JSONObject> jsonObjects = IntStream.range(0, jsonArray.length())
+                .mapToObj(k -> (JSONObject) jsonArray.get(k))
+                .collect(Collectors.toList());
+        String otherDidParticipant = jsonObjects.stream().map(x -> x.getString("DID").toString())
+                .collect(Collectors.joining(","));
+        final String otherParticipants = otherDidParticipant.toString() == "null" ? "" : otherDidParticipant;
+        final String tcStatus = testResultResponse.get("status").toString() == "null" ? ""
+                : testResultResponse.get("status").toString();
+        final String errorCategory = testResultResponse.get("errorCategory").toString() == "null" ? ""
+                : testResultResponse.get("errorCategory").toString();
+        final String errorReason = testResultResponse.get("errorReason").toString() == "null" ? ""
+                : testResultResponse.get("errorReason").toString();
+        String testResultDetails = String.format(
+                "TestCaseName:%s | Start Time:%s | End Time:%s | From:%s | To:%s | OtherParties:%s | status:%s | Error Category:%s | Error Reason:%s",
+                tcName, tcStartTime, tcEndTime, fromDidParticipant, toDidParticipant, otherDidParticipant, tcStatus, errorCategory,
+                errorReason);
+        context.getLogger().info("testResultDetails: " + testResultDetails);
         addCell(row, cell, cellStyle, count++, tcName);
         addCell(row, cell, cellStyle, count++, tcStartTime);
         addCell(row, cell, cellStyle, count++, tcEndTime);
@@ -319,7 +355,7 @@ public class GenerateExcelReport {
         newstyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
         newstyle.setWrapText(true);
         newstyle.setVerticalAlignment(VerticalAlignment.TOP);
-        newstyle.setAlignment(HorizontalAlignment.LEFT);
+        newstyle.setAlignment(HorizontalAlignment.CENTER);
         newstyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(242, 245, 243), new DefaultIndexedColorMap()));
         newstyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         Font newFont = workbook.createFont();
@@ -369,9 +405,9 @@ public class GenerateExcelReport {
         Drawing drawing = summarySheet.createDrawingPatriarch();
         //Create an anchor that is attached to the worksheet
         ClientAnchor anchor = helper.createClientAnchor();
-        anchor.setCol1(0); //Column A
+        anchor.setCol1(1); //Column A
         anchor.setRow1(0); //Row 1
-        anchor.setCol2(1);
+        anchor.setCol2(3);
         anchor.setRow2(1);
         //Creates a picture
         Picture pict = drawing.createPicture(anchor, pictureIdx);
