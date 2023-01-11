@@ -195,7 +195,7 @@ public class GenerateExcelReport {
      * @param whiteLabel
      * @param redLabel
      * @param index
-     * @param jsonObject
+     * @param jsonObject: {summary:{},endpoints:{},results:[],type:""}
      */
     private void generateTestReportByType(ExecutionContext context, XSSFSheet summarySheet, Row row, Cell cell, XSSFCellStyle blackLabel, XSSFCellStyle whiteLabel, XSSFCellStyle redLabel, int index, JSONObject jsonObject) {
         context.getLogger().info("Generating Test Cases Details Report");
@@ -205,17 +205,16 @@ public class GenerateExcelReport {
         int columnnum = row.getRowNum() + 1;
         summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + columnnum + ":" + "I" + columnnum));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
-        if ((JSONArray) jsonObject.get("featureFunctionality") != null)
-            addCell(row, null, whiteLabel, count++, "Feature Functionality");
-        else if ((JSONArray) jsonObject.get("callReliability") != null)
-            addCell(row, null, whiteLabel, count++, "callReliability");
-
+        final String REPORT_TYPE = jsonObject.get("type").toString().equalsIgnoreCase("LTS") ? "Feature Functionality"
+                : "Call Reliability";
+        if ((JSONArray) jsonObject.get("results") != null)
+            addCell(row, null, whiteLabel, count++, REPORT_TYPE);
         count = 0;
         row = summarySheet.createRow(index++);
         for (String header : iterationTestResultHeaders) {
             cell = addCell(row, cell, whiteLabel, count++, header);
         }
-        JSONArray testResult = (JSONArray) jsonObject.get("featureFunctionality") == null ? (JSONArray) jsonObject.get("callReliability") : (JSONArray) jsonObject.get("featureFunctionality");
+        JSONArray testResult = jsonObject.get("results")==null ? new JSONArray() :(JSONArray) jsonObject.get("results");
         for (int i = 0; i < testResult.length(); i++) {
             count = 0;
             row = summarySheet.createRow(index++);
