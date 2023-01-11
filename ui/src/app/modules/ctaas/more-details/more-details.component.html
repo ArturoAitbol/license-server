@@ -36,23 +36,23 @@
                         <tbody>
                             <tr>
                                 <th scope="row">Test Cases Executed</th>
-                                <td> {{sampleJsonData.summary.total }}</td>
+                                <td> {{reportResponse.summary.total }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">Passed</th>
-                                <td> {{sampleJsonData.summary.passed }} </td>
+                                <td> {{reportResponse.summary.passed }} </td>
                             </tr>
                             <tr>
                                 <th scope="row">Failed</th>
-                                <td>{{sampleJsonData.summary.failed }}</td>
+                                <td>{{reportResponse.summary.failed }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">Start Time</th>
-                                <td>{{sampleJsonData.summary. startTime }}</td>
+                                <td>{{reportResponse.summary.startTime }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">End Time</th>
-                                <td>{{sampleJsonData.summary. endTime }}</td>
+                                <td>{{reportResponse.summary.endTime }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -65,8 +65,8 @@
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
                         <app-data-table class="table-container mat-elevation-z8" 
-                        [tableData]="sampleJsonData.endpoints"
-                        [isLoadingResults]="isLoadingResults"
+                        [tableData]="reportResponse.endpoints"
+                        [isLoadingResults]="isLoadingResults" 
                         [isRequestCompleted]="isRequestCompleted"
                         [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
@@ -75,27 +75,12 @@
         </div>
     </div>
     <br>
-    <section class="table-section" *ngIf="type===FEATURE_FUNCTIONALITY">
-        <mat-card class="card">
-            <mat-card-content [style.max-height.px]="tableMaxHeight">
-                <app-data-table class="table-container mat-elevation-z8"
-                    [tableData]="sampleJsonData.featureFunctionality"
-                    [isLoadingResults]="isLoadingResults"
-                    [isRequestCompleted]="isRequestCompleted"
-                    [tableColumns]="featureFunctionalityDisplayedColumns">
-                </app-data-table>
-            </mat-card-content>
-        </mat-card>
-    </section>
-    <section class="table-section" *ngIf="type===CALL_RELIABILITY">
+    <ng-container *ngIf="reportResponse then viewTestDetailedReport;"></ng-container>
+</ng-template>
+<ng-template #viewTestDetailedReport>
+    <section class="table-section">
         <mat-card class="card" style="overflow: hidden;height: auto;">
             <mat-card-content>
-                <!-- <app-data-table class="table-container mat-elevation-z8"
-                    [tableData]="sampleJsonData.callReliability"
-                    [isLoadingResults]="isLoadingResults"
-                    [isRequestCompleted]="isRequestCompleted"
-                    [tableColumns]="featureFunctionalityDisplayedColumns" [nestedKey] = "'call-reliability'">
-                </app-data-table> -->
                 <div style="overflow: auto;" [style.height]="openFlag ? '60vh' : 'auto'">
                     <ng-container>
                         <mat-accordion>
@@ -112,7 +97,7 @@
                                 </mat-expansion-panel-header>
                             </mat-expansion-panel>
                         </mat-accordion>
-                        <mat-accordion *ngFor="let key of callReliabilityDetails; let i = index"
+                        <mat-accordion *ngFor="let key of detailedTestReport; let i = index"
                             class="accordian-container">
                             <mat-expansion-panel (closed)="close(i)" hideToggle>
                                 <mat-expansion-panel-header>
@@ -154,14 +139,13 @@
                                                         <th scope="row" style="width: 20%;"> Reason </th>
                                                         <td>{{key.reason}}</td>
                                                     </tr>
-
                                                 </tbody>
                                             </table>
                                         </div>
                                         <div class="col-6">
                                             <table class="table table-hover">
                                                 <tbody>
-                                                    <tr *ngFor="let from of key.duts.from.mediaStats">
+                                                    <tr *ngFor="let item of key.from.mediaStats">
                                                         <td>
                                                             <mat-accordion>
                                                                 <mat-expansion-panel hideToggle
@@ -172,7 +156,7 @@
                                                                         <mat-panel-title>
                                                                             <ul class="inner-accor">
                                                                                 <li> From </li>
-                                                                                <li> {{key.from.DID}} </li>
+                                                                                <li> {{item.data.DID}} </li>
                                                                             </ul>
                                                                         </mat-panel-title>
                                                                     </mat-expansion-panel-header>
@@ -181,27 +165,31 @@
                                                                             <tr>
                                                                                 <th scope="row"> Avg Audio Degradation
                                                                                 </th>
-                                                                                <td> {{from.avgAudioDegradation}} </td>
+                                                                                <td> {{item.data.avgAudioDegradation}}
+                                                                                </td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <th scope="row"> Stream Direction </th>
-                                                                                <td> {{from.streamDirection}} </td>
+                                                                                <td> {{item.data.streamDirection}} </td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <th scope="row"> Audio Codec </th>
-                                                                                <td> {{from.audioCodec}} </td>
+                                                                                <td> {{item.data.audioCodec}} </td>
                                                                             </tr>
                                                                             <tr>
                                                                                 <th scope="row"> Avg Jitter </th>
-                                                                                <td>{{from.avgJitter}}</td>
+                                                                                <td>{{item.data.avgJitter}}</td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <th scope="row"> Connection Type(Wired/Wireless) </th>
-                                                                                <td>{{from.connectionType}}</td>
+                                                                                <th scope="row"> Connection
+                                                                                    Type(Wired/Wireless) </th>
+                                                                                <td>{{item.data.connectionType}}</td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <th scope="row"> Network Transport Protocol </th>
-                                                                                <td>{{from.networkTransportProtocol}}</td>
+                                                                                <th scope="row"> Network Transport
+                                                                                    Protocol </th>
+                                                                                <td>{{item.data.networkTransportProtocol}}
+                                                                                </td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </table>
@@ -209,7 +197,7 @@
                                                             </mat-accordion>
                                                         </td>
                                                     </tr>
-                                                    <tr>
+                                                    <!-- <tr>
                                                         <td>
                                                             <mat-accordion>
                                                                 <mat-expansion-panel hideToggle
@@ -284,7 +272,7 @@
                                                                 </mat-expansion-panel>
                                                             </mat-accordion>
                                                         </td>
-                                                    </tr>
+                                                    </tr> -->
                                                 </tbody>
                                             </table>
                                         </div>
