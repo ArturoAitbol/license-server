@@ -78,7 +78,6 @@ mat-card {
   overflow: auto;
 }
 
-
 ::ng-deep tr.mat-header-row {
   background: #e4e5e5;
 }
@@ -109,4 +108,11 @@ mat-card {
   align-items: center !important;
   margin: 0 !important;
   padding: 0 !important;
+}
+.summary {
+  padding: 12px 0px;
+  overflow: hidden;
+}
+.summary-card-content {
+  padding: 1%;
 }

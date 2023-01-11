@@ -397,6 +397,7 @@ export class MoreDetailsComponent implements OnInit {
       }
     ]
   };
+  summaryDisplayedColumns: any = [];
   constructor(
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
@@ -523,6 +524,14 @@ export class MoreDetailsComponent implements OnInit {
       { name: 'Status', dataKey: 'status', position: 'center', isSortable: true },
       { name: 'Error Category', dataKey: 'errorCategory', position: 'center', isSortable: true },
       // { name: 'Reason', dataKey: 'errorReason', position: 'center', isSortable: true },
+    ];
+
+    this.summaryDisplayedColumns = [
+      { header: 'Test Cases Executed', value: 'total' },
+      { header: 'Passed', value: 'passed' },
+      { header: 'Failed', value: 'failed' },
+      { header: 'Start Time', value: 'startTime' },
+      { header: 'End Time', value: 'endTime' }
     ];
   }
   /**

@@ -30,29 +30,13 @@
     <div class="row">
         <div class="col-4">
             <h1 class="text-start font-s">Summary</h1>
-            <mat-card class="card" style="padding: 10px 0px;">
-                <mat-card-content style="padding: 1%;">
+            <mat-card class="card summary">
+                <mat-card-content class="summary-card-content">
                     <table class="table table-hover">
                         <tbody>
-                            <tr>
-                                <th scope="row">Test Cases Executed</th>
-                                <td> {{reportResponse.summary.total }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Passed</th>
-                                <td> {{reportResponse.summary.passed }} </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Failed</th>
-                                <td>{{reportResponse.summary.failed }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Start Time</th>
-                                <td>{{reportResponse.summary.startTime }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">End Time</th>
-                                <td>{{reportResponse.summary.endTime }}</td>
+                            <tr *ngFor="let item of summaryDisplayedColumns">
+                                <th>{{item.header}}</th>
+                                <td>{{reportResponse?.summary[item.value]}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -65,9 +49,9 @@
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
                         <app-data-table class="table-container mat-elevation-z8" 
-                        [tableData]="reportResponse.endpoints"
+                        [tableData]="reportResponse.endpoints" 
                         [isLoadingResults]="isLoadingResults" 
-                        [isRequestCompleted]="isRequestCompleted"
+                        [isRequestCompleted]="isRequestCompleted" 
                         [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
