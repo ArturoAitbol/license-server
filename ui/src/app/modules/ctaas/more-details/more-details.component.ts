@@ -447,7 +447,9 @@ export class MoreDetailsComponent implements OnInit {
       this.isRequestCompleted = false;
       this.hasDashboardDetails = false;
       this.isLoadingResults = true;
-      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, this.type, this.startDateStr, this.endDateStr)
+      const PARSED_REPORT_TYPE = this.type === this.FEATURE_FUNCTIONALITY ? 'LTS' :
+        (this.type === this.CALL_RELIABILITY) ? 'STS' : this.type;
+      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr)
         .subscribe((res: any) => {
           this.isRequestCompleted = true;
           this.isLoadingResults = false;
