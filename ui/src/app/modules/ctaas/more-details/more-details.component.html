@@ -48,11 +48,9 @@
             <section class="table-section">
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
-                        <app-data-table class="table-container mat-elevation-z8" 
-                        [tableData]="reportResponse.endpoints" 
-                        [isLoadingResults]="isLoadingResults" 
-                        [isRequestCompleted]="isRequestCompleted" 
-                        [tableColumns]="endpointDisplayedColumns"></app-data-table>
+                        <app-data-table class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
+                            [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
+                            [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
             </section>
@@ -81,21 +79,21 @@
                                 </mat-expansion-panel-header>
                             </mat-expansion-panel>
                         </mat-accordion>
-                        <mat-accordion *ngFor="let key of detailedTestReport; let i = index"
+                        <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
                             class="accordian-container">
                             <mat-expansion-panel (closed)="close(i)" hideToggle>
                                 <mat-expansion-panel-header>
                                     <mat-panel-title style="width:25%">
-                                        {{key.testCaseName}}
+                                        {{item.testCaseName}}
                                     </mat-panel-title>
                                     <mat-panel-title style="width:25%">
-                                        {{key.startTime}}
+                                        {{item.startTime}}
                                     </mat-panel-title>
                                     <mat-panel-title style="width:25%">
-                                        {{key.status}}
+                                        {{item.status}}
                                     </mat-panel-title>
                                     <mat-panel-title style="width:25%">
-                                        {{key.errorCategory}}
+                                        {{item.errorCategory}}
                                     </mat-panel-title>
                                 </mat-expansion-panel-header>
                                 <div style="padding: 1%;">
@@ -103,25 +101,9 @@
                                         <div class="col-6">
                                             <table class="table table-hover">
                                                 <tbody>
-                                                    <tr>
-                                                        <th scope="row" style="width: 20%;"> Start Date </th>
-                                                        <td> {{key.startTime}}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row" style="width: 20%;"> End Date </th>
-                                                        <td> {{key.endTime}} </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row" style="width: 20%;"> Status </th>
-                                                        <td>{{key.status}}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row" style="width: 20%;">Error Category</th>
-                                                        <td>{{key.errorCategory}}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row" style="width: 20%;"> Reason </th>
-                                                        <td>{{key.reason}}</td>
+                                                    <tr *ngFor="let subitems of detailedTestFeatureandCallReliability">
+                                                        <th scope="row" style="width: 20%;"> {{subitems.header}} </th>
+                                                        <td> {{item[subitems.value]}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -129,50 +111,44 @@
                                         <div class="col-6">
                                             <table class="table table-hover">
                                                 <tbody>
-                                                    <tr *ngFor="let item of key.from.mediaStats">
+                                                    <tr>
                                                         <td>
                                                             <mat-accordion>
                                                                 <mat-expansion-panel hideToggle
                                                                     [expanded]="obj['key' + i] === 1"
-                                                                    (opened)="setStep(1, i)">
+                                                                    (opened)="setStep('from', 1, i)">
                                                                     <mat-expansion-panel-header
                                                                         style="background-color: white;">
                                                                         <mat-panel-title>
                                                                             <ul class="inner-accor">
                                                                                 <li> From </li>
-                                                                                <li> {{item.data.DID}} </li>
+                                                                                <li> {{item.from.DID}} </li>
                                                                             </ul>
                                                                         </mat-panel-title>
                                                                     </mat-expansion-panel-header>
+                                                                    <form>
+                                                                        <mat-form-field
+                                                                            (click)="$event.stopPropagation()">
+                                                                            <mat-label> Select Time Stamp </mat-label>
+                                                                            <mat-select [(ngModel)]="fromMediaStats"
+                                                                                name="fromtimestamp"
+                                                                                (selectionChange)="getSelectedFromTimeStamp(fromMediaStats)"
+                                                                                placeholder="Select Time Stamp">
+                                                                                <mat-option
+                                                                                    *ngFor="let fromtimestamp of item.from.mediaStats"
+                                                                                    [value]="fromtimestamp">
+                                                                                    {{fromtimestamp.timestamp}}
+                                                                                </mat-option>
+                                                                            </mat-select>
+                                                                        </mat-form-field>
+                                                                    </form>
                                                                     <table class="table table-hover">
                                                                         <tbody>
-                                                                            <tr>
-                                                                                <th scope="row"> Avg Audio Degradation
+                                                                            <tr
+                                                                                *ngFor="let key of mediaStatsDisplayedColumns">
+                                                                                <th scope="row"> {{key.header}}
                                                                                 </th>
-                                                                                <td> {{item.data.avgAudioDegradation}}
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Stream Direction </th>
-                                                                                <td> {{item.data.streamDirection}} </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Audio Codec </th>
-                                                                                <td> {{item.data.audioCodec}} </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Avg Jitter </th>
-                                                                                <td>{{item.data.avgJitter}}</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Connection
-                                                                                    Type(Wired/Wireless) </th>
-                                                                                <td>{{item.data.connectionType}}</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Network Transport
-                                                                                    Protocol </th>
-                                                                                <td>{{item.data.networkTransportProtocol}}
+                                                                                <td> {{selectedFromMediaStats[key.value]}}
                                                                                 </td>
                                                                             </tr>
                                                                         </tbody>
@@ -181,55 +157,41 @@
                                                             </mat-accordion>
                                                         </td>
                                                     </tr>
-                                                    <!-- <tr>
+                                                    <tr>
                                                         <td>
                                                             <mat-accordion>
                                                                 <mat-expansion-panel hideToggle
                                                                     [expanded]="obj['key' + i] === 2"
-                                                                    (opened)="setStep(2, i)">
+                                                                    (opened)="setStep('to',2, i)">
                                                                     <mat-expansion-panel-header
                                                                         style="background-color: white;">
                                                                         <mat-panel-title>
                                                                             <ul class="inner-accor">
                                                                                 <li> To </li>
-                                                                                <li> {{key.duts.to}} </li>
+                                                                                <li> {{item.to.DID}} </li>
                                                                             </ul>
                                                                         </mat-panel-title>
                                                                     </mat-expansion-panel-header>
+                                                                    <mat-form-field (click)="$event.stopPropagation()">
+                                                                        <mat-select [(ngModel)]="toMediaStats"
+                                                                            name="totimestamp"
+                                                                            (selectionChange)="getSelectedToTimeStamp(toMediaStats)"
+                                                                            placeholder="Select Time Stamp">
+                                                                            <mat-option
+                                                                                *ngFor="let totimestamp of item.to.mediaStats"
+                                                                                [value]="totimestamp">
+                                                                                {{totimestamp.timestamp}}
+                                                                            </mat-option>
+                                                                        </mat-select>
+                                                                    </mat-form-field>
                                                                     <table class="table table-hover">
                                                                         <tbody>
-                                                                            <tr>
-                                                                                <th scope="row"> Received packet loss
+                                                                            <tr
+                                                                                *ngFor="let key of mediaStatsDisplayedColumns">
+                                                                                <th scope="row"> {{key.header}}
                                                                                 </th>
-                                                                                <td> 0 </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Sent bitrate </th>
-                                                                                <td> 47.2 Kbps </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Received Jitter </th>
-                                                                                <td> 8.89 ms </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Round trip time </th>
-                                                                                <td>--</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Sent codec </th>
-                                                                                <td>SATIN</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Received packets </th>
-                                                                                <td>1249</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Received codec </th>
-                                                                                <td>SATIN</td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <th scope="row"> Sent packets </th>
-                                                                                <td>1248</td>
+                                                                                <td> {{selectedToMediaStats[key.value]}}
+                                                                                </td>
                                                                             </tr>
                                                                         </tbody>
                                                                     </table>
@@ -238,25 +200,48 @@
                                                             </mat-accordion>
                                                         </td>
                                                     </tr>
-                                                    <tr *ngFor="let data of key.duts.otherParties; let j = index">
+                                                    <tr *ngFor="let data of item.otherParties; let j = index">
                                                         <td>
                                                             <mat-accordion>
                                                                 <mat-expansion-panel hideToggle
                                                                     [expanded]="obj['key' + i] === (3 + j)"
-                                                                    (opened)="setStep((3 + j), i)" hideToggle>
+                                                                    (opened)="setStep('other',(3 + j), i)" hideToggle>
                                                                     <mat-expansion-panel-header
                                                                         style="background-color: white;">
                                                                         <mat-panel-title>
                                                                             <ul class="inner-accor">
                                                                                 <li> Other party </li>
-                                                                                <li> {{data}} </li>
+                                                                                <li> {{data.DID}} </li>
                                                                             </ul>
                                                                         </mat-panel-title>
                                                                     </mat-expansion-panel-header>
+                                                                    <mat-form-field (click)="$event.stopPropagation()">
+                                                                        <mat-select [(ngModel)]="otherpartyMediaStat"
+                                                                            name="otherPartytimestamp"
+                                                                            (selectionChange)="getSelectedToTimeStamp(otherpartyMediaStat)"
+                                                                            placeholder="Select Time Stamp">
+                                                                            <mat-option
+                                                                                *ngFor="let totimestamp of data.mediaStats"
+                                                                                [value]="totimestamp">
+                                                                                {{totimestamp.timestamp}}
+                                                                            </mat-option>
+                                                                        </mat-select>
+                                                                    </mat-form-field>
+                                                                    <table class="table table-hover">
+                                                                        <tbody>
+                                                                            <tr
+                                                                                *ngFor="let key of mediaStatsDisplayedColumns">
+                                                                                <th scope="row"> {{key.header}}
+                                                                                </th>
+                                                                                <td> {{otherPartiesMediaStats[key.value]}}
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
                                                                 </mat-expansion-panel>
                                                             </mat-accordion>
                                                         </td>
-                                                    </tr> -->
+                                                    </tr>
                                                 </tbody>
                                             </table>
                                         </div>

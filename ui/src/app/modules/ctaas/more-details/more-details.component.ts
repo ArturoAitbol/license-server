@@ -34,6 +34,11 @@ export class MoreDetailsComponent implements OnInit {
   fromMediaTimeStampsList: string[] = [];
   toMediaTimeStampsList: string[] = [];
   otherPartiesMediaTimeStampsList: string[] = [];
+  selectedFromMediaStats: any = {};
+  selectedToMediaStats: any = {};
+  otherPartiesMediaStats: any = {};
+  detailedTestFeatureandCallReliability: any = [];
+  mediaStatsDisplayedColumns: any = [];
   fakeResponse: any = {
     "summary": {
       "total": 4,
@@ -90,7 +95,7 @@ export class MoreDetailsComponent implements OnInit {
                 "sent packets": "xxxxx",
                 "received codec": "xxxxx",
                 "Sent bitrate": "Tcp",
-                "received packet loss": "Wired",
+                "received packet loss": "Wired2",
                 "received Jitter": "xxxxx",
                 "sent codec": "xxxxx",
                 "round trip time": "xxxxx",
@@ -398,6 +403,10 @@ export class MoreDetailsComponent implements OnInit {
     ]
   };
   summaryDisplayedColumns: any = [];
+  fromMediaStats: any;
+  toMediaStats: any;
+  otherpartyMediaStat: any;
+
   constructor(
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
@@ -476,9 +485,34 @@ export class MoreDetailsComponent implements OnInit {
     }
   }
 
-  setStep(index: number, rowIndex) {
-    this.openFlag = true
+  getSelectedFromTimeStamp(event) {
+    console.log(event)
+    this.selectedFromMediaStats = event.data;
+  }
+  getSelectedToTimeStamp(event) {
+    this.selectedToMediaStats = event.data;
+  }
+  getSelectedOtherPartyTimeStamp(event) {
+    this.otherPartiesMediaStats = event.data;
+  }
+
+  setStep(key: any, index: number, rowIndex) {
+    this.openFlag = true;
     this.obj['key' + rowIndex] = index;
+    if (key === 'from') {
+      this.fromMediaStats = this.detailedTestReport[rowIndex].from.mediaStats[0];
+      this.getSelectedFromTimeStamp(this.fromMediaStats);
+    }
+    else if (key === 'to') {
+      this.toMediaStats = this.detailedTestReport[rowIndex].to.mediaStats[0];
+      this.getSelectedToTimeStamp(this.toMediaStats);
+
+    }
+    else {
+      this.otherpartyMediaStat = this.detailedTestReport[rowIndex].otherParties[index - 3].mediaStats[0];
+      this.getSelectedOtherPartyTimeStamp(this.otherpartyMediaStat)
+    }
+
   }
   close(index) {
     this.detailedTestReport[index].closeKey = true;
@@ -533,6 +567,24 @@ export class MoreDetailsComponent implements OnInit {
       { header: 'Start Time', value: 'startTime' },
       { header: 'End Time', value: 'endTime' }
     ];
+
+    this.detailedTestFeatureandCallReliability = [
+      { header: 'Start Date', value: 'startTime' },
+      { header: 'End Date', value: 'endTime' },
+      { header: 'Status', value: 'status' },
+      { header: 'Error Category', value: 'errorCategory' },
+      { header: 'Reason', value: 'reason' }
+    ];
+    this.mediaStatsDisplayedColumns = [
+      { header: 'Sent packets', value: 'sent packets' },
+      { header: 'Received codec', value: 'received codec' },
+      { header: 'Sent bitrate', value: 'Sent bitrate' },
+      { header: 'Received packet loss', value: 'received packet loss' },
+      { header: 'Received Jitter', value: 'received Jitter' },
+      { header: 'Sent codec', value: 'sent codec' },
+      { header: 'Round trip time', value: 'round trip time' },
+      { header: 'Received packets', value: 'received packets' }
+    ]
   }
   /**
    * download file as excel
