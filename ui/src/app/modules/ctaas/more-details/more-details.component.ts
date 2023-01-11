@@ -39,6 +39,9 @@ export class MoreDetailsComponent implements OnInit {
   otherPartiesMediaStats: any = {};
   detailedTestFeatureandCallReliability: any = [];
   mediaStatsDisplayedColumns: any = [];
+  fromMediaStatsFlag = false;
+  toMediaStatsFlag = false;
+  otherPartisMediaStatsFlag = false;
   // fakeResponse: any = {
   //   "summary": {
   //     "total": 4,
@@ -485,7 +488,6 @@ export class MoreDetailsComponent implements OnInit {
   }
 
   getSelectedFromTimeStamp(event) {
-    console.log(event)
     this.selectedFromMediaStats = event.data;
   }
   getSelectedToTimeStamp(event) {
@@ -499,17 +501,37 @@ export class MoreDetailsComponent implements OnInit {
     this.openFlag = true;
     this.obj['key' + rowIndex] = index;
     if (key === 'from') {
-      this.fromMediaStats = this.detailedTestReport[rowIndex].from.mediaStats[0];
-      this.getSelectedFromTimeStamp(this.fromMediaStats);
+      if (this.detailedTestReport[rowIndex].from.mediaStats.length > 0) {
+        this.fromMediaStats = this.detailedTestReport[rowIndex].from.mediaStats[0];
+        this.fromMediaStatsFlag = false;
+        this.getSelectedFromTimeStamp(this.fromMediaStats);
+      }
+      else {
+        this.fromMediaStatsFlag = true;
+      }
+
     }
     else if (key === 'to') {
-      this.toMediaStats = this.detailedTestReport[rowIndex].to.mediaStats[0];
-      this.getSelectedToTimeStamp(this.toMediaStats);
+      if (this.detailedTestReport[rowIndex].to.mediaStats.length > 0) {
+        this.toMediaStats = this.detailedTestReport[rowIndex].to.mediaStats[0];
+        this.toMediaStatsFlag = false;
+        this.getSelectedToTimeStamp(this.toMediaStats);
+      }
+      else {
+        this.toMediaStatsFlag = true;
+      }
 
     }
     else {
-      this.otherpartyMediaStat = this.detailedTestReport[rowIndex].otherParties[index - 3].mediaStats[0];
-      this.getSelectedOtherPartyTimeStamp(this.otherpartyMediaStat)
+      if (this.detailedTestReport[rowIndex].otherParties[index - 3].mediaStats.length > 0) {
+        this.otherpartyMediaStat = this.detailedTestReport[rowIndex].otherParties[index - 3].mediaStats[0];
+        this.otherPartisMediaStatsFlag = false;
+        this.getSelectedOtherPartyTimeStamp(this.otherpartyMediaStat)
+      }
+      else {
+        this.otherPartisMediaStatsFlag = true;
+      }
+
     }
 
   }
@@ -575,14 +597,14 @@ export class MoreDetailsComponent implements OnInit {
       { header: 'Reason', value: 'reason' }
     ];
     this.mediaStatsDisplayedColumns = [
-      { header: 'Sent packets', value: 'sent packets' },
-      { header: 'Received codec', value: 'received codec' },
+      { header: 'Sent packets', value: 'Sent packets' },
+      { header: 'Received codec', value: 'Received codec' },
       { header: 'Sent bitrate', value: 'Sent bitrate' },
-      { header: 'Received packet loss', value: 'received packet loss' },
-      { header: 'Received Jitter', value: 'received Jitter' },
-      { header: 'Sent codec', value: 'sent codec' },
-      { header: 'Round trip time', value: 'round trip time' },
-      { header: 'Received packets', value: 'received packets' }
+      { header: 'Received packet loss', value: 'Received packet loss' },
+      { header: 'Received Jitter', value: 'Received Jitter' },
+      { header: 'Sent codec', value: 'Sent codec' },
+      { header: 'Round trip time', value: 'Round trip time' },
+      { header: 'Received packets', value: 'Received packets' }
     ]
   }
   /**
