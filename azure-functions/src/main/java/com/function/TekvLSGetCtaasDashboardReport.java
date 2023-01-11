@@ -171,7 +171,7 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info("Requesting TAP for detailed report. URL: " + tapURL);
             // Make a http call to TAP and get the access token
             String accessToken = TAPClient.getAccessToken(tapURL, context);
-            context.getLogger().info("Start Date: " + startDate + " | End Date: " + endDate);
+            context.getLogger().info("Report Type: " + reportType + " | Start Date: " + startDate + " | End Date: " + endDate);
             // Make a http call to North Bound API to fetch detailed test report by reportType
             JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, reportType, startDate, endDate, context);
             if (response == null) {
