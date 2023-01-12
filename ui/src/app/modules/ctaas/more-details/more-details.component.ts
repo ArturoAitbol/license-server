@@ -541,6 +541,7 @@ export class MoreDetailsComponent implements OnInit {
     if (trueKey) {
       this.openFlag = false;
     }
+    this.obj['key' + index] = '';
   }
   /**
    * calculate table height based on the window height
