@@ -10,6 +10,7 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
 import com.microsoft.azure.functions.ExecutionContext;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -172,7 +173,7 @@ public class StorageBlobClient {
             Iterator<BlobItem> iterator = blobContainerClient.listBlobs().iterator();
             List<BlobItem> blobItemList = StreamSupport
                     .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
-                    .filter(x -> x.getName().contains(filterFileString))
+                    // .filter(x -> x.getName().contains(filterFileString))
                     .collect(Collectors.toList());
             for (BlobItem blobItem : blobItemList) {
                 context.getLogger().info("blobItem " + blobItem.getName());
@@ -196,5 +197,96 @@ public class StorageBlobClient {
             context.getLogger().info("Caught exception: " + e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Get the blob list for a customer from Azure Storage Blob return JSONArray
+     * 
+     * @param context:        ExecutionContext
+     * @param customerName:   String
+     * @param subAccountName: String
+     * @param frequency:      String
+     * @param type:           String
+     * @param timestamp:      String
+     * @return: JSONArray
+     */
+    public JSONArray fetchReportsPerCustomer(ExecutionContext context, final String customerName,
+            final String subAccountName, final String frequency, final String type, final String timestamp) {
+        JSONArray reports = new JSONArray();
+        try {
+            // Check if container exist or not
+            if (!blobContainerClient.exists()) {
+                context.getLogger().info("Container doesn't exist");
+            }
+
+            // Form the filter string to fetch only customer-subaccount reports
+            String filterFileString = String.format("%s/%s-%s-", customerName, subAccountName, frequency);
+
+            if (!type.isEmpty())
+                filterFileString += String.format("%s-Image-", type);
+
+            final String filter = filterFileString;
+            context.getLogger().info("Search for Files like " + filterFileString);
+            Iterator<BlobItem> iterator = blobContainerClient.listBlobs().iterator();
+            List<BlobItem> blobItemList = StreamSupport
+                    .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
+                    .filter(x -> x.getName().contains(filter))
+                    .collect(Collectors.toList());
+
+            JSONObject jsonObj = new JSONObject();
+
+            for (BlobItem blobItem : blobItemList) {
+                context.getLogger().info("blobItem " + blobItem.getName());
+                String blobItemName = blobItem.getName();
+                String reportType = blobItemName.substring(blobItemName.indexOf(type + "-") + type.length() + 1,
+                        blobItemName.indexOf("-Image"));
+                String[] range = blobItemName
+                        .substring(blobItemName.indexOf("Image-") + 6, blobItemName.indexOf(".jpg")).split("-");
+                String startTimestamp = range[0];
+                String endTimestamp = range[1];
+
+                jsonObj.put("reportType", reportType);
+                jsonObj.put("startTime", startTimestamp);
+                jsonObj.put("endTime", endTimestamp);
+
+                boolean insert = false;
+                // Check filters
+                if (type.isEmpty() && timestamp.isEmpty())
+                    insert = true;
+                else if (!type.isEmpty() && type.equals(reportType) && timestamp.isEmpty())
+                    insert = true;
+                else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
+                        && type.isEmpty())
+                    insert = true;
+                else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
+                        && !type.isEmpty() && type.equals(reportType))
+                    insert = true;
+
+                if (insert)
+                    reports.put(jsonObj);
+            }
+
+            return reports;
+
+        } catch (Exception e) {
+            context.getLogger().info("Caught exception: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Verify if a timestamp is between two timestamps
+     *
+     * @param timestamp:   String
+     * @param start:       String
+     * @param end:         String
+     * @return: boolean
+     */
+    public boolean isTimestampInRange(String timestamp, String start, String end) throws Exception{
+        //Convert timestampID to Date
+        Date filterDate = new SimpleDateFormat("yyMMddHHmmss").parse(timestamp);
+        Date startDate = new SimpleDateFormat("yyMMddHHmmss").parse(start);
+        Date endDate = new SimpleDateFormat("yyMMddHHmmss").parse(end);
+        return startDate.compareTo(filterDate) * filterDate.compareTo(endDate) >= 0;
     }
 }
