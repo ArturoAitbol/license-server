@@ -99,6 +99,12 @@ export class MoreDetailsComponent implements OnInit {
             this.filename = reportType;
             this.hasDashboardDetails = true;
             const { summary, endpoints, results, type } = this.reportResponse;
+            this.reportResponse.endpoints = this.reportResponse.endpoints.map(e => {
+              if (e.city && e.country && e.state && e.zipcode) {
+                e.region = `${e.city}, ${e.state}, ${e.country}, ${e.zipcode}`;
+              }
+              return e;
+            });
             this.detailedTestReport = (results && results.length > 0) ? results : [];
             this.detailedTestReport.forEach((obj: any) => {
               obj.closeKey = false;
@@ -202,10 +208,7 @@ export class MoreDetailsComponent implements OnInit {
       { name: 'Model', dataKey: 'model', position: 'center', isSortable: true },
       { name: 'DID', dataKey: 'did', position: 'center', isSortable: true },
       { name: 'Firmware', dataKey: 'firmwareVersion', position: 'center', isSortable: true },
-      { name: 'Region', dataKey: '', position: 'center', isSortable: true },
-      { name: 'State', dataKey: 'state', position: 'center', isSortable: true },
-      { name: 'Country', dataKey: 'country', position: 'center', isSortable: true },
-      { name: 'ZipCode', dataKey: 'zipcode', position: 'center', isSortable: true }
+      { name: 'Region', dataKey: 'region', position: 'center', isSortable: false }
     ];
     this.featureFunctionalityDisplayedColumns = [
       { name: 'Test Case', dataKey: 'testCaseName', position: 'left', isSortable: true },
@@ -232,7 +235,7 @@ export class MoreDetailsComponent implements OnInit {
       { header: 'End Date', value: 'endTime' },
       { header: 'Status', value: 'status' },
       { header: 'Error Category', value: 'errorCategory' },
-      { header: 'Reason', value: 'reason' }
+      { header: 'Reason', value: 'errorReason' }
     ];
     this.mediaStatsDisplayedColumns = [
       { header: 'Sent packets', value: 'Sent packets' },
@@ -250,7 +253,14 @@ export class MoreDetailsComponent implements OnInit {
    * @param data: any 
    */
   private downloadExcelFile(data: any): void {
-    const name = this.type + '-' + Date.now().toString() + '.xlsx';
+    const currentDate = new Date();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = currentDate.getDay().toString().padStart(2, '0');
+    const year = currentDate.getFullYear().toString();
+    const hh = currentDate.getHours();
+    const mm = currentDate.getMinutes();
+    const ss = currentDate.getSeconds();
+    const name = `${this.type}-${month}-${day}-${year} ${hh}.${mm}.${ss}.xlsx`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
     a.download = name;

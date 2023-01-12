@@ -48,9 +48,11 @@
             <section class="table-section">
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
-                        <app-data-table class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
-                            [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
-                            [tableColumns]="endpointDisplayedColumns"></app-data-table>
+                        <app-data-table class="table-container mat-elevation-z8" 
+                        [tableData]="reportResponse.endpoints"
+                        [isLoadingResults]="isLoadingResults" 
+                        [isRequestCompleted]="isRequestCompleted" 
+                        [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
             </section>
