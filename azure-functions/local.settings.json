@@ -20,7 +20,9 @@
     "SMTP_PWD": "G9um3XGr",
     "SMTP_HOST": "exchange.tekvizion.com",
     "NOTIFICATIONS_ENDPOINT": "https://fcm.googleapis.com/fcm/send",
-    "NOTIFICATIONS_AUTH_KEY": "key=AAAAZQriFSg:APA91bEaRPdifNydaU1p88GVMXOsempGA7DeNl27zpt9941BJnyeXWwz8OYpKKd7nbuLXred8q5R5P0DmGsPA9Q3MXo8Lxk_RhpzaM3sUsZsB1tNeSG9D70PIl_eP5ilSanm-N4cU-Rs"
+    "NOTIFICATIONS_AUTH_KEY": "key=AAAAZQriFSg:APA91bEaRPdifNydaU1p88GVMXOsempGA7DeNl27zpt9941BJnyeXWwz8OYpKKd7nbuLXred8q5R5P0DmGsPA9Q3MXo8Lxk_RhpzaM3sUsZsB1tNeSG9D70PIl_eP5ilSanm-N4cU-Rs",
+    "TAP_USERNAME": "spotlight@tekvizion.com",
+    "TAP_PASSWORD": "spotlight123"
   },
   "Host": {
     "LocalHttpPort": 7071,

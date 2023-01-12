@@ -154,6 +154,8 @@ public class TekvLSGetCtaasDashboard {
                 jsonObject.put("lastUpdatedTS", base64Response.get("lastModifiedDate"));
                 jsonObject.put("timestampId", base64Response.get("timestampId"));
                 jsonObject.put("imageBase64", base64Response.get("base64String"));
+                jsonObject.put("startDateStr", base64Response.get("startDate"));
+                jsonObject.put("endDateStr", base64Response.get("endDate"));
                 json.put("response", jsonObject);
             }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();

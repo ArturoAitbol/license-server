@@ -10,11 +10,12 @@ import { Constants } from '../helpers/constants';
 export class CtaasDashboardService {
   private readonly API_URL: string = environment.apiEndpoint + '/ctaasDashboard';
   private readonly FETCH_DASHBOARD_URL: string = this.API_URL + '/{subaccountId}/{reportType}';
-  private readonly FETCH_DASHBOARD_REPORT_URL: string = this.API_URL + '/report/{subaccountId}/{reportType}';
-  private readonly DOWNLOAD_DASHBOARD_REPORT_URL: string = this.API_URL + '/downloadReport/{subaccountId}/{reportType}';
+  private readonly FETCH_DASHBOARD_REPORT_URL: string = this.API_URL + '/report/{subaccountId}/{reportType}/{startDate}/{endDate}';
+  private readonly DOWNLOAD_DASHBOARD_REPORT_URL: string = this.API_URL + '/downloadReport';
 
 
   private currentReports: any;
+  private detailedReportObj: any = {};
 
   constructor(private httpClient: HttpClient) { }
 
@@ -28,6 +29,16 @@ export class CtaasDashboardService {
   getReports(): any {
     return (this.currentReports) ? this.currentReports : JSON.parse(localStorage.getItem(Constants.CURRENT_REPORTS));
   }
+  /**
+   * set detailed report response by type
+   * @param obj: any 
+   */
+  setDetailedReportObject(obj: any): void { this.detailedReportObj = obj; }
+  /**
+   * get detailed report response object
+   * @returns: any 
+   */
+  getDetailedReportyObject(): any { return this.detailedReportObj; }
 
   /**
    * fetch SpotLight Power BI reports
@@ -49,13 +60,12 @@ export class CtaasDashboardService {
    * @param reportType: string 
    * @returns: Observable<any>  
    */
-  public getCtaasDashboardDetailedReport(subaccountId: string, reportType: string): Observable<any> {
-    const url = this.FETCH_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
+  public getCtaasDashboardDetailedReport(subaccountId: string, reportType: string, startDateStr: string, endDateStr: string): Observable<any> {
+    const url = this.FETCH_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType).replace(/{startDate}/g, startDateStr).replace(/{endDate}/g, endDateStr);
     return this.httpClient.get(url);
   }
 
-  public downloadCtaasDashboardDetailedReport(subaccountId: string, reportType: string): Observable<any> {
-    const url = this.DOWNLOAD_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
-    return this.httpClient.get(url, { responseType: 'blob' });
+  public downloadCtaasDashboardDetailedReport(detailedResponseObj: any): Observable<any> {
+    return this.httpClient.post(this.DOWNLOAD_DASHBOARD_REPORT_URL, { detailedReport: detailedResponseObj }, { responseType: 'blob' });
   }
 }

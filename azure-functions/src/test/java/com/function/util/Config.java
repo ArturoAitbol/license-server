@@ -2,6 +2,7 @@ package com.function.util;
 
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
+
 import org.json.JSONObject;
 
 import java.io.*;
@@ -11,10 +12,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
-
 import java.util.Properties;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class Config {
     private static final String postgresqlServer = "postgresql_server";
@@ -28,9 +28,11 @@ public class Config {
     private static final String dashboardAppClientId = "dashboard_app_client_id";
     private static final String dashboardAppClientSecret = "dashboard_app_client_secret";
     private static final String tenantId = "tenant_id";
-    private static final String storageAccountName="storage_account_name";
+    private static final String storageAccountName = "storage_account_name";
 
-    private static final String storageContainerName="storage_container_name";
+    private static final String storageContainerName = "storage_container_name";
+    private static final String tapUsername = "tap_username";
+    private static final String tapPassword = "tap_password";
 
     //    private static final Logger LOGGER = LogManager.getLogger();
     public static Logger logger = Logger.getLogger(Config.class.getName());
@@ -57,8 +59,7 @@ public class Config {
         String systemProperty = System.getProperty(property);
         if (systemProperty == null) {
             String customProperty = properties.getProperty(property);
-            if (customProperty == null)
-            {
+            if (customProperty == null) {
                 logger.severe("Error retrieving property: " + property + " in config.properties");
                 throw new RuntimeException();
             }
@@ -83,26 +84,53 @@ public class Config {
         return getConfig(postgresqlSecurityMode);
     }
 
-    public String getExpiredToken() { return getConfig(expiredToken); }
+    public String getExpiredToken() {
+        return getConfig(expiredToken);
+    }
 
-    public String getEnvironmentName() { return getConfig(environmentName); }
-    public String getEmailInviteClientId() { return getConfig(emailInviteClientId); }
+    public String getEnvironmentName() {
+        return getConfig(environmentName);
+    }
 
-    public String getEmailInviteClientSecret() { return getConfig(emailInviteClientSecret);}
+    public String getEmailInviteClientId() {
+        return getConfig(emailInviteClientId);
+    }
 
-    public String getDashboardAppClientId() { return getConfig(dashboardAppClientId);}
+    public String getEmailInviteClientSecret() {
+        return getConfig(emailInviteClientSecret);
+    }
 
-    public String getDashboardAppClientSecret() { return getConfig(dashboardAppClientSecret);}
+    public String getDashboardAppClientId() {
+        return getConfig(dashboardAppClientId);
+    }
 
-    public String getTenantId() { return getConfig(tenantId);}
+    public String getDashboardAppClientSecret() {
+        return getConfig(dashboardAppClientSecret);
+    }
 
-    public String getStorageAccountName(){ return getConfig(storageAccountName);}
-    public String getStorageContainerName(){ return getConfig(storageContainerName);}
+    public String getTenantId() {
+        return getConfig(tenantId);
+    }
 
+    public String getStorageAccountName() {
+        return getConfig(storageAccountName);
+    }
+
+    public String getStorageContainerName() {
+        return getConfig(storageContainerName);
+    }
+
+    public String getTapUsername() {
+        return getConfig(tapUsername);
+    }
+
+    public String getTapPassword() {
+        return getConfig(tapPassword);
+    }
 
     public String getToken(String role) {
-        String roleId, roleSecret, accessToken="",username="",password="";
-        switch (role){
+        String roleId, roleSecret, accessToken = "", username = "", password = "";
+        switch (role) {
             case "fullAdmin":
                 roleId = "fullAdminId";
                 roleSecret = "fullAdminSecret";
@@ -136,19 +164,19 @@ public class Config {
                 password = "nonexistent_subaccountAdmin_password";
                 break;
             case "subaccountStakeholder":
-            	roleId = "fullAdminId";
+                roleId = "fullAdminId";
                 roleSecret = "fullAdminSecret";
                 username = "subaccountStakeholder_user";
                 password = "subaccountStakeholder_password";
                 break;
             case "salesAdmin":
-            	roleId = "fullAdminId";
+                roleId = "fullAdminId";
                 roleSecret = "fullAdminSecret";
                 username = "salesAdmin_user";
                 password = "salesAdmin_password";
                 break;
             case "configTester":
-            	roleId = "fullAdminId";
+                roleId = "fullAdminId";
                 roleSecret = "fullAdminSecret";
                 username = "configTester_user";
                 password = "configTester_password";
@@ -164,12 +192,12 @@ public class Config {
                 throw new RuntimeException();
         }
         try {
-            if((username+password).isEmpty()){
-                accessToken = getAccessToken(getConfig(roleId), getConfig(roleSecret),username,password);
-            }else{
-                accessToken = getAccessToken(getConfig(roleId),getConfig(roleSecret),getConfig(username),getConfig(password));
+            if ((username + password).isEmpty()) {
+                accessToken = getAccessToken(getConfig(roleId), getConfig(roleSecret), username, password);
+            } else {
+                accessToken = getAccessToken(getConfig(roleId), getConfig(roleSecret), getConfig(username), getConfig(password));
             }
-            if (accessToken.isEmpty()){
+            if (accessToken.isEmpty()) {
                 logger.info("Access token is empty");
                 throw new RuntimeException();
             }
@@ -181,35 +209,35 @@ public class Config {
         return accessToken;
     }
 
-    public String getAccessToken(String roleId, String roleSecret,String username,String password) throws IOException {
-        String token="";
+    public String getAccessToken(String roleId, String roleSecret, String username, String password) throws IOException {
+        String token = "";
         Map<String, String> parameters = new HashMap<>();
         parameters.put("client_id", roleId);
         parameters.put("client_secret", roleSecret);
-        if(!username.isEmpty() && !password.isEmpty()){
+        if (!username.isEmpty() && !password.isEmpty()) {
             parameters.put("scope", "api://abb49487-0434-4a82-85fa-b9be4443d158/.default");
             parameters.put("grant_type", "password");
             parameters.put("username", username);
             parameters.put("password", password);
-        }else{
+        } else {
             parameters.put("scope", "api://e643fc9d-b127-4883-8b80-2927df90e275/.default");
             parameters.put("grant_type", "client_credentials");
         }
 
         String urlParameters = getDataString(parameters);
-        byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8 );
-        URL url = new URL( "https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/oauth2/v2.0/token" );
-        HttpURLConnection conn= (HttpURLConnection) url.openConnection();
+        byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+        URL url = new URL("https://login.microsoftonline.com/e3a46007-31cb-4529-b8cc-1e59b97ebdbd/oauth2/v2.0/token");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         conn.setRequestProperty("Content-Length", Integer.toString(postData.length));
 
         DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-        wr.write( postData);
+        wr.write(postData);
 
         int responseCode = conn.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK){
+        if (responseCode == HttpURLConnection.HTTP_OK) {
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String inputLine;
             StringBuilder content = new StringBuilder();
@@ -219,16 +247,15 @@ public class Config {
             in.close();
             JSONObject jsonBody = new JSONObject(content.toString());
             token = jsonBody.get("access_token").toString();
-        }
-        else {
+        } else {
             logger.severe("Error retrieving token from Microsoft identity platform");
-            logger.info("Request params: "+ urlParameters);
+            logger.info("Request params: " + urlParameters);
             throw new RuntimeException();
         }
         return token;
     }
 
-    public String getDataString(Map<String, String> params){
+    public String getDataString(Map<String, String> params) {
         StringBuilder result = new StringBuilder();
         try {
             for (Map.Entry<String, String> entry : params.entrySet()) {
