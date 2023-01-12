@@ -237,9 +237,7 @@ public class StorageBlobClient {
             for (BlobItem blobItem : blobItemList) {
                 String blobItemName = blobItem.getName();
                 if (blobItemName.contains("-Image-")) {
-                    String reportType = blobItemName.substring(
-                            blobItemName.indexOf(frequency + "-") + frequency.length() + 1,
-                            blobItemName.indexOf("-Image"));
+                    String reportType = blobItemName.substring(blobItemName.indexOf(subAccountName + "-") + subAccountName.length() + 1, blobItemName.indexOf("-Image"));
                     String[] range = blobItemName
                             .substring(blobItemName.indexOf("Image-") + 6, blobItemName.indexOf(".jpg")).split("-");
                     Date startTimestamp = new SimpleDateFormat("yyMMddHHmmss").parse(range[0]);
@@ -253,18 +251,18 @@ public class StorageBlobClient {
                     boolean insert = false;
                     // Check filters
                     if (type.isEmpty() && timestamp.isEmpty()) {
-                        context.getLogger().info("Case 1");
+                        // context.getLogger().info("Case 1");
                         insert = true;
-                    } else if (!type.isEmpty() && type.equals(reportType) && timestamp.isEmpty()) {
-                        context.getLogger().info("Case 2");
+                    } else if (!type.isEmpty() && (frequency+"-"+type).equals(reportType) && timestamp.isEmpty()) {
+                        // context.getLogger().info("Case 2");
                         insert = true;
                     } else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
                             && type.isEmpty()) {
-                        context.getLogger().info("Case 3");
+                        // context.getLogger().info("Case 3");
                         insert = true;
                     } else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
-                            && !type.isEmpty() && type.equals(reportType)) {
-                        context.getLogger().info("Case 4");
+                            && !type.isEmpty() && (frequency+"-"+type).equals(reportType)) {
+                        // context.getLogger().info("Case 4");
                         insert = true;
                     }
 
@@ -272,7 +270,6 @@ public class StorageBlobClient {
                         reports.put(jsonObj);
                 }
             }
-
             return reports;
 
         } catch (Exception e) {
@@ -292,8 +289,6 @@ public class StorageBlobClient {
     public boolean isTimestampInRange(String timestamp, Date startDate, Date endDate) throws Exception {
         // Convert timestampID to Date
         Date filterDate = new SimpleDateFormat("yyMMddHHmmss").parse(timestamp);
-        // Date startDate = new SimpleDateFormat("yyMMddHHmmss").parse(start);
-        // Date endDate = new SimpleDateFormat("yyMMddHHmmss").parse(end);
         return startDate.compareTo(filterDate) * filterDate.compareTo(endDate) >= 0;
     }
 }
