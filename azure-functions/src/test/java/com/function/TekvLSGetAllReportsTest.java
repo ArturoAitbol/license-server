@@ -87,7 +87,7 @@ public class TekvLSGetAllReportsTest extends TekvLSTest {
         assertTrue(report.has("startTime"));
         assertTrue(report.has("endTime"));
 
-        assertEquals(report.get("reportType"), "FeatureFunctionality");
+        assertEquals(report.get("reportType"), "Daily-FeatureFunctionality");
     }
 
     @Tag("acceptance")
@@ -119,7 +119,7 @@ public class TekvLSGetAllReportsTest extends TekvLSTest {
         assertTrue(report.has("startTime"));
         assertTrue(report.has("endTime"));
 
-        assertEquals(report.get("reportType"), "CallingReliability");
+        assertEquals(report.get("reportType"), "Daily-CallingReliability");
     }
 
     @Tag("acceptance")
