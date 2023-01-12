@@ -134,11 +134,11 @@ public class StorageBlobClient {
                         end_date = sDateFormat.format(date);
                     }
                     context.getLogger().info("Start date " + start_date + " | End date " + end_date);
-                    // String timestampID = getTimestampFromBlobName(blobItemName);
-                    // if (timestampID != null) {
-                    // blobMap.put("timestampId", timestampID);
-                    // continue;
-                    // }
+                    String timestampID = getTimestampFromBlobName(blobItemName);
+                    if (timestampID != null) {
+                        blobMap.put("timestampId", timestampID);
+//                        continue;
+                    }
                 }
                 BlobClient blobClient = blobContainerClient.getBlobClient(blobItemName);
                 OffsetDateTime lastModifiedDate = blobItem.getProperties().getLastModified();
