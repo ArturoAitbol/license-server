@@ -111,7 +111,9 @@ export class MoreDetailsComponent implements OnInit {
               obj.fromnoDataFoundFlag = false;
               obj.tonoDataFoundFlag = false;
               obj.otherPartynoDataFoundFlag = false;
-
+              obj.panelOpenState = true;
+              obj.frompanelOpenState = true;
+              obj.topanelOpenState = true;
             });
           } else {
             this.hasDashboardDetails = false;
@@ -143,6 +145,7 @@ export class MoreDetailsComponent implements OnInit {
   setStep(key: any, index: number, rowIndex) {
     this.openFlag = true;
     this.obj['key' + rowIndex] = index;
+    console.log(this.obj['key' + rowIndex])
     if (key === 'from') {
       if (this.detailedTestReport[rowIndex].from.mediaStats.length > 0) {
         this.fromMediaStats = this.detailedTestReport[rowIndex].from.mediaStats[0];
@@ -178,6 +181,11 @@ export class MoreDetailsComponent implements OnInit {
     }
 
   }
+
+
+  open(index) {
+    this.detailedTestReport[index].panelOpenState = false;
+  }
   close(index) {
     this.detailedTestReport[index].closeKey = true;
     const trueKey = this.detailedTestReport.every(e => e.closeKey);
@@ -185,6 +193,23 @@ export class MoreDetailsComponent implements OnInit {
       this.openFlag = false;
     }
     this.obj['key' + index] = '';
+    this.detailedTestReport[index].panelOpenState = true;
+    this.detailedTestReport[index].topanelOpenState = true;
+    this.detailedTestReport[index].frompanelOpenState = true
+  }
+
+  subpanelOpenState(key, index) {
+    console.log(key, index)
+    if (key === 'from') {
+      this.detailedTestReport[index].frompanelOpenState = !this.detailedTestReport[index].frompanelOpenState;
+      // this.obj['key' + index] = '';
+      this.detailedTestReport[index].topanelOpenState = true;
+    }
+    else if (key === 'to') {
+      this.detailedTestReport[index].topanelOpenState = !this.detailedTestReport[index].topanelOpenState;
+      this.detailedTestReport[index].frompanelOpenState = true;
+      // this.detailedTestReport[index].frompanelOpenState = !this.detailedTestReport[index].frompanelOpenState;
+    }
   }
   /**
    * calculate table height based on the window height

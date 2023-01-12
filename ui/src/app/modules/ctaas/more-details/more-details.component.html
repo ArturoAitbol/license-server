@@ -48,11 +48,9 @@
             <section class="table-section">
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
-                        <app-data-table class="table-container mat-elevation-z8" 
-                        [tableData]="reportResponse.endpoints"
-                        [isLoadingResults]="isLoadingResults" 
-                        [isRequestCompleted]="isRequestCompleted" 
-                        [tableColumns]="endpointDisplayedColumns"></app-data-table>
+                        <app-data-table class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
+                            [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
+                            [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
             </section>
@@ -84,7 +82,7 @@
                         <ng-container *ngIf="detailedTestReport.length > 0">
                             <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
                                 class="accordian-container">
-                                <mat-expansion-panel (closed)="close(i)" hideToggle>
+                                <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
                                     <mat-expansion-panel-header>
                                         <mat-panel-title style="width:25%">
                                             <span class="testcasename" [title]="item.testCaseName">
@@ -100,6 +98,8 @@
                                         <mat-panel-title style="width:25%">
                                             {{item.errorCategory | na}}
                                         </mat-panel-title>
+                                        <mat-icon>{{item.panelOpenState ? 'keyboard_arrow_down' : 'keyboard_arrow_up'
+                                            }}</mat-icon>
                                     </mat-expansion-panel-header>
                                     <div style="padding: 1%;">
                                         <div class="row">
@@ -123,7 +123,8 @@
                                                                 <mat-accordion>
                                                                     <mat-expansion-panel hideToggle
                                                                         [expanded]="obj['key' + i] === 1"
-                                                                        (opened)="setStep('from', 1, i)">
+                                                                        (opened)="setStep('from', 1, i)"
+                                                                        (click)="subpanelOpenState('from', i)">
                                                                         <mat-expansion-panel-header
                                                                             style="background-color: white;">
                                                                             <mat-panel-title>
@@ -132,6 +133,10 @@
                                                                                     <li> {{item.from.DID}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
+                                                                            <mat-icon>{{(item.frompanelOpenState) ?
+                                                                                'keyboard_arrow_down' :
+                                                                                'keyboard_arrow_up' }}</mat-icon>
+
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
                                                                             *ngIf="item.from.mediaStats.length > 0">
@@ -141,9 +146,9 @@
                                                                                     <mat-label> Select Time Stamp
                                                                                     </mat-label>
                                                                                     <mat-select
-                                                                                        [(ngModel)]="item.timestamp"
+                                                                                        [(ngModel)]="fromMediaStats"
                                                                                         name="fromtimestamp"
-                                                                                        (selectionChange)="getSelectedFromTimeStamp(fromMediaStats.timestamp)"
+                                                                                        (selectionChange)="getSelectedFromTimeStamp(fromMediaStats)"
                                                                                         placeholder="Select Time Stamp">
                                                                                         <mat-option
                                                                                             *ngFor="let fromtimestamp of item.from.mediaStats"
@@ -178,7 +183,8 @@
                                                                 <mat-accordion>
                                                                     <mat-expansion-panel hideToggle
                                                                         [expanded]="obj['key' + i] === 2"
-                                                                        (opened)="setStep('to',2, i)">
+                                                                        (opened)="setStep('to',2, i)"
+                                                                        (click)="subpanelOpenState('to', i)">
                                                                         <mat-expansion-panel-header
                                                                             style="background-color: white;">
                                                                             <mat-panel-title>
@@ -187,6 +193,9 @@
                                                                                     <li> {{item.to.DID}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
+                                                                            <mat-icon>{{(item.topanelOpenState) ?
+                                                                                'keyboard_arrow_down' :
+                                                                                'keyboard_arrow_up' }}</mat-icon>
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
                                                                             *ngIf="item.to.mediaStats.length > 0">
@@ -230,7 +239,7 @@
                                                                     <mat-expansion-panel hideToggle
                                                                         [expanded]="obj['key' + i] === (3 + j)"
                                                                         (opened)="setStep('other',(3 + j), i)"
-                                                                        hideToggle>
+                                                                        hideToggle (click) = "subpanelOpenState('other', i)">
                                                                         <mat-expansion-panel-header
                                                                             style="background-color: white;">
                                                                             <mat-panel-title>
@@ -239,6 +248,9 @@
                                                                                     <li> {{data.DID}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
+                                                                            <mat-icon>{{(item.frompanelOpenState) ?
+                                                                                'keyboard_arrow_down' :
+                                                                                'keyboard_arrow_up' }}</mat-icon>
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
                                                                             *ngIf="data.mediaStats.length > 0">

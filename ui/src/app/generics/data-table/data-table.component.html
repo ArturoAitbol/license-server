@@ -72,7 +72,7 @@
         </ng-container>
         <ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleRow(row)"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </ng-container>
     </table>
     <!-- table for no data -->

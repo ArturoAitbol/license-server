@@ -38,11 +38,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output() rowAction: EventEmitter<any> = new EventEmitter<any>();
   @Output() clickableRow: EventEmitter<any> = new EventEmitter<any>();
   @Output() pageChanged = new EventEmitter<{ pageIndex: number, pageSize: number }>();
-  // expandedElement = false;
-  expandedElement: any = false;
-  cd: any;
-  innerTables: any;
-  innerSort: any;
+  
   // this property needs to have a setter, to dynamically get changes from parent component
   @Input() set tableData(data: any[]) {
     this.setTableDataSource(data);
