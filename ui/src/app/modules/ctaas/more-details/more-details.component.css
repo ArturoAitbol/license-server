@@ -51,8 +51,8 @@ th.mat-sort-header-sorted {
 
 .no-data-found {
   font-size: 1rem;
-  font-weight: 500;
   margin-top: 50px;
+  text-align: center;
 }
 
 .btn-container {

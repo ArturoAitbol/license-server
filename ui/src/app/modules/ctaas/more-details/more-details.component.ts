@@ -302,7 +302,7 @@ export class MoreDetailsComponent implements OnInit {
       const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
       const reportResponse = detailedResponseObj[this.type];
       if (reportResponse) {
-        this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(this.subaccountId, this.type, reportResponse)
+        this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(reportResponse)
           .subscribe((res: any) => {
             const { error } = res;
             if (!error) this.downloadExcelFile(res);

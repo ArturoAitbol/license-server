@@ -165,16 +165,23 @@ public class GenerateExcelReport {
         int num1 = row.getRowNum() + 1;
         summarySheet.addMergedRegion(CellRangeAddress.valueOf("C" + num1 + ":" + "E" + num1));
         blackLabel.setAlignment(HorizontalAlignment.CENTER);
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("F" + num1 + ":" + "I" + num1));
+        blackLabel.setAlignment(HorizontalAlignment.CENTER);
+
         count = 0;
         addCell(row, cell, blackLabel, count++, "Vendor / Model");
         addCell(row, cell, blackLabel, count++, "DID");
         addCell(row, cell, blackLabel, count++, "Firmware Version");
         addCell(row, cell, blackLabel, count++, null);
         addCell(row, cell, blackLabel, count++, null);
-        addCell(row, cell, blackLabel, count++, "Country");
-        addCell(row, cell, blackLabel, count++, "State");
-        addCell(row, cell, blackLabel, count++, "City");
-        addCell(row, cell, blackLabel, count++, "Zipcode");
+        addCell(row, cell, blackLabel, count++, "Region");
+        addCell(row, cell, blackLabel, count++, null);
+        addCell(row, cell, blackLabel, count++, null);
+        addCell(row, cell, blackLabel, count++, null);
+
+//        addCell(row, cell, blackLabel, count++, "State");
+//        addCell(row, cell, blackLabel, count++, "City");
+//        addCell(row, cell, blackLabel, count++, "Zipcode");
 
         JSONArray endpointsResponse = (JSONArray) jsonObject.get("endpoints");
         for (int i = 0; i < endpointsResponse.length(); i++) {
@@ -235,6 +242,8 @@ public class GenerateExcelReport {
         int num = row.getRowNum() + 1;
         workSheet.addMergedRegion(CellRangeAddress.valueOf("C" + num + ":" + "E" + num));
         whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("F" + num + ":" + "I" + num));
+        whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
         final String vendorName = endPointResource.get("vendor").toString() == "null" ? "" : endPointResource.get("vendor").toString();
         final String modelName = endPointResource.get("model").toString() == "null" ? "" : endPointResource.get("model").toString();
         final String did = endPointResource.get("did").toString() == "null" ? "" : endPointResource.get("did").toString();
@@ -244,15 +253,16 @@ public class GenerateExcelReport {
         final String city = endPointResource.get("city").toString() == "null" ? "" : endPointResource.get("city").toString();
         final String zipcode = endPointResource.get("zipcode").toString() == "null" ? "" : endPointResource.get("zipcode").toString();
 
+        final String region = String.format("%s, %s, %s, %s",city,state,country,zipcode);
         addCell(row, null, blackLabel, count++, vendorName + " / " + modelName);
         addCell(row, null, whiteUnboldStyle, count++, did);
         addCell(row, null, whiteUnboldStyle, count++, firmwareVersion);
         addCell(row, null, whiteUnboldStyle, count++, null);
         addCell(row, null, whiteUnboldStyle, count++, null);
-        addCell(row, null, whiteUnboldStyle, count++, country);
-        addCell(row, null, whiteUnboldStyle, count++, state);
-        addCell(row, null, whiteUnboldStyle, count++, city);
-        addCell(row, null, whiteUnboldStyle, count++, zipcode);
+        addCell(row, null, whiteUnboldStyle, count++, region);
+        addCell(row, null, whiteUnboldStyle, count++, null);
+        addCell(row, null, whiteUnboldStyle, count++, null);
+        addCell(row, null, whiteUnboldStyle, count++, null);
     }
 
 
