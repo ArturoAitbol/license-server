@@ -139,9 +139,9 @@
                                                                                     <mat-label> Select Time Stamp
                                                                                     </mat-label>
                                                                                     <mat-select
-                                                                                        [(ngModel)]="fromMediaStats"
+                                                                                        [(ngModel)]="item.timestamp"
                                                                                         name="fromtimestamp"
-                                                                                        (selectionChange)="getSelectedFromTimeStamp(fromMediaStats)"
+                                                                                        (selectionChange)="getSelectedFromTimeStamp(fromMediaStats.timestamp)"
                                                                                         placeholder="Select Time Stamp">
                                                                                         <mat-option
                                                                                             *ngFor="let fromtimestamp of item.from.mediaStats"
@@ -163,7 +163,7 @@
                                                                                 </tbody>
                                                                             </table>
                                                                         </ng-container>
-                                                                        <h3 *ngIf="fromMediaStatsFlag"
+                                                                        <h3 *ngIf="item.fromnoDataFoundFlag"
                                                                             style="text-align: center;"> No media stats
                                                                             to
                                                                             display </h3>
@@ -213,7 +213,7 @@
                                                                                 </tbody>
                                                                             </table>
                                                                         </ng-container>
-                                                                        <h3 *ngIf="toMediaStatsFlag"
+                                                                        <h3 *ngIf="item.tonoDataFoundFlag"
                                                                             style="text-align: center;"> No media stats
                                                                             to
                                                                             display </h3>
@@ -266,7 +266,7 @@
                                                                                 </tbody>
                                                                             </table>
                                                                         </ng-container>
-                                                                        <h3 *ngIf="otherPartisMediaStatsFlag"
+                                                                        <h3 *ngIf="item.otherPartynoDataFoundFlag"
                                                                             style="text-align: center;"> No media stats
                                                                             to
                                                                             display </h3>

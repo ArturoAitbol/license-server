@@ -39,9 +39,6 @@ export class MoreDetailsComponent implements OnInit {
   otherPartiesMediaStats: any = {};
   detailedTestFeatureandCallReliability: any = [];
   mediaStatsDisplayedColumns: any = [];
-  fromMediaStatsFlag = false;
-  toMediaStatsFlag = false;
-  otherPartisMediaStatsFlag = false;
   // fakeResponse: any = {
   //   "summary": {
   //     "total": 4,
@@ -469,6 +466,10 @@ export class MoreDetailsComponent implements OnInit {
             console.log('this.detailedTestReport ', this.detailedTestReport);
             this.detailedTestReport.forEach((obj: any) => {
               obj.closeKey = false;
+              obj.fromnoDataFoundFlag = false;
+              obj.tonoDataFoundFlag = false;
+              obj.otherPartynoDataFoundFlag = false;
+
             });
           } else {
             this.hasDashboardDetails = false;
@@ -503,33 +504,33 @@ export class MoreDetailsComponent implements OnInit {
     if (key === 'from') {
       if (this.detailedTestReport[rowIndex].from.mediaStats.length > 0) {
         this.fromMediaStats = this.detailedTestReport[rowIndex].from.mediaStats[0];
-        this.fromMediaStatsFlag = false;
+        this.detailedTestReport[rowIndex].fromnoDataFoundFlag = false;
         this.getSelectedFromTimeStamp(this.fromMediaStats);
       }
       else {
-        this.fromMediaStatsFlag = true;
+        this.detailedTestReport[rowIndex].fromnoDataFoundFlag = true;
       }
 
     }
     else if (key === 'to') {
       if (this.detailedTestReport[rowIndex].to.mediaStats.length > 0) {
         this.toMediaStats = this.detailedTestReport[rowIndex].to.mediaStats[0];
-        this.toMediaStatsFlag = false;
+        this.detailedTestReport[rowIndex].tonoDataFoundFlag = false;
         this.getSelectedToTimeStamp(this.toMediaStats);
       }
       else {
-        this.toMediaStatsFlag = true;
+        this.detailedTestReport[rowIndex].tonoDataFoundFlag = true;
       }
 
     }
     else {
       if (this.detailedTestReport[rowIndex].otherParties[index - 3].mediaStats.length > 0) {
         this.otherpartyMediaStat = this.detailedTestReport[rowIndex].otherParties[index - 3].mediaStats[0];
-        this.otherPartisMediaStatsFlag = false;
+        this.detailedTestReport[rowIndex].otherPartynoDataFoundFlag = false;
         this.getSelectedOtherPartyTimeStamp(this.otherpartyMediaStat)
       }
       else {
-        this.otherPartisMediaStatsFlag = true;
+        this.detailedTestReport[rowIndex].otherPartynoDataFoundFlag = true;
       }
 
     }
