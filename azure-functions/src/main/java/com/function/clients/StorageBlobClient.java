@@ -211,7 +211,8 @@ public class StorageBlobClient {
      * @return: JSONArray
      */
     public JSONArray fetchReportsPerCustomer(ExecutionContext context, final String customerName,
-            final String subAccountName, final String frequency, final String type, final String timestamp) {
+            final String subAccountName, final String frequency, final String type, final String timestamp)
+            throws Exception {
         JSONArray reports = new JSONArray();
         try {
             // Check if container exist or not
@@ -233,37 +234,43 @@ public class StorageBlobClient {
                     .filter(x -> x.getName().contains(filter))
                     .collect(Collectors.toList());
 
-            JSONObject jsonObj = new JSONObject();
-
             for (BlobItem blobItem : blobItemList) {
-                context.getLogger().info("blobItem " + blobItem.getName());
                 String blobItemName = blobItem.getName();
-                String reportType = blobItemName.substring(blobItemName.indexOf(type + "-") + type.length() + 1,
-                        blobItemName.indexOf("-Image"));
-                String[] range = blobItemName
-                        .substring(blobItemName.indexOf("Image-") + 6, blobItemName.indexOf(".jpg")).split("-");
-                String startTimestamp = range[0];
-                String endTimestamp = range[1];
+                if (blobItemName.contains("-Image-")) {
+                    String reportType = blobItemName.substring(
+                            blobItemName.indexOf(frequency + "-") + frequency.length() + 1,
+                            blobItemName.indexOf("-Image"));
+                    String[] range = blobItemName
+                            .substring(blobItemName.indexOf("Image-") + 6, blobItemName.indexOf(".jpg")).split("-");
+                    Date startTimestamp = new SimpleDateFormat("yyMMddHHmmss").parse(range[0]);
+                    Date endTimestamp = new SimpleDateFormat("yyMMddHHmmss").parse(range[1]);
 
-                jsonObj.put("reportType", reportType);
-                jsonObj.put("startTime", startTimestamp);
-                jsonObj.put("endTime", endTimestamp);
+                    JSONObject jsonObj = new JSONObject();
+                    jsonObj.put("reportType", reportType);
+                    jsonObj.put("startTime", startTimestamp);
+                    jsonObj.put("endTime", endTimestamp);
 
-                boolean insert = false;
-                // Check filters
-                if (type.isEmpty() && timestamp.isEmpty())
-                    insert = true;
-                else if (!type.isEmpty() && type.equals(reportType) && timestamp.isEmpty())
-                    insert = true;
-                else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
-                        && type.isEmpty())
-                    insert = true;
-                else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
-                        && !type.isEmpty() && type.equals(reportType))
-                    insert = true;
+                    boolean insert = false;
+                    // Check filters
+                    if (type.isEmpty() && timestamp.isEmpty()) {
+                        context.getLogger().info("Case 1");
+                        insert = true;
+                    } else if (!type.isEmpty() && type.equals(reportType) && timestamp.isEmpty()) {
+                        context.getLogger().info("Case 2");
+                        insert = true;
+                    } else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
+                            && type.isEmpty()) {
+                        context.getLogger().info("Case 3");
+                        insert = true;
+                    } else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
+                            && !type.isEmpty() && type.equals(reportType)) {
+                        context.getLogger().info("Case 4");
+                        insert = true;
+                    }
 
-                if (insert)
-                    reports.put(jsonObj);
+                    if (insert)
+                        reports.put(jsonObj);
+                }
             }
 
             return reports;
@@ -277,16 +284,16 @@ public class StorageBlobClient {
     /**
      * Verify if a timestamp is between two timestamps
      *
-     * @param timestamp:   String
-     * @param start:       String
-     * @param end:         String
+     * @param timestamp: String
+     * @param start:     String
+     * @param end:       String
      * @return: boolean
      */
-    public boolean isTimestampInRange(String timestamp, String start, String end) throws Exception{
-        //Convert timestampID to Date
+    public boolean isTimestampInRange(String timestamp, Date startDate, Date endDate) throws Exception {
+        // Convert timestampID to Date
         Date filterDate = new SimpleDateFormat("yyMMddHHmmss").parse(timestamp);
-        Date startDate = new SimpleDateFormat("yyMMddHHmmss").parse(start);
-        Date endDate = new SimpleDateFormat("yyMMddHHmmss").parse(end);
+        // Date startDate = new SimpleDateFormat("yyMMddHHmmss").parse(start);
+        // Date endDate = new SimpleDateFormat("yyMMddHHmmss").parse(end);
         return startDate.compareTo(filterDate) * filterDate.compareTo(endDate) >= 0;
     }
 }

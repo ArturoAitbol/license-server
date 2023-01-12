@@ -108,7 +108,6 @@ public class TekvLSGetAllReports {
 				PreparedStatement selectStmt = queryBuilder.build(connection)) {
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			ResultSet rs;
-			
 
 			if (verificationQueryBuilder != null) {
 				try (PreparedStatement verificationStmt = verificationQueryBuilder.build(connection)) {
@@ -116,38 +115,41 @@ public class TekvLSGetAllReports {
 					rs = verificationStmt.executeQuery();
 					if (!rs.next()) {
 						context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
-                        json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+						json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
 						return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 					}
 				}
 			}
 
 			context.getLogger().info("Execute SQL statement: " + selectStmt);
-            rs = selectStmt.executeQuery();
-            String customerName = null;
-            String subaccountName = null;
+			rs = selectStmt.executeQuery();
+			String customerName = null;
+			String subaccountName = null;
 			String frequency = "Daily"; // Hardcoded value since currently we support Daily frequency only
 
-            if (rs.next()) {
-                customerName = rs.getString("customerName");
-                subaccountName = rs.getString("subaccountName");
-                context.getLogger().info("customer name - " + customerName + " - subaccount name - " + subaccountName);
-            }
+			if (rs.next()) {
+				customerName = rs.getString("customerName");
+				subaccountName = rs.getString("subaccountName");
+				context.getLogger().info("customer name - " + customerName + " - subaccount name - " + subaccountName);
+			}
 
-            if ((customerName == null || customerName.isEmpty()) || (subaccountName == null || subaccountName.isEmpty())) {
-                context.getLogger().info(LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
-                json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
-                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-            }
+			if ((customerName == null || customerName.isEmpty())
+					|| (subaccountName == null || subaccountName.isEmpty())) {
+				context.getLogger().info(LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
+				json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
 
-			JSONArray reportArray = StorageBlobClient.getInstance().fetchReportsPerCustomer(context, customerName, subaccountName, frequency, reportType, timestamp);
+			JSONArray reportArray = StorageBlobClient.getInstance().fetchReportsPerCustomer(context, customerName,
+					subaccountName, frequency, getReportType(reportType), timestamp);
 			if (reportArray == null) {
-                json.put("error", "Cannot found reports for customer");
-                context.getLogger().info( "Cannot found reports for customer");
-            } else {                
-                json.put("response", reportArray);
-            }
-            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
+				json.put("error", "Cannot found reports for customer");
+				context.getLogger().info("Cannot found reports for customer");
+			} else {
+				json.put("reports", reportArray);
+			}
+			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
+					.body(json.toString()).build();
 		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			json = new JSONObject();
@@ -158,6 +160,17 @@ public class TekvLSGetAllReports {
 			json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+		}
+	}
+
+	public String getReportType(String type) {
+		switch (type) {
+			case "calling":
+				return "CallingReliability";
+			case "feature":
+				return "FeatureFunctionality";
+			default:
+				return "";
 		}
 	}
 }
