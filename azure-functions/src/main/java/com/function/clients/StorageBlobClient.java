@@ -107,8 +107,6 @@ public class StorageBlobClient {
             BlobItem blobItem = blobItemList.subList(MAX_VALUE, BLOB_LIST_SIZE).get(0);
 
             Map<String, String> blobMap = new HashMap<>();
-            if (!timestamp.isEmpty())
-                blobMap.put("timestampId", timestamp);
 
             String blobItemName = blobItem.getName();
             context.getLogger().info("File name: " + blobItemName);
@@ -117,7 +115,9 @@ public class StorageBlobClient {
             // set start date and end date from the blob file name
             this.getStartDateAndEndDateFromBlobItem(context, blobMap, blobItemName);
 
-            if (timestamp.isEmpty()) {
+            if (!timestamp.isEmpty())
+                blobMap.put("timestampId", timestamp);
+            else{
                 String timestampID = getTimestampFromBlobName(blobItemName);
                 if (timestampID != null) {
                     blobMap.put("timestampId", timestampID);
