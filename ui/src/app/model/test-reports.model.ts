@@ -1,6 +1,7 @@
 export interface ITestReports {
     reportType: string, 
-    timeStamp: string,
+    endTime: string,
+    startTime: string
     status: string
 }
 

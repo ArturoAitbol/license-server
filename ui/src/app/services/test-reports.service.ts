@@ -15,10 +15,11 @@ export class TestReportsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public getTestReportsList(subaccountId?: string) {
+  public getTestReportsList(subaccountId?: string, reportType?:string, date?:string) {
     let params = new HttpParams();
     if (subaccountId) {
-      params = params.set('subaccountId', subaccountId);
+      params = params.set('date', date);
+      params = params.set('reportType', reportType);
     }
     const headers = this.getHeaders();
     return this.httpClient.get<ITestReports>(`${this.API_URL}/${subaccountId}`, { headers, params });

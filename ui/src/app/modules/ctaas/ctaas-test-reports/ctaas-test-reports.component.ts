@@ -10,6 +10,7 @@ import { Note } from 'src/app/model/note.model';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 import { TestReportsService } from 'src/app/services/test-reports.service';
 import { CtaasHistoricalDashboardComponent } from '../ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 
@@ -29,18 +30,22 @@ export class CtaasTestReportsComponent implements OnInit {
   testReportsDataBK: any = [];
   currentCustomer: any;
   filteredReports: any = [];
+  selectedFilter: any;
+  selectedDate: any;
   private readonly VIEW_REPORT = 'View Report';
-  private readonly VIEW_CHART = 'View Chart';
+  private readonly VIEW_CHARTS = 'View Chart';
 
   readonly options = {
     VIEW_REPORT:this.VIEW_REPORT,
-    VIEW_CHART: this.VIEW_CHART
+    VIEW_CHARTS: this.VIEW_CHARTS
   }
 
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
 
   filterForm = this.fb.group({
-    typeFilterControl: ['']
+    typeFilterControl: [''],
+    startTimeControl: [''],
+    endTimeControl: ['']
   });
 
   private unsubscribe: Subject<void> = new Subject<void>();
@@ -52,7 +57,7 @@ export class CtaasTestReportsComponent implements OnInit {
     private dialogService: DialogService,
     private testReportsService: TestReportsService,
     private fb: FormBuilder,
-    private customerService: CustomerService
+    private subAccountService: SubAccountService
   ) { }
 
   private calculateTableHeight() {
@@ -69,51 +74,37 @@ export class CtaasTestReportsComponent implements OnInit {
     this.displayedColumns = [
       { name: 'Report Type', dataKey: 'reportType', position: 'left', isSortable: true },
       { name: 'Start Time', dataKey: 'startTime', position: 'left', isSortable: true },
-      { name: 'End Time', dataKey: 'endTime', position: 'left', isSortable: true },
-      { name: 'Status', dataKey: 'status', position: 'left', isSortable: true }
+      { name: 'End Time', dataKey: 'endTime', position: 'left', isSortable: true }
+      // { name: 'Status', dataKey: 'status', position: 'left', isSortable: true }
 
     ];
   }
 
   private getActionMenuOptions() {
     const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions")
+    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "testReportsOptions")
   }
 
   ngOnInit(): void {
     this.calculateTableHeight();
-    this.currentCustomer = this.customerService.getSelectedCustomer();
     this.getActionMenuOptions();
     this.initColumns();
     this.fetchTestReports();
-    this.filterForm.valueChanges.pipe(
-      debounceTime(300),
-      takeUntil(this.unsubscribe)
-    ).subscribe(value => {
-      const filter = [];
-      if(value.typeFilterControl != '' && value.typeFilterControl != undefined) filter.push(report => report.reportType === value.typeFilterControl);
-      this.isLoadingResults = true;
-      this.filteredReports = this.testReportsData.filter(report => filter.every(filter => filter(report)));
-      this.isLoadingResults = false;
-    })
   }
 
   fetchTestReports() {
-    // this.isRequestCompleted = false;
-    // this.isLoadingResults = true;
-    // this.testReportsService.getTestReportsList(this.currentCustomer.subaccountId).subscribe((res: any) => {
-    //   this.isRequestCompleted = true; 
-    //   this.isLoadingResults = false;
-    //   this.filteredReports = this.testReportsData;
-    //   this.testReportsDataBK = this.testReportsData = res['reports'];
-    // }, () => {
-    //   this.isLoadingResults = false;
-    //   this.isRequestCompleted = true;
-    // });
-
-    this.isRequestCompleted = true; 
-    this.isLoadingResults = false;
-    return  this.testReportsData;
+    this.isRequestCompleted = false;
+    this.isLoadingResults = true;
+    this.testReportsService.getTestReportsList(this.subAccountService.getSelectedSubAccount().id,this.selectedFilter, this.selectedDate).subscribe((res: any) => {
+      this.isRequestCompleted = true; 
+      this.isLoadingResults = false;
+      this.testReportsDataBK = this.testReportsData = res['reports'];
+      this.filteredReports = this.testReportsData;
+    }, error => {
+      console.debug('error', error);
+      this.isLoadingResults = false;
+      this.isRequestCompleted = true;
+  });
   }
 
 
@@ -132,7 +123,7 @@ export class CtaasTestReportsComponent implements OnInit {
     this.toggleStatus = flag;
     if (flag) {
         console.log(this.actionMenuOptions);
-        let failedTestReportIndex = this.actionMenuOptions.indexOf('Close Note');
+        let failedTestReportIndex = this.actionMenuOptions.indexOf('failed');
         if (failedTestReportIndex != -1)
           this.actionMenuOptions.splice(failedTestReportIndex, 1);
         this.testReportsData = this.testReportsDataBK.filter(x => x.status === 'Failed');
@@ -149,14 +140,14 @@ export class CtaasTestReportsComponent implements OnInit {
         case this.VIEW_REPORT:
             //this.onCloseNote(selectedRow);
             break;
-        case this.VIEW_CHART:
+        case this.VIEW_CHARTS:
             this.viewDashboard(selectedRow);
             break;
     }
   }
 
   viewDashboard(note: Note): void{
-    this.openDialog(this.VIEW_CHART,note);
+    this.openDialog(this.VIEW_CHARTS,note);
   }
 
   openDialog(type: string, selectedItemData?: any){
@@ -168,7 +159,7 @@ export class CtaasTestReportsComponent implements OnInit {
             //     disableClose: false
             // });
             break;
-        case this.VIEW_CHART:
+        case this.VIEW_CHARTS:
             dialogRef = this.dialog.open(CtaasHistoricalDashboardComponent, {
                 data: selectedItemData,
                 width: '100vw',
@@ -184,6 +175,25 @@ export class CtaasTestReportsComponent implements OnInit {
             this.fetchTestReports();
         }
     });
+  }
+
+
+  toggleOptionValue(value:any){
+    if(value === 'Daily-FeatureFunctionality'){
+      this.selectedFilter = 'feature';
+      this.testReportsData = [];
+      this.fetchTestReports();
+    } else if(value ==='Daily-CallingReliability'){
+      this.selectedFilter = 'calling';
+      this.testReportsData = [];
+      this.fetchTestReports();
+    }
+  }
+
+  toggleDateValue(value:any){
+    console.log("342",value.value.toJSON());
+    this.selectedDate = value.value.toJSON();
+    this.fetchTestReports();
   }
 
   ngOnDestroy() {
