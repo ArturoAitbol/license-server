@@ -98,11 +98,12 @@ public class StorageBlobClient {
                     .collect(Collectors.toList());
             int BLOB_LIST_SIZE = blobItemList.size();
             int MAX_VALUE = Math.max(BLOB_LIST_SIZE - 1, 0);
-            context.getLogger()
-                    .info("Type: " + type + " | Max value: " + MAX_VALUE + " | Blob List size: " + BLOB_LIST_SIZE);
+            context.getLogger().info("Type: " + type + " | Max value: " + MAX_VALUE + " | Blob List size: " + BLOB_LIST_SIZE);
+            context.getLogger().info("Filtered files path: " + filterImageString);
             // sort the list by ascending order with file name
             Collections.sort(blobItemList,
                     (blobItem1, blobItem2) -> blobItem1.getName().compareTo(blobItem2.getName()));
+                    
             BlobItem blobItem = blobItemList.subList(MAX_VALUE, BLOB_LIST_SIZE).get(0);
 
             Map<String, String> blobMap = new HashMap<>();
@@ -111,30 +112,12 @@ public class StorageBlobClient {
 
             String blobItemName = blobItem.getName();
             context.getLogger().info("File name: " + blobItemName);
-            //e.g: Daily file name {customer_name}/{subaccount_name}-{report_type}-Image-{start_date}-{end_date}.jpg
-            //e.g: Weekly file name {customer_name}/{subaccount_name}-{report_type}-Image {timestamp}.jpg
-            // split the string
-            String[] splittedStr = blobItemName.replace(".jpg", "").split("-");
-            String start_date = null;
-            String end_date = null;
-            if (splittedStr.length == 6) {
-                start_date = splittedStr[4];
-                end_date = splittedStr[5];
-                if (start_date != null && end_date != null) {
-                    blobMap.put("startDate", start_date);
-                    blobMap.put("endDate", end_date);
-                    if (timestamp.isEmpty())
-                        blobMap.put("timestampId", start_date);
-                }
-            } else {
-                SimpleDateFormat sDateFormat = new SimpleDateFormat("yyMMddHHmmss");
-                Date date = new Date();
-                start_date = sDateFormat.format(date);
-                end_date = sDateFormat.format(date);
-            }
-            context.getLogger().info("Start date " + start_date + " | End date " + end_date);
+            // e.g: Daily file name {customer_name}/{subaccount_name}-{report_type}-Image-{start_date}-{end_date}.jpg
+            // e.g: Weekly file name  {customer_name}/{subaccount_name}-{report_type}-Image-{timestamp}.jpg
+            // set start date and end date from the blob file name
+            this.getStartDateAndEndDateFromBlobItem(context, blobMap, blobItemName);
 
-            if (blobMap.getOrDefault("timestampId","").isEmpty()) {
+            if (timestamp.isEmpty()) {
                 String timestampID = getTimestampFromBlobName(blobItemName);
                 if (timestampID != null) {
                     blobMap.put("timestampId", timestampID);
@@ -176,6 +159,49 @@ public class StorageBlobClient {
             return simpleDateFormat.format(d);
         }
         return null;
+    }
+
+    /**
+     * get start date and end date from blob item name
+     *
+     * @param context:      ExecutionContext
+     * @param blobMap:      Map<String, String>
+     * @param blobItemName: String
+     */
+    public void getStartDateAndEndDateFromBlobItem(
+            ExecutionContext context,
+            Map<String, String> blobMap,
+            String blobItemName) {
+        String[] splittedStr = blobItemName.replace(".jpg", "").split("Image");
+        String date_time_str = splittedStr.length == 2 ? splittedStr[1] : "";
+        String start_date = null;
+        String end_date = null;
+        // if string is empty then set start date and end date
+        if (date_time_str.isEmpty()) {
+            SimpleDateFormat sDateFormat = new SimpleDateFormat("yyMMddHHmmss");
+            Date date = new Date();
+            start_date = sDateFormat.format(date);
+            end_date = sDateFormat.format(date);
+        } else {
+            String[] splitted_by_minus = date_time_str.split("-");
+            if (splitted_by_minus.length > 1) {
+                start_date = splitted_by_minus[splitted_by_minus.length - 2];
+                end_date = splitted_by_minus[splitted_by_minus.length - 1];
+            } else if (splitted_by_minus.length == 1) {
+                start_date = splitted_by_minus[splitted_by_minus.length - 1];
+                end_date = splitted_by_minus[splitted_by_minus.length - 1];
+            } else {
+                SimpleDateFormat sDateFormat = new SimpleDateFormat("yyMMddHHmmss");
+                Date date = new Date();
+                start_date = sDateFormat.format(date);
+                end_date = sDateFormat.format(date);
+            }
+        }
+        context.getLogger().info("Start date " + start_date + " | End date " + end_date);
+        if (start_date != null && end_date != null) {
+            blobMap.put("startDate", start_date);
+            blobMap.put("endDate", end_date);
+        }
     }
 
     /**
