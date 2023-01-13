@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class NaPipe implements PipeTransform {
 
   transform(value: unknown, ...args: unknown[]): unknown {
-    return (value === null || value === undefined) ? 'N/A' : value;
+    return (value === null || value === undefined || value === '') ? 'N/A' : value;
   }
 
 }

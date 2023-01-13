@@ -1,21 +1,26 @@
 .card-width {
   width: max-content;
 }
+
 .card-size {
   width: 100px;
   border-radius: 5px;
 }
+
 .card {
   border-radius: 5px;
-  padding: 10px 0px;
+  /* padding: 10px 0px; */
 }
+
 .sub-heading {
   font-size: medium;
   font-weight: bold;
 }
+
 .value {
   font-size: medium;
 }
+
 .dashboard-content {
   padding: 20px;
 }
@@ -46,8 +51,8 @@ th.mat-sort-header-sorted {
 
 .no-data-found {
   font-size: 1rem;
-  font-weight: 500;
   margin-top: 50px;
+  text-align: center;
 }
 
 .btn-container {
@@ -61,6 +66,62 @@ th.mat-sort-header-sorted {
   padding: 0;
   height: 0;
 }
+
 .fw-500 {
   font-weight: 500 !important;
+}
+
+mat-card {
+  height: 215px;
+  margin: 0px;
+  padding: 0px;
+  overflow: auto;
+}
+
+::ng-deep tr.mat-header-row {
+  background: #e4e5e5;
+}
+
+::ng-deep #Region {
+  max-width: 200px;
+}
+
+.font-s {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.text-s {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.accordian-container .mat-expanded .mat-expansion-panel-header {
+  background: lightgray;
+}
+
+.inner-accor {
+  list-style-type: none !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  flex: 1 1 auto !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.summary {
+  padding: 12px 0px;
+  overflow: hidden;
+}
+
+.summary-card-content {
+  padding: 1%;
+}
+
+.testcasename {
+  width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

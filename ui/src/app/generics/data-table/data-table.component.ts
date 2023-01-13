@@ -15,8 +15,9 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   data: any = [];
   public tableDataSource = new MatTableDataSource([]);
   public displayedColumns: string[];
-  public selection = new SelectionModel(true,[]);
+  public selection = new SelectionModel(true, []);
   public selectable = false;
+
   @ViewChild(MatPaginator, { static: false }) matPaginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) matSort: MatSort;
 
@@ -37,7 +38,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output() rowAction: EventEmitter<any> = new EventEmitter<any>();
   @Output() clickableRow: EventEmitter<any> = new EventEmitter<any>();
   @Output() pageChanged = new EventEmitter<{ pageIndex: number, pageSize: number }>();
-
+  
   // this property needs to have a setter, to dynamically get changes from parent component
   @Input() set tableData(data: any[]) {
     this.setTableDataSource(data);
@@ -53,8 +54,9 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-
+  
   ngOnInit(): void {
+    // this.nestedKey = 'endpoint-resources'
     const columnNames = this.tableColumns.map((tableColumn: TableColumn) => tableColumn.name);
     this.displayedColumns = columnNames;
     if (this.selectable) this.displayedColumns = ['select', ...this.displayedColumns];
@@ -83,6 +85,10 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.serverSidePagination) {
       this.tableDataSource.paginator = this.matPaginator;
     }
+  }
+
+  toggleRow(element) {
+    element.expandedElement = !element.expandedElement
   }
   /**
    * apply filter to the table
@@ -139,7 +145,7 @@ export class DataTableComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   onPageChange(event: PageEvent) {
     if (this.isPageable && this.serverSidePagination)
-      this.pageChanged.emit({pageIndex: event.pageIndex, pageSize: event.pageSize })
+      this.pageChanged.emit({ pageIndex: event.pageIndex, pageSize: event.pageSize })
   }
 
   /**

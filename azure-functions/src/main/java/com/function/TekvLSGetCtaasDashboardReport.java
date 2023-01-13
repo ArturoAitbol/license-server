@@ -1,7 +1,7 @@
 package com.function;
 
 import com.function.auth.Resource;
-import com.function.clients.StorageBlobClient;
+import com.function.clients.TAPClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.*;
@@ -23,6 +23,13 @@ import static com.function.auth.Roles.*;
  * Azure Functions with HTTP Trigger.
  */
 public class TekvLSGetCtaasDashboardReport {
+
+    public static final String MESSAGE_FOR_INVALID_REPORT_TYPE = "Report Type provided is invalid.";
+    public static final String MESSAGE_FOR_INVALID_START_DATE = "Start Date provided is invalid.";
+    public static final String MESSAGE_FOR_INVALID_END_DATE = "End Date provided is invalid.";
+    private static final String MESSAGE_FOR_INVALID_TAP_URL = "Failed to fetch detailed report";
+    private static final String LOG_MESSAGE_FOR_INVALID_TAP_URL = "Invalid TAP URL";
+
     /**
      * This function listens at endpoint "/api/TekvLSGetCtaasDashboardReport". Two ways to invoke it using "curl" command in bash:
      * 1. curl -d "HTTP Body" {your host}/api/TekvLSGetCtaasDashboardReport
@@ -33,10 +40,12 @@ public class TekvLSGetCtaasDashboardReport {
             @HttpTrigger(name = "req",
                     methods = {HttpMethod.GET},
                     authLevel = AuthorizationLevel.ANONYMOUS,
-                    route = "ctaasDashboard/report/{subaccountId=EMPTY}/{reportType=EMPTY}")
+                    route = "ctaasDashboard/report/{subaccountId=EMPTY}/{reportType=EMPTY}/{startDate=EMPTY}/{endDate=EMPTY}")
             HttpRequestMessage<Optional<String>> request,
             @BindingName("subaccountId") String subaccountId,
             @BindingName("reportType") String reportType,
+            @BindingName("startDate") String startDate,
+            @BindingName("endDate") String endDate,
             final ExecutionContext context) {
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
         JSONArray roles = getRolesFromToken(tokenClaims, context);
@@ -65,15 +74,27 @@ public class TekvLSGetCtaasDashboardReport {
         }
         // Check if reportType is empty
         if (reportType.equals("EMPTY") || reportType.isEmpty()) {
-            context.getLogger().info("Report type cannot be empty");
+            context.getLogger().info(MESSAGE_FOR_INVALID_REPORT_TYPE + " | Report Type: " + reportType);
             JSONObject json = new JSONObject();
-            json.put("error", "Report type cannot be empty");
+            json.put("error", MESSAGE_FOR_INVALID_REPORT_TYPE);
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-
-
+        // Check if start date is null
+        if (startDate == null) {
+            context.getLogger().info(MESSAGE_FOR_INVALID_START_DATE + " | Start Date: " + null);
+            JSONObject json = new JSONObject();
+            json.put("error", MESSAGE_FOR_INVALID_START_DATE);
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+        }
+        // Check if end date is null
+        if (endDate == null) {
+            context.getLogger().info(MESSAGE_FOR_INVALID_END_DATE + " | End Date: " + null);
+            JSONObject json = new JSONObject();
+            json.put("error", MESSAGE_FOR_INVALID_END_DATE);
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+        }
         // Build SQL statement
-        SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT c.name as customerName, s.name as subaccountName  FROM customer c LEFT JOIN subaccount s ON c.id = s.customer_id");
+        SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT c.name as customerName, s.name as subaccountName, cs.tap_url as tapURL  FROM customer c LEFT JOIN subaccount s ON c.id = s.customer_id LEFT JOIN ctaas_setup cs ON s.id = cs.subaccount_id");
         queryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
         SelectQueryBuilder verificationQueryBuilder = null;
         String email = getEmailFromToken(tokenClaims, context);
@@ -128,11 +149,12 @@ public class TekvLSGetCtaasDashboardReport {
             rs = selectStmt.executeQuery();
             String customerName = null;
             String subaccountName = null;
-
+            String tapURL = null;
             if (rs.next()) {
                 customerName = rs.getString("customerName");
                 subaccountName = rs.getString("subaccountName");
-                context.getLogger().info("customer name - " + customerName + " - subaccount name - " + subaccountName);
+                tapURL = rs.getString("tapURL");
+                context.getLogger().info("customer name : " + customerName + " | subaccount name : " + subaccountName + " | TAP URL : " + tapURL);
             }
 
             if ((customerName == null || customerName.isEmpty()) || (subaccountName == null || subaccountName.isEmpty())) {
@@ -141,14 +163,25 @@ public class TekvLSGetCtaasDashboardReport {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
-            JSONObject reportJsonObject = StorageBlobClient.getInstance().fetchJsonFileFromBlob(context, customerName, subaccountName, reportType);
-            if (reportJsonObject == null) {
-                json.put("error", "Cannot found the detailed report with " + reportType + " in the storage blob");
-                context.getLogger().info( "Cannot found the detailed report with " + reportType + " in the storage blob");
+            if (tapURL == null || tapURL.isEmpty()) {
+                context.getLogger().info(LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
+                json.put("error", MESSAGE_FOR_INVALID_TAP_URL);
+                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+            }
+            context.getLogger().info("Requesting TAP for detailed report. URL: " + tapURL);
+            // Make a http call to TAP and get the access token
+            String accessToken = TAPClient.getAccessToken(tapURL, context);
+            context.getLogger().info("Report Type: " + reportType + " | Start Date: " + startDate + " | End Date: " + endDate);
+            // Make a http call to North Bound API to fetch detailed test report by reportType
+            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, reportType, startDate, endDate, context);
+            if (response == null) {
+                json.put("error", "Error with fetching detailed test report from Automation Platform");
+                context.getLogger().info("Error with fetching detailed test report from Automation Platform");
             } else {
+                context.getLogger().info("Received detailed test report response from Automation Platform");
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("reportType", reportType);
-                jsonObject.put("report", reportJsonObject);
+                jsonObject.put("report", response);
                 json.put("response", jsonObject);
             }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
