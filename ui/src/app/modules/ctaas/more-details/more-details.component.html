@@ -61,29 +61,29 @@
 </ng-template>
 <ng-template #viewTestDetailedReport>
     <section class="table-section">
+        <mat-accordion>
+            <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
+                <mat-expansion-panel-header>
+                    <mat-panel-title style="width:24%;color: black;font-weight: 500;"> Test Case
+                    </mat-panel-title>
+                    <mat-panel-title style="width:24%;color: black;font-weight: 500;"> Start Date
+                    </mat-panel-title>
+                    <mat-panel-title style="width:24%;color: black;font-weight: 500;"> Status
+                    </mat-panel-title>
+                    <mat-panel-title style="width:24%;color: black;font-weight: 500;margin-right: 25px;"> Error Category
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
+        </mat-accordion>
         <mat-card class="card" style="overflow: auto;height: 400px;">
             <mat-card-content>
-                <div style="overflow: auto;">
+                <div>
                     <ng-container>
-                        <mat-accordion>
-                            <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
-                                <mat-expansion-panel-header>
-                                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Test Case
-                                    </mat-panel-title>
-                                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Start Date
-                                    </mat-panel-title>
-                                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Status
-                                    </mat-panel-title>
-                                    <mat-panel-title style="width:25%;color: black;font-weight: 500;"> Error Category
-                                    </mat-panel-title>
-                                </mat-expansion-panel-header>
-                            </mat-expansion-panel>
-                        </mat-accordion>
                         <ng-container *ngIf="detailedTestReport.length > 0">
                             <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
                                 class="accordian-container">
                                 <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
-                                    <mat-expansion-panel-header>
+                                    <mat-expansion-panel-header style="position: relative;">
                                         <mat-panel-title style="width:25%">
                                             <span class="testcasename" [title]="item.testCaseName">
                                                 {{item.testCaseName | na}}
@@ -98,7 +98,9 @@
                                         <mat-panel-title style="width:25%">
                                             {{item.errorCategory | na}}
                                         </mat-panel-title>
-                                        <mat-icon>{{item.panelOpenState ? 'keyboard_arrow_down' : 'keyboard_arrow_up'
+                                        <mat-icon style="position: absolute;right: 20px;">{{item.panelOpenState ?
+                                            'keyboard_arrow_down' :
+                                            'keyboard_arrow_up'
                                             }}</mat-icon>
                                     </mat-expansion-panel-header>
                                     <div style="padding: 1%;">
@@ -162,7 +164,8 @@
                                                                                 <tbody>
                                                                                     <tr
                                                                                         *ngFor="let key of mediaStatsDisplayedColumns">
-                                                                                        <th scope="row"> {{key.header}}
+                                                                                        <th scope="row">
+                                                                                            {{key.header}}
                                                                                         </th>
                                                                                         <td> {{selectedFromMediaStats[key.value]}}
                                                                                         </td>
@@ -171,7 +174,8 @@
                                                                             </table>
                                                                         </ng-container>
                                                                         <h3 *ngIf="item.fromnoDataFoundFlag"
-                                                                            style="text-align: center;"> No media stats
+                                                                            style="text-align: center;"> No media
+                                                                            stats
                                                                             to
                                                                             display </h3>
                                                                     </mat-expansion-panel>
@@ -216,7 +220,8 @@
                                                                                 <tbody>
                                                                                     <tr
                                                                                         *ngFor="let key of mediaStatsDisplayedColumns">
-                                                                                        <th scope="row"> {{key.header}}
+                                                                                        <th scope="row">
+                                                                                            {{key.header}}
                                                                                         </th>
                                                                                         <td> {{selectedToMediaStats[key.value]}}
                                                                                         </td>
@@ -225,7 +230,8 @@
                                                                             </table>
                                                                         </ng-container>
                                                                         <h3 *ngIf="item.tonoDataFoundFlag"
-                                                                            style="text-align: center;"> No media stats
+                                                                            style="text-align: center;"> No media
+                                                                            stats
                                                                             to
                                                                             display </h3>
                                                                     </mat-expansion-panel>
@@ -239,7 +245,8 @@
                                                                     <mat-expansion-panel hideToggle
                                                                         [expanded]="obj['key' + i] === (3 + j)"
                                                                         (opened)="setStep('other',(3 + j), i)"
-                                                                        hideToggle (click) = "subpanelOpenState('other', i, j)">
+                                                                        hideToggle
+                                                                        (click)="subpanelOpenState('other', i, j)">
                                                                         <mat-expansion-panel-header
                                                                             style="background-color: white;">
                                                                             <mat-panel-title>
@@ -248,7 +255,8 @@
                                                                                     <li> {{data.DID}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
-                                                                            <mat-icon>{{(item.otherPartyPanelStatus) ?
+                                                                            <mat-icon>{{(item.otherPartyPanelStatus)
+                                                                                ?
                                                                                 'keyboard_arrow_down' :
                                                                                 'keyboard_arrow_up' }}</mat-icon>
                                                                         </mat-expansion-panel-header>
@@ -272,7 +280,8 @@
                                                                                 <tbody>
                                                                                     <tr
                                                                                         *ngFor="let key of mediaStatsDisplayedColumns">
-                                                                                        <th scope="row"> {{key.header}}
+                                                                                        <th scope="row">
+                                                                                            {{key.header}}
                                                                                         </th>
                                                                                         <td> {{otherPartiesMediaStats[key.value]}}
                                                                                         </td>
@@ -281,7 +290,8 @@
                                                                             </table>
                                                                         </ng-container>
                                                                         <h3 *ngIf="item.otherPartynoDataFoundFlag"
-                                                                            style="text-align: center;"> No media stats
+                                                                            style="text-align: center;"> No media
+                                                                            stats
                                                                             to
                                                                             display </h3>
                                                                     </mat-expansion-panel>
