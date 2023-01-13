@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { CtaasRoutingModule } from './ctaas-routing.module';
 import { CtaasDashboardComponent } from './ctaas-dashboard/ctaas-dashboard.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
 import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.component';
@@ -20,6 +20,7 @@ import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 import { MoreDetailsComponent } from './more-details/more-details.component';
+
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { MoreDetailsComponent } from './more-details/more-details.component';
     CtaasRoutingModule,
     ReactiveFormsModule,
     MaterialModule,
-    SharedModule
+    SharedModule,
+    FormsModule
   ],
   entryComponents: [
     OnboardWizardComponent,
