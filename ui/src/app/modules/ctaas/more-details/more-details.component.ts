@@ -12,8 +12,6 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 })
 export class MoreDetailsComponent implements OnInit {
   endpointDisplayedColumns: any = [];
-  featureFunctionalityDisplayedColumns: any = [];
-  downloadUrl: any;
   filename: string = '';
   tableMaxHeight: number;
   type: string = '';
@@ -21,8 +19,6 @@ export class MoreDetailsComponent implements OnInit {
   endDateStr: string = '';
   loggedInUserRoles: string[] = [];
   subaccountId: string = '';
-  readonly FEATURE_FUNCTIONALITY: string = ReportType.DAILY_FEATURE_FUNCTIONALITY;
-  readonly CALL_RELIABILITY: string = ReportType.DAILY_CALLING_RELIABILITY;
   hasDashboardDetails: boolean = false;
   isLoadingResults = true;
   isRequestCompleted = false;
@@ -43,6 +39,9 @@ export class MoreDetailsComponent implements OnInit {
   fromMediaStats: any;
   toMediaStats: any;
   otherpartyMediaStat: any;
+  public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
+  public readonly FEATURE_FUNCTIONALITY: string = ReportType.DAILY_FEATURE_FUNCTIONALITY;
+  public readonly CALL_RELIABILITY: string = ReportType.DAILY_CALLING_RELIABILITY;
 
   constructor(
     private msalService: MsalService,
@@ -99,12 +98,18 @@ export class MoreDetailsComponent implements OnInit {
             this.filename = reportType;
             this.hasDashboardDetails = true;
             const { summary, endpoints, results, type } = this.reportResponse;
-            this.reportResponse.endpoints = this.reportResponse.endpoints.map(e => {
-              if (e.city && e.country && e.state && e.zipcode) {
-                e.region = `${e.city}, ${e.state}, ${e.country}, ${e.zipcode}`;
-              }
-              return e;
-            });
+            if (endpoints && endpoints.length > 0) {
+              this.reportResponse.endpoints = endpoints.map((e: any) => {
+                if (e.city && e.country && e.state && e.zipcode) {
+                  e.region = `${e.city}, ${e.state}, ${e.country}, ${e.zipcode}`;
+                } else {
+                  e.region = "";
+                }
+                return e;
+              });
+            } else {
+              this.reportResponse.endpoints = [];
+            }
             this.detailedTestReport = (results && results.length > 0) ? results : [];
             this.detailedTestReport.forEach((obj: any) => {
               obj.closeKey = false;
@@ -112,8 +117,6 @@ export class MoreDetailsComponent implements OnInit {
               obj.tonoDataFoundFlag = false;
               obj.otherPartynoDataFoundFlag = false;
               obj.panelOpenState = true;
-              // obj.frompanelOpenState = true;
-              // obj.topanelOpenState = true;
             });
           } else {
             this.hasDashboardDetails = false;
@@ -247,17 +250,6 @@ export class MoreDetailsComponent implements OnInit {
       { name: 'DID', dataKey: 'did', position: 'center', isSortable: true },
       { name: 'Firmware', dataKey: 'firmwareVersion', position: 'center', isSortable: true },
       { name: 'Region', dataKey: 'region', position: 'center', isSortable: false }
-    ];
-    this.featureFunctionalityDisplayedColumns = [
-      { name: 'Test Case', dataKey: 'testCaseName', position: 'left', isSortable: true },
-      // { name: 'Start Time', dataKey: 'startTime', position: 'center', isSortable: true },
-      // { name: 'End Time', dataKey: 'endTime', position: 'center', isSortable: true },
-      // { name: 'From', dataKey: 'from', position: 'center', isSortable: true },
-      // { name: 'To', dataKey: 'to', position: 'center', isSortable: true },
-      // { name: 'Other Parties', dataKey: 'otherParties', position: 'center', isSortable: true },
-      { name: 'Status', dataKey: 'status', position: 'center', isSortable: true },
-      { name: 'Error Category', dataKey: 'errorCategory', position: 'center', isSortable: true },
-      // { name: 'Reason', dataKey: 'errorReason', position: 'center', isSortable: true },
     ];
 
     this.summaryDisplayedColumns = [

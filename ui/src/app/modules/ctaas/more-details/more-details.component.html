@@ -36,7 +36,7 @@
                         <tbody>
                             <tr *ngFor="let item of summaryDisplayedColumns">
                                 <th>{{item.header}}</th>
-                                <td>{{reportResponse?.summary[item.value]}}</td>
+                                <td>{{reportResponse?.summary[item.value] | na}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -48,8 +48,10 @@
             <section class="table-section">
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
-                        <app-data-table class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
-                            [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
+                        <app-data-table class="table-container mat-elevation-z8" 
+                            [tableData]="reportResponse.endpoints"
+                            [isLoadingResults]="isLoadingResults" 
+                            [isRequestCompleted]="isRequestCompleted"
                             [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
@@ -132,7 +134,7 @@
                                                                             <mat-panel-title>
                                                                                 <ul class="inner-accor">
                                                                                     <li> From </li>
-                                                                                    <li> {{item.from.DID}} </li>
+                                                                                    <li> {{item.from?.DID | na}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
                                                                             <mat-icon>{{(item.frompanelOpenState) ?
@@ -141,7 +143,7 @@
 
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
-                                                                            *ngIf="item.from.mediaStats.length > 0">
+                                                                            *ngIf="item.from.mediaStats && item.from.mediaStats.length > 0">
                                                                             <form>
                                                                                 <mat-form-field
                                                                                     (click)="$event.stopPropagation()">
@@ -167,17 +169,14 @@
                                                                                         <th scope="row">
                                                                                             {{key.header}}
                                                                                         </th>
-                                                                                        <td> {{selectedFromMediaStats[key.value]}}
-                                                                                        </td>
+                                                                                        <td> {{selectedFromMediaStats[key.value] | na}}                                                                                        </td>
                                                                                     </tr>
                                                                                 </tbody>
                                                                             </table>
                                                                         </ng-container>
-                                                                        <h3 *ngIf="item.fromnoDataFoundFlag"
-                                                                            style="text-align: center;"> No media
-                                                                            stats
-                                                                            to
-                                                                            display </h3>
+                                                                        <h3 *ngIf="item.fromnoDataFoundFlag || !(item.from.mediaStats)"
+                                                                            class="text-center"> {{NO_MEDIA_STATS_MSG}}
+                                                                        </h3>
                                                                     </mat-expansion-panel>
                                                                 </mat-accordion>
                                                             </td>
@@ -194,7 +193,7 @@
                                                                             <mat-panel-title>
                                                                                 <ul class="inner-accor">
                                                                                     <li> To </li>
-                                                                                    <li> {{item.to.DID}} </li>
+                                                                                    <li> {{item.to?.DID | na}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
                                                                             <mat-icon>{{(item.topanelOpenState) ?
@@ -202,7 +201,7 @@
                                                                                 'keyboard_arrow_up' }}</mat-icon>
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
-                                                                            *ngIf="item.to.mediaStats.length > 0">
+                                                                            *ngIf="item.to.mediaStats && item.to.mediaStats.length > 0">
                                                                             <mat-form-field
                                                                                 (click)="$event.stopPropagation()">
                                                                                 <mat-select [(ngModel)]="toMediaStats"
@@ -223,17 +222,15 @@
                                                                                         <th scope="row">
                                                                                             {{key.header}}
                                                                                         </th>
-                                                                                        <td> {{selectedToMediaStats[key.value]}}
+                                                                                        <td> {{selectedToMediaStats[key.value] | na}}
                                                                                         </td>
                                                                                     </tr>
                                                                                 </tbody>
                                                                             </table>
                                                                         </ng-container>
-                                                                        <h3 *ngIf="item.tonoDataFoundFlag"
-                                                                            style="text-align: center;"> No media
-                                                                            stats
-                                                                            to
-                                                                            display </h3>
+                                                                        <h3 *ngIf="item.tonoDataFoundFlag || !(item.to.mediaStats)"
+                                                                            class="text-center"> {{NO_MEDIA_STATS_MSG}}
+                                                                        </h3>
                                                                     </mat-expansion-panel>
 
                                                                 </mat-accordion>
@@ -252,7 +249,7 @@
                                                                             <mat-panel-title>
                                                                                 <ul class="inner-accor">
                                                                                     <li> Other party </li>
-                                                                                    <li> {{data.DID}} </li>
+                                                                                    <li> {{data?.DID | na}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
                                                                             <mat-icon>{{(item.otherPartyPanelStatus)
@@ -283,17 +280,15 @@
                                                                                         <th scope="row">
                                                                                             {{key.header}}
                                                                                         </th>
-                                                                                        <td> {{otherPartiesMediaStats[key.value]}}
+                                                                                        <td> {{otherPartiesMediaStats[key.value] | na}}
                                                                                         </td>
                                                                                     </tr>
                                                                                 </tbody>
                                                                             </table>
                                                                         </ng-container>
-                                                                        <h3 *ngIf="item.otherPartynoDataFoundFlag"
-                                                                            style="text-align: center;"> No media
-                                                                            stats
-                                                                            to
-                                                                            display </h3>
+                                                                        <h3 *ngIf="item.otherPartynoDataFoundFlag || item.otherParties.length===0"
+                                                                            class=" text-center">{{NO_MEDIA_STATS_MSG}}
+                                                                        </h3>
                                                                     </mat-expansion-panel>
                                                                 </mat-accordion>
                                                             </td>
