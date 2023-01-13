@@ -112,8 +112,8 @@ export class MoreDetailsComponent implements OnInit {
               obj.tonoDataFoundFlag = false;
               obj.otherPartynoDataFoundFlag = false;
               obj.panelOpenState = true;
-              obj.frompanelOpenState = true;
-              obj.topanelOpenState = true;
+              // obj.frompanelOpenState = true;
+              // obj.topanelOpenState = true;
             });
           } else {
             this.hasDashboardDetails = false;
@@ -145,7 +145,6 @@ export class MoreDetailsComponent implements OnInit {
   setStep(key: any, index: number, rowIndex) {
     this.openFlag = true;
     this.obj['key' + rowIndex] = index;
-    console.log(this.obj['key' + rowIndex])
     if (key === 'from') {
       if (this.detailedTestReport[rowIndex].from.mediaStats.length > 0) {
         this.fromMediaStats = this.detailedTestReport[rowIndex].from.mediaStats[0];
@@ -185,7 +184,17 @@ export class MoreDetailsComponent implements OnInit {
 
   open(index) {
     this.detailedTestReport[index].panelOpenState = false;
+    this.detailedTestReport[index].frompanelOpenState = true;
+    this.detailedTestReport[index].topanelOpenState = true;
+    this.getOtherPartiesReports(this.detailedTestReport[index].otherParties)
   }
+
+  getOtherPartiesReports(data) {
+    data.forEach((otherParties) => {
+      otherParties.otherPartyPanelStatus = true;
+    })
+  }
+
   close(index) {
     this.detailedTestReport[index].closeKey = true;
     const trueKey = this.detailedTestReport.every(e => e.closeKey);
@@ -198,17 +207,21 @@ export class MoreDetailsComponent implements OnInit {
     this.detailedTestReport[index].frompanelOpenState = true
   }
 
-  subpanelOpenState(key, index) {
-    console.log(key, index)
+  subpanelOpenState(key, index, otherIndex?) {
     if (key === 'from') {
       this.detailedTestReport[index].frompanelOpenState = !this.detailedTestReport[index].frompanelOpenState;
-      // this.obj['key' + index] = '';
       this.detailedTestReport[index].topanelOpenState = true;
+      this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = true;
     }
     else if (key === 'to') {
       this.detailedTestReport[index].topanelOpenState = !this.detailedTestReport[index].topanelOpenState;
       this.detailedTestReport[index].frompanelOpenState = true;
-      // this.detailedTestReport[index].frompanelOpenState = !this.detailedTestReport[index].frompanelOpenState;
+      this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = true;
+    }
+    else {
+      this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = !this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus;
+      this.detailedTestReport[index].topanelOpenState = true;
+      this.detailedTestReport[index].frompanelOpenState = true;
     }
   }
   /**

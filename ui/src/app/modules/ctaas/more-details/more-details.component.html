@@ -61,9 +61,9 @@
 </ng-template>
 <ng-template #viewTestDetailedReport>
     <section class="table-section">
-        <mat-card class="card" style="overflow: hidden;height: auto;">
+        <mat-card class="card" style="overflow: auto;height: 400px;">
             <mat-card-content>
-                <div style="overflow: auto;" [style.height]="openFlag ? '60vh' : 'auto'">
+                <div style="overflow: auto;">
                     <ng-container>
                         <mat-accordion>
                             <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
@@ -239,7 +239,7 @@
                                                                     <mat-expansion-panel hideToggle
                                                                         [expanded]="obj['key' + i] === (3 + j)"
                                                                         (opened)="setStep('other',(3 + j), i)"
-                                                                        hideToggle (click) = "subpanelOpenState('other', i)">
+                                                                        hideToggle (click) = "subpanelOpenState('other', i, j)">
                                                                         <mat-expansion-panel-header
                                                                             style="background-color: white;">
                                                                             <mat-panel-title>
@@ -248,7 +248,7 @@
                                                                                     <li> {{data.DID}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
-                                                                            <mat-icon>{{(item.frompanelOpenState) ?
+                                                                            <mat-icon>{{(item.otherPartyPanelStatus) ?
                                                                                 'keyboard_arrow_down' :
                                                                                 'keyboard_arrow_up' }}</mat-icon>
                                                                         </mat-expansion-panel-header>
