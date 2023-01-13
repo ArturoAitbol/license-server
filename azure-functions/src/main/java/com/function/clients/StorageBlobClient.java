@@ -13,7 +13,10 @@ import org.json.JSONArray;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -294,11 +297,13 @@ public class StorageBlobClient {
             for (BlobItem blobItem : blobItemList) {
                 String blobItemName = blobItem.getName();
                 if (blobItemName.contains("-Image-")) {
-                    String reportType = blobItemName.substring(blobItemName.indexOf(subAccountName + "-") + subAccountName.length() + 1, blobItemName.indexOf("-Image"));
+                    String reportType = blobItemName.substring(
+                            blobItemName.indexOf(subAccountName + "-") + subAccountName.length() + 1,
+                            blobItemName.indexOf("-Image"));
                     String[] range = blobItemName
                             .substring(blobItemName.indexOf("Image-") + 6, blobItemName.indexOf(".jpg")).split("-");
-                    Date startTimestamp = new SimpleDateFormat("yyMMddHHmmss").parse(range[0]);
-                    Date endTimestamp = new SimpleDateFormat("yyMMddHHmmss").parse(range[1]);
+                    String startTimestamp = range[0];
+                    String endTimestamp = range[1];
 
                     JSONObject jsonObj = new JSONObject();
                     jsonObj.put("reportType", reportType);
@@ -307,21 +312,20 @@ public class StorageBlobClient {
 
                     boolean insert = false;
                     // Check filters
-                    if (type.isEmpty() && timestamp.isEmpty()) {
-                        // context.getLogger().info("Case 1");
+                    if (type.isEmpty() && timestamp.isEmpty())
                         insert = true;
-                    } else if (!type.isEmpty() && (frequency+"-"+type).equals(reportType) && timestamp.isEmpty()) {
-                        // context.getLogger().info("Case 2");
+                    else if (!type.isEmpty() && (frequency + "-" + type).equals(reportType) && timestamp.isEmpty())
+
                         insert = true;
-                    } else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
-                            && type.isEmpty()) {
-                        // context.getLogger().info("Case 3");
+                    else if (!timestamp.isEmpty()
+                            && isTimestampInRange(timestamp, startTimestamp, endTimestamp, context)
+                            && type.isEmpty())
                         insert = true;
-                    } else if (!timestamp.isEmpty() && isTimestampInRange(timestamp, startTimestamp, endTimestamp)
-                            && !type.isEmpty() && (frequency+"-"+type).equals(reportType)) {
-                        // context.getLogger().info("Case 4");
+                    else if (!timestamp.isEmpty()
+                            && isTimestampInRange(timestamp, startTimestamp, endTimestamp, context)
+                            && !type.isEmpty() && (frequency + "-" + type).equals(reportType))
+
                         insert = true;
-                    }
 
                     if (insert)
                         reports.put(jsonObj);
@@ -343,9 +347,13 @@ public class StorageBlobClient {
      * @param end:       String
      * @return: boolean
      */
-    public boolean isTimestampInRange(String timestamp, Date startDate, Date endDate) throws Exception {
-        // Convert timestampID to Date
-        Date filterDate = new SimpleDateFormat("yyMMddHHmmss").parse(timestamp);
+    public boolean isTimestampInRange(String timestamp, String start, String end, ExecutionContext context)
+            throws Exception {
+        TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(timestamp);
+        Instant i = Instant.from(ta);
+        Date filterDate = Date.from(i);
+        Date startDate = new SimpleDateFormat("yyMMddHHmmss").parse(start);
+        Date endDate = new SimpleDateFormat("yyMMddHHmmss").parse(end);
         return startDate.compareTo(filterDate) * filterDate.compareTo(endDate) >= 0;
     }
 }
