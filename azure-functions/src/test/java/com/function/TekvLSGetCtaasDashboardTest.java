@@ -59,7 +59,7 @@ public class TekvLSGetCtaasDashboardTest extends TekvLSTest {
     public void getDashboardByTimestampId() {
         //Given
         String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
-        String timestampId = "221121121316";
+        String timestampId = "230110002112";
         this.queryParams.put("timestampId", timestampId);
 
         // When
