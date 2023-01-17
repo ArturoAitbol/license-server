@@ -143,8 +143,8 @@ public class TekvLSGetAllReports {
 			JSONArray reportArray = StorageBlobClient.getInstance().fetchReportsPerCustomer(context, customerName,
 					subaccountName, frequency, getReportType(reportType), timestamp);
 			if (reportArray == null) {
-				json.put("error", "Cannot found reports for customer");
-				context.getLogger().info("Cannot found reports for customer");
+				json.put("error", "Cannot find reports for customer");
+				context.getLogger().info("Cannot find reports for customer");
 			} else {
 				json.put("reports", reportArray);
 			}
