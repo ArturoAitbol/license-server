@@ -117,6 +117,8 @@ export class MoreDetailsComponent implements OnInit {
               obj.tonoDataFoundFlag = false;
               obj.otherPartynoDataFoundFlag = false;
               obj.panelOpenState = true;
+              // filter the array without media stats details 
+              obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
             });
           } else {
             this.hasDashboardDetails = false;
@@ -184,21 +186,31 @@ export class MoreDetailsComponent implements OnInit {
 
   }
 
-
-  open(index) {
+  /**
+   * This method got triggered if mat expansion panel is opened
+   * @param index: number 
+   */
+  open(index: number): void {
     this.detailedTestReport[index].panelOpenState = false;
     this.detailedTestReport[index].frompanelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
-    this.getOtherPartiesReports(this.detailedTestReport[index].otherParties)
+    if (this.detailedTestReport[index].otherParties) // check for null / undefined values
+      this.setOtherPartiesPanelStatus(this.detailedTestReport[index].otherParties);
   }
-
-  getOtherPartiesReports(data) {
+  /**
+   * set other parties panel status as true
+   * @param data: any[]
+   */
+  setOtherPartiesPanelStatus(data: any[]): void {
     data.forEach((otherParties) => {
       otherParties.otherPartyPanelStatus = true;
-    })
+    });
   }
-
-  close(index) {
+  /**
+   * This method got triggered if mat expansion panel is closed
+   * @param index: number 
+   */
+  close(index: number): void {
     this.detailedTestReport[index].closeKey = true;
     const trueKey = this.detailedTestReport.every(e => e.closeKey);
     if (trueKey) {
@@ -210,21 +222,24 @@ export class MoreDetailsComponent implements OnInit {
     this.detailedTestReport[index].frompanelOpenState = true
   }
 
-  subpanelOpenState(key, index, otherIndex?) {
-    if (key === 'from') {
-      this.detailedTestReport[index].frompanelOpenState = !this.detailedTestReport[index].frompanelOpenState;
-      this.detailedTestReport[index].topanelOpenState = true;
-      this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = true;
-    }
-    else if (key === 'to') {
-      this.detailedTestReport[index].topanelOpenState = !this.detailedTestReport[index].topanelOpenState;
-      this.detailedTestReport[index].frompanelOpenState = true;
-      this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = true;
-    }
-    else {
-      this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = !this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus;
-      this.detailedTestReport[index].topanelOpenState = true;
-      this.detailedTestReport[index].frompanelOpenState = true;
+  subpanelOpenState(key: string, index: number, otherIndex?: number) {
+    if (index !== undefined && index !== null) {
+      const { frompanelOpenState, topanelOpenState, otherParties } = this.detailedTestReport[index];
+      switch (key) {
+        case 'from':
+          this.detailedTestReport[index].frompanelOpenState = !frompanelOpenState;
+          this.detailedTestReport[index].topanelOpenState = true;
+          break;
+        case 'to':
+          this.detailedTestReport[index].topanelOpenState = !topanelOpenState;
+          this.detailedTestReport[index].frompanelOpenState = true;
+          break;
+        case 'other':
+          this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = !otherParties[otherIndex].otherPartyPanelStatus;
+          this.detailedTestReport[index].topanelOpenState = true;
+          this.detailedTestReport[index].frompanelOpenState = true;
+          break;
+      }
     }
   }
   /**
@@ -323,4 +338,10 @@ export class MoreDetailsComponent implements OnInit {
       this.snackBarService.openSnackBar('Error loading downloading report', 'Ok');
     }
   }
+  /**
+   * get mat expansion panel icon by type
+   * @param type: boolean
+   * @returns: string
+   */
+  getIconByType(flag: boolean): string { return (flag) ? 'keyboard_arrow_down' : 'keyboard_arrow_up'; }
 }
