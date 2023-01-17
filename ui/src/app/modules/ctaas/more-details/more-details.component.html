@@ -137,13 +137,10 @@
                                                                                     <li> {{item.from?.DID | na}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
-                                                                            <mat-icon>{{(item.frompanelOpenState) ?
-                                                                                'keyboard_arrow_down' :
-                                                                                'keyboard_arrow_up' }}</mat-icon>
-
+                                                                            <mat-icon>{{getIconByType(item.frompanelOpenState)}}</mat-icon>
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
-                                                                            *ngIf="item.from && item.from.mediaStats && item.from.mediaStats.length > 0">
+                                                                            *ngIf="item.from && item.from.mediaStats && item.from.mediaStats.length > 0; else noMediaStats">
                                                                             <form>
                                                                                 <mat-form-field
                                                                                     (click)="$event.stopPropagation()">
@@ -174,9 +171,6 @@
                                                                                 </tbody>
                                                                             </table>
                                                                         </ng-container>
-                                                                        <h3 *ngIf="item.fromnoDataFoundFlag || !(item.from.mediaStats)"
-                                                                            class="text-center"> {{NO_MEDIA_STATS_MSG}}
-                                                                        </h3>
                                                                     </mat-expansion-panel>
                                                                 </mat-accordion>
                                                             </td>
@@ -196,12 +190,10 @@
                                                                                     <li> {{item.to?.DID | na}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
-                                                                            <mat-icon>{{(item.topanelOpenState) ?
-                                                                                'keyboard_arrow_down' :
-                                                                                'keyboard_arrow_up' }}</mat-icon>
+                                                                            <mat-icon>{{getIconByType(item.topanelOpenState)}}</mat-icon>
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
-                                                                            *ngIf="item.to && item.to.mediaStats && item.to.mediaStats.length > 0">
+                                                                            *ngIf="item.to && item.to.mediaStats && item.to.mediaStats.length > 0; else noMediaStats">
                                                                             <mat-form-field
                                                                                 (click)="$event.stopPropagation()">
                                                                                 <mat-select [(ngModel)]="toMediaStats"
@@ -228,9 +220,6 @@
                                                                                 </tbody>
                                                                             </table>
                                                                         </ng-container>
-                                                                        <h3 *ngIf="item.tonoDataFoundFlag || !(item.to.mediaStats)"
-                                                                            class="text-center"> {{NO_MEDIA_STATS_MSG}}
-                                                                        </h3>
                                                                     </mat-expansion-panel>
 
                                                                 </mat-accordion>
@@ -252,13 +241,10 @@
                                                                                     <li> {{data?.DID | na}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
-                                                                            <mat-icon>
-                                                                                {{(!item.otherPartyPanelStatus)?
-                                                                                'keyboard_arrow_down' :
-                                                                                'keyboard_arrow_up' }}</mat-icon>
+                                                                            <mat-icon> {{getIconByType(item.otherPartyPanelStatus)}}</mat-icon>
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
-                                                                            *ngIf="data.mediaStats.length > 0">
+                                                                            *ngIf="data.mediaStats && data.mediaStats.length > 0; else noMediaStats">
                                                                             <mat-form-field
                                                                                 (click)="$event.stopPropagation()">
                                                                                 <mat-select
@@ -286,9 +272,6 @@
                                                                                 </tbody>
                                                                             </table>
                                                                         </ng-container>
-                                                                        <h3 *ngIf="item.otherPartynoDataFoundFlag || item.otherParties.length===0"
-                                                                            class=" text-center">{{NO_MEDIA_STATS_MSG}}
-                                                                        </h3>
                                                                     </mat-expansion-panel>
                                                                 </mat-accordion>
                                                             </td>
@@ -307,4 +290,8 @@
             </mat-card-content>
         </mat-card>
     </section>
+</ng-template>
+
+<ng-template #noMediaStats>
+    <h3 class=" text-center">{{NO_MEDIA_STATS_MSG}}</h3>
 </ng-template>
