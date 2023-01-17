@@ -213,7 +213,7 @@ public class GenerateExcelReport {
         summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + columnnum + ":" + "I" + columnnum));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
         final String REPORT_TYPE = jsonObject.get("type").toString().equalsIgnoreCase("LTS") ? "Feature Functionality"
-                : "Call Reliability";
+                : "Calling Reliability";
         if ((JSONArray) jsonObject.get("results") != null)
             addCell(row, null, whiteLabel, count++, REPORT_TYPE);
         count = 0;
