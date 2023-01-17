@@ -117,6 +117,10 @@ export class MoreDetailsComponent implements OnInit {
               obj.tonoDataFoundFlag = false;
               obj.otherPartynoDataFoundFlag = false;
               obj.panelOpenState = true;
+              if (obj.otherParties && obj.otherParties.length > 0) {
+                // filter the array without media stats details
+                obj.otherParties = obj.otherParties.filter(e => e.hasOwnProperty('mediaStats'));
+              }
             });
           } else {
             this.hasDashboardDetails = false;
@@ -137,6 +141,8 @@ export class MoreDetailsComponent implements OnInit {
 
   getSelectedFromTimeStamp(event) {
     this.selectedFromMediaStats = event.data;
+    console.log('selectedFromMediaStats: ', this.selectedFromMediaStats);
+
   }
   getSelectedToTimeStamp(event) {
     this.selectedToMediaStats = event.data;
@@ -190,12 +196,15 @@ export class MoreDetailsComponent implements OnInit {
     this.detailedTestReport[index].frompanelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
     this.getOtherPartiesReports(this.detailedTestReport[index].otherParties)
+    console.log('>>> ', this.detailedTestReport[index].otherParties);
   }
 
   getOtherPartiesReports(data) {
     data.forEach((otherParties) => {
       otherParties.otherPartyPanelStatus = true;
     })
+    console.log('data: ', data);
+
   }
 
   close(index) {

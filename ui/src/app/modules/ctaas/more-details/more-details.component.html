@@ -100,7 +100,8 @@
                                         <mat-panel-title style="width:25%">
                                             {{item.errorCategory | na}}
                                         </mat-panel-title>
-                                        <mat-icon style="position: absolute;right: 20px;">{{item.panelOpenState ?
+                                        <mat-icon style="position: absolute;right: 20px;">
+                                            {{item.panelOpenState ?
                                             'keyboard_arrow_down' :
                                             'keyboard_arrow_up'
                                             }}</mat-icon>
@@ -112,8 +113,7 @@
                                                     <tbody>
                                                         <tr
                                                             *ngFor="let subitems of detailedTestFeatureandCallReliability">
-                                                            <th scope="row" style="width: 25%;"> {{subitems.header |
-                                                                na}} </th>
+                                                            <th scope="row" style="width: 25%;"> {{subitems.header | na}} </th>
                                                             <td> {{item[subitems.value] | na}}</td>
                                                         </tr>
                                                     </tbody>
@@ -143,7 +143,7 @@
 
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
-                                                                            *ngIf="item.from.mediaStats && item.from.mediaStats.length > 0">
+                                                                            *ngIf="item.from && item.from.mediaStats && item.from.mediaStats.length > 0">
                                                                             <form>
                                                                                 <mat-form-field
                                                                                     (click)="$event.stopPropagation()">
@@ -201,7 +201,7 @@
                                                                                 'keyboard_arrow_up' }}</mat-icon>
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
-                                                                            *ngIf="item.to.mediaStats && item.to.mediaStats.length > 0">
+                                                                            *ngIf="item.to && item.to.mediaStats && item.to.mediaStats.length > 0">
                                                                             <mat-form-field
                                                                                 (click)="$event.stopPropagation()">
                                                                                 <mat-select [(ngModel)]="toMediaStats"
@@ -252,8 +252,8 @@
                                                                                     <li> {{data?.DID | na}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
-                                                                            <mat-icon>{{(item.otherPartyPanelStatus)
-                                                                                ?
+                                                                            <mat-icon>
+                                                                                {{(!item.otherPartyPanelStatus)?
                                                                                 'keyboard_arrow_down' :
                                                                                 'keyboard_arrow_up' }}</mat-icon>
                                                                         </mat-expansion-panel-header>
