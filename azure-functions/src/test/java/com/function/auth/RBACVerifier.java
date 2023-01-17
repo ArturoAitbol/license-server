@@ -495,6 +495,16 @@ public class RBACVerifier {
                 true,
                 true,
                 true));
+        verifiers.put(GET_ALL_REPORTS, new ExpectedPermissions(true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false,
+                true,
+                true,
+                true));
         verifiers.put(GET_ALL_FEATURE_TOGGLES, new ExpectedPermissions(
                 true,
                 false,
