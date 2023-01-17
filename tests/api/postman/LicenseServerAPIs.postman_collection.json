@@ -266,7 +266,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\"\r\n}",
+					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}admin1@tekvizion.com\",\r\n    \"test\": \"true\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -303,7 +303,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerAdminEmail\": \"{{name}}@adminemail.com\",\r\n    \"customerId\": \"{{customerId}}\"\r\n}",
+					"raw": "{\r\n    \"customerAdminEmail\": \"{{name}}admin2@tekvizion.com\",\r\n    \"customerId\": \"{{customerId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -344,7 +344,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountName\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmail\": \"{{name}}@test.com\"\r\n}",
+					"raw": "{\r\n    \"subaccountName\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmail\": \"{{name}}subadmin1@tekvizion.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -381,7 +381,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountAdminEmail\": \"{{name}}@subadmin.com\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"raw": "{\r\n    \"subaccountAdminEmail\": \"{{name}}subadmin2@tekvizion.com\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -920,7 +920,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -957,7 +957,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n    \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n    \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -965,13 +965,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOST}}/subaccountStakeHolders/{{subaccountAdminEmail}}",
+					"raw": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"subaccountStakeHolders",
-						"{{subaccountAdminEmail}}"
+						"{{name}}stakeholder@tekvizion.com"
 					]
 				}
 			},
@@ -1561,13 +1561,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/customerAdminEmails/{{name}}@adminemail.com",
+					"raw": "{{HOST}}/customerAdminEmails/{{name}}admin2@tekvizion.com",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"customerAdminEmails",
-						"{{name}}@adminemail.com"
+						"{{name}}admin2@tekvizion.com"
 					]
 				}
 			},
@@ -1599,13 +1599,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOST}}/subaccountAdminEmails/{{name}}@subadmin.com",
+					"raw": "{{HOST}}/subaccountAdminEmails/{{name}}subadmin2@tekvizion.com",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"subaccountAdminEmails",
-						"{{name}}@subadmin.com"
+						"{{name}}subadmin2@tekvizion.com"
 					]
 				}
 			},
@@ -1830,13 +1830,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/subaccountStakeHolders/{{subaccountAdminEmail}}",
+					"raw": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"subaccountStakeHolders",
-						"{{subaccountAdminEmail}}"
+						"{{name}}stakeholder@tekvizion.com"
 					]
 				}
 			},
