@@ -59,6 +59,33 @@ CREATE TYPE public.consumption_type_enum AS ENUM (
     'AutomationPlatform'
 );
 
+--
+-- Name: dut_type_enum; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.dut_type_enum AS ENUM (
+    'Device/Phone/ATA',
+    'Soft Client/UC Client',
+    'SBC',
+    'BYOC',
+    'Application',
+    'Headset',
+    'Video Collab Device'
+);
+
+--
+-- Name: calling_platform_type_enum; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.calling_platform_type_enum AS ENUM (
+    'PBX',
+    'PBX+SBC',
+    'UCaaS',
+    'Contact Center',
+    'CCaaS',
+    'CPaaS'
+);
+
 
 --
 -- Name: device_type_enum; Type: TYPE; Schema: public; Owner: -
@@ -66,15 +93,25 @@ CREATE TYPE public.consumption_type_enum AS ENUM (
 
 CREATE TYPE public.device_type_enum AS ENUM (
     'PBX',
+    'PBX+SBC',
     'SBC',
     'GATEWAY',
     'PHONE',
     'TRUNK',
     'FAX',
     'CC',
+    'Contact Center',
     'UCAAS',
+    'CCaaS',
+    'CPaaS',
     'CLIENT',
     'CERT',
+    'Device/Phone/ATA',
+    'Soft Client/UC Client',
+    'BYOC',
+    'Application',
+    'Headset',
+    'Video Collab Device',
     'OTHER'
 );
 

@@ -33,6 +33,11 @@ export class DevicesService {
     return this.httpClient.get<Device>(this.API_URL, { headers, params });
   }
 
+  public getDevicesTypesList():Observable<any>{
+    const headers = this.getHeaders();
+    return this.httpClient.get<any>(environment.apiEndpoint + `/deviceTypes`, { headers });
+  }
+
   /**
    * get device by id
    * @returns: Observable

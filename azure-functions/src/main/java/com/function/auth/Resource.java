@@ -43,6 +43,7 @@ public enum Resource {
         GET_ALL_BUNDLES,//TekvLSGetAllBundles
         GET_ALL_CUSTOMERS,//TekvLSGetAllCustomers
         GET_ALL_DEVICES,//TekvLSGetAllDevices
+        GET_ALL_DEVICE_TYPES,//TekvLSGetAllDevices
         GET_ALL_LICENSES,//TekvLSGetAllLicenses
         GET_ALL_LICENSE_USAGE_DETAILS,//TekvLSGetAllLicenseUsageDetails
         GET_ALL_PROJECTS,//TekvLSGetAllProjects
