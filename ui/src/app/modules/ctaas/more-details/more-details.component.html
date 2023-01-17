@@ -252,10 +252,7 @@
                                                                                     <li> {{data?.DID | na}} </li>
                                                                                 </ul>
                                                                             </mat-panel-title>
-                                                                            <mat-icon>{{(item.otherPartyPanelStatus)
-                                                                                ?
-                                                                                'keyboard_arrow_down' :
-                                                                                'keyboard_arrow_up' }}</mat-icon>
+                                                                            <mat-icon> {{getIconByType(data.otherPartyPanelStatus)}}</mat-icon>
                                                                         </mat-expansion-panel-header>
                                                                         <ng-container
                                                                             *ngIf="data.mediaStats.length > 0">
