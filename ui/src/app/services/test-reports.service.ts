@@ -15,19 +15,14 @@ export class TestReportsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public getTestReportsList(subaccountId?: string, reportType?:string, date?:string) {
+  public getTestReportsList(subaccountId?: string, reportType?:string,timestamp?:string) {
     let params = new HttpParams();
     if (subaccountId) {
-      params = params.set('date', date);
       params = params.set('reportType', reportType);
+      params = params.set('timestamp', timestamp);
     }
     const headers = this.getHeaders();
     return this.httpClient.get<ITestReports>(`${this.API_URL}/${subaccountId}`, { headers, params });
-  }
-
-  public getTestReport(subaccountId: string, reportType: string): Observable<any> {
-    const url = this.DOWNLOAD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
-    return this.httpClient.get(url);
   }
 
   public getHeaders() {

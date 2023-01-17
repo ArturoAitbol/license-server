@@ -45,6 +45,7 @@ export const permissions = {
             'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -84,7 +85,6 @@ export const permissions = {
             noteOptions: [],
             testReportsOptions: [
                 'VIEW_REPORT',
-                'VIEW_CHARTS'
             ]
         }
     },
@@ -152,6 +152,7 @@ export const permissions = {
             'addTestSuite',
             'showBanner',
             'showUserToggle',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -182,8 +183,7 @@ export const permissions = {
             ],
             subscriptionsOverviewOptions: [],
             testReportsOptions: [
-                'VIEW_REPORT',
-                'VIEW_CHARTS'
+                'VIEW_REPORT', 
             ]
         }
     },
@@ -244,6 +244,7 @@ export const permissions = {
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -270,7 +271,6 @@ export const permissions = {
             ],
             testReportsOptions: [
                 'VIEW_REPORT',
-                'VIEW_CHARTS'
             ]
         }
     },
@@ -297,6 +297,7 @@ export const permissions = {
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -323,7 +324,6 @@ export const permissions = {
             ],
             testReportsOptions: [
                 'VIEW_REPORT',
-                'VIEW_CHARTS'
             ]
         }
     },
@@ -341,7 +341,8 @@ export const permissions = {
         elements: [
             'showUserToggle',
             'view-profile',
-            'showLatestNote'
+            'showLatestNote',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [],
@@ -355,7 +356,6 @@ export const permissions = {
             ],
             testReportsOptions: [
                 'VIEW_REPORT',
-                'VIEW_CHARTS'
             ]
         }
     }

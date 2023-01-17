@@ -4,20 +4,11 @@
         <h2 id="main-title">Test Reports</h2>
     </div>
     <div class="row justify-content-end">
-        <div class="col-auto" id="customCol">   
-            <span class="fw-500" *lcCheckAccessFor="'showUserToggle'">Failed</span>
-            &nbsp;
-            <mat-slide-toggle *lcCheckAccessFor="'showUserToggle'" id="mat-toggle" [color]="'primary'" (change)="onChangeToggle($event.checked)"></mat-slide-toggle>
-            &nbsp;
-            <span class="fw-500" *lcCheckAccessFor="'showUserToggle'">Successfull</span>
-            &nbsp;
-        </div>
         <div class="col-auto ms-auto">
             <div [formGroup]="filterForm" class="row" id="form" >
                 <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
                     <mat-label>Filter by report type</mat-label>
                     <mat-select (valueChange)="toggleOptionValue($event)" formControlName="typeFilterControl">
-                        <mat-option>None</mat-option>
                         <mat-option *ngFor="let type of reportsTypes" [value]="type">
                             {{type}}
                         </mat-option>
@@ -33,8 +24,11 @@
             <div>
                 <mat-form-field appearance="outline">
                     <mat-label>Filter by date</mat-label>
-                    <input matInput [matDatepicker]="picker" formControlName="startDate" (dateChange)="toggleDateValue($event)">
+                    <input matInput [matDatepicker]="picker" formControlName="startDate" (dateChange)="toggleDateValue($event)" name="date" >
                     <mat-datepicker-toggle matSuffix [for]="picker" id="start-date-calendar"></mat-datepicker-toggle>
+                    <mat-datepicker-toggle matSuffix (click)="clearDateFilter()">
+                        <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+                    </mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
             </div>
