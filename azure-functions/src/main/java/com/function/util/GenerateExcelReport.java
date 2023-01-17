@@ -236,7 +236,7 @@ public class GenerateExcelReport {
     }
 
     private void generateEndpointsReport(ExecutionContext context, int index, XSSFSheet workSheet, XSSFCellStyle blackLabel, XSSFCellStyle whiteUnboldStyle, JSONObject endPointResource) {
-        context.getLogger().info("inside method of createEndPointDataRow. ");
+        context.getLogger().info("Generating end points report");
         int count = 0;
         Row row = workSheet.createRow(index);
         int num = row.getRowNum() + 1;
@@ -253,7 +253,7 @@ public class GenerateExcelReport {
         final String city = endPointResource.get("city").toString() == "null" ? "" : endPointResource.get("city").toString();
         final String zipcode = endPointResource.get("zipcode").toString() == "null" ? "" : endPointResource.get("zipcode").toString();
 
-        final String region = String.format("%s, %s, %s, %s",city,state,country,zipcode);
+        final String region = (city.isEmpty() || state.isEmpty() || country.isEmpty() || zipcode.isEmpty()) ? "": String.format("%s, %s, %s, %s",city,state,country,zipcode);
         addCell(row, null, blackLabel, count++, vendorName + " / " + modelName);
         addCell(row, null, whiteUnboldStyle, count++, did);
         addCell(row, null, whiteUnboldStyle, count++, firmwareVersion);
