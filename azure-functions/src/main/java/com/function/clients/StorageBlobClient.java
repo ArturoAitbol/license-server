@@ -13,10 +13,11 @@ import org.json.JSONArray;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -209,56 +210,6 @@ public class StorageBlobClient {
     }
 
     /**
-     * Get the blob from Azure Storage Blob if exist and return JSONObject
-     *
-     * @param context:        ExecutionContext
-     * @param customerName:   String
-     * @param subAccountName: String
-     * @param type:           String
-     * @return: JSONObject
-     */
-    public JSONObject fetchJsonFileFromBlob(ExecutionContext context, final String customerName,
-                                            final String subAccountName, final String type) {
-        try {
-            // Check if container exist or not
-            if (!blobContainerClient.exists()) {
-                context.getLogger().info("Container doesn't exist");
-            }
-            // eg: Customer01/Customer01-Daily-CallingReliability-Detailed-Report
-            final String filterFileString = String.format("%s/%s-%s-Detailed-Report", customerName, subAccountName,
-                    type);
-            context.getLogger().info("Search for File name " + filterFileString);
-            Iterator<BlobItem> iterator = blobContainerClient.listBlobs().iterator();
-            List<BlobItem> blobItemList = StreamSupport
-                    .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
-                    // .filter(x -> x.getName().contains(filterFileString))
-                    .collect(Collectors.toList());
-            for (BlobItem blobItem : blobItemList) {
-                context.getLogger().info("blobItem " + blobItem.getName());
-                String blobItemName = blobItem.getName();
-                BlobClient blobClient = blobContainerClient.getBlobClient(blobItemName);
-                if (blobClient.exists()) {
-                    context.getLogger().info("Blob exists: " + blobItem.getName());
-                    // creating an object of output stream to receive the file's content from azure
-                    // blob.
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    blobClient.download(outputStream);
-                    // converting it to the inputStream to return
-                    final byte[] bytes = outputStream.toByteArray();
-                    if ((bytes != null) && (bytes.length > 0)) {
-                        String str = new String(bytes);
-                        JSONObject jsonObj = new JSONObject(str);
-                        return jsonObj;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            context.getLogger().info("Caught exception: " + e.getMessage());
-        }
-        return null;
-    }
-
-    /**
      * Get the blob list for a customer from Azure Storage Blob return JSONArray
      * 
      * @param context:        ExecutionContext
@@ -348,11 +299,12 @@ public class StorageBlobClient {
      */
     public boolean isTimestampInRange(String timestamp, String start, String end, ExecutionContext context)
             throws Exception {
-        TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(timestamp);
-        Instant i = Instant.from(ta);
-        Date filterDate = Date.from(i);
-        Date startDate = new SimpleDateFormat("yyMMddHHmmss").parse(start);
-        Date endDate = new SimpleDateFormat("yyMMddHHmmss").parse(end);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                .withZone(ZoneId.of("UTC"));
+        LocalDate filterDate = LocalDateTime.parse(timestamp, formatter).toLocalDate();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyMMddHHmmss");
+        LocalDate startDate = LocalDateTime.parse(start, format).toLocalDate();
+        LocalDate endDate = LocalDateTime.parse(end, format).toLocalDate();
         return startDate.compareTo(filterDate) * filterDate.compareTo(endDate) >= 0;
     }
 }
