@@ -26,7 +26,8 @@ export const permissions = {
             'stakeholders',
             'setup',
             'subscriptions-overview',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'addCustomer',
@@ -44,6 +45,7 @@ export const permissions = {
             'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -80,7 +82,10 @@ export const permissions = {
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
             ],
-            noteOptions: []
+            noteOptions: [],
+            testReportsOptions: [
+                'VIEW_REPORT',
+            ]
         }
     },
     'tekvizion.SalesAdmin': {
@@ -138,7 +143,8 @@ export const permissions = {
             'test-suites',
             'stakeholders',
             'setup',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'addProject',
@@ -146,6 +152,7 @@ export const permissions = {
             'addTestSuite',
             'showBanner',
             'showUserToggle',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -175,6 +182,9 @@ export const permissions = {
                 'DELETE_STAKEHOLDER'
             ],
             subscriptionsOverviewOptions: [],
+            testReportsOptions: [
+                'VIEW_REPORT', 
+            ]
         }
     },
     'distributor.FullAdmin': {
@@ -224,7 +234,8 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'view-profile',
@@ -233,6 +244,7 @@ export const permissions = {
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -256,6 +268,9 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
             ]
         }
     },
@@ -272,7 +287,8 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'view-profile',
@@ -281,6 +297,7 @@ export const permissions = {
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -304,6 +321,9 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
             ]
         }
     },
@@ -315,12 +335,14 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'showUserToggle',
             'view-profile',
-            'showLatestNote'
+            'showLatestNote',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [],
@@ -331,6 +353,9 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
             ]
         }
     }
