@@ -10,7 +10,7 @@ import { Constants } from '../helpers/constants';
 export class CtaasDashboardService {
   private readonly API_URL: string = environment.apiEndpoint + '/ctaasDashboard';
   private readonly FETCH_DASHBOARD_URL: string = this.API_URL + '/{subaccountId}/{reportType}';
-  private readonly FETCH_DASHBOARD_REPORT_URL: string = this.API_URL + '/report/{subaccountId}/{reportType}/{startDate}/{endDate}';
+  private readonly FETCH_DASHBOARD_REPORT_URL: string = environment.apiEndpoint + '/ctaasDashboardReport'; // /{subaccountId}/{reportType}/{startDate}/{endDate}
   private readonly DOWNLOAD_DASHBOARD_REPORT_URL: string = this.API_URL + '/downloadReport';
 
 
@@ -61,8 +61,13 @@ export class CtaasDashboardService {
    * @returns: Observable<any>  
    */
   public getCtaasDashboardDetailedReport(subaccountId: string, reportType: string, startDateStr: string, endDateStr: string): Observable<any> {
-    const url = this.FETCH_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType).replace(/{startDate}/g, startDateStr).replace(/{endDate}/g, endDateStr);
-    return this.httpClient.get(url);
+    // const url = this.FETCH_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType).replace(/{startDate}/g, startDateStr).replace(/{endDate}/g, endDateStr);
+    let params = new HttpParams()
+      .set('subId', subaccountId)
+      .set('report', reportType)
+      .set('startDate', startDateStr)
+      .set('endDate', endDateStr);
+    return this.httpClient.get(this.FETCH_DASHBOARD_REPORT_URL, { params });
   }
 
   public downloadCtaasDashboardDetailedReport(detailedResponseObj: any): Observable<any> {

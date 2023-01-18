@@ -6,7 +6,6 @@ import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
-import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import io.jsonwebtoken.Claims;
@@ -40,12 +39,8 @@ public class TekvLSGetCtaasDashboardReport {
             @HttpTrigger(name = "req",
                     methods = {HttpMethod.GET},
                     authLevel = AuthorizationLevel.ANONYMOUS,
-                    route = "ctaasDashboard/report/{subaccountId=EMPTY}/{reportType=EMPTY}/{startDate=EMPTY}/{endDate=EMPTY}")
+                    route = "ctaasDashboardReport/{subaccountId=EMPTY}") // /{subaccountId=EMPTY}/{reportType=EMPTY}/{startDate=EMPTY}/{endDate=EMPTY}
             HttpRequestMessage<Optional<String>> request,
-            @BindingName("subaccountId") String subaccountId,
-            @BindingName("reportType") String reportType,
-            @BindingName("startDate") String startDate,
-            @BindingName("endDate") String endDate,
             final ExecutionContext context) {
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
         JSONArray roles = getRolesFromToken(tokenClaims, context);
@@ -63,31 +58,41 @@ public class TekvLSGetCtaasDashboardReport {
         }
 
         context.getLogger().info("Entering TekvLSGetCtaasDashboardReport Azure function");
-
+        /**
+         * @BindingName("subaccountId") String subaccountId,
+         * @BindingName("reportType") String reportType,
+         * @BindingName("startDate") String startDate,
+         * @BindingName("endDate") String endDate,
+         */
+        context.getLogger().info("URL parameters are: " + request.getQueryParameters());
+        String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
+        String reportType = request.getQueryParameters().getOrDefault("reportType", "");
+        String startDate = request.getQueryParameters().getOrDefault("startDate", "");
+        String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 
         // Check if subaccount is empty
-        if (subaccountId.equals("EMPTY") || subaccountId.isEmpty()) {
+        if (subaccountId.isEmpty() || subaccountId ==null) {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if reportType is empty
-        if (reportType.equals("EMPTY") || reportType.isEmpty()) {
+        if (reportType.isEmpty() || reportType==null) {
             context.getLogger().info(MESSAGE_FOR_INVALID_REPORT_TYPE + " | Report Type: " + reportType);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_FOR_INVALID_REPORT_TYPE);
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if start date is null
-        if (startDate == null) {
+        if (startDate == null || startDate.isEmpty()) {
             context.getLogger().info(MESSAGE_FOR_INVALID_START_DATE + " | Start Date: " + null);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_FOR_INVALID_START_DATE);
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if end date is null
-        if (endDate == null) {
+        if (endDate == null || endDate.isEmpty()) {
             context.getLogger().info(MESSAGE_FOR_INVALID_END_DATE + " | End Date: " + null);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_FOR_INVALID_END_DATE);
