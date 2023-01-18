@@ -9,7 +9,7 @@ import { FeatureToggleGuard } from "./modules/shared/feature-toggle.guard";
 import { MyAppsComponent } from './my-apps/my-apps.component';
 import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
 import { RedirectPageComponent } from './redirect-page/redirect-page.component';
-import { SubscriptionsOverviewComponent } from "./subscriptions-overview/subscriptions-overview.component";
+import { SubscriptionsOverviewComponent } from "./modules/subscriptions-overview/subscriptions-overview.component";
 // set default route based on the feature toggle
 const defaultRoute = FeatureToggleHelper.isFeatureEnabled("ctaasFeature") ? 'redirect' : 'dashboard';
 
