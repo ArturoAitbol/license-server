@@ -112,7 +112,7 @@ mat-card {
 
 .summary {
   padding: 12px 0px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .summary-card-content {
