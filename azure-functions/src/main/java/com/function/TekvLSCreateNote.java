@@ -130,6 +130,8 @@ public class TekvLSCreateNote {
             JSONObject notification = new JSONObject();
             notification.put("title", "New Note!");
             notification.put("body", userEmail + ": " + jobj.getString(MANDATORY_PARAMS.CONTENT.value));
+            notification.put("sound","default");
+            notification.put("android_channel_id","notes-notifications");
             body.put("notification", notification);
             HashMap<String, String> headers = new HashMap<>();
             headers.put("Content-Type", "application/json");
