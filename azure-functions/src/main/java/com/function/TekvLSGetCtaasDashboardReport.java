@@ -6,6 +6,7 @@ import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import io.jsonwebtoken.Claims;
@@ -39,8 +40,9 @@ public class TekvLSGetCtaasDashboardReport {
             @HttpTrigger(name = "req",
                     methods = {HttpMethod.GET},
                     authLevel = AuthorizationLevel.ANONYMOUS,
-                    route = "ctaasDashboardReport/{subaccountId=EMPTY}") // /{subaccountId=EMPTY}/{reportType=EMPTY}/{startDate=EMPTY}/{endDate=EMPTY}
+                    route = "ctaasDashboardReport/{subaccountId=EMPTY}")
             HttpRequestMessage<Optional<String>> request,
+            @BindingName("subaccountId") String subaccountId,
             final ExecutionContext context) {
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
         JSONArray roles = getRolesFromToken(tokenClaims, context);
@@ -58,14 +60,8 @@ public class TekvLSGetCtaasDashboardReport {
         }
 
         context.getLogger().info("Entering TekvLSGetCtaasDashboardReport Azure function");
-        /**
-         * @BindingName("subaccountId") String subaccountId,
-         * @BindingName("reportType") String reportType,
-         * @BindingName("startDate") String startDate,
-         * @BindingName("endDate") String endDate,
-         */
+       
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-        String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
         String reportType = request.getQueryParameters().getOrDefault("reportType", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
         String endDate = request.getQueryParameters().getOrDefault("endDate", "");
