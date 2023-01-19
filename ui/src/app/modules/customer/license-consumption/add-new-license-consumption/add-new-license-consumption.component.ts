@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Moment } from 'moment';
@@ -19,7 +19,7 @@ import { AddLicenseConsumptionComponent } from '../add-license-consumption/add-l
   templateUrl: './add-new-license-consumption.component.html',
   styleUrls: ['./add-new-license-consumption.component.css']
 })
-export class AddNewLicenseConsumptionComponent implements OnInit {
+export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
   updateProjects: EventEmitter<any> = new EventEmitter<any>();
 
   projects: Project[] = [];
@@ -356,14 +356,8 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
       this.deviceDays[daysIndex].used = value;
   }
 
-  setConsumptionDays(value: boolean, daysIndex: number, deviceIndex?: number) {
-    console.log(value)
-    console.log(daysIndex)
-    console.log(deviceIndex)
-    // if (deviceIndex !== null && deviceIndex !== undefined)
-    //   this.dutUsed[deviceIndex].days[daysIndex].used = value;
-    // else
-    //   this.consumptionDays[daysIndex].used = value;
+  setConsumptionDays(value: boolean, daysIndex: number) {
+    this.consumptionDays[daysIndex].used = value;
   }
 
   submit(): void {
@@ -383,48 +377,50 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
     this.addCallingPlatform();
     this.addDevice();
 
-    this.dutUsed.forEach((dut: any) => {
-      const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
-      newConsumptionObject.deviceId = dut.id;
-      for (let i = 0; i < this.consumptionDays.length; i++) {
-        if (dut.days[i].used)
-          newConsumptionObject.usageDays.push(i);
-      }
-      consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
-    });
-
-    this.callingPlatformUsed.forEach((platform: any) => {
-      const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
-      newConsumptionObject.deviceId = platform.id;
-      for (let i = 0; i < this.consumptionDays.length; i++) {
-        if (platform.days[i].used)
-          newConsumptionObject.usageDays.push(i);
-      }
-      consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
-    });
+    const dut: any = this.dutUsed[0];
+    const callingPlatform: any = this.callingPlatformUsed[0];
+    const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
+    newConsumptionObject.deviceId = dut.id;
+    newConsumptionObject.callingPlatformId = callingPlatform.id;
+    for (let i = 0; i < this.consumptionDays.length; i++) {
+      if (this.consumptionDays[i].used)
+        newConsumptionObject.usageDays.push(i);
+    }
 
     this.otherDevicesUsed.forEach((device: any) => {
       const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
       newConsumptionObject.deviceId = device.id;
+      newConsumptionObject.supportDevice = true;
+      newConsumptionObject.dutType = dut.name;
+      newConsumptionObject.callingPlatformType = callingPlatform.name;
       for (let i = 0; i < device.days.length; i++) {
         if (device.days[i].used)
           newConsumptionObject.usageDays.push(i);
       }
       consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
     });
+
     this.isDataLoading = true;
-    forkJoin(consumptionRequests).subscribe((res: any) => {
-      const resDataObject: any = res.reduce((current: any, next: any) => {
-        return { ...current, ...next };
-      }, {});
-      if (resDataObject.error)
-        this.snackBarService.openSnackBar(resDataObject.error, 'Error adding license consumption!');
-      this.isDataLoading = false;
-      this.dialogRef.close(true);
-    }, (err: any) => {
-      this.snackBarService.openSnackBar(err, 'Error adding license consumption!');
-      this.isDataLoading = false;
-      this.dialogRef.close(true);
+    this.licenseConsumptionService.addLicenseConsumptionEvent(newConsumptionObject).subscribe((response: any) => {
+      if (!response.error) {
+        forkJoin(consumptionRequests).subscribe((res: any) => {
+          const resDataObject: any = res.reduce((current: any, next: any) => {
+            return { ...current, ...next };
+          }, {});
+          if (resDataObject.error)
+            this.snackBarService.openSnackBar(resDataObject.error, 'Error adding license consumption!');
+          this.isDataLoading = false;
+          this.dialogRef.close(true);
+        }, (err: any) => {
+          this.snackBarService.openSnackBar(err, 'Error adding license consumption!');
+          this.isDataLoading = false;
+          this.dialogRef.close(true);
+        });
+      } else {
+        this.snackBarService.openSnackBar(response.error, 'Error adding license consumption!');
+        this.isDataLoading = false;
+        this.dialogRef.close(true);
+      }
     });
   }
 

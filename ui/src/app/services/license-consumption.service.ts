@@ -8,6 +8,7 @@ import { LicenseConsumption } from '../model/license-consumption.model';
 })
 export class LicenseConsumptionService {
   private readonly API_URL: string = environment.apiEndpoint + '/licenseUsageDetails';
+  private readonly CONSUMPTION_EVENT_URL: string = environment.apiEndpoint + '/consumptionEvent';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -18,6 +19,15 @@ export class LicenseConsumptionService {
    */
   public addLicenseConsumptionDetails(data: any) {
     return this.httpClient.post(this.API_URL, data);
+  }
+  
+  /**
+   * add New License Usage details
+   * @param data: LicenseConsumption
+   * @returns: Observable 
+   */
+  public addLicenseConsumptionEvent(data: any) {
+    return this.httpClient.post(this.CONSUMPTION_EVENT_URL, data);
   }
   /**
    * get particular LicenseConsumption details by parameters
