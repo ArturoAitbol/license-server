@@ -190,7 +190,11 @@ export class CtaasTestReportsComponent implements OnInit {
     this.unsubscribe.complete();
   }
 
-  restoreTable(data:any) {
-   console.log(this.date)
+  restoreTable(event:any) {
+    if(event.data === null){
+      this.selectedDateFilter = '';
+      this.testReportsData = [];
+      this.fetchTestReports();
+    }
   }
 }
