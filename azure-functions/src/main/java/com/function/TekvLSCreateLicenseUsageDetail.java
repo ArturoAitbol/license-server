@@ -1,6 +1,7 @@
 package com.function;
 
 import com.function.auth.Resource;
+import com.function.util.Constants.DeviceGranularity;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -101,10 +102,9 @@ public class TekvLSCreateLicenseUsageDetail
 
 			// Build the sql query to get tokens consumption and granularity from device table
 			String deviceTokensSql = "SELECT tokens_to_consume, granularity FROM device WHERE id=?::uuid;";
-			String insertSql = "INSERT INTO license_consumption (subaccount_id, device_id, consumption_date, usage_type, tokens_consumed, modified_by, modified_date, project_id) " +
-							   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid) RETURNING id;";
-			String devicePerProjectConsumptionSql;
-			devicePerProjectConsumptionSql = "SELECT id FROM license_consumption WHERE device_id=?::uuid and project_id=?::uuid LIMIT 1;";
+			String insertSql = "INSERT INTO license_consumption (subaccount_id, device_id, consumption_date, usage_type, tokens_consumed, modified_by, modified_date, project_id, consumption_matrix_id) " +
+							   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid, ?::uuid) RETURNING id;";
+			String devicePerProjectConsumptionSql = "SELECT id FROM license_consumption WHERE device_id=?::uuid and project_id=?::uuid LIMIT 1;";
 
 			try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			 PreparedStatement deviceTokensStmt = connection.prepareStatement(deviceTokensSql);
@@ -112,16 +112,27 @@ public class TekvLSCreateLicenseUsageDetail
 			 PreparedStatement devicePerProjectStmt = connection.prepareStatement(devicePerProjectConsumptionSql)) {
 				context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 				String userId = getUserIdFromToken(tokenClaims,context);
-
-				//Insert parameters to statement
-				deviceTokensStmt.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
-
-				// get tokens to consume
-				context.getLogger().info("Execute SQL statement: " + deviceTokensStmt);
-				ResultSet rs = deviceTokensStmt.executeQuery();
-				rs.next();
-				int tokensToConsume = rs.getInt("tokens_to_consume");
-				String granularity = rs.getString("granularity");
+				
+				int tokensToConsume;
+				String granularity;
+				String consumptionMatrixId;
+				ResultSet rs;
+				// if it has the support device flag then it must be comming from a CONSUMPTION MATRIX event
+				if (jobj.has(OPTIONAL_PARAMS.SUPPORT_DEVICE.value)) {
+					tokensToConsume = 0;
+					granularity = DeviceGranularity.WEEKLY.value();
+					consumptionMatrixId = jobj.getString(OPTIONAL_PARAMS.CONSUMPTION_MATRIX_ID.value);
+				} else {
+					//Insert parameters to statement
+					deviceTokensStmt.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_ID.value));
+					// get tokens to consume
+					context.getLogger().info("Execute SQL statement: " + deviceTokensStmt);
+					rs = deviceTokensStmt.executeQuery();
+					rs.next();
+					tokensToConsume = rs.getInt("tokens_to_consume");
+					granularity = rs.getString("granularity");
+					consumptionMatrixId = null;
+				}
 				// check if there was a consumption for this device in the same project previously.
 				if (granularity.equalsIgnoreCase("static")) {
 
@@ -150,6 +161,7 @@ public class TekvLSCreateLicenseUsageDetail
 				insertStmt.setString(6, userEmail);
 				insertStmt.setTimestamp(7, Timestamp.from(Instant.now()));
 				insertStmt.setString(8, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
+				insertStmt.setString(9, consumptionMatrixId);
 
 				// Insert consumption
 				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertStmt);
@@ -244,7 +256,9 @@ public class TekvLSCreateLicenseUsageDetail
 	private enum OPTIONAL_PARAMS {
 		USAGE_DAYS("usageDays"),
 		MAC_ADDRESS("macAddress"),
-		SERIAL_NUMBER("serialNumber");
+		SERIAL_NUMBER("serialNumber"),
+		CONSUMPTION_MATRIX_ID("consumptionMatrixId"),
+		SUPPORT_DEVICE("supportDevice");
 
 		private final String value;
 
