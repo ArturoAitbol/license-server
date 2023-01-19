@@ -60,21 +60,21 @@ public class TekvLSGetCtaasDashboardReport {
         }
 
         context.getLogger().info("Entering TekvLSGetCtaasDashboardReport Azure function");
-       
+
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String reportType = request.getQueryParameters().getOrDefault("reportType", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
         String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 
-        // Check if subaccount is empty
-        if (subaccountId.isEmpty() || subaccountId ==null) {
+        // Check if sub account is empty
+        if (subaccountId.equals("EMPTY") || subaccountId.isEmpty()) {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if reportType is empty
-        if (reportType.isEmpty() || reportType==null) {
+        if (reportType.isEmpty() || reportType == null) {
             context.getLogger().info(MESSAGE_FOR_INVALID_REPORT_TYPE + " | Report Type: " + reportType);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_FOR_INVALID_REPORT_TYPE);
