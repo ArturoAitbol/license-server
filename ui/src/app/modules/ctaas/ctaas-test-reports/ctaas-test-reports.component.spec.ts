@@ -116,7 +116,7 @@ describe('UI verification test', () => {
 
 });
 
-fdescribe('Data collection and parsing test', () => {
+describe('Data collection and parsing test', () => {
   beforeEach(beforeEachFunction);
   it('should make a call to get the selected subaccount, test reports and actionMenuOptions ', () => {
     spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
