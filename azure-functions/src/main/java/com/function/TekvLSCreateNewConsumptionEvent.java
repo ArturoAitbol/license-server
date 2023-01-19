@@ -224,7 +224,7 @@ public class TekvLSCreateNewConsumptionEvent
 			rs = insertStmt.executeQuery();
 			rs.next();
 			jobj.put("id", rs.getString("id"));
-			jobj.put("consumtpionMatrixId", consumptionMatrixId);
+			jobj.put("consumptionMatrixId", consumptionMatrixId);
 			jobj.put("userEmail", userEmail);
 			jobj.put("userId", userId);
 			context.getLogger().info("DUT consumption inserted successfully.");
