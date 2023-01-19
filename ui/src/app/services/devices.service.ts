@@ -68,8 +68,12 @@ export class DevicesService {
    * get device vendor list
    * @returns: Observable<string []>
    */
-  public getAllDeviceVendors(): Observable<{ vendors: string[], supportVendors: string[] }> {
-    return this.httpClient.get<{ vendors: string[], supportVendors: string[] }>(environment.apiEndpoint + '/vendors')
+  public getAllDeviceVendors(deviceType:string = null): Observable<{ vendors: string[], supportVendors: string[] }> {
+    let params = new HttpParams();
+    if(deviceType)
+      params = params.set("deviceType", deviceType);
+    const headers = this.getHeaders();
+    return this.httpClient.get<{ vendors: string[], supportVendors: string[] }>(environment.apiEndpoint + '/vendors', {headers,params});
   }
 
   /**

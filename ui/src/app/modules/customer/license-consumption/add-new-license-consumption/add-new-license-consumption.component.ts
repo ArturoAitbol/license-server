@@ -57,9 +57,12 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: "Sat", used: false, disabled: true },
   ];
   filteredProjects: Observable<any[]>;
-  filteredVendors: Observable<any[]>;
+  // filteredVendors: Observable<any[]>;
+  filteredVendors: any;
+
   filteredModels: Observable<any[]>;
-  filteredCallingPlatformVendors: Observable<any[]>;
+  // filteredCallingPlatformVendors: Observable<any[]>;
+  filteredCallingPlatformVendors: any;
   filteredCallingPlatformModels: Observable<any[]>;
   filteredDeviceVendors: Observable<any[]>;
   filteredDeviceModels: Observable<any[]>;
@@ -148,34 +151,18 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
         map(projectName => (projectName ? this.filterProjects(projectName) : this.projects.slice())),
       );
 
-      this.filteredVendors = this.addDutForm.controls['vendor'].valueChanges.pipe(
-        startWith(''),
-        map(vendor => {
-          if (vendor === '') {
-            this.models = [];
-            this.addDutForm.controls['product'].disable();
-            this.addDutForm.patchValue({ product: '' });
-          }
-          return vendor ? this.filterVendors(vendor) : this.vendors.slice();
-        })
-      );
+      this.addDutForm.controls['product'].disable();
+      this.addDutForm.patchValue({ product: '' });
+      
       this.filteredModels = this.addDutForm.controls['product'].valueChanges.pipe(
         startWith(''),
         map(value => (typeof value === 'string' ? value : value ? value.product : '')),
         map(product => (product ? this.filterModels(product) : this.models.slice()))
       );
 
-      this.filteredCallingPlatformVendors = this.addCallingPlatformForm.controls['vendor'].valueChanges.pipe(
-        startWith(''),
-        map(vendor => {
-          if (vendor === '') {
-            this.callingPlatformModels = [];
-            this.addCallingPlatformForm.controls['product'].disable();
-            this.addCallingPlatformForm.patchValue({ product: '' });
-          }
-          return vendor ? this.filterVendors(vendor, true) : this.callingPlatformVendors.slice();
-        })
-      );
+      this.addCallingPlatformForm.controls['product'].disable();
+      this.addCallingPlatformForm.patchValue({ product: '' });
+      
       this.filteredCallingPlatformModels = this.addCallingPlatformForm.controls['product'].valueChanges.pipe(
         startWith(''),
         map(value => (typeof value === 'string' ? value : value ? value.product : '')),
@@ -213,24 +200,22 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   onChangeDutType(value: any): void {
     this.isDataLoading = true;
-    // Should I acquire vendors only for this DUT?
-    // this.deviceService.getVendorsList(this.currentCustomer.subaccountId, value).subscribe(res => {
-    //   this.filterDutVendors(res['vendors']);
-    this.addDutForm.patchValue({ vendor: '' });
-    this.addDutForm.controls['vendor'].enable();
-    this.isDataLoading = false;
-    // });
+    this.deviceService.getAllDeviceVendors(value).subscribe(res => {
+      this.filteredVendors = res['vendors'].concat(res['supportVendors']);
+      this.addDutForm.patchValue({ vendor: '' });
+      this.addDutForm.controls['vendor'].enable();
+      this.isDataLoading = false;
+    });
   }
 
   onChangeCallingPlatformType(value: any): void {
     this.isDataLoading = true;
-    // Should I acquire vendors only for this Calling Platform?
-    // this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
-    //   this.filterVendorDevices(res['devices']);
-    this.addCallingPlatformForm.patchValue({ product: '' });
-    this.addCallingPlatformForm.controls['vendor'].enable();
-    this.isDataLoading = false;
-    // });
+    this.deviceService.getAllDeviceVendors(value).subscribe(res => {
+      this.filteredCallingPlatformVendors = res['vendors'].concat(res['supportVendors']);
+      this.addCallingPlatformForm.patchValue({ product: '' });
+      this.addCallingPlatformForm.controls['vendor'].enable();
+      this.isDataLoading = false;
+    });
   }
 
   /**
@@ -370,7 +355,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
       type: "Configuration",
       macAddress: "",
       serialNumber: "",
-      deviceId: "",
+      // deviceId: "",
       usageDays: []
     };
     this.addDut();
@@ -380,7 +365,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     const dut: any = this.dutUsed[0];
     const callingPlatform: any = this.callingPlatformUsed[0];
     const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
-    newConsumptionObject.deviceId = dut.id;
+    newConsumptionObject.dutId = dut.id;
     newConsumptionObject.callingPlatformId = callingPlatform.id;
     for (let i = 0; i < this.consumptionDays.length; i++) {
       if (this.consumptionDays[i].used)
@@ -400,8 +385,8 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
       consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
     });
 
-    this.isDataLoading = true;
     this.licenseConsumptionService.addLicenseConsumptionEvent(newConsumptionObject).subscribe((response: any) => {
+      this.isDataLoading = true;
       if (!response.error) {
         forkJoin(consumptionRequests).subscribe((res: any) => {
           const resDataObject: any = res.reduce((current: any, next: any) => {
