@@ -149,7 +149,7 @@ public class TekvLSCreateNewConsumptionEvent
 
 	public String getDeviceType(String deviceId, final ExecutionContext context) {
 		String deviceType = "";
-		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT device_type FROM device");
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT type FROM device");
 		queryBuilder.appendEqualsCondition("id", deviceId);
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -163,7 +163,7 @@ public class TekvLSCreateNewConsumptionEvent
 			ResultSet rs = statement.executeQuery();
 			// Get 
 			if (rs.next()) {
-				deviceType = rs.getString("device_type");
+				deviceType = rs.getString("type");
 			} else {
 				context.getLogger().warning("Unable to find device with id: " + deviceId);
 			}
