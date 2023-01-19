@@ -1,6 +1,7 @@
 package com.function;
 
 import com.function.auth.Resource;
+import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
@@ -98,18 +99,18 @@ public class TekvLSCreateNewConsumptionEvent
 		}
 
 		// Get Calling Platform type
-		String callingPlatformType = getDeviceType(jobj.getString(MANDATORY_PARAMS.DUT_ID.value), context);
+		String callingPlatformType = getDeviceType(jobj.getString(MANDATORY_PARAMS.CALLING_PLATFORM_ID.value), context);
 		if (callingPlatformType.isEmpty()) {
 			JSONObject json = new JSONObject();
-			json.put("error", "DUT provided doesn't exist");
+			json.put("error", "Calling Platform provided doesn't exist");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
 		/** Get the device matrix id and tokens of the dut + calling platform type combinations to insert it in the consumption event records*/
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM consumption_matrix");
-		queryBuilder.appendEqualsCondition("dut_type", dutType);
-		queryBuilder.appendEqualsCondition("calling_platform_type", callingPlatformType);
+		queryBuilder.appendCustomCondition("?::dut_type_enum = dut_type", dutType);
+		queryBuilder.appendCustomCondition("?::calling_platform_type_enum = calling_platform", callingPlatformType);
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -150,7 +151,7 @@ public class TekvLSCreateNewConsumptionEvent
 	public String getDeviceType(String deviceId, final ExecutionContext context) {
 		String deviceType = "";
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT type FROM device");
-		queryBuilder.appendEqualsCondition("id", deviceId);
+		queryBuilder.appendEqualsCondition("id", deviceId, QueryBuilder.DATA_TYPE.UUID);
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")

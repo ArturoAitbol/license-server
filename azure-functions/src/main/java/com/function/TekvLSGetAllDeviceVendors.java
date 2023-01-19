@@ -51,8 +51,8 @@ public class TekvLSGetAllDeviceVendors {
         SelectQueryBuilder supportVendorQueryBuilder = new SelectQueryBuilder("SELECT DISTINCT vendor FROM device WHERE support_type = 'true'", true);
 
         if (!deviceType.isEmpty()) {
-            vendorQueryBuilder.appendEqualsCondition("type", deviceType);
-            supportVendorQueryBuilder.appendEqualsCondition("type", deviceType);
+            vendorQueryBuilder.appendCustomCondition("?::device_type_enum = type", deviceType);
+            supportVendorQueryBuilder.appendCustomCondition("?::device_type_enum = type", deviceType);
         }
         
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
