@@ -102,6 +102,7 @@ CREATE TYPE public.device_type_enum AS ENUM (
     'CC',
     'Contact Center',
     'UCAAS',
+    'UCaaS',
     'CCaaS',
     'CPaaS',
     'CLIENT',
@@ -140,20 +141,6 @@ CREATE TYPE public.package_type_enum AS ENUM (
     'Basic',
     'Custom',
     'Trial'
-);
-
-
---
--- Name: product_type_enum; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE public.product_type_enum AS ENUM (
-    'PBX',
-    'SBC',
-    'Gateway',
-    'Phone',
-    'trunk',
-    'Other'
 );
 
 
@@ -289,6 +276,18 @@ CREATE TABLE public.license (
     description character varying NOT NULL
 );
 
+--
+-- Name: consumption_matrix; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.consumption_matrix (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    tokens integer DEFAULT 0,
+    dut_type public.dut_type_enum NOT NULL,
+    calling_platform public.calling_platform_type_enum NOT NULL,
+    updated_by character varying
+);
+
 
 --
 -- Name: license_consumption; Type: TABLE; Schema: public; Owner: -
@@ -298,10 +297,28 @@ CREATE TABLE public.license_consumption (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     subaccount_id uuid,
     project_id uuid,
+    consumption_matrix_id uuid,
     consumption_date timestamp without time zone,
     usage_type public.usage_type_enum DEFAULT 'Configuration'::public.usage_type_enum NOT NULL,
     device_id uuid,
+    calling_platform_id uuid,
     tokens_consumed integer DEFAULT 0 NOT NULL,
+    modified_date timestamp without time zone,
+    modified_by character varying
+);
+
+
+--
+-- Name: usage_detail; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.usage_detail (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    consumption_id uuid NOT NULL,
+    usage_date date NOT NULL,
+    day_of_week smallint,
+    mac_address character varying,
+    serial_number character varying,
     modified_date timestamp without time zone,
     modified_by character varying
 );
@@ -341,22 +358,6 @@ CREATE TABLE public.subaccount (
 CREATE TABLE public.subaccount_admin (
     subaccount_admin_email character varying NOT NULL,
     subaccount_id uuid NOT NULL
-);
-
-
---
--- Name: usage_detail; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.usage_detail (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    consumption_id uuid NOT NULL,
-    usage_date date NOT NULL,
-    day_of_week smallint,
-    mac_address character varying,
-    serial_number character varying,
-    modified_date timestamp without time zone,
-    modified_by character varying
 );
 
 CREATE TABLE public.ctaas_test_suite
@@ -719,6 +720,14 @@ ALTER TABLE ONLY public.bundle
 
 
 --
+-- Name: consumption_matrix consumption_matrix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.consumption_matrix
+    ADD CONSTRAINT consumption_matrix_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: license_consumption consumption_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -895,6 +904,21 @@ ALTER TABLE ONLY public.customer_admin
 ALTER TABLE ONLY public.license_consumption
     ADD CONSTRAINT fk_device FOREIGN KEY (device_id) REFERENCES public.device(id) ON DELETE CASCADE;
 
+--
+-- Name: license_consumption fk_calling_platform; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.license_consumption
+    ADD CONSTRAINT fk_calling_platform FOREIGN KEY (calling_platform_id) REFERENCES public.device(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: license_consumption fk_consumption_matrix; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.license_consumption
+    ADD CONSTRAINT fk_consumption_matrix FOREIGN KEY (consumption_matrix_id) REFERENCES public.consumption_matrix(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
 
 --
 -- Name: customer fk_distributor; Type: FK CONSTRAINT; Schema: public; Owner: -
@@ -984,6 +1008,9 @@ ALTER TABLE IF EXISTS public.subaccount_admin
 
 ALTER TYPE public.usage_type_enum
     ADD VALUE 'Ctaas' AFTER 'AutomationPlatform';
+
+ALTER TYPE public.usage_type_enum
+    ADD VALUE 'Configuration' AFTER 'Ctaas';
 
 ALTER TABLE ONLY public.feature_toggle
     ADD CONSTRAINT feature_toggle_pkey PRIMARY KEY (id);
