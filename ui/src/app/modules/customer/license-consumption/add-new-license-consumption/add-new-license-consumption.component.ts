@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Moment } from 'moment';
 import { forkJoin, Observable } from 'rxjs';
+import { Device } from 'src/app/model/device.model';
 import { map, startWith } from 'rxjs/operators';
 import { Project } from 'src/app/model/project.model';
 import { CustomerService } from 'src/app/services/customer.service';
@@ -25,12 +26,18 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
   dutTypes: any[] = [];
   callingPlatformTypes: any[] = [];
   deviceTypes: any[] = [];
+
   vendors: any[] = [];
-  // supportVendors: any[] = [];
-  // models: any = [];
-  // supportModels: any = [];
-  devicesUsed: any = [];
-  supportUsed: any = [];
+  callingPlatformVendors: any[] = [];
+  deviceVendors: any[] = [];
+
+  models: any = [];
+  callingPlatformModels: any = [];
+  deviceModels: any = [];
+
+  dutUsed: any = [];
+  callingPlatformUsed: any = [];
+  otherDevicesUsed: any = [];
   consumptionDays: any = [
     { name: "Sun", used: false, disabled: true },
     { name: "Mon", used: false, disabled: true },
@@ -40,29 +47,23 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
     { name: "Fri", used: false, disabled: true },
     { name: "Sat", used: false, disabled: true },
   ];
-  // deviceDays: any = [
-  //   { name: "Sun", used: false, disabled: true },
-  //   { name: "Mon", used: false, disabled: true },
-  //   { name: "Tue", used: false, disabled: true },
-  //   { name: "Wed", used: false, disabled: true },
-  //   { name: "Thu", used: false, disabled: true },
-  //   { name: "Fri", used: false, disabled: true },
-  //   { name: "Sat", used: false, disabled: true },
-  // ];
-  // supportDays: any = [
-  //   { name: "Sun", used: false, disabled: true },
-  //   { name: "Mon", used: false, disabled: true },
-  //   { name: "Tue", used: false, disabled: true },
-  //   { name: "Wed", used: false, disabled: true },
-  //   { name: "Thu", used: false, disabled: true },
-  //   { name: "Fri", used: false, disabled: true },
-  //   { name: "Sat", used: false, disabled: true },
-  // ];
+  deviceDays: any = [
+    { name: "Sun", used: false, disabled: true },
+    { name: "Mon", used: false, disabled: true },
+    { name: "Tue", used: false, disabled: true },
+    { name: "Wed", used: false, disabled: true },
+    { name: "Thu", used: false, disabled: true },
+    { name: "Fri", used: false, disabled: true },
+    { name: "Sat", used: false, disabled: true },
+  ];
   filteredProjects: Observable<any[]>;
-  // filteredVendors: Observable<any[]>;
-  // filteredModels: Observable<any[]>;
-  // filteredSupportVendors: Observable<any[]>;
-  // filteredSupportModels: Observable<any[]>;
+  filteredVendors: Observable<any[]>;
+  filteredModels: Observable<any[]>;
+  filteredCallingPlatformVendors: Observable<any[]>;
+  filteredCallingPlatformModels: Observable<any[]>;
+  filteredDeviceVendors: Observable<any[]>;
+  filteredDeviceModels: Observable<any[]>;
+
   startDate: any;
   endDate: any;
   addLicenseConsumptionForm = this.formBuilder.group({
@@ -73,19 +74,17 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
   addDutForm = this.formBuilder.group({
     name: ['', Validators.required],
     vendor: ['', Validators.required],
+    product: ['', [this.RequireMatch]]
   });
   addCallingPlatformForm = this.formBuilder.group({
     name: ['', Validators.required],
     vendor: ['', Validators.required],
+    product: ['', [this.RequireMatch]]
   });
-  // addDeviceForm = this.formBuilder.group({
-  //   vendor: ['', Validators.required],
-  //   product: ['', [this.RequireMatch]]
-  // });
-  // addSupportForm = this.formBuilder.group({
-  //   vendor: ['', Validators.required],
-  //   product: ['', [this.RequireMatch]]
-  // });
+  addDeviceForm = this.formBuilder.group({
+    vendor: ['', Validators.required],
+    product: ['', [this.RequireMatch]]
+  });
   currentCustomer: any;
   isDataLoading = false;
 
@@ -93,8 +92,8 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
     private customerService: CustomerService,
     private deviceService: DevicesService,
     private projectService: ProjectService,
-    // private licenseConsumptionService: LicenseConsumptionService,
-    // private snackBarService: SnackBarService,
+    private licenseConsumptionService: LicenseConsumptionService,
+    private snackBarService: SnackBarService,
     private formBuilder: FormBuilder,
     public dialog: MatDialog,
     public dialogRef: MatDialogRef<AddLicenseConsumptionComponent>,
@@ -127,12 +126,19 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
 
       // Device Types
       this.dutTypes = resDataObject['dutTypes'];
+      this.addDutForm.controls['vendor'].disable();
+      this.addDutForm.patchValue({ vendor: '' });
+
       this.callingPlatformTypes = resDataObject['callingPlatformTypes'];
+      this.addCallingPlatformForm.controls['vendor'].disable();
+      this.addCallingPlatformForm.patchValue({ vendor: '' });
+
       this.deviceTypes = resDataObject['deviceTypes'];
 
       /*Devices list*/
-      this.vendors = resDataObject['vendors'];
-      // this.supportVendors = resDataObject['supportVendors'];
+      this.vendors = resDataObject['vendors'].concat(resDataObject['supportVendors']);
+      this.callingPlatformVendors = resDataObject['vendors'].concat(resDataObject['supportVendors']);
+      this.deviceVendors = resDataObject['vendors'].concat(resDataObject['supportVendors']);
 
       /*Projects List*/
       this.projects = resDataObject['projects'];
@@ -141,38 +147,57 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
         map(value => (typeof value === 'string' ? value : value.projectName)),
         map(projectName => (projectName ? this.filterProjects(projectName) : this.projects.slice())),
       );
-      // this.filteredVendors = this.addDeviceForm.controls['vendor'].valueChanges.pipe(
-      //   startWith(''),
-      //   map(vendor => {
-      //     if (vendor === '') {
-      //       this.models = [];
-      //       this.addDeviceForm.controls['product'].disable();
-      //       this.addDeviceForm.patchValue({ product: '' });
-      //     }
-      //     return vendor ? this.filterVendors(vendor) : this.vendors.slice();
-      //   })
-      // );
-      // this.filteredModels = this.addDeviceForm.controls['product'].valueChanges.pipe(
-      //   startWith(''),
-      //   map(value => (typeof value === 'string' ? value : value ? value.product : '')),
-      //   map(product => (product ? this.filterModels(product) : this.models.slice()))
-      // );
-      // this.filteredSupportVendors = this.addSupportForm.controls['vendor'].valueChanges.pipe(
-      //   startWith(''),
-      //   map(vendor => {
-      //     if (vendor === '') {
-      //       this.supportModels = [];
-      //       this.addSupportForm.controls['product'].disable();
-      //       this.addSupportForm.patchValue({ product: '' });
-      //     }
-      //     return vendor ? this.filterVendors(vendor, true) : this.supportVendors.slice();
-      //   })
-      // );
-      // this.filteredSupportModels = this.addSupportForm.controls['product'].valueChanges.pipe(
-      //   startWith(''),
-      //   map(value => (typeof value === 'string' ? value : value ? value.product : '')),
-      //   map(product => (product ? this.filterModels(product, true) : this.supportModels.slice()))
-      // );
+
+      this.filteredVendors = this.addDutForm.controls['vendor'].valueChanges.pipe(
+        startWith(''),
+        map(vendor => {
+          if (vendor === '') {
+            this.models = [];
+            this.addDutForm.controls['product'].disable();
+            this.addDutForm.patchValue({ product: '' });
+          }
+          return vendor ? this.filterVendors(vendor) : this.vendors.slice();
+        })
+      );
+      this.filteredModels = this.addDutForm.controls['product'].valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value : value ? value.product : '')),
+        map(product => (product ? this.filterModels(product) : this.models.slice()))
+      );
+
+      this.filteredCallingPlatformVendors = this.addCallingPlatformForm.controls['vendor'].valueChanges.pipe(
+        startWith(''),
+        map(vendor => {
+          if (vendor === '') {
+            this.callingPlatformModels = [];
+            this.addCallingPlatformForm.controls['product'].disable();
+            this.addCallingPlatformForm.patchValue({ product: '' });
+          }
+          return vendor ? this.filterVendors(vendor, true) : this.callingPlatformVendors.slice();
+        })
+      );
+      this.filteredCallingPlatformModels = this.addCallingPlatformForm.controls['product'].valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value : value ? value.product : '')),
+        map(product => (product ? this.filterModels(product, true) : this.callingPlatformModels.slice()))
+      );
+
+      this.filteredDeviceVendors = this.addDeviceForm.controls['vendor'].valueChanges.pipe(
+        startWith(''),
+        map(vendor => {
+          if (vendor === '') {
+            this.deviceModels = [];
+            this.addDeviceForm.controls['product'].disable();
+            this.addDeviceForm.patchValue({ product: '' });
+          }
+          return vendor ? this.filterDeviceVendors(vendor) : this.deviceVendors.slice();
+        })
+      );
+      this.filteredDeviceModels = this.addDeviceForm.controls['product'].valueChanges.pipe(
+        startWith(''),
+        map(value => (typeof value === 'string' ? value : value ? value.product : '')),
+        map(product => (product ? this.filterDeviceModels(product) : this.deviceModels.slice()))
+      );
       this.isDataLoading = false;
     });
   }
@@ -187,27 +212,60 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
   }
 
   onChangeDutType(value: any): void {
-    console.log(value);
-    // this.isDataLoading = true;
-    // this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
-    //   this.filterVendorDevices(res['devices']);
-    //   this.addDeviceForm.patchValue({ product: '' });
-    //   this.addDeviceForm.controls['product'].enable();
-    //   this.isDataLoading = false;
+    this.isDataLoading = true;
+    // Should I acquire vendors only for this DUT?
+    // this.deviceService.getVendorsList(this.currentCustomer.subaccountId, value).subscribe(res => {
+    //   this.filterDutVendors(res['vendors']);
+    this.addDutForm.patchValue({ vendor: '' });
+    this.addDutForm.controls['vendor'].enable();
+    this.isDataLoading = false;
     // });
   }
 
   onChangeCallingPlatformType(value: any): void {
-    console.log(value);
-    // this.isDataLoading = true;
+    this.isDataLoading = true;
+    // Should I acquire vendors only for this Calling Platform?
     // this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
     //   this.filterVendorDevices(res['devices']);
-    //   this.addDeviceForm.patchValue({ product: '' });
-    //   this.addDeviceForm.controls['product'].enable();
-    //   this.isDataLoading = false;
+    this.addCallingPlatformForm.patchValue({ product: '' });
+    this.addCallingPlatformForm.controls['vendor'].enable();
+    this.isDataLoading = false;
     // });
   }
 
+  /**
+   * trigger when user select/change vendor dropdown
+   * @param value: string 
+   */
+  onChangeVendor(value: any): void {
+    this.isDataLoading = true;
+    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
+      this.filterVendorDevices(res['devices']);
+      this.addDutForm.patchValue({ product: '' });
+      this.addDutForm.controls['product'].enable();
+      this.isDataLoading = false;
+    });
+  }
+
+  onChangeCallingPlatformVendor(value: any): void {
+    this.isDataLoading = true;
+    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
+      this.filterCallingPlatformVendorDevices(res['devices']);
+      this.addCallingPlatformForm.patchValue({ product: '' });
+      this.addCallingPlatformForm.controls['product'].enable();
+      this.isDataLoading = false;
+    });
+  }
+
+  onChangeDeviceVendor(value: any): void {
+    this.isDataLoading = true;
+    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
+      this.filterOtherVendorDevices(res['devices']);
+      this.addDeviceForm.patchValue({ product: '' });
+      this.addDeviceForm.controls['product'].enable();
+      this.isDataLoading = false;
+    });
+  }
 
   private RequireMatch(control: AbstractControl) {
     const selection: any = control.value;
@@ -226,6 +284,48 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
     });
   }
 
+  private filterVendorDevices(devices: Device[]): void {
+    this.models = [];
+    devices.forEach((device: any) => {
+      if (device.type != "PHONE" && !device.supportType) {
+        const productLabel = device.version ? device.product + " - v." + device.version : device.product;
+        this.models.push({
+          id: device.id,
+          vendor: device.vendor,
+          product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
+        });
+      }
+    });
+  }
+
+  private filterCallingPlatformVendorDevices(devices: Device[]): void {
+    this.callingPlatformModels = [];
+    devices.forEach((device: any) => {
+      if (device.type != "PHONE" && !device.supportType) {
+        const productLabel = device.version ? device.product + " - v." + device.version : device.product;
+        this.callingPlatformModels.push({
+          id: device.id,
+          vendor: device.vendor,
+          product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
+        });
+      }
+    });
+  }
+
+  private filterOtherVendorDevices(devices: Device[]): void {
+    this.deviceModels = [];
+    devices.forEach((device: any) => {
+      if (device.type != "PHONE" && !device.supportType) {
+        const productLabel = device.version ? device.product + " - v." + device.version : device.product;
+        this.deviceModels.push({
+          id: device.id,
+          vendor: device.vendor,
+          product: productLabel + " (" + device.granularity + " - " + device.tokensToConsume + ")"
+        });
+      }
+    });
+  }
+
   onCancel(): void {
     this.dialogRef.close();
   }
@@ -234,10 +334,8 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
     const startWeek = this.addLicenseConsumptionForm.get('startWeek').value;
     const endWeek = this.addLicenseConsumptionForm.get('endWeek').value;
     this.toggleUsageDays(this.consumptionDays, startWeek, endWeek);
-    // this.toggleUsageDays(this.deviceDays, startWeek, endWeek);
-    // this.toggleUsageDays(this.supportDays, startWeek, endWeek);
-    // this.devicesUsed.forEach(deviceUsed => this.toggleUsageDays(deviceUsed.days, startWeek, endWeek));
-    // this.supportUsed.forEach(supportUsed => this.toggleUsageDays(supportUsed.days, startWeek, endWeek));
+    this.toggleUsageDays(this.deviceDays, startWeek, endWeek);
+    this.otherDevicesUsed.forEach(deviceUsed => this.toggleUsageDays(deviceUsed.days, startWeek, endWeek));
   }
 
   toggleUsageDays(days: any[], startWeek: Moment, endWeek: Moment) {
@@ -251,29 +349,162 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
     })
   }
 
-  setConsumptionDays(value: boolean, daysIndex: number, deviceIndex?: number) {
+  setChecked(value: boolean, daysIndex: number, deviceIndex?: number) {
     if (deviceIndex !== null && deviceIndex !== undefined)
-      this.devicesUsed[deviceIndex].days[daysIndex].used = value;
+      this.otherDevicesUsed[deviceIndex].days[daysIndex].used = value;
     else
-      this.consumptionDays[daysIndex].used = value;
+      this.deviceDays[daysIndex].used = value;
   }
 
-  submit(): void { }
+  setConsumptionDays(value: boolean, daysIndex: number, deviceIndex?: number) {
+    console.log(value)
+    console.log(daysIndex)
+    console.log(deviceIndex)
+    // if (deviceIndex !== null && deviceIndex !== undefined)
+    //   this.dutUsed[deviceIndex].days[daysIndex].used = value;
+    // else
+    //   this.consumptionDays[daysIndex].used = value;
+  }
+
+  submit(): void {
+    const consumptionRequests: any[] = [];
+    const stringDate = this.addLicenseConsumptionForm.value.startWeek.format("YYYY-MM-DD");
+    const licenseConsumptionsObject: any = {
+      subaccountId: this.currentCustomer.subaccountId,
+      projectId: this.addLicenseConsumptionForm.value.project.id,
+      consumptionDate: stringDate,
+      type: "Configuration",
+      macAddress: "",
+      serialNumber: "",
+      deviceId: "",
+      usageDays: []
+    };
+    this.addDut();
+    this.addCallingPlatform();
+    this.addDevice();
+
+    this.dutUsed.forEach((dut: any) => {
+      const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
+      newConsumptionObject.deviceId = dut.id;
+      for (let i = 0; i < this.consumptionDays.length; i++) {
+        if (dut.days[i].used)
+          newConsumptionObject.usageDays.push(i);
+      }
+      consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
+    });
+
+    this.callingPlatformUsed.forEach((platform: any) => {
+      const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
+      newConsumptionObject.deviceId = platform.id;
+      for (let i = 0; i < this.consumptionDays.length; i++) {
+        if (platform.days[i].used)
+          newConsumptionObject.usageDays.push(i);
+      }
+      consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
+    });
+
+    this.otherDevicesUsed.forEach((device: any) => {
+      const newConsumptionObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
+      newConsumptionObject.deviceId = device.id;
+      for (let i = 0; i < device.days.length; i++) {
+        if (device.days[i].used)
+          newConsumptionObject.usageDays.push(i);
+      }
+      consumptionRequests.push(this.licenseConsumptionService.addLicenseConsumptionDetails(newConsumptionObject));
+    });
+    this.isDataLoading = true;
+    forkJoin(consumptionRequests).subscribe((res: any) => {
+      const resDataObject: any = res.reduce((current: any, next: any) => {
+        return { ...current, ...next };
+      }, {});
+      if (resDataObject.error)
+        this.snackBarService.openSnackBar(resDataObject.error, 'Error adding license consumption!');
+      this.isDataLoading = false;
+      this.dialogRef.close(true);
+    }, (err: any) => {
+      this.snackBarService.openSnackBar(err, 'Error adding license consumption!');
+      this.isDataLoading = false;
+      this.dialogRef.close(true);
+    });
+  }
+
+  addDut(): void {
+    const dut: any = this.addDutForm.value.product;
+    if (dut) {
+      this.dutUsed.push(dut)
+      this.addDutForm.reset();
+    }
+  }
+
+  addCallingPlatform(): void {
+    const callingPlatform: any = this.addCallingPlatformForm.value.product;
+    if (callingPlatform) {
+      this.callingPlatformUsed.push(callingPlatform);
+      this.addCallingPlatformForm.reset();
+    }
+  }
+
+  addDevice(): void {
+    const device: any = this.addDeviceForm.value.product;
+    if (device) {
+      device.days = JSON.parse(JSON.stringify(this.deviceDays));
+      this.otherDevicesUsed.push(device);
+      this.addDeviceForm.reset();
+      this.deviceDays.forEach(deviceDay => deviceDay.used = false);
+    }
+  }
+
+  /**
+   * trigger when user deletes a device
+   * @param index: number 
+   */
+  removeDevice(index: number): void {
+    this.otherDevicesUsed.splice(index, 1);
+  }
 
   private filterProjects(value: string): Project[] {
     const filterValue = value.toLowerCase();
     return this.projects.filter(option => option.projectName.toLowerCase().includes(filterValue));
   }
 
+  private filterVendors(value: string, callingPlatforms = false): any[] {
+    const filterValue = value.toLowerCase();
+    const vendorsList: string[] = callingPlatforms ? this.callingPlatformVendors : this.vendors;
+    return vendorsList.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
+  private filterDeviceVendors(value: string): any[] {
+    const filterValue = value.toLowerCase();
+    const vendorsList: string[] = this.deviceVendors;
+    return vendorsList.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
+  private filterModels(value: string, callingPlatforms = false): Device[] {
+    const filterValue = value.toLowerCase();
+    if (!callingPlatforms)
+      return this.models.filter(option => option.product.toLowerCase().includes(filterValue));
+    else
+      return this.callingPlatformModels.filter(option => option.product.toLowerCase().includes(filterValue));
+  }
+
+  private filterDeviceModels(value: string): Device[] {
+    const filterValue = value.toLowerCase();
+    return this.deviceModels.filter(option => option.product.toLowerCase().includes(filterValue));
+  }
+
   displayFnProject(project: any): string {
     return project && project.projectName ? project.projectName : '';
   }
 
-  devicesAndSupportInvalid(): boolean {
-    // const isInvalidDevice = this.devicesUsed.length === 0 && this.isInvalid('product');
-    // const isInvalidSupport = this.supportUsed.length === 0 && this.isInvalidSupport('product');
-    // return isInvalidDevice && isInvalidSupport;
-    return true;
+  displayFnDevice(device: any): string {
+    return device && device.product ? device.product : '';
+  }
+
+  dutCallingAndDeviceInvalid(): boolean {
+    const isInvalidDut = this.dutUsed.length === 0 && this.isInvalid('product');
+    const isInvalidCalling = this.callingPlatformUsed.length === 0 && this.isInvalidCallingPlatform('product');
+    const isDeviceInvalid = this.otherDevicesUsed.length === 0 && this.isDeviceInvalid('product');
+    return isInvalidDut && isInvalidCalling && isDeviceInvalid;
   }
 
   getErrorMessage(): string {
@@ -284,24 +515,26 @@ export class AddNewLicenseConsumptionComponent implements OnInit {
     return this.addLicenseConsumptionForm.controls['project'].invalid;
   }
 
-  // isInvalid(control: string): boolean {
-  //   return this.addDeviceForm.controls[control].invalid || !this.addDeviceForm.controls[control].value;
-  // }
-  // isInvalidSupport(control: string): boolean {
-  //   return this.addSupportForm.controls[control].invalid || !this.addSupportForm.controls[control].value;
-  // }
-
-  isWeekDefined(): boolean{
-    return this.addLicenseConsumptionForm.controls['startWeek'].valid && this.addLicenseConsumptionForm.controls['endWeek'].valid;
+  isInvalid(control: string): boolean {
+    return this.addDutForm.controls[control].invalid || !this.addDutForm.controls[control].value;
   }
 
-  
+  isInvalidCallingPlatform(control: string): boolean {
+    return this.addCallingPlatformForm.controls[control].invalid || !this.addCallingPlatformForm.controls[control].value;
+  }
+
+  isDeviceInvalid(control: string): boolean {
+    return this.addDeviceForm.controls[control].invalid || !this.addDeviceForm.controls[control].value;
+  }
+
+  isWeekDefined(): boolean {
+    return this.addLicenseConsumptionForm.controls['startWeek'].valid && this.addLicenseConsumptionForm.controls['endWeek'].valid;
+  }
 
   ngOnDestroy(): void {
     // reset form here
     this.addLicenseConsumptionForm.reset();
-    // this.addDeviceForm.reset();
-    // this.addSupportForm.reset();
+    this.addDutForm.reset();
+    this.addCallingPlatformForm.reset();
   }
 }
-
