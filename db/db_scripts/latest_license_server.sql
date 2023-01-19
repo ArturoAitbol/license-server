@@ -710,6 +710,35 @@ c4c5c8c9-e399-4fdc-a210-4aa5e3bc57a2	CICDTest	CICDTest1658150055	2.0	OTHER	week	
 cdd0e8af-1ba4-4a20-b354-bf7c6c121dc3	Dialogic	Brooktrout SR140	X6.13--GFI FAX Maker	FAX	static	0	2022-06-17 15:42:48.550405	infinity	\N	t
 \.
 
+COPY public.consumption_matrix (id, tokens, dut_type, calling_platform) FROM stdin;
+a8654484-1cb2-4fec-adf4-ee7ddc17375d	2	Device/Phone/ATA	PBX
+6a70a31b-fc5a-443b-82d4-d306961fa533	2	Device/Phone/ATA	PBX+SBC
+5726d813-834e-40c4-a52e-e9ac63459e03	2	Device/Phone/ATA	UCaaS
+30ab93f1-3bde-4721-8892-1ba34a005d08	2	Device/Phone/ATA	Contact Center
+89eeb522-157f-4125-96e6-b4cc900fa9d1	2	Device/Phone/ATA	CCaaS
+5798ecd9-6db9-43a6-a521-b21f065e7879	2	Device/Phone/ATA	CPaaS
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	2	Soft Client/UC Client	CCaaS
+be612704-c26e-48ea-ab9b-19312f03d644	2	Soft Client/UC Client	CPaaS
+eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	5	SBC	PBX
+3ad3f83e-2654-466d-b9e9-9cd8ded28110	5	SBC	UCaaS
+34859fba-9987-4a1c-b176-14569b331653	5	SBC	CCaaS
+b66edd36-ee7f-42e7-bfb4-41810ea69fe6	5	SBC	CPaaS
+c323f5f8-cd49-4b0b-ac74-fe2113b658b8	5	BYOC	UCaaS
+0cba280f-06fa-47c2-9782-c16d8bf8ed05	5	BYOC	CCaaS
+9285ca9e-04c3-49df-9d59-085322a13319	5	BYOC	CPaaS
+7f6c9fec-978f-41a6-ba38-117611f0dfa3	3	Application	PBX
+866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	3	Application	PBX+SBC
+1ba09c6f-9a2a-4181-ac1e-b7217763df96	3	Application	UCaaS
+0e709699-3dab-47f1-a710-ebd2ae78d57b	3	Application	Contact Center
+ea00b987-0f14-4888-a0ce-f963d1eb7592	3	Application	CCaaS
+7ab51789-e767-42cc-a9ba-4ab4aef81d1f	3	Application	CPaaS
+9c0cc4a5-a773-46f3-b73e-a09c55080b1f	5	Headset	PBX
+9f53d1ae-e22d-4c3b-b05d-6bf6b13c0658	5	Headset	UCaaS
+f2b57afb-c389-48ec-a54b-7d8a05a51f32	5	Headset	CCaaS
+2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	5	Headset	CPaaS
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	2	Video Collab Device	UCaaS
+\.
+
 
 --
 -- Name: bundle bundle_pkey; Type: CONSTRAINT; Schema: public; Owner: -

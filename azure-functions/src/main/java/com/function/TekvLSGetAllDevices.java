@@ -81,7 +81,7 @@ public class TekvLSGetAllDevices {
 				   queryBuilder.appendEqualsCondition("vendor", vendor);
 			   }
 			   if (!deviceType.isEmpty()) {
-				   queryBuilder.appendEqualsCondition("type", deviceType);
+				   queryBuilder.appendCustomCondition("?::device_type_enum = type", deviceType);
 			   }
 			   if (!product.isEmpty()) {
 				   queryBuilder.appendEqualsCondition("product", product);
