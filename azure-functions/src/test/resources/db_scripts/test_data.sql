@@ -192,13 +192,13 @@ be612704-c26e-48ea-ab9b-19312f03d644	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	note 1
 COPY public.device (id, vendor, product, version, type, granularity, tokens_to_consume, start_date, deprecated_date, subaccount_id, support_type) FROM stdin;
 7564aab0-5331-4ab5-85f7-e37acbdfd90d	Test	Poly VVX 500	1.0	Device/Phone/ATA	static	5	2022-06-17 15:42:48.550405	infinity	\N	f
 be612704-c26e-48ea-ab9b-19312f03d644	Test	Cisco Webex  Windows Client	1.0	Soft Client/UC Client	static	15	2022-06-17 15:42:48.550405	infinity	\N	f
-eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	Test	HylaFAX Enterprise	6.2	BYOC	static	0	2022-06-17 15:42:48.550405	infinity	\N	t
-3ad3f83e-2654-466d-b9e9-9cd8ded28110	Test	Multitech FAX Finder IP FAX server	5.0	Application	static	0	2022-06-17 15:42:48.550405	infinity	\N	t
-34859fba-9987-4a1c-b176-14569b331653	Test	OpenText-Right FAX	20.2	Headset	static	0	2022-06-17 15:42:48.550405	infinity	\N	t
-b66edd36-ee7f-42e7-bfb4-41810ea69fe6	Test	Xmedius FAX server	9.0	Video Collab Device	static	0	2022-06-17 15:42:48.550405	infinity	\N	t
-7f6c9fec-978f-41a6-ba38-117611f0dfa3	Test	Genesys Pure Cloud	1.0.0.10206	Contact Center	static	0	2022-06-17 15:42:48.550405	infinity	\N	t
+eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	Test	HylaFAX Enterprise	6.2	BYOC	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+3ad3f83e-2654-466d-b9e9-9cd8ded28110	Test	Multitech FAX Finder IP FAX server	5.0	Application	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+34859fba-9987-4a1c-b176-14569b331653	Test	OpenText-Right FAX	20.2	Headset	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+b66edd36-ee7f-42e7-bfb4-41810ea69fe6	Test	Xmedius FAX server	9.0	Video Collab Device	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+7f6c9fec-978f-41a6-ba38-117611f0dfa3	Test	Genesys Pure Cloud	1.0.0.10206	Contact Center	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
 866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	Test	3CX	18.0.1880	PBX+SBC	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
 1ba09c6f-9a2a-4181-ac1e-b7217763df96	Test	Adtran NetVanta Series (7100)	11.10.3	UCaaS	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
-0e709699-3dab-47f1-a710-ebd2ae78d57b	Test	Lucent	Alcatel Lucent OmniPCX/OpenTouch.OXE	12.4	CCaaS	week	4	2022-06-17 15:42:48.550405	infinity	\N	f
-ea00b987-0f14-4888-a0ce-f963d1eb7592	Test	Lucent	Alcatel Lucent OXO	v032/021.001	CPaaS	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
+0e709699-3dab-47f1-a710-ebd2ae78d57b	Test	Alcatel Lucent OmniPCX/OpenTouch.OXE	12.4	CCaaS	week	4	2022-06-17 15:42:48.550405	infinity	\N	f
+ea00b987-0f14-4888-a0ce-f963d1eb7592	Test	Alcatel Lucent OXO	v032/021.001	CPaaS	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
 \.

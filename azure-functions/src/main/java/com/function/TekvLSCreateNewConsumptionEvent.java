@@ -182,7 +182,7 @@ public class TekvLSCreateNewConsumptionEvent
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 
 		// Build the sql query to get tokens consumption and granularity from device table
-		String devicePerProjectConsumptionSql = "SELECT id FROM license_consumption WHERE consumption_matrix_id=?::uuid and project_id=?::uuid and ?::timestamp LIMIT 1;";
+		String devicePerProjectConsumptionSql = "SELECT id FROM license_consumption WHERE consumption_matrix_id=?::uuid and project_id=?::uuid and consumption_date=?::timestamp LIMIT 1;";
 		String insertSql = "INSERT INTO license_consumption (subaccount_id, consumption_matrix_id, device_id, calling_platform_id, consumption_date, usage_type, tokens_consumed, modified_by, modified_date, project_id) " +
 							"VALUES (?::uuid, ?::uuid, ?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid) returning id;";
 

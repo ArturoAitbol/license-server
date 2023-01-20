@@ -15,20 +15,14 @@ export class DevicesService {
    * get devices list
    * @returns: Observable 
    */
-  public getDevicesList(subaccountId?: string, vendor?: string, product?: string, version?: string ): Observable<Device> {
+  public getDevicesList(subaccountId?: string, vendor?: string, deviceType?: string): Observable<Device> {
     let params = new HttpParams();
-    if (subaccountId){
+    if (subaccountId)
       params = params.set('subaccountId', subaccountId);
-    }
-    if (vendor){
+    if (vendor)
       params = params.set('vendor', vendor);
-    }
-    if (product){
-      params = params.set('product', product);
-    }
-    if (version){
-      params = params.set('version', version);
-    }
+    if (deviceType)
+      params = params.set('deviceType', deviceType);
     const headers = this.getHeaders();
     return this.httpClient.get<Device>(this.API_URL, { headers, params });
   }
