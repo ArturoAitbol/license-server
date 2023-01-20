@@ -8,7 +8,7 @@ import { ReportType } from 'src/app/helpers/report-type';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { fromMatPaginator, paginateRows } from '../../../helpers/dataSource-utils';
+
 @Component({
   selector: 'app-more-details',
   templateUrl: './more-details.component.html',
