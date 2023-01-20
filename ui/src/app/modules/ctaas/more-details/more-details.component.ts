@@ -1,16 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
+import { concat, defer, Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ReportType } from 'src/app/helpers/report-type';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+import { fromMatPaginator, paginateRows } from '../../../helpers/dataSource-utils';
 @Component({
   selector: 'app-more-details',
   templateUrl: './more-details.component.html',
   styleUrls: ['./more-details.component.css']
 })
 export class MoreDetailsComponent implements OnInit {
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  displayedRows$: Observable<any[]>;
+  totalRows$: Observable<number>;
+
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
@@ -120,6 +130,10 @@ export class MoreDetailsComponent implements OnInit {
               // filter the array without media stats details 
               obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
             });
+            // const pageEvents$: Observable<PageEvent> = fromMatPaginator(this.paginator);
+            // const rows$ = of(this.detailedTestReport);
+            // this.totalRows$ = rows$.pipe(map(rows => rows.length));
+            // this.displayedRows$ = rows$.pipe(paginateRows(pageEvents$));
           } else {
             this.hasDashboardDetails = false;
             this.reportResponse = {};
@@ -136,6 +150,8 @@ export class MoreDetailsComponent implements OnInit {
       console.error("Error while fetching dashboard report: " + error);
     }
   }
+
+
 
   getSelectedFromTimeStamp(event) {
     this.selectedFromMediaStats = event.data;
@@ -191,7 +207,11 @@ export class MoreDetailsComponent implements OnInit {
    * @param index: number 
    */
   open(index: number): void {
-    this.detailedTestReport[index].panelOpenState = false;
+    
+    setTimeout(() => {
+      this.detailedTestReport[index].panelOpenState = false;
+    }, 0);
+
     this.detailedTestReport[index].frompanelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
     if (this.detailedTestReport[index].otherParties) // check for null / undefined values

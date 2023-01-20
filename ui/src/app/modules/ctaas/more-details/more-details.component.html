@@ -48,10 +48,8 @@
             <section class="table-section">
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
-                        <app-data-table class="table-container mat-elevation-z8" 
-                            [tableData]="reportResponse.endpoints"
-                            [isLoadingResults]="isLoadingResults" 
-                            [isRequestCompleted]="isRequestCompleted"
+                        <app-data-table class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
+                            [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                             [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
@@ -61,6 +59,10 @@
     <br>
     <ng-container *ngIf="reportResponse then viewTestDetailedReport;"></ng-container>
 </ng-template>
+<!-- <div *ngIf = "isRequestCompleted">
+    <mat-paginator #paginator [length]="totalRows$ | async" [pageIndex]="0" [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+</div> -->
 <ng-template #viewTestDetailedReport>
     <section class="table-section">
         <mat-accordion>
@@ -80,7 +82,7 @@
         <mat-card class="card" style="overflow: auto;height: 400px;">
             <mat-card-content>
                 <div>
-                    <ng-container>
+                    <!-- <ng-container> -->
                         <ng-container *ngIf="detailedTestReport.length > 0">
                             <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
                                 class="accordian-container">
@@ -113,13 +115,14 @@
                                                     <tbody>
                                                         <tr
                                                             *ngFor="let subitems of detailedTestFeatureandCallReliability">
-                                                            <th scope="row" style="width: 25%;"> {{subitems.header | na}} </th>
+                                                            <th scope="row" style="width: 25%;"> {{subitems.header |
+                                                                na}} </th>
                                                             <td> {{item[subitems.value] | na}}</td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-6" *ngIf = "!item.panelOpenState">
                                                 <table>
                                                     <tbody>
                                                         <tr>
@@ -166,7 +169,8 @@
                                                                                         <th scope="row">
                                                                                             {{key.header}}
                                                                                         </th>
-                                                                                        <td> {{selectedFromMediaStats[key.value] | na}}                                                                                        </td>
+                                                                                        <td> {{selectedFromMediaStats[key.value]
+                                                                                            | na}} </td>
                                                                                     </tr>
                                                                                 </tbody>
                                                                             </table>
@@ -214,7 +218,8 @@
                                                                                         <th scope="row">
                                                                                             {{key.header}}
                                                                                         </th>
-                                                                                        <td> {{selectedToMediaStats[key.value] | na}}
+                                                                                        <td> {{selectedToMediaStats[key.value]
+                                                                                            | na}}
                                                                                         </td>
                                                                                     </tr>
                                                                                 </tbody>
@@ -266,7 +271,8 @@
                                                                                         <th scope="row">
                                                                                             {{key.header}}
                                                                                         </th>
-                                                                                        <td> {{otherPartiesMediaStats[key.value] | na}}
+                                                                                        <td> {{otherPartiesMediaStats[key.value]
+                                                                                            | na}}
                                                                                         </td>
                                                                                     </tr>
                                                                                 </tbody>
@@ -285,7 +291,7 @@
                             </mat-accordion>
                         </ng-container>
                         <h3 class="no-data-found" *ngIf="detailedTestReport.length === 0">No Data to display</h3>
-                    </ng-container>
+                    <!-- </ng-container> -->
                 </div>
             </mat-card-content>
         </mat-card>
