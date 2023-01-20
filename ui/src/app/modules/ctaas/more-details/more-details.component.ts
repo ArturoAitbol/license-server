@@ -49,6 +49,7 @@ export class MoreDetailsComponent implements OnInit {
   fromMediaStats: any;
   toMediaStats: any;
   otherpartyMediaStat: any;
+  detailedTestReports:any;
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
   public readonly FEATURE_FUNCTIONALITY: string = ReportType.DAILY_FEATURE_FUNCTIONALITY;
   public readonly CALL_RELIABILITY: string = ReportType.DAILY_CALLING_RELIABILITY;
@@ -130,10 +131,6 @@ export class MoreDetailsComponent implements OnInit {
               // filter the array without media stats details 
               obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
             });
-            // const pageEvents$: Observable<PageEvent> = fromMatPaginator(this.paginator);
-            // const rows$ = of(this.detailedTestReport);
-            // this.totalRows$ = rows$.pipe(map(rows => rows.length));
-            // this.displayedRows$ = rows$.pipe(paginateRows(pageEvents$));
           } else {
             this.hasDashboardDetails = false;
             this.reportResponse = {};
@@ -150,8 +147,6 @@ export class MoreDetailsComponent implements OnInit {
       console.error("Error while fetching dashboard report: " + error);
     }
   }
-
-
 
   getSelectedFromTimeStamp(event) {
     this.selectedFromMediaStats = event.data;
