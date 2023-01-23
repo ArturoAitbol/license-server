@@ -32,7 +32,9 @@ export class CtaasTestReportsComponent implements OnInit {
   currentCustomer: any;
   selectedTypeFilter: any = '';
   selectedDateFilter: any = '';
-  private readonly VIEW_REPORT = 'View Report';
+  public date: Date;
+  public maxDate: any;
+  readonly VIEW_REPORT = 'View Report';
 
   readonly options = {
     VIEW_REPORT:this.VIEW_REPORT
@@ -42,8 +44,7 @@ export class CtaasTestReportsComponent implements OnInit {
 
   filterForm = this.fb.group({
     typeFilterControl: [''],
-    startTimeControl: [''],
-    endTimeControl: ['']
+    dateFilterControl: ['']
   });
 
   private unsubscribe: Subject<void> = new Subject<void>();
@@ -82,6 +83,7 @@ export class CtaasTestReportsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.maxDate = moment().toDate()
     this.calculateTableHeight();
     this.getActionMenuOptions();
     this.initColumns();
@@ -98,8 +100,8 @@ export class CtaasTestReportsComponent implements OnInit {
         const {reports} = r
         try {
           reports.forEach((report: ITestReports, index) => {
-            let parsedStartTime = moment(report.startTime, "YYMMDD HH:mm:ss").format("YYYY-MM-DD hh:mm:ss");
-            let parsedEndTime = moment(report.endTime, "YYMMDD HH:mm:ss").format("YYYY-MM-DD hh:mm:ss");
+            let parsedStartTime = moment(report.startTime, "YYMMDD HH:mm:ss UTC").format("MM-DD-YYYY HH:mm:ss UTC");
+            let parsedEndTime = moment(report.endTime, "YYMMDD HH:mm:ss UTC").format("MM-DD-YYYY HH:mm:ss UTC");
             reportListWithDates[index] = {...report, endDate:parsedEndTime, startDate:parsedStartTime}
           });
           return r;
@@ -163,7 +165,6 @@ export class CtaasTestReportsComponent implements OnInit {
   }
 
   onClickMoreDetails(index: string): void {
-    console.log(this.testReportsData[0]);
     const { reportType, startTime, endTime } = this.testReportsData[index];
     const type = (reportType === 'Daily-FeatureFunctionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Daily-CallingReliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
     const url = `${environment.BASE_URL}/#/spotlight/details?type=${type}&start=${startTime}&end=${endTime}`;
@@ -172,13 +173,13 @@ export class CtaasTestReportsComponent implements OnInit {
   }
 
   toggleDateValue(date:any){
-    console.log("entra", date)
     this.selectedDateFilter = date.value.toJSON();
     this.testReportsData = [];
     this.fetchTestReports();
   }
 
-  clearDateFilter(): void {
+  clearDateFilter() {
+    this.date = null;
     this.selectedDateFilter = '';
     this.testReportsData = [];
     this.fetchTestReports();
@@ -187,5 +188,13 @@ export class CtaasTestReportsComponent implements OnInit {
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
+  }
+
+  restoreTable(event:any) {
+    if(event.data === null){
+      this.selectedDateFilter = '';
+      this.testReportsData = [];
+      this.fetchTestReports();
+    }
   }
 }
