@@ -79,7 +79,7 @@
             <mat-card-content>
                 <div>
                     <ng-container *ngIf="detailedTestReport.length > 0">
-                        <mat-accordion *ngFor="let item of detailedTestReport; let i = index;"
+                        <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
                             class="accordian-container">
                             <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
                                 <mat-expansion-panel-header style="position: relative;">

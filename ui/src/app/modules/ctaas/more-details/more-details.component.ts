@@ -16,11 +16,6 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 })
 export class MoreDetailsComponent implements OnInit {
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-
-  displayedRows$: Observable<any[]>;
-  totalRows$: Observable<number>;
-
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
@@ -49,7 +44,6 @@ export class MoreDetailsComponent implements OnInit {
   fromMediaStats: any;
   toMediaStats: any;
   otherpartyMediaStat: any;
-  detailedTestReports:any;
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
   public readonly FEATURE_FUNCTIONALITY: string = ReportType.DAILY_FEATURE_FUNCTIONALITY;
   public readonly CALL_RELIABILITY: string = ReportType.DAILY_CALLING_RELIABILITY;
