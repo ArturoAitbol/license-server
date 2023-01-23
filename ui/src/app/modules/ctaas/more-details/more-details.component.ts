@@ -1,9 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import { concat, defer, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { ReportType } from 'src/app/helpers/report-type';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -122,6 +119,11 @@ export class MoreDetailsComponent implements OnInit {
               obj.tonoDataFoundFlag = false;
               obj.otherPartynoDataFoundFlag = false;
               obj.panelOpenState = true;
+              obj.
+              obj.from.mediaStats.sort((a, b) => {
+                return a.timestamp - b.timestamp
+              })
+              // console.log(obj)
               // filter the array without media stats details 
               obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
             });
