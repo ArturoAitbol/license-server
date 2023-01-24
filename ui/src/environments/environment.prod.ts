@@ -10,5 +10,6 @@ export const environment = {
     INSTRUMENTATION_CONN_STRING: 'InstrumentationKey=f7b20352-0555-4fe7-a991-c2f6fc587a94;IngestionEndpoint=https://southcentralus-3.in.applicationinsights.azure.com/;LiveEndpoint=https://southcentralus.livediagnostics.monitor.azure.com/',
     // BASE URL
     BASE_URL: window.location.origin,
-    ENVIRONMENT_NAME: "production"
+    ENVIRONMENT_NAME: "production",
+    TOKEN_CONSUMPTION_DATE: "2023-01-09"
 };
