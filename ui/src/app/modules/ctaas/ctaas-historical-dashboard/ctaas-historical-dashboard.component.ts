@@ -95,7 +95,6 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
                   });
                   const { daily, weekly, lastUpdatedDateList } = resultant;
                   this.lastModifiedDate = lastUpdatedDateList[0];
-                  console.log("last", resultant)
                   if (daily.length > 0)
                       this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
                   if (weekly.length > 0)

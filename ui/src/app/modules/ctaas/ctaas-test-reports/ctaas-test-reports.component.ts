@@ -106,7 +106,7 @@ export class CtaasTestReportsComponent implements OnInit {
           });
           return r;
         }catch(exception){
-          console.error('error', exception);
+          console.error('error while fetching data', exception);
         }
        })
       )
