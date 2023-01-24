@@ -10,6 +10,7 @@ import { MyAppsComponent } from './my-apps/my-apps.component';
 import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
 import { RedirectPageComponent } from './redirect-page/redirect-page.component';
 import { SubscriptionsOverviewComponent } from "./subscriptions-overview/subscriptions-overview.component";
+import { DevicesComponent } from './modules/customer/devices/devices.component';
 // set default route based on the feature toggle
 const defaultRoute = FeatureToggleHelper.isFeatureEnabled("ctaasFeature") ? 'redirect' : 'dashboard';
 
@@ -35,6 +36,7 @@ const routes: Routes = [
     path: 'spotlight', canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard], canActivateChild: [FeatureToggleGuard],
     loadChildren: () => import('./modules/ctaas/ctaas.module').then(m => m.CtaasModule)
   },
+  { path: 'devices', component: DevicesComponent, canActivate: [MsalGuard, RoleGuard] },
   { path: '**', redirectTo: defaultRoute }
 ];
 

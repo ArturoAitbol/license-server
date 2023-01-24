@@ -17,6 +17,7 @@ import { ProjectsComponent } from './projects/projects.component';
 import { AddProjectComponent } from './projects/add-project/add-project.component';
 import { SharedModule } from '../shared/shared.module';
 import { ModifyProjectComponent } from './projects/modify-project/modify-project.component';
+import { DevicesComponent } from './devices/devices.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { ModifyProjectComponent } from './projects/modify-project/modify-project
     AddProjectComponent,
     ModifyProjectComponent,
     AddNewLicenseConsumptionComponent,
+    DevicesComponent,
   ],
   imports: [
     CommonModule,

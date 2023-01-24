@@ -1,9 +1,20 @@
 export const permissions = {
     'tekvizion.DevicesAdmin': {
-        paths: [],
-        elements: [],
+        paths: [
+            'devices',
+        ],
+        elements: [
+            'addDevice',
+            'modifyDevice',
+            'deleteDevice'
+        ],
         tables: {
             customerOptions: [],
+            devicesOptions:[
+                'VIEW_DEVICES',
+                'MODIFY_DEVICES',
+                'DELETE_DEVICES',
+            ],
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
@@ -19,6 +30,7 @@ export const permissions = {
             'consumption',
             'projects',
             'licenses',
+            'devices',
             'redirect',
             'spotlight',
             'report-dashboards',
@@ -57,6 +69,7 @@ export const permissions = {
                 'VIEW_CTAAS_DASHBOARD',
                 'MODIFY_ACCOUNT',
                 'DELETE_ACCOUNT'],
+            
             licenseOptions: [
                 'MODIFY_LICENSE',
                 'DELETE_LICENSE'],
@@ -136,6 +149,7 @@ export const permissions = {
             'consumption',
             'projects',
             'licenses',
+            'devices',
             'redirect',
             'apps',
             'spotlight',
