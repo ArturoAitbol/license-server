@@ -77,16 +77,16 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
       forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
           if (res) {
               // get all response without any error messages
-              const result: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string }[] = [...res]
+              const result: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string, startDateStr: string, endDateStr: string }[] = [...res]
                   .filter((e: any) => !e.error)
-                  .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string } }) => e.response);
+                  .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string, startDateStr: string, endDateStr: string } }) => e.response);
               this.isLoadingResults = false;
               if (result.length > 0) {
                   this.hasDashboardDetails = true;
                   const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
                   result.forEach((e) => {
                       if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                          resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
+                          resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType), startDate: e.startDateStr,endDate: e.endDateStr });
                           resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                       } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
                           resultant.weekly.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
@@ -95,6 +95,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
                   });
                   const { daily, weekly, lastUpdatedDateList } = resultant;
                   this.lastModifiedDate = lastUpdatedDateList[0];
+                  console.log("last", resultant)
                   if (daily.length > 0)
                       this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
                   if (weekly.length > 0)
@@ -144,12 +145,12 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
   }
   
   onClickMoreDetails(index: string): void {
-        const obj = this.resultantImagesList[0];
-        const { imagesList } = obj;
-        const { reportType } = imagesList[index];
-        const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-        const url = environment.BASE_URL + '/#/spotlight/details?type=' + type;
-        window.open(url);
-        window.close();
+    const obj = this.resultantImagesList[0];
+    const { imagesList } = obj;
+    const { reportType, startDate, endDate } = imagesList[index];
+    const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
+    const url = `${environment.BASE_URL}/#/spotlight/details?type=${type}&start=${startDate}&end=${endDate}`;
+    window.open(url);
+    window.close();
     }
 }

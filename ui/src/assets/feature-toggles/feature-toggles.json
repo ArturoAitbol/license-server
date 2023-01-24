@@ -15,7 +15,8 @@
       "setup": true,
       "subscriptions-overview": true,
       "notes": true,
-      "details": true
+      "details": true,
+      "reports": true
     },
     "features": {
       "ctaasFeature": true,
@@ -38,7 +39,8 @@
       "setup": true,
       "subscriptions-overview": true,
       "notes": true,
-      "details": true
+      "details": true,
+      "reports": true
     },
     "features": {
       "ctaasFeature": true,
@@ -61,7 +63,8 @@
       "setup": true,
       "subscriptions-overview": true,
       "notes": true,
-      "details": true
+      "details": true,
+      "reports": true
     },
     "features": {
       "ctaasFeature": true,
