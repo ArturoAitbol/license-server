@@ -128,12 +128,10 @@ export class Utility {
         return [...set];
     }
 
-    public static sortDatesInAscendingOrder(list: any[] | [any], key: string, isValueNumber: boolean): any[] {
+    public static sortDatesInAscendingOrder(list: any[] | [any], key: string): any[] {
         list.sort((e1, e2) => {
-            if (isValueNumber) {
-                return new Date(e1[key]).valueOf() - new Date(e2[key]).valueOf();
-            }
-        })
+            return new Date(e1[key]).valueOf() - new Date(e2[key]).valueOf();
+        });
         return [...list];
     }
 
