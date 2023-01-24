@@ -100,11 +100,11 @@ export class Utility {
      * @param options: Object
      * @return: string[]
      */
-    public static getTableOptions(roles: string[], options: any, optionType : string) : string[]{
+    public static getTableOptions(roles: string[], options: any, optionType: string): string[] {
         //new Set([]) is used to avoid repeated options when a user has multiple roles
         const set = new Set([]);
         roles.forEach(accountRole => {
-            permissions[accountRole]?.tables[optionType]?.forEach(item =>set.add(options[item]));
+            permissions[accountRole]?.tables[optionType]?.forEach(item => set.add(options[item]));
         });
         return [...set];
     }
@@ -115,7 +115,7 @@ export class Utility {
      * @param options: any[]
      * @return: any[]
      */
-    public static getNavbarOptions(roles: string[], options: any[]) : any[]{
+    public static getNavbarOptions(roles: string[], options: any[]): any[] {
         //new Set([]) is used to avoid repeated options when a user has multiple roles
         const set = new Set([]);
         options.forEach((item) => {
@@ -126,6 +126,13 @@ export class Utility {
             });
         });
         return [...set];
+    }
+
+    public static sortDatesInAscendingOrder(list: any[] | [any], key: string): any[] {
+        list.sort((e1, e2) => {
+            return new Date(e1[key]).valueOf() - new Date(e2[key]).valueOf();
+        });
+        return [...list];
     }
 
 }

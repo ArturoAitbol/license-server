@@ -49,7 +49,6 @@ public class TekvLSCtaasDownloadTestReport {
         context.getLogger().info("Entering TekvLSCtaasDownloadTestReport Azure function");
         // Parse request body and extract parameters needed
         String requestBody = request.getBody().orElse("");
-        context.getLogger().info("Request body: " + requestBody);
         if (requestBody.isEmpty()) {
             context.getLogger().info("Error: Request body is empty.");
             JSONObject json = new JSONObject();
