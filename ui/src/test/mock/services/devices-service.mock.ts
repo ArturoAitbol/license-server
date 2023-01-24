@@ -653,6 +653,49 @@ const DEVICE_LIST = {
     ]
 };
 
+const DEVICE_TYPES = {
+    "deviceTypes": [
+        { "name": "PBX" },
+        { "name": "PBX+SBC" },
+        { "name": "SBC" },
+        { "name": "GATEWAY" },
+        { "name": "PHONE" },
+        { "name": "TRUNK" },
+        { "name": "FAX" },
+        { "name": "CC" },
+        { "name": "Contact Center" },
+        { "name": "UCAAS" },
+        { "name": "UCaaS" },
+        { "name": "CCaaS" },
+        { "name": "CPaaS" },
+        { "name": "CLIENT" },
+        { "name": "CERT" },
+        { "name": "Device/Phone/ATA" },
+        { "name": "Soft Client/UC Client" },
+        { "name": "BYOC" },
+        { "name": "Application" },
+        { "name": "Headset" },
+        { "name": "Video Collab Device" },
+        { "name": "OTHER" }
+    ],
+    "callingPlatformTypes": [
+        { "name": "PBX" },
+        { "name": "PBX+SBC" },
+        { "name": "UCaaS" },
+        { "name": "Contact Center" },
+        { "name": "CCaaS" },
+        { "name": "CPaaS" }],
+    "dutTypes": [
+        { "name": "Device/Phone/ATA" },
+        { "name": "Soft Client/UC Client" },
+        { "name": "SBC" },
+        { "name": "BYOC" },
+        { "name": "Application" },
+        { "name": "Headset" },
+        { "name": "Video Collab Device" }
+    ]
+}
+
 const VENDORS_LIST = {
     "vendors": [
         "HylaFAX",
@@ -695,12 +738,16 @@ const VENDORS_LIST = {
 
 export const DevicesServiceMock = {
     devicesListValue: DEVICE_LIST,
-    getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string ) => {
+    getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string) => {
         return of(
             JSON.parse(JSON.stringify({ devices: DEVICE_LIST.devices.filter(device => device.vendor === vendor) }))
         );
     },
-
+    getDevicesTypesList: () => {
+        return of(
+            JSON.parse(JSON.stringify(DEVICE_TYPES))
+        )
+    },
     getAllDeviceVendors: () => {
         return of(
             JSON.parse(JSON.stringify(VENDORS_LIST))
@@ -714,22 +761,22 @@ export const DevicesServiceMock = {
         return new Observable((observer) => {
             observer.next(
                 {
-                  
+
                 }
             );
             observer.complete();
             return {
-                unsubscribe() {}
+                unsubscribe() { }
             };
         });
     },
     createDevice: (device: any) => {
         return new Observable((observer) => {
             observer.next(
-                { 
-                    body:[
+                {
+                    body: [
                         {
-                 
+
                         }
                     ]
                 }

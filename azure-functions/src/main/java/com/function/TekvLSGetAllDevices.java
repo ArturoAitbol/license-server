@@ -62,6 +62,7 @@ public class TekvLSGetAllDevices {
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String vendor = request.getQueryParameters().getOrDefault("vendor", "");
+		String deviceType = request.getQueryParameters().getOrDefault("deviceType", "");
 		String product = request.getQueryParameters().getOrDefault("product", "");
 		String version = request.getQueryParameters().getOrDefault("version", "");
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
@@ -78,6 +79,9 @@ public class TekvLSGetAllDevices {
 			   }
 			   if (!vendor.isEmpty()) {
 				   queryBuilder.appendEqualsCondition("vendor", vendor);
+			   }
+			   if (!deviceType.isEmpty()) {
+				   queryBuilder.appendCustomCondition("?::device_type_enum = type", deviceType);
 			   }
 			   if (!product.isEmpty()) {
 				   queryBuilder.appendEqualsCondition("product", product);
