@@ -73,13 +73,21 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/spotlight/'
             },
             {
+                name: 'Test Reports',
+                iconName: "assets\\images\\project_3.png",
+                path: 'reports',
+                active: false,
+                materialIcon: 'folder_copy',
+                baseUrl: '/spotlight/'
+            },
+            {
                 name: 'Configuration',
                 iconName: "assets\\images\\tune.png",
                 path: 'setup',
                 active: false,
                 materialIcon: 'tune',
                 baseUrl: '/spotlight/'
-            },
+            }
         ],
         main: [
             {
@@ -123,6 +131,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
     readonly SPOTLIGHT_NOTES_PATH: string = '/spotlight/notes';
+    readonly SPOTLIGHT_TEST_REPORTS: string = '/spotlight/reports'
     readonly MAIN_DASHBOARD = '/dashboard';
     readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
 
@@ -190,6 +199,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
                     case this.CTAAS_SETUP_PATH:
                     case this.SPOTLIGHT_NOTES_PATH:
+                    case this.SPOTLIGHT_TEST_REPORTS:
                         this.tabName = Constants.CTAAS_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;

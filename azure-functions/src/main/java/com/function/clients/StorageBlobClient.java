@@ -252,13 +252,23 @@ public class StorageBlobClient {
                             blobItemName.indexOf("-Image"));
                     String[] range = blobItemName
                             .substring(blobItemName.indexOf("Image-") + 6, blobItemName.indexOf(".jpg")).split("-");
-                    String startTimestamp = range[0];
-                    String endTimestamp = range[1];
+                    String startTimestamp;
+                    String endTimestamp;
+                    String creationTimestamp = "";
+                    if (range.length > 2) {
+                        creationTimestamp = range[0];
+                        startTimestamp = range[1];
+                        endTimestamp = range[2];
+                    } else {
+                        startTimestamp = range[0];
+                        endTimestamp = range[1];
+                    }
 
                     JSONObject jsonObj = new JSONObject();
                     jsonObj.put("reportType", reportType);
                     jsonObj.put("startTime", startTimestamp);
                     jsonObj.put("endTime", endTimestamp);
+                    jsonObj.put("timestamp", creationTimestamp);
 
                     boolean insert = false;
                     // Check filters

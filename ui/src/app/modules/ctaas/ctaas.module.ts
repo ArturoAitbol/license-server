@@ -20,6 +20,7 @@ import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 import { MoreDetailsComponent } from './more-details/more-details.component';
+import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 
 
 
@@ -39,7 +40,8 @@ import { MoreDetailsComponent } from './more-details/more-details.component';
     CtaasNotesComponent,
     AddNotesComponent,
     CtaasHistoricalDashboardComponent,
-    MoreDetailsComponent
+    MoreDetailsComponent,
+    CtaasTestReportsComponent
   ],
   imports: [
     CommonModule,
