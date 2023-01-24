@@ -25,7 +25,7 @@
                         </div>
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <div class="row">
-                                <div class="col-8 col-sm-9 col-md-9 col-lg-10 col-xl-10">
+                                <div class="col-8 col-sm-9 col-md-9 col-lg-10 col-xl-9">
                                     <mat-form-field appearance="outline">
                                         <mat-label>Project</mat-label>
                                         <input type="text" placeholder="Select a project" aria-label="Project" matInput
@@ -41,7 +41,7 @@
                                         <mat-error *ngIf="isInvalidProject()">{{getErrorMessage()}}</mat-error>
                                     </mat-form-field>
                                 </div>
-                                <div *lcCheckAccessFor="'addProject'" class="col-4 col-sm-3 col-md-3 col-lg-2 col-xl-2">
+                                <div *lcCheckAccessFor="'addProject'" class="col-4 col-sm-3 col-md-3 col-lg-2 col-xl-3">
                                     <button mat-stroked-button type="button" class="plus-button" title="New Project"
                                         id="add-new-project-button" (click)="onAddProject()">
                                         <mat-icon>add</mat-icon>
@@ -125,7 +125,8 @@
                                         <mat-label>Calling Platform Type</mat-label>
                                         <input type="text" placeholder="Select Calling Platform type"
                                             aria-label="Calling Platform" matInput formControlName="name"
-                                            [matAutocomplete]="callingPlatformTypesList" id="calling-platform-vendor-auto-complete">
+                                            [matAutocomplete]="callingPlatformTypesList"
+                                            id="calling-platform-auto-complete">
                                         <mat-autocomplete #callingPlatformTypesList="matAutocomplete"
                                             (optionSelected)="onChangeCallingPlatformType($event.option.value)">
                                             <mat-option *ngFor="let item of callingPlatformTypes" [value]="item.name"
@@ -143,12 +144,13 @@
                                             id="calling-platform-vendor-auto-complete">
                                         <mat-autocomplete #callingPlatformVendorsList="matAutocomplete"
                                             (optionSelected)="onChangeCallingPlatformVendor($event.option.value)">
-                                            <mat-option *ngFor="let item of filteredCallingPlatformVendors" [value]="item"
-                                                title="{{item}}">
+                                            <mat-option *ngFor="let item of filteredCallingPlatformVendors"
+                                                [value]="item" title="{{item}}">
                                                 {{item}}
                                             </mat-option>
                                         </mat-autocomplete>
-                                        <mat-error *ngIf="isInvalidCallingPlatform('vendor')">{{getErrorMessage()}}</mat-error>
+                                        <mat-error
+                                            *ngIf="isInvalidCallingPlatform('vendor')">{{getErrorMessage()}}</mat-error>
                                     </mat-form-field>
                                 </div>
                                 <div>
@@ -159,13 +161,15 @@
                                             id="calling-platform-device-auto-complete">
                                         <mat-autocomplete #callingPlatformDevicesList="matAutocomplete"
                                             [displayWith]="displayFnDevice">
-                                            <mat-option *ngFor="let item of filteredCallingPlatformModels | async" [value]="item"
-                                                title="{{item.product}}">
+                                            <mat-option *ngFor="let item of filteredCallingPlatformModels | async"
+                                                [value]="item" title="{{item.product}}">
                                                 {{item.product}}
                                             </mat-option>
                                         </mat-autocomplete>
-                                        <mat-error *ngIf="isInvalidCallingPlatform('product')">{{getErrorMessage()}}</mat-error>
-                                        <mat-hint *ngIf="callingPlatformModels.length === 0">Please select a Vendor first</mat-hint>
+                                        <mat-error
+                                            *ngIf="isInvalidCallingPlatform('product')">{{getErrorMessage()}}</mat-error>
+                                        <mat-hint *ngIf="callingPlatformModels.length === 0">Please select a Vendor
+                                            first</mat-hint>
                                     </mat-form-field>
                                 </div>
                             </form>
@@ -203,8 +207,8 @@
                                             id="vendor-auto-complete">
                                         <mat-autocomplete #vendorsList="matAutocomplete"
                                             (optionSelected)="onChangeDeviceVendor($event.option.value)">
-                                            <mat-option *ngFor="let item of filteredDeviceVendors | async" [value]="item"
-                                                title="{{item}}">
+                                            <mat-option *ngFor="let item of filteredDeviceVendors | async"
+                                                [value]="item" title="{{item}}">
                                                 {{item}}
                                             </mat-option>
                                         </mat-autocomplete>
@@ -225,7 +229,8 @@
                                             </mat-option>
                                         </mat-autocomplete>
                                         <mat-error *ngIf="isDeviceInvalid('product')">{{getErrorMessage()}}</mat-error>
-                                        <mat-hint *ngIf="deviceModels.length === 0">Please select a Vendor first</mat-hint>
+                                        <mat-hint *ngIf="deviceModels.length === 0">Please select a Vendor
+                                            first</mat-hint>
                                     </mat-form-field>
                                 </div>
                                 <div>
@@ -246,7 +251,8 @@
                                         [disabled]="!addDeviceForm.valid || isDeviceInvalid('product')">
                                         <mat-icon>add</mat-icon>
                                     </button>
-                                    <mat-hint *ngIf="otherDevicesUsed.length === 0">Please add at least one device</mat-hint>
+                                    <mat-hint *ngIf="otherDevicesUsed.length === 0">Please add at least one
+                                        device</mat-hint>
                                 </div>
                             </form>
                         </div>

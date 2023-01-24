@@ -119,4 +119,14 @@ describe('Customer service http requests test', () => {
         });
         expect(httpClientSpy.post).toHaveBeenCalledWith(environment.apiEndpoint + '/devices', deviceToCreate);
     });
+    
+    it('should make the proper calls on getDevicesTypesList()', (done: DoneFn) => {
+        httpClientSpy.get.and.returnValue(DevicesServiceMock.getDevicesTypesList());
+
+        devicesService.getDevicesTypesList().subscribe({
+            next: () => { done(); },
+            error: done.fail
+        });
+        expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/deviceTypes', { headers });
+    });
 });
