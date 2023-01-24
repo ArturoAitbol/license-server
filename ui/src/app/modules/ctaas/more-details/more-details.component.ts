@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportType } from 'src/app/helpers/report-type';
+import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
@@ -194,6 +195,8 @@ export class MoreDetailsComponent implements OnInit {
     this.detailedTestReport[index].panelOpenState = false;
     this.detailedTestReport[index].frompanelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
+    this.detailedTestReport[index].from.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].from.mediaStats, 'timestamp', true);
+    this.detailedTestReport[index].to.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].to.mediaStats, 'timestamp', true);
     if (this.detailedTestReport[index].otherParties) // check for null / undefined values
       this.setOtherPartiesPanelStatus(this.detailedTestReport[index].otherParties);
   }
@@ -203,6 +206,7 @@ export class MoreDetailsComponent implements OnInit {
    */
   setOtherPartiesPanelStatus(data: any[]): void {
     data.forEach((otherParties) => {
+      otherParties.mediaStats = Utility.sortDatesInAscendingOrder(otherParties.mediaStats, 'timestamp', true)
       otherParties.otherPartyPanelStatus = true;
     });
   }
