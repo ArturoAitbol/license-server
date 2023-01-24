@@ -1,25 +1,335 @@
-// import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { By } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MsalService } from '@azure/msal-angular';
+import { SharedModule } from 'src/app/modules/shared/shared.module';
+import { CustomerService } from 'src/app/services/customer.service';
+import { DevicesService } from 'src/app/services/devices.service';
+import { DialogService } from 'src/app/services/dialog.service';
+import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
+import { ProjectService } from 'src/app/services/project.service';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
+import { CustomerServiceMock } from 'src/test/mock/services/customer-service.mock';
+import { DevicesServiceMock } from 'src/test/mock/services/devices-service.mock';
+import { ConsumptionServiceMock } from 'src/test/mock/services/license-consumption-service.mock';
+import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
+import { ProjectServiceMock } from 'src/test/mock/services/project-service.mock';
+import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
+import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption.component';
+import moment from "moment";
+import { of, throwError } from "rxjs";
 
-// import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption.component';
+let testInstance: AddNewLicenseConsumptionComponent;
+let fixture: ComponentFixture<AddNewLicenseConsumptionComponent>;
 
-// describe('AddNewLicenseConsumptionComponent', () => {
-//   let component: AddNewLicenseConsumptionComponent;
-//   let fixture: ComponentFixture<AddNewLicenseConsumptionComponent>;
+const MatDialogRefMock = {
+    close: () => {
+        return null
+    }
+};
 
-//   beforeEach(async () => {
-//     await TestBed.configureTestingModule({
-//       declarations: [ AddNewLicenseConsumptionComponent ]
-//     })
-//     .compileComponents();
-//   });
+const defaultTestBedConfig = {
+    declarations: [AddNewLicenseConsumptionComponent],
+    imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
+    providers: [
+        {
+            provide: MatDialog,
+            useValue: MatDialogMock
+        },
+        {
+            provide: CustomerService,
+            useValue: CustomerServiceMock
+        },
+        {
+            provide: DevicesService,
+            useValue: DevicesServiceMock
+        },
+        {
+            provide: ProjectService,
+            useValue: ProjectServiceMock
+        },
+        {
+            provide: LicenseConsumptionService,
+            useValue: ConsumptionServiceMock
+        },
+        {
+            provide: SnackBarService,
+            useValue: SnackBarServiceMock
+        },
+        {
+            provide: DialogService,
+            useValue: () => {
+                return {};
+            }
+        },
+        {
+            provide: MsalService,
+            useValue: MsalServiceMock
+        },
+        {
+            provide: HttpClient,
+            useValue: HttpClient
+        },
+        {
+            provide: MatDialogRef,
+            useValue: MatDialogRefMock
+        },
+        {
+            provide: MAT_DIALOG_DATA,
+            useValue: {}
+        }
+    ]
+};
 
-//   beforeEach(() => {
-//     fixture = TestBed.createComponent(AddNewLicenseConsumptionComponent);
-//     component = fixture.componentInstance;
-//     fixture.detectChanges();
-//   });
+const beforeEachFunction = () => {
+    TestBed.configureTestingModule(defaultTestBedConfig);
+    fixture = TestBed.createComponent(AddNewLicenseConsumptionComponent);
+    testInstance = fixture.componentInstance;
+    spyOn(console, 'log').and.callThrough();
+    fixture.detectChanges();
+};
 
-//   it('should create', () => {
-//     expect(component).toBeTruthy();
-//   });
-// });
+
+describe('add-new-license-consumption - UI verification tests', () => {
+    beforeEach(beforeEachFunction);
+    it('should display UI elements correctly', () => {
+        fixture.detectChanges();
+        const h1 = fixture.nativeElement.querySelector('#page-title');
+        const cancelButton = fixture.nativeElement.querySelector('#cancel-button');
+        const submitButton = fixture.nativeElement.querySelector('#submit-button');
+        const newProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
+        const addDeviceButton = fixture.nativeElement.querySelector('#add-device-button');
+        const h2 = fixture.debugElement.queryAll(By.css("h2"));
+
+        expect(h1.textContent).toBe('Add tekToken Consumption');
+        expect(cancelButton.textContent).toBe('Cancel');
+        expect(submitButton.disabled).toBeTrue();
+        expect(submitButton.textContent).toBe('Submit');
+        expect(newProjectButton.title).toBe('New Project');
+        expect(h2.length).toBeGreaterThanOrEqual(3);
+        expect(h2[0].nativeElement.textContent).toBe('DUT');
+        expect(h2[1].nativeElement.textContent).toBe('Calling Platform Type');
+        expect(h2[2].nativeElement.textContent).toBe('Other Devices');
+        expect(addDeviceButton.disabled).toBeTrue();
+        expect(addDeviceButton.title).toBe('New Device');
+    });
+
+    it('should display correctly the object selected in the mat-autocompletes', async () => {
+        const addLicenseConsumptionForm = testInstance.addLicenseConsumptionForm;
+        const projectInput = fixture.nativeElement.querySelector('#project-auto-complete');
+
+        const addDutForm = testInstance.addDutForm;
+        const addCallingPlatformForm = testInstance.addCallingPlatformForm;
+        const addDeviceForm = testInstance.addDeviceForm;
+
+        const dutInput = fixture.nativeElement.querySelector('#dut-auto-complete');
+        const dutVendorInput = fixture.nativeElement.querySelector('#dut-vendor-auto-complete');
+        const dutDeviceInput = fixture.nativeElement.querySelector('#dut-device-auto-complete');
+
+        const callingPlatformInput = fixture.nativeElement.querySelector('#calling-platform-auto-complete');
+        const callingPlatformVendorInput = fixture.nativeElement.querySelector('#calling-platform-vendor-auto-complete');
+        const callingPlatformDeviceInput = fixture.nativeElement.querySelector('#calling-platform-device-auto-complete');
+
+        const othersVendorInput = fixture.nativeElement.querySelector('#vendor-auto-complete');
+        const otherDeviceInput = fixture.nativeElement.querySelector('#device-auto-complete');
+
+        projectInput.dispatchEvent(new Event('focus'));
+        projectInput.dispatchEvent(new Event('input'));
+
+        dutInput.dispatchEvent(new Event('focus'));
+        dutInput.dispatchEvent(new Event('input'));
+        dutVendorInput.dispatchEvent(new Event('focus'));
+        dutVendorInput.dispatchEvent(new Event('input'));
+        dutDeviceInput.dispatchEvent(new Event('focus'));
+        dutDeviceInput.dispatchEvent(new Event('input'));
+
+        callingPlatformInput.dispatchEvent(new Event('focus'));
+        callingPlatformInput.dispatchEvent(new Event('input'));
+        callingPlatformVendorInput.dispatchEvent(new Event('focus'));
+        callingPlatformVendorInput.dispatchEvent(new Event('input'));
+        callingPlatformDeviceInput.dispatchEvent(new Event('focus'));
+        callingPlatformDeviceInput.dispatchEvent(new Event('input'));
+
+        othersVendorInput.dispatchEvent(new Event('focus'));
+        othersVendorInput.dispatchEvent(new Event('input'));
+        otherDeviceInput.dispatchEvent(new Event('focus'));
+        otherDeviceInput.dispatchEvent(new Event('input'));
+
+        addLicenseConsumptionForm.get('project').setValue({ projectName: 'TestProject' });
+
+        addDutForm.get('name').setValue('TestDUT');
+        addDutForm.get('vendor').setValue('TestDUTVendor');
+        addDutForm.get('product').setValue({ product: 'TestDUTProduct' });
+
+        addCallingPlatformForm.get('name').setValue('TestCallingPlatform');
+        addCallingPlatformForm.get('vendor').setValue('TestCallingPlatformVendor');
+        addCallingPlatformForm.get('product').setValue({ product: 'TestCallingPlatformProduct' });
+
+        addDeviceForm.get('vendor').setValue('TestVendor');
+        addDeviceForm.get('product').setValue({ product: 'TestProduct' });
+
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(projectInput.value).toBe('TestProject');
+
+        expect(dutInput.value).toBe('TestDUT');
+        expect(dutVendorInput.value).toBe('TestDUTVendor');
+        expect(dutDeviceInput.value).toBe('TestDUTProduct');
+
+        expect(callingPlatformInput.value).toBe('TestCallingPlatform');
+        expect(callingPlatformVendorInput.value).toBe('TestCallingPlatformVendor');
+        expect(callingPlatformDeviceInput.value).toBe('TestCallingPlatformProduct');
+
+        expect(othersVendorInput.value).toBe('TestVendor');
+        expect(otherDeviceInput.value).toBe('TestProduct');
+
+    });
+});
+
+describe('add-new-license-consumption - FormGroup verification tests', () => {
+
+    beforeEach(beforeEachFunction);
+
+    it('should create a formGroup with the necessary controls', () => {
+        fixture.detectChanges();
+        expect(testInstance.addLicenseConsumptionForm.get('startWeek')).toBeTruthy();
+        expect(testInstance.addLicenseConsumptionForm.get('endWeek')).toBeTruthy();
+        expect(testInstance.addLicenseConsumptionForm.get('project')).toBeTruthy();
+        expect(testInstance.addDutForm.get('name')).toBeTruthy();
+        expect(testInstance.addDutForm.get('vendor')).toBeTruthy();
+        expect(testInstance.addDutForm.get('product')).toBeTruthy();
+        expect(testInstance.addCallingPlatformForm.get('name')).toBeTruthy();
+        expect(testInstance.addCallingPlatformForm.get('vendor')).toBeTruthy();
+        expect(testInstance.addCallingPlatformForm.get('product')).toBeTruthy();
+        expect(testInstance.addDeviceForm.get('vendor')).toBeTruthy();
+        expect(testInstance.addDeviceForm.get('product')).toBeTruthy();
+
+    });
+
+    it('should make all the controls required', () => {
+        const addLicenseConsumptionForm = testInstance.addLicenseConsumptionForm;
+        const addDutForm = testInstance.addDutForm;
+        const addCallingPlatformForm = testInstance.addCallingPlatformForm;
+        const addDeviceForm = testInstance.addDeviceForm;
+
+        addLicenseConsumptionForm.setValue({
+            startWeek: '',
+            endWeek: '',
+            project: '',
+        });
+
+        addDutForm.setValue({
+            name: '',
+            vendor: '',
+            product: ''
+        });
+
+        addCallingPlatformForm.setValue({
+            name: '',
+            vendor: '',
+            product: ''
+        });
+
+        addDeviceForm.setValue({
+            vendor: '',
+            product: ''
+        });
+
+        expect(addLicenseConsumptionForm.get('startWeek').valid).toBeFalse();
+        expect(addLicenseConsumptionForm.get('endWeek').valid).toBeFalse();
+        expect(addLicenseConsumptionForm.get('project').valid).toBeFalse();
+        expect(addDutForm.get('name').valid).toBeFalse();
+        expect(addDutForm.get('vendor').valid).toBeFalse();
+        expect(addDutForm.get('product').valid).toBeFalse();
+        expect(addCallingPlatformForm.get('name').valid).toBeFalse();
+        expect(addCallingPlatformForm.get('vendor').valid).toBeFalse();
+        expect(addCallingPlatformForm.get('product').valid).toBeFalse();
+        expect(addDeviceForm.get('vendor').valid).toBeFalse();
+        expect(addDeviceForm.get('product').valid).toBeFalse();
+
+    });
+
+    it('should validate autocomplete forms are not of type string', () => {
+        const addLicenseConsumptionForm = testInstance.addLicenseConsumptionForm;
+        const addDutForm = testInstance.addDutForm;
+        const addCallingPlatformForm = testInstance.addCallingPlatformForm;
+        const addDeviceForm = testInstance.addDeviceForm;
+
+
+        addLicenseConsumptionForm.get('project').setValue('test');
+        addDutForm.get('name').setValue('DUTName');
+        addDutForm.get('vendor').enable();
+        addDutForm.get('vendor').setValue('DUTVendor');
+        addDutForm.get('product').enable();
+        addDutForm.get('product').setValue('DUTProduct');
+
+        addCallingPlatformForm.get('name').setValue('CPName');
+        addCallingPlatformForm.get('vendor').enable();
+        addCallingPlatformForm.get('vendor').setValue('CPVendor');
+        addCallingPlatformForm.get('product').enable();
+        addCallingPlatformForm.get('product').setValue('CPProduct');
+
+        addDeviceForm.get('vendor').setValue('test');
+        addDeviceForm.get('product').enable();
+        addDeviceForm.get('product').setValue('test');
+
+        fixture.detectChanges();
+        expect(addLicenseConsumptionForm.valid).toBeFalse();
+        expect(addDutForm.valid).toBeFalse();
+        expect(addCallingPlatformForm.valid).toBeFalse();
+        expect(addDeviceForm.valid).toBeFalse();
+
+        addLicenseConsumptionForm.get('startWeek').setValue(new Date());
+        addLicenseConsumptionForm.get('endWeek').setValue(new Date());
+        addLicenseConsumptionForm.get('project').setValue({ test: "test" });
+
+        addDutForm.get('name').setValue('DUTName');
+        addDutForm.get('vendor').setValue('DUTVendor');
+        addDutForm.get('product').setValue({ test: 'DUTProduct' });
+
+        addCallingPlatformForm.get('name').setValue('CPName');
+        addCallingPlatformForm.get('vendor').setValue('CPVendor');
+        addCallingPlatformForm.get('product').setValue({ test: 'CPProduct' });
+
+        addDeviceForm.get('vendor').setValue("test");
+        addDeviceForm.get('product').setValue({ test: "test" });
+
+        expect(addLicenseConsumptionForm.valid).toBeTrue();
+        expect(addDutForm.valid).toBeTrue();
+        expect(addCallingPlatformForm.valid).toBeTrue();
+        expect(addDeviceForm.valid).toBeTrue();
+
+    });
+});
+
+describe('add-new-license-consumption - Data collection and parsing tests', () => {
+    beforeEach(beforeEachFunction);
+
+    it('should make a call to get device list, device types and project list', () => {
+        spyOn(DevicesServiceMock, 'getAllDeviceVendors').and.callThrough();
+        spyOn(DevicesServiceMock, 'getDevicesTypesList').and.callThrough();
+        spyOn(ProjectServiceMock, 'getProjectDetailsByLicense').and.callThrough();
+        testInstance.ngOnInit();
+        expect(DevicesServiceMock.getAllDeviceVendors).toHaveBeenCalled();
+        expect(DevicesServiceMock.getDevicesTypesList).toHaveBeenCalled();
+        expect(ProjectServiceMock.getProjectDetailsByLicense).toHaveBeenCalled();
+    });
+
+});
+
+describe('add-new-license-consumption - Dialog calls and interactions', () => {
+    beforeEach(beforeEachFunction);
+
+    it('should close the openDialog when calling onCancel()', () => {
+        spyOn(testInstance.dialogRef, 'close');
+        fixture.detectChanges();
+        testInstance.onCancel();
+        expect(testInstance.dialogRef.close).toHaveBeenCalled();
+    });
+});

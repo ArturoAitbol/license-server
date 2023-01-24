@@ -59,12 +59,10 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: "Sat", used: false, disabled: true },
   ];
   filteredProjects: Observable<any[]>;
-  // filteredVendors: Observable<any[]>;
-  filteredVendors: any;
+  filteredVendors: any[];
 
   filteredModels: Observable<any[]>;
-  // filteredCallingPlatformVendors: Observable<any[]>;
-  filteredCallingPlatformVendors: any;
+  filteredCallingPlatformVendors: any[];
   filteredCallingPlatformModels: Observable<any[]>;
   filteredDeviceVendors: Observable<any[]>;
   filteredDeviceModels: Observable<any[]>;
@@ -156,17 +154,17 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.addDutForm.controls['product'].disable();
       this.addDutForm.patchValue({ product: '' });
 
-      this.filteredVendors = this.addDutForm.controls['vendor'].valueChanges.pipe(
-        startWith(''),
-        map(vendor => {
-          if (vendor === '') {
-            this.models = [];
-            this.addDutForm.controls['product'].disable();
-            this.addDutForm.patchValue({ product: '' });
-          }
-          return vendor ? this.filterDeviceVendors(vendor) : this.vendors.slice();
-        })
-      );
+      // this.filteredVendors = this.addDutForm.controls['vendor'].valueChanges.pipe(
+      //   startWith(''),
+      //   map(vendor => {
+      //     if (vendor === '') {
+      //       this.models = [];
+      //       this.addDutForm.controls['product'].disable();
+      //       this.addDutForm.patchValue({ product: '' });
+      //     }
+      //     return vendor ? this.filterDeviceVendors(vendor) : this.vendors.slice();
+      //   })
+      // );
       
       this.filteredModels = this.addDutForm.controls['product'].valueChanges.pipe(
         startWith(''),
@@ -174,17 +172,17 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
         map(product => (product ? this.filterModels(product) : this.models.slice()))
       );
 
-      this.filteredVendors = this.addCallingPlatformForm.controls['vendor'].valueChanges.pipe(
-        startWith(''),
-        map(vendor => {
-          if (vendor === '') {
-            this.models = [];
-            this.addCallingPlatformForm.controls['product'].disable();
-            this.addCallingPlatformForm.patchValue({ product: '' });
-          }
-          return vendor ? this.filterDeviceVendors(vendor) : this.vendors.slice();
-        })
-      );
+      // this.filteredCallingPlatformVendors = this.addCallingPlatformForm.controls['vendor'].valueChanges.pipe(
+      //   startWith(''),
+      //   map(vendor => {
+      //     if (vendor === '') {
+      //       this.models = [];
+      //       this.addCallingPlatformForm.controls['product'].disable();
+      //       this.addCallingPlatformForm.patchValue({ product: '' });
+      //     }
+      //     return vendor ? this.filterDeviceVendors(vendor) : this.vendors.slice();
+      //   })
+      // );
 
       this.addCallingPlatformForm.controls['product'].disable();
       this.addCallingPlatformForm.patchValue({ product: '' });
@@ -231,6 +229,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.filteredVendors = res['vendors'];
       this.addDutForm.patchValue({ vendor: '' });
       this.addDutForm.controls['vendor'].enable();
+      this.addDutForm.patchValue({ product: '' });
       this.isDataLoading = false;
     });
   }
@@ -240,8 +239,9 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.selectedCallingPlatformType = value;
     this.deviceService.getAllDeviceVendors(this.selectedCallingPlatformType).subscribe(res => {
       this.filteredCallingPlatformVendors = res['vendors'];
-      this.addCallingPlatformForm.patchValue({ product: '' });
+      this.addCallingPlatformForm.patchValue({ vendor: '' });
       this.addCallingPlatformForm.controls['vendor'].enable();
+      this.addCallingPlatformForm.patchValue({ product: '' });
       this.isDataLoading = false;
     });
   }
