@@ -171,11 +171,13 @@ CREATE TYPE public.status_type_enum AS ENUM (
 
 CREATE TYPE public.usage_type_enum AS ENUM (
     'Configuration',
-    'AutomationPlatform'
+    'AutomationPlatform',
+    'Ctaas',
+    'Certification'
 );
 
 --
--- Name: usage_type_enum; Type: TYPE; Schema: public; Owner: -
+-- Name: feature_toggle_status_type_enum; Type: TYPE; Schema: public; Owner: -
 --
 CREATE TYPE public.feature_toggle_status_type_enum AS ENUM (
     'On',
@@ -240,7 +242,7 @@ CREATE TABLE public.device (
     vendor character varying NOT NULL,
     product character varying NOT NULL,
     version character varying NOT NULL,
-    type public.device_type_enum DEFAULT 'OTHER'::public.device_type_enum NOT NULL,
+    type public.device_type_enum NOT NULL,
     granularity public.granularity_type_enum DEFAULT 'week'::public.granularity_type_enum NOT NULL,
     tokens_to_consume integer NOT NULL,
     start_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -299,7 +301,7 @@ CREATE TABLE public.license_consumption (
     project_id uuid,
     consumption_matrix_id uuid,
     consumption_date timestamp without time zone,
-    usage_type public.usage_type_enum DEFAULT 'Configuration'::public.usage_type_enum NOT NULL,
+    usage_type public.usage_type_enum NOT NULL,
     device_id uuid,
     calling_platform_id uuid,
     tokens_consumed integer DEFAULT 0 NOT NULL,
@@ -1034,12 +1036,6 @@ ALTER TABLE IF EXISTS public.subaccount
 	
 ALTER TABLE IF EXISTS public.subaccount_admin
     ADD COLUMN IF NOT EXISTS notifications character varying;
-
-ALTER TYPE public.usage_type_enum
-    ADD VALUE 'Ctaas' AFTER 'AutomationPlatform';
-
-ALTER TYPE public.usage_type_enum
-    ADD VALUE 'Configuration' AFTER 'Ctaas';
 
 ALTER TABLE ONLY public.feature_toggle
     ADD CONSTRAINT feature_toggle_pkey PRIMARY KEY (id);
