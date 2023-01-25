@@ -917,7 +917,7 @@ ALTER TABLE ONLY public.note
 --
 
 ALTER TABLE ONLY public.subaccount
-    ADD CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES public.customer(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES public.customer(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -933,7 +933,7 @@ ALTER TABLE ONLY public.customer_admin
 --
 
 ALTER TABLE ONLY public.license_consumption
-    ADD CONSTRAINT fk_device FOREIGN KEY (device_id) REFERENCES public.device(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_device FOREIGN KEY (device_id) REFERENCES public.device(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- Name: license_consumption fk_calling_platform; Type: FK CONSTRAINT; Schema: public; Owner: -
@@ -964,7 +964,7 @@ ALTER TABLE ONLY public.customer
 --
 
 ALTER TABLE ONLY public.usage_detail
-    ADD CONSTRAINT fk_license_consumption FOREIGN KEY (consumption_id) REFERENCES public.license_consumption(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_license_consumption FOREIGN KEY (consumption_id) REFERENCES public.license_consumption(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -972,7 +972,7 @@ ALTER TABLE ONLY public.usage_detail
 --
 
 ALTER TABLE ONLY public.license_consumption
-    ADD CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES public.project(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES public.project(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -980,7 +980,7 @@ ALTER TABLE ONLY public.license_consumption
 --
 
 ALTER TABLE ONLY public.license
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -988,7 +988,7 @@ ALTER TABLE ONLY public.license
 --
 
 ALTER TABLE ONLY public.project
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -996,7 +996,7 @@ ALTER TABLE ONLY public.project
 --
 
 ALTER TABLE ONLY public.project
-    ADD CONSTRAINT fk_license FOREIGN KEY (license_id) REFERENCES public.license(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_license FOREIGN KEY (license_id) REFERENCES public.license(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1004,7 +1004,7 @@ ALTER TABLE ONLY public.project
 --
 
 ALTER TABLE ONLY public.license_consumption
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1023,13 +1023,13 @@ ALTER TABLE ONLY public.device
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.ctaas_test_suite
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.ctaas_setup
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 	
 ALTER TABLE ONLY public.ctaas_run_instance
-	ADD CONSTRAINT fk_ctaas_test_suite FOREIGN KEY (ctaas_test_suite_id) REFERENCES public.ctaas_test_suite(id) ON DELETE CASCADE;
+	ADD CONSTRAINT fk_ctaas_test_suite FOREIGN KEY (ctaas_test_suite_id) REFERENCES public.ctaas_test_suite(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE IF EXISTS public.subaccount
     ADD COLUMN IF NOT EXISTS services character varying;
@@ -1049,7 +1049,7 @@ ALTER TABLE ONLY public.feature_toggle
 --
 
 ALTER TABLE ONLY public.note
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1057,7 +1057,7 @@ ALTER TABLE ONLY public.note
 --
 
 ALTER TABLE ONLY public.subaccount_admin_device
-    ADD CONSTRAINT subaccount_admin_device_fk FOREIGN KEY (subaccount_admin_email) REFERENCES public.subaccount_admin(subaccount_admin_email) ON DELETE CASCADE;
+    ADD CONSTRAINT subaccount_admin_device_fk FOREIGN KEY (subaccount_admin_email) REFERENCES public.subaccount_admin(subaccount_admin_email) ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- PostgreSQL database dump complete
