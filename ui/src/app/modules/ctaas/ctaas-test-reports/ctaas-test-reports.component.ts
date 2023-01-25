@@ -113,7 +113,8 @@ export class CtaasTestReportsComponent implements OnInit {
     ).subscribe(() => {
       this.isRequestCompleted = true; 
       this.isLoadingResults = false;
-      this.testReportsDataBK = this.testReportsData = reportListWithDates;
+      this.testReportsData = reportListWithDates.sort((a: any, b: any) => b['endDate'].localeCompare(a['endDate']));
+      this.testReportsDataBK = this.testReportsData;
     }, error => {
       console.debug('error', error);
       this.isLoadingResults = false;
