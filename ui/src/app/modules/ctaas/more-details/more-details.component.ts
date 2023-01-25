@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportType } from 'src/app/helpers/report-type';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+
 @Component({
   selector: 'app-more-details',
   templateUrl: './more-details.component.html',
   styleUrls: ['./more-details.component.css']
 })
 export class MoreDetailsComponent implements OnInit {
+
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
@@ -67,10 +69,10 @@ export class MoreDetailsComponent implements OnInit {
       this.type = type;
       this.startDateStr = start;
       this.endDateStr = end;
+      this.fetchDashboardReportDetails();
     });
     this.initColumns();
     this.calculateTableHeight();
-    this.fetchDashboardReportDetails();
   }
   /**
    * fetch detailed dashboard report
@@ -114,6 +116,11 @@ export class MoreDetailsComponent implements OnInit {
               obj.tonoDataFoundFlag = false;
               obj.otherPartynoDataFoundFlag = false;
               obj.panelOpenState = true;
+              obj.
+              obj.from.mediaStats.sort((a, b) => {
+                return a.timestamp - b.timestamp
+              })
+              // console.log(obj)
               // filter the array without media stats details 
               obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
             });
@@ -188,7 +195,11 @@ export class MoreDetailsComponent implements OnInit {
    * @param index: number 
    */
   open(index: number): void {
-    this.detailedTestReport[index].panelOpenState = false;
+    
+    setTimeout(() => {
+      this.detailedTestReport[index].panelOpenState = false;
+    }, 0);
+
     this.detailedTestReport[index].frompanelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
     this.detailedTestReport[index].from.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].from.mediaStats, 'timestamp');
