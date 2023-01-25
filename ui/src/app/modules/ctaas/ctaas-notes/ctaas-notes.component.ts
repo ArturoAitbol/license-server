@@ -211,7 +211,6 @@ export class CtaasNotesComponent implements OnInit {
     onChangeToggle(flag: boolean): void {
         this.toggleStatus = flag;
         if (flag) {
-            console.log(this.actionMenuOptions);
             let closeNoteIndex = this.actionMenuOptions.indexOf('Close Note');
             if (closeNoteIndex != -1)
                 this.actionMenuOptions.splice(closeNoteIndex, 1);

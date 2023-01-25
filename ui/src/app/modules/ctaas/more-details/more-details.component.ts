@@ -5,7 +5,6 @@ import { ReportType } from 'src/app/helpers/report-type';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 @Component({
   selector: 'app-more-details',
   templateUrl: './more-details.component.html',
@@ -47,7 +46,6 @@ export class MoreDetailsComponent implements OnInit {
   constructor(
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
-    private subaccountService: SubAccountService,
     private route: ActivatedRoute,
     private snackBarService: SnackBarService
   ) { }
@@ -63,11 +61,9 @@ export class MoreDetailsComponent implements OnInit {
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
-    const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-    const { id, subaccountId } = currentSubaccountDetails;
-    this.subaccountId = subaccountId ? subaccountId : id;
     this.route.queryParams.subscribe((params: any) => {
-      const { type, start, end } = params;
+      const { type, start, end, subaccountId } = params;
+      this.subaccountId = subaccountId;
       this.type = type;
       this.startDateStr = start;
       this.endDateStr = end;

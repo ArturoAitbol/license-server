@@ -171,11 +171,13 @@ CREATE TYPE public.status_type_enum AS ENUM (
 
 CREATE TYPE public.usage_type_enum AS ENUM (
     'Configuration',
-    'AutomationPlatform'
+    'AutomationPlatform',
+    'Ctaas',
+    'Certification'
 );
 
 --
--- Name: usage_type_enum; Type: TYPE; Schema: public; Owner: -
+-- Name: feature_toggle_status_type_enum; Type: TYPE; Schema: public; Owner: -
 --
 CREATE TYPE public.feature_toggle_status_type_enum AS ENUM (
     'On',
@@ -240,7 +242,7 @@ CREATE TABLE public.device (
     vendor character varying NOT NULL,
     product character varying NOT NULL,
     version character varying NOT NULL,
-    type public.device_type_enum DEFAULT 'OTHER'::public.device_type_enum NOT NULL,
+    type public.device_type_enum NOT NULL,
     granularity public.granularity_type_enum DEFAULT 'week'::public.granularity_type_enum NOT NULL,
     tokens_to_consume integer NOT NULL,
     start_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -299,7 +301,7 @@ CREATE TABLE public.license_consumption (
     project_id uuid,
     consumption_matrix_id uuid,
     consumption_date timestamp without time zone,
-    usage_type public.usage_type_enum DEFAULT 'Configuration'::public.usage_type_enum NOT NULL,
+    usage_type public.usage_type_enum NOT NULL,
     device_id uuid,
     calling_platform_id uuid,
     tokens_consumed integer DEFAULT 0 NOT NULL,
@@ -915,7 +917,7 @@ ALTER TABLE ONLY public.note
 --
 
 ALTER TABLE ONLY public.subaccount
-    ADD CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES public.customer(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES public.customer(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -931,7 +933,7 @@ ALTER TABLE ONLY public.customer_admin
 --
 
 ALTER TABLE ONLY public.license_consumption
-    ADD CONSTRAINT fk_device FOREIGN KEY (device_id) REFERENCES public.device(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_device FOREIGN KEY (device_id) REFERENCES public.device(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- Name: license_consumption fk_calling_platform; Type: FK CONSTRAINT; Schema: public; Owner: -
@@ -962,7 +964,7 @@ ALTER TABLE ONLY public.customer
 --
 
 ALTER TABLE ONLY public.usage_detail
-    ADD CONSTRAINT fk_license_consumption FOREIGN KEY (consumption_id) REFERENCES public.license_consumption(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_license_consumption FOREIGN KEY (consumption_id) REFERENCES public.license_consumption(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -970,7 +972,7 @@ ALTER TABLE ONLY public.usage_detail
 --
 
 ALTER TABLE ONLY public.license_consumption
-    ADD CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES public.project(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES public.project(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -978,7 +980,7 @@ ALTER TABLE ONLY public.license_consumption
 --
 
 ALTER TABLE ONLY public.license
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -986,7 +988,7 @@ ALTER TABLE ONLY public.license
 --
 
 ALTER TABLE ONLY public.project
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -994,7 +996,7 @@ ALTER TABLE ONLY public.project
 --
 
 ALTER TABLE ONLY public.project
-    ADD CONSTRAINT fk_license FOREIGN KEY (license_id) REFERENCES public.license(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_license FOREIGN KEY (license_id) REFERENCES public.license(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1002,7 +1004,7 @@ ALTER TABLE ONLY public.project
 --
 
 ALTER TABLE ONLY public.license_consumption
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1021,25 +1023,19 @@ ALTER TABLE ONLY public.device
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.ctaas_test_suite
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.ctaas_setup
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 	
 ALTER TABLE ONLY public.ctaas_run_instance
-	ADD CONSTRAINT fk_ctaas_test_suite FOREIGN KEY (ctaas_test_suite_id) REFERENCES public.ctaas_test_suite(id) ON DELETE CASCADE;
+	ADD CONSTRAINT fk_ctaas_test_suite FOREIGN KEY (ctaas_test_suite_id) REFERENCES public.ctaas_test_suite(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE IF EXISTS public.subaccount
     ADD COLUMN IF NOT EXISTS services character varying;
 	
 ALTER TABLE IF EXISTS public.subaccount_admin
     ADD COLUMN IF NOT EXISTS notifications character varying;
-
-ALTER TYPE public.usage_type_enum
-    ADD VALUE 'Ctaas' AFTER 'AutomationPlatform';
-
-ALTER TYPE public.usage_type_enum
-    ADD VALUE 'Configuration' AFTER 'Ctaas';
 
 ALTER TABLE ONLY public.feature_toggle
     ADD CONSTRAINT feature_toggle_pkey PRIMARY KEY (id);
@@ -1053,7 +1049,7 @@ ALTER TABLE ONLY public.feature_toggle
 --
 
 ALTER TABLE ONLY public.note
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1061,7 +1057,7 @@ ALTER TABLE ONLY public.note
 --
 
 ALTER TABLE ONLY public.subaccount_admin_device
-    ADD CONSTRAINT subaccount_admin_device_fk FOREIGN KEY (subaccount_admin_email) REFERENCES public.subaccount_admin(subaccount_admin_email) ON DELETE CASCADE;
+    ADD CONSTRAINT subaccount_admin_device_fk FOREIGN KEY (subaccount_admin_email) REFERENCES public.subaccount_admin(subaccount_admin_email) ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- PostgreSQL database dump complete
