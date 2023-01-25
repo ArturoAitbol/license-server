@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { ComponentFixture,TestBed } from '@angular/core/testing';
+import { ComponentFixture,fakeAsync,TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
@@ -20,12 +20,15 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
 import { of, throwError } from 'rxjs';
 import { ITestReports } from 'src/app/model/test-reports.model';
+import moment from 'moment';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 
 
 let ctaasTestReportComponentTestInstance: CtaasTestReportsComponent;
 let fixture: ComponentFixture<CtaasTestReportsComponent>;
 const dialogService = new DialogServiceMock();
-
+let loader: HarnessLoader;
 
 const RouterMock = {
     navigate: (commands: string[]) => { }
@@ -76,6 +79,8 @@ const beforeEachFunction = () => {
     });
     fixture = TestBed.createComponent(CtaasTestReportsComponent);
     ctaasTestReportComponentTestInstance = fixture.componentInstance;
+    loader = TestbedHarnessEnvironment.loader(fixture);
+    spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
 };
 
 describe('UI verification test', () => {
@@ -119,7 +124,6 @@ describe('UI verification test', () => {
 describe('Data collection and parsing test', () => {
   beforeEach(beforeEachFunction);
   it('should make a call to get the selected subaccount, test reports and actionMenuOptions ', () => {
-    spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
     spyOn(TestReportsServiceMock, 'getTestReportsList').and.callThrough();
     spyOn(MsalServiceMock.instance, 'getActiveAccount').and.callThrough();
 
@@ -140,38 +144,24 @@ describe('Data collection and parsing test', () => {
     expect(ctaasTestReportComponentTestInstance.isRequestCompleted).toBeTrue();
   });
 
-  // it('should return an error if something went wrong while fetching the data', () => {
-  //   spyOn(console, 'error').and.callThrough();
-  //   spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
-  //   spyOn(TestReportsServiceMock, 'getTestReportsList').and.returnValue(of([{error:'some error'}]));
+  it('should return an error if something went wrong while fetching the data', () => {
+    spyOn(console, 'error').and.callThrough();
+    spyOn(TestReportsServiceMock, 'getTestReportsList').and.returnValue(of([{"error":'some error'}]));
+    
+    fixture.detectChanges();
 
-  //   fixture.detectChanges();
-
-  //   expect(SubaccountServiceMock.getSelectedSubAccount).toHaveBeenCalled();
-  //   expect(console.error).toHaveBeenCalledWith('some error |', jasmine.any(TypeError));
-  // })
+    expect(SubaccountServiceMock.getSelectedSubAccount).toHaveBeenCalled();
+    expect(TestReportsServiceMock.getTestReportsList).toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledWith('error while fetching data', jasmine.any(TypeError));
+  })
 });
 
 describe('Interactions of the table', () => {
   beforeEach(beforeEachFunction);
-
-  // it('should execute rowAction() with expected data given set arguments', async () => {
-  //   spyOn(ctaasTestReportComponentTestInstance, 'onClickMoreDetails').and.callThrough();
-  //   ctaasTestReportComponentTestInstance.testReportsData = TestReportsServiceMock.testReportsValue.reports;
-    
-  //   const testReport: ITestReports = TestReportsServiceMock.mockTestReportA;
-    
-  //   const selectedTestData = {selectedRow: testReport, selectedOption: undefined, selectedIndex: '0'};
-  //   selectedTestData.selectedOption = ctaasTestReportComponentTestInstance.VIEW_REPORT;
-    
-  //   fixture.detectChanges();
-  //   await fixture.whenStable();
-    
-  //   ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
-  //   expect(ctaasTestReportComponentTestInstance.onClickMoreDetails).toHaveBeenCalledWith(selectedTestData.selectedIndex)
-  // });
-
   it('should filter the rows in the table based on the name, type and status filters',() => {
+    let pickedEvent = {data:null};
+    let pickedDate = {value: moment().toDate()};
+
     ctaasTestReportComponentTestInstance.filterForm.patchValue({typeFilterControl: 'Daily-FeatureFunctionality'});
     ctaasTestReportComponentTestInstance.toggleOptionValue('Daily-FeatureFunctionality');
 
@@ -186,13 +176,88 @@ describe('Interactions of the table', () => {
     ctaasTestReportComponentTestInstance.toggleOptionValue('None');
 
     expect(ctaasTestReportComponentTestInstance.selectedTypeFilter).toBe('');
+    expect(ctaasTestReportComponentTestInstance.testReportsData.length).toBe(6);
 
     ctaasTestReportComponentTestInstance.filterForm.patchValue({typeFilterControl: 'any'});
     ctaasTestReportComponentTestInstance.toggleOptionValue('any');
 
     expect(ctaasTestReportComponentTestInstance.selectedTypeFilter).toBe('');
+    expect(ctaasTestReportComponentTestInstance.testReportsData.length).toBe(6);
 
-    // ctaasTestReportComponentTestInstance.clearDate();
-    // expect(ctaasTestReportComponentTestInstance.selectedDateFilter).toBe('')
+    ctaasTestReportComponentTestInstance.clearDateFilter();
+
+    expect(ctaasTestReportComponentTestInstance.selectedDateFilter).toBe('');
+    expect(ctaasTestReportComponentTestInstance.testReportsData.length).toBe(6);
+
+    ctaasTestReportComponentTestInstance.restoreTable(pickedEvent);
+
+    expect(ctaasTestReportComponentTestInstance.selectedDateFilter).toBe('');
+    expect(ctaasTestReportComponentTestInstance.testReportsData.length).toBe(6);
+
+    ctaasTestReportComponentTestInstance.toggleDateValue(pickedDate);
+    expect(ctaasTestReportComponentTestInstance.selectedDateFilter).toBe(pickedDate.value.toJSON());
   });
 });
+
+describe('interaction with the elements of the table', () => {
+  beforeEach(beforeEachFunction);
+  it('should execute rowAction with expected data given set arguments',() => {
+    const selectedTestData = {
+      selectedRow:{
+        reportType: "Daily-FeatureFunctionality",
+        endTime: "230110034409",
+        startTime: "230109113617"
+      }, 
+      selectedOption: 'selectedOption', 
+      selectedIndex: '0' 
+    }
+    fixture.detectChanges();
+    spyOn(ctaasTestReportComponentTestInstance, 'onClickMoreDetails').and.callThrough();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+    selectedTestData.selectedOption = ctaasTestReportComponentTestInstance.VIEW_REPORT;
+
+    ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
+    expect(ctaasTestReportComponentTestInstance.onClickMoreDetails).toHaveBeenCalledWith(selectedTestData.selectedIndex);
+  });
+
+  it('should execute rowAction with expected data given set arguments',() => {
+    const selectedTestData = {
+      selectedRow:{
+        reportType: "Daily-CallingReliability",
+        endTime: "230110034409",
+        startTime: "230109113617"
+      }, 
+      selectedOption: 'selectedOption', 
+      selectedIndex: '4' 
+    }
+    fixture.detectChanges();
+    spyOn(ctaasTestReportComponentTestInstance, 'onClickMoreDetails').and.callThrough();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+    selectedTestData.selectedOption = ctaasTestReportComponentTestInstance.VIEW_REPORT;
+
+    ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
+    expect(ctaasTestReportComponentTestInstance.onClickMoreDetails).toHaveBeenCalledWith(selectedTestData.selectedIndex);
+  });
+
+  it('should execute rowAction with inexistent name in the report type',() => {
+    fixture.detectChanges();
+    const selectedTestData = {
+      selectedRow:{
+        reportType: "testName",
+        endTime: "230110034409",
+        startTime: "230109113617"
+      }, 
+      selectedOption: 'selectedOption', 
+      selectedIndex: '3' 
+    }
+    spyOn(ctaasTestReportComponentTestInstance, 'onClickMoreDetails').and.callThrough();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+    selectedTestData.selectedOption = ctaasTestReportComponentTestInstance.VIEW_REPORT;
+
+    ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
+    expect(ctaasTestReportComponentTestInstance.onClickMoreDetails).toHaveBeenCalledWith(selectedTestData.selectedIndex);
+  });
+})

@@ -219,7 +219,7 @@ export class CtaasDashboardComponent implements OnInit {
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
         const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-        const url = `${environment.BASE_URL}/#/spotlight/details?type=${type}&start=${startDate}&end=${endDate}`;
+        const url = `${environment.BASE_URL}/#/spotlight/details?subaccount=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
         window.close();
     }
