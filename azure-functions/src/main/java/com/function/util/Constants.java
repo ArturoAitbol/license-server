@@ -36,4 +36,19 @@ public abstract class Constants {
             return this.value;
         }
     }
+
+    public enum DeviceGranularity {
+        DAYLY("day"),
+        WEEKLY("week"),
+        MONTHLY("month"),
+        STATIC("static");
+
+        private final String value;
+        DeviceGranularity(String value){
+            this.value = value;
+        }
+        public String value() {
+            return this.value;
+        }
+    }
 }

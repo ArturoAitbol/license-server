@@ -385,6 +385,16 @@ public class RBACVerifier {
                 true,
                 true,
                 false));
+        verifiers.put(GET_ALL_DEVICE_TYPES, new ExpectedPermissions(true,
+                true,
+                true,
+                true,
+                true,
+                false,
+                true,
+                true,
+                true,
+                false));
         verifiers.put(GET_ALL_LICENSES, new ExpectedPermissions(true,
                 true,
                 true,

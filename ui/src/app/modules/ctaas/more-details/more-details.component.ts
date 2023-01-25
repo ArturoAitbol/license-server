@@ -2,9 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportType } from 'src/app/helpers/report-type';
+import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-more-details',
@@ -48,7 +48,6 @@ export class MoreDetailsComponent implements OnInit {
   constructor(
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
-    private subaccountService: SubAccountService,
     private route: ActivatedRoute,
     private snackBarService: SnackBarService
   ) { }
@@ -64,18 +63,16 @@ export class MoreDetailsComponent implements OnInit {
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
-    const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-    const { id, subaccountId } = currentSubaccountDetails;
-    this.subaccountId = subaccountId ? subaccountId : id;
     this.route.queryParams.subscribe((params: any) => {
-      const { type, start, end } = params;
+      const { type, start, end, subaccountId } = params;
+      this.subaccountId = subaccountId;
       this.type = type;
       this.startDateStr = start;
       this.endDateStr = end;
+      this.fetchDashboardReportDetails();
     });
     this.initColumns();
     this.calculateTableHeight();
-    this.fetchDashboardReportDetails();
   }
   /**
    * fetch detailed dashboard report
@@ -205,6 +202,8 @@ export class MoreDetailsComponent implements OnInit {
 
     this.detailedTestReport[index].frompanelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
+    this.detailedTestReport[index].from.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].from.mediaStats, 'timestamp');
+    this.detailedTestReport[index].to.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].to.mediaStats, 'timestamp');
     if (this.detailedTestReport[index].otherParties) // check for null / undefined values
       this.setOtherPartiesPanelStatus(this.detailedTestReport[index].otherParties);
   }
@@ -214,6 +213,7 @@ export class MoreDetailsComponent implements OnInit {
    */
   setOtherPartiesPanelStatus(data: any[]): void {
     data.forEach((otherParties) => {
+      otherParties.mediaStats = Utility.sortDatesInAscendingOrder(otherParties.mediaStats, 'timestamp')
       otherParties.otherPartyPanelStatus = true;
     });
   }

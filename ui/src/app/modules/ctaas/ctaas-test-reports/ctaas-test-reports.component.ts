@@ -9,8 +9,6 @@ import { map } from 'rxjs/operators';
 import { ReportType } from 'src/app/helpers/report-type';
 import { Utility } from 'src/app/helpers/utils';
 import { ITestReports } from 'src/app/model/test-reports.model';
-import { DialogService } from 'src/app/services/dialog.service';
-import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { TestReportsService } from 'src/app/services/test-reports.service';
 import { environment } from 'src/environments/environment';
@@ -52,8 +50,7 @@ export class CtaasTestReportsComponent implements OnInit {
   constructor(
     private msalService: MsalService,
     public dialog: MatDialog,
-    private snackBarService: SnackBarService,
-    private dialogService: DialogService,
+    private subaccountService: SubAccountService,
     private testReportsService: TestReportsService,
     private fb: FormBuilder,
     private subAccountService: SubAccountService
@@ -106,7 +103,7 @@ export class CtaasTestReportsComponent implements OnInit {
           });
           return r;
         }catch(exception){
-          console.error('error', exception);
+          console.error('error while fetching data', exception);
         }
        })
       )
@@ -167,7 +164,10 @@ export class CtaasTestReportsComponent implements OnInit {
   onClickMoreDetails(index: string): void {
     const { reportType, startTime, endTime } = this.testReportsData[index];
     const type = (reportType === 'Daily-FeatureFunctionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Daily-CallingReliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-    const url = `${environment.BASE_URL}/#/spotlight/details?type=${type}&start=${startTime}&end=${endTime}`;
+    const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+    const { id, subaccountId } = currentSubaccountDetails;
+    const subaccount = subaccountId ? subaccountId : id;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccount=${subaccount}&type=${type}&start=${startTime}&end=${endTime}`;
     window.open(url);
     window.close();
   }

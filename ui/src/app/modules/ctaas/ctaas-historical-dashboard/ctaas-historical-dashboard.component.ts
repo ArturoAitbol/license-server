@@ -95,7 +95,6 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
                   });
                   const { daily, weekly, lastUpdatedDateList } = resultant;
                   this.lastModifiedDate = lastUpdatedDateList[0];
-                  console.log("last", resultant)
                   if (daily.length > 0)
                       this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
                   if (weekly.length > 0)
@@ -149,7 +148,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
     const { imagesList } = obj;
     const { reportType, startDate, endDate } = imagesList[index];
     const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-    const url = `${environment.BASE_URL}/#/spotlight/details?type=${type}&start=${startDate}&end=${endDate}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccount=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
     window.open(url);
     window.close();
     }
