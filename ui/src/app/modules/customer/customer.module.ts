@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 // components
 import { LicenseConsumptionComponent } from './license-consumption/license-consumption.component';
 import { AddLicenseConsumptionComponent } from './license-consumption/add-license-consumption/add-license-consumption.component';
+import { AddNewLicenseConsumptionComponent } from './license-consumption/add-new-license-consumption/add-new-license-consumption.component';
 import { AddLicenseComponent } from './licenses/add-license/add-license.component';
 import { ModifyLicenseComponent } from './licenses/modify-license/modify-license.component';
 // modules
@@ -29,6 +30,7 @@ import { ModifyProjectComponent } from './projects/modify-project/modify-project
     ProjectsComponent,
     AddProjectComponent,
     ModifyProjectComponent,
+    AddNewLicenseConsumptionComponent,
   ],
   imports: [
     CommonModule,

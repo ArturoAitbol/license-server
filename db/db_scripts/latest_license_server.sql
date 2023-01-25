@@ -59,6 +59,33 @@ CREATE TYPE public.consumption_type_enum AS ENUM (
     'AutomationPlatform'
 );
 
+--
+-- Name: dut_type_enum; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.dut_type_enum AS ENUM (
+    'Device/Phone/ATA',
+    'Soft Client/UC Client',
+    'SBC',
+    'BYOC',
+    'Application',
+    'Headset',
+    'Video Collab Device'
+);
+
+--
+-- Name: calling_platform_type_enum; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.calling_platform_type_enum AS ENUM (
+    'PBX',
+    'PBX+SBC',
+    'UCaaS',
+    'Contact Center',
+    'CCaaS',
+    'CPaaS'
+);
+
 
 --
 -- Name: device_type_enum; Type: TYPE; Schema: public; Owner: -
@@ -66,15 +93,26 @@ CREATE TYPE public.consumption_type_enum AS ENUM (
 
 CREATE TYPE public.device_type_enum AS ENUM (
     'PBX',
+    'PBX+SBC',
     'SBC',
     'GATEWAY',
     'PHONE',
     'TRUNK',
     'FAX',
     'CC',
+    'Contact Center',
     'UCAAS',
+    'UCaaS',
+    'CCaaS',
+    'CPaaS',
     'CLIENT',
     'CERT',
+    'Device/Phone/ATA',
+    'Soft Client/UC Client',
+    'BYOC',
+    'Application',
+    'Headset',
+    'Video Collab Device',
     'OTHER'
 );
 
@@ -107,20 +145,6 @@ CREATE TYPE public.package_type_enum AS ENUM (
 
 
 --
--- Name: product_type_enum; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE public.product_type_enum AS ENUM (
-    'PBX',
-    'SBC',
-    'Gateway',
-    'Phone',
-    'trunk',
-    'Other'
-);
-
-
---
 -- Name: project_status_type_enum; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -147,11 +171,13 @@ CREATE TYPE public.status_type_enum AS ENUM (
 
 CREATE TYPE public.usage_type_enum AS ENUM (
     'Configuration',
-    'AutomationPlatform'
+    'AutomationPlatform',
+    'Ctaas',
+    'Certification'
 );
 
 --
--- Name: usage_type_enum; Type: TYPE; Schema: public; Owner: -
+-- Name: feature_toggle_status_type_enum; Type: TYPE; Schema: public; Owner: -
 --
 CREATE TYPE public.feature_toggle_status_type_enum AS ENUM (
     'On',
@@ -216,7 +242,7 @@ CREATE TABLE public.device (
     vendor character varying NOT NULL,
     product character varying NOT NULL,
     version character varying NOT NULL,
-    type public.device_type_enum DEFAULT 'OTHER'::public.device_type_enum NOT NULL,
+    type public.device_type_enum NOT NULL,
     granularity public.granularity_type_enum DEFAULT 'week'::public.granularity_type_enum NOT NULL,
     tokens_to_consume integer NOT NULL,
     start_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -252,6 +278,18 @@ CREATE TABLE public.license (
     description character varying NOT NULL
 );
 
+--
+-- Name: consumption_matrix; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.consumption_matrix (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    tokens integer DEFAULT 0,
+    dut_type public.dut_type_enum NOT NULL,
+    calling_platform public.calling_platform_type_enum NOT NULL,
+    updated_by character varying
+);
+
 
 --
 -- Name: license_consumption; Type: TABLE; Schema: public; Owner: -
@@ -261,10 +299,28 @@ CREATE TABLE public.license_consumption (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     subaccount_id uuid,
     project_id uuid,
+    consumption_matrix_id uuid,
     consumption_date timestamp without time zone,
-    usage_type public.usage_type_enum DEFAULT 'Configuration'::public.usage_type_enum NOT NULL,
+    usage_type public.usage_type_enum NOT NULL,
     device_id uuid,
+    calling_platform_id uuid,
     tokens_consumed integer DEFAULT 0 NOT NULL,
+    modified_date timestamp without time zone,
+    modified_by character varying
+);
+
+
+--
+-- Name: usage_detail; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.usage_detail (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    consumption_id uuid NOT NULL,
+    usage_date date NOT NULL,
+    day_of_week smallint,
+    mac_address character varying,
+    serial_number character varying,
     modified_date timestamp without time zone,
     modified_by character varying
 );
@@ -304,22 +360,6 @@ CREATE TABLE public.subaccount (
 CREATE TABLE public.subaccount_admin (
     subaccount_admin_email character varying NOT NULL,
     subaccount_id uuid NOT NULL
-);
-
-
---
--- Name: usage_detail; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.usage_detail (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    consumption_id uuid NOT NULL,
-    usage_date date NOT NULL,
-    day_of_week smallint,
-    mac_address character varying,
-    serial_number character varying,
-    modified_date timestamp without time zone,
-    modified_by character varying
 );
 
 CREATE TABLE public.ctaas_test_suite
@@ -672,6 +712,35 @@ c4c5c8c9-e399-4fdc-a210-4aa5e3bc57a2	CICDTest	CICDTest1658150055	2.0	OTHER	week	
 cdd0e8af-1ba4-4a20-b354-bf7c6c121dc3	Dialogic	Brooktrout SR140	X6.13--GFI FAX Maker	FAX	static	0	2022-06-17 15:42:48.550405	infinity	\N	t
 \.
 
+COPY public.consumption_matrix (id, tokens, dut_type, calling_platform) FROM stdin;
+a8654484-1cb2-4fec-adf4-ee7ddc17375d	2	Device/Phone/ATA	PBX
+6a70a31b-fc5a-443b-82d4-d306961fa533	2	Device/Phone/ATA	PBX+SBC
+5726d813-834e-40c4-a52e-e9ac63459e03	2	Device/Phone/ATA	UCaaS
+30ab93f1-3bde-4721-8892-1ba34a005d08	2	Device/Phone/ATA	Contact Center
+89eeb522-157f-4125-96e6-b4cc900fa9d1	2	Device/Phone/ATA	CCaaS
+5798ecd9-6db9-43a6-a521-b21f065e7879	2	Device/Phone/ATA	CPaaS
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	2	Soft Client/UC Client	CCaaS
+be612704-c26e-48ea-ab9b-19312f03d644	2	Soft Client/UC Client	CPaaS
+eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	5	SBC	PBX
+3ad3f83e-2654-466d-b9e9-9cd8ded28110	5	SBC	UCaaS
+34859fba-9987-4a1c-b176-14569b331653	5	SBC	CCaaS
+b66edd36-ee7f-42e7-bfb4-41810ea69fe6	5	SBC	CPaaS
+c323f5f8-cd49-4b0b-ac74-fe2113b658b8	5	BYOC	UCaaS
+0cba280f-06fa-47c2-9782-c16d8bf8ed05	5	BYOC	CCaaS
+9285ca9e-04c3-49df-9d59-085322a13319	5	BYOC	CPaaS
+7f6c9fec-978f-41a6-ba38-117611f0dfa3	3	Application	PBX
+866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	3	Application	PBX+SBC
+1ba09c6f-9a2a-4181-ac1e-b7217763df96	3	Application	UCaaS
+0e709699-3dab-47f1-a710-ebd2ae78d57b	3	Application	Contact Center
+ea00b987-0f14-4888-a0ce-f963d1eb7592	3	Application	CCaaS
+7ab51789-e767-42cc-a9ba-4ab4aef81d1f	3	Application	CPaaS
+9c0cc4a5-a773-46f3-b73e-a09c55080b1f	5	Headset	PBX
+9f53d1ae-e22d-4c3b-b05d-6bf6b13c0658	5	Headset	UCaaS
+f2b57afb-c389-48ec-a54b-7d8a05a51f32	5	Headset	CCaaS
+2bdaf2af-838f-4053-b3fa-ef22aaa11b0d	5	Headset	CPaaS
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	2	Video Collab Device	UCaaS
+\.
+
 
 --
 -- Name: bundle bundle_pkey; Type: CONSTRAINT; Schema: public; Owner: -
@@ -679,6 +748,14 @@ cdd0e8af-1ba4-4a20-b354-bf7c6c121dc3	Dialogic	Brooktrout SR140	X6.13--GFI FAX Ma
 
 ALTER TABLE ONLY public.bundle
     ADD CONSTRAINT bundle_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: consumption_matrix consumption_matrix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.consumption_matrix
+    ADD CONSTRAINT consumption_matrix_pkey PRIMARY KEY (id);
 
 
 --
@@ -840,7 +917,7 @@ ALTER TABLE ONLY public.note
 --
 
 ALTER TABLE ONLY public.subaccount
-    ADD CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES public.customer(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES public.customer(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -856,7 +933,22 @@ ALTER TABLE ONLY public.customer_admin
 --
 
 ALTER TABLE ONLY public.license_consumption
-    ADD CONSTRAINT fk_device FOREIGN KEY (device_id) REFERENCES public.device(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_device FOREIGN KEY (device_id) REFERENCES public.device(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: license_consumption fk_calling_platform; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.license_consumption
+    ADD CONSTRAINT fk_calling_platform FOREIGN KEY (calling_platform_id) REFERENCES public.device(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: license_consumption fk_consumption_matrix; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.license_consumption
+    ADD CONSTRAINT fk_consumption_matrix FOREIGN KEY (consumption_matrix_id) REFERENCES public.consumption_matrix(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -872,7 +964,7 @@ ALTER TABLE ONLY public.customer
 --
 
 ALTER TABLE ONLY public.usage_detail
-    ADD CONSTRAINT fk_license_consumption FOREIGN KEY (consumption_id) REFERENCES public.license_consumption(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_license_consumption FOREIGN KEY (consumption_id) REFERENCES public.license_consumption(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -880,7 +972,7 @@ ALTER TABLE ONLY public.usage_detail
 --
 
 ALTER TABLE ONLY public.license_consumption
-    ADD CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES public.project(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES public.project(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -888,7 +980,7 @@ ALTER TABLE ONLY public.license_consumption
 --
 
 ALTER TABLE ONLY public.license
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -896,7 +988,7 @@ ALTER TABLE ONLY public.license
 --
 
 ALTER TABLE ONLY public.project
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -904,7 +996,7 @@ ALTER TABLE ONLY public.project
 --
 
 ALTER TABLE ONLY public.project
-    ADD CONSTRAINT fk_license FOREIGN KEY (license_id) REFERENCES public.license(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_license FOREIGN KEY (license_id) REFERENCES public.license(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -912,7 +1004,7 @@ ALTER TABLE ONLY public.project
 --
 
 ALTER TABLE ONLY public.license_consumption
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -931,22 +1023,19 @@ ALTER TABLE ONLY public.device
     ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.ctaas_test_suite
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY public.ctaas_setup
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 	
 ALTER TABLE ONLY public.ctaas_run_instance
-	ADD CONSTRAINT fk_ctaas_test_suite FOREIGN KEY (ctaas_test_suite_id) REFERENCES public.ctaas_test_suite(id) ON DELETE CASCADE;
+	ADD CONSTRAINT fk_ctaas_test_suite FOREIGN KEY (ctaas_test_suite_id) REFERENCES public.ctaas_test_suite(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE IF EXISTS public.subaccount
     ADD COLUMN IF NOT EXISTS services character varying;
 	
 ALTER TABLE IF EXISTS public.subaccount_admin
     ADD COLUMN IF NOT EXISTS notifications character varying;
-
-ALTER TYPE public.usage_type_enum
-    ADD VALUE 'Ctaas' AFTER 'AutomationPlatform';
 
 ALTER TABLE ONLY public.feature_toggle
     ADD CONSTRAINT feature_toggle_pkey PRIMARY KEY (id);
@@ -960,7 +1049,7 @@ ALTER TABLE ONLY public.feature_toggle
 --
 
 ALTER TABLE ONLY public.note
-    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -968,7 +1057,7 @@ ALTER TABLE ONLY public.note
 --
 
 ALTER TABLE ONLY public.subaccount_admin_device
-    ADD CONSTRAINT subaccount_admin_device_fk FOREIGN KEY (subaccount_admin_email) REFERENCES public.subaccount_admin(subaccount_admin_email) ON DELETE CASCADE;
+    ADD CONSTRAINT subaccount_admin_device_fk FOREIGN KEY (subaccount_admin_email) REFERENCES public.subaccount_admin(subaccount_admin_email) ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- PostgreSQL database dump complete
