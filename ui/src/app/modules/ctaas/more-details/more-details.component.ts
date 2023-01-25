@@ -64,8 +64,8 @@ export class MoreDetailsComponent implements OnInit {
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
     this.route.queryParams.subscribe((params: any) => {
-      const { type, start, end, subaccountId } = params;
-      this.subaccountId = subaccountId;
+      const { type, start, end, subaccount } = params;
+      this.subaccountId = subaccount;
       this.type = type;
       this.startDateStr = start;
       this.endDateStr = end;
