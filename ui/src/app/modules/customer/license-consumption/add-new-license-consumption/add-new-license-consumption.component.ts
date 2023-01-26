@@ -154,36 +154,12 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.addDutForm.controls['product'].disable();
       this.addDutForm.patchValue({ product: '' });
 
-      // this.filteredVendors = this.addDutForm.controls['vendor'].valueChanges.pipe(
-      //   startWith(''),
-      //   map(vendor => {
-      //     if (vendor === '') {
-      //       this.models = [];
-      //       this.addDutForm.controls['product'].disable();
-      //       this.addDutForm.patchValue({ product: '' });
-      //     }
-      //     return vendor ? this.filterDeviceVendors(vendor) : this.vendors.slice();
-      //   })
-      // );
-      
       this.filteredModels = this.addDutForm.controls['product'].valueChanges.pipe(
         startWith(''),
         map(value => (typeof value === 'string' ? value : value ? value.product : '')),
         map(product => (product ? this.filterModels(product) : this.models.slice()))
       );
-
-      // this.filteredCallingPlatformVendors = this.addCallingPlatformForm.controls['vendor'].valueChanges.pipe(
-      //   startWith(''),
-      //   map(vendor => {
-      //     if (vendor === '') {
-      //       this.models = [];
-      //       this.addCallingPlatformForm.controls['product'].disable();
-      //       this.addCallingPlatformForm.patchValue({ product: '' });
-      //     }
-      //     return vendor ? this.filterDeviceVendors(vendor) : this.vendors.slice();
-      //   })
-      // );
-
+      
       this.addCallingPlatformForm.controls['product'].disable();
       this.addCallingPlatformForm.patchValue({ product: '' });
       

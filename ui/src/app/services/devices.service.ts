@@ -57,6 +57,15 @@ export class DevicesService {
   public updateDevice(device: Device): Observable<any> {
     return this.httpClient.put(`${this.API_URL}/${device.id}`, device);
   }
+  
+  /**
+   * delete device
+   * @param device: Device 
+   * @returns: Observable<Device> 
+   */
+  public deleteDevice(deviceId: string): Observable<any> {
+    return this.httpClient.delete(`${this.API_URL}/${deviceId}`);
+  }
 
   /**
    * get device vendor list

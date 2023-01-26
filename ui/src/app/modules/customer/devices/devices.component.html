@@ -3,14 +3,70 @@
         <h1 id="page-title">Devices</h1>
     </main>
     <div class="row align-items-center">
-
+        <div [formGroup]="filterForm" class="row align-items-center col-auto">
+            <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                <mat-label id="name-label">Name Filter</mat-label>
+                <input matInput type="text" formControlName="nameFilterControl">
+                <button *ngIf="filterForm.get('nameFilterControl').value" matSuffix mat-icon-button
+                        aria-label="Clear" (click)="filterForm.get('nameFilterControl').setValue('')">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                <mat-label id="type-label">Device Type</mat-label>
+                <mat-select formControlName="typeFilterControl">
+                    <mat-option>None</mat-option>
+                    <mat-option *ngFor="let type of deviceTypes" [value]="type.name">
+                        {{type.name}}
+                    </mat-option>
+                </mat-select>
+                <button *ngIf="filterForm.get('typeFilterControl').value" matSuffix mat-icon-button
+                        aria-label="Clear" (click)="filterForm.get('typeFilterControl').setValue('')">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                <mat-label id="vendor-label">Device Vendor</mat-label>
+                <mat-select formControlName="vendorFilterControl">
+                    <mat-option>None</mat-option>
+                    <mat-option *ngFor="let vendor of deviceVendors" [value]="vendor">
+                        {{vendor}}
+                    </mat-option>
+                </mat-select>
+                <button *ngIf="filterForm.get('vendorFilterControl').value" matSuffix mat-icon-button
+                        aria-label="Clear" (click)="filterForm.get('vendorFilterControl').setValue('')">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                <mat-label id="date-label">Start Date Range Filter</mat-label>
+                <mat-date-range-input #rangeFilter [disabled]="filterForm.disabled" [rangePicker]="picker">
+                    <input matStartDate formControlName="startDateFilterControl" placeholder="Start date">
+                    <input matEndDate formControlName="endDateFilterControl" placeholder="End date">
+                </mat-date-range-input>
+                <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+                <button
+                    *ngIf="filterForm.get('startDateFilterControl').value || filterForm.get('endDateFilterControl').value"
+                    matSuffix mat-icon-button aria-label="Clear"
+                    (click)="filterForm.get('startDateFilterControl').setValue(''); filterForm.get('endDateFilterControl').setValue('');">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="col-auto ms-auto justify-content-end gy-3">
+            <button class="me-1" *lcCheckAccessFor="'addDevice'" mat-raised-button (click)="addDevice()"
+                id="add-device-button">Add Device</button>
+        </div>
     </div>
     <section class="table-section">
         <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
-            <app-data-table [tableData]="devices" [tableColumns]="displayedColumns" [isFilterable]="false"
+            <app-data-table [tableData]="devicesBk" [tableColumns]="displayedColumns" [isFilterable]="false"
                 [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                 [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
-                [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'" (rowAction)="rowAction($event)" [actionMenuList]="actionMenuOptions">
+                [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'" (rowAction)="rowAction($event)"
+                [actionMenuList]="actionMenuOptions">
             </app-data-table>
         </div>
     </section>

@@ -1,0 +1,117 @@
+<div class="container" style="text-align: center;">
+    <h1 id="dialog-title" mat-dialig-title>Add Device</h1>
+    <form [formGroup]="addDeviceForm" (ngSubmit)="submit()">
+        <div class="">
+            <div class="loading-shade" *ngIf="isDataLoading">
+                <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+            </div>
+            <mat-dialog-content>
+                <div class="container">
+                    <div class="row" style="align-items: center">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Start Date</mat-label>
+                                <input required matInput [matDatepicker]="picker" formControlName="startDate"
+                                    [max]="startDateMax" (dateChange)="onStartDateChange($event.value)">
+                                <mat-datepicker-toggle matSuffix [for]="picker"
+                                    id="start-date-calendar"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Deprecated Date</mat-label>
+                                <input matInput [matDatepicker]="renewalDatepicker"
+                                    formControlName="deprecatedDate" [min]="deprecatedDateMin"
+                                    (dateChange)="onRenewalDateChange($event.value)">
+                                <mat-datepicker-toggle matSuffix [for]="renewalDatepicker"
+                                    id="renewal-date-calendar"></mat-datepicker-toggle>
+                                <mat-datepicker #renewalDatepicker></mat-datepicker>
+                                <mat-error
+                                    *ngIf="addDeviceForm.errors?.['renewalIsBeforeStart'] && (addDeviceForm.get('deprecatedDate').touched || addDeviceForm.get('deprecatedDate').dirty)">Renewal
+                                    Date should be after the Start Date</mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row" style="align-items: center">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Device Type</mat-label>
+                                <input type="text" placeholder="Select Device type" aria-label="Type" matInput
+                                    formControlName="type" [matAutocomplete]="deviceTypesList"
+                                    id="devices-auto-complete">
+                                <mat-autocomplete #deviceTypesList="matAutocomplete"
+                                    (optionSelected)="onChangeDeviceType($event.option.value)">
+                                    <mat-option *ngFor="let type of deviceTypes" [value]="type.name"
+                                        title="{{type.name}}">
+                                        {{type.name}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Vendor</mat-label>
+                                <input type="text" placeholder="Select Vendor" aria-label="Vendor" matInput
+                                    formControlName="vendor" [matAutocomplete]="vendorsList" id="vendor-auto-complete">
+                                <mat-autocomplete #vendorsList="matAutocomplete">
+                                    <mat-option *ngFor="let vendor of vendors" [value]="vendor" title="{{vendor}}">
+                                        {{vendor}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row" style="align-items: center">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <mat-form-field class="example-full-width" appearance="outline">
+                                <mat-label>Name</mat-label>
+                                <input required matInput formControlName="product" id="product-input">
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <mat-form-field class="example-full-width" appearance="outline">
+                                <mat-label>Version</mat-label>
+                                <input required matInput formControlName="version" id="version-input">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row" style="align-items: center">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Granularity</mat-label>
+                                <input type="text" placeholder="Select Granularity" aria-label="Granularity" matInput
+                                    formControlName="granularity" [matAutocomplete]="granularityList" id="granularity-auto-complete">
+                                <mat-autocomplete #granularityList="matAutocomplete">
+                                    <mat-option *ngFor="let granularity of granularities" [value]="granularity" title="{{granularity}}">
+                                        {{granularity}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <mat-form-field class="example-full-width" appearance="outline">
+                                <mat-label>Tokens to Consume</mat-label>
+                                <input required matInput formControlName="tokensToConsume" id="tokens-input">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row" style="align-items: center">
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <mat-checkbox  labelPosition="before"
+                            color="primary" title="Support Type"
+                            formControlName="supportType">Is Support Device</mat-checkbox>
+                        </div>
+                    </div>
+                </div>
+            </mat-dialog-content>
+        </div>
+        <!-- <div class="btn-flex-container"> -->
+        <mat-dialog-actions>
+            <button id="cancel-button" mat-stroked-button (click)="onCancel()" type="button">Cancel</button>
+            <button id="submit-button" mat-raised-button color="primary" [disabled]="!addDeviceForm.valid"
+                type="submit">Submit</button>
+            <!-- </div> -->
+        </mat-dialog-actions>
+    </form>
+</div>

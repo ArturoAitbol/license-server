@@ -10,10 +10,9 @@ export const permissions = {
         ],
         tables: {
             customerOptions: [],
-            devicesOptions:[
-                'VIEW_DEVICES',
-                'MODIFY_DEVICES',
-                'DELETE_DEVICES',
+            deviceOptions: [
+                'MODIFY_DEVICE',
+                'DELETE_DEVICE',
             ],
             licenseOptions: [],
             licConsumptionOptions: [],
@@ -68,8 +67,8 @@ export const permissions = {
                 'VIEW_SUBACC_ADMIN_EMAILS',
                 'VIEW_CTAAS_DASHBOARD',
                 'MODIFY_ACCOUNT',
-                'DELETE_ACCOUNT'],
-            
+                'DELETE_ACCOUNT'
+            ],
             licenseOptions: [
                 'MODIFY_LICENSE',
                 'DELETE_LICENSE'],
@@ -96,6 +95,10 @@ export const permissions = {
                 'VIEW_CONSUMPTION',
             ],
             noteOptions: [],
+            deviceOptions: [
+                'MODIFY_DEVICE',
+                'DELETE_DEVICE',
+            ],
             testReportsOptions: [
                 'VIEW_REPORT',
             ]
@@ -196,8 +199,9 @@ export const permissions = {
                 'DELETE_STAKEHOLDER'
             ],
             subscriptionsOverviewOptions: [],
+            deviceOptions: [],
             testReportsOptions: [
-                'VIEW_REPORT', 
+                'VIEW_REPORT',
             ]
         }
     },

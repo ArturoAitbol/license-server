@@ -108,7 +108,6 @@ describe('Subscriptions Overview - UI verification tests', () => {
 
         testInstance.sortData(sort);
         expect(testInstance.sortData).toHaveBeenCalledWith(sort);
-        console.log(testInstance.filteredSubscriptions);
         expect(testInstance.filteredSubscriptions).toEqual([ {
             licenseTokens: 0,
             customerId: 'b062d227-5b26-4343-930a-9f3693d47c8a',
@@ -153,7 +152,6 @@ describe('Subscriptions Overview - UI verification tests', () => {
         sort.direction = 'asc';
         testInstance.sortData(sort);
         expect(testInstance.sortData).toHaveBeenCalledWith(sort);
-        console.log(testInstance.filteredSubscriptions);
         expect(testInstance.filteredSubscriptions).toEqual([ {
             subaccountId: '6fe7d952-13cd-4b5d-90bd-6dce6c2ed475',
             licenseRenewalDate: '2023-02-02',
