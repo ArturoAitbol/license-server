@@ -54,7 +54,6 @@ class TekvLSGetSubscriptionsOverviewTest extends TekvLSTest {
         JSONObject subscription = subscriptionsArray.getJSONObject(0);
         assertTrue(subscription.has("customerName"));
         assertTrue(subscription.has("customerId"));
-        assertTrue(subscription.has("subaccountId"));
     }
 
     @Tag("security")

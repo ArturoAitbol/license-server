@@ -41,7 +41,7 @@ describe('Customer service http requests test', () => {
         });
         expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/devices', { headers, params });
 
-        devicesService.getDevicesList(null,null,'KX-NS700').subscribe({
+        devicesService.getDevicesList(null,null,'PBX').subscribe({
             next: () => { done(); },
             error: done.fail
         });
