@@ -80,7 +80,8 @@ public class Permissions {
                         GET_ALL_CTAAS_SETUPS,
                         GET_CTAAS_DASHBOARD,
                         GET_ALL_REPORTS,
-                        GET_SUBSCRIPTIONS_OVERVIEW);
+                        GET_SUBSCRIPTIONS_OVERVIEW,
+                        GET_CONSUMPTION_MATRIX);
 
         public static final EnumSet<Resource> ConfigTesterPermissions = EnumSet.of(
                         // CREATE

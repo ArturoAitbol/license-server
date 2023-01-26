@@ -104,7 +104,8 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
-            'subscriptions-overview'
+            'subscriptions-overview',
+            'consumption-matrix'
         ],
         elements: [
             'showBanner',

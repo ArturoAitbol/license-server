@@ -572,7 +572,7 @@ public class RBACVerifier {
                 true));
         verifiers.put(GET_CONSUMPTION_MATRIX, new ExpectedPermissions(
                 true,
-                false,
+                true,
                 true,
                 true,
                 false,
