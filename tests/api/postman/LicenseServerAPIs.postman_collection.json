@@ -1846,13 +1846,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/consumptionMatrix/{{deviceId}}",
+					"raw": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"consumptionMatrix",
-						"{{deviceId}}"
+						"{{consumptionMatrixId}}"
 					]
 				}
 			},
