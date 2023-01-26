@@ -28,6 +28,7 @@ public class FCMClient {
         notification.put("body",body);
         notification.put("sound","default");
         notification.put("color","#D83539");
+        notification.put("content_available",true);
         notification.put("android_channel_id","notes-notifications");
         requestBody.put("notification", notification);
 
