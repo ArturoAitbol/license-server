@@ -31,7 +31,8 @@ export const permissions = {
             'setup',
             'subscriptions-overview',
             'details',
-            'reports'
+            'reports',
+            'consumption-matrix'
         ],
         elements: [
             'addCustomer',

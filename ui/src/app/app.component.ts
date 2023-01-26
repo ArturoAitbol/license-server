@@ -107,7 +107,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/'
             },
             {
-                name: 'C. matrix',
+                name: 'C. Matrix',
                 path: 'consumption-matrix',
                 active: false,
                 materialIcon: 'grid_on',
