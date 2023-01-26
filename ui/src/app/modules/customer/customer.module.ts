@@ -17,9 +17,9 @@ import { ProjectsComponent } from './projects/projects.component';
 import { AddProjectComponent } from './projects/add-project/add-project.component';
 import { SharedModule } from '../shared/shared.module';
 import { ModifyProjectComponent } from './projects/modify-project/modify-project.component';
-import { DevicesComponent } from './devices/devices.component';
-import { AddDeviceComponent } from './devices/add-device/add-device.component';
-import { ModifyDeviceComponent } from './devices/modify-device/modify-device.component';
+import { DevicesComponent } from '../devices/devices.component';
+import { AddDeviceComponent } from '../devices/add-device/add-device.component';
+import { ModifyDeviceComponent } from '../devices/modify-device/modify-device.component';
 
 @NgModule({
   declarations: [

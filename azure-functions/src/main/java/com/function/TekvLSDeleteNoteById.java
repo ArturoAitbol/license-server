@@ -100,6 +100,8 @@ public class TekvLSDeleteNoteById {
             JSONObject notification = new JSONObject();
             notification.put("title", "Closed note!");
             notification.put("body", userEmail + ": " + noteContent);
+            notification.put("content_available",true);
+            notification.put("android_channel_id","notes-notifications");
             body.put("notification", notification);
             HashMap<String, String> headers = new HashMap<>();
             headers.put("authorization", NOTIFICATIONS_AUTH_KEY);

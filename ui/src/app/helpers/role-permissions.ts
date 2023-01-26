@@ -2,11 +2,13 @@ export const permissions = {
     'tekvizion.DevicesAdmin': {
         paths: [
             'devices',
+            'consumption-matrix'
         ],
         elements: [
             'addDevice',
             'modifyDevice',
-            'deleteDevice'
+            'deleteDevice',
+            'editConsumptionMatrix'
         ],
         tables: {
             customerOptions: [],
@@ -38,7 +40,8 @@ export const permissions = {
             'setup',
             'subscriptions-overview',
             'details',
-            'reports'
+            'reports',
+            'consumption-matrix'
         ],
         elements: [
             'addCustomer',
@@ -56,7 +59,8 @@ export const permissions = {
             'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
-            'resetFilter'
+            'resetFilter',
+            'editConsumptionMatrix'
         ],
         tables: {
             customerOptions: [
@@ -115,7 +119,8 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
-            'subscriptions-overview'
+            'subscriptions-overview',
+            'consumption-matrix'
         ],
         elements: [
             'showBanner',
@@ -161,7 +166,8 @@ export const permissions = {
             'stakeholders',
             'setup',
             'details',
-            'reports'
+            'reports',
+            'consumption-matrix'
         ],
         elements: [
             'addProject',

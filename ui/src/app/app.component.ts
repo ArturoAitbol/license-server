@@ -107,11 +107,19 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/'
             },
             {
+
                 name: 'Devices',
                 iconName: "assets\\images\\dashboard_3.png",
                 path: 'devices',
                 active: false,
                 materialIcon: 'devices',
+                baseUrl: '/'
+            },
+            {
+                name: 'C. Matrix',
+                path: 'consumption-matrix',
+                active: false,
+                materialIcon: 'grid_on',
                 baseUrl: '/'
             },
         ]
@@ -143,6 +151,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly MAIN_DASHBOARD = '/dashboard';
     readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
     readonly DEVICES = '/devices';
+    readonly CONSUMPTION_MATRIX = '/consumption-matrix';
 
     private _mobileQueryListener: () => void;
 
@@ -217,6 +226,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.MAIN_DASHBOARD:
                     case this.SUBSCRIPTIONS_OVERVIEW:
                     case this.DEVICES:
+                    case this.CONSUMPTION_MATRIX:
                         this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
@@ -378,7 +388,7 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     enableSidebar(): boolean {
         if ((this.isCtaasFeatureEnabled() && this.currentRoutePath.includes(this.baseCtaasURL)) ||
-            this.currentRoutePath === this.MAIN_DASHBOARD || this.currentRoutePath == this.SUBSCRIPTIONS_OVERVIEW || this.currentRoutePath == this.DEVICES) {
+            [this.MAIN_DASHBOARD, this.SUBSCRIPTIONS_OVERVIEW, this.CONSUMPTION_MATRIX, this.DEVICES].includes(this.currentRoutePath)) {
             this.displayedSideBarItems.forEach((e: any) => {
                 if (e.baseUrl + e.path === this.currentRoutePath)
                     e.active = true;

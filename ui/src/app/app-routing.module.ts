@@ -9,8 +9,9 @@ import { FeatureToggleGuard } from "./modules/shared/feature-toggle.guard";
 import { MyAppsComponent } from './my-apps/my-apps.component';
 import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
 import { RedirectPageComponent } from './redirect-page/redirect-page.component';
-import { SubscriptionsOverviewComponent } from "./subscriptions-overview/subscriptions-overview.component";
-import { DevicesComponent } from './modules/customer/devices/devices.component';
+import { DevicesComponent } from './modules/devices/devices.component';
+import { SubscriptionsOverviewComponent } from "./modules/subscriptions-overview/subscriptions-overview.component";
+import { ConsumptionMatrixComponent } from "./modules/consumption-matrix/consumption-matrix.component";
 // set default route based on the feature toggle
 const defaultRoute = FeatureToggleHelper.isFeatureEnabled("ctaasFeature") ? 'redirect' : 'dashboard';
 
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'no-permissions', component: NoPermissionsPageComponent, canActivate: [MsalGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   { path: 'subscriptions-overview', component: SubscriptionsOverviewComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
+  { path: 'consumption-matrix', component: ConsumptionMatrixComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   { path: 'apps', component: MyAppsComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   { path: 'redirect', component: RedirectPageComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
   {
