@@ -185,7 +185,18 @@ public class RBACVerifier {
                 true,
                 true
         ));
-
+        verifiers.put(CREATE_CONSUMPTION_MATRIX, new ExpectedPermissions(
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
         verifiers.put(DELETE_ADMIN_EMAIL, new ExpectedPermissions(true,
                 false,
                 false,
@@ -354,6 +365,18 @@ public class RBACVerifier {
                 true
         ));
 
+        verifiers.put(DELETE_CONSUMPTION_MATRIX, new ExpectedPermissions(
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
 
         verifiers.put(GET_ALL_BUNDLES, new ExpectedPermissions(true,
                 true,
@@ -547,6 +570,18 @@ public class RBACVerifier {
                 true,
                 true,
                 true));
+        verifiers.put(GET_CONSUMPTION_MATRIX, new ExpectedPermissions(
+                true,
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
         verifiers.put(MODIFY_CUSTOMER, new ExpectedPermissions(true,
                 false,
                 false,
@@ -669,6 +704,18 @@ public class RBACVerifier {
                 true));
         verifiers.put(MODIFY_FEATURE_TOGGLE, new ExpectedPermissions(
                 true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
+        verifiers.put(MODIFY_CONSUMPTION_MATRIX, new ExpectedPermissions(
+                false,
                 false,
                 false,
                 true,

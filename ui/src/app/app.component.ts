@@ -106,6 +106,13 @@ export class AppComponent implements OnInit, OnDestroy {
                 materialIcon: 'event_repeat',
                 baseUrl: '/'
             },
+            {
+                name: 'C. Matrix',
+                path: 'consumption-matrix',
+                active: false,
+                materialIcon: 'grid_on',
+                baseUrl: '/'
+            },
         ]
     };
     allowedSideBarItems: any = {
@@ -134,6 +141,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly SPOTLIGHT_TEST_REPORTS: string = '/spotlight/reports'
     readonly MAIN_DASHBOARD = '/dashboard';
     readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
+    readonly CONSUMPTION_MATRIX = '/consumption-matrix';
 
     private _mobileQueryListener: () => void;
 
@@ -208,6 +216,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         break;
                     case this.MAIN_DASHBOARD:
                     case this.SUBSCRIPTIONS_OVERVIEW:
+                    case this.CONSUMPTION_MATRIX:
                         this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
@@ -369,7 +378,7 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     enableSidebar(): boolean {
         if ((this.isCtaasFeatureEnabled() && this.currentRoutePath.includes(this.baseCtaasURL)) ||
-            this.currentRoutePath === this.MAIN_DASHBOARD || this.currentRoutePath == this.SUBSCRIPTIONS_OVERVIEW) {
+            [this.MAIN_DASHBOARD, this.SUBSCRIPTIONS_OVERVIEW, this.CONSUMPTION_MATRIX].includes(this.currentRoutePath)) {
             this.displayedSideBarItems.forEach((e: any) => {
                 if (e.baseUrl + e.path === this.currentRoutePath)
                     e.active = true;
