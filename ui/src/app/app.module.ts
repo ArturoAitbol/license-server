@@ -33,6 +33,7 @@ import { MyAppsComponent } from './my-apps/my-apps.component';
 import { RedirectPageComponent } from './redirect-page/redirect-page.component';
 import { SubscriptionsOverviewComponent } from './modules/subscriptions-overview/subscriptions-overview.component';
 import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
+import { ConsumptionMatrixComponent } from './modules/consumption-matrix/consumption-matrix.component';
 
 @NgModule({
     declarations: [
@@ -51,7 +52,8 @@ import { ViewProfileComponent } from './generics/view-profile/view-profile.compo
         MyAppsComponent,
         RedirectPageComponent,
         ViewProfileComponent,
-        SubscriptionsOverviewComponent
+        SubscriptionsOverviewComponent,
+        ConsumptionMatrixComponent,
     ],
     imports: [
         AppRoutingModule,

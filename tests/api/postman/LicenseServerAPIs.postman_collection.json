@@ -206,6 +206,57 @@
 			"response": []
 		},
 		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"consumptionMatrixId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tokens\": \"2\",\r\n    \"dutType\": \"Device/Phone/ATA\",\r\n    \"callingPlatform\": \"CCaaS\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/consumptionMatrix",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"consumptionMatrix"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "customers",
 			"event": [
 				{
@@ -656,6 +707,54 @@
 					],
 					"path": [
 						"licenseUsageDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tokens\": \"4\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"consumptionMatrix",
+						"{{consumptionMatrixId}}"
 					]
 				}
 			},
@@ -1136,6 +1235,47 @@
 					],
 					"path": [
 						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"consumptionMatrix\");\r",
+							"    pm.expect(pm.response.json().consumptionMatrix).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/consumptionMatrix",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"consumptionMatrix"
 					]
 				}
 			},
@@ -1680,6 +1820,45 @@
 			"response": []
 		},
 		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/consumptionMatrix/{{deviceId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"consumptionMatrix",
+						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "notes",
 			"request": {
 				"method": "DELETE",
@@ -2165,6 +2344,11 @@
 		{
 			"key": "ctaasSetupId",
 			"value": ""
+		},
+		{
+			"key": "consumptionMatrixId",
+			"value": "",
+			"type": "string"
 		},
 		{
 			"key": "subaccountAdminEmail",

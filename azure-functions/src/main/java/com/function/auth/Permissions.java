@@ -53,6 +53,7 @@ public class Permissions {
                         GET_ALL_FEATURE_TOGGLES,
                         GET_SUBSCRIPTIONS_OVERVIEW,
                         GET_ALL_NOTES,
+                        GET_CONSUMPTION_MATRIX,
                         // UPDATE
                         MODIFY_CUSTOMER,
                         MODIFY_SUBACCOUNT,
@@ -62,7 +63,8 @@ public class Permissions {
                         MODIFY_CTAAS_SETUP,
                         MODIFY_CTAAS_TEST_SUITE,
                         MODIFY_SUBACCOUNT_STAKEHOLDER,
-                        MODIFY_FEATURE_TOGGLE);
+                        MODIFY_FEATURE_TOGGLE
+    );
 
         public static final EnumSet<Resource> SaleAdminPermissions = EnumSet.of(
                         // READ
@@ -109,31 +111,37 @@ public class Permissions {
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
                         GET_CTAAS_DASHBOARD,
                         GET_ALL_REPORTS,
+                        GET_CONSUMPTION_MATRIX,
                         // UPDATE
                         MODIFY_PROJECT,
                         MODIFY_LICENSE_USAGE,
                         MODIFY_CTAAS_SETUP,
                         MODIFY_CTAAS_TEST_SUITE,
-                        MODIFY_SUBACCOUNT_STAKEHOLDER);
+                        MODIFY_SUBACCOUNT_STAKEHOLDER
+    );
 
         public static final EnumSet<Resource> devicesAdminPermissions = EnumSet.of(
                         // CREATE
                         CREATE_DEVICE,
                         CREATE_BUNDLE,
                         CREATE_FEATURE_TOGGLE,
+                        CREATE_CONSUMPTION_MATRIX,
                         // DELETE
                         DELETE_DEVICE,
                         DELETE_BUNDLE,
                         DELETE_FEATURE_TOGGLE,
+                        DELETE_CONSUMPTION_MATRIX,
                         // READ
                         GET_ALL_DEVICES,
                         GET_ALL_DEVICE_TYPES,
                         GET_ALL_BUNDLES,
                         GET_ALL_FEATURE_TOGGLES,
+                        GET_CONSUMPTION_MATRIX,
                         // UPDATE
                         MODIFY_DEVICE,
                         MODIFY_BUNDLE,
-                        MODIFY_FEATURE_TOGGLE);
+                        MODIFY_FEATURE_TOGGLE,
+                        MODIFY_CONSUMPTION_MATRIX);
 
         public static final EnumSet<Resource> automationPlatformPermissions = EnumSet.of(
                         // CREATE

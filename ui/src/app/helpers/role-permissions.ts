@@ -1,7 +1,11 @@
 export const permissions = {
     'tekvizion.DevicesAdmin': {
-        paths: [],
-        elements: [],
+        paths: [
+            'consumption-matrix'
+        ],
+        elements: [
+            'editConsumptionMatrix'
+        ],
         tables: {
             customerOptions: [],
             licenseOptions: [],
@@ -45,7 +49,8 @@ export const permissions = {
             'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
-            'resetFilter'
+            'resetFilter',
+            'editConsumptionMatrix'
         ],
         tables: {
             customerOptions: [
@@ -144,7 +149,8 @@ export const permissions = {
             'stakeholders',
             'setup',
             'details',
-            'reports'
+            'reports',
+            'consumption-matrix'
         ],
         elements: [
             'addProject',
