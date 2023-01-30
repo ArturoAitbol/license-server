@@ -19,9 +19,7 @@
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                            <mat-checkbox labelPosition="before" color="primary" title="Support Type"
-                                formControlName="supportType">Is Support Device</mat-checkbox>
-                            <!-- <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline">
                                 <mat-label>Deprecated Date</mat-label>
                                 <input matInput [matDatepicker]="renewalDatepicker" formControlName="deprecatedDate"
                                     [min]="deprecatedDateMin" (dateChange)="onRenewalDateChange($event.value)">
@@ -31,7 +29,7 @@
                                 <mat-error
                                     *ngIf="modifyDeviceForm.errors?.['renewalIsBeforeStart'] && (modifyDeviceForm.get('deprecatedDate').touched || modifyDeviceForm.get('deprecatedDate').dirty)">Renewal
                                     Date should be after the Start Date</mat-error>
-                            </mat-form-field> -->
+                            </mat-form-field>
                         </div>
                     </div>
                     <div class="row" style="align-items: center">
@@ -99,19 +97,19 @@
                             </mat-form-field>
                         </div>
                     </div>
-                    <!-- <div class="row" style="align-items: center">
+                    <div class="row" style="align-items: center">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                             <mat-checkbox labelPosition="before" color="primary" title="Support Type"
                                 formControlName="supportType">Is Support Device</mat-checkbox>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>
             <button id="cancel-button" mat-stroked-button (click)="onCancel()" type="button">Cancel</button>
-            <button id="submit-button" mat-raised-button color="primary" [disabled]="!modifyDeviceForm.valid || disableSumbitBtn()"
-                type="submit">Submit</button>
+            <button id="submit-button" mat-raised-button color="primary"
+                [disabled]="!modifyDeviceForm.valid || disableSumbitBtn()" type="submit">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>

@@ -151,7 +151,6 @@ export class DevicesComponent implements OnInit, OnDestroy {
       this.isRequestCompleted = true;
       res['devices'].map((device:any)=>{
         device.startDate = new Date(device.startDate).toLocaleDateString("en-CA");
-        console.log(device);
       });
       
       this.devicesBk = this.devices = res['devices'];

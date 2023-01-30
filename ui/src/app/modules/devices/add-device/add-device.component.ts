@@ -73,7 +73,6 @@ export class AddDeviceComponent implements OnInit {
     this.isDataLoading = true;
     const deviceObject: Device | any = {
       startDate: this.addDeviceForm.value.startDate,
-      // deprecatedDate: this.addDeviceForm.value.deprecatedDate,
       type: this.addDeviceForm.value.type,
       vendor: this.addDeviceForm.value.vendor,
       product: this.addDeviceForm.value.product,

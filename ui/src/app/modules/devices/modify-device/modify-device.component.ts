@@ -25,7 +25,7 @@ export class ModifyDeviceComponent implements OnInit {
 
   modifyDeviceForm = this.formBuilder.group({
     startDate: ['', Validators.required],
-    // deprecatedDate: ['',],
+    deprecatedDate: [''],
     type: ['', Validators.required],
     vendor: ['', Validators.required],
     product: ['', Validators.required], // name
@@ -38,7 +38,7 @@ export class ModifyDeviceComponent implements OnInit {
   startDateMax: Date = null;
   deprecatedDateMin: Date = null;
   isDataLoading = false;
-  
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -53,7 +53,8 @@ export class ModifyDeviceComponent implements OnInit {
       this.isDataLoading = true;
       this.data.granularity = this.data.granularity.charAt(0).toUpperCase() + this.data.granularity.slice(1);
       this.onStartDateChange(this.data.startDate);
-      // this.onRenewalDateChange(this.data.renewalDate);
+      if (this.data.deprecatedDate != "infinity")
+        this.onRenewalDateChange(this.data.deprecatedDate);
       this.modifyDeviceForm.patchValue(this.data);
       this.fetchData();
       this.previousFormValue = { ...this.modifyDeviceForm.getRawValue() };
@@ -77,13 +78,13 @@ export class ModifyDeviceComponent implements OnInit {
   }
 
   submit(): void {
-    this.isDataLoading = true;    
+    this.isDataLoading = true;
     this.modifyDeviceForm.value.granularity = this.modifyDeviceForm.value.granularity.toLowerCase();
     this.modifyDeviceForm.value.supportType = this.modifyDeviceForm.value.supportType.toString();
+    if (!this.modifyDeviceForm.value.deprecatedDate)
+      this.modifyDeviceForm.value.deprecatedDate = "infinity";
     const mergedDeviceObject = { ... this.data, ...this.modifyDeviceForm.value };
-    console.log(mergedDeviceObject);
     this.devicesService.updateDevice(mergedDeviceObject).subscribe((res: any) => {
-      console.log(res);
       if (!res.error) {
         this.snackBarService.openSnackBar('Device updated successfully!', '');
         this.isDataLoading = false;
@@ -106,12 +107,14 @@ export class ModifyDeviceComponent implements OnInit {
   }
 
   onRenewalDateChange(value) {
-    const maxDate = new Date(value);
-    maxDate.setDate(maxDate.getDate() - 1);
-    this.startDateMax = maxDate;
+    if (value) {
+      const maxDate = new Date(value);
+      maxDate.setDate(maxDate.getDate() - 1);
+      this.startDateMax = maxDate;
+    }
   }
 
   disableSumbitBtn(): boolean {
     return JSON.stringify(this.modifyDeviceForm.getRawValue()) === JSON.stringify(this.previousFormValue);
-}
+  }
 }
