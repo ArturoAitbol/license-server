@@ -20,6 +20,7 @@ export class RedirectPageComponent implements OnInit {
 
   private readonly DASHBOARD_ROUTE_PATH: string = '/dashboard';
   private readonly APPS_ROUTE_PATH: string = '/apps';
+  private readonly  CONSUMPTION_MATRIX_PATH = '/consumption-matrix';
   loggedInUserRoles: string[] = [];
   currentSubaccountDetails: SubAccount;
   availableServices: IService[] = [];
@@ -37,10 +38,15 @@ export class RedirectPageComponent implements OnInit {
       const accountDetails = this.getAccountDetails();
       const { idTokenClaims: { roles } } = accountDetails;
       this.loggedInUserRoles = roles;
-      if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
-        this.fetchUserProfileDetails();
+      if (this.loggedInUserRoles.length == 1 && this.loggedInUserRoles[0] === Constants.DEVICES_ADMIN) {
+        // Devices admin does not have permission to access dashboard, so it's a special case
+        this.router.navigate([this.CONSUMPTION_MATRIX_PATH]);
+      } else {
+        if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
+          this.fetchUserProfileDetails();
+        }
+        this.getSubAccountDetails();
       }
-      this.getSubAccountDetails();
     } catch (e) { console.error('error at redirect page'); }
   }
   /**

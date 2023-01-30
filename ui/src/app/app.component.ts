@@ -18,6 +18,7 @@ import { Utility } from './helpers/utils';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
 import { UserProfileService } from './services/user-profile.service';
+import { BehaviorSubject, Subscription } from "rxjs";
 
 
 @Component({
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
     baseCtaasURL = "/spotlight/";
     // tabName: string = 'tekVizion 360 Portal';
     tabName: string = Constants.TEK_TOKEN_TOOL_BAR;
+    previousDisplayedItemsSubscription: Subscription = null;
     @ViewChild('sidenav') sidenav: MatSidenav;
     fullSideBarItems: any = {
         spotlight: [
@@ -107,7 +109,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/'
             },
             {
-                name: 'C. Matrix',
+                name: 'Consumption Matrix',
                 path: 'consumption-matrix',
                 active: false,
                 materialIcon: 'grid_on',
@@ -115,9 +117,9 @@ export class AppComponent implements OnInit, OnDestroy {
             },
         ]
     };
-    allowedSideBarItems: any = {
-        spotlight: [],
-        main: []
+    allowedSideBarItems = {
+        spotlight: new BehaviorSubject([]),
+        main: new BehaviorSubject([])
     };
     displayedSideBarItems: any[] = [
         {
@@ -211,7 +213,13 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.tabName = Constants.CTAAS_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
-                        this.displayedSideBarItems = this.allowedSideBarItems.spotlight;
+                        if (this.previousDisplayedItemsSubscription) {
+                            this.previousDisplayedItemsSubscription.unsubscribe();
+                        }
+                        this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
+                            this.displayedSideBarItems = res;
+                            console.log('spotlight', this.displayedSideBarItems)
+                        });
                         this.enableSidebar();
                         break;
                     case this.MAIN_DASHBOARD:
@@ -220,17 +228,35 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
-                        this.displayedSideBarItems = this.allowedSideBarItems.main;
+                        if (this.previousDisplayedItemsSubscription) {
+                            this.previousDisplayedItemsSubscription.unsubscribe();
+                        }
+                        this.previousDisplayedItemsSubscription = this.allowedSideBarItems.main.subscribe(res => {
+                            this.displayedSideBarItems = res;
+                            console.log('main', this.displayedSideBarItems)
+                        });
                         this.enableSidebar();
                         break;
                     default:
                         // if route contains spotlight details
                         if (this.currentRoutePath.includes('/spotlight/details')) {
                             this.tabName = Constants.CTAAS_TOOL_BAR;
-                            this.displayedSideBarItems = this.allowedSideBarItems.spotlight;
+                            if (this.previousDisplayedItemsSubscription) {
+                                this.previousDisplayedItemsSubscription.unsubscribe();
+                            }
+                            this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
+                                this.displayedSideBarItems = res;
+                                console.log('default spotlight', this.displayedSideBarItems)
+                            });
                         } else {
                             this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
-                            this.displayedSideBarItems = this.allowedSideBarItems.main;
+                            if (this.previousDisplayedItemsSubscription) {
+                                this.previousDisplayedItemsSubscription.unsubscribe();
+                            }
+                            this.previousDisplayedItemsSubscription = this.allowedSideBarItems.main.subscribe(res => {
+                                this.displayedSideBarItems = res;
+                                console.log('default', this.displayedSideBarItems)
+                            });
                         }
                         this.hideToolbar = false;
                         this.isTransparentToolbar = false;
@@ -273,8 +299,8 @@ export class AppComponent implements OnInit, OnDestroy {
     initalizeSidebarItems(): void {
         const accountDetails = this.getAccountDetails();
         const { roles } = accountDetails.idTokenClaims;
-        this.allowedSideBarItems.spotlight = Utility.getNavbarOptions(roles, this.fullSideBarItems.spotlight);
-        this.allowedSideBarItems.main = Utility.getNavbarOptions(roles, this.fullSideBarItems.main);
+        this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.spotlight));
+        this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main));
     }
 
     /**

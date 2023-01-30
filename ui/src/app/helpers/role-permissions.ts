@@ -1,7 +1,8 @@
 export const permissions = {
     'tekvizion.DevicesAdmin': {
         paths: [
-            'consumption-matrix'
+            'consumption-matrix',
+            'redirect'
         ],
         elements: [
             'editConsumptionMatrix'
@@ -51,7 +52,6 @@ export const permissions = {
             'addStakeholderBtn',
             'changeSpotlightRole',
             'resetFilter',
-            'editConsumptionMatrix'
         ],
         tables: {
             customerOptions: [
