@@ -83,6 +83,8 @@ class TekvLSModifySubaccountByIdTest extends TekvLSTest {
     @Test
     public void modifySubaccountServicesTest() {
         if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+//		if(FeatureToggleService.isFeatureActiveByName("services-feature")) {
+//		if(FeatureToggleService.isFeatureActiveById("")) {
             //Given - Arrange
             String services = Constants.SubaccountServices.SPOTLIGHT.value() + "," + Constants.SubaccountServices.TOKEN_CONSUMPTION.value();
             String bodyRequest = "{\n" +

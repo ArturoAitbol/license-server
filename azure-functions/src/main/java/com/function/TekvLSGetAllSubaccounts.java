@@ -122,6 +122,8 @@ public class TekvLSGetAllSubaccounts
 				item.put("name", rs.getString("name"));
 				item.put("customerId", rs.getString("customer_id"));
 				if (FeatureToggles.INSTANCE.isFeatureActive("services-feature"))
+	//			if(FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation"))
+	//			if(FeatureToggleService.isFeatureActiveById(""))
 					item.put("services", rs.getString("services"));
 				if (!id.equals("EMPTY"))
 					item.put("subaccountAdminEmails", adminEmailsMap.get(rs.getString("id")));

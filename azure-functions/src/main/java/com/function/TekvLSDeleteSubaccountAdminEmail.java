@@ -59,7 +59,11 @@ public class TekvLSDeleteSubaccountAdminEmail {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+//			if(FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+//			if(FeatureToggleService.isFeatureActiveById("")) {
                 if (FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")) {
+    //			if(FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
+    //			if(FeatureToggleService.isFeatureActiveById("")) {
                     String searchAdminEmailSql = "SELECT admin_email FROM customer_admin WHERE admin_email = ?;";
                     try (PreparedStatement emailStatement = connection.prepareStatement(searchAdminEmailSql)) {
                             emailStatement.setString(1, email);

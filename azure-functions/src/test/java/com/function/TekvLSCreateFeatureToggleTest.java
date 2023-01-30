@@ -30,7 +30,7 @@ class TekvLSCreateFeatureToggleTest extends TekvLSTest {
     @BeforeEach
     void setUp() {
         this.initTestParameters();
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
     }
 
     @AfterEach

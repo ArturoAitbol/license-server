@@ -18,6 +18,7 @@ public enum Resource {
         CREATE_CTAAS_TEST_SUITE,//TekvLSCreateCtaasTestSuite
         CREATE_SUBACCOUNT_STAKEHOLDER,//TekvLSCreateSubaccountStakeHolder
         CREATE_FEATURE_TOGGLE,//TekvLSCreateFeatureToggle
+        CREATE_FEATURE_TOGGLE_EXCEPTION,//TekvLSCreateFeatureToggle
         CREATE_NOTE,//TekvLSCreateNote
         CREATE_SUBACCOUNT_ADMIN_DEVICE, //TekvLSCreateSubaccountAdminDevice
 
@@ -36,6 +37,7 @@ public enum Resource {
         DELETE_CTAAS_TEST_SUITE,//TekvLSDeleteCtaasTestSuiteById
         DELETE_SUBACCOUNT_STAKEHOLDER,//TekvLSDeleteSubaccountStakeHolderByEmail
         DELETE_FEATURE_TOGGLE,//TekvLSDeleteFeatureToggleById
+        DELETE_FEATURE_TOGGLE_EXCEPTION,//TekvLSDeleteFeatureToggleException
         DELETE_NOTE,//TekvLSDeleteNoteById
         DELETE_SUBACCOUNT_ADMIN_DEVICE, // TekvLSDeleteSubaccountAdminDevice
 

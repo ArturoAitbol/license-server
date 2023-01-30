@@ -90,7 +90,6 @@ public class TekvLSGetAllFeatureTogglesTest extends TekvLSTest {
         assertTrue(featureToggle.has("status"));
         assertTrue(featureToggle.has("name"));
         assertTrue(featureToggle.has("description"));
-        assertTrue(featureToggle.has("customerName"));
     }
 
     @Tag("acceptance")
@@ -119,7 +118,6 @@ public class TekvLSGetAllFeatureTogglesTest extends TekvLSTest {
         assertTrue(featureToggle.has("status"));
         assertTrue(featureToggle.has("name"));
         assertTrue(featureToggle.has("description"));
-        assertTrue(featureToggle.has("customerName"));
         assertEquals(this.featureToggleId, featureToggle.getString("id"), "Response doesn't match with: ".concat(this.featureToggleId));
     }
 
@@ -144,31 +142,6 @@ public class TekvLSGetAllFeatureTogglesTest extends TekvLSTest {
         assertTrue(jsonBody.has("error"));
 
         String expectedResponse = RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
-        String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
-    }
-
-    @Tag("security")
-    @Test
-    public void forbiddenTest() {
-        //Given - Arrange
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("crm"));
-
-        //When - Action
-        HttpResponseMessage response = getAllFeatureToggles.run(this.request, "EMPTY", this.context);
-        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
-
-        //Then - Assert
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.FORBIDDEN;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-
-        assertTrue(jsonBody.has("error"));
-
-        String expectedResponse = RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }

@@ -30,7 +30,7 @@ public class TekvLSModifyFeatureToggleByIdTest extends TekvLSTest {
     @BeforeEach
     public void setup() {
         this.initTestParameters();
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
         String name = "customerTest" + LocalDateTime.now();
         String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -45,7 +45,7 @@ public class TekvLSModifyFeatureToggleByIdTest extends TekvLSTest {
     void tearDown() {
         if (!this.featureToggleId.equals("EMPTY")) {
             this.initTestParameters();
-            this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
+            this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
             HttpResponseMessage response = deleteFeatureToggleApi.run(this.request, this.featureToggleId, this.context);
             this.context.getLogger().info(response.getStatus().toString());
             this.featureToggleId = "EMPTY";

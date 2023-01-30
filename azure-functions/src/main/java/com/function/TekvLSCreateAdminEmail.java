@@ -85,6 +85,8 @@ public class TekvLSCreateAdminEmail {
             context.getLogger().info("Admin email inserted successfully.");
 
             if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
+//			if(FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
+//			if(FeatureToggleService.isFeatureActiveById("")) {
                 final String customerNameSql = "SELECT name FROM customer WHERE id = ?::uuid;";
                 try(PreparedStatement customerNameStmt = connection.prepareStatement(customerNameSql)){
                     customerNameStmt.setString(1,createAdminRequest.customerId);

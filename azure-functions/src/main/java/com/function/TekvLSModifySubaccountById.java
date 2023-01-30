@@ -90,6 +90,8 @@ public class TekvLSModifySubaccountById
 		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
 			try {
 				if (!param.columnName.equals("services") || FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+	//			if(!param.columnName.equals("services") || FeatureToggleService.isFeatureActiveByName("services-feature")) {
+	//			if(!param.columnName.equals("services") || FeatureToggleService.isFeatureActiveById("")) {
 					queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
 					optionalParamsFound++;
 				}
@@ -127,6 +129,8 @@ public class TekvLSModifySubaccountById
 			context.getLogger().info("Subaccount updated successfully."); 
 
 			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+//			if(FeatureToggleService.isFeatureActiveByName("services-feature")) {
+//			if(FeatureToggleService.isFeatureActiveById("")) {
 				if (jobj.has("services") && jobj.getString("services").contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
 					verifyCtassSetupStmt.setString(1, id);
 		
@@ -153,6 +157,8 @@ public class TekvLSModifySubaccountById
 						final String adminEmail = rs.getString("subaccount_admin_email");
 
 						if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+			//			if(FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+			//			if(FeatureToggleService.isFeatureActiveById("")) {
 							EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
 						}
 					}

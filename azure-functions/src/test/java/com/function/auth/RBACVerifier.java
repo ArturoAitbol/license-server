@@ -149,7 +149,19 @@ public class RBACVerifier {
                 true,
                 false));
         verifiers.put(CREATE_FEATURE_TOGGLE, new ExpectedPermissions(
+                false,
+                false,
+                false,
                 true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
+        verifiers.put(CREATE_FEATURE_TOGGLE_EXCEPTION, new ExpectedPermissions(
+                false,
                 false,
                 false,
                 true,
@@ -315,9 +327,10 @@ public class RBACVerifier {
                 false,
                 true,
                 true,
-                false));
+                false
+        ));
         verifiers.put(DELETE_FEATURE_TOGGLE, new ExpectedPermissions(
-                true,
+                false,
                 false,
                 false,
                 true,
@@ -352,6 +365,19 @@ public class RBACVerifier {
                 false,
                 true,
                 true
+        ));
+
+        verifiers.put(DELETE_FEATURE_TOGGLE_EXCEPTION, new ExpectedPermissions(
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
         ));
 
 
@@ -507,15 +533,15 @@ public class RBACVerifier {
                 true));
         verifiers.put(GET_ALL_FEATURE_TOGGLES, new ExpectedPermissions(
                 true,
-                false,
-                false,
                 true,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
         ));
         verifiers.put(GET_SUBSCRIPTIONS_OVERVIEW, new ExpectedPermissions(true,
                 true,
@@ -658,7 +684,7 @@ public class RBACVerifier {
                 true,
                 true));
         verifiers.put(MODIFY_FEATURE_TOGGLE, new ExpectedPermissions(
-                true,
+                false,
                 false,
                 false,
                 true,

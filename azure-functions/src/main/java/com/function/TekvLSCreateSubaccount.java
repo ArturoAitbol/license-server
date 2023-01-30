@@ -96,6 +96,9 @@ public class TekvLSCreateSubaccount
 		}
 
 		// Build the sql queries
+
+		//String insertValuesClause = FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation") ?
+		//String insertValuesClause = FeatureToggleService.isFeatureActiveById("") ?
 		String insertValuesClause = FeatureToggles.INSTANCE.isFeatureActive("services-feature")? 
 			"(name, customer_id, services) VALUES (?, ?::uuid, ?)" : "(name, customer_id) VALUES (?, ?::uuid)";
 		String insertSql = "INSERT INTO subaccount " + insertValuesClause + " RETURNING id;";
@@ -164,6 +167,8 @@ public class TekvLSCreateSubaccount
 			insertEmailStmt.executeUpdate();
 			context.getLogger().info("Subaccount admin email inserted successfully.");
 			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
+//			if(FeatureToggleService.isFeatureActiveByName("services-feature")) {
+//			if(FeatureToggleService.isFeatureActiveById("")) {
 				if (subaccountServices.contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
 					insertCtassSetupStmt.setString(1, subaccountId);
 					insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());

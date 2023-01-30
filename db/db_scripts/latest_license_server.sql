@@ -354,13 +354,17 @@ CREATE TABLE public.ctaas_setup
 
 CREATE TABLE public.feature_toggle (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    customer_name character varying,
     status public.feature_toggle_status_type_enum DEFAULT 'Off'::public.feature_toggle_status_type_enum NOT NULL,
     author character varying,
     description character varying,
     name character varying NOT NULL
 );
 
+CREATE TABLE public.feature_toggle_exception (
+    feature_toggle_id uuid NOT NULL,
+    subaccount_id uuid NOT NULL,
+    status public.feature_toggle_status_type_enum DEFAULT 'Off'::public.feature_toggle_status_type_enum NOT NULL
+);
 
 --
 -- Name: subaccount_admin_device; Type: TABLE; Schema: public; Owner: -
@@ -954,6 +958,14 @@ ALTER TABLE ONLY public.feature_toggle
 ALTER TABLE ONLY public.feature_toggle
     ADD CONSTRAINT ft_name_unique UNIQUE (name);
 
+ALTER TABLE ONLY public.feature_toggle_exception
+    ADD CONSTRAINT fk_subaccount FOREIGN KEY (subaccount_id) REFERENCES public.subaccount(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.feature_toggle_exception
+    ADD CONSTRAINT fk_feature_toggle FOREIGN KEY (feature_toggle_id) REFERENCES public.feature_toggle(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE ONLY public.feature_toggle_exception
+    ADD CONSTRAINT feature_toggle_exception_pkey PRIMARY KEY (feature_toggle_id, subaccount_id);
 
 --
 -- Name: note fk_subaccount; Type: FK CONSTRAINT; Schema: public; Owner: -
