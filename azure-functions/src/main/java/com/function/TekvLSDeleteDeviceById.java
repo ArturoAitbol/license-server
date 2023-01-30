@@ -57,8 +57,13 @@ public class TekvLSDeleteDeviceById
 		}
 
 		context.getLogger().info("Entering TekvLSDeleteDeviceById Azure function");
+		// Get query parameters
+		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
+		String forceDelete = request.getQueryParameters().getOrDefault("force", "false");
+		Boolean deleteFlag = Boolean.parseBoolean(forceDelete);
 
-		String sql = "DELETE FROM device WHERE id = ?::uuid;";
+		String tombstoneSql = "UPDATE device SET tombstone=true WHERE id = ?::uuid;";
+		String deleteSql = "DELETE FROM device WHERE id = ?::uuid;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -66,16 +71,24 @@ public class TekvLSDeleteDeviceById
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = connection.prepareStatement(sql)) {
+			PreparedStatement tombstoneStmt = connection.prepareStatement(tombstoneSql);
+			PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-			statement.setString(1, id);
-
 			// Delete device
 			String userId = getUserIdFromToken(tokenClaims,context);
-			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
-			statement.executeUpdate();
+			if (deleteFlag) {
+				deleteStmt.setString(1, id);
+				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + deleteStmt);
+				deleteStmt.executeUpdate();
+			}
+			else {
+				tombstoneStmt.setString(1, id);
+				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + tombstoneStmt);
+				tombstoneStmt.executeUpdate();
+			}
+			
 			context.getLogger().info("Device deleted successfully.");
 
 			return request.createResponseBuilder(HttpStatus.OK).build();

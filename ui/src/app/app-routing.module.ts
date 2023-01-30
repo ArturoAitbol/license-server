@@ -9,6 +9,7 @@ import { FeatureToggleGuard } from "./modules/shared/feature-toggle.guard";
 import { MyAppsComponent } from './my-apps/my-apps.component';
 import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
 import { RedirectPageComponent } from './redirect-page/redirect-page.component';
+import { DevicesComponent } from './modules/devices/devices.component';
 import { SubscriptionsOverviewComponent } from "./modules/subscriptions-overview/subscriptions-overview.component";
 import { ConsumptionMatrixComponent } from "./modules/consumption-matrix/consumption-matrix.component";
 // set default route based on the feature toggle
@@ -37,6 +38,7 @@ const routes: Routes = [
     path: 'spotlight', canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard], canActivateChild: [FeatureToggleGuard],
     loadChildren: () => import('./modules/ctaas/ctaas.module').then(m => m.CtaasModule)
   },
+  { path: 'devices', component: DevicesComponent, canActivate: [MsalGuard, RoleGuard] },
   { path: '**', redirectTo: defaultRoute }
 ];
 

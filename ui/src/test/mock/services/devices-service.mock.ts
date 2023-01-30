@@ -738,6 +738,7 @@ const VENDORS_LIST = {
 
 export const DevicesServiceMock = {
     devicesListValue: DEVICE_LIST,
+    deviceTypes:DEVICE_TYPES,
     getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string) => {
         return of(
             JSON.parse(JSON.stringify({ devices: DEVICE_LIST.devices.filter(device => device.vendor === vendor) }))

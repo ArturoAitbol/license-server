@@ -77,7 +77,6 @@ describe('Consumption Matrix - UI verification tests', () => {
     const sbcColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[5];
     const softClientColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[6];
 
-    console.log(callingPlatformColumn);
     expect(callingPlatformColumn.innerText).toBe('Calling Platform');
     expect(applicationColumn.innerText).toBe('Application');
     expect(ByocColumn.innerText).toBe('BYOC');
