@@ -111,7 +111,9 @@ public class TekvLSModifyDeviceById
 			statement.executeUpdate();
 			context.getLogger().info("Device updated successfully."); 
 
-			return request.createResponseBuilder(HttpStatus.OK).build();
+			JSONObject json = new JSONObject();
+			json.put("id", jobj.getString("id"));
+			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
 		catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());

@@ -125,7 +125,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
 
       if (value.endDateFilterControl != '' && value.endDateFilterControl != null)
         filters.push(device => device.licenseRenewalDate != null && moment(device.licenseStartDate, 'YYYY-MM-DD').isSameOrBefore(value.endDateFilterControl));
-        
+
       this.isLoadingResults = true;
       this.devicesBk = this.devices.filter(device => filters.every(filter => filter(device)));
       this.isLoadingResults = false;
@@ -149,6 +149,11 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.devicesService.getDevicesList().subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
+      res['devices'].map((device:any)=>{
+        device.startDate = new Date(device.startDate).toLocaleDateString("en-CA");
+        console.log(device);
+      });
+      
       this.devicesBk = this.devices = res['devices'];
       this.filterForm.enable();
     }, () => {
@@ -197,7 +202,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.MODIFY_DEVICE:
-        this.openDialog(ModifyDeviceComponent, {...object.selectedRow});
+        this.openDialog(ModifyDeviceComponent, { ...object.selectedRow });
         break;
       case this.DELETE_DEVICE:
         this.onDelete(object.selectedRow);
@@ -205,7 +210,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
     }
   }
 
-  addDevice(): void { 
+  addDevice(): void {
     this.openDialog(AddDeviceComponent);
   }
 

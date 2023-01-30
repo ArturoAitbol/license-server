@@ -19,11 +19,14 @@
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <mat-checkbox labelPosition="before" color="primary" title="Support Type"
+                                formControlName="supportType">Is Support Device</mat-checkbox>
+                        </div>
+                        <!-- <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <mat-form-field appearance="outline">
                                 <mat-label>Deprecated Date</mat-label>
-                                <input matInput [matDatepicker]="renewalDatepicker"
-                                    formControlName="deprecatedDate" [min]="deprecatedDateMin"
-                                    (dateChange)="onRenewalDateChange($event.value)">
+                                <input matInput [matDatepicker]="renewalDatepicker" formControlName="deprecatedDate"
+                                    [min]="deprecatedDateMin" (dateChange)="onRenewalDateChange($event.value)">
                                 <mat-datepicker-toggle matSuffix [for]="renewalDatepicker"
                                     id="renewal-date-calendar"></mat-datepicker-toggle>
                                 <mat-datepicker #renewalDatepicker></mat-datepicker>
@@ -31,7 +34,7 @@
                                     *ngIf="addDeviceForm.errors?.['renewalIsBeforeStart'] && (addDeviceForm.get('deprecatedDate').touched || addDeviceForm.get('deprecatedDate').dirty)">Renewal
                                     Date should be after the Start Date</mat-error>
                             </mat-form-field>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="row" style="align-items: center">
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
@@ -81,9 +84,11 @@
                             <mat-form-field appearance="outline">
                                 <mat-label>Granularity</mat-label>
                                 <input type="text" placeholder="Select Granularity" aria-label="Granularity" matInput
-                                    formControlName="granularity" [matAutocomplete]="granularityList" id="granularity-auto-complete">
+                                    formControlName="granularity" [matAutocomplete]="granularityList"
+                                    id="granularity-auto-complete">
                                 <mat-autocomplete #granularityList="matAutocomplete">
-                                    <mat-option *ngFor="let granularity of granularities" [value]="granularity" title="{{granularity}}">
+                                    <mat-option *ngFor="let granularity of granularities" [value]="granularity"
+                                        title="{{granularity}}">
                                         {{granularity}}
                                     </mat-option>
                                 </mat-autocomplete>
@@ -96,22 +101,19 @@
                             </mat-form-field>
                         </div>
                     </div>
-                    <div class="row" style="align-items: center">
+                    <!-- <div class="row" style="align-items: center">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                            <mat-checkbox  labelPosition="before"
-                            color="primary" title="Support Type"
-                            formControlName="supportType">Is Support Device</mat-checkbox>
+                            <mat-checkbox labelPosition="before" color="primary" title="Support Type"
+                                formControlName="supportType">Is Support Device</mat-checkbox>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </mat-dialog-content>
         </div>
-        <!-- <div class="btn-flex-container"> -->
         <mat-dialog-actions>
             <button id="cancel-button" mat-stroked-button (click)="onCancel()" type="button">Cancel</button>
             <button id="submit-button" mat-raised-button color="primary" [disabled]="!addDeviceForm.valid"
                 type="submit">Submit</button>
-            <!-- </div> -->
         </mat-dialog-actions>
     </form>
 </div>
