@@ -25,6 +25,7 @@ export class Constants {
     // User roles
     public static readonly SUBACCOUNT_ADMIN = 'customer.SubaccountAdmin';
     public static readonly SUBACCOUNT_STAKEHOLDER = 'customer.SubaccountStakeholder';
+    public static readonly DEVICES_ADMIN = 'tekvizion.DevicesAdmin';
 
     // Timer constants
     public static readonly DASHBOARD_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes * 60 seconds * 1000 milliseconds

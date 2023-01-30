@@ -33,6 +33,7 @@ export class AddNotesComponent implements OnInit {
 
     addNote() {
         this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
+        this.isDataLoading = true;
         const currentReports = this.ctaasDashboardService.getReports();
         if(currentReports!==null){
             let noteToAdd: Note = {

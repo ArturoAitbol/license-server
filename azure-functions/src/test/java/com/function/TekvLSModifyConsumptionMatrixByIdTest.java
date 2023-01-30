@@ -15,48 +15,42 @@ import org.mockito.Mockito;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 
-class TekvLSModifyDeviceByIdTest extends TekvLSTest {
+class TekvLSModifyConsumptionMatrixByIdTest extends TekvLSTest {
 
-    TekvLSModifyDeviceById modifyDeviceApi = new TekvLSModifyDeviceById();
+    TekvLSModifyConsumptionMatrixById modifyConsumptionMatrixByIdApi = new TekvLSModifyConsumptionMatrixById();
 
-    private final TekvLSCreateDevice createDeviceApi = new TekvLSCreateDevice();
-    private final TekvLSDeleteDeviceById deleteDeviceApi = new TekvLSDeleteDeviceById();
-    private String deviceId = "EMPTY";
+    private final TekvLSCreateConsumptionMatrix createConsumptionMatrixApi = new TekvLSCreateConsumptionMatrix();
+    private final TekvLSDeleteConsumptionMatrixById deleteConsumptionMatrixByIdApi = new TekvLSDeleteConsumptionMatrixById();
+    private String consumptionMatrixId = "EMPTY";
 
     @BeforeEach
     public void setup() {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
         String bodyRequest = "{\n" +
-                "    \"vendor\": \"UnitTest\",\n" +
-                "    \"product\": \"UnitTest\",\n" +
-                "    \"version\": \"1.0\",\n" +
-                "    \"type\": \"OTHER\",\n" +
-                "    \"granularity\": \"week\",\n" +
-                "    \"tokensToConsume\": \"1\",\n" +
-                "    \"supportType\": \"true\",\n" +
-                "    \"startDate\": \"" + LocalDateTime.now() + "\"\n" +
-                "}";
+                "            \"tokens\": \"2\",\n" +
+                "            \"dutType\": \"Device/Phone/ATA\",\n" +
+                "            \"callingPlatform\": \"CCaaS\"\n" +
+                "        }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        HttpResponseMessage response = this.createDeviceApi.run(this.request, context);
+        HttpResponseMessage response = this.createConsumptionMatrixApi.run(this.request, context);
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-        this.deviceId = new JSONObject(response.getBody().toString()).getString("id");
+        this.consumptionMatrixId = new JSONObject(response.getBody().toString()).getString("id");
     }
 
     @AfterEach
     void tearDown() {
-        if (!this.deviceId.equals("EMPTY")) {
+        if (!this.consumptionMatrixId.equals("EMPTY")) {
             this.initTestParameters();
             this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
-            HttpResponseMessage response = deleteDeviceApi.run(this.request, this.deviceId, this.context);
+            HttpResponseMessage response = deleteConsumptionMatrixByIdApi.run(this.request, this.consumptionMatrixId, this.context);
             this.context.getLogger().info(response.getStatus().toString());
-            this.deviceId = "EMPTY";
+            this.consumptionMatrixId = "EMPTY";
 
             HttpStatusType actualStatus = response.getStatus();
             HttpStatus expected = HttpStatus.OK;
@@ -65,24 +59,35 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
     }
 
     @Test
-    public void modifyDeviceTest() {
-        // Given - Arrange
+    public void modifyConsumptionMatrixByIdTest() {
+        //Given - Arrange
         String bodyRequest = "{\n" +
-                "    \"vendor\": \"UnitTestModified\",\n" +
-                "    \"product\": \"UnitTestModified\",\n" +
-                "    \"version\": \"2.0\",\n" +
-                "    \"type\": \"OTHER\",\n" +
-                "    \"granularity\": \"week\",\n" +
-                "    \"tokensToConsume\": \"1\",\n" +
-                "    \"supportType\": \"true\",\n" +
-                "    \"startDate\": \"" + LocalDateTime.now() + "\"\n" +
-                "}";
+                "            \"dutType\": \"Headset\",\n" +
+                "            \"callingPlatform\": \"PBX\"\n" +
+                "        }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        // When - Action
-        HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
+        //When - Action
+        HttpResponseMessage response = modifyConsumptionMatrixByIdApi.run(this.request, this.consumptionMatrixId, this.context);
 
-        // Then - Assert
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Test
+    public void modifyConsumptionMatrixByIdTest2() {
+        //Given - Arrange
+        String bodyRequest =  "{\n" +
+                "            \"tokens\": \"5\"\n" +
+                "        }";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When - Action
+        HttpResponseMessage response = modifyConsumptionMatrixByIdApi.run(this.request, this.consumptionMatrixId, this.context);
+
+        //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -90,14 +95,14 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void noParamsTest() {
-        // Given - Arrange
+        //Given - Arrange
         String bodyRequest = "{}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        // When - Action
-        HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
+        //When - Action
+        HttpResponseMessage response = modifyConsumptionMatrixByIdApi.run(this.request, this.consumptionMatrixId, this.context);
 
-        // Then - Assert
+        //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -105,14 +110,14 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void emptyBodyTest() {
-        // Given - Arrange
+        //Given - Arrange
         String bodyRequest = "";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        // When - Action
-        HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
+        //When - Action
+        HttpResponseMessage response = modifyConsumptionMatrixByIdApi.run(this.request, this.consumptionMatrixId, this.context);
 
-        // Then - Assert
+        //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -129,14 +134,14 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void invalidBodyTest() {
-        // Given - Arrange
+        //Given - Arrange
         String bodyRequest = "Something";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        // When - Action
-        HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
+        //When - Action
+        HttpResponseMessage response = modifyConsumptionMatrixByIdApi.run(this.request, this.consumptionMatrixId, this.context);
 
-        // Then - Assert
+        //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -153,23 +158,18 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void sqlExceptionTest() {
-        // Given - Arrange
+        //Given - Arrange
         String bodyRequest = "{\n" +
-                "    \"vendor\": \"UnitTestModified\",\n" +
-                "    \"product\": \"UnitTestModified\",\n" +
-                "    \"version\": \"2.0\",\n" +
-                "    \"type\": \"OTHER\",\n" +
-                "    \"granularity\": \"week\",\n" +
-                "    \"tokensToConsume\": \"1\",\n" +
-                "    \"supportType\": \"true\",\n" +
-                "    \"startDate\": \"TEST\"\n" +
-                "}";
+                "            \"tokens\": \"2\",\n" +
+                "            \"dutType\": \"Device/Phone/ATA\",\n" +
+                "            \"callingPlatform\": \"CCaaS\"\n" +
+                "        }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        // When - Action
-        HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
+        //When - Action
+        HttpResponseMessage response = modifyConsumptionMatrixByIdApi.run(this.request, "0", this.context);
 
-        // Then - Assert
+        //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -177,30 +177,25 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void genericExceptionTest() {
-        // Given - Arrange
+        //Given - Arrange
+        String name = "unitTestModified" + LocalDateTime.now();
         String bodyRequest = "{\n" +
-                "    \"vendor\": \"UnitTestModified\",\n" +
-                "    \"product\": \"UnitTestModified\",\n" +
-                "    \"version\": \"2.0\",\n" +
-                "    \"type\": \"OTHER\",\n" +
-                "    \"granularity\": \"week\",\n" +
-                "    \"tokensToConsume\": \"1\",\n" +
-                "    \"supportType\": \"true\",\n" +
-                "    \"startDate\": \"" + LocalDateTime.now() + "\"\n" +
-                "}";
+                "            \"tokens\": \"3\"\n" +
+                "        }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
-        // When - Action
-        HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
+        //When - Action
+        HttpResponseMessage response = modifyConsumptionMatrixByIdApi.run(this.request, this.consumptionMatrixId, this.context);
 
-        // Then - Assert
+        //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
+
         assertTrue(jsonBody.has("error"));
 
         String expectedResponse = "Generic error";
@@ -210,23 +205,16 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void unauthorizedTest() {
-        // Given - Arrange
+        //Given - Arrange
         String bodyRequest = "{\n" +
-                "    \"vendor\": \"UnitTestModified\",\n" +
-                "    \"product\": \"UnitTestModified\",\n" +
-                "    \"version\": \"2.0\",\n" +
-                "    \"type\": \"OTHER\",\n" +
-                "    \"granularity\": \"week\",\n" +
-                "    \"tokensToConsume\": \"1\",\n" +
-                "    \"supportType\": \"true\",\n" +
-                "    \"startDate\": \"" + LocalDateTime.now() + "\"\n" +
-                "}";
+                "            \"tokens\": \"3\"\n" +
+                "        }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         this.headers.remove("authorization");
-        // When - Action
-        HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
+        //When - Action
+        HttpResponseMessage response = modifyConsumptionMatrixByIdApi.run(this.request, this.consumptionMatrixId, this.context);
 
-        // Then - Assert
+        //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.UNAUTHORIZED;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -243,24 +231,17 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void forbiddenTest() {
-        // Given - Arrange
+        //Given - Arrange
         String bodyRequest = "{\n" +
-                "    \"vendor\": \"UnitTestModified\",\n" +
-                "    \"product\": \"UnitTestModified\",\n" +
-                "    \"version\": \"2.0\",\n" +
-                "    \"type\": \"OTHER\",\n" +
-                "    \"granularity\": \"week\",\n" +
-                "    \"tokensToConsume\": \"1\",\n" +
-                "    \"supportType\": \"true\",\n" +
-                "    \"startDate\": \"" + LocalDateTime.now() + "\"\n" +
-                "}";
+                "            \"tokens\": \"3\"\n" +
+                "        }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         this.headers.remove("authorization");
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        // When - Action
-        HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
+        //When - Action
+        HttpResponseMessage response = modifyConsumptionMatrixByIdApi.run(this.request, this.consumptionMatrixId, this.context);
 
-        // Then - Assert
+        //Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.FORBIDDEN;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
