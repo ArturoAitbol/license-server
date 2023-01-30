@@ -161,6 +161,7 @@ describe('Interactions of the table', () => {
   it('should filter the rows in the table based on the name, type and status filters',() => {
     let pickedEvent = {data:null};
     let pickedDate = {value: moment().toDate()};
+    fixture.detectChanges();
 
     ctaasTestReportComponentTestInstance.filterForm.patchValue({typeFilterControl: 'Daily-FeatureFunctionality'});
     ctaasTestReportComponentTestInstance.toggleOptionValue('Daily-FeatureFunctionality');

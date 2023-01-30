@@ -17,7 +17,7 @@ import { IResultant } from '../ctaas-dashboard/ctaas-dashboard.component';
 })
 export class CtaasHistoricalDashboardComponent implements OnInit {
 
-  subaccountId = '';
+  private subaccountDetails: any;
   hasDashboardDetails = false;
   isLoadingResults = false;
   dailyImagesList: string[] = [];
@@ -38,16 +38,13 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
       private ctaasDashboardService: CtaasDashboardService,
       private snackBarService: SnackBarService,
       public dialogRef: MatDialogRef<CtaasHistoricalDashboardComponent>,
-      @Inject(MAT_DIALOG_DATA) public note: Note
-  ) { }
+      @Inject(MAT_DIALOG_DATA) public note: Note) {}
 
   ngOnInit(): void {
     if(this.note?.reports!=null){
       this.reports = this.note.reports;
       this.fontStyleControl.setValue(this.DAILY);
-      const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-      const { id, subaccountId } = currentSubaccountDetails;
-      this.subaccountId = subaccountId ? subaccountId : id;
+      this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
       this.fetchCtaasDashboardDetailsBySubaccount();
     }else{
       console.error('Error loading dashboard reports | ', "No reports found for the selected note");
@@ -71,7 +68,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
       const requests: Observable<any>[] = [];
       // iterate through dashboard reports
       for (const report of this.reports) {
-          requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId, report.reportType,report.timestampId));
+          requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountDetails.id, report.reportType,report.timestampId));
       }
       // get all the request response in an array
       forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
@@ -148,7 +145,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
     const { imagesList } = obj;
     const { reportType, startDate, endDate } = imagesList[index];
     const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccount=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${startDate}&end=${endDate}`;
     window.open(url);
     window.close();
     }

@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Constants } from '../helpers/constants';
 import { SubAccount } from '../model/subaccount.model';
@@ -10,17 +10,25 @@ import { SubAccount } from '../model/subaccount.model';
 export class SubAccountService {
   private readonly API_URL: string = environment.apiEndpoint + '/subaccounts';
   private selectedSubAccount: any;
+  @Output() subaccountEmitter =  new EventEmitter<any>();
 
   constructor(private httpClient: HttpClient) { }
 
   //set the selected subaccount
   setSelectedSubAccount(subaccount: any) { 
-    localStorage.setItem(Constants.SELECTED_SUBACCOUNT, JSON.stringify(subaccount)),
+    sessionStorage.setItem(Constants.SELECTED_SUBACCOUNT, JSON.stringify(subaccount));
     this.selectedSubAccount = subaccount;
+
+    this.subaccountEmitter.emit(this.selectedSubAccount)
   }
   //get the selected subaccount
   getSelectedSubAccount() {
-    return (this.selectedSubAccount) ? this.selectedSubAccount : JSON.parse(localStorage.getItem(Constants.SELECTED_SUBACCOUNT));
+    if(this.selectedSubAccount?.id)
+      return this.selectedSubAccount;
+    if(sessionStorage.getItem(Constants.SELECTED_SUBACCOUNT))
+      return JSON.parse(sessionStorage.getItem(Constants.SELECTED_SUBACCOUNT));
+    //if the other sentences aren't matched return a default empty template
+    return { id: "", name: "", customerName: "" };
   }
 
   /**

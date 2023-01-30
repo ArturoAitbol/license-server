@@ -19,24 +19,25 @@ export class AddNotesComponent implements OnInit {
     noteForm = this.fb.group({
         content: ['', Validators.required]
     });
-
+    private subaccountDetails: any;
     constructor(
         private fb: FormBuilder,
         private snackBarService: SnackBarService,
         private subaccountService: SubAccountService,
         private notesService: NoteService,
         private ctaasDashboardService: CtaasDashboardService,
-        public dialogRef: MatDialogRef<AddNotesComponent>) { }
+        public dialogRef: MatDialogRef<AddNotesComponent>) {}
 
     ngOnInit(): void {
     }
 
     addNote() {
+        this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
         const currentReports = this.ctaasDashboardService.getReports();
         if(currentReports!==null){
             let noteToAdd: Note = {
                 content: this.noteForm.get('content').value,
-                subaccountId: this.subaccountService.getSelectedSubAccount().id,
+                subaccountId: this.subaccountDetails.id,
                 status: 'Open',
                 reports: currentReports
             };

@@ -28,9 +28,10 @@ describe('Stakeholder service http requests test', () => {
 
     it('should make the proper calls on getStakeholderList()', (done: DoneFn) => {
         let params = new HttpParams();
+        let subaccountId = '89ef7e6a-367f-48c8-b69e-c52bf16a4e05'
         httpClientSpy.get.and.returnValue(StakeHolderServiceMock.getStakeholderList());
-        params = params.set('subaccountId', '89ef7e6a-367f-48c8-b69e-c52bf16a4e05');
-        stakeHolderService.getStakeholderList().subscribe({
+        params = params.set('subaccountId', subaccountId );
+        stakeHolderService.getStakeholderList(subaccountId).subscribe({
             next: () => { done(); },
             error: done.fail
         });

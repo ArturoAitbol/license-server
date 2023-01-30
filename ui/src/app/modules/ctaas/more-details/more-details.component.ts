@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute} from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportType } from 'src/app/helpers/report-type';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-more-details',
@@ -20,7 +21,7 @@ export class MoreDetailsComponent implements OnInit {
   startDateStr: string = '';
   endDateStr: string = '';
   loggedInUserRoles: string[] = [];
-  subaccountId: string = '';
+  private subaccountDetails: any;
   hasDashboardDetails: boolean = false;
   isLoadingResults = true;
   isRequestCompleted = false;
@@ -49,8 +50,8 @@ export class MoreDetailsComponent implements OnInit {
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
     private route: ActivatedRoute,
-    private snackBarService: SnackBarService
-  ) { }
+    private snackBarService: SnackBarService,
+    private subaccountService: SubAccountService) {}
   /**
    * get logged in account details
    * @returns: any | null
@@ -60,15 +61,15 @@ export class MoreDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.subaccountDetails = this.subaccountService.getSelectedSubAccount()
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
     this.route.queryParams.subscribe((params: any) => {
-      const { type, start, end, subaccount } = params;
-      this.subaccountId = subaccount;
-      this.type = type;
-      this.startDateStr = start;
-      this.endDateStr = end;
+      this.subaccountDetails.id = params.subaccountId;
+      this.type = params.type;
+      this.startDateStr = params.start;
+      this.endDateStr = params.end;
       this.fetchDashboardReportDetails();
     });
     this.initColumns();
@@ -84,7 +85,7 @@ export class MoreDetailsComponent implements OnInit {
       this.isLoadingResults = true;
       const PARSED_REPORT_TYPE = this.type === this.FEATURE_FUNCTIONALITY ? 'LTS' :
         (this.type === this.CALL_RELIABILITY) ? 'STS' : this.type;
-      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr)
+      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr)
         .subscribe((res: any) => {
           this.isRequestCompleted = true;
           this.isLoadingResults = false;
