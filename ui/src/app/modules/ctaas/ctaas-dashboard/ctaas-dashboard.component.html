@@ -2,6 +2,12 @@
   <div>
     <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'">
     </app-banner>
+    <!-- <mat-slide-toggle formControlName="powerBiEmbeddingFlag" id="mat-toggle" [color]="'primary'"
+      (change)="onChangeToggle($event.checked)">Power BI View</mat-slide-toggle> -->
+    <mat-button-toggle-group [formControl]="viewMode" (change)="onChangeToggle($event)">
+      <mat-button-toggle [value]="POWERBI_MODE">PowerBi</mat-button-toggle>
+      <mat-button-toggle [value]="LEGACY_MODE">Legacy</mat-button-toggle>
+    </mat-button-toggle-group>
     <div class="container-fluid controls" id="reportContainer">
       <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
     </div>
@@ -21,7 +27,13 @@
     <!-- pbrs report images view -->
     <div>
       <ng-template #reportView>
-        <div class="container-fluid controls" id="reportContainer">
+        <div *ngIf="powerBiEmbeddingFlag">
+          <!-- power bi report view -->
+          <powerbi-report [embedConfig]="reportConfig" [phasedEmbedding]="phasedEmbeddingFlag"
+            [cssClassName]="reportClass" [eventHandlers]="eventHandlersMap">
+          </powerbi-report>
+        </div>
+        <div *ngIf="!powerBiEmbeddingFlag" class="container-fluid controls" id="reportContainer">
           <br>
           <section>
             <div class="flex-container">
@@ -53,8 +65,8 @@
           <img [src]="image.imageBase64" class="img-fluid header-image" [id]="i">
         </mat-card-content>
         <mat-card-actions>
-          <!-- <p (click)="onClickMoreDetails(i1)">More Details</p> -->
-          <a *ngIf="item.reportType===DAILY" class="clickable-item" (click)="onClickMoreDetails(i1)">Click here for detailed report</a>
+          <a *ngIf="item.reportType===DAILY" class="clickable-item" (click)="onClickMoreDetails(i1)">Click here for
+            detailed report</a>
         </mat-card-actions>
       </mat-card>
     </div>
