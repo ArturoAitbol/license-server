@@ -248,6 +248,7 @@ CREATE TABLE public.device (
     start_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deprecated_date timestamp without time zone DEFAULT 'infinity'::timestamp without time zone,
     subaccount_id uuid,
+    tombstone boolean DEFAULT false,
     support_type boolean DEFAULT false
 );
 
@@ -719,7 +720,7 @@ a8654484-1cb2-4fec-adf4-ee7ddc17375d	2	Device/Phone/ATA	PBX
 30ab93f1-3bde-4721-8892-1ba34a005d08	2	Device/Phone/ATA	Contact Center
 89eeb522-157f-4125-96e6-b4cc900fa9d1	2	Device/Phone/ATA	CCaaS
 5798ecd9-6db9-43a6-a521-b21f065e7879	2	Device/Phone/ATA	CPaaS
-7564aab0-5331-4ab5-85f7-e37acbdfd90d	2	Soft Client/UC Client	CCaaS
+67e342e7-fc87-4440-bbd7-315b2938c858	2	Soft Client/UC Client	CCaaS
 be612704-c26e-48ea-ab9b-19312f03d644	2	Soft Client/UC Client	CPaaS
 eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	5	SBC	PBX
 3ad3f83e-2654-466d-b9e9-9cd8ded28110	5	SBC	UCaaS

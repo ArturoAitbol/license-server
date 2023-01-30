@@ -1,14 +1,22 @@
 export const permissions = {
     'tekvizion.DevicesAdmin': {
         paths: [
+            'devices',
             'consumption-matrix',
             'redirect'
         ],
         elements: [
+            'addDevice',
+            'modifyDevice',
+            'deleteDevice',
             'editConsumptionMatrix'
         ],
         tables: {
             customerOptions: [],
+            deviceOptions: [
+                'MODIFY_DEVICE',
+                'DELETE_DEVICE',
+            ],
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
@@ -24,6 +32,7 @@ export const permissions = {
             'consumption',
             'projects',
             'licenses',
+            'devices',
             'redirect',
             'spotlight',
             'report-dashboards',
@@ -62,7 +71,8 @@ export const permissions = {
                 'VIEW_SUBACC_ADMIN_EMAILS',
                 'VIEW_CTAAS_DASHBOARD',
                 'MODIFY_ACCOUNT',
-                'DELETE_ACCOUNT'],
+                'DELETE_ACCOUNT'
+            ],
             licenseOptions: [
                 'MODIFY_LICENSE',
                 'DELETE_LICENSE'],
@@ -89,6 +99,10 @@ export const permissions = {
                 'VIEW_CONSUMPTION',
             ],
             noteOptions: [],
+            deviceOptions: [
+                'MODIFY_DEVICE',
+                'DELETE_DEVICE',
+            ],
             testReportsOptions: [
                 'VIEW_REPORT',
             ]
@@ -143,6 +157,7 @@ export const permissions = {
             'consumption',
             'projects',
             'licenses',
+            'devices',
             'redirect',
             'apps',
             'spotlight',
@@ -190,8 +205,9 @@ export const permissions = {
                 'DELETE_STAKEHOLDER'
             ],
             subscriptionsOverviewOptions: [],
+            deviceOptions: [],
             testReportsOptions: [
-                'VIEW_REPORT', 
+                'VIEW_REPORT',
             ]
         }
     },

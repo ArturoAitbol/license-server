@@ -57,6 +57,15 @@ export class DevicesService {
   public updateDevice(device: Device): Observable<any> {
     return this.httpClient.put(`${this.API_URL}/${device.id}`, device);
   }
+  
+  /**
+   * delete device
+   * @param device: Device 
+   * @returns: Observable<Device> 
+   */
+  public deleteDevice(deviceId: string): Observable<any> {
+    return this.httpClient.delete(`${this.API_URL}/${deviceId}`);
+  }
 
   /**
    * get device vendor list
@@ -65,7 +74,7 @@ export class DevicesService {
   public getAllDeviceVendors(deviceType:string = null): Observable<{ vendors: string[], supportVendors: string[] }> {
     let params = new HttpParams();
     if(deviceType)
-      params = params.set("deviceType", deviceType);
+      params = params.set("deviceType", encodeURIComponent(deviceType));
     const headers = this.getHeaders();
     return this.httpClient.get<{ vendors: string[], supportVendors: string[] }>(environment.apiEndpoint + '/vendors', {headers,params});
   }

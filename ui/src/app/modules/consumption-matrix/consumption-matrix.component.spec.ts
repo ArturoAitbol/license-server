@@ -78,7 +78,6 @@ describe('Consumption Matrix - UI verification tests', () => {
     const headsetColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[6];
     const videoCollabDeviceColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[7];
 
-    console.log(callingPlatformColumn);
     expect(callingPlatformColumn.innerText).toBe('Calling Platform');
     expect(devicePhoneAta.innerText).toBe('Device/Phone/ATA');
     expect(softClientColumn.innerText).toBe('Soft Client/UC Client');

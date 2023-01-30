@@ -116,11 +116,9 @@ export class MoreDetailsComponent implements OnInit {
               obj.tonoDataFoundFlag = false;
               obj.otherPartynoDataFoundFlag = false;
               obj.panelOpenState = true;
-              obj.
               obj.from.mediaStats.sort((a, b) => {
                 return a.timestamp - b.timestamp
               })
-              // console.log(obj)
               // filter the array without media stats details 
               obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
             });

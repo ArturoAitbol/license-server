@@ -109,6 +109,15 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/'
             },
             {
+
+                name: 'Devices',
+                iconName: "assets\\images\\dashboard_3.png",
+                path: 'devices',
+                active: false,
+                materialIcon: 'devices',
+                baseUrl: '/'
+            },
+            {
                 name: 'Consumption Matrix',
                 path: 'consumption-matrix',
                 active: false,
@@ -143,6 +152,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly SPOTLIGHT_TEST_REPORTS: string = '/spotlight/reports'
     readonly MAIN_DASHBOARD = '/dashboard';
     readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
+    readonly DEVICES = '/devices';
     readonly CONSUMPTION_MATRIX = '/consumption-matrix';
 
     private _mobileQueryListener: () => void;
@@ -203,7 +213,6 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.isTransparentToolbar = true;
                         this.enableSidebar();
                         break;
-
                     case this.CTAAS_DASHBOARD_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
@@ -224,6 +233,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         break;
                     case this.MAIN_DASHBOARD:
                     case this.SUBSCRIPTIONS_OVERVIEW:
+                    case this.DEVICES:
                     case this.CONSUMPTION_MATRIX:
                         this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
@@ -404,7 +414,7 @@ export class AppComponent implements OnInit, OnDestroy {
      */
     enableSidebar(): boolean {
         if ((this.isCtaasFeatureEnabled() && this.currentRoutePath.includes(this.baseCtaasURL)) ||
-            [this.MAIN_DASHBOARD, this.SUBSCRIPTIONS_OVERVIEW, this.CONSUMPTION_MATRIX].includes(this.currentRoutePath)) {
+            [this.MAIN_DASHBOARD, this.SUBSCRIPTIONS_OVERVIEW, this.CONSUMPTION_MATRIX, this.DEVICES].includes(this.currentRoutePath)) {
             this.displayedSideBarItems.forEach((e: any) => {
                 if (e.baseUrl + e.path === this.currentRoutePath)
                     e.active = true;

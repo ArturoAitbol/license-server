@@ -66,7 +66,7 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void modifyDeviceTest() {
-        //Given - Arrange
+        // Given - Arrange
         String bodyRequest = "{\n" +
                 "    \"vendor\": \"UnitTestModified\",\n" +
                 "    \"product\": \"UnitTestModified\",\n" +
@@ -79,10 +79,10 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -90,14 +90,14 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void noParamsTest() {
-        //Given - Arrange
+        // Given - Arrange
         String bodyRequest = "{}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -105,14 +105,14 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void emptyBodyTest() {
-        //Given - Arrange
+        // Given - Arrange
         String bodyRequest = "";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -129,14 +129,14 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void invalidBodyTest() {
-        //Given - Arrange
+        // Given - Arrange
         String bodyRequest = "Something";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -153,7 +153,7 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void sqlExceptionTest() {
-        //Given - Arrange
+        // Given - Arrange
         String bodyRequest = "{\n" +
                 "    \"vendor\": \"UnitTestModified\",\n" +
                 "    \"product\": \"UnitTestModified\",\n" +
@@ -166,10 +166,10 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -177,7 +177,7 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void genericExceptionTest() {
-        //Given - Arrange
+        // Given - Arrange
         String bodyRequest = "{\n" +
                 "    \"vendor\": \"UnitTestModified\",\n" +
                 "    \"product\": \"UnitTestModified\",\n" +
@@ -191,17 +191,16 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
-
         assertTrue(jsonBody.has("error"));
 
         String expectedResponse = "Generic error";
@@ -211,7 +210,7 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void unauthorizedTest() {
-        //Given - Arrange
+        // Given - Arrange
         String bodyRequest = "{\n" +
                 "    \"vendor\": \"UnitTestModified\",\n" +
                 "    \"product\": \"UnitTestModified\",\n" +
@@ -224,10 +223,10 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         this.headers.remove("authorization");
-        //When - Action
+        // When - Action
         HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.UNAUTHORIZED;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
@@ -244,7 +243,7 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
 
     @Test
     public void forbiddenTest() {
-        //Given - Arrange
+        // Given - Arrange
         String bodyRequest = "{\n" +
                 "    \"vendor\": \"UnitTestModified\",\n" +
                 "    \"product\": \"UnitTestModified\",\n" +
@@ -258,10 +257,10 @@ class TekvLSModifyDeviceByIdTest extends TekvLSTest {
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         this.headers.remove("authorization");
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        //When - Action
+        // When - Action
         HttpResponseMessage response = modifyDeviceApi.run(this.request, this.deviceId, this.context);
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.FORBIDDEN;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
