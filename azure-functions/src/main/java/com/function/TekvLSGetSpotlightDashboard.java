@@ -153,11 +153,7 @@ public class TekvLSGetSpotlightDashboard {
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
 			
-			JSONObject powerBiInfo = new JSONObject();
-
-			if(FeatureToggles.INSTANCE.isFeatureActive("powerBi-dashboard"))
-				powerBiInfo = PowerBIClient.getPowerBiDetails(item.getString("powerBiWorkspaceId"), item.getString("powerBiReportId"), context);
-
+			JSONObject powerBiInfo = PowerBIClient.getPowerBiDetails(item.getString("powerBiWorkspaceId"), item.getString("powerBiReportId"), context);
 			json.put("powerBiInfo", powerBiInfo);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
