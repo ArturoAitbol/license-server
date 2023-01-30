@@ -20,6 +20,8 @@ export class ConsumptionMatrixComponent implements OnInit {
   consumptionMatrixDataSource: MatTableDataSource<any>;
   isEditing = false;
 
+  private readonly rowOrder = ['PBX', 'PBX+SBC', 'UCaaS', 'Contact Center', 'CCaaS', 'CPaaS'];
+
   constructor(private consumptionMatrixService: ConsumptionMatrixService,
               private snackBarService: SnackBarService) {
     this.isLoadingResults = true;
@@ -39,6 +41,17 @@ export class ConsumptionMatrixComponent implements OnInit {
   initTable(): void {
     // Set table height
     this.calculateTableHeight();
+    this.tableColumns = [
+      {name: 'Device/Phone/ATA', dataKey: 'Device/Phone/ATA', position: 'left'},
+      {name: 'Soft Client/UC Client', dataKey: 'Soft Client/UC Client', position: 'left'},
+      {name: 'SBC', dataKey: 'SBC', position: 'left'},
+      {name: 'BYOC', dataKey: 'BYOC', position: 'left'},
+      {name: 'Application', dataKey: 'Application', position: 'left'},
+      {name: 'Headset', dataKey: 'Headset', position: 'left'},
+      {name: 'Video Collab Device', dataKey: 'Video Collab Device', position: 'left'},
+    ];
+    this.displayedColumns = this.tableColumns.map(tableColumn => tableColumn.name);
+    this.displayedColumns.unshift("callingPlatform");
   }
 
   private fetchData() {
@@ -53,10 +66,13 @@ export class ConsumptionMatrixComponent implements OnInit {
         callingPlatformMap.set(entry.callingPlatform, {[entry.dutType]: { tokens: entry.tokens, id: entry.id, updatedBy: entry.updatedBy, modified: false},...callingPlatformMap.get(entry.callingPlatform)});
         columns.add(entry.dutType);
       });
-      callingPlatformMap.forEach((value, key) => {
-        this.consumptionMatrix.push({callingPlatform: key, ...value});
+
+      // get the calling platforms in order, if more calling platforms are added in the future please add them to the rowOrder object
+      this.rowOrder.forEach(callingPlatform => {
+        this.consumptionMatrix.push({ callingPlatform, ...callingPlatformMap.get(callingPlatform) });
       });
-      this.generateColumnsForTable([...columns]);
+
+      //Initialize the token attribute for non-existent cells, else an error occurs when rendering
       this.consumptionMatrix.forEach(row => {
         this.displayedColumns.slice(1).forEach(column => {
           if (row[column] == null || row[column]== undefined) row[column] = { tokens: null }
@@ -113,16 +129,6 @@ export class ConsumptionMatrixComponent implements OnInit {
   cancel() {
     this.isEditing = false;
     this.fetchData();
-  }
-
-  private generateColumnsForTable(columns: string[]) {
-    const tableColumns = [];
-    columns.forEach(column => {
-      tableColumns.push({ name: column, dataKey: column, position: 'left' })
-    });
-    this.tableColumns = tableColumns;
-    this.displayedColumns = tableColumns.map(tableColumn => tableColumn.name).sort();
-    this.displayedColumns.unshift("callingPlatform");
   }
 
   private calculateTableHeight(): void {
