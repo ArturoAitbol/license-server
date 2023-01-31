@@ -17,7 +17,8 @@
       "notes": true,
       "details": true,
       "reports": true,
-      "consumption-matrix": true
+      "consumption-matrix": true,
+      "visualization": true
     },
     "features": {
       "ctaasFeature": true,
@@ -42,7 +43,8 @@
       "notes": true,
       "details": true,
       "reports": true,
-      "consumption-matrix": true
+      "consumption-matrix": true,
+      "visualization": true
     },
     "features": {
       "ctaasFeature": true,
@@ -67,7 +69,8 @@
       "notes": true,
       "details": true,
       "reports": true,
-      "consumption-matrix": true
+      "consumption-matrix": true,
+      "visualization": false
     },
     "features": {
       "ctaasFeature": true,

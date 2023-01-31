@@ -89,6 +89,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 active: false,
                 materialIcon: 'tune',
                 baseUrl: '/spotlight/'
+            },
+            {
+                name: 'PowerBi Visualization',
+                iconName: "assets\\images\\monitoring.png",
+                path: 'visualization',
+                active: false,
+                materialIcon: 'analytics',
+                baseUrl: '/spotlight/'
             }
         ],
         main: [
@@ -145,6 +153,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
     readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/report-dashboards';
+    readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = '/spotlight/visualization';
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
@@ -214,6 +223,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.enableSidebar();
                         break;
                     case this.CTAAS_DASHBOARD_ROUTE_PATH:
+                    case this.CTAAS_POWERBI_REPORT_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
                     case this.CTAAS_SETUP_PATH:
@@ -227,7 +237,6 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
                             this.displayedSideBarItems = res;
-                            console.log('spotlight', this.displayedSideBarItems)
                         });
                         this.enableSidebar();
                         break;
@@ -243,7 +252,6 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.main.subscribe(res => {
                             this.displayedSideBarItems = res;
-                            console.log('main', this.displayedSideBarItems)
                         });
                         this.enableSidebar();
                         break;
@@ -256,7 +264,6 @@ export class AppComponent implements OnInit, OnDestroy {
                             }
                             this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
                                 this.displayedSideBarItems = res;
-                                console.log('default spotlight', this.displayedSideBarItems)
                             });
                         } else {
                             this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
@@ -265,7 +272,6 @@ export class AppComponent implements OnInit, OnDestroy {
                             }
                             this.previousDisplayedItemsSubscription = this.allowedSideBarItems.main.subscribe(res => {
                                 this.displayedSideBarItems = res;
-                                console.log('default', this.displayedSideBarItems)
                             });
                         }
                         this.hideToolbar = false;

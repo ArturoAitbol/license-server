@@ -13,6 +13,7 @@ import { Constants } from 'src/app/helpers/constants';
 import { FormControl } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { IReportEmbedConfiguration, models, service } from 'powerbi-client';
+import { Router } from '@angular/router';
 export interface IImagesList {
     imageBase64: string;
     reportType: string
@@ -107,14 +108,14 @@ export class CtaasDashboardComponent implements OnInit {
 
     viewMode = new FormControl(this.LEGACY_MODE);
 
-    dashboardReqSubscription: Subscription;
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
         private ctaasSetupService: CtaasSetupService,
         private ctaasDashboardService: CtaasDashboardService,
         private subaccountService: SubAccountService,
-        private snackBarService: SnackBarService
+        private snackBarService: SnackBarService,
+        private router: Router
     ) { }
 
     /**
@@ -131,10 +132,12 @@ export class CtaasDashboardComponent implements OnInit {
         const accountDetails = this.getAccountDetails();
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
-        // this.fetchCtaasDashboardDetailsBySubaccount();
-        // this.fetchCtaasPowerBiDashboardDetailsBySubaccount();
-        // this.viewMode.setValue('legacy');
-        this.onChangeToggle();
+        // load the view based on the route
+        if (this.router.url.includes('/report-dashboards'))
+            this.viewMode.setValue(this.LEGACY_MODE);
+        else
+            this.viewMode.setValue(this.POWERBI_MODE);
+        this.viewDashboardByMode();
         // fetch dashboard report for every 15 minutes interval
         this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
             .subscribe(() => {
@@ -200,7 +203,7 @@ export class CtaasDashboardComponent implements OnInit {
             requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId, reportType));
         }
         // get all the request response in an array
-        this.dashboardReqSubscription = forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
+        forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
             this.isLoadingResults = false;
             if (res) {
                 // get all response without any error messages
@@ -293,16 +296,15 @@ export class CtaasDashboardComponent implements OnInit {
      * fetch SpotLight Power BI dashboard required details
      */
     fetchCtaasPowerBiDashboardDetailsBySubaccount(): void {
-        try {
-
-            this.isLoadingResults = true;
-            this.hasDashboardDetails = false;
-            this.dashboardReqSubscription = this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountId)
-                .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
-                    this.isLoadingResults = false;
-                    const { powerBiInfo } = response;
-                    if (powerBiInfo) {
-                        const { embedUrl, embedToken } = powerBiInfo;
+        this.isLoadingResults = true;
+        this.hasDashboardDetails = false;
+        this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountId)
+            .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
+                this.isLoadingResults = false;
+                const { powerBiInfo } = response;
+                if (powerBiInfo) {
+                    const { embedUrl, embedToken } = powerBiInfo;
+                    if (embedUrl && embedToken) {
                         this.reportConfig = {
                             type: 'report',
                             embedUrl,
@@ -318,27 +320,23 @@ export class CtaasDashboardComponent implements OnInit {
                             }
                         };
                         this.hasDashboardDetails = true;
-                    } else {
-                        this.hasDashboardDetails = false;
                     }
-                }, (err) => {
+                } else {
                     this.hasDashboardDetails = false;
-                    this.isLoadingResults = false;
-                    console.error('Error | ', err);
-                    this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
-                });
-
-        } catch (error) {
-            this.hasDashboardDetails = false;
-            this.isLoadingResults = false;
-            console.error('Error while fetching power bi report | ');
-            this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
-        }
+                }
+            }, (err) => {
+                this.hasDashboardDetails = false;
+                this.isLoadingResults = false;
+                console.error('Error while loading embedded powerbi report: ', err);
+                this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+            });
     }
-
-    onChangeToggle(val?: any): void {
-        if (val)
-            this.dashboardReqSubscription.unsubscribe();
+    /**
+     * view dashboard based on the mode
+     * PBRS dashboard - LEGACY mode
+     * Embedded PowerBi - PowerBi mode
+     */
+    viewDashboardByMode(): void {
         switch (this.viewMode.value) {
             case this.POWERBI_MODE:
                 this.fetchCtaasPowerBiDashboardDetailsBySubaccount();
@@ -350,6 +348,7 @@ export class CtaasDashboardComponent implements OnInit {
                 break;
         }
     }
+
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();

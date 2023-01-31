@@ -2,12 +2,6 @@
   <div>
     <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'">
     </app-banner>
-    <!-- <mat-slide-toggle formControlName="powerBiEmbeddingFlag" id="mat-toggle" [color]="'primary'"
-      (change)="onChangeToggle($event.checked)">Power BI View</mat-slide-toggle> -->
-    <mat-button-toggle-group [formControl]="viewMode" (change)="onChangeToggle($event)">
-      <mat-button-toggle [value]="POWERBI_MODE">PowerBi</mat-button-toggle>
-      <mat-button-toggle [value]="LEGACY_MODE">Legacy</mat-button-toggle>
-    </mat-button-toggle-group>
     <div class="container-fluid controls" id="reportContainer">
       <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
     </div>
@@ -24,15 +18,18 @@
       </div>
     </ng-template>
 
-    <!-- pbrs report images view -->
+    
     <div>
       <ng-template #reportView>
         <div *ngIf="powerBiEmbeddingFlag">
           <!-- power bi report view -->
-          <powerbi-report [embedConfig]="reportConfig" [phasedEmbedding]="phasedEmbeddingFlag"
-            [cssClassName]="reportClass" [eventHandlers]="eventHandlersMap">
+          <powerbi-report [embedConfig]="reportConfig" 
+          [phasedEmbedding]="phasedEmbeddingFlag"
+          [cssClassName]="reportClass" 
+          [eventHandlers]="eventHandlersMap">
           </powerbi-report>
         </div>
+        <!-- pbrs report images view -->
         <div *ngIf="!powerBiEmbeddingFlag" class="container-fluid controls" id="reportContainer">
           <br>
           <section>
