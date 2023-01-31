@@ -28,7 +28,7 @@ export class CtaasDashboardComponent implements OnInit {
     isOnboardingComplete: boolean;
     loggedInUserRoles: string[] = [];
     ctaasSetupDetails: any = {};
-    subaccountId = '';
+    private subaccountDetails: any;
     hasDashboardDetails = false;
     latestNoteLoaded = false;
     isLoadingResults = false;
@@ -108,6 +108,7 @@ export class CtaasDashboardComponent implements OnInit {
     ngOnInit(): void {
         this.fontStyleControl.setValue(this.DAILY);
         this.isOnboardingComplete = false;
+        this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.fetchCtaasSetupDetails();
         const accountDetails = this.getAccountDetails();
         const { idTokenClaims: { roles } } = accountDetails;
@@ -137,10 +138,9 @@ export class CtaasDashboardComponent implements OnInit {
      * fetch SpotLight Setup details by subaccount id
      */
     fetchCtaasSetupDetails(): void {
-        const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-        const { id, subaccountId } = currentSubaccountDetails;
-        this.subaccountId = subaccountId ? subaccountId : id;
-        this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountId)
+        // const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+        // const { id } = currentSubaccountDetails;
+        this.ctaasSetupService.getSubaccountCtaasSetupDetails( this.subaccountDetails.id)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
                 const { onBoardingComplete, status } = this.ctaasSetupDetails;
@@ -161,7 +161,7 @@ export class CtaasDashboardComponent implements OnInit {
                 width: '700px',
                 maxHeight: '80vh',
                 disableClose: true,
-                data: { ctaasSetupId: id, ctaasSetupSubaccountId: this.subaccountId }
+                data: { ctaasSetupId: id, ctaasSetupSubaccountId:  this.subaccountDetails.id }
             });
         }
     }
@@ -180,7 +180,7 @@ export class CtaasDashboardComponent implements OnInit {
             const reportType: string = ReportType[key];
             // if(key==='WEEKLY_FEATURE_FUNCTIONALITY')
             // push all the request to an array
-            requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId, reportType));
+            requests.push(this.ctaasDashboardService.getCtaasDashboardDetails( this.subaccountDetails.id, reportType));
         }
         // get all the request response in an array
         forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
@@ -268,7 +268,7 @@ export class CtaasDashboardComponent implements OnInit {
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
         const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-        const url = `${environment.BASE_URL}/#/spotlight/details?subaccount=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
+        const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${ this.subaccountDetails.id}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
         window.close();
     }
@@ -278,7 +278,7 @@ export class CtaasDashboardComponent implements OnInit {
     fetchCtaasPowerBiDashboardDetailsBySubaccount(): void {
         this.isLoadingResults = true;
         this.hasDashboardDetails = false;
-        this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountId)
+        this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
             .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
                 this.isLoadingResults = false;
                 const { powerBiInfo } = response;

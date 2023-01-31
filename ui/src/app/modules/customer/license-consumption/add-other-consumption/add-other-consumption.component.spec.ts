@@ -104,7 +104,7 @@ describe('add-other-consumption - UI verification tests', () => {
         const newProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
         const addDeviceButton = fixture.nativeElement.querySelector('#add-device-button');
         const h2 = fixture.debugElement.queryAll(By.css("h2"));
-        expect(h1.textContent).toBe('Add tekToken Consumption');
+        expect(h1.textContent).toBe('Add Other Consumption');
         expect(cancelButton.textContent).toBe('Cancel');
         expect(submitButton.disabled).toBeTrue();
         expect(submitButton.textContent).toBe('Submit');

@@ -32,6 +32,7 @@ export class CtaasTestReportsComponent implements OnInit {
   selectedDateFilter: any = '';
   public date: Date;
   public maxDate: any;
+  private subaccountDetails: any;
   readonly VIEW_REPORT = 'View Report';
 
   readonly options = {
@@ -52,9 +53,7 @@ export class CtaasTestReportsComponent implements OnInit {
     public dialog: MatDialog,
     private subaccountService: SubAccountService,
     private testReportsService: TestReportsService,
-    private fb: FormBuilder,
-    private subAccountService: SubAccountService
-  ) { }
+    private fb: FormBuilder) { }
 
   private calculateTableHeight() {
     this.tableMaxHeight = window.innerHeight // doc height
@@ -80,6 +79,7 @@ export class CtaasTestReportsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.maxDate = moment().toDate()
     this.calculateTableHeight();
     this.getActionMenuOptions();
@@ -91,7 +91,7 @@ export class CtaasTestReportsComponent implements OnInit {
     this.isRequestCompleted = false;
     this.isLoadingResults = true;
     let reportListWithDates = []
-    this.testReportsService.getTestReportsList(this.subAccountService.getSelectedSubAccount().id,this.selectedTypeFilter, this.selectedDateFilter)
+    this.testReportsService.getTestReportsList(this.subaccountDetails.id,this.selectedTypeFilter, this.selectedDateFilter)
     .pipe(
       map(((r:any):{reports : ITestReports[]} => {
         const {reports} = r
@@ -165,10 +165,7 @@ export class CtaasTestReportsComponent implements OnInit {
   onClickMoreDetails(index: string): void {
     const { reportType, startTime, endTime } = this.testReportsData[index];
     const type = (reportType === 'Daily-FeatureFunctionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Daily-CallingReliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-    const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-    const { id, subaccountId } = currentSubaccountDetails;
-    const subaccount = subaccountId ? subaccountId : id;
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccount=${subaccount}&type=${type}&start=${startTime}&end=${endTime}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${startTime}&end=${endTime}`;
     window.open(url);
     window.close();
   }

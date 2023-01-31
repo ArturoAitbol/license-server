@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {MsalService} from '@azure/msal-angular';
 import { Constants } from '../helpers/constants';
 import {tekVizionServices} from '../helpers/tekvizion-services';
@@ -31,8 +31,12 @@ export class MyAppsComponent implements OnInit {
         private ctaasSetupService: CtaasSetupService,
         private subaccountService: SubAccountService,
         private dialog: MatDialog,
-        private msalService: MsalService
+        private msalService: MsalService,
+        private route: ActivatedRoute
     ) {
+        this.route.queryParams.subscribe((query:Params) => {
+            this.subaccountId = query.subaccountId;
+        });
     }
 
     ngOnInit(): void {
@@ -81,7 +85,7 @@ export class MyAppsComponent implements OnInit {
     onClickService(value: { label: string, value: string, enabled: boolean, access: boolean, routePath: string, tabName: string, transparentToolbar: boolean }): void {
         const {enabled, routePath} = value;
         if (enabled) {
-            this.router.navigate([routePath]);
+            this.router.navigate([routePath], {queryParams:{subaccountId:this.subaccountId}});
         }
     }
 

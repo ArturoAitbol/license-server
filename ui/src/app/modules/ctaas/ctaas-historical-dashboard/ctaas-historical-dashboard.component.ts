@@ -23,6 +23,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
     dailyImagesList: string[] = [];
     weeklyImagesList: string[] = [];
     lastModifiedDate: string;
+    private subaccountDetails: any;
     fontStyleControl = new FormControl('');
     resultantImagesList: IDashboardImageResponse[] = [];
     resultantImagesListBk: IDashboardImageResponse[] = [];
@@ -45,9 +46,8 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
         if (this.note?.reports != null) {
             this.reports = this.note.reports;
             this.fontStyleControl.setValue(this.DAILY);
-            const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-            const { id, subaccountId } = currentSubaccountDetails;
-            this.subaccountId = subaccountId ? subaccountId : id;
+            this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
+            this.subaccountId = this.subaccountDetails.id;
             this.fetchCtaasDashboardDetailsBySubaccount();
         } else {
             console.error('Error loading dashboard reports | ', "No reports found for the selected note");

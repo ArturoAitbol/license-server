@@ -31,63 +31,69 @@ import { Features } from '../helpers/features';
 import { tekVizionServices } from '../helpers/tekvizion-services';
 import { of, throwError } from 'rxjs';
 import { Sort } from '@angular/material/sort';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
 const dialogServiceMock = new DialogServiceMock();
+let loader: HarnessLoader;
 
 const RouterMock = {
     navigate: (commands: string[]) => { }
 };
 
-const beforeEachFunction = async () => {
-    TestBed.configureTestingModule({
-        declarations: [DashboardComponent, DataTableComponent, AddCustomerAccountModalComponent, AddSubaccountModalComponent, ModifyCustomerAccountComponent, AdminEmailsComponent, SubaccountAdminEmailsComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: CustomerService,
-                useValue: CustomerServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogServiceMock
-            },
-            {
-                provide: LicenseService,
-                useValue: LicenseServiceMock
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            }
-        ]
-    }).compileComponents().then(() => {
+const defaultTestBedConfig = {
+    declarations: [DashboardComponent, DataTableComponent, AddCustomerAccountModalComponent, AddSubaccountModalComponent, ModifyCustomerAccountComponent, AdminEmailsComponent, SubaccountAdminEmailsComponent],
+    imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
+    providers: [
+        {
+            provide: Router,
+            useValue: RouterMock
+        },
+        {
+            provide: MatDialog,
+            useValue: MatDialogMock
+        },
+        {
+            provide: SnackBarService,
+            useValue: SnackBarServiceMock
+        },
+        {
+            provide: CustomerService,
+            useValue: CustomerServiceMock
+        },
+        {
+            provide: DialogService,
+            useValue: dialogServiceMock
+        },
+        {
+            provide: LicenseService,
+            useValue: LicenseServiceMock
+        },
+        {
+            provide: SubAccountService,
+            useValue: SubaccountServiceMock
+        },
+        {
+            provide: MsalService,
+            useValue: MsalServiceMock
+        },
+        {
+            provide: HttpClient,
+            useValue: HttpClient
+        }
+    ]
+    
+};
+
+const beforeEachFunction = async () =>{
+    TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
         fixture = TestBed.createComponent(DashboardComponent);
         dashboardComponentTestInstance = fixture.componentInstance;
         dashboardComponentTestInstance.ngOnInit();
     });
-};
+}
 
 describe('UI verification tests', () => {
     beforeEach(beforeEachFunction);
@@ -283,23 +289,23 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
     });
 
     if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-        it('should navigate to Spotlight dashboard ', () => {
-            const selectedTestData = { selectedRow: {
-                name: "testV2",
-                id: "157fdef0-c28e-4764-9023-75c06daad09d",
-                subaccountName: "testv2Demo",
-                subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-                services: "tokenConsumption,spotlight"
-            }, 
-            selectedOption: 'selectedTestOption', 
-            selectedIndex: '0' }; 
-            spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-            spyOn(RouterMock, 'navigate').and.callThrough();
+        // it('should navigate to Spotlight dashboard ', () => {
+        //     const selectedTestData = { selectedRow: {
+        //         name: "testV2",
+        //         id: "157fdef0-c28e-4764-9023-75c06daad09d",
+        //         subaccountName: "testv2Demo",
+        //         subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+        //         services: "tokenConsumption,spotlight"
+        //     }, 
+        //     selectedOption: 'selectedTestOption', 
+        //     selectedIndex: '0' }; 
+        //     spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
+        //     spyOn(RouterMock, 'navigate').and.callThrough();
 
-            selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
-            dashboardComponentTestInstance.rowAction(selectedTestData);
-            expect(RouterMock.navigate).toHaveBeenCalledWith(['/spotlight/report-dashboards']);
-        });
+        //     selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
+        //     dashboardComponentTestInstance.rowAction(selectedTestData);
+        //     expect(TestBed.get(Router).navigate).toHaveBeenCalledWith(['/spotlight/report-dashboards'],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
+        // });
 
         it('should navigate to Spotlight dashboard ', () => {
             const selectedTestData = { selectedRow: {
@@ -320,6 +326,40 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
             expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight service is not available for this Subaccount', '');
         });
     };
+});
+
+describe('routes to spothlight dashboard', () => {
+    const RouterMock2 = {
+        navigate: (commands: string[], queryParams:any) => { }
+    };
+    beforeEach(() => {
+        TestBed.configureTestingModule(defaultTestBedConfig);
+        TestBed.overrideProvider(Router, {
+            useValue: RouterMock2
+        });
+        fixture = TestBed.createComponent(DashboardComponent);
+        dashboardComponentTestInstance = fixture.componentInstance;
+    });
+
+    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
+        it('should navigate to Spotlight dashboard ', () => {
+            const selectedTestData = { selectedRow: {
+                name: "testV2",
+                id: "157fdef0-c28e-4764-9023-75c06daad09d",
+                subaccountName: "testv2Demo",
+                subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+                services: "tokenConsumption,spotlight"
+            }, 
+            selectedOption: 'selectedTestOption', 
+            selectedIndex: '0' }; 
+            spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
+            spyOn(RouterMock2, 'navigate').and.callThrough();
+
+            selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
+            dashboardComponentTestInstance.rowAction(selectedTestData);
+            expect(RouterMock2.navigate).toHaveBeenCalledWith(['/spotlight/report-dashboards'],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
+        });
+    }
 });
 
 describe('.rowAction()', () => {

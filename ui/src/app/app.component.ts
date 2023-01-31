@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { Subject } from 'rxjs/internal/Subject';
 import { EventMessage, EventType } from '@azure/msal-browser';
@@ -18,6 +18,8 @@ import { Utility } from './helpers/utils';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
 import { UserProfileService } from './services/user-profile.service';
+import { SubAccountService } from './services/sub-account.service';
+import { CustomerService } from './services/customer.service';
 import { BehaviorSubject, Subscription } from "rxjs";
 import { ISidebar } from './model/sidebar.model';
 
@@ -162,6 +164,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly SPOTLIGHT_TEST_REPORTS: string = '/spotlight/reports'
     readonly MAIN_DASHBOARD = '/dashboard';
     readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
+    private subaccountId: any;
     readonly DEVICES = '/devices';
     readonly CONSUMPTION_MATRIX = '/consumption-matrix';
 
@@ -175,8 +178,26 @@ export class AppComponent implements OnInit, OnDestroy {
         private autoLogoutService: AutoLogoutService,
         changeDetectorRef: ChangeDetectorRef,
         media: MediaMatcher,
-        private userProfileService: UserProfileService
+        private userProfileService: UserProfileService,
+        private route: ActivatedRoute,
+        private subaccountService: SubAccountService,
+        private customerService: CustomerService
     ) {
+        this.route.queryParams.subscribe((query:Params) => {
+            this.subaccountId = query.subaccountId;
+            if(this.subaccountId) {
+                //if subaccountId from url has a value we need to retrieve the details
+                const oldSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+                if(!oldSubaccountDetails.id) {
+                    //if old subaccount details are empty set only the id before requesting the rest of the data 
+                    this.subaccountService.setSelectedSubAccount({id:this.subaccountId});
+                    this.retrieveSubaccountDetails();
+                } else if(oldSubaccountDetails.id !== this.subaccountId || !oldSubaccountDetails.name ) {
+                     //if old selected subaccount id is different to the new selected subaccount id retrieve the rest of the details
+                    this.retrieveSubaccountDetails();
+                }
+            }
+        });
 
         this.mobileQuery = media.matchMedia('(max-width: 600px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -203,13 +224,26 @@ export class AppComponent implements OnInit, OnDestroy {
         appInsights.trackPageView();
         this.onRouteChanges();
     }
+
+    private retrieveSubaccountDetails() {
+        this.subaccountService.getSubAccountDetails(this.subaccountId).subscribe((subaccountsResp: any) => {
+            let selectedSubAccount = subaccountsResp.subaccounts[0];
+            this.customerService.getCustomerById(selectedSubAccount.customerId).subscribe((customersResp: any) => {
+                const subaccountCustomer = customersResp.customers[0];
+                selectedSubAccount.id = this.subaccountId;
+                selectedSubAccount.customerName = subaccountCustomer.name;
+                selectedSubAccount.testCustomer = subaccountCustomer.testCustomer;
+                this.subaccountService.setSelectedSubAccount(selectedSubAccount);
+            });
+        });
+    }
     /**
      * listen for route changes, to manage toolbar based on the route
      */
     onRouteChanges(): void {
         this.router.events.subscribe((val) => {
             if (val instanceof NavigationEnd) {
-                this.currentRoutePath = val.urlAfterRedirects;
+                this.currentRoutePath = val.urlAfterRedirects.split('?')[0];
                 switch (this.currentRoutePath) {
                     case this.REDIRECT_ROUTE_PATH:
                         this.tabName = '';
@@ -360,7 +394,12 @@ export class AppComponent implements OnInit, OnDestroy {
      * navigate to main view
      */
     navigateToMainView(): void {
-        this.router.navigate(['/']);
+        const accountDetails = this.getAccountDetails();
+        const { roles } = accountDetails.idTokenClaims;
+        if(roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER))
+            this.router.navigate(['/']);
+        else
+            this.router.navigate(['/dashboard']);
     }
 
     /**
@@ -419,7 +458,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
         const { baseUrl, path } = item;
         const componentRoute = baseUrl + path;
-        this.router.navigate([componentRoute]);
+        this.router.navigate([componentRoute], {queryParams:{subaccountId: this.subaccountId}});
         if (this.mobileQuery.matches) this.snav.toggle();
     }
 

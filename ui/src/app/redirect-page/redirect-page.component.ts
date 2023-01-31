@@ -47,6 +47,12 @@ export class RedirectPageComponent implements OnInit {
         }
         this.getSubAccountDetails();
       }
+      //get the user's details only if the user logged is subbaccount admin or stakeholder otherwise redirect to the dashboard
+      if(this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) )
+        this.getSubAccountDetails();
+      else {
+        this.navigateToDashboard();
+      } 
     } catch (e) { console.error('error at redirect page'); }
   }
   /**
@@ -60,34 +66,30 @@ export class RedirectPageComponent implements OnInit {
     }
   }
   /**
-   * get logged in sub account details
+   * get logged in user's subaccount details
    */
   private getSubAccountDetails(): void {
-    this.subaccountService.getSubAccountList()
-      .pipe(
-        map((e: SubAccount) => {
-          const { services } = e['subaccounts'][0];
-          if (services) {
-            e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
-          } else {
-            e['subaccounts'][0]['services'] = [];
-          }
-          return e;
-        })
-      )
-      .subscribe((res: any) => {
-        if (res) {
-          const { subaccounts } = res;
-          this.currentSubaccountDetails = subaccounts[0];
-          this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
-          // enable/disable the available services
-          this.availableServices.forEach((e: { label: string, value: string, access: boolean }) => {
-            if (this.currentSubaccountDetails.services.includes(e.value))
-              e.access = true;
-          });
-          this.navigationCheckPoint();
+    this.subaccountService.getSubAccountList().pipe(map((e: SubAccount) => {
+        const { services } = e['subaccounts'][0];
+        if (services) {
+          e['subaccounts'][0]['services'] = services.split(',').map((e: string) => e.trim());
+        } else {
+          e['subaccounts'][0]['services'] = [];
         }
-      });
+        return e;
+      })).subscribe((res: any) => {
+      if (res) {
+        const { subaccounts } = res;
+        this.currentSubaccountDetails = subaccounts[0];
+        this.subaccountService.setSelectedSubAccount(this.currentSubaccountDetails);
+        // enable/disable the available services
+        this.availableServices.forEach((e: { label: string, value: string, access: boolean }) => {
+          if (this.currentSubaccountDetails.services.includes(e.value))
+            e.access = true;
+        });
+        this.navigationCheckPoint();
+      }
+    });
   }
   /**
    * get logged in account details 

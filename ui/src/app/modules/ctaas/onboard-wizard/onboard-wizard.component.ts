@@ -7,6 +7,7 @@ import {AutoLogoutService} from 'src/app/services/auto-logout.service';
 import {CtaasSetupService} from 'src/app/services/ctaas-setup.service';
 import {SnackBarService} from 'src/app/services/snack-bar.service';
 import {StakeHolderService} from 'src/app/services/stake-holder.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 import {UserProfileService} from 'src/app/services/user-profile.service';
 
 @Component({
@@ -42,6 +43,7 @@ export class OnboardWizardComponent implements OnInit {
         private autoLogoutService: AutoLogoutService,
         private ctaasSetupService: CtaasSetupService,
         private snackBarService: SnackBarService,
+        private subaccountService: SubAccountService,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
         this.ctaasSetupId = data.ctaasSetupId;
@@ -134,9 +136,10 @@ export class OnboardWizardComponent implements OnInit {
      * @param value: string
      */
     addStakeholdersConfirmation(value: string): void {
-        switch (value) {
+        let subaccountDetails = this.subaccountService.getSelectedSubAccount();
+        switch (value) { 
             case 'yes':
-                this.stakeholderService.getStakeholderList().subscribe(res => {
+                this.stakeholderService.getStakeholderList(subaccountDetails.id).subscribe(res => {
                     const {stakeHolders} = res;
                     if(res.stakeHolders.length < 10){
                         this.addAnotherStakeHolder = true;
