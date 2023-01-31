@@ -53,12 +53,6 @@ const CONSUMPTION_MATRIX_AS_LIST = {
         },
         {
             "tokens": "3",
-            "id": "866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6",
-            "dutType": "Application",
-            "callingPlatform": "PBX+SBC"
-        },
-        {
-            "tokens": "3",
             "id": "1ba09c6f-9a2a-4181-ac1e-b7217763df96",
             "dutType": "Application",
             "callingPlatform": "UCaaS"
@@ -167,13 +161,6 @@ const CONSUMPTION_MATRIX_AS_LIST = {
             "id": "3ad3f83e-2654-466d-b9e9-9cd8ded28110",
             "dutType": "SBC",
             "callingPlatform": "UCaaS"
-        },
-        {
-            "updatedBy": "rvasquez@tekvizionlabs.com",
-            "tokens": "3",
-            "id": "6a70a31b-fc5a-443b-82d4-d306961fa533",
-            "dutType": "Device/Phone/ATA",
-            "callingPlatform": "PBX+SBC"
         },
         {
             "updatedBy": "rvasquez@tekvizionlabs.com",

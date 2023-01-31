@@ -59,10 +59,10 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: "Sat", used: false, disabled: true },
   ];
   filteredProjects: Observable<any[]>;
-  filteredVendors: any[];
 
+  filteredVendors: Observable<any[]>;
   filteredModels: Observable<any[]>;
-  filteredCallingPlatformVendors: any[];
+  filteredCallingPlatformVendors: Observable<any[]>;
   filteredCallingPlatformModels: Observable<any[]>;
   filteredDeviceVendors: Observable<any[]>;
   filteredDeviceModels: Observable<any[]>;
@@ -139,8 +139,6 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
       this.deviceTypes = resDataObject['deviceTypes'];
 
       /*Devices list*/
-      this.vendors = resDataObject['vendors'].concat(resDataObject['supportVendors']);
-      this.callingPlatformVendors = resDataObject['vendors'].concat(resDataObject['supportVendors']);
       this.deviceVendors = resDataObject['vendors'].concat(resDataObject['supportVendors']);
 
       /*Projects List*/
@@ -151,6 +149,18 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
         map(projectName => (projectName ? this.filterProjects(projectName) : this.projects.slice())),
       );
 
+      this.filteredVendors = this.addDutForm.controls['vendor'].valueChanges.pipe(
+        startWith(''),
+        map(vendor => {
+          if (vendor === '') {
+            this.models = [];
+            this.addDutForm.controls['product'].disable();
+            this.addDutForm.patchValue({ product: '' });
+          }
+          return vendor ? this.filterVendors(vendor) : this.vendors.slice();
+        })
+      );
+
       this.addDutForm.controls['product'].disable();
       this.addDutForm.patchValue({ product: '' });
 
@@ -158,6 +168,18 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
         startWith(''),
         map(value => (typeof value === 'string' ? value : value ? value.product : '')),
         map(product => (product ? this.filterModels(product) : this.models.slice()))
+      );
+
+      this.filteredCallingPlatformVendors = this.addCallingPlatformForm.controls['vendor'].valueChanges.pipe(
+        startWith(''),
+        map(vendor => {
+          if (vendor === '') {
+            this.callingPlatformModels = [];
+            this.addCallingPlatformForm.controls['product'].disable();
+            this.addCallingPlatformForm.patchValue({ product: '' });
+          }
+          return vendor ? this.filterVendors(vendor, true) : this.callingPlatformVendors.slice();
+        })
       );
       
       this.addCallingPlatformForm.controls['product'].disable();
@@ -202,7 +224,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.isDataLoading = true;
     this.selectedDutType = value;
     this.deviceService.getAllDeviceVendors(this.selectedDutType).subscribe(res => {
-      this.filteredVendors = res['vendors'];
+      this.vendors = res['vendors'];
       this.addDutForm.patchValue({ vendor: '' });
       this.addDutForm.controls['vendor'].enable();
       this.addDutForm.patchValue({ product: '' });
@@ -214,7 +236,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.isDataLoading = true;
     this.selectedCallingPlatformType = value;
     this.deviceService.getAllDeviceVendors(this.selectedCallingPlatformType).subscribe(res => {
-      this.filteredCallingPlatformVendors = res['vendors'];
+      this.callingPlatformVendors = res['vendors'];
       this.addCallingPlatformForm.patchValue({ vendor: '' });
       this.addCallingPlatformForm.controls['vendor'].enable();
       this.addCallingPlatformForm.patchValue({ product: '' });
@@ -256,23 +278,6 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private RequireMatch(control: AbstractControl) {
-    const selection: any = control.value;
-    if (typeof selection === 'string') {
-      return { incorrect: true };
-    }
-    return null;
-  }
-
-  onAddProject(): void {
-    const dialogRef = this.dialog.open(AddProjectComponent, { width: 'auto', disableClose: true });
-    dialogRef.afterClosed().subscribe(res => {
-      if (res)
-        this.fetchProjects();
-      this.updateProjects.emit();
-    });
-  }
-
   private filterVendorDevices(devices: Device[]): void {
     this.models = [];
     devices.forEach((device: any) => {
@@ -306,6 +311,23 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
         vendor: device.vendor,
         product: productLabel
       });
+    });
+  }
+
+  private RequireMatch(control: AbstractControl) {
+    const selection: any = control.value;
+    if (typeof selection === 'string') {
+      return { incorrect: true };
+    }
+    return null;
+  }
+
+  onAddProject(): void {
+    const dialogRef = this.dialog.open(AddProjectComponent, { width: 'auto', disableClose: true });
+    dialogRef.afterClosed().subscribe(res => {
+      if (res)
+        this.fetchProjects();
+      this.updateProjects.emit();
     });
   }
 

@@ -79,7 +79,6 @@ CREATE TYPE public.dut_type_enum AS ENUM (
 
 CREATE TYPE public.calling_platform_type_enum AS ENUM (
     'PBX',
-    'PBX+SBC',
     'UCaaS',
     'Contact Center',
     'CCaaS',
@@ -93,7 +92,6 @@ CREATE TYPE public.calling_platform_type_enum AS ENUM (
 
 CREATE TYPE public.device_type_enum AS ENUM (
     'PBX',
-    'PBX+SBC',
     'SBC',
     'GATEWAY',
     'PHONE',
@@ -107,6 +105,7 @@ CREATE TYPE public.device_type_enum AS ENUM (
     'CPaaS',
     'CLIENT',
     'CERT',
+    'Sandbox',
     'Device/Phone/ATA',
     'Soft Client/UC Client',
     'BYOC',
@@ -717,7 +716,6 @@ cdd0e8af-1ba4-4a20-b354-bf7c6c121dc3	Dialogic	Brooktrout SR140	X6.13--GFI FAX Ma
 
 COPY public.consumption_matrix (id, tokens, dut_type, calling_platform) FROM stdin;
 a8654484-1cb2-4fec-adf4-ee7ddc17375d	2	Device/Phone/ATA	PBX
-6a70a31b-fc5a-443b-82d4-d306961fa533	2	Device/Phone/ATA	PBX+SBC
 5726d813-834e-40c4-a52e-e9ac63459e03	2	Device/Phone/ATA	UCaaS
 30ab93f1-3bde-4721-8892-1ba34a005d08	2	Device/Phone/ATA	Contact Center
 89eeb522-157f-4125-96e6-b4cc900fa9d1	2	Device/Phone/ATA	CCaaS
@@ -732,7 +730,6 @@ c323f5f8-cd49-4b0b-ac74-fe2113b658b8	5	BYOC	UCaaS
 0cba280f-06fa-47c2-9782-c16d8bf8ed05	5	BYOC	CCaaS
 9285ca9e-04c3-49df-9d59-085322a13319	5	BYOC	CPaaS
 7f6c9fec-978f-41a6-ba38-117611f0dfa3	3	Application	PBX
-866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	3	Application	PBX+SBC
 1ba09c6f-9a2a-4181-ac1e-b7217763df96	3	Application	UCaaS
 0e709699-3dab-47f1-a710-ebd2ae78d57b	3	Application	Contact Center
 ea00b987-0f14-4888-a0ce-f963d1eb7592	3	Application	CCaaS

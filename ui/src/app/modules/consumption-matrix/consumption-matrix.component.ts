@@ -20,7 +20,7 @@ export class ConsumptionMatrixComponent implements OnInit {
   consumptionMatrixDataSource: MatTableDataSource<any>;
   isEditing = false;
 
-  private readonly rowOrder = ['PBX', 'PBX+SBC', 'UCaaS', 'Contact Center', 'CCaaS', 'CPaaS'];
+  private readonly rowOrder = ['PBX', 'UCaaS', 'Contact Center', 'CCaaS', 'CPaaS'];
 
   constructor(private consumptionMatrixService: ConsumptionMatrixService,
               private snackBarService: SnackBarService) {

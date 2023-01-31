@@ -25,10 +25,20 @@
                         (change)="onChangeToggle($event)" class="add-btn">
                         Add tekVizion 360 Subscription
                     </mat-button-toggle>
-                    <mat-button-toggle *lcCheckAccessFor="'addLicenseConsumption'" value="add-license-consumption"
+                    <mat-button-toggle *ngIf="hasAddConsumptionPermission && !newLicenseConsumptionLogicFlag" value="add-license-consumption"
                         id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
                         class="add-btn">
                         Add tekToken Consumption
+                    </mat-button-toggle>
+                    <mat-button-toggle *ngIf="hasAddConsumptionPermission && newLicenseConsumptionLogicFlag" value="add-license-consumption"
+                        id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
+                        class="add-btn">
+                        Add Labs Consumption
+                    </mat-button-toggle>
+                    <mat-button-toggle *ngIf="hasAddConsumptionPermission && newLicenseConsumptionLogicFlag" value="add-other-consumption"
+                        id="add-other-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
+                        class="add-btn">
+                        Add Other Consumption
                     </mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
