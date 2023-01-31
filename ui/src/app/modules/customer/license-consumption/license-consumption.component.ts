@@ -22,6 +22,8 @@ import { License } from 'src/app/model/license.model';
 import { Utility } from 'src/app/helpers/utils';
 import { environment } from 'src/environments/environment';
 import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption/add-new-license-consumption.component';
+import { AddOtherConsumptionComponent } from './add-other-consumption/add-other-consumption.component';
+import { permissions } from 'src/app/helpers/role-permissions';
 
 @Component({
   selector: 'app-license-consumption',
@@ -107,6 +109,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true },
     { name: 'Usage Days', dataKey: 'usageDays', position: 'left', isSortable: false }
   ];
+  readonly ADD_OTHER_CONSUMPTION = 'add-other-consumption';
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
   readonly ADD_LICENSE = 'add-new-license';
 
@@ -121,6 +124,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   isDetailedConsumptionRequestCompleted = false;
   isLicenseListLoaded = false;
   detailedConsumptionTableSelectable = false;
+  newLicenseConsumptionLogicFlag = false;
+  hasAddConsumptionPermission = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
@@ -154,6 +159,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    const premissionsMatchIndex = roles?.findIndex((role : string) => permissions[role].elements.indexOf('addLicenseConsumption') !==-1);
+    if (premissionsMatchIndex >= 0)
+      this.hasAddConsumptionPermission = true;
     const projectItem: string = localStorage.getItem(Constants.PROJECT);
     const projectObject = JSON.parse(projectItem);
     if (projectItem)
@@ -190,6 +199,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
     this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
     this.currentCustomer.licenseId = license.id;
+    if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
+      this.newLicenseConsumptionLogicFlag = true;
+    else this.newLicenseConsumptionLogicFlag = false;
     this.customerService.setSelectedCustomer(this.currentCustomer);
   }
 
@@ -430,6 +442,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     switch (event.value) {
       case this.ADD_LICENSE:
         this.openDialog(AddLicenseComponent);
+        break;
+      case this.ADD_OTHER_CONSUMPTION:
+        this.openDialog(AddOtherConsumptionComponent, this.selectedLicense);
         break;
       case this.ADD_LICENSE_CONSUMPTION:
         if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
