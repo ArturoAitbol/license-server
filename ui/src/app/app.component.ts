@@ -19,6 +19,7 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
 import { UserProfileService } from './services/user-profile.service';
 import { BehaviorSubject, Subscription } from "rxjs";
+import { ISidebar } from './model/sidebar.model';
 
 
 @Component({
@@ -89,6 +90,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 active: false,
                 materialIcon: 'tune',
                 baseUrl: '/spotlight/'
+            },
+            {
+                name: 'Power BI Visuals',
+                iconName: "assets\\images\\analytics.png",
+                path: 'visualization',
+                active: false,
+                materialIcon: 'analytics',
+                baseUrl: '/spotlight/'
             }
         ],
         main: [
@@ -145,6 +154,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
     readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/report-dashboards';
+    readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = '/spotlight/visualization';
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
@@ -214,6 +224,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.enableSidebar();
                         break;
                     case this.CTAAS_DASHBOARD_ROUTE_PATH:
+                    case this.CTAAS_POWERBI_REPORT_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
                     case this.CTAAS_SETUP_PATH:
@@ -227,7 +238,6 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
                             this.displayedSideBarItems = res;
-                            console.log('spotlight', this.displayedSideBarItems)
                         });
                         this.enableSidebar();
                         break;
@@ -243,7 +253,6 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.main.subscribe(res => {
                             this.displayedSideBarItems = res;
-                            console.log('main', this.displayedSideBarItems)
                         });
                         this.enableSidebar();
                         break;
@@ -256,7 +265,6 @@ export class AppComponent implements OnInit, OnDestroy {
                             }
                             this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
                                 this.displayedSideBarItems = res;
-                                console.log('default spotlight', this.displayedSideBarItems)
                             });
                         } else {
                             this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
@@ -265,7 +273,6 @@ export class AppComponent implements OnInit, OnDestroy {
                             }
                             this.previousDisplayedItemsSubscription = this.allowedSideBarItems.main.subscribe(res => {
                                 this.displayedSideBarItems = res;
-                                console.log('default', this.displayedSideBarItems)
                             });
                         }
                         this.hideToolbar = false;
@@ -307,10 +314,18 @@ export class AppComponent implements OnInit, OnDestroy {
      * initalize the items required for side nav bar
      */
     initalizeSidebarItems(): void {
-        const accountDetails = this.getAccountDetails();
-        const { roles } = accountDetails.idTokenClaims;
-        this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.spotlight));
-        this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main));
+        try {
+            const accountDetails = this.getAccountDetails();
+            const { roles } = accountDetails.idTokenClaims;
+            // check for Power Bi feature toggle, if enabled then only we can see the Power Bi Visuals tab on the side bar
+            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ?
+                this.fullSideBarItems.spotlight :
+                this.fullSideBarItems.spotlight.filter((e: ISidebar) => e.path !== 'visualization');
+            this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST));
+            this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main));
+        } catch (e) {
+            console.error('Error while initalizing sidebar items: ', e);
+        }
     }
 
     /**

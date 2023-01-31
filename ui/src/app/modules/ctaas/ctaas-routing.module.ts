@@ -17,6 +17,11 @@ const routes: Routes = [
     canActivate: [RoleGuard]
   },
   {
+    path: 'visualization',
+    component: CtaasDashboardComponent,
+    canActivate: [RoleGuard]
+  },
+  {
     path: 'test-suites',
     component: CtaasTestSuitesComponent,
     canActivate: [RoleGuard]
