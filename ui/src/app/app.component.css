@@ -156,3 +156,7 @@ button {
     padding: 0px;
   }
 }
+
+::ng-deep .mat-sidenav {
+  max-width: 100px !important;
+}

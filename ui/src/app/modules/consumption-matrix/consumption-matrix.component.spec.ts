@@ -70,21 +70,22 @@ describe('Consumption Matrix - UI verification tests', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     const callingPlatformColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[0];
-    const applicationColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[1];
-    const ByocColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[2];
-    const devicePhoneAta = fixture.nativeElement.querySelectorAll('.mat-header-cell')[3];
-    const headsetColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[4];
-    const sbcColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[5];
-    const softClientColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[6];
+    const devicePhoneAta = fixture.nativeElement.querySelectorAll('.mat-header-cell')[1];
+    const softClientColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[2];
+    const sbcColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[3];
+    const ByocColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[4];
+    const applicationColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[5];
+    const headsetColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[6];
+    const videoCollabDeviceColumn = fixture.nativeElement.querySelectorAll('.mat-header-cell')[7];
 
-    console.log(callingPlatformColumn);
     expect(callingPlatformColumn.innerText).toBe('Calling Platform');
-    expect(applicationColumn.innerText).toBe('Application');
-    expect(ByocColumn.innerText).toBe('BYOC');
     expect(devicePhoneAta.innerText).toBe('Device/Phone/ATA');
-    expect(headsetColumn.innerText).toBe('Headset');
-    expect(sbcColumn.innerText).toBe('SBC');
     expect(softClientColumn.innerText).toBe('Soft Client/UC Client');
+    expect(sbcColumn.innerText).toBe('SBC');
+    expect(ByocColumn.innerText).toBe('BYOC');
+    expect(applicationColumn.innerText).toBe('Application');
+    expect(headsetColumn.innerText).toBe('Headset');
+    expect(videoCollabDeviceColumn.innerText).toBe('Video Collab Device')
   });
 });
 
@@ -118,7 +119,7 @@ describe('Consumption Matrix - edit, save and cancel buttons', () => {
     saveButton.click();
     expect(testInstance.saveChanges).toHaveBeenCalled();
     expect(testInstance.isEditing).toBe(false);
-    expect(ConsumptionMatrixServiceMock.updateConsumptionMatrix).toHaveBeenCalledWith('ea00b987-0f14-4888-a0ce-f963d1eb7592', { dutType: 'Application', callingPlatform: 'CCaaS', tokens: '3' });
+    expect(ConsumptionMatrixServiceMock.updateConsumptionMatrix).toHaveBeenCalledWith('af4a2ee5-8f1f-4745-83ec-8d6e15fd3f33', { dutType: 'Device/Phone/ATA', callingPlatform: 'PBX', tokens: '2' });
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The matrix was saved correctly!', '')
   });
 

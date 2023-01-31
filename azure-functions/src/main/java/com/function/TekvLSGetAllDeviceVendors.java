@@ -9,6 +9,8 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Optional;
 
@@ -45,7 +47,13 @@ public class TekvLSGetAllDeviceVendors {
         }
 
         context.getLogger().info("Entering TekvLSGetAllVendors Azure function");
-		String deviceType = request.getQueryParameters().getOrDefault("deviceType", "");
+        String deviceType = request.getQueryParameters().getOrDefault("deviceType", "");
+        try {
+            deviceType = URLDecoder.decode(deviceType, "UTF-8");
+            
+        } catch (Exception e) {
+            deviceType = "";
+        }
 
         SelectQueryBuilder vendorQueryBuilder = new SelectQueryBuilder("SELECT DISTINCT vendor FROM device WHERE support_type = 'false'", true);
         SelectQueryBuilder supportVendorQueryBuilder = new SelectQueryBuilder("SELECT DISTINCT vendor FROM device WHERE support_type = 'true'", true);
