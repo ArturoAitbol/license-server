@@ -649,6 +649,26 @@ const DEVICE_LIST = {
             id: "eb2e8d89-b5a0-4e6c-8b11-83aad3674d7f",
             version: null,
             tokensToConsume: 2
+        },
+        {
+            supportType: false,
+            product: "CERT",
+            vendor: "CERT",
+            granularity: "static",
+            type: "CERT",
+            id: "eb2e8d89-b5a0-4e6c-8b11-83aad3674d7f",
+            version: null,
+            tokensToConsume: 2
+        },
+        {
+            supportType: false,
+            product: "Sandbox",
+            vendor: "Sandbox",
+            granularity: "week",
+            type: "Sandbox",
+            id: "eb2e8d89-b5a0-4e6c-8b11-83aad3674d7f",
+            version: null,
+            tokensToConsume: 2
         }
     ]
 };
@@ -656,7 +676,6 @@ const DEVICE_LIST = {
 const DEVICE_TYPES = {
     "deviceTypes": [
         { "name": "PBX" },
-        { "name": "PBX+SBC" },
         { "name": "SBC" },
         { "name": "GATEWAY" },
         { "name": "PHONE" },
@@ -670,6 +689,7 @@ const DEVICE_TYPES = {
         { "name": "CPaaS" },
         { "name": "CLIENT" },
         { "name": "CERT" },
+        { "name": "Sandbox" },
         { "name": "Device/Phone/ATA" },
         { "name": "Soft Client/UC Client" },
         { "name": "BYOC" },
@@ -680,7 +700,6 @@ const DEVICE_TYPES = {
     ],
     "callingPlatformTypes": [
         { "name": "PBX" },
-        { "name": "PBX+SBC" },
         { "name": "UCaaS" },
         { "name": "Contact Center" },
         { "name": "CCaaS" },
