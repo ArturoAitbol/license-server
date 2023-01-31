@@ -316,13 +316,7 @@ export class AppComponent implements OnInit, OnDestroy {
         try {
             const accountDetails = this.getAccountDetails();
             const { roles } = accountDetails.idTokenClaims;
-            // Power BI Visuals tab should be displayed only for Customer01 setup only, this condition maynot be required in future.
-            const subaccountDetails = JSON.parse(localStorage.getItem('selectedSubAccount')); // 2c8e386b-d1bd-48b3-b73a-12bfa5d00805
-            const { name, customerName } = subaccountDetails || {};
-            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = (name && customerName && name === 'Customer01' && customerName === 'Customer01') ?
-                this.fullSideBarItems.spotlight :
-                this.fullSideBarItems.spotlight.filter(e => e.path !== 'visualization');
-            this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST));
+            this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.spotlight));
             this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main));
         } catch (e) {
             console.error('Error while initalizing sidebar items: ', e);
