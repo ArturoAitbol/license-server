@@ -14,28 +14,8 @@ import { FormControl } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { IReportEmbedConfiguration, models, service } from 'powerbi-client';
 import { Router } from '@angular/router';
-export interface IImagesList {
-    imageBase64: string;
-    reportType: string
-}
-export interface IResultant {
-    lastUpdatedTS: string;
-    reportType: string;
-    imagesList: IImagesList[]
-}
-// Handles the embed config response for embedding
-export interface ConfigResponse {
-    Id: string;
-    EmbedUrl: string;
-    EmbedToken: {
-        Token: string;
-    };
-}
-
-export interface IPowerBiReponse {
-    embedUrl: string;
-    embedToken: string;
-}
+import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
+import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -58,8 +38,8 @@ export class CtaasDashboardComponent implements OnInit {
     refreshNotesIntervalSubscription: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
-    resultantImagesList: IResultant[] = [];
-    resultantImagesListBk: IResultant[] = [];
+    resultantImagesList: IDashboardImageResponse[] = [];
+    resultantImagesListBk: IDashboardImageResponse[] = [];
     resultant: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';

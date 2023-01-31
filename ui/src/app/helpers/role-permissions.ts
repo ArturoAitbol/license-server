@@ -363,6 +363,7 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
+            'visualization',
             'stakeholders',
             'notes',
             'details',
