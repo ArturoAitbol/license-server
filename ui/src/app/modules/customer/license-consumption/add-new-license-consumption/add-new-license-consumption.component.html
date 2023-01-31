@@ -1,7 +1,7 @@
 <div class="container" style="text-align: center;">
     <h1 id="page-title" mat-dialig-title>Add tekToken Consumption</h1>
     <form [formGroup]="addLicenseConsumptionForm" (ngSubmit)="submit()">
-        <div class="">
+        <div class>
             <div class="loading-shade" *ngIf="isDataLoading">
                 <mat-spinner *ngIf="isDataLoading"></mat-spinner>
             </div>
@@ -89,7 +89,7 @@
                                             id="dut-vendor-auto-complete">
                                         <mat-autocomplete #dutVendorsList="matAutocomplete"
                                             (optionSelected)="onChangeVendor($event.option.value)">
-                                            <mat-option *ngFor="let item of filteredVendors" [value]="item"
+                                            <mat-option *ngFor="let item of filteredVendors | async" [value]="item"
                                                 title="{{item}}">
                                                 {{item}}
                                             </mat-option>
@@ -144,7 +144,7 @@
                                             id="calling-platform-vendor-auto-complete">
                                         <mat-autocomplete #callingPlatformVendorsList="matAutocomplete"
                                             (optionSelected)="onChangeCallingPlatformVendor($event.option.value)">
-                                            <mat-option *ngFor="let item of filteredCallingPlatformVendors"
+                                            <mat-option *ngFor="let item of filteredCallingPlatformVendors | async"
                                                 [value]="item" title="{{item}}">
                                                 {{item}}
                                             </mat-option>
