@@ -22,7 +22,8 @@
     },
     "features": {
       "ctaasFeature": true,
-      "notificationFeature": false
+      "notificationFeature": false,
+      "powerbiFeature": true
     }
   },
   "integration": {
@@ -48,7 +49,8 @@
     },
     "features": {
       "ctaasFeature": true,
-      "notificationFeature": false
+      "notificationFeature": false,
+      "powerbiFeature": true
     }
   },
   "production": {
@@ -74,7 +76,8 @@
     },
     "features": {
       "ctaasFeature": true,
-      "notificationFeature": false
+      "notificationFeature": false,
+      "powerbiFeature": false
     }
   }
 }

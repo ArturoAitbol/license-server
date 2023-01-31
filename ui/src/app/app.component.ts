@@ -19,6 +19,7 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
 import { UserProfileService } from './services/user-profile.service';
 import { BehaviorSubject, Subscription } from "rxjs";
+import { ISidebar } from './model/sidebar.model';
 
 
 @Component({
@@ -316,7 +317,11 @@ export class AppComponent implements OnInit, OnDestroy {
         try {
             const accountDetails = this.getAccountDetails();
             const { roles } = accountDetails.idTokenClaims;
-            this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.spotlight));
+            // check for Power Bi feature toggle, if enabled then only we can see the Power Bi Visuals tab on the side bar
+            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ?
+                this.fullSideBarItems.spotlight :
+                this.fullSideBarItems.spotlight.filter((e: ISidebar) => e.path !== 'visualization');
+            this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST));
             this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main));
         } catch (e) {
             console.error('Error while initalizing sidebar items: ', e);
