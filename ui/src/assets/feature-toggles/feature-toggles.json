@@ -17,11 +17,13 @@
       "notes": true,
       "details": true,
       "reports": true,
-      "consumption-matrix": true
+      "consumption-matrix": true,
+      "visualization": true
     },
     "features": {
       "ctaasFeature": true,
-      "notificationFeature": false
+      "notificationFeature": false,
+      "powerbiFeature": true
     }
   },
   "integration": {
@@ -42,11 +44,13 @@
       "notes": true,
       "details": true,
       "reports": true,
-      "consumption-matrix": true
+      "consumption-matrix": true,
+      "visualization": true
     },
     "features": {
       "ctaasFeature": true,
-      "notificationFeature": false
+      "notificationFeature": false,
+      "powerbiFeature": true
     }
   },
   "production": {
@@ -67,11 +71,13 @@
       "notes": true,
       "details": true,
       "reports": true,
-      "consumption-matrix": true
+      "consumption-matrix": true,
+      "visualization": false
     },
     "features": {
       "ctaasFeature": true,
-      "notificationFeature": false
+      "notificationFeature": false,
+      "powerbiFeature": false
     }
   }
 }

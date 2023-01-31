@@ -104,7 +104,7 @@ describe('UI verification test', () => {
         const azureResouceGroup = fixture.nativeElement.querySelector('#azure-resource-group-label');
         const tapUrl = fixture.nativeElement.querySelector('#tap-url-label');
         const status = fixture.nativeElement.querySelector('#status-label');
-        
+
         expect(setupForm).toBeTruthy();
         expect(azureResouceGroup.innerText).toBe('Azure Resource Group');
         expect(tapUrl.innerText).toBe('TAP URL');
@@ -190,6 +190,8 @@ describe('setup form verifications', () => {
             tapUrl: '',
             status: '',
             onBoardingComplete: '',
+            powerBiWorkspaceId: '',
+            powerBiReportId: ''
         });
         expect(setup.hasError('required')).toBeTruthy;
 
@@ -343,6 +345,6 @@ describe('check for error and success messages', () => {
         CtaasSetupComponentTestInstance.submit();
         expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
         expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight Setup edited successfully!','');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight Setup edited successfully!', '');
     });
 });

@@ -12,15 +12,11 @@ import { forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { FormControl } from '@angular/forms';
 import { environment } from 'src/environments/environment';
-export interface IImagesList {
-    imageBase64: string;
-    reportType: string
-}
-export interface IResultant {
-    lastUpdatedTS: string;
-    reportType: string;
-    imagesList: IImagesList[]
-}
+import { IReportEmbedConfiguration, models, service } from 'powerbi-client';
+import { Router } from '@angular/router';
+import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
+import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
+
 @Component({
     selector: 'app-ctaas-dashboard',
     templateUrl: './ctaas-dashboard.component.html',
@@ -42,18 +38,65 @@ export class CtaasDashboardComponent implements OnInit {
     refreshNotesIntervalSubscription: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
-    resultantImagesList: IResultant[] = [];
-    resultantImagesListBk: IResultant[] = [];
+    resultantImagesList: IDashboardImageResponse[] = [];
+    resultantImagesListBk: IDashboardImageResponse[] = [];
     resultant: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
+    // embedded power bi changes
+    // CSS Class to be passed to the wrapper
+    // Hide the report container initially
+    reportClass = 'report-container-hidden';
+
+    // Flag which specify the type of embedding
+    phasedEmbeddingFlag = false;
+    powerBiEmbeddingFlag: boolean = false;
+    reportConfig: IReportEmbedConfiguration;
+    /**
+     * Map of event handlers to be applied to the embedded report
+     */
+    // Update event handlers for the report by redefining the map using this.eventHandlersMap
+    // Set event handler to null if event needs to be removed
+    // More events can be provided from here
+    // https://docs.microsoft.com/en-us/javascript/api/overview/powerbi/handle-events#report-events
+    eventHandlersMap = new Map<string, (event?: service.ICustomEvent<any>) => void>([
+        ['loaded', () => console.debug('Report has loaded')],
+        [
+            'rendered',
+            () => {
+                console.debug('Report has rendered');
+            },
+        ],
+        [
+            'error',
+            (event?: service.ICustomEvent<any>) => {
+                if (event) {
+                    console.error(event.detail);
+                    const { detail: { message, errorCode } } = event;
+                    if (message && errorCode && message === 'TokenExpired' && errorCode === '403') {
+                        this.fetchCtaasPowerBiDashboardDetailsBySubaccount();
+                    }
+                }
+            },
+        ],
+        ['visualClicked', () => console.debug('visual clicked')],
+        ['pageChanged', (event) => console.debug(event)],
+    ]);
+
+    readonly LEGACY_MODE: string = 'legacy_view';
+    readonly POWERBI_MODE: string = 'powerbi_view';
+
+    viewMode = new FormControl(this.LEGACY_MODE);
+
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
         private ctaasSetupService: CtaasSetupService,
         private ctaasDashboardService: CtaasDashboardService,
         private subaccountService: SubAccountService,
-        private snackBarService: SnackBarService) { }
+        private snackBarService: SnackBarService,
+        private router: Router
+    ) { }
 
     /**
      * get logged in account details
@@ -70,11 +113,18 @@ export class CtaasDashboardComponent implements OnInit {
         const accountDetails = this.getAccountDetails();
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
-        this.fetchCtaasDashboardDetailsBySubaccount();
+        // load the view based on the route
+        if (this.router.url.includes('/report-dashboards'))
+            this.viewMode.setValue(this.LEGACY_MODE);
+        else
+            this.viewMode.setValue(this.POWERBI_MODE);
+        this.viewDashboardByMode();
         // fetch dashboard report for every 15 minutes interval
         this.refreshIntervalSubscription = interval(Constants.DASHBOARD_REFRESH_INTERVAL)
             .subscribe(() => {
-                this.fetchCtaasDashboardDetailsBySubaccount();
+                // Make an http request only in Legacy mode
+                if (!this.powerBiEmbeddingFlag)
+                    this.fetchCtaasDashboardDetailsBySubaccount();
             });
     }
     /**
@@ -222,6 +272,63 @@ export class CtaasDashboardComponent implements OnInit {
         window.open(url);
         window.close();
     }
+    /**
+     * fetch SpotLight Power BI dashboard required details
+     */
+    fetchCtaasPowerBiDashboardDetailsBySubaccount(): void {
+        this.isLoadingResults = true;
+        this.hasDashboardDetails = false;
+        this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
+            .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
+                this.isLoadingResults = false;
+                const { powerBiInfo } = response;
+                if (powerBiInfo) {
+                    const { embedUrl, embedToken } = powerBiInfo;
+                    if (embedUrl && embedToken) {
+                        this.reportConfig = {
+                            type: 'report',
+                            embedUrl,
+                            tokenType: models.TokenType.Embed,
+                            accessToken: embedToken,
+                            settings: {
+                                filterPaneEnabled: false,
+                                navContentPaneEnabled: true,
+                                layoutType: models.LayoutType.Custom,
+                                customLayout: {
+                                    displayOption: models.DisplayOption.FitToPage
+                                }
+                            }
+                        };
+                        this.hasDashboardDetails = true;
+                    }
+                } else {
+                    this.hasDashboardDetails = false;
+                }
+            }, (err) => {
+                this.hasDashboardDetails = false;
+                this.isLoadingResults = false;
+                console.error('Error while loading embedded powerbi report: ', err);
+                this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+            });
+    }
+    /**
+     * view dashboard based on the mode
+     * PBRS dashboard - LEGACY mode
+     * Embedded PowerBi - PowerBi mode
+     */
+    viewDashboardByMode(): void {
+        switch (this.viewMode.value) {
+            case this.POWERBI_MODE:
+                this.fetchCtaasPowerBiDashboardDetailsBySubaccount();
+                this.powerBiEmbeddingFlag = true;
+                break;
+            default:
+                this.powerBiEmbeddingFlag = false;
+                this.fetchCtaasDashboardDetailsBySubaccount();
+                break;
+        }
+    }
+
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
