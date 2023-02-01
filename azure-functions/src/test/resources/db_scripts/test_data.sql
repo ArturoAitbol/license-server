@@ -155,7 +155,7 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	9285ca9e-04c3-49df-9d59-085322a13319	2022-0
 9f53d1ae-e22d-4c3b-b05d-6bf6b13c0658	9c0cc4a5-a773-46f3-b73e-a09c55080b1f	2021-12-28	2			\N	\N
 \.
 
-COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_complete, subaccount_id, powerBi_workspace_id, powerBi_report_id) FROM stdin;
+COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_complete, subaccount_id, powerbi_workspace_id, powerbi_report_id) FROM stdin;
 836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	\N	\N
 fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	96234b32-32d3-45a4-af26-4c912c0d6a06	\N	\N
 2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7	\N	\N
