@@ -106,8 +106,6 @@ export class CtaasSetupComponent implements OnInit {
 
   private fetchSetupInfo() {
     this.isDataLoading = true;
-    const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-    const { id } = currentSubaccountDetails;
     this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).pipe(map(res => res.ctaasSetups.length > 0 ? res.ctaasSetups[0] : null)).subscribe(res => {
       if (res != null) {
         this.originalCtaasSetupDetails = res;
