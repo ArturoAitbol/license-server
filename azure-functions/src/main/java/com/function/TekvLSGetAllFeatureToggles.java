@@ -54,34 +54,24 @@ public class TekvLSGetAllFeatureToggles {
         context.getLogger().info("Entering TekvLSGetAllFeatureToggles Azure function");
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-
-        // Parse request body and extract parameters needed
-        String requestBody = request.getBody().orElse("{}");
-        context.getLogger().info("Request body: " + requestBody);
-
-        JSONObject jobj;
-        try {
-            jobj = new JSONObject(requestBody);
-        } catch (Exception e) {
-            context.getLogger().info("Caught exception: " + e.getMessage());
-            JSONObject json = new JSONObject();
-            json.put("error", e.getMessage());
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-
-        SelectQueryBuilder selectFTExceptionQueryBuilder = null;
-        if (jobj.has(EXCEPTION_PARAMS.SUBACCOUNT_ID.value)) {
-            // Parameter not found
-            context.getLogger().info("Found subaccount id in request params");
-            selectFTExceptionQueryBuilder = new SelectQueryBuilder("SELECT * FROM feature_toggle_exception");
-            selectFTExceptionQueryBuilder.appendEqualsCondition("subaccount_id", jobj.getString("subaccountId"), QueryBuilder.DATA_TYPE.UUID);
-        }
+        String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 
         // Build SQL statement
         SelectQueryBuilder selectFTQueryBuilder = new SelectQueryBuilder("SELECT * FROM feature_toggle");
+        SelectQueryBuilder selectFTExQueryBuilder = new SelectQueryBuilder("SELECT fte.feature_toggle_id, fte.subaccount_id, s.name as subaccount_name, c.name as customer_name, " +
+                                                                                   "c.id as customer_id, fte.status as status " +
+                                                                                   "FROM feature_toggle_exception fte, subaccount s, customer c " +
+                                                                                   "WHERE fte.subaccount_id = s.id AND s.customer_id = c.id", true);
+        if (!subaccountId.isEmpty()) {
+            // Parameter not found
+            context.getLogger().info("Found subaccount id in query params");
+            selectFTExQueryBuilder.appendCustomCondition("subaccount_id = ?::uuid", subaccountId);
+        }
 
-        if (!featureToggleId.equals("EMPTY"))
+        if (!featureToggleId.equals("EMPTY")) {
             selectFTQueryBuilder.appendEqualsCondition("id", featureToggleId, QueryBuilder.DATA_TYPE.UUID);
+            selectFTExQueryBuilder.appendEqualsCondition("feature_toggle_id", featureToggleId, QueryBuilder.DATA_TYPE.UUID);
+        }
 
         selectFTQueryBuilder.appendOrderBy("name", ORDER_DIRECTION.ASC);
 
@@ -90,40 +80,42 @@ public class TekvLSGetAllFeatureToggles {
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
 
         // Connect to the database
-        try (
-                Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                PreparedStatement statement = selectFTQueryBuilder.build(connection);
-                PreparedStatement exceptionStatement = selectFTExceptionQueryBuilder != null ? selectFTExceptionQueryBuilder.build(connection) : null;
-        ) {
+        try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+             PreparedStatement featureToggleStmt = selectFTQueryBuilder.build(connection);
+             PreparedStatement exStmt = selectFTExQueryBuilder.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
+            // Map exceptions using the feature toggle id as key
+            Map<String, List<FeatureToggleException>> exceptionsMap = new HashMap<>();
+            context.getLogger().info("Execute SQL statement: " + exStmt);
+            ResultSet eRS = exStmt.executeQuery();
+            while (eRS.next()) {
+                exceptionsMap.computeIfAbsent(eRS.getString("feature_toggle_id"), k -> new ArrayList<>())
+                             .add(new FeatureToggleException(eRS.getBoolean("status"),
+                                                             eRS.getString("subaccount_name"),
+                                                             eRS.getString("subaccount_id"),
+                                                             eRS.getString("customer_name"),
+                                                             eRS.getString("customer_id")));
+            }
+
             // Retrieve all feature toggles
-            context.getLogger().info("Execute SQL statement: " + statement);
-            ResultSet rs = statement.executeQuery();
+            context.getLogger().info("Execute SQL statement: " + featureToggleStmt);
+            ResultSet rs = featureToggleStmt.executeQuery();
             // Return a JSON array of feature toggles
             JSONObject json = new JSONObject();
             JSONArray array = new JSONArray();
-
-            Map<String, String> fteIdMap = new HashMap<>();
-            if (exceptionStatement != null) {
-                context.getLogger().info("Execute SQL statement: " + exceptionStatement);
-                ResultSet ers = exceptionStatement.executeQuery();
-                while (ers.next()) {
-                    fteIdMap.put(ers.getString("feature_toggle_id"), ers.getString("status"));
-                }
-            }
 
             while (rs.next()) {
                 JSONObject item = new JSONObject();
                 item.put("id", rs.getString("id"));
                 item.put("name", rs.getString("name"));
-                if(fteIdMap.containsKey(item.getString("id")))
-                    item.put("status", fteIdMap.get(item.getString("id")));
-                else
-                    item.put("status", rs.getString("status"));
+                item.put("status", rs.getBoolean("status"));
                 item.put("author", rs.getString("author"));
                 item.put("description", rs.getString("description"));
+                if (exceptionsMap.containsKey(rs.getString("id"))) {
+                    item.put("exceptions", exceptionsMap.get(rs.getString("id")));
+                }
                 array.put(item);
             }
 
@@ -142,13 +134,40 @@ public class TekvLSGetAllFeatureToggles {
         }
     }
 
-    private enum EXCEPTION_PARAMS {
-        SUBACCOUNT_ID("subaccountId");
+    public static class FeatureToggleException {
+        private final Boolean status;
+        private final String subaccountName;
+        private final String subaccountId;
+        private final String customerName;
+        private final String customerId;
 
-        private final String value;
+        public FeatureToggleException(Boolean status, String subaccountName, String subaccountId, String customerName, String customerId) {
+            this.status = status;
+            this.subaccountName = subaccountName;
+            this.subaccountId = subaccountId;
+            this.customerName = customerName;
+            this.customerId = customerId;
+        }
 
-        EXCEPTION_PARAMS(String value) {
-            this.value = value;
+        public Boolean getStatus() {
+            return status;
+        }
+
+        public String getSubaccountName() {
+            return subaccountName;
+        }
+
+        public String getSubaccountId() {
+            return subaccountId;
+        }
+
+        public String getCustomerName() {
+            return customerName;
+        }
+
+        public String getCustomerId() {
+            return customerId;
         }
     }
+
 }
