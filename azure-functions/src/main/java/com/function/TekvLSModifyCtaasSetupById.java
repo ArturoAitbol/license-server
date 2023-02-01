@@ -120,8 +120,7 @@ public class TekvLSModifyCtaasSetupById {
         if (optionalParamsFound == 0) {
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
-        queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
-
+        queryBuilder.appendWhereStatement("subaccount_id", id, QueryBuilder.DATA_TYPE.UUID);
         // build the sql query for project
         String sql = "INSERT INTO project (subaccount_id, code, name, status, open_date, project_owner, license_id) " +
                 "VALUES (?::uuid, ?, ?, ?::project_status_type_enum, ?::timestamp, ?, ?::uuid) RETURNING id;";
@@ -142,7 +141,7 @@ public class TekvLSModifyCtaasSetupById {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
             String userId = getUserIdFromToken(tokenClaims, context);
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
-            statement.executeUpdate();
+            statement.executeUpdate();            
             context.getLogger().info("Ctaas_setup updated successfully.");
             if (isSetupReady) {
                 String today = LocalDate.now().toString();
