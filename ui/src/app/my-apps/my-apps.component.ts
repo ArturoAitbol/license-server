@@ -114,12 +114,11 @@ export class MyAppsComponent implements OnInit {
     setupCustomerOnboardDetails(): void {
         // only open onboarding wizard dialog/modal when onboardingcomplete is f and index !==-1
         if ((!this.isOnboardingComplete && this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN))) {
-            const {id} = this.ctaasSetupDetails;
             this.dialog.open(OnboardWizardComponent, {
                 width: '700px',
                 maxHeight: '80vh',
                 disableClose: true,
-                data: {ctaasSetupId:id, ctaasSetupSubaccountId:this.subaccountId}
+                data: {ctaasSetupId:this.ctaasSetupDetails.id, ctaasSetupSubaccountId:this.subaccountId}
             });
         }
     }

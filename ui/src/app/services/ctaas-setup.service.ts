@@ -43,8 +43,7 @@ export class CtaasSetupService {
    * @returns: Observable<any> 
    */
   public updateSubaccountCtaasDetails(setupDetails: { onBoardingComplete: boolean, ctaasSetupId: string }) {
-    const { ctaasSetupId } = setupDetails;
-    const url = this.UPDATE_ONBOARD_DETAILS.replace(/{setupId}/g, ctaasSetupId);
+    const url = this.UPDATE_ONBOARD_DETAILS.replace(/{setupId}/g, setupDetails.ctaasSetupId);
     return this.httpClient.put(url, setupDetails);
   }
 
