@@ -15,11 +15,15 @@
       "setup": true,
       "subscriptions-overview": true,
       "notes": true,
-      "details": true
+      "details": true,
+      "reports": true,
+      "consumption-matrix": true,
+      "visualization": true
     },
     "features": {
       "ctaasFeature": true,
-      "notificationFeature": false
+      "notificationFeature": false,
+      "powerbiFeature": true
     }
   },
   "integration": {
@@ -38,11 +42,15 @@
       "setup": true,
       "subscriptions-overview": true,
       "notes": true,
-      "details": true
+      "details": true,
+      "reports": true,
+      "consumption-matrix": true,
+      "visualization": true
     },
     "features": {
       "ctaasFeature": true,
-      "notificationFeature": false
+      "notificationFeature": false,
+      "powerbiFeature": true
     }
   },
   "production": {
@@ -61,11 +69,15 @@
       "setup": true,
       "subscriptions-overview": true,
       "notes": true,
-      "details": true
+      "details": true,
+      "reports": true,
+      "consumption-matrix": true,
+      "visualization": false
     },
     "features": {
       "ctaasFeature": true,
-      "notificationFeature": false
+      "notificationFeature": false,
+      "powerbiFeature": false
     }
   }
 }

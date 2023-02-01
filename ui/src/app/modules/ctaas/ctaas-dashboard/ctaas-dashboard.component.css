@@ -201,3 +201,6 @@ button:hover {
   color: darkblue !important;
   text-decoration: underline !important;
 }
+::ng-deep powerbi-report > div {
+  height: 90vh !important;
+}

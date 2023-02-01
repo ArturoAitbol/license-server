@@ -21,6 +21,7 @@ public enum Resource {
         CREATE_FEATURE_TOGGLE_EXCEPTION,//TekvLSCreateFeatureToggle
         CREATE_NOTE,//TekvLSCreateNote
         CREATE_SUBACCOUNT_ADMIN_DEVICE, //TekvLSCreateSubaccountAdminDevice
+        CREATE_CONSUMPTION_MATRIX, //TekvLSCreateConsumptionMatrix
 
         // DELETE
         DELETE_ADMIN_EMAIL,//TekvLSDeleteAdminEmail
@@ -40,11 +41,13 @@ public enum Resource {
         DELETE_FEATURE_TOGGLE_EXCEPTION,//TekvLSDeleteFeatureToggleException
         DELETE_NOTE,//TekvLSDeleteNoteById
         DELETE_SUBACCOUNT_ADMIN_DEVICE, // TekvLSDeleteSubaccountAdminDevice
+        DELETE_CONSUMPTION_MATRIX, //TekvLSDeleteConsumptionMatrix
 
         // READ
         GET_ALL_BUNDLES,//TekvLSGetAllBundles
         GET_ALL_CUSTOMERS,//TekvLSGetAllCustomers
         GET_ALL_DEVICES,//TekvLSGetAllDevices
+        GET_ALL_DEVICE_TYPES,//TekvLSGetAllDevices
         GET_ALL_LICENSES,//TekvLSGetAllLicenses
         GET_ALL_LICENSE_USAGE_DETAILS,//TekvLSGetAllLicenseUsageDetails
         GET_ALL_PROJECTS,//TekvLSGetAllProjects
@@ -60,6 +63,7 @@ public enum Resource {
         GET_ALL_FEATURE_TOGGLES,//TekvLSGetAllFeatureToggles
         GET_SUBSCRIPTIONS_OVERVIEW, //TeTekvLSGetSubscriptionsOverview
         GET_ALL_NOTES, //TeTekvLSGetAllNotes
+        GET_CONSUMPTION_MATRIX, //TekvLSGetConsumptionMatrix
 
         //UPDATE
         MODIFY_CUSTOMER,//TekvLSModifyCustomerById
@@ -74,5 +78,6 @@ public enum Resource {
         MODIFY_CTAAS_ONBOARDING,//TekvLSModifyCtaasOnBoardingById
         MODIFY_SUBACCOUNT_STAKEHOLDER,//TekvLSModifySubaccountStakeholderByEmail
         MODIFY_AUTH_USER_PROFILE,//TekvLSModifyAuthUserProfile
-        MODIFY_FEATURE_TOGGLE//TekvLSModifyFeatureToggleById
+        MODIFY_FEATURE_TOGGLE, //TekvLSModifyFeatureToggleById
+        MODIFY_CONSUMPTION_MATRIX //TekvLSModifyConsumptionMatrixById
 }

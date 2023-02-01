@@ -29,8 +29,7 @@ export class AddTestSuiteComponent implements OnInit {
     public dialogRef: MatDialogRef<AddTestSuiteComponent>,
     private snackBarService: SnackBarService,
     private subaccountService: SubAccountService,
-    private testSuiteService: CtaasTestSuiteService) {
-  }
+    private testSuiteService: CtaasTestSuiteService) {}
 
   ngOnInit(): void {
     this.currentCustomer = this.subaccountService.getSelectedSubAccount();

@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.function.auth.Resource;
+import com.function.clients.FCMClient;
 import com.function.clients.HttpClient;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
@@ -119,31 +120,24 @@ public class TekvLSCreateNote {
             json.put("id", rs.getString("id"));
 
             // Send notifications to subaccount users
-            String NOTIFICATIONS_ENDPOINT = System.getenv("NOTIFICATIONS_ENDPOINT");
-            String NOTIFICATIONS_AUTH_KEY = System.getenv("NOTIFICATIONS_AUTH_KEY");
-
             deviceTokensStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
             context.getLogger().info("Execute SQL statement: " + deviceTokensStmt);
             rs = deviceTokensStmt.executeQuery();
-
-            JSONObject body = new JSONObject();
-            JSONObject notification = new JSONObject();
-            notification.put("title", "New Note!");
-            notification.put("body", userEmail + ": " + jobj.getString(MANDATORY_PARAMS.CONTENT.value));
-            body.put("notification", notification);
-            HashMap<String, String> headers = new HashMap<>();
-            headers.put("Content-Type", "application/json");
-            headers.put("Authorization", NOTIFICATIONS_AUTH_KEY);
-
+            JSONArray deviceTokens = new JSONArray();
             while (rs.next()) {
-                String finalDeviceToken = rs.getString("device_token");
-                body.put("to", finalDeviceToken);
-                String bodyString = body.toString();
+                deviceTokens.put(rs.getString("device_token"));
+            }
+
+            if(!deviceTokens.isEmpty()){
+                String noteAuthor = userEmail.split("@")[0];
+                String noteContent = jobj.getString(TekvLSCreateNote.MANDATORY_PARAMS.CONTENT.value);
+                String notificationBody = noteAuthor + ":\n" + noteContent;
                 try {
-                    context.getLogger().info("Sending notification to: " + finalDeviceToken);
-                    JSONObject response = HttpClient.post(NOTIFICATIONS_ENDPOINT, bodyString, headers);
+                    context.getLogger().info("Sending notification to: " + deviceTokens);
+                    JSONObject response = FCMClient.sendPushNotification("New Note!",notificationBody,deviceTokens);
+                    context.getLogger().info("Notifications sent: " + response);
                 } catch (Exception e) {
-                    context.getLogger().warning("Could not send notification to " + finalDeviceToken);
+                    context.getLogger().warning("Could not send notification to " + deviceTokens);
                     context.getLogger().warning("Notification exception: " + e.getMessage());
                 }
             }

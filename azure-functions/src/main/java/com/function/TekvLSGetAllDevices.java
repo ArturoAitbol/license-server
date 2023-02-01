@@ -28,29 +28,27 @@ import static com.function.auth.RoleAuthHandler.*;
 public class TekvLSGetAllDevices {
 
 	/**
-	 * This function listens at endpoint "/v1.0/devices/{vendor}/{product}/{version}". Two ways to invoke it using "curl" command in bash:
+	 * This function listens at endpoint
+	 * "/v1.0/devices/{vendor}/{product}/{version}". Two ways to invoke it using
+	 * "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/devices/{vendor}/{product}/{version}
 	 * 2. curl "{your host}/v1.0/devices"
 	 */
 	@FunctionName("TekvLSGetAllDevices")
 	public HttpResponseMessage run(
-		@HttpTrigger(
-			name = "req",
-			methods = {HttpMethod.GET},
-			authLevel = AuthorizationLevel.ANONYMOUS,
-			route = "devices/{id=EMPTY}")
-		HttpRequestMessage<Optional<String>> request,
-	  @BindingName("id") String id,
-		final ExecutionContext context) {
+			@HttpTrigger(name = "req", methods = {
+					HttpMethod.GET }, authLevel = AuthorizationLevel.ANONYMOUS, route = "devices/{id=EMPTY}") HttpRequestMessage<Optional<String>> request,
+			@BindingName("id") String id,
+			final ExecutionContext context) {
 
-		JSONArray roles = getRolesFromToken(request,context);
-		if(roles.isEmpty()){
+		JSONArray roles = getRolesFromToken(request, context);
+		if (roles.isEmpty()) {
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Resource.GET_ALL_DEVICES)){
+		if (!hasPermission(roles, Resource.GET_ALL_DEVICES)) {
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -62,33 +60,42 @@ public class TekvLSGetAllDevices {
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String vendor = request.getQueryParameters().getOrDefault("vendor", "");
+		String deviceType = request.getQueryParameters().getOrDefault("deviceType", "");
 		String product = request.getQueryParameters().getOrDefault("product", "");
 		String version = request.getQueryParameters().getOrDefault("version", "");
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		String licenseStartDate = request.getQueryParameters().getOrDefault("date", "");
 		String limit = request.getQueryParameters().getOrDefault("limit", "");
 		String offset = request.getQueryParameters().getOrDefault("offset", "");
-  
+		
+		String tombstone = request.getQueryParameters().getOrDefault("tombstone", "false");
+
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM device");
+		queryBuilder.appendEqualsCondition("tombstone", tombstone, QueryBuilder.DATA_TYPE.BOOLEAN);
 		if (id.equals("EMPTY")) {
-			if (!vendor.isEmpty() || !subaccountId.isEmpty() || !product.isEmpty() || !version.isEmpty() || !licenseStartDate.isEmpty()) {
-			   if (!subaccountId.isEmpty()) {
-				   queryBuilder.appendCustomCondition("(subaccount_id is NULL or subaccount_id = ?::uuid)", subaccountId);
-			   }
-			   if (!vendor.isEmpty()) {
-				   queryBuilder.appendEqualsCondition("vendor", vendor);
-			   }
-			   if (!product.isEmpty()) {
-				   queryBuilder.appendEqualsCondition("product", product);
-			   }
-			   if (!version.isEmpty()) {
-				   queryBuilder.appendEqualsCondition("version", version);
-			   }
-			   if (!licenseStartDate.isEmpty()) {
-				   queryBuilder.appendCustomCondition("?::timestamp >= start_date", licenseStartDate);
-				   queryBuilder.appendCustomCondition("?::timestamp < deprecated_date", licenseStartDate);
-			   }
+			if (!vendor.isEmpty() || !subaccountId.isEmpty() || !product.isEmpty() || !version.isEmpty()
+					|| !licenseStartDate.isEmpty()) {
+				if (!subaccountId.isEmpty()) {
+					queryBuilder.appendCustomCondition("(subaccount_id is NULL or subaccount_id = ?::uuid)",
+							subaccountId);
+				}
+				if (!vendor.isEmpty()) {
+					queryBuilder.appendEqualsCondition("vendor", vendor);
+				}
+				if (!deviceType.isEmpty()) {
+					queryBuilder.appendCustomCondition("?::device_type_enum = type", deviceType);
+				}
+				if (!product.isEmpty()) {
+					queryBuilder.appendEqualsCondition("product", product);
+				}
+				if (!version.isEmpty()) {
+					queryBuilder.appendEqualsCondition("version", version);
+				}
+				if (!licenseStartDate.isEmpty()) {
+					queryBuilder.appendCustomCondition("?::timestamp >= start_date", licenseStartDate);
+					queryBuilder.appendCustomCondition("?::timestamp < deprecated_date", licenseStartDate);
+				}
 			} else {
 				queryBuilder.appendColumnIsNull("subaccount_id");
 			}
@@ -100,21 +107,22 @@ public class TekvLSGetAllDevices {
 			queryBuilder.appendLimit(limit);
 			queryBuilder.appendOffset(offset);
 		}
-		
+
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
-			+ "&user=" + System.getenv("POSTGRESQL_USER")
-			+ "&password=" + System.getenv("POSTGRESQL_PWD");
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"
+				+ System.getenv("POSTGRESQL_SECURITY_MODE")
+				+ "&user=" + System.getenv("POSTGRESQL_USER")
+				+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = queryBuilder.build(connection)) {
-			
+				Connection connection = DriverManager.getConnection(dbConnectionUrl);
+				PreparedStatement statement = queryBuilder.build(connection)) {
+
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+
 			// Execute sql query. TO DO: pagination
 			context.getLogger().info("Execute SQL statement: " + statement);
 			ResultSet rs = statement.executeQuery();
-//			// Return a JSON array
+			// Return a JSON array
 			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
 			while (rs.next()) {
@@ -126,6 +134,11 @@ public class TekvLSGetAllDevices {
 				item.put("supportType", rs.getBoolean("support_type"));
 				item.put("tokensToConsume", rs.getInt("tokens_to_consume"));
 				item.put("granularity", rs.getString("granularity"));
+				// Required for list devices
+				item.put("type", rs.getString("type"));
+				item.put("startDate", rs.getString("start_date"));
+				item.put("deprecatedDate", rs.getString("deprecated_date"));
+				//
 				if (!id.equals("EMPTY")) {
 					subaccountId = rs.getString("subaccount_id");
 					if (rs.wasNull())
@@ -138,15 +151,14 @@ public class TekvLSGetAllDevices {
 				array.put(item);
 			}
 			json.put("devices", array);
-			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
-		}
-		catch (SQLException e) {
+			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json")
+					.body(json.toString()).build();
+		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());

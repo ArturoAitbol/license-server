@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { MsalService } from '@azure/msal-angular';
-import { permissions } from 'src/app/helpers/role-permissions';
 import { DialogService } from 'src/app/services/dialog.service';
 import { AddStakeHolderComponent } from './add-stake-holder/add-stake-holder.component';
 import { UpdateStakeHolderComponent } from './update-stake-holder/update-stake-holder.component';
@@ -13,6 +12,7 @@ import { IStakeholder } from 'src/app/model/stakeholder.model';
 import { Report } from 'src/app/helpers/report';
 import { Utility } from 'src/app/helpers/utils';
 import { Constants } from 'src/app/helpers/constants';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -42,7 +42,8 @@ export class CtaasStakeholderComponent implements OnInit {
     public dialog: MatDialog,
     private snackBarService: SnackBarService,
     private dialogService: DialogService,
-    private stakeholderService: StakeHolderService
+    private stakeholderService: StakeHolderService,
+    private subaccountService: SubAccountService
   ) { }
   /**
    * calculate table height based on the window height
@@ -81,8 +82,8 @@ export class CtaasStakeholderComponent implements OnInit {
   private fetchStakeholderList(): void {
     this.isRequestCompleted = false;
     this.isLoadingResults = true;
-    this.stakeholderService.getStakeholderList()
-      .pipe(
+    let subaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.stakeholderService.getStakeholderList(subaccountDetails.id).pipe(
         map((e: { stakeHolders: IStakeholder[] }) => {
           const { stakeHolders } = e;
           try {

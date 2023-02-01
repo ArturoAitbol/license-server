@@ -20,6 +20,10 @@ import { StaticConsumptionDetailsComponent } from './static-consumption-details/
 import moment, { Moment } from 'moment';
 import { License } from 'src/app/model/license.model';
 import { Utility } from 'src/app/helpers/utils';
+import { environment } from 'src/environments/environment';
+import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption/add-new-license-consumption.component';
+import { AddOtherConsumptionComponent } from './add-other-consumption/add-other-consumption.component';
+import { permissions } from 'src/app/helpers/role-permissions';
 
 @Component({
   selector: 'app-license-consumption',
@@ -27,6 +31,7 @@ import { Utility } from 'src/app/helpers/utils';
   styleUrls: ['./license-consumption.component.css']
 })
 export class LicenseConsumptionComponent implements OnInit, OnDestroy {
+  private readonly TOKEN_CONSUMPTION_DATE = new Date(environment.TOKEN_CONSUMPTION_DATE + ' 00:00:00');
   currentCustomer: any;
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
@@ -87,7 +92,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: 'Week', dataKey: 'weekId', position: 'left', isSortable: true },
     { name: 'tekTokens', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
-  
+
   readonly projectConsumptionColumns: TableColumn[] = [
     { name: 'Project Name', dataKey: 'name', position: 'left', isSortable: true },
     { name: 'Status', dataKey: 'status', position: 'left', isSortable: true },
@@ -104,6 +109,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true },
     { name: 'Usage Days', dataKey: 'usageDays', position: 'left', isSortable: false }
   ];
+  readonly ADD_OTHER_CONSUMPTION = 'add-other-consumption';
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
   readonly ADD_LICENSE = 'add-new-license';
 
@@ -118,6 +124,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   isDetailedConsumptionRequestCompleted = false;
   isLicenseListLoaded = false;
   detailedConsumptionTableSelectable = false;
+  newLicenseConsumptionLogicFlag = false;
+  hasAddConsumptionPermission = false;
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
@@ -151,6 +159,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+    const premissionsMatchIndex = roles?.findIndex((role : string) => permissions[role].elements.indexOf('addLicenseConsumption') !==-1);
+    if (premissionsMatchIndex >= 0)
+      this.hasAddConsumptionPermission = true;
     const projectItem: string = localStorage.getItem(Constants.PROJECT);
     const projectObject = JSON.parse(projectItem);
     if (projectItem)
@@ -187,6 +199,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
     this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
     this.currentCustomer.licenseId = license.id;
+    if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
+      this.newLicenseConsumptionLogicFlag = true;
+    else this.newLicenseConsumptionLogicFlag = false;
     this.customerService.setSelectedCustomer(this.currentCustomer);
   }
 
@@ -199,7 +214,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private getActionMenuOptions() {
     this.licConsumptionActionMenuOptions = [];
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    this.licConsumptionActionMenuOptions = Utility.getTableOptions(roles,this.options,"licConsumptionOptions");
+    this.licConsumptionActionMenuOptions = Utility.getTableOptions(roles, this.options, "licConsumptionOptions");
   }
 
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
@@ -318,7 +333,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   private getWeeksDetail(weeklyConsumption: any[]): any[] {
     let licenseStartWeek: Moment;
-    let licenseEndWeek:  Moment;
+    let licenseEndWeek: Moment;
     if (this.aggregation === "month" || this.aggregation === "week") {
       licenseStartWeek = moment.utc(this.range.get('start').value);
       licenseEndWeek = moment.utc(this.range.get('end').value);
@@ -377,7 +392,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formatUsageDays(usage: any[]){
+  private formatUsageDays(usage: any[]) {
     usage.forEach(item => {
       if (item.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
         item.usageDays = "...";
@@ -428,8 +443,14 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       case this.ADD_LICENSE:
         this.openDialog(AddLicenseComponent);
         break;
+      case this.ADD_OTHER_CONSUMPTION:
+        this.openDialog(AddOtherConsumptionComponent, this.selectedLicense);
+        break;
       case this.ADD_LICENSE_CONSUMPTION:
-        this.openDialog(AddLicenseConsumptionComponent, this.selectedLicense);
+        if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
+          this.openDialog(AddNewLicenseConsumptionComponent, this.selectedLicense);
+        else
+          this.openDialog(AddLicenseConsumptionComponent, this.selectedLicense);
         break;
     }
   }
@@ -483,19 +504,19 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   sortData(sortParameters: Sort, data: any[], listName: string): any[] {
     const keyName = sortParameters.active;
     if (sortParameters.direction === 'asc') {
-      data = data.sort((a: any, b: any) =>{
-        if(typeof a[keyName] === 'number')
+      data = data.sort((a: any, b: any) => {
+        if (typeof a[keyName] === 'number')
           return +a[keyName] > +b[keyName] ? 1 : (+a[keyName] < +b[keyName] ? -1 : 0);
         return a[keyName].localeCompare(b[keyName]);
       });
     } else if (sortParameters.direction === 'desc') {
       data = data.sort((a: any, b: any) => {
-        if(typeof a[keyName] === 'number')
+        if (typeof a[keyName] === 'number')
           return +a[keyName] < +b[keyName] ? 1 : (+a[keyName] > +b[keyName] ? -1 : 0);
         return b[keyName].localeCompare(a[keyName]);
       });
     } else {
-      switch(listName){
+      switch (listName) {
         case 'detailedList':
           return this.detailedConsumptionData = [...this.listDetailedConsumptionBK];
         case 'projectList':
@@ -600,7 +621,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   cloneConsumptions() {
-    this.openDialog(AddLicenseConsumptionComponent, {...this.selectedLicense, selectedConsumptions: this.detailsConsumptionTable.selection.selected});
+    this.openDialog(AddLicenseConsumptionComponent, { ...this.selectedLicense, selectedConsumptions: this.detailsConsumptionTable.selection.selected });
     this.toggleSelectableConsumptions();
     this.detailsConsumptionTable.selection.clear();
   }

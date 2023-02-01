@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute} from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportType } from 'src/app/helpers/report-type';
+import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+
 @Component({
   selector: 'app-more-details',
   templateUrl: './more-details.component.html',
   styleUrls: ['./more-details.component.css']
 })
 export class MoreDetailsComponent implements OnInit {
+
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
@@ -18,7 +21,7 @@ export class MoreDetailsComponent implements OnInit {
   startDateStr: string = '';
   endDateStr: string = '';
   loggedInUserRoles: string[] = [];
-  subaccountId: string = '';
+  private subaccountDetails: any;
   hasDashboardDetails: boolean = false;
   isLoadingResults = true;
   isRequestCompleted = false;
@@ -46,10 +49,9 @@ export class MoreDetailsComponent implements OnInit {
   constructor(
     private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
-    private subaccountService: SubAccountService,
     private route: ActivatedRoute,
-    private snackBarService: SnackBarService
-  ) { }
+    private snackBarService: SnackBarService,
+    private subaccountService: SubAccountService) {}
   /**
    * get logged in account details
    * @returns: any | null
@@ -59,21 +61,19 @@ export class MoreDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.subaccountDetails = this.subaccountService.getSelectedSubAccount()
     const accountDetails = this.getAccountDetails();
     const { idTokenClaims: { roles } } = accountDetails;
     this.loggedInUserRoles = roles;
-    const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-    const { id, subaccountId } = currentSubaccountDetails;
-    this.subaccountId = subaccountId ? subaccountId : id;
     this.route.queryParams.subscribe((params: any) => {
-      const { type, start, end } = params;
-      this.type = type;
-      this.startDateStr = start;
-      this.endDateStr = end;
+      this.subaccountDetails.id = params.subaccountId;
+      this.type = params.type;
+      this.startDateStr = params.start;
+      this.endDateStr = params.end;
+      this.fetchDashboardReportDetails();
     });
     this.initColumns();
     this.calculateTableHeight();
-    this.fetchDashboardReportDetails();
   }
   /**
    * fetch detailed dashboard report
@@ -85,7 +85,7 @@ export class MoreDetailsComponent implements OnInit {
       this.isLoadingResults = true;
       const PARSED_REPORT_TYPE = this.type === this.FEATURE_FUNCTIONALITY ? 'LTS' :
         (this.type === this.CALL_RELIABILITY) ? 'STS' : this.type;
-      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountId, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr)
+      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr)
         .subscribe((res: any) => {
           this.isRequestCompleted = true;
           this.isLoadingResults = false;
@@ -117,6 +117,11 @@ export class MoreDetailsComponent implements OnInit {
               obj.tonoDataFoundFlag = false;
               obj.otherPartynoDataFoundFlag = false;
               obj.panelOpenState = true;
+              obj.from.mediaStats.sort((a, b) => {
+                return a.timestamp - b.timestamp
+              })
+              // filter the array without media stats details 
+              obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
             });
           } else {
             this.hasDashboardDetails = false;
@@ -184,21 +189,38 @@ export class MoreDetailsComponent implements OnInit {
 
   }
 
+  /**
+   * This method got triggered if mat expansion panel is opened
+   * @param index: number 
+   */
+  open(index: number): void {
+    
+    setTimeout(() => {
+      this.detailedTestReport[index].panelOpenState = false;
+    }, 0);
 
-  open(index) {
-    this.detailedTestReport[index].panelOpenState = false;
     this.detailedTestReport[index].frompanelOpenState = true;
     this.detailedTestReport[index].topanelOpenState = true;
-    this.getOtherPartiesReports(this.detailedTestReport[index].otherParties)
+    this.detailedTestReport[index].from.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].from.mediaStats, 'timestamp');
+    this.detailedTestReport[index].to.mediaStats = Utility.sortDatesInAscendingOrder(this.detailedTestReport[index].to.mediaStats, 'timestamp');
+    if (this.detailedTestReport[index].otherParties) // check for null / undefined values
+      this.setOtherPartiesPanelStatus(this.detailedTestReport[index].otherParties);
   }
-
-  getOtherPartiesReports(data) {
+  /**
+   * set other parties panel status as true
+   * @param data: any[]
+   */
+  setOtherPartiesPanelStatus(data: any[]): void {
     data.forEach((otherParties) => {
+      otherParties.mediaStats = Utility.sortDatesInAscendingOrder(otherParties.mediaStats, 'timestamp')
       otherParties.otherPartyPanelStatus = true;
-    })
+    });
   }
-
-  close(index) {
+  /**
+   * This method got triggered if mat expansion panel is closed
+   * @param index: number 
+   */
+  close(index: number): void {
     this.detailedTestReport[index].closeKey = true;
     const trueKey = this.detailedTestReport.every(e => e.closeKey);
     if (trueKey) {
@@ -210,21 +232,24 @@ export class MoreDetailsComponent implements OnInit {
     this.detailedTestReport[index].frompanelOpenState = true
   }
 
-  subpanelOpenState(key, index, otherIndex?) {
-    if (key === 'from') {
-      this.detailedTestReport[index].frompanelOpenState = !this.detailedTestReport[index].frompanelOpenState;
-      this.detailedTestReport[index].topanelOpenState = true;
-      this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = true;
-    }
-    else if (key === 'to') {
-      this.detailedTestReport[index].topanelOpenState = !this.detailedTestReport[index].topanelOpenState;
-      this.detailedTestReport[index].frompanelOpenState = true;
-      this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = true;
-    }
-    else {
-      this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = !this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus;
-      this.detailedTestReport[index].topanelOpenState = true;
-      this.detailedTestReport[index].frompanelOpenState = true;
+  subpanelOpenState(key: string, index: number, otherIndex?: number) {
+    if (index !== undefined && index !== null) {
+      const { frompanelOpenState, topanelOpenState, otherParties } = this.detailedTestReport[index];
+      switch (key) {
+        case 'from':
+          this.detailedTestReport[index].frompanelOpenState = !frompanelOpenState;
+          this.detailedTestReport[index].topanelOpenState = true;
+          break;
+        case 'to':
+          this.detailedTestReport[index].topanelOpenState = !topanelOpenState;
+          this.detailedTestReport[index].frompanelOpenState = true;
+          break;
+        case 'other':
+          this.detailedTestReport[index].otherParties[otherIndex].otherPartyPanelStatus = !otherParties[otherIndex].otherPartyPanelStatus;
+          this.detailedTestReport[index].topanelOpenState = true;
+          this.detailedTestReport[index].frompanelOpenState = true;
+          break;
+      }
     }
   }
   /**
@@ -323,4 +348,10 @@ export class MoreDetailsComponent implements OnInit {
       this.snackBarService.openSnackBar('Error loading downloading report', 'Ok');
     }
   }
+  /**
+   * get mat expansion panel icon by type
+   * @param type: boolean
+   * @returns: string
+   */
+  getIconByType(flag: boolean): string { return (flag) ? 'keyboard_arrow_down' : 'keyboard_arrow_up'; }
 }

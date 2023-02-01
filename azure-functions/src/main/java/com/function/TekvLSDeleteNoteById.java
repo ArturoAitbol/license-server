@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.function.auth.Resource;
+import com.function.clients.FCMClient;
 import com.function.clients.HttpClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
@@ -89,30 +90,23 @@ public class TekvLSDeleteNoteById {
             context.getLogger().info("Note deleted successfully.");
 
             // Send notifications to subaccount users
-            String NOTIFICATIONS_ENDPOINT = System.getenv("NOTIFICATIONS_ENDPOINT");
-            String NOTIFICATIONS_AUTH_KEY = System.getenv("NOTIFICATIONS_AUTH_KEY");
-
             deviceTokensStmt.setString(1, subaccountId);
+            context.getLogger().info("Execute SQL statement: " + deviceTokensStmt);
             rs = deviceTokensStmt.executeQuery();
-
-            String deviceToken;
-            JSONObject body = new JSONObject();
-            JSONObject notification = new JSONObject();
-            notification.put("title", "Closed note!");
-            notification.put("body", userEmail + ": " + noteContent);
-            body.put("notification", notification);
-            HashMap<String, String> headers = new HashMap<>();
-            headers.put("authorization", NOTIFICATIONS_AUTH_KEY);
-
+            JSONArray deviceTokens = new JSONArray();
             while (rs.next()) {
-                String finalDeviceToken = rs.getString("device_token");
-                body.put("to", finalDeviceToken);
-                String bodyString = body.toString();
+                deviceTokens.put(rs.getString("device_token"));
+            }
+
+            if(!deviceTokens.isEmpty()){
+                String noteAuthor = userEmail.split("@")[0];
+                String notificationBody = noteAuthor + ":\n" + noteContent;
                 try {
-                    context.getLogger().info("Sending notification to: " + finalDeviceToken);
-                    JSONObject response = HttpClient.post(NOTIFICATIONS_ENDPOINT, bodyString, headers);
+                    context.getLogger().info("Sending notification to: " + deviceTokens);
+                    JSONObject response = FCMClient.sendPushNotification("Note closed!",notificationBody,deviceTokens);
+                    context.getLogger().info("Notifications sent: " + response);
                 } catch (Exception e) {
-                    context.getLogger().warning("Could not send notification to " + finalDeviceToken);
+                    context.getLogger().warning("Could not send notification to " + deviceTokens);
                     context.getLogger().warning("Notification exception: " + e.getMessage());
                 }
             }

@@ -7,11 +7,17 @@ import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder
 import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
 import { CtaasNotesComponent } from './ctaas-notes/ctaas-notes.component';
 import { MoreDetailsComponent } from './more-details/more-details.component';
+import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'report-dashboards', pathMatch: 'full' },
   {
     path: 'report-dashboards',
+    component: CtaasDashboardComponent,
+    canActivate: [RoleGuard]
+  },
+  {
+    path: 'visualization',
     component: CtaasDashboardComponent,
     canActivate: [RoleGuard]
   },
@@ -38,6 +44,11 @@ const routes: Routes = [
   {
     path: 'details',
     component: MoreDetailsComponent,
+    canActivate: [RoleGuard]
+  },
+  {
+    path: 'reports',
+    component: CtaasTestReportsComponent,
     canActivate: [RoleGuard]
   }
 ];

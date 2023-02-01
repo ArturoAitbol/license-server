@@ -1,9 +1,22 @@
 export const permissions = {
     'tekvizion.DevicesAdmin': {
-        paths: [],
-        elements: [],
+        paths: [
+            'devices',
+            'consumption-matrix',
+            'redirect'
+        ],
+        elements: [
+            'addDevice',
+            'modifyDevice',
+            'deleteDevice',
+            'editConsumptionMatrix'
+        ],
         tables: {
             customerOptions: [],
+            deviceOptions: [
+                'MODIFY_DEVICE',
+                'DELETE_DEVICE',
+            ],
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
@@ -15,10 +28,12 @@ export const permissions = {
     'tekvizion.FullAdmin': {
         paths: [
             'dashboard',
+            'visualization',
             'customer',
             'consumption',
             'projects',
             'licenses',
+            'devices',
             'redirect',
             'spotlight',
             'report-dashboards',
@@ -26,7 +41,9 @@ export const permissions = {
             'stakeholders',
             'setup',
             'subscriptions-overview',
-            'details'
+            'details',
+            'reports',
+            'consumption-matrix'
         ],
         elements: [
             'addCustomer',
@@ -44,6 +61,7 @@ export const permissions = {
             'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
+            'resetFilter',
         ],
         tables: {
             customerOptions: [
@@ -54,7 +72,8 @@ export const permissions = {
                 'VIEW_SUBACC_ADMIN_EMAILS',
                 'VIEW_CTAAS_DASHBOARD',
                 'MODIFY_ACCOUNT',
-                'DELETE_ACCOUNT'],
+                'DELETE_ACCOUNT'
+            ],
             licenseOptions: [
                 'MODIFY_LICENSE',
                 'DELETE_LICENSE'],
@@ -80,12 +99,20 @@ export const permissions = {
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
             ],
-            noteOptions: []
+            noteOptions: [],
+            deviceOptions: [
+                'MODIFY_DEVICE',
+                'DELETE_DEVICE',
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
+            ]
         }
     },
     'tekvizion.SalesAdmin': {
         paths: [
             'dashboard',
+            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -94,7 +121,8 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
-            'subscriptions-overview'
+            'subscriptions-overview',
+            'consumption-matrix'
         ],
         elements: [
             'showBanner',
@@ -127,10 +155,12 @@ export const permissions = {
     'tekvizion.ConfigTester': {
         paths: [
             'dashboard',
+            'visualization',
             'customer',
             'consumption',
             'projects',
             'licenses',
+            'devices',
             'redirect',
             'apps',
             'spotlight',
@@ -138,7 +168,9 @@ export const permissions = {
             'test-suites',
             'stakeholders',
             'setup',
-            'details'
+            'details',
+            'reports',
+            'consumption-matrix'
         ],
         elements: [
             'addProject',
@@ -146,6 +178,7 @@ export const permissions = {
             'addTestSuite',
             'showBanner',
             'showUserToggle',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -175,11 +208,16 @@ export const permissions = {
                 'DELETE_STAKEHOLDER'
             ],
             subscriptionsOverviewOptions: [],
+            deviceOptions: [],
+            testReportsOptions: [
+                'VIEW_REPORT',
+            ]
         }
     },
     'distributor.FullAdmin': {
         paths: [
             'dashboard',
+            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -214,6 +252,7 @@ export const permissions = {
     'customer.FullAdmin': {
         paths: [
             'dashboard',
+            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -224,7 +263,8 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'view-profile',
@@ -233,6 +273,7 @@ export const permissions = {
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -256,12 +297,16 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
             ]
         }
     },
     'customer.SubaccountAdmin': {
         paths: [
             'dashboard',
+            'visualization',
             'customer',
             'consumption',
             'projects',
@@ -272,7 +317,8 @@ export const permissions = {
             'report-dashboards',
             'stakeholders',
             'notes',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'view-profile',
@@ -281,6 +327,7 @@ export const permissions = {
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [
@@ -304,6 +351,9 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
             ]
         }
     },
@@ -313,14 +363,17 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
+            'visualization',
             'stakeholders',
             'notes',
-            'details'
+            'details',
+            'reports'
         ],
         elements: [
             'showUserToggle',
             'view-profile',
-            'showLatestNote'
+            'showLatestNote',
+            'resetFilter'
         ],
         tables: {
             customerOptions: [],
@@ -331,6 +384,9 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_REPORT',
             ]
         }
     }

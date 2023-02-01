@@ -17,7 +17,7 @@
 <ng-template #reportView>
     <div class="row mt-3">
         <div class="col-4">
-            <h1 class="text-start text-s" *ngIf="type===CALL_RELIABILITY">Call Reliability</h1>
+            <h1 class="text-start text-s" *ngIf="type===CALL_RELIABILITY">Calling Reliability</h1>
             <h1 class="text-start text-s" *ngIf="type===FEATURE_FUNCTIONALITY">Feature Functionality</h1>
         </div>
         <div class="col-8 text-right">
@@ -48,10 +48,8 @@
             <section class="table-section">
                 <mat-card class="card">
                     <mat-card-content [style.max-height.px]="tableMaxHeight">
-                        <app-data-table class="table-container mat-elevation-z8" 
-                            [tableData]="reportResponse.endpoints"
-                            [isLoadingResults]="isLoadingResults" 
-                            [isRequestCompleted]="isRequestCompleted"
+                        <app-data-table class="table-container mat-elevation-z8" [tableData]="reportResponse.endpoints"
+                            [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
                             [tableColumns]="endpointDisplayedColumns"></app-data-table>
                     </mat-card-content>
                 </mat-card>
@@ -80,231 +78,217 @@
         <mat-card class="card" style="overflow: auto;height: 400px;">
             <mat-card-content>
                 <div>
-                    <ng-container>
-                        <ng-container *ngIf="detailedTestReport.length > 0">
-                            <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
-                                class="accordian-container">
-                                <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
-                                    <mat-expansion-panel-header style="position: relative;">
-                                        <mat-panel-title style="width:25%">
-                                            <span class="testcasename" [title]="item.testCaseName">
-                                                {{item.testCaseName | na}}
-                                            </span>
-                                        </mat-panel-title>
-                                        <mat-panel-title style="width:25%">
-                                            {{item.startTime | na}}
-                                        </mat-panel-title>
-                                        <mat-panel-title style="width:25%">
-                                            {{item.status | na}}
-                                        </mat-panel-title>
-                                        <mat-panel-title style="width:25%">
-                                            {{item.errorCategory | na}}
-                                        </mat-panel-title>
-                                        <mat-icon style="position: absolute;right: 20px;">{{item.panelOpenState ?
-                                            'keyboard_arrow_down' :
-                                            'keyboard_arrow_up'
-                                            }}</mat-icon>
-                                    </mat-expansion-panel-header>
-                                    <div style="padding: 1%;">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <table class="table table-hover">
-                                                    <tbody>
-                                                        <tr
-                                                            *ngFor="let subitems of detailedTestFeatureandCallReliability">
-                                                            <th scope="row" style="width: 25%;"> {{subitems.header |
-                                                                na}} </th>
-                                                            <td> {{item[subitems.value] | na}}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="col-6">
-                                                <table>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <mat-accordion>
-                                                                    <mat-expansion-panel hideToggle
-                                                                        [expanded]="obj['key' + i] === 1"
-                                                                        (opened)="setStep('from', 1, i)"
-                                                                        (click)="subpanelOpenState('from', i)">
-                                                                        <mat-expansion-panel-header
-                                                                            style="background-color: white;">
-                                                                            <mat-panel-title>
-                                                                                <ul class="inner-accor">
-                                                                                    <li> From </li>
-                                                                                    <li> {{item.from?.DID | na}} </li>
-                                                                                </ul>
-                                                                            </mat-panel-title>
-                                                                            <mat-icon>{{(item.frompanelOpenState) ?
-                                                                                'keyboard_arrow_down' :
-                                                                                'keyboard_arrow_up' }}</mat-icon>
-
-                                                                        </mat-expansion-panel-header>
-                                                                        <ng-container
-                                                                            *ngIf="item.from.mediaStats && item.from.mediaStats.length > 0">
-                                                                            <form>
-                                                                                <mat-form-field
-                                                                                    (click)="$event.stopPropagation()">
-                                                                                    <mat-label> Select Time Stamp
-                                                                                    </mat-label>
-                                                                                    <mat-select
-                                                                                        [(ngModel)]="fromMediaStats"
-                                                                                        name="fromtimestamp"
-                                                                                        (selectionChange)="getSelectedFromTimeStamp(fromMediaStats)"
-                                                                                        placeholder="Select Time Stamp">
-                                                                                        <mat-option
-                                                                                            *ngFor="let fromtimestamp of item.from.mediaStats"
-                                                                                            [value]="fromtimestamp">
-                                                                                            {{fromtimestamp.timestamp}}
-                                                                                        </mat-option>
-                                                                                    </mat-select>
-                                                                                </mat-form-field>
-                                                                            </form>
-                                                                            <table class="table table-hover">
-                                                                                <tbody>
-                                                                                    <tr
-                                                                                        *ngFor="let key of mediaStatsDisplayedColumns">
-                                                                                        <th scope="row">
-                                                                                            {{key.header}}
-                                                                                        </th>
-                                                                                        <td> {{selectedFromMediaStats[key.value] | na}}                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </ng-container>
-                                                                        <h3 *ngIf="item.fromnoDataFoundFlag || !(item.from.mediaStats)"
-                                                                            class="text-center"> {{NO_MEDIA_STATS_MSG}}
-                                                                        </h3>
-                                                                    </mat-expansion-panel>
-                                                                </mat-accordion>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <mat-accordion>
-                                                                    <mat-expansion-panel hideToggle
-                                                                        [expanded]="obj['key' + i] === 2"
-                                                                        (opened)="setStep('to',2, i)"
-                                                                        (click)="subpanelOpenState('to', i)">
-                                                                        <mat-expansion-panel-header
-                                                                            style="background-color: white;">
-                                                                            <mat-panel-title>
-                                                                                <ul class="inner-accor">
-                                                                                    <li> To </li>
-                                                                                    <li> {{item.to?.DID | na}} </li>
-                                                                                </ul>
-                                                                            </mat-panel-title>
-                                                                            <mat-icon>{{(item.topanelOpenState) ?
-                                                                                'keyboard_arrow_down' :
-                                                                                'keyboard_arrow_up' }}</mat-icon>
-                                                                        </mat-expansion-panel-header>
-                                                                        <ng-container
-                                                                            *ngIf="item.to.mediaStats && item.to.mediaStats.length > 0">
+                    <ng-container *ngIf="detailedTestReport.length > 0">
+                        <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
+                            class="accordian-container">
+                            <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
+                                <mat-expansion-panel-header style="position: relative;">
+                                    <mat-panel-title style="width:25%">
+                                        <span class="testcasename" [title]="item.testCaseName">
+                                            {{item.testCaseName | na}}
+                                        </span>
+                                    </mat-panel-title>
+                                    <mat-panel-title style="width:25%">
+                                        {{item.startTime | na}}
+                                    </mat-panel-title>
+                                    <mat-panel-title style="width:25%">
+                                        {{item.status | na}}
+                                    </mat-panel-title>
+                                    <mat-panel-title style="width:25%">
+                                        {{item.errorCategory | na}}
+                                    </mat-panel-title>
+                                    <mat-icon style="position: absolute;right: 20px;">
+                                        {{item.panelOpenState ?
+                                        'keyboard_arrow_down' :
+                                        'keyboard_arrow_up'
+                                        }}</mat-icon>
+                                </mat-expansion-panel-header>
+                                <div style="padding: 1%;">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <table class="table table-hover">
+                                                <tbody>
+                                                    <tr *ngFor="let subitems of detailedTestFeatureandCallReliability">
+                                                        <th scope="row" style="width: 25%;"> {{subitems.header |
+                                                            na}} </th>
+                                                        <td> {{item[subitems.value] | na}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-6" *ngIf="!item.panelOpenState">
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <mat-accordion>
+                                                                <mat-expansion-panel hideToggle
+                                                                    [expanded]="obj['key' + i] === 1"
+                                                                    (opened)="setStep('from', 1, i)"
+                                                                    (click)="subpanelOpenState('from', i)">
+                                                                    <mat-expansion-panel-header
+                                                                        style="background-color: white;">
+                                                                        <mat-panel-title>
+                                                                            <ul class="inner-accor">
+                                                                                <li> From </li>
+                                                                                <li> {{item.from?.DID | na}} </li>
+                                                                            </ul>
+                                                                        </mat-panel-title>
+                                                                        <mat-icon>{{getIconByType(item.frompanelOpenState)}}</mat-icon>
+                                                                    </mat-expansion-panel-header>
+                                                                    <ng-container
+                                                                        *ngIf="item.from && item.from.mediaStats && item.from.mediaStats.length > 0; else noMediaStats">
+                                                                        <form>
                                                                             <mat-form-field
                                                                                 (click)="$event.stopPropagation()">
-                                                                                <mat-select [(ngModel)]="toMediaStats"
-                                                                                    name="totimestamp"
-                                                                                    (selectionChange)="getSelectedToTimeStamp(toMediaStats)"
+                                                                                <mat-label> Select Time Stamp
+                                                                                </mat-label>
+                                                                                <mat-select [(ngModel)]="fromMediaStats"
+                                                                                    name="fromtimestamp"
+                                                                                    (selectionChange)="getSelectedFromTimeStamp(fromMediaStats)"
                                                                                     placeholder="Select Time Stamp">
                                                                                     <mat-option
-                                                                                        *ngFor="let totimestamp of item.to.mediaStats"
-                                                                                        [value]="totimestamp">
-                                                                                        {{totimestamp.timestamp}}
+                                                                                        *ngFor="let fromtimestamp of item.from.mediaStats"
+                                                                                        [value]="fromtimestamp">
+                                                                                        {{fromtimestamp.timestamp}}
                                                                                     </mat-option>
                                                                                 </mat-select>
                                                                             </mat-form-field>
-                                                                            <table class="table table-hover">
-                                                                                <tbody>
-                                                                                    <tr
-                                                                                        *ngFor="let key of mediaStatsDisplayedColumns">
-                                                                                        <th scope="row">
-                                                                                            {{key.header}}
-                                                                                        </th>
-                                                                                        <td> {{selectedToMediaStats[key.value] | na}}
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </ng-container>
-                                                                        <h3 *ngIf="item.tonoDataFoundFlag || !(item.to.mediaStats)"
-                                                                            class="text-center"> {{NO_MEDIA_STATS_MSG}}
-                                                                        </h3>
-                                                                    </mat-expansion-panel>
+                                                                        </form>
+                                                                        <table class="table table-hover">
+                                                                            <tbody>
+                                                                                <tr
+                                                                                    *ngFor="let key of mediaStatsDisplayedColumns">
+                                                                                    <th scope="row">
+                                                                                        {{key.header}}
+                                                                                    </th>
+                                                                                    <td> {{selectedFromMediaStats[key.value]
+                                                                                        | na}} </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </ng-container>
+                                                                </mat-expansion-panel>
+                                                            </mat-accordion>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <mat-accordion>
+                                                                <mat-expansion-panel hideToggle
+                                                                    [expanded]="obj['key' + i] === 2"
+                                                                    (opened)="setStep('to',2, i)"
+                                                                    (click)="subpanelOpenState('to', i)">
+                                                                    <mat-expansion-panel-header
+                                                                        style="background-color: white;">
+                                                                        <mat-panel-title>
+                                                                            <ul class="inner-accor">
+                                                                                <li> To </li>
+                                                                                <li> {{item.to?.DID | na}} </li>
+                                                                            </ul>
+                                                                        </mat-panel-title>
+                                                                        <mat-icon>{{getIconByType(item.topanelOpenState)}}</mat-icon>
+                                                                    </mat-expansion-panel-header>
+                                                                    <ng-container
+                                                                        *ngIf="item.to && item.to.mediaStats && item.to.mediaStats.length > 0; else noMediaStats">
+                                                                        <mat-form-field
+                                                                            (click)="$event.stopPropagation()">
+                                                                            <mat-select [(ngModel)]="toMediaStats"
+                                                                                name="totimestamp"
+                                                                                (selectionChange)="getSelectedToTimeStamp(toMediaStats)"
+                                                                                placeholder="Select Time Stamp">
+                                                                                <mat-option
+                                                                                    *ngFor="let totimestamp of item.to.mediaStats"
+                                                                                    [value]="totimestamp">
+                                                                                    {{totimestamp.timestamp}}
+                                                                                </mat-option>
+                                                                            </mat-select>
+                                                                        </mat-form-field>
+                                                                        <table class="table table-hover">
+                                                                            <tbody>
+                                                                                <tr
+                                                                                    *ngFor="let key of mediaStatsDisplayedColumns">
+                                                                                    <th scope="row">
+                                                                                        {{key.header}}
+                                                                                    </th>
+                                                                                    <td> {{selectedToMediaStats[key.value]
+                                                                                        | na}}
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </ng-container>
+                                                                </mat-expansion-panel>
 
-                                                                </mat-accordion>
-                                                            </td>
-                                                        </tr>
-                                                        <tr *ngFor="let data of item.otherParties; let j = index">
-                                                            <td>
-                                                                <mat-accordion>
-                                                                    <mat-expansion-panel hideToggle
-                                                                        [expanded]="obj['key' + i] === (3 + j)"
-                                                                        (opened)="setStep('other',(3 + j), i)"
-                                                                        hideToggle
-                                                                        (click)="subpanelOpenState('other', i, j)">
-                                                                        <mat-expansion-panel-header
-                                                                            style="background-color: white;">
-                                                                            <mat-panel-title>
-                                                                                <ul class="inner-accor">
-                                                                                    <li> Other party </li>
-                                                                                    <li> {{data?.DID | na}} </li>
-                                                                                </ul>
-                                                                            </mat-panel-title>
-                                                                            <mat-icon>{{(item.otherPartyPanelStatus)
-                                                                                ?
-                                                                                'keyboard_arrow_down' :
-                                                                                'keyboard_arrow_up' }}</mat-icon>
-                                                                        </mat-expansion-panel-header>
-                                                                        <ng-container
-                                                                            *ngIf="data.mediaStats.length > 0">
-                                                                            <mat-form-field
-                                                                                (click)="$event.stopPropagation()">
-                                                                                <mat-select
-                                                                                    [(ngModel)]="otherpartyMediaStat"
-                                                                                    name="otherPartytimestamp"
-                                                                                    (selectionChange)="getSelectedToTimeStamp(otherpartyMediaStat)"
-                                                                                    placeholder="Select Time Stamp">
-                                                                                    <mat-option
-                                                                                        *ngFor="let totimestamp of data.mediaStats"
-                                                                                        [value]="totimestamp">
-                                                                                        {{totimestamp.timestamp}}
-                                                                                    </mat-option>
-                                                                                </mat-select>
-                                                                            </mat-form-field>
-                                                                            <table class="table table-hover">
-                                                                                <tbody>
-                                                                                    <tr
-                                                                                        *ngFor="let key of mediaStatsDisplayedColumns">
-                                                                                        <th scope="row">
-                                                                                            {{key.header}}
-                                                                                        </th>
-                                                                                        <td> {{otherPartiesMediaStats[key.value] | na}}
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </ng-container>
-                                                                        <h3 *ngIf="item.otherPartynoDataFoundFlag || item.otherParties.length===0"
-                                                                            class=" text-center">{{NO_MEDIA_STATS_MSG}}
-                                                                        </h3>
-                                                                    </mat-expansion-panel>
-                                                                </mat-accordion>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                            </mat-accordion>
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngFor="let data of item.otherParties; let j = index">
+                                                        <td>
+                                                            <mat-accordion>
+                                                                <mat-expansion-panel hideToggle
+                                                                    [expanded]="obj['key' + i] === (3 + j)"
+                                                                    (opened)="setStep('other',(3 + j), i)" hideToggle
+                                                                    (click)="subpanelOpenState('other', i, j)">
+                                                                    <mat-expansion-panel-header
+                                                                        style="background-color: white;">
+                                                                        <mat-panel-title>
+                                                                            <ul class="inner-accor">
+                                                                                <li> Other party </li>
+                                                                                <li> {{data?.DID | na}} </li>
+                                                                            </ul>
+                                                                        </mat-panel-title>
+                                                                        <mat-icon>{{getIconByType(data.otherPartyPanelStatus)}}</mat-icon>
+                                                                    </mat-expansion-panel-header>
+                                                                    <ng-container
+                                                                        *ngIf="data.mediaStats && data.mediaStats.length > 0; else noMediaStats">
+                                                                        <mat-form-field
+                                                                            (click)="$event.stopPropagation()">
+                                                                            <mat-select
+                                                                                [(ngModel)]="otherpartyMediaStat"
+                                                                                name="otherPartytimestamp"
+                                                                                (selectionChange)="getSelectedToTimeStamp(otherpartyMediaStat)"
+                                                                                placeholder="Select Time Stamp">
+                                                                                <mat-option
+                                                                                    *ngFor="let totimestamp of data.mediaStats"
+                                                                                    [value]="totimestamp">
+                                                                                    {{totimestamp.timestamp}}
+                                                                                </mat-option>
+                                                                            </mat-select>
+                                                                        </mat-form-field>
+                                                                        <table class="table table-hover">
+                                                                            <tbody>
+                                                                                <tr
+                                                                                    *ngFor="let key of mediaStatsDisplayedColumns">
+                                                                                    <th scope="row">
+                                                                                        {{key.header}}
+                                                                                    </th>
+                                                                                    <td> {{otherPartiesMediaStats[key.value]
+                                                                                        | na}}
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </ng-container>
+                                                                </mat-expansion-panel>
+                                                            </mat-accordion>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-                                </mat-expansion-panel>
-                            </mat-accordion>
-                        </ng-container>
-                        <h3 class="no-data-found" *ngIf="detailedTestReport.length === 0">No Data to display</h3>
+                                </div>
+                            </mat-expansion-panel>
+                        </mat-accordion>
                     </ng-container>
+                    <h3 class="no-data-found" *ngIf="detailedTestReport.length === 0">No Data to display</h3>
                 </div>
             </mat-card-content>
         </mat-card>
     </section>
+</ng-template>
+
+<ng-template #noMediaStats>
+    <h3 class=" text-center">{{NO_MEDIA_STATS_MSG}}</h3>
 </ng-template>

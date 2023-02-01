@@ -20,12 +20,9 @@ export class StakeHolderService {
    * get stakeholder list details
    * @returns: Observable<any>
    */
-  public getStakeholderList(): Observable<any> {
+  public getStakeholderList(subaccountId: any): Observable<any> {
     let params = new HttpParams();
-    const subaccountDetails = this.subaacountService.getSelectedSubAccount();
-    const { id, subaccountId } = subaccountDetails;
-    const SUB_ACCOUNT_ID = (id) ? id : subaccountId;
-    params = params.set('subaccountId', SUB_ACCOUNT_ID);
+    params = params.set('subaccountId', subaccountId);
     const headers = this.getHeaders();
     return this.httpClient.get(this.GET_STAKE_HOLDER_LIST, { headers, params });
   }

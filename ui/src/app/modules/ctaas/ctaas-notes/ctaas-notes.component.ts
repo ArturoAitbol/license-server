@@ -27,6 +27,7 @@ export class CtaasNotesComponent implements OnInit {
     isLoadingResults = false;
     isRequestCompleted = false;
     toggleStatus = false;
+    private subaccountDetails: any;
     readonly CLOSE_NOTE = 'Close Note';
     readonly ADD_NOTE = 'Close Note';
     readonly VIEW_DASHBOARD = 'View Dashboard';
@@ -42,8 +43,7 @@ export class CtaasNotesComponent implements OnInit {
         private dialogService: DialogService,
         private noteService: NoteService,
         private subAccountService: SubAccountService,
-        private datePipe: DatePipe
-    ) { }
+        private datePipe: DatePipe) {}
     /**
      * calculate table height based on the window height
      */
@@ -80,9 +80,10 @@ export class CtaasNotesComponent implements OnInit {
      * fetch note data
      */
     fetchNoteList(): void {
+        this.subaccountDetails = this.subAccountService.getSelectedSubAccount();
         this.isRequestCompleted = false;
         this.isLoadingResults = true;
-        this.noteService.getNoteList(this.subAccountService.getSelectedSubAccount().id).subscribe((res) => {
+        this.noteService.getNoteList(this.subaccountDetails.id).subscribe((res) => {
             this.isRequestCompleted = true;
             this.notesDataBk = res.notes.map(note => {
                 note.openDate = this.datePipe.transform(new Date(note.openDate), 'yyyy-MM-dd  h:mm:ss');
@@ -211,7 +212,6 @@ export class CtaasNotesComponent implements OnInit {
     onChangeToggle(flag: boolean): void {
         this.toggleStatus = flag;
         if (flag) {
-            console.log(this.actionMenuOptions);
             let closeNoteIndex = this.actionMenuOptions.indexOf('Close Note');
             if (closeNoteIndex != -1)
                 this.actionMenuOptions.splice(closeNoteIndex, 1);

@@ -197,7 +197,18 @@ public class RBACVerifier {
                 true,
                 true
         ));
-
+        verifiers.put(CREATE_CONSUMPTION_MATRIX, new ExpectedPermissions(
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
         verifiers.put(DELETE_ADMIN_EMAIL, new ExpectedPermissions(true,
                 false,
                 false,
@@ -366,7 +377,18 @@ public class RBACVerifier {
                 true,
                 true
         ));
-
+        verifiers.put(DELETE_CONSUMPTION_MATRIX, new ExpectedPermissions(
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
         verifiers.put(DELETE_FEATURE_TOGGLE_EXCEPTION, new ExpectedPermissions(
                 false,
                 false,
@@ -379,8 +401,6 @@ public class RBACVerifier {
                 false,
                 false
         ));
-
-
         verifiers.put(GET_ALL_BUNDLES, new ExpectedPermissions(true,
                 true,
                 true,
@@ -402,6 +422,16 @@ public class RBACVerifier {
                 true,
                 true));
         verifiers.put(GET_ALL_DEVICES, new ExpectedPermissions(true,
+                true,
+                true,
+                true,
+                true,
+                false,
+                true,
+                true,
+                true,
+                false));
+        verifiers.put(GET_ALL_DEVICE_TYPES, new ExpectedPermissions(true,
                 true,
                 true,
                 true,
@@ -563,6 +593,18 @@ public class RBACVerifier {
                 true,
                 true,
                 true));
+        verifiers.put(GET_CONSUMPTION_MATRIX, new ExpectedPermissions(
+                true,
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
         verifiers.put(MODIFY_CUSTOMER, new ExpectedPermissions(true,
                 false,
                 false,
@@ -684,6 +726,18 @@ public class RBACVerifier {
                 true,
                 true));
         verifiers.put(MODIFY_FEATURE_TOGGLE, new ExpectedPermissions(
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+        ));
+        verifiers.put(MODIFY_CONSUMPTION_MATRIX, new ExpectedPermissions(
                 false,
                 false,
                 false,

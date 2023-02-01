@@ -24,6 +24,7 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   testSuites: any = [];
   isLoadingResults = true;
   isRequestCompleted = false;
+  private subaccountDetails: any;
   // readonly EXECUTE_ON_DEMAND: string = 'Execute OnDemand';
   readonly MODIFY_TEST_SUITE: string = 'Edit';
   readonly DELETE_TEST_SUITE: string = 'Delete';
@@ -42,7 +43,7 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
     private snackBarService: SnackBarService,
     private msalService: MsalService,
     private subaccountService: SubAccountService,
-    private ctaasTestSuiteService: CtaasTestSuiteService) { }
+    private ctaasTestSuiteService: CtaasTestSuiteService) {}
 
   @HostListener('window:resize')
   sizeChange() {
@@ -52,11 +53,12 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   private getActionMenuOptions() {
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"ctaasTestSuiteOptions")
-    if (this.currentCustomer.testCustomer === false) {
+    //was talking with paolo and he said that is not necessary to block the delete whether is test customer or not
+    //if (this.currentCustomer.testCustomer === false) {
       const action = (action) => action === 'Delete';
       const index = this.actionMenuOptions.findIndex(action);
       this.actionMenuOptions.splice(index,);
-    }
+    //}
   }
 
   private calculateTableHeight() {
@@ -70,8 +72,9 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.calculateTableHeight();
-    this.currentCustomer = this.subaccountService.getSelectedSubAccount();
+    //this.currentCustomer = this.subaccountService.getSelectedSubAccount();
     this.initColumns();
     this.fetchDataToDisplay();
     this.getActionMenuOptions();
@@ -88,7 +91,7 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   }
 
   private fetchDataToDisplay(): void {
-    this.ctaasTestSuiteService.getTestSuitesBySubAccount(this.currentCustomer.id).subscribe((response: any) => {
+    this.ctaasTestSuiteService.getTestSuitesBySubAccount(this.subaccountDetails.id).subscribe((response: any) => {
       this.testSuites = response.ctaasTestSuites;
       this.isRequestCompleted = true;
       this.isLoadingResults = false;

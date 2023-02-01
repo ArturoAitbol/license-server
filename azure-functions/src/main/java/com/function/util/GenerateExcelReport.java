@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -23,7 +24,7 @@ public class GenerateExcelReport {
     }
 
 
-    private static List<String> iterationTestResultHeaders = new ArrayList<String>();
+    private static final List<String> iterationTestResultHeaders = new ArrayList<String>();
 
     static {
         iterationTestResultHeaders.add("Test Case");
@@ -110,19 +111,18 @@ public class GenerateExcelReport {
         Font blackFontHeader = workbook.createFont();
         blackFontHeader.setBold(true);
         blackLabel.setFont(blackFontHeader);
-        JSONObject summaryResponse = (JSONObject) jsonObject.get("summary");
-        final String total = summaryResponse.get("total").toString() == "null" ? "" : summaryResponse.get("total").toString();
-        final String passed = summaryResponse.get("passed").toString() == "null" ? "" : summaryResponse.get("passed").toString();
-        final String failed = summaryResponse.get("failed").toString() == "null" ? "" : summaryResponse.get("failed").toString();
-        final String startTime = summaryResponse.get("startTime").toString() == "null" ? "" : summaryResponse.get("startTime").toString();
-        final String endTime = summaryResponse.get("endTime").toString() == "null" ? "" : summaryResponse.get("endTime").toString();
-
-        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Test Cases Executed", total);
-        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Passed", passed);
-        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Failed", failed);
-        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "Start Time", startTime);
-        createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, "End Time", endTime);
-
+        JSONObject summaryResponse = jsonObject.has("summary") ? (JSONObject) jsonObject.get("summary") : new JSONObject();
+        StringJoiner stringJoiner = new StringJoiner(" | ");
+        for (SUMMARY_REPORT_PARAMS summaryParams : SUMMARY_REPORT_PARAMS.values()) {
+            String val = "";
+            if (summaryResponse.has(summaryParams.value)) {
+                final String tmp = summaryResponse.get(summaryParams.value).toString();
+                val = tmp.equalsIgnoreCase("null") ? "" : tmp;
+            }
+            createSpotlightSummaryRow(index++, summarySheet, whiteLabel, blackLabel, summaryParams.key, val);
+            stringJoiner.add(String.format("%s:%s", summaryParams.key, val));
+        }
+        context.getLogger().info("Summary Results: " + stringJoiner);
         getEndpointResources(context, summarySheet, row, cell, blackLabel, whiteLabel, redLabel, whiteUnboldLabel, index, jsonObject);
 
     }
@@ -179,9 +179,6 @@ public class GenerateExcelReport {
         addCell(row, cell, blackLabel, count++, null);
         addCell(row, cell, blackLabel, count++, null);
 
-//        addCell(row, cell, blackLabel, count++, "State");
-//        addCell(row, cell, blackLabel, count++, "City");
-//        addCell(row, cell, blackLabel, count++, "Zipcode");
 
         JSONArray endpointsResponse = (JSONArray) jsonObject.get("endpoints");
         for (int i = 0; i < endpointsResponse.length(); i++) {
@@ -202,7 +199,7 @@ public class GenerateExcelReport {
      * @param whiteLabel
      * @param redLabel
      * @param index
-     * @param jsonObject: {summary:{},endpoints:{},results:[],type:""}
+     * @param jsonObject:  {summary:{},endpoints:{},results:[],type:""}
      */
     private void generateTestReportByType(ExecutionContext context, XSSFSheet summarySheet, Row row, Cell cell, XSSFCellStyle blackLabel, XSSFCellStyle whiteLabel, XSSFCellStyle redLabel, int index, JSONObject jsonObject) {
         context.getLogger().info("Generating Test Cases Details Report");
@@ -213,15 +210,15 @@ public class GenerateExcelReport {
         summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + columnnum + ":" + "I" + columnnum));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
         final String REPORT_TYPE = jsonObject.get("type").toString().equalsIgnoreCase("LTS") ? "Feature Functionality"
-                : "Call Reliability";
-        if ((JSONArray) jsonObject.get("results") != null)
+                : "Calling Reliability";
+        if (jsonObject.get("results") != null)
             addCell(row, null, whiteLabel, count++, REPORT_TYPE);
         count = 0;
         row = summarySheet.createRow(index++);
         for (String header : iterationTestResultHeaders) {
             cell = addCell(row, cell, whiteLabel, count++, header);
         }
-        JSONArray testResult = jsonObject.get("results")==null ? new JSONArray() :(JSONArray) jsonObject.get("results");
+        JSONArray testResult = jsonObject.get("results") == null ? new JSONArray() : (JSONArray) jsonObject.get("results");
         for (int i = 0; i < testResult.length(); i++) {
             count = 0;
             row = summarySheet.createRow(index++);
@@ -236,7 +233,7 @@ public class GenerateExcelReport {
     }
 
     private void generateEndpointsReport(ExecutionContext context, int index, XSSFSheet workSheet, XSSFCellStyle blackLabel, XSSFCellStyle whiteUnboldStyle, JSONObject endPointResource) {
-        context.getLogger().info("inside method of createEndPointDataRow. ");
+        context.getLogger().info("Generating end points report");
         int count = 0;
         Row row = workSheet.createRow(index);
         int num = row.getRowNum() + 1;
@@ -244,70 +241,82 @@ public class GenerateExcelReport {
         whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
         workSheet.addMergedRegion(CellRangeAddress.valueOf("F" + num + ":" + "I" + num));
         whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
-        final String vendorName = endPointResource.get("vendor").toString() == "null" ? "" : endPointResource.get("vendor").toString();
-        final String modelName = endPointResource.get("model").toString() == "null" ? "" : endPointResource.get("model").toString();
-        final String did = endPointResource.get("did").toString() == "null" ? "" : endPointResource.get("did").toString();
-        final String firmwareVersion = endPointResource.get("firmwareVersion").toString() == "null" ? "" : endPointResource.get("firmwareVersion").toString();
-        final String country = endPointResource.get("country").toString() == "null" ? "" : endPointResource.get("country").toString();
-        final String state = endPointResource.get("state").toString() == "null" ? "" : endPointResource.get("state").toString();
-        final String city = endPointResource.get("city").toString() == "null" ? "" : endPointResource.get("city").toString();
-        final String zipcode = endPointResource.get("zipcode").toString() == "null" ? "" : endPointResource.get("zipcode").toString();
+        List<String> valuesList = new ArrayList<>();
+        StringJoiner stringJoiner = new StringJoiner(" | ");
+        for (ENDPOINT_REPORT_PARAMS endpointReportParams : ENDPOINT_REPORT_PARAMS.values()) {
+            String val = "";
+            if (endPointResource.has(endpointReportParams.value)) {
+                final String tmp = endPointResource.get(endpointReportParams.value).toString();
+                val = tmp.equalsIgnoreCase("null") ? "" : tmp;
+            }
+            stringJoiner.add(String.format("%s:%s", endpointReportParams.key, val));
+            valuesList.add(val);
+        }
+        String city = valuesList.get(4);
+        String state = valuesList.get(5);
+        String country = valuesList.get(6);
+        String zipcode = valuesList.get(7);
 
-        final String region = String.format("%s, %s, %s, %s",city,state,country,zipcode);
-        addCell(row, null, blackLabel, count++, vendorName + " / " + modelName);
-        addCell(row, null, whiteUnboldStyle, count++, did);
-        addCell(row, null, whiteUnboldStyle, count++, firmwareVersion);
+        context.getLogger().info("End point results: " + stringJoiner);
+        final String region = (city.isEmpty() || state.isEmpty() || country.isEmpty() || zipcode.isEmpty()) ? "" : String.format("%s, %s, %s, %s", city, state, country, zipcode);
+        addCell(row, null, blackLabel, count++, valuesList.get(0) + " / " + valuesList.get(1));
+        addCell(row, null, whiteUnboldStyle, count++, valuesList.get(2));
+        addCell(row, null, whiteUnboldStyle, count++, valuesList.get(3));
         addCell(row, null, whiteUnboldStyle, count++, null);
         addCell(row, null, whiteUnboldStyle, count++, null);
         addCell(row, null, whiteUnboldStyle, count++, region);
         addCell(row, null, whiteUnboldStyle, count++, null);
         addCell(row, null, whiteUnboldStyle, count++, null);
         addCell(row, null, whiteUnboldStyle, count++, null);
+
     }
 
 
     private void getIterationWiseTestResultsDetails(ExecutionContext context, int i, Cell cell, Row row, int index,
                                                     int count, XSSFCellStyle cellStyle, JSONObject testResultResponse) {
         context.getLogger().info("Generating iteration wise run count details ");
-        final String tcName = testResultResponse.get("testCaseName").toString() == "null" ? ""
-                : testResultResponse.get("testCaseName").toString();
-        final String tcStartTime = testResultResponse.get("startTime").toString() == "null" ? ""
-                : testResultResponse.get("startTime").toString();
-        final String tcEndTime = testResultResponse.get("endTime").toString() == "null" ? ""
-                : testResultResponse.get("endTime").toString();
-        JSONObject fromDidParticipant = (JSONObject) testResultResponse.get("from");
-        final String fromParticipant = testResultResponse.get("from").toString() == "null" ? ""
-                : fromDidParticipant.get("DID").toString();
-        JSONObject toDidParticipant = (JSONObject) testResultResponse.get("to");
-        final String toParticipant = testResultResponse.get("to").toString() == "null" ? "" : toDidParticipant.get("DID").toString();
-        JSONArray jsonArray = (JSONArray) testResultResponse.get("otherParties");
-        List<JSONObject> jsonObjects = IntStream.range(0, jsonArray.length())
-                .mapToObj(k -> (JSONObject) jsonArray.get(k))
-                .collect(Collectors.toList());
-        String otherDidParticipant = jsonObjects.stream().map(x -> x.getString("DID").toString())
-                .collect(Collectors.joining(","));
-        final String otherParticipants = otherDidParticipant.toString() == "null" ? "" : otherDidParticipant;
-        final String tcStatus = testResultResponse.get("status").toString() == "null" ? ""
-                : testResultResponse.get("status").toString();
-        final String errorCategory = testResultResponse.get("errorCategory").toString() == "null" ? ""
-                : testResultResponse.get("errorCategory").toString();
-        final String errorReason = testResultResponse.get("errorReason").toString() == "null" ? ""
-                : testResultResponse.get("errorReason").toString();
-        String testResultDetails = String.format(
-                "TestCaseName:%s | Start Time:%s | End Time:%s | From:%s | To:%s | OtherParties:%s | status:%s | Error Category:%s | Error Reason:%s",
-                tcName, tcStartTime, tcEndTime, fromDidParticipant, toDidParticipant, otherDidParticipant, tcStatus, errorCategory,
-                errorReason);
-        context.getLogger().info("testResultDetails: " + testResultDetails);
-        addCell(row, cell, cellStyle, count++, tcName);
-        addCell(row, cell, cellStyle, count++, tcStartTime);
-        addCell(row, cell, cellStyle, count++, tcEndTime);
-        addCell(row, cell, cellStyle, count++, fromParticipant);
-        addCell(row, cell, cellStyle, count++, toParticipant);
-        addCell(row, cell, cellStyle, count++, otherParticipants);
-        addCell(row, cell, cellStyle, count++, tcStatus);
-        addCell(row, cell, cellStyle, count++, errorCategory);
-        addCell(row, cell, cellStyle, count++, errorReason);
-        index++;
+        StringJoiner stringJoiner = new StringJoiner(" | ");
+        for (TEST_RESULTS_REPORT_PARAMS resultsParams : TEST_RESULTS_REPORT_PARAMS.values()) {
+            if (testResultResponse.has(resultsParams.value)) {
+                String val = "";
+                switch (resultsParams.value) {
+                    case "testCaseName":
+                    case "status":
+                    case "errorReason":
+                    case "errorCategory":
+                    case "startTime":
+                    case "endTime": {
+                        final String tmp = testResultResponse.get(resultsParams.value).toString();
+                        val = tmp.equalsIgnoreCase("null") ? "" : tmp;
+                        break;
+                    }
+                    case "from":
+                    case "to": {
+                        JSONObject jsonObject = (JSONObject) testResultResponse.get(resultsParams.value);
+                        val = jsonObject.isEmpty() || jsonObject.toString().equalsIgnoreCase("null") || !jsonObject.has("DID") ? "" : jsonObject.getString("DID");
+                        break;
+                    }
+                    case "otherParties":
+                        JSONArray jsonArray = testResultResponse.has(resultsParams.value)
+                                ? (JSONArray) testResultResponse.get(resultsParams.value)
+                                : new JSONArray();
+                        List<JSONObject> jsonObjects = IntStream.range(0, jsonArray.length())
+                                .mapToObj(k -> (JSONObject) jsonArray.get(k))
+                                .collect(Collectors.toList());
+                        String otherDidParticipant = jsonObjects.stream()
+                                .filter(e -> !e.isEmpty())
+                                .map(x -> x.has("DID") ? x.getString("DID") : "")
+                                .filter(e -> !e.isEmpty())
+                                .collect(Collectors.joining(","));
+                        val = otherDidParticipant.equalsIgnoreCase("null") ? "" : otherDidParticipant;
+                        break;
+                }
+                stringJoiner.add(String.format("%s:%s", resultsParams.name(), val));
+                addCell(row, cell, cellStyle, count++, val);
+                index++;
+            }
+        }
+        context.getLogger().info("Test ResultDetails: " + stringJoiner);
     }
 
     private XSSFCellStyle getImageStyle(XSSFWorkbook workbook) {
@@ -425,4 +434,60 @@ public class GenerateExcelReport {
         return pict.toString();
 
     }
+
+    // Changing this order will impact the report
+
+    private enum SUMMARY_REPORT_PARAMS {
+        TOTAL("Test Cases Executed", "total"),
+        PASSED("Passed", "passed"),
+        FAILED("Failed", "failed"),
+        START_DATE("Start Time", "startTime"),
+        END_DATE("End Time", "endTime");
+
+        private final String key;
+        private final String value;
+
+        SUMMARY_REPORT_PARAMS(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    private enum ENDPOINT_REPORT_PARAMS {
+        VENDOR("VENDOR", "vendor"),
+        MODEL("MODEL", "model"),
+        DID("DID", "did"),
+        FIRMWARE_VERSION("FIRMWARE_VERSION", "firmwareVersion"),
+        CITY("CITY", "city"),
+        STATE("STATE", "state"),
+        COUNTRY("COUNTRY", "country"),
+        ZIPCODE("ZIPCODE", "zipcode");
+
+        private final String key;
+        private final String value;
+
+        ENDPOINT_REPORT_PARAMS(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    private enum TEST_RESULTS_REPORT_PARAMS {
+        TEST_CASE_NAME("testCaseName"),
+        START_DATE("startTime"),
+        END_DATE("endTime"),
+        FROM_RESOURCE("from"),
+        TO_RESOURCE("to"),
+        OTHER_PARTIES("otherParties"),
+        STATUS("status"),
+        ERROR_CATEGORY("errorCategory"),
+        ERROR_REASON("errorReason");
+
+        private final String value;
+
+        TEST_RESULTS_REPORT_PARAMS(String value) {
+            this.value = value;
+        }
+    }
+
 }

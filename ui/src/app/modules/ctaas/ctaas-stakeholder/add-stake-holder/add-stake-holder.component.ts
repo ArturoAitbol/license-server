@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Constants } from 'src/app/helpers/constants';
 import { Report } from 'src/app/helpers/report';
 import { IUserProfile } from 'src/app/model/user-profile.model';
@@ -17,13 +18,13 @@ export class AddStakeHolderComponent implements OnInit {
 
   isDataLoading = false;
   userprofileDetails: IUserProfile;
+  private subaccountId: any;
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
     private stakeholderService: StakeHolderService,
     public dialogRef: MatDialogRef<AddStakeHolderComponent>,
-    private subaccountService: SubAccountService
-  ) { }
+    private subaccountService: SubAccountService) {}
   readonly type = 'TYPE:Detailed';
   readonly notifications = 'DAILY_REPORTS';
   /**
@@ -49,9 +50,9 @@ export class AddStakeHolderComponent implements OnInit {
   private fetchUserProfileDetails(): void {
     const subaccountUserProfileDetails = this.subaccountService.getSelectedSubAccount();
     if (subaccountUserProfileDetails) {
-      const { id, companyName } = subaccountUserProfileDetails;
-      if (id) {
-        this.userprofileDetails = { subaccountId: id };
+      const { companyName } = subaccountUserProfileDetails;
+      if (subaccountUserProfileDetails.id) {
+        this.userprofileDetails = { subaccountId: subaccountUserProfileDetails.id };
       } else {
         this.userprofileDetails = subaccountUserProfileDetails;
       }

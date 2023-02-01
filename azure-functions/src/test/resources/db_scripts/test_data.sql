@@ -155,16 +155,16 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	9285ca9e-04c3-49df-9d59-085322a13319	2022-0
 9f53d1ae-e22d-4c3b-b05d-6bf6b13c0658	9c0cc4a5-a773-46f3-b73e-a09c55080b1f	2021-12-28	2			\N	\N
 \.
 
-COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_complete, subaccount_id) FROM stdin;
-836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
-fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	96234b32-32d3-45a4-af26-4c912c0d6a06
-2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7
-39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
-78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d
-b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981
-a079c3a9-66c7-424f-aa1b-fdc2565d615a	\N	\N	SETUP_INPROGRESS	false	b5b91753-4c2b-43f5-afa0-feb22cefa901
-b079c3a9-66c7-424f-aa1b-fdc2565d616a	\N	\N	SETUP_INPROGRESS	false	0e2038ec-2b9b-493b-b3f2-6702e60b5b90
-c079c3a9-66c7-424f-aa1b-fdc2565d617a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	2c8e386b-d1bd-48b3-b73a-12bfa5d00805
+COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_complete, subaccount_id, powerbi_workspace_id, powerbi_report_id) FROM stdin;
+836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	\N	\N
+fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	96234b32-32d3-45a4-af26-4c912c0d6a06	\N	\N
+2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7	\N	\N
+39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec	\N	\N
+78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d	\N	\N
+b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981	\N	\N
+a079c3a9-66c7-424f-aa1b-fdc2565d615a	\N	\N	SETUP_INPROGRESS	false	b5b91753-4c2b-43f5-afa0-feb22cefa901	\N	\N
+b079c3a9-66c7-424f-aa1b-fdc2565d616a	\N	\N	SETUP_INPROGRESS	false	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	\N	\N
+c079c3a9-66c7-424f-aa1b-fdc2565d617a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	e00a514e-01d5-47ae-b728-7930c4b514b5	cf516c08-b093-4703-bc51-934265cb0fad
 \.
 
 COPY public.ctaas_test_suite (id, subaccount_id, total_executions, next_execution_ts, frequency, device_type, name) FROM stdin;
@@ -186,4 +186,19 @@ f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	app de
 2bdaf2af-838f-4053-b3fa-ef22aaa10b0d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 2	Open	2022-10-20 18:30:00	opener@email.com	\N	\N
 7564aab0-5331-4ab5-85f7-e37acbdfd90d	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	test 3	Open	2022-10-04 18:30:00	opener@email.com	\N	\N
 be612704-c26e-48ea-ab9b-19312f03d644	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	note 1	Open	2022-10-03 04:00:00	opener@email.com	\N	\N
+\.
+
+
+COPY public.device (id, vendor, product, version, type, granularity, tokens_to_consume, start_date, deprecated_date, subaccount_id, support_type) FROM stdin;
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	Test	Poly VVX 500	1.0	Device/Phone/ATA	static	5	2022-06-17 15:42:48.550405	infinity	\N	f
+be612704-c26e-48ea-ab9b-19312f03d644	Test	Cisco Webex  Windows Client	1.0	Soft Client/UC Client	static	15	2022-06-17 15:42:48.550405	infinity	\N	f
+eea27aa4-f2b7-455a-a8ea-af85ee6ac25e	Test	HylaFAX Enterprise	6.2	BYOC	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+3ad3f83e-2654-466d-b9e9-9cd8ded28110	Test	Multitech FAX Finder IP FAX server	5.0	Application	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+34859fba-9987-4a1c-b176-14569b331653	Test	OpenText-Right FAX	20.2	Headset	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+b66edd36-ee7f-42e7-bfb4-41810ea69fe6	Test	Xmedius FAX server	9.0	Video Collab Device	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+7f6c9fec-978f-41a6-ba38-117611f0dfa3	Test	Genesys Pure Cloud	1.0.0.10206	Contact Center	static	0	2022-06-17 15:42:48.550405	infinity	\N	f
+1ba09c6f-9a2a-4181-ac1e-b7217763df96	Test	Adtran NetVanta Series (7100)	11.10.3	UCaaS	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
+0e709699-3dab-47f1-a710-ebd2ae78d57b	Test	Alcatel Lucent OmniPCX/OpenTouch.OXE	12.4	CCaaS	week	4	2022-06-17 15:42:48.550405	infinity	\N	f
+ea00b987-0f14-4888-a0ce-f963d1eb7592	Test	Alcatel Lucent OXO	v032/021.001	CPaaS	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
+866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	Test	3CX	18.0.1880	Sandbox	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
 \.

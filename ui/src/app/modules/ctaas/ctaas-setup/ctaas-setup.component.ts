@@ -20,7 +20,7 @@ export class CtaasSetupComponent implements OnInit {
   originalCtaasSetupDetails: ICtaasSetup;
   isDataLoading = false;
   isEditing = false;
-
+  private subaccountDetails: any;
   readonly statusOptions = {
     SETUP_READY: { label: 'READY' },
     SETUP_INPROGRESS: { label: 'IN PROGRESS' }
@@ -32,6 +32,8 @@ export class CtaasSetupComponent implements OnInit {
     tapUrl: [null, Validators.required],
     status: ['SETUP_INPROGRESS', Validators.required],
     onBoardingComplete: [{ value: false, disabled: true }, Validators.required],
+    powerBiWorkspaceId: [null],
+    powerBiReportId: [null]
   });
 
   constructor(
@@ -43,6 +45,7 @@ export class CtaasSetupComponent implements OnInit {
     public dialog: MatDialog) { }
 
   ngOnInit(): void {
+    this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.fetchSetupInfo();
     this.disableForm();
   }
@@ -59,7 +62,7 @@ export class CtaasSetupComponent implements OnInit {
       if (this.setupForm.value.status != null && this.setupForm.value.status === 'SETUP_READY') {
         let selectedLicenseId;
         this.isDataLoading = true;
-        this.licenseService.getLicenseList(this.subaccountService.getSelectedSubAccount().id).subscribe(async (licenseList: any) => {
+        this.licenseService.getLicenseList(this.subaccountDetails.id).subscribe(async (licenseList: any) => {
           const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
 
           if (activeLicenses.length === 0) {
@@ -105,11 +108,11 @@ export class CtaasSetupComponent implements OnInit {
     this.isDataLoading = true;
     const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     const { id } = currentSubaccountDetails;
-    this.ctaasSetupService.getSubaccountCtaasSetupDetails(id).pipe(map(res => res.ctaasSetups.length > 0 ? res.ctaasSetups[0] : null)).subscribe(res => {
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).pipe(map(res => res.ctaasSetups.length > 0 ? res.ctaasSetups[0] : null)).subscribe(res => {
       if (res != null) {
         this.originalCtaasSetupDetails = res;
         this.setupForm.patchValue(res);
-        this.ctaasSetupId = res.id;
+        this.ctaasSetupId = this.subaccountDetails.id;
       } else {
         this.snackBarService.openSnackBar("No initial setup found", 'Error getting Spotlight Setup!');
       }
@@ -124,7 +127,7 @@ export class CtaasSetupComponent implements OnInit {
   private generateUpdateBody(licenseId?: string) {
     const ctaasSetup = { ...this.setupForm.value };
     if (ctaasSetup.status === this.originalCtaasSetupDetails.status) delete ctaasSetup.status;
-    ctaasSetup.subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    ctaasSetup.subaccountId =  this.subaccountDetails.id;
     if (licenseId != null) ctaasSetup.licenseId = licenseId;
     return ctaasSetup;
   }

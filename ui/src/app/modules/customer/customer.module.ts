@@ -4,6 +4,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 // components
 import { LicenseConsumptionComponent } from './license-consumption/license-consumption.component';
 import { AddLicenseConsumptionComponent } from './license-consumption/add-license-consumption/add-license-consumption.component';
+import { AddNewLicenseConsumptionComponent } from './license-consumption/add-new-license-consumption/add-new-license-consumption.component';
+import { AddOtherConsumptionComponent } from './license-consumption/add-other-consumption/add-other-consumption.component';
 import { AddLicenseComponent } from './licenses/add-license/add-license.component';
 import { ModifyLicenseComponent } from './licenses/modify-license/modify-license.component';
 // modules
@@ -16,6 +18,9 @@ import { ProjectsComponent } from './projects/projects.component';
 import { AddProjectComponent } from './projects/add-project/add-project.component';
 import { SharedModule } from '../shared/shared.module';
 import { ModifyProjectComponent } from './projects/modify-project/modify-project.component';
+import { DevicesComponent } from '../devices/devices.component';
+import { AddDeviceComponent } from '../devices/add-device/add-device.component';
+import { ModifyDeviceComponent } from '../devices/modify-device/modify-device.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +34,11 @@ import { ModifyProjectComponent } from './projects/modify-project/modify-project
     ProjectsComponent,
     AddProjectComponent,
     ModifyProjectComponent,
+    AddNewLicenseConsumptionComponent,
+    AddOtherConsumptionComponent,
+    DevicesComponent,
+    AddDeviceComponent,
+    ModifyDeviceComponent,
   ],
   imports: [
     CommonModule,

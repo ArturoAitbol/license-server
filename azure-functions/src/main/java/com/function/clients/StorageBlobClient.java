@@ -13,10 +13,11 @@ import org.json.JSONArray;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -251,13 +252,23 @@ public class StorageBlobClient {
                             blobItemName.indexOf("-Image"));
                     String[] range = blobItemName
                             .substring(blobItemName.indexOf("Image-") + 6, blobItemName.indexOf(".jpg")).split("-");
-                    String startTimestamp = range[0];
-                    String endTimestamp = range[1];
+                    String startTimestamp;
+                    String endTimestamp;
+                    String creationTimestamp = "";
+                    if (range.length > 2) {
+                        creationTimestamp = range[0];
+                        startTimestamp = range[1];
+                        endTimestamp = range[2];
+                    } else {
+                        startTimestamp = range[0];
+                        endTimestamp = range[1];
+                    }
 
                     JSONObject jsonObj = new JSONObject();
                     jsonObj.put("reportType", reportType);
                     jsonObj.put("startTime", startTimestamp);
                     jsonObj.put("endTime", endTimestamp);
+                    jsonObj.put("timestamp", creationTimestamp);
 
                     boolean insert = false;
                     // Check filters
@@ -298,11 +309,12 @@ public class StorageBlobClient {
      */
     public boolean isTimestampInRange(String timestamp, String start, String end, ExecutionContext context)
             throws Exception {
-        TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(timestamp);
-        Instant i = Instant.from(ta);
-        Date filterDate = Date.from(i);
-        Date startDate = new SimpleDateFormat("yyMMddHHmmss").parse(start);
-        Date endDate = new SimpleDateFormat("yyMMddHHmmss").parse(end);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                .withZone(ZoneId.of("UTC"));
+        LocalDate filterDate = LocalDateTime.parse(timestamp, formatter).toLocalDate();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyMMddHHmmss");
+        LocalDate startDate = LocalDateTime.parse(start, format).toLocalDate();
+        LocalDate endDate = LocalDateTime.parse(end, format).toLocalDate();
         return startDate.compareTo(filterDate) * filterDate.compareTo(endDate) >= 0;
     }
 }

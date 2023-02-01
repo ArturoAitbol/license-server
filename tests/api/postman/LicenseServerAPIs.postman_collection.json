@@ -206,6 +206,57 @@
 			"response": []
 		},
 		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"consumptionMatrixId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tokens\": \"2\",\r\n    \"dutType\": \"Device/Phone/ATA\",\r\n    \"callingPlatform\": \"CCaaS\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/consumptionMatrix",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"consumptionMatrix"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "customers",
 			"event": [
 				{
@@ -266,7 +317,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}@test.com\",\r\n    \"test\": \"true\"\r\n}",
+					"raw": "{\r\n    \"customerName\": \"{{name}}\",\r\n    \"customerType\": \"MSP\",\r\n    \"customerAdminEmail\": \"{{name}}admin1@tekvizion.com\",\r\n    \"test\": \"true\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -303,7 +354,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerAdminEmail\": \"{{name}}@adminemail.com\",\r\n    \"customerId\": \"{{customerId}}\"\r\n}",
+					"raw": "{\r\n    \"customerAdminEmail\": \"{{name}}admin2@tekvizion.com\",\r\n    \"customerId\": \"{{customerId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -344,7 +395,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountName\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmail\": \"{{name}}@test.com\"\r\n}",
+					"raw": "{\r\n    \"subaccountName\": \"{{name}}\",\r\n    \"customerId\": {{customerId}},\r\n    \"subaccountAdminEmail\": \"{{name}}subadmin1@tekvizion.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -381,7 +432,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountAdminEmail\": \"{{name}}@subadmin.com\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"raw": "{\r\n    \"subaccountAdminEmail\": \"{{name}}subadmin2@tekvizion.com\",\r\n    \"subaccountId\": \"{{subaccountId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -662,6 +713,54 @@
 			"response": []
 		},
 		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tokens\": \"4\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"consumptionMatrix",
+						"{{consumptionMatrixId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "customers",
 			"event": [
 				{
@@ -920,7 +1019,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n   \"companyName\": \"company name test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n     \"phoneNumber\": \"4434532455\",\r\n      \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\",\r\n     \"subaccountId\": \"{{subaccountId}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -957,7 +1056,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}@mail.com\",\r\n    \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"jobTitle\": \"job title test\",\r\n    \"subaccountAdminEmail\": \"{{name}}stakeholder@tekvizion.com\",\r\n    \"type\": \"TYPE:High level\",\r\n     \"notifications\": \"TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -965,13 +1064,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOST}}/subaccountStakeHolders/{{subaccountAdminEmail}}",
+					"raw": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"subaccountStakeHolders",
-						"{{subaccountAdminEmail}}"
+						"{{name}}stakeholder@tekvizion.com"
 					]
 				}
 			},
@@ -1136,6 +1235,47 @@
 					],
 					"path": [
 						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"consumptionMatrix\");\r",
+							"    pm.expect(pm.response.json().consumptionMatrix).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/consumptionMatrix",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"consumptionMatrix"
 					]
 				}
 			},
@@ -1561,13 +1701,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/customerAdminEmails/{{name}}@adminemail.com",
+					"raw": "{{HOST}}/customerAdminEmails/{{name}}admin2@tekvizion.com",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"customerAdminEmails",
-						"{{name}}@adminemail.com"
+						"{{name}}admin2@tekvizion.com"
 					]
 				}
 			},
@@ -1599,13 +1739,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{HOST}}/subaccountAdminEmails/{{name}}@subadmin.com",
+					"raw": "{{HOST}}/subaccountAdminEmails/{{name}}subadmin2@tekvizion.com",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"subaccountAdminEmails",
-						"{{name}}@subadmin.com"
+						"{{name}}subadmin2@tekvizion.com"
 					]
 				}
 			},
@@ -1674,6 +1814,45 @@
 					"path": [
 						"devices",
 						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "consumptionMatrix",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/consumptionMatrix/{{consumptionMatrixId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"consumptionMatrix",
+						"{{consumptionMatrixId}}"
 					]
 				}
 			},
@@ -1830,13 +2009,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{HOST}}/subaccountStakeHolders/{{subaccountAdminEmail}}",
+					"raw": "{{HOST}}/subaccountStakeHolders/{{name}}stakeholder@tekvizion.com",
 					"host": [
 						"{{HOST}}"
 					],
 					"path": [
 						"subaccountStakeHolders",
-						"{{subaccountAdminEmail}}"
+						"{{name}}stakeholder@tekvizion.com"
 					]
 				}
 			},
@@ -2165,6 +2344,11 @@
 		{
 			"key": "ctaasSetupId",
 			"value": ""
+		},
+		{
+			"key": "consumptionMatrixId",
+			"value": "",
+			"type": "string"
 		},
 		{
 			"key": "subaccountAdminEmail",

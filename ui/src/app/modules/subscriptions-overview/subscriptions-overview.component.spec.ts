@@ -1,22 +1,22 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { DataTableComponent } from "../generics/data-table/data-table.component";
+import { DataTableComponent } from "../../generics/data-table/data-table.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { SharedModule } from "../modules/shared/shared.module";
+import { SharedModule } from "../shared/shared.module";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
-import { MatDialogMock } from "../../test/mock/components/mat-dialog.mock";
-import { SnackBarService } from "../services/snack-bar.service";
-import { SnackBarServiceMock } from "../../test/mock/services/snack-bar-service.mock";
-import { CustomerService } from "../services/customer.service";
-import { CustomerServiceMock } from "../../test/mock/services/customer-service.mock";
+import { MatDialogMock } from "../../../test/mock/components/mat-dialog.mock";
+import { SnackBarService } from "../../services/snack-bar.service";
+import { SnackBarServiceMock } from "../../../test/mock/services/snack-bar-service.mock";
+import { CustomerService } from "../../services/customer.service";
+import { CustomerServiceMock } from "../../../test/mock/services/customer-service.mock";
 import { MsalService } from "@azure/msal-angular";
-import { MsalServiceMock } from "../../test/mock/services/msal-service.mock";
+import { MsalServiceMock } from "../../../test/mock/services/msal-service.mock";
 import { HttpClient } from "@angular/common/http";
 import { SubscriptionsOverviewComponent } from "./subscriptions-overview.component";
-import { SubscriptionsOverviewService } from "../services/subscriptions-overview.service";
-import { SubscriptionsOverviewServiceMock } from "../../test/mock/services/subscriptions-overview.service.mock";
+import { SubscriptionsOverviewService } from "../../services/subscriptions-overview.service";
+import { SubscriptionsOverviewServiceMock } from "../../../test/mock/services/subscriptions-overview.service.mock";
 import { Sort } from "@angular/material/sort";
 import { throwError } from "rxjs";
 import moment from "moment";
@@ -108,7 +108,6 @@ describe('Subscriptions Overview - UI verification tests', () => {
 
         testInstance.sortData(sort);
         expect(testInstance.sortData).toHaveBeenCalledWith(sort);
-        console.log(testInstance.filteredSubscriptions);
         expect(testInstance.filteredSubscriptions).toEqual([ {
             licenseTokens: 0,
             customerId: 'b062d227-5b26-4343-930a-9f3693d47c8a',
@@ -153,7 +152,6 @@ describe('Subscriptions Overview - UI verification tests', () => {
         sort.direction = 'asc';
         testInstance.sortData(sort);
         expect(testInstance.sortData).toHaveBeenCalledWith(sort);
-        console.log(testInstance.filteredSubscriptions);
         expect(testInstance.filteredSubscriptions).toEqual([ {
             subaccountId: '6fe7d952-13cd-4b5d-90bd-6dce6c2ed475',
             licenseRenewalDate: '2023-02-02',
