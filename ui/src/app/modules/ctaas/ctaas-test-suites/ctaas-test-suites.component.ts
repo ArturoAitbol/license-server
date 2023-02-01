@@ -19,7 +19,6 @@ import { ModifyTestSuiteComponent } from './modify-test-suite/modify-test-suite.
 })
 export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   tableMaxHeight: number;
-  currentCustomer: any;
   displayedColumns: any[] = [];
   testSuites: any = [];
   isLoadingResults = true;
@@ -53,12 +52,11 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   private getActionMenuOptions() {
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"ctaasTestSuiteOptions")
-    //was talking with paolo and he said that is not necessary to block the delete whether is test customer or not
-    //if (this.currentCustomer.testCustomer === false) {
+    if (this.subaccountDetails.testCustomer === false) {
       const action = (action) => action === 'Delete';
       const index = this.actionMenuOptions.findIndex(action);
       this.actionMenuOptions.splice(index,);
-    //}
+    }
   }
 
   private calculateTableHeight() {
@@ -74,7 +72,6 @@ export class CtaasTestSuitesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.calculateTableHeight();
-    //this.currentCustomer = this.subaccountService.getSelectedSubAccount();
     this.initColumns();
     this.fetchDataToDisplay();
     this.getActionMenuOptions();
