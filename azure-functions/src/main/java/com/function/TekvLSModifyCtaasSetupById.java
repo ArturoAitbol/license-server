@@ -120,7 +120,7 @@ public class TekvLSModifyCtaasSetupById {
         if (optionalParamsFound == 0) {
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
-        queryBuilder.appendWhereStatement("subaccount_id", id, QueryBuilder.DATA_TYPE.UUID);
+        queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
         // build the sql query for project
         String sql = "INSERT INTO project (subaccount_id, code, name, status, open_date, project_owner, license_id) " +
                 "VALUES (?::uuid, ?, ?, ?::project_status_type_enum, ?::timestamp, ?, ?::uuid) RETURNING id;";

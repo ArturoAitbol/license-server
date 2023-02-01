@@ -110,7 +110,7 @@ export class CtaasSetupComponent implements OnInit {
       if (res != null) {
         this.originalCtaasSetupDetails = res;
         this.setupForm.patchValue(res);
-        this.ctaasSetupId = this.subaccountDetails.id;
+        this.ctaasSetupId = res.id;
       } else {
         this.snackBarService.openSnackBar("No initial setup found", 'Error getting Spotlight Setup!');
       }
