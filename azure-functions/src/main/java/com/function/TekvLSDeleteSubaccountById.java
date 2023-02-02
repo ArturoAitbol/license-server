@@ -2,7 +2,7 @@ package com.function;
 
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
-import com.function.util.FeatureToggles;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -73,8 +73,8 @@ public class TekvLSDeleteSubaccountById
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-			if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-//			if(FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+			if(FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", id)) {
+			// if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
 //			if(FeatureToggleService.isFeatureActiveById("")) {
 				String emailSql = "SELECT sa.subaccount_admin_email, ca.admin_email FROM subaccount_admin sa " +
 						"LEFT JOIN customer_admin ca ON sa.subaccount_admin_email = ca.admin_email " +

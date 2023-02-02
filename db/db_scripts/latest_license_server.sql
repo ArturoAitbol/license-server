@@ -176,15 +176,6 @@ CREATE TYPE public.usage_type_enum AS ENUM (
 );
 
 --
--- Name: feature_toggle_status_type_enum; Type: TYPE; Schema: public; Owner: -
---
-CREATE TYPE public.feature_toggle_status_type_enum AS ENUM (
-    'On',
-    'Off'
-);
-
-
---
 -- Name: note_status_type_enum; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -396,7 +387,7 @@ CREATE TABLE public.ctaas_setup
 
 CREATE TABLE public.feature_toggle (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    status public.feature_toggle_status_type_enum DEFAULT 'Off'::public.feature_toggle_status_type_enum NOT NULL,
+    status boolean DEFAULT false NOT NULL,
     author character varying,
     description character varying,
     name character varying NOT NULL
@@ -405,7 +396,7 @@ CREATE TABLE public.feature_toggle (
 CREATE TABLE public.feature_toggle_exception (
     feature_toggle_id uuid NOT NULL,
     subaccount_id uuid NOT NULL,
-    status public.feature_toggle_status_type_enum DEFAULT 'Off'::public.feature_toggle_status_type_enum NOT NULL
+    status boolean DEFAULT false NOT NULL
 );
 
 --

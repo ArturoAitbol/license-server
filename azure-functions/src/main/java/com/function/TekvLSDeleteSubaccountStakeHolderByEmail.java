@@ -10,11 +10,12 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
-import com.function.util.FeatureToggles;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -56,8 +57,8 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
 
         context.getLogger().info("Entering TekvLSDeleteSubaccountStakeHolderByEmail Azure function");
 
-        if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
-//		if(FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
+		if(FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+        // if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")){
 //		if(FeatureToggleService.isFeatureActiveById("")) {
             try{
                 GraphAPIClient.removeRole(email,SUBACCOUNT_STAKEHOLDER,context);

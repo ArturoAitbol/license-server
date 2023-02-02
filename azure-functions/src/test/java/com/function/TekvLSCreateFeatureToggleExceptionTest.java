@@ -37,7 +37,7 @@ class TekvLSCreateFeatureToggleExceptionTest extends TekvLSTest {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
         // create FT
         String name = "featureToggleTest" + LocalDateTime.now();
-        String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
+        String bodyRequest = "{ 'status' : true, 'name' : '" + name + "' }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = this.createFeatureToggleApi.run(this.request, this.context);
         this.featureToggleId = new JSONObject(response.getBody().toString()).getString("id");
@@ -72,7 +72,7 @@ class TekvLSCreateFeatureToggleExceptionTest extends TekvLSTest {
     @Test
     public void createFeatureToggleExceptionTest() {
         // Given - Arrange
-        String bodyRequest = "{ 'featureToggleId' : '" + this.featureToggleId + "', 'subaccountId' : '" + this.subaccountId + "', 'status' : 'On'}";
+        String bodyRequest = "{ 'featureToggleId' : '" + this.featureToggleId + "', 'subaccountId' : '" + this.subaccountId + "', 'status' : true}";
         doReturn(Optional.of(bodyRequest)).when(this.request).getBody();
 
         // When - Action
@@ -95,7 +95,7 @@ class TekvLSCreateFeatureToggleExceptionTest extends TekvLSTest {
     @Test
     public void createRepeatedFeatureToggleExceptionTest() {
         // Given - Arrange
-        String bodyRequest = "{ 'featureToggleId' : '" + this.featureToggleId + "', 'subaccountId' : '" + this.subaccountId + "', 'status' : 'On'}";
+        String bodyRequest = "{ 'featureToggleId' : '" + this.featureToggleId + "', 'subaccountId' : '" + this.subaccountId + "', 'status' : true}";
         doReturn(Optional.of(bodyRequest)).when(this.request).getBody();
         HttpResponseMessage response = createFeatureToggleExceptionApi.run(this.request, this.context);
         this.context.getLogger().info(response.getBody().toString());
@@ -124,7 +124,7 @@ class TekvLSCreateFeatureToggleExceptionTest extends TekvLSTest {
 
     @Test
     public void createFeatureToggleExceptionIncomplete() {
-        String incompleteRequest = "{ 'featureToggleId' : '" + this.featureToggleId + "', 'status' : 'On' }";
+        String incompleteRequest = "{ 'featureToggleId' : '" + this.featureToggleId + "', 'status' : true }";
         doReturn(Optional.of(incompleteRequest)).when(request).getBody();
 
         TekvLSCreateFeatureToggleException createFeatureToggleException = new TekvLSCreateFeatureToggleException();
@@ -206,28 +206,8 @@ class TekvLSCreateFeatureToggleExceptionTest extends TekvLSTest {
     }
 
     @Test
-    public void createFeatureToggleExceptionSQLExceptionTest() {
-        String bodyRequest = "{ 'featureToggleId' : '" + this.featureToggleId + "', 'subaccountId' : '" + this.subaccountId + "', 'status' : 'XXXX'}";
-        doReturn(Optional.of(bodyRequest)).when(this.request).getBody();
-
-        TekvLSCreateFeatureToggleException createFeatureToggleException = new TekvLSCreateFeatureToggleException();
-        HttpResponseMessage response = createFeatureToggleException.run(this.request, this.context);
-        this.context.getLogger().info(response.getBody().toString());
-
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-
-        String expectedResponse = "SQL";
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        String actualResponse = jsonBody.getString("error");
-        assertTrue(actualResponse.contains(expectedResponse), "Response doesn't match with: ".concat(expectedResponse));
-    }
-
-    @Test
     public void createFeatureToggleExceptionGenericExceptionTest() {
-        String bodyRequest = "{ 'featureToggleId' : '" + this.featureToggleId + "', 'subaccountId' : '" + this.subaccountId + "', 'status' : 'On'}";
+        String bodyRequest = "{ 'featureToggleId' : '" + this.featureToggleId + "', 'subaccountId' : '" + this.subaccountId + "', 'status' : true}";
         doReturn(Optional.of(bodyRequest)).when(this.request).getBody();
         String expectedResponse = "Generic error unit test";
 
@@ -270,7 +250,7 @@ class TekvLSCreateFeatureToggleExceptionTest extends TekvLSTest {
         // Given - Arrange
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("distributorAdmin"));
         String name = "NewFeatureToggleExceptionTest" + LocalDateTime.now();
-        String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
+        String bodyRequest = "{ 'status' : true, 'name' : '" + name + "' }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         // When - Action

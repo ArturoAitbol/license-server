@@ -76,7 +76,7 @@ public class TekvLSCreateFeatureToggle {
         }
 
         //Build the sql query
-        String insertFeatureToggleSql = "INSERT INTO feature_toggle (status, name, author, description) VALUES (?::feature_toggle_status_type_enum, ?, ?, ?) RETURNING id;";
+        String insertFeatureToggleSql = "INSERT INTO feature_toggle (status, name, author, description) VALUES (?::boolean, ?, ?, ?) RETURNING id;";
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -90,7 +90,7 @@ public class TekvLSCreateFeatureToggle {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Set statement parameters
-            insertStatement.setString(1, jobj.getString(MANDATORY_PARAMS.STATUS.value));
+            insertStatement.setBoolean(1, jobj.getBoolean(MANDATORY_PARAMS.STATUS.value));
             insertStatement.setString(2, jobj.getString(MANDATORY_PARAMS.NAME.value));
 
             insertStatement.setString(3, jobj.has(OPTIONAL_PARAMS.AUTHOR.value) ? jobj.getString(OPTIONAL_PARAMS.AUTHOR.value) : null);

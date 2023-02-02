@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Optional;
 
 import org.json.JSONArray;
@@ -17,7 +16,7 @@ import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.db.UpdateQueryBuilder;
-import com.function.util.FeatureToggles;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -152,9 +151,9 @@ public class TekvLSModifyAuthUserProfile {
 		}
 	}
 	
-	private void updateADUser(String email, JSONObject jobj, ExecutionContext context) {
-		if (!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-//			if(FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+	private void updateADUser(String email, JSONObject jobj, ExecutionContext context) throws Exception {
+		if(!FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+				// if (!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
 //			if(FeatureToggleService.isFeatureActiveById("")) {
 			 context.getLogger().info("ad-subaccount-user-creation toggle is not active. Nothing to do at Azure AD");
 			 return;

@@ -32,7 +32,7 @@ public class TekvLSModifyFeatureToggleByIdTest extends TekvLSTest {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
         String name = "customerTest" + LocalDateTime.now();
-        String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
+        String bodyRequest = "{ 'status' : true, 'name' : '" + name + "' }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = this.createFeatureToggleApi.run(this.request, context);
         HttpStatusType actualStatus = response.getStatus();
@@ -60,7 +60,7 @@ public class TekvLSModifyFeatureToggleByIdTest extends TekvLSTest {
     public void modifyFeatureToggleTest() {
         //Given - Arrange
         String name = "featureToggleTestModified" + LocalDateTime.now();
-        String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
+        String bodyRequest = "{ 'status' : true, 'name' : '" + name + "' }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
         //When - Action

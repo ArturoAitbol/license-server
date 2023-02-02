@@ -25,7 +25,7 @@ import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
-import com.function.util.FeatureToggles;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -42,6 +42,7 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 	/**
 	 * This function listens at endpoint "/v1.0/subaccountStakeHolders/{id}". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccountStakeHolders/{id}
+	 * @throws Exception
 	 */
 	
 	@FunctionName("TekvLSModifySubaccountStakeholderByEmail")
@@ -53,7 +54,7 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 				route = "subaccountStakeHolders/{email}")
 				HttpRequestMessage<Optional<String>> request,
 				@BindingName("email") String email,
-				final ExecutionContext context) 
+				final ExecutionContext context)
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
@@ -153,8 +154,8 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 	}
 	
 	private void updateADUser(String email, JSONObject jobj, ExecutionContext context) {
-		 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-//			if(FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+		if(!FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+		//  if(!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
 //			if(FeatureToggleService.isFeatureActiveById("")) {
 			 context.getLogger().info("ad-subaccount-user-creation toggle is not active. Nothing to do at Azure AD");
 			 return;

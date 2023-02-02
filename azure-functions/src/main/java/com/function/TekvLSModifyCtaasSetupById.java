@@ -16,7 +16,6 @@ import java.util.Optional;
 
 import com.function.clients.EmailClient;
 import com.function.clients.GraphAPIClient;
-import com.function.util.FeatureToggles;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -24,6 +23,7 @@ import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.Constants;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -183,9 +183,9 @@ public class TekvLSModifyCtaasSetupById {
                 TekvLSCreateLicenseUsageDetail licenseUsageDetailCreator = new TekvLSCreateLicenseUsageDetail();
                 licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
 
-                if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-    //			if(FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
-    //			if(FeatureToggleService.isFeatureActiveById("")) {
+                if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", jobj.getString("subaccountId"))) {
+                    // if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+                    // if(FeatureToggleService.isFeatureActiveById("")) {
                     this.ADUserCreation(jobj, context, connection);
                 }
 

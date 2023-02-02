@@ -35,7 +35,7 @@ public class TekvLSGetAllFeatureTogglesTest extends TekvLSTest {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
         String name = "1featureToggleTest" + LocalDateTime.now();
         String bodyRequest = "{" +
-                    " 'status' : 'On'," +
+                    " 'status' : true," +
                     " 'name' : '" + name + "'," +
                     " 'customerName' : '(optional)Customer Name'," +
                     " 'author' : '(optional)Test User'," +

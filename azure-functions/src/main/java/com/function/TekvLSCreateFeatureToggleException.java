@@ -76,7 +76,7 @@ public class TekvLSCreateFeatureToggleException {
         }
 
         //Build the sql query
-        String insertFeatureToggleSql = "INSERT INTO feature_toggle_exception (status, feature_toggle_id, subaccount_id) VALUES (?::feature_toggle_status_type_enum, ?::uuid, ?::uuid) RETURNING (feature_toggle_id, subaccount_id);";
+        String insertFeatureToggleSql = "INSERT INTO feature_toggle_exception (status, feature_toggle_id, subaccount_id) VALUES (?::boolean, ?::uuid, ?::uuid) RETURNING (feature_toggle_id, subaccount_id);";
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -90,10 +90,9 @@ public class TekvLSCreateFeatureToggleException {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Set statement parameters
-            insertStatement.setString(1, jobj.getString(MANDATORY_PARAMS.STATUS.value));
+            insertStatement.setBoolean(1, jobj.getBoolean(MANDATORY_PARAMS.STATUS.value));
             insertStatement.setString(2, jobj.getString(MANDATORY_PARAMS.FEATURE_TOGGLE_ID.value));
             insertStatement.setString(3, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
-
             // Insert
             String userId = getUserIdFromToken(tokenClaims, context);
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + insertStatement);

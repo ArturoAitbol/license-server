@@ -5,7 +5,7 @@ import com.function.clients.EmailClient;
 import com.function.clients.GraphAPIClient;
 import com.function.exceptions.ADException;
 import com.function.util.Constants;
-import com.function.util.FeatureToggles;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -181,7 +181,8 @@ public class TekvLSCreateSubaccount
 				rs.next();
 				String customerName = rs.getString("name");
 
-				if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+				if (FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+				// if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
 					EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName, context);
 				}
 
@@ -222,7 +223,8 @@ public class TekvLSCreateSubaccount
 	}
 
 	private void ADUserCreation(JSONObject jobj, ExecutionContext context) throws Exception {
-		if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+		if (FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+		// if(FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
 			String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
 			String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
 			GraphAPIClient.createGuestUserWithProperRole(subaccountName, subaccountEmail, SUBACCOUNT_ADMIN, context);
