@@ -99,8 +99,7 @@ public class TekvLSCreateSubaccount
 
 		//String insertValuesClause = FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation") ?
 		//String insertValuesClause = FeatureToggleService.isFeatureActiveById("") ?
-		String insertValuesClause = FeatureToggles.INSTANCE.isFeatureActive("services-feature")? 
-			"(name, customer_id, services) VALUES (?, ?::uuid, ?)" : "(name, customer_id) VALUES (?, ?::uuid)";
+		String insertValuesClause = "(name, customer_id, services) VALUES (?, ?::uuid, ?)";
 		String insertSql = "INSERT INTO subaccount " + insertValuesClause + " RETURNING id;";
 		String verifyEmailsSql = "SELECT count(*) FROM subaccount_admin WHERE subaccount_admin_email=?;";
 		String adminEmailSql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid);";
@@ -139,13 +138,13 @@ public class TekvLSCreateSubaccount
 
 			//services information
 			String subaccountServices = "";
-			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
-				if (jobj.has(OPTIONAL_PARAMS.SERVICES.value))
-					subaccountServices = jobj.getString(OPTIONAL_PARAMS.SERVICES.value);
-				if (subaccountServices.equals(""))
-					subaccountServices = Constants.SubaccountServices.TOKEN_CONSUMPTION.value();
-				insertStmt.setString(3, subaccountServices);
-			}
+			
+			if (jobj.has(OPTIONAL_PARAMS.SERVICES.value))
+				subaccountServices = jobj.getString(OPTIONAL_PARAMS.SERVICES.value);
+			if (subaccountServices.equals(""))
+				subaccountServices = Constants.SubaccountServices.TOKEN_CONSUMPTION.value();
+			insertStmt.setString(3, subaccountServices);
+			
 
 			// Insert
 			String userId = getUserIdFromToken(tokenClaims,context);
@@ -166,34 +165,30 @@ public class TekvLSCreateSubaccount
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertEmailStmt);
 			insertEmailStmt.executeUpdate();
 			context.getLogger().info("Subaccount admin email inserted successfully.");
-			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
-//			if(FeatureToggleService.isFeatureActiveByName("services-feature")) {
-//			if(FeatureToggleService.isFeatureActiveById("")) {
-				if (subaccountServices.contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
-					insertCtassSetupStmt.setString(1, subaccountId);
-					insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());
-					insertCtassSetupStmt.setBoolean(3, Constants.DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
-		
-					context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
-					insertCtassSetupStmt.executeUpdate();
-					context.getLogger().info("SpotLight setup default values inserted successfully.");
+			
+			if (subaccountServices.contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
+				insertCtassSetupStmt.setString(1, subaccountId);
+				insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());
+				insertCtassSetupStmt.setBoolean(3, Constants.DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
+	
+				context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
+				insertCtassSetupStmt.executeUpdate();
+				context.getLogger().info("SpotLight setup default values inserted successfully.");
 
-					// Get customer name to send spotlight invitation
-					customerNameStmt.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ID.value));
-					rs = customerNameStmt.executeQuery();
-					rs.next();
-					String customerName = rs.getString("name");
+				// Get customer name to send spotlight invitation
+				customerNameStmt.setString(1, jobj.getString(MANDATORY_PARAMS.CUSTOMER_ID.value));
+				rs = customerNameStmt.executeQuery();
+				rs.next();
+				String customerName = rs.getString("name");
 
-					if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-						EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName, context);
-					}
-
-				} else {
-					this.ADUserCreation(jobj,context);
+				if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+					EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName, context);
 				}
+
 			} else {
 				this.ADUserCreation(jobj,context);
 			}
+			
 
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
 		}
