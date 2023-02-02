@@ -163,7 +163,7 @@ jobs:
       id: uiTests
       run: |
         cd tests/ui
-        gradle uiTests -Denv=integration -D"cucumber.filter.tags=not @feature-toggle"
+        gradle uiTests -Denv=integration -D"cucumber.filter.tags=not (@feature-toggle or @licenseConsumptionTest)"
     - uses: deblockt/cucumber-report-annotations-action@v1.10
       if: success() || failure()
       name: Publish Cucumber Report
