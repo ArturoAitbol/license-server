@@ -42,17 +42,14 @@ export class RedirectPageComponent implements OnInit {
         // Devices admin does not have permission to access dashboard, so it's a special case
         this.router.navigate([this.CONSUMPTION_MATRIX_PATH]);
       } else {
-        if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
+        //get the user's details only if the user logged is subbaccount admin or stakeholder otherwise redirect to the dashboard
+        if(this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) ) {
           this.fetchUserProfileDetails();
-        }
-        this.getSubAccountDetails();
+          this.getSubAccountDetails();
+        } else {
+          this.navigateToDashboard();
+        } 
       }
-      //get the user's details only if the user logged is subbaccount admin or stakeholder otherwise redirect to the dashboard
-      if(this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) )
-        this.getSubAccountDetails();
-      else {
-        this.navigateToDashboard();
-      } 
     } catch (e) { console.error('error at redirect page'); }
   }
   /**
