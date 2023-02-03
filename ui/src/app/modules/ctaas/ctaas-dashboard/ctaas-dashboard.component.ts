@@ -140,7 +140,7 @@ export class CtaasDashboardComponent implements OnInit {
     fetchCtaasSetupDetails(): void {
         // const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
         // const { id } = currentSubaccountDetails;
-        this.ctaasSetupService.getSubaccountCtaasSetupDetails( this.subaccountDetails.id)
+        this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
                 const { onBoardingComplete, status } = this.ctaasSetupDetails;
@@ -161,7 +161,7 @@ export class CtaasDashboardComponent implements OnInit {
                 width: '700px',
                 maxHeight: '80vh',
                 disableClose: true,
-                data: { ctaasSetupId: id, ctaasSetupSubaccountId:  this.subaccountDetails.id }
+                data: { ctaasSetupId: id, ctaasSetupSubaccountId: this.subaccountDetails.id }
             });
         }
     }
@@ -180,7 +180,7 @@ export class CtaasDashboardComponent implements OnInit {
             const reportType: string = ReportType[key];
             // if(key==='WEEKLY_FEATURE_FUNCTIONALITY')
             // push all the request to an array
-            requests.push(this.ctaasDashboardService.getCtaasDashboardDetails( this.subaccountDetails.id, reportType));
+            requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountDetails.id, reportType));
         }
         // get all the request response in an array
         forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
@@ -268,7 +268,7 @@ export class CtaasDashboardComponent implements OnInit {
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
         const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-        const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${ this.subaccountDetails.id}&type=${type}&start=${startDate}&end=${endDate}`;
+        const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
         window.close();
     }
@@ -292,10 +292,10 @@ export class CtaasDashboardComponent implements OnInit {
                             accessToken: embedToken,
                             settings: {
                                 filterPaneEnabled: false,
-                                navContentPaneEnabled: true,
+                                navContentPaneEnabled: false,
                                 layoutType: models.LayoutType.Custom,
                                 customLayout: {
-                                    displayOption: models.DisplayOption.FitToPage
+                                    displayOption: models.DisplayOption.FitToWidth
                                 }
                             }
                         };
