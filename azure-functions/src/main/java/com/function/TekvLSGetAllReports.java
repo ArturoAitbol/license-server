@@ -14,8 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
