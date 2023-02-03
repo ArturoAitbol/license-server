@@ -12,6 +12,8 @@ import com.microsoft.azure.functions.ExecutionContext;
 public class PowerBIClient {
 	
 	static private final String baseURL = "https://api.powerbi.com/v1.0/myorg";
+	static private final String REPORT_TYPE_DAILY = "Daily";
+	static private final String REPORT_TYPE_WEEKLY = "Weekly";
 	
 	static public String getAccessToken(ExecutionContext context) throws Exception {
         String url = "https://login.microsoftonline.com/"+System.getenv("POWER_BI_TENANT_ID")+"/oauth2/v2.0/token";
@@ -36,26 +38,69 @@ public class PowerBIClient {
         return response.get("access_token").toString();
     }
 	
-	static public JSONObject getPowerBiDetails(String workspaceId, String reportId, ExecutionContext context) throws Exception {
-		if(workspaceId==null || workspaceId.equals("null") || reportId==null || reportId.equals("null") ) {
-			context.getLogger().severe("Failed to fetch power bi details. Invaid workspace/report. Workspace: "+workspaceId+" | Report: "+reportId);
-			throw new ADException("Failed to fetch power bi details. Invalid workspace/report. Workspace: "+workspaceId+" | Report: "+reportId);
+	static public JSONObject getPowerBiDetails(String customer, String subaccount, ExecutionContext context) throws Exception {
+		if(customer==null || customer.equals("null") || subaccount==null || subaccount.equals("null") ) {
+			context.getLogger().severe("Failed to fetch power bi details. Invaid customer/subaccount. Customer: "+customer+" | Subaccount: "+subaccount);
+			throw new ADException("Failed to fetch power bi details. Invalid customer/subaccount. Customer: "+customer+" | Subaccount: "+subaccount);
 		}
 		String token = getAccessToken(context);
-		JSONObject report = getReport(token, workspaceId, reportId, context);
-		String embedToken = getEmbedToken(token, workspaceId, reportId,  report.getString("datasetId"), context);
-		if(!report.has("embedUrl") || report.getString("embedUrl").isEmpty() || embedToken.isEmpty()) {
-			context.getLogger().severe("Failed to fetch power bi details of given workspace: "+workspaceId+" | Report: "+report+" | Embed Url: "+embedToken);
-			throw new ADException("Failed to fetch power bi details of given workspace: "+workspaceId);
+		String workspaceId = getWorkspaceIdByName(token, customer, context);
+		if(workspaceId==null) {
+			context.getLogger().severe("Failed to fetch workspace id of the customer. Customer: "+customer+" | Subaccount: "+subaccount);
+			throw new ADException("Failed to fetch workspace id of the customer. Customer: "+customer+" | Subaccount: "+subaccount);
 		}
+		context.getLogger().info("Power bI workspace details for the customer: "+customer+" | Workspace: "+workspaceId);
 		JSONObject response = new JSONObject();
-		response.put("embedUrl", report.getString("embedUrl"));
-		response.put("embedToken", embedToken);
-		context.getLogger().info("Power bI details fetched for given workspace: "+workspaceId);
+		JSONObject powerBiReport = getPowerBiReportDetails(token, workspaceId, subaccount, REPORT_TYPE_DAILY, context);
+		response.put("daily", powerBiReport);
+		powerBiReport = getPowerBiReportDetails(token, workspaceId, subaccount, REPORT_TYPE_WEEKLY, context);
+		response.put("weekly", powerBiReport);	
 		return response;
 	}
 	
-	static private JSONObject getReport(String token, String workspaceId, String reportId, ExecutionContext context) throws Exception {
+	static public JSONObject getPowerBiReportDetails(String token, String workspaceId, String subaccount, String type, ExecutionContext context) throws Exception {
+		JSONObject report = getReport(token, workspaceId, subaccount, type, context);
+		if(report==null) {
+			context.getLogger().severe("Failed to fetch "+type+" report of the subaccount. Subaccount: "+subaccount);
+			throw new ADException("Failed to fetch "+type+" report of the subaccount. Subaccount: "+subaccount);
+		}
+		String embedToken = getEmbedToken(token, workspaceId, report.getString("id"),  report.getString("datasetId"), context);
+		JSONObject response = new JSONObject();
+		response.put("embedUrl", report.getString("embedUrl"));
+		response.put("embedToken", embedToken);
+		context.getLogger().info("Power bI "+type+" report details of subaccount - "+subaccount+" | Report Id: "+report.getString("id"));
+		return response;
+	}
+	
+	
+	
+	static private String getWorkspaceIdByName(String token, String name, ExecutionContext context) throws Exception {
+		String url = baseURL+"/groups";
+        HashMap<String,String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer "+ token);
+        JSONObject response = HttpClient.get(url,headers);
+
+        if(response.has("error") || !response.has("value")){
+            context.getLogger().severe("Request params: " + url);
+            context.getLogger().severe("Error response: " + response);
+            throw new ADException("Failed to fetch workspaces");
+        }
+        JSONArray workspaceList = response.getJSONArray("value");
+        if(workspaceList.length()==0) {
+        	context.getLogger().severe("Request params: " + url);
+            context.getLogger().severe("Error response: " + response);
+            throw new ADException("No workspaces available");
+        }
+        JSONObject workspace = null;
+        for(int i=0; i<workspaceList.length(); i++) {
+        	workspace = (JSONObject) workspaceList.get(i);
+        	if(workspace.has("name") && workspace.getString("name").equalsIgnoreCase(name))
+        		return workspace.getString("id");
+        }
+        return null;
+	}
+	
+	static private JSONObject getReport(String token, String workspaceId, String name, String type, ExecutionContext context) throws Exception {
 		String url = baseURL+"/groups/"+workspaceId+"/reports";
         HashMap<String,String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer "+ token);
@@ -75,8 +120,8 @@ public class PowerBIClient {
         JSONObject report = null;
         for(int i=0; i<reportList.length(); i++) {
         	report = (JSONObject) reportList.get(i);
-        	if(report.has("id") && report.getString("id").equals(reportId))
-        		break;
+        	if(report.has("name") && report.getString("name").equalsIgnoreCase(name+"-"+type))
+        		return report;
         }
         return report;
 	}
