@@ -138,7 +138,7 @@ export class CtaasDashboardComponent implements OnInit {
         this.resultantImagesList = this.resultantImagesListBk.filter(e => e.reportType.toLowerCase().includes(value));
     }
     onChangePowerBiButtonToggle() {
-        const { value } = this.powerBiFontStyleControl.value;
+        const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
         this.viewDashboardByMode();
     }
@@ -316,11 +316,11 @@ export class CtaasDashboardComponent implements OnInit {
      * @param url 
      * @param token 
      */
-    fetchData(url, token) {
-        if (url && token) {
+    fetchData(embedUrl, token) {
+        if (embedUrl && token) {
             this.reportConfig = {
                 type: 'report',
-                url,
+                embedUrl,
                 tokenType: models.TokenType.Embed,
                 accessToken: token,
                 settings: {
