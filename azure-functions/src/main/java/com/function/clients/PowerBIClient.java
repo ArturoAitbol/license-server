@@ -14,7 +14,7 @@ public class PowerBIClient {
 	static private final String baseURL = "https://api.powerbi.com/v1.0/myorg";
 	
 	static public String getAccessToken(ExecutionContext context) throws Exception {
-        String url = "https://login.microsoftonline.com/"+System.getenv("TENANT_ID")+"/oauth2/v2.0/token";
+        String url = "https://login.microsoftonline.com/"+System.getenv("POWER_BI_TENANT_ID")+"/oauth2/v2.0/token";
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("client_id",System.getenv("POWER_BI_CLIENT_ID"));
