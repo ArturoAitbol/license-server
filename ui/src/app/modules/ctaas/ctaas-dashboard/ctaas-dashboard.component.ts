@@ -38,11 +38,13 @@ export class CtaasDashboardComponent implements OnInit {
     refreshNotesIntervalSubscription: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
+    powerBiFontStyleControl = new FormControl('');
     resultantImagesList: IDashboardImageResponse[] = [];
     resultantImagesListBk: IDashboardImageResponse[] = [];
     resultant: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
+    featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
     // Hide the report container initially
@@ -107,6 +109,7 @@ export class CtaasDashboardComponent implements OnInit {
     }
     ngOnInit(): void {
         this.fontStyleControl.setValue(this.DAILY);
+        this.powerBiFontStyleControl.setValue(this.DAILY);
         this.isOnboardingComplete = false;
         this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.fetchCtaasSetupDetails();
@@ -134,13 +137,18 @@ export class CtaasDashboardComponent implements OnInit {
         const { value } = this.fontStyleControl;
         this.resultantImagesList = this.resultantImagesListBk.filter(e => e.reportType.toLowerCase().includes(value));
     }
+    onChangePowerBiButtonToggle() {
+        const { value } = this.powerBiFontStyleControl;
+        this.featureToggleKey = value;
+        this.viewDashboardByMode();
+    }
     /**
      * fetch SpotLight Setup details by subaccount id
      */
     fetchCtaasSetupDetails(): void {
         // const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
         // const { id } = currentSubaccountDetails;
-        this.ctaasSetupService.getSubaccountCtaasSetupDetails( this.subaccountDetails.id)
+        this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
                 const { onBoardingComplete, status } = this.ctaasSetupDetails;
@@ -161,7 +169,7 @@ export class CtaasDashboardComponent implements OnInit {
                 width: '700px',
                 maxHeight: '80vh',
                 disableClose: true,
-                data: { ctaasSetupId: id, ctaasSetupSubaccountId:  this.subaccountDetails.id }
+                data: { ctaasSetupId: id, ctaasSetupSubaccountId: this.subaccountDetails.id }
             });
         }
     }
@@ -180,7 +188,7 @@ export class CtaasDashboardComponent implements OnInit {
             const reportType: string = ReportType[key];
             // if(key==='WEEKLY_FEATURE_FUNCTIONALITY')
             // push all the request to an array
-            requests.push(this.ctaasDashboardService.getCtaasDashboardDetails( this.subaccountDetails.id, reportType));
+            requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountDetails.id, reportType));
         }
         // get all the request response in an array
         forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
@@ -268,7 +276,7 @@ export class CtaasDashboardComponent implements OnInit {
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
         const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-        const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${ this.subaccountDetails.id}&type=${type}&start=${startDate}&end=${endDate}`;
+        const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
         window.close();
     }
@@ -281,26 +289,17 @@ export class CtaasDashboardComponent implements OnInit {
         this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
             .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
                 this.isLoadingResults = false;
-                const { powerBiInfo } = response;
-                if (powerBiInfo) {
-                    const { embedUrl, embedToken } = powerBiInfo;
-                    if (embedUrl && embedToken) {
-                        this.reportConfig = {
-                            type: 'report',
-                            embedUrl,
-                            tokenType: models.TokenType.Embed,
-                            accessToken: embedToken,
-                            settings: {
-                                filterPaneEnabled: false,
-                                navContentPaneEnabled: true,
-                                layoutType: models.LayoutType.Custom,
-                                customLayout: {
-                                    displayOption: models.DisplayOption.FitToPage
-                                }
-                            }
-                        };
-                        this.hasDashboardDetails = true;
+                const { daily, weekly } = response.powerBiInfo;
+                if (response.powerBiInfo) {
+                    if (this.featureToggleKey === this.DAILY) {
+                        const { embedUrl, embedToken } = daily;
+                        this.fetchData(embedUrl, embedToken)
                     }
+                    else {
+                        const { embedUrl, embedToken } = weekly;
+                        this.fetchData(embedUrl, embedToken)
+                    }
+
                 } else {
                     this.hasDashboardDetails = false;
                 }
@@ -310,6 +309,31 @@ export class CtaasDashboardComponent implements OnInit {
                 console.error('Error while loading embedded powerbi report: ', err);
                 this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
             });
+    }
+
+    /**
+     * Fetching Data based on toggle feature
+     * @param url 
+     * @param token 
+     */
+    fetchData(embedUrl, token) {
+        if (embedUrl && token) {
+            this.reportConfig = {
+                type: 'report',
+                embedUrl,
+                tokenType: models.TokenType.Embed,
+                accessToken: token,
+                settings: {
+                    filterPaneEnabled: false,
+                    navContentPaneEnabled: false,
+                    layoutType: models.LayoutType.Custom,
+                    customLayout: {
+                        displayOption: models.DisplayOption.FitToWidth
+                    }
+                }
+            };
+            this.hasDashboardDetails = true;
+        }
     }
     /**
      * view dashboard based on the mode

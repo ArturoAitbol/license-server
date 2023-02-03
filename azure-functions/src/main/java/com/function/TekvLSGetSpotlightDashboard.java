@@ -29,7 +29,6 @@ import com.function.auth.Resource;
 import com.function.clients.PowerBIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
-import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -85,7 +84,8 @@ public class TekvLSGetSpotlightDashboard {
 		}
   
 		// Build SQL statement
-		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM ctaas_setup");
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT c.name as customerName, s.name as subaccountName FROM customer c LEFT JOIN subaccount s ON c.id = s.customer_id");
+		queryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 		SelectQueryBuilder verificationQueryBuilder = null;
 		String email = getEmailFromToken(tokenClaims,context);
 
@@ -102,8 +102,6 @@ public class TekvLSGetSpotlightDashboard {
 				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
 				break;
 		}
-
-		queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 
 		if (verificationQueryBuilder != null) {
 			if (currentRole.equals(SUBACCOUNT_ADMIN) || currentRole.equals(SUBACCOUNT_STAKEHOLDER))
@@ -143,8 +141,8 @@ public class TekvLSGetSpotlightDashboard {
 			JSONObject item = null;
 			if (rs.next()) {
 				item = new JSONObject();
-				item.put("powerBiWorkspaceId", rs.getString("powerbi_workspace_id"));
-				item.put("powerBiReportId", rs.getString("powerbi_report_id"));
+				item.put("customerName", rs.getString("customerName"));
+				item.put("subaccountName", rs.getString("subaccountName"));
 			}
 
 			if(item == null){
@@ -152,8 +150,7 @@ public class TekvLSGetSpotlightDashboard {
 				json.put("error",MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
-			
-			JSONObject powerBiInfo = PowerBIClient.getPowerBiDetails(item.getString("powerBiWorkspaceId"), item.getString("powerBiReportId"), context);
+			JSONObject powerBiInfo = PowerBIClient.getPowerBiDetails(item.getString("customerName"), item.getString("subaccountName"), context);
 			json.put("powerBiInfo", powerBiInfo);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
