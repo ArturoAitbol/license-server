@@ -1,4 +1,11 @@
 export interface IPowerBiReponse {
-    embedUrl: string;
-    embedToken: string;
+    daily: {
+        embedUrl: string;
+        embedToken: string;
+    }
+    weekly: {
+        embedUrl: string;
+        embedToken: string;
+    };
+
 }

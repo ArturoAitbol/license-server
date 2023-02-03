@@ -38,11 +38,13 @@ export class CtaasDashboardComponent implements OnInit {
     refreshNotesIntervalSubscription: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
+    powerBiFontStyleControl = new FormControl('');
     resultantImagesList: IDashboardImageResponse[] = [];
     resultantImagesListBk: IDashboardImageResponse[] = [];
     resultant: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
+    featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
     // Hide the report container initially
@@ -107,6 +109,7 @@ export class CtaasDashboardComponent implements OnInit {
     }
     ngOnInit(): void {
         this.fontStyleControl.setValue(this.DAILY);
+        this.powerBiFontStyleControl.setValue(this.DAILY);
         this.isOnboardingComplete = false;
         this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.fetchCtaasSetupDetails();
@@ -133,6 +136,11 @@ export class CtaasDashboardComponent implements OnInit {
     onChangeButtonToggle(): void {
         const { value } = this.fontStyleControl;
         this.resultantImagesList = this.resultantImagesListBk.filter(e => e.reportType.toLowerCase().includes(value));
+    }
+    onChangePowerBiButtonToggle() {
+        const { value } = this.powerBiFontStyleControl;
+        this.featureToggleKey = value;
+        this.viewDashboardByMode();
     }
     /**
      * fetch SpotLight Setup details by subaccount id
@@ -281,26 +289,17 @@ export class CtaasDashboardComponent implements OnInit {
         this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
             .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
                 this.isLoadingResults = false;
-                const { powerBiInfo } = response;
-                if (powerBiInfo) {
-                    const { embedUrl, embedToken } = powerBiInfo;
-                    if (embedUrl && embedToken) {
-                        this.reportConfig = {
-                            type: 'report',
-                            embedUrl,
-                            tokenType: models.TokenType.Embed,
-                            accessToken: embedToken,
-                            settings: {
-                                filterPaneEnabled: false,
-                                navContentPaneEnabled: false,
-                                layoutType: models.LayoutType.Custom,
-                                customLayout: {
-                                    displayOption: models.DisplayOption.FitToWidth
-                                }
-                            }
-                        };
-                        this.hasDashboardDetails = true;
+                const { daily, weekly } = response.powerBiInfo;
+                if (response.powerBiInfo) {
+                    if (this.featureToggleKey === this.DAILY) {
+                        const { embedUrl, embedToken } = daily;
+                        this.fetchData(embedUrl, embedToken)
                     }
+                    else {
+                        const { embedUrl, embedToken } = weekly;
+                        this.fetchData(embedUrl, embedToken)
+                    }
+
                 } else {
                     this.hasDashboardDetails = false;
                 }
@@ -310,6 +309,31 @@ export class CtaasDashboardComponent implements OnInit {
                 console.error('Error while loading embedded powerbi report: ', err);
                 this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
             });
+    }
+
+    /**
+     * Fetching Data based on toggle feature
+     * @param url 
+     * @param token 
+     */
+    fetchData(embedUrl, token) {
+        if (embedUrl && token) {
+            this.reportConfig = {
+                type: 'report',
+                embedUrl,
+                tokenType: models.TokenType.Embed,
+                accessToken: token,
+                settings: {
+                    filterPaneEnabled: false,
+                    navContentPaneEnabled: false,
+                    layoutType: models.LayoutType.Custom,
+                    customLayout: {
+                        displayOption: models.DisplayOption.FitToWidth
+                    }
+                }
+            };
+            this.hasDashboardDetails = true;
+        }
     }
     /**
      * view dashboard based on the mode
