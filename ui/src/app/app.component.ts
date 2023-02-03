@@ -243,7 +243,6 @@ export class AppComponent implements OnInit, OnDestroy {
     onRouteChanges(): void {
         this.router.events.subscribe((val) => {
             if (val instanceof NavigationEnd) {
-                //console.log(val);
                 this.currentRoutePath = val.urlAfterRedirects.split('?')[0];
                 switch (this.currentRoutePath) {
                     case this.REDIRECT_ROUTE_PATH:
