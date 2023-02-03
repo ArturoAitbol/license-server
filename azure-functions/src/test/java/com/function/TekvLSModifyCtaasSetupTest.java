@@ -190,7 +190,27 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         assertEquals(expectedResponse,actualResponse,"Response doesn't match with: ".concat(expectedResponse));
     }
 
+    @Tag("acceptance")
+    @Test
+    public void modifyStatusWithIncorrectSubaccountIdTest(){
+        //Given
+        String bodyRequest = "{'status': '" + Constants.CTaaSSetupStatus.READY.value() + "'," +
+                "'subaccountId': '12341234-1234-1234-1234-123412341234'," +
+                "'licenseId': '16f4f014-5bed-4166-b10a-574b2e6655e3'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
+        //When
+        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        JSONObject jsonBody = new JSONObject(response.getBody().toString());
+        assertTrue(jsonBody.has("error"));
+    }
 
     @Tag("acceptance")
     @Test
