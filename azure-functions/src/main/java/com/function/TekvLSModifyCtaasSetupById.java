@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import com.function.clients.EmailClient;
 import com.function.clients.GraphAPIClient;
+import com.function.db.SelectQueryBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -35,6 +36,8 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import io.jsonwebtoken.Claims;
+
+import javax.xml.transform.Result;
 
 public class TekvLSModifyCtaasSetupById {
     /**
@@ -105,6 +108,19 @@ public class TekvLSModifyCtaasSetupById {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
+
+        // Create license verifier query builder
+        SelectQueryBuilder verificationBuilder = null;
+        if (jobj.has("licenseId") && jobj.has("subaccountId")) {
+            verificationBuilder = new SelectQueryBuilder("SELECT * FROM license");
+            verificationBuilder.appendEqualsCondition(
+                    OPTIONAL_PARAMS.SUBACCOUNT_ID.columnName,
+                    jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib),
+                    QueryBuilder.DATA_TYPE.UUID
+            );
+        }
+
+
         // Build the sql query for SpotLight setup
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
         int optionalParamsFound = 0;
@@ -120,7 +136,7 @@ public class TekvLSModifyCtaasSetupById {
         if (optionalParamsFound == 0) {
             return request.createResponseBuilder(HttpStatus.OK).build();
         }
-        queryBuilder.appendWhereStatement("subaccount_id", id, QueryBuilder.DATA_TYPE.UUID);
+        queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
         // build the sql query for project
         String sql = "INSERT INTO project (subaccount_id, code, name, status, open_date, project_owner, license_id) " +
                 "VALUES (?::uuid, ?, ?, ?::project_status_type_enum, ?::timestamp, ?, ?::uuid) RETURNING id;";
@@ -135,9 +151,24 @@ public class TekvLSModifyCtaasSetupById {
                 Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 PreparedStatement statement = queryBuilder.build(connection);
                 PreparedStatement projectStatement = connection.prepareStatement(sql);
-                PreparedStatement ctaasDeviceStatement = connection.prepareStatement(deviceSql)) {
+                PreparedStatement ctaasDeviceStatement = connection.prepareStatement(deviceSql);
+                PreparedStatement licenseVerificationStatement = verificationBuilder == null ? null : verificationBuilder.build(connection)) {
 
             JSONObject json = new JSONObject();
+
+            if (licenseVerificationStatement != null) {
+                ResultSet licenseQueryResult = licenseVerificationStatement.executeQuery();
+                context.getLogger().info(licenseQueryResult.toString());
+                if (licenseQueryResult.next()){
+                    context.getLogger().info("info: found matching license for subaccount: " + jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib));
+                }
+                else {
+                    context.getLogger().info("info: the license provided does not match with the subaccount provided");
+                    json.put("error", "The license provided does not belong to the subaccount");
+                    return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+                }
+            }
+
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
             String userId = getUserIdFromToken(tokenClaims, context);
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);

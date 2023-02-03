@@ -18,15 +18,23 @@
       </div>
     </ng-template>
 
-    
+
     <div>
       <ng-template #reportView>
         <div *ngIf="powerBiEmbeddingFlag">
+
+          <div class="flex-container">
+            <div class="banner-container">
+              <mat-button-toggle-group [formControl]="powerBiFontStyleControl" aria-label="Font Style"
+                (change)="onChangePowerBiButtonToggle()">
+                <mat-button-toggle [value]="DAILY">{{DAILY | titlecase}}</mat-button-toggle>
+                <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+          </div>
           <!-- power bi report view -->
-          <powerbi-report [embedConfig]="reportConfig" 
-          [phasedEmbedding]="phasedEmbeddingFlag"
-          [cssClassName]="reportClass" 
-          [eventHandlers]="eventHandlersMap">
+          <powerbi-report [embedConfig]="reportConfig" [phasedEmbedding]="phasedEmbeddingFlag"
+            [cssClassName]="reportClass" [eventHandlers]="eventHandlersMap">
           </powerbi-report>
         </div>
         <!-- pbrs report images view -->
