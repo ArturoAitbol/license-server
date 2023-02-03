@@ -1,6 +1,6 @@
 // Angular modules
 import { BrowserModule } from '@angular/platform-browser';
-import { CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, NgModule } from '@angular/core';
+import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -34,6 +34,7 @@ import { RedirectPageComponent } from './redirect-page/redirect-page.component';
 import { SubscriptionsOverviewComponent } from './modules/subscriptions-overview/subscriptions-overview.component';
 import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
 import { ConsumptionMatrixComponent } from './modules/consumption-matrix/consumption-matrix.component';
+import { FeatureToggleService } from "./services/feature-toggle.service";
 
 @NgModule({
     declarations: [
@@ -86,6 +87,7 @@ import { ConsumptionMatrixComponent } from './modules/consumption-matrix/consump
         SharedModule
     ],
     providers: [
+        { provide: APP_INITIALIZER, useFactory: (featureToggleService: FeatureToggleService) => () => featureToggleService.refreshToggles(), deps: [FeatureToggleService], multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: MsalInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
         { provide: ErrorHandler, useClass: ApplicationinsightsAngularpluginErrorService },

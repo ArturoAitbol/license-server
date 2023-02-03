@@ -36,21 +36,6 @@ public class TekvLSGetAllFeatureToggles {
             @BindingName("featureToggleId") String featureToggleId,
             final ExecutionContext context) {
 
-        Claims tokenClaims = getTokenClaimsFromHeader(request, context);
-        JSONArray roles = getRolesFromToken(tokenClaims, context);
-        if (roles.isEmpty()) {
-            JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
-            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
-            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
-        }
-        if (!hasPermission(roles, Resource.GET_ALL_FEATURE_TOGGLES)) {
-            JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
-            json.put("error", MESSAGE_FOR_FORBIDDEN);
-            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
-        }
-
         context.getLogger().info("Entering TekvLSGetAllFeatureToggles Azure function");
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());

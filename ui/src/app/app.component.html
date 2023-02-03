@@ -41,7 +41,7 @@
                     <div style="padding-top: 70px;">
                         <!-- #F9F9F9; -->
                         <!-- <mat-card class="shadow-backdrop" style="background: whitesmoke"> -->
-                            <router-outlet></router-outlet>
+                        <ng-container *ngTemplateOutlet="routerOutletTemplate"></ng-container>
                         <!-- </mat-card> -->
                     </div>
                 </div>
@@ -53,13 +53,13 @@
 <ng-template #nonSidebarTemplate>
     <div [ngClass]="{'main-container':(!hideToolbar && !isTransparentToolbar )}">
         <div [ngClass]="{'route-content':(!hideToolbar)}">
-            <router-outlet></router-outlet>
+            <ng-container *ngTemplateOutlet="routerOutletTemplate"></ng-container>
         </div>
     </div>
 </ng-template>
 <ng-template #loggedOut>
     <div class="login-container" *ngIf="!currentUser">
-        <router-outlet></router-outlet>
+        <ng-container *ngTemplateOutlet="routerOutletTemplate"></ng-container>
     </div>
 </ng-template>
 
@@ -188,4 +188,8 @@
             </mat-menu>
         </mat-toolbar>
     </div>
+</ng-template>
+
+<ng-template #routerOutletTemplate>
+    <router-outlet></router-outlet>
 </ng-template>
