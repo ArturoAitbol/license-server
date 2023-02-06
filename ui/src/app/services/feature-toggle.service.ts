@@ -10,7 +10,6 @@ import { Observable } from "rxjs";
 export class FeatureToggleService {
 
     private featureToggleMap: Map<string, FeatureToggle>;
-    private lastRefreshTimestamp = null;
     private refreshInterval = 5 * 60 * 1000;
     private intervalId = null;
     private httpClient: HttpClient;
@@ -49,7 +48,7 @@ export class FeatureToggleService {
     }
 
     /**
-     * Returns a boolean indicating if the feature toggle is enabled
+     * Returns a boolean indicating if the feature toggle is enabled, <b>if the feature toggle is not defined by default the return value is true<b>;
      * @param toggleName The unique name that identifies the feature toggle
      * @param subaccountId The subaccountId to check if there's any exception
      */
@@ -62,7 +61,7 @@ export class FeatureToggleService {
                 if (exception) return exception.status;
                 else return featureToggle.status;
             } else return featureToggle.status;
-        } else return false;
+        } else return true;
     }
 
     /**
