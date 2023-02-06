@@ -76,7 +76,7 @@ export class CtaasDashboardComponent implements OnInit {
                     console.error(event.detail);
                     const { detail: { message, errorCode } } = event;
                     if (message && errorCode && message === 'TokenExpired' && errorCode === '403') {
-                        this.fetchCtaasPowerBiDashboardDetailsBySubaccount();
+                        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
                     }
                 }
             },
@@ -87,9 +87,12 @@ export class CtaasDashboardComponent implements OnInit {
 
     readonly LEGACY_MODE: string = 'legacy_view';
     readonly POWERBI_MODE: string = 'powerbi_view';
-
+    readonly REPORT_TYPE: string = 'report';
     viewMode = new FormControl(this.LEGACY_MODE);
-
+    powerbiReportResponse: {
+        daily: { embedUrl: string, embedToken: string },
+        weekly: { embedUrl: string, embedToken: string }
+    };
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
@@ -137,6 +140,9 @@ export class CtaasDashboardComponent implements OnInit {
         const { value } = this.fontStyleControl;
         this.resultantImagesList = this.resultantImagesListBk.filter(e => e.reportType.toLowerCase().includes(value));
     }
+    /**
+     * on change power bi button toggle
+     */
     onChangePowerBiButtonToggle() {
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
@@ -283,46 +289,43 @@ export class CtaasDashboardComponent implements OnInit {
     /**
      * fetch SpotLight Power BI dashboard required details
      */
-    fetchCtaasPowerBiDashboardDetailsBySubaccount(): void {
-        this.isLoadingResults = true;
-        this.hasDashboardDetails = false;
-        this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
-            .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
-                this.isLoadingResults = false;
-                const { daily, weekly } = response.powerBiInfo;
-                if (response.powerBiInfo) {
-                    if (this.featureToggleKey === this.DAILY) {
-                        const { embedUrl, embedToken } = daily;
-                        this.fetchData(embedUrl, embedToken)
-                    }
-                    else {
-                        const { embedUrl, embedToken } = weekly;
-                        this.fetchData(embedUrl, embedToken)
-                    }
-
-                } else {
+    fetchSpotlightPowerBiDashboardDetailsBySubaccount(): Promise<any> {
+        const promise = new Promise((resolve, reject) => {
+            this.powerbiReportResponse = undefined;
+            this.isLoadingResults = true;
+            this.hasDashboardDetails = false;
+            this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
+                .toPromise()
+                .then((response: { powerBiInfo: IPowerBiReponse }) => {
+                    this.isLoadingResults = false;
+                    const { daily, weekly } = response.powerBiInfo;
+                    this.powerbiReportResponse = { daily, weekly };
+                    resolve("API request is successfull !");
+                }, (err) => {
                     this.hasDashboardDetails = false;
-                }
-            }, (err) => {
-                this.hasDashboardDetails = false;
-                this.isLoadingResults = false;
-                console.error('Error while loading embedded powerbi report: ', err);
-                this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
-            });
+                    this.isLoadingResults = false;
+                    console.error('Error while loading embedded powerbi report: ', err);
+                    this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+                    reject("API request is not successfull !");
+                });
+
+        });
+        return promise;
     }
 
     /**
-     * Fetching Data based on toggle feature
-     * @param url 
-     * @param token 
+     * configure the embedded powerbi report
+     * @param embedUrl: string 
+     * @param accessToken: string 
      */
-    fetchData(embedUrl, token) {
-        if (embedUrl && token) {
+    configurePowerbiEmbeddedReport(embedUrl: string, accessToken: string) {
+        this.reportConfig = undefined;
+        if (embedUrl && accessToken) {
             this.reportConfig = {
-                type: 'report',
+                type: this.REPORT_TYPE,
                 embedUrl,
                 tokenType: models.TokenType.Embed,
-                accessToken: token,
+                accessToken,
                 settings: {
                     filterPaneEnabled: false,
                     navContentPaneEnabled: false,
@@ -340,10 +343,28 @@ export class CtaasDashboardComponent implements OnInit {
      * PBRS dashboard - LEGACY mode
      * Embedded PowerBi - PowerBi mode
      */
-    viewDashboardByMode(): void {
+    async viewDashboardByMode(): Promise<any> {
         switch (this.viewMode.value) {
             case this.POWERBI_MODE:
-                this.fetchCtaasPowerBiDashboardDetailsBySubaccount();
+                // check for powerbi response, if not make an API request to fetch powerbi dashboard details
+                if (!this.powerbiReportResponse) {
+                    await this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
+                }
+
+                if (this.powerbiReportResponse) {
+                    this.hasDashboardDetails = true;
+                    const { daily, weekly } = this.powerbiReportResponse;
+                    // configure for daily report
+                    if (this.featureToggleKey === this.DAILY) {
+                        const { embedUrl, embedToken } = daily;
+                        this.configurePowerbiEmbeddedReport(embedUrl, embedToken);
+                    } else if (this.featureToggleKey === this.WEEKLY) { // configure for weekly report
+                        const { embedUrl, embedToken } = weekly;
+                        this.configurePowerbiEmbeddedReport(embedUrl, embedToken);
+                    }
+                } else {
+                    this.hasDashboardDetails = false;
+                }
                 this.powerBiEmbeddingFlag = true;
                 break;
             default:
