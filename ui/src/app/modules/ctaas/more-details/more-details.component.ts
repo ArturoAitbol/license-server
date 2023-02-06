@@ -310,12 +310,12 @@ export class MoreDetailsComponent implements OnInit {
   private downloadExcelFile(data: any): void {
     const currentDate = new Date();
     const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = currentDate.getDay().toString().padStart(2, '0');
+    const date = currentDate.getDate().toString().padStart(2, '0');
     const year = currentDate.getFullYear().toString();
     const hh = currentDate.getHours();
     const mm = currentDate.getMinutes();
     const ss = currentDate.getSeconds();
-    const name = `${this.type}-${month}-${day}-${year} ${hh}.${mm}.${ss}.xlsx`;
+    const name = `${this.type}-${month}-${date}-${year} ${hh}.${mm}.${ss}.xlsx`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
     a.download = name;

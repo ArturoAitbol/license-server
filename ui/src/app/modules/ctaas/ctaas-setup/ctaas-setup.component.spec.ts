@@ -199,9 +199,7 @@ describe('setup form verifications', () => {
             azureResourceGroup: '',
             tapUrl: '',
             status: '',
-            onBoardingComplete: '',
-            powerBiWorkspaceId: '',
-            powerBiReportId: ''
+            onBoardingComplete: ''            
         });
         expect(setup.hasError('required')).toBeTruthy;
 

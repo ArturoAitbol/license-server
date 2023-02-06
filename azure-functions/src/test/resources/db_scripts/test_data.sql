@@ -154,16 +154,15 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	9285ca9e-04c3-49df-9d59-085322a13319	2022-0
 9f53d1ae-e22d-4c3b-b05d-6bf6b13c0658	9c0cc4a5-a773-46f3-b73e-a09c55080b1f	2021-12-28	2			\N	\N
 \.
 
-COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_complete, subaccount_id, powerbi_workspace_id, powerbi_report_id) FROM stdin;
-836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	\N	\N
-fee9374f-2c18-4feb-9dc2-fa1280651802	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	96234b32-32d3-45a4-af26-4c912c0d6a06	\N	\N
-2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7	\N	\N
-39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec	\N	\N
-78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d	\N	\N
-b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981	\N	\N
-a079c3a9-66c7-424f-aa1b-fdc2565d615a	\N	\N	SETUP_INPROGRESS	false	b5b91753-4c2b-43f5-afa0-feb22cefa901	\N	\N
-b079c3a9-66c7-424f-aa1b-fdc2565d616a	\N	\N	SETUP_INPROGRESS	false	0e2038ec-2b9b-493b-b3f2-6702e60b5b90	\N	\N
-c079c3a9-66c7-424f-aa1b-fdc2565d617a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	e00a514e-01d5-47ae-b728-7930c4b514b5	cf516c08-b093-4703-bc51-934265cb0fad
+COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_complete, subaccount_id) FROM stdin;
+836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
+2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7
+39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
+78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d
+b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981
+a079c3a9-66c7-424f-aa1b-fdc2565d615a	\N	\N	SETUP_INPROGRESS	false	b5b91753-4c2b-43f5-afa0-feb22cefa901
+b079c3a9-66c7-424f-aa1b-fdc2565d616a	\N	\N	SETUP_INPROGRESS	false	0e2038ec-2b9b-493b-b3f2-6702e60b5b90
+c079c3a9-66c7-424f-aa1b-fdc2565d617a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	2c8e386b-d1bd-48b3-b73a-12bfa5d00805
 \.
 
 COPY public.ctaas_test_suite (id, subaccount_id, total_executions, next_execution_ts, frequency, device_type, name) FROM stdin;
