@@ -1,16 +1,23 @@
 import { of, Observable } from "rxjs";
+import { Device } from "src/app/model/device.model";
+
+const DEVICE_A = {
+    id: "001ee852-4ab5-4642-85e1-58f5a477fbb3",
+    vendor: "HylaFAX",
+    product: "HylaFAX Enterprise",
+    version: "6.2",
+    type: "PBX",
+    granularity: "static",
+    tokensToConsume: 0,
+    deprecatedDate: "",
+    startDate: new Date(),
+    subaccountId: "",
+    supportType: true
+};
 
 const DEVICE_LIST = {
     devices: [
-        {
-            supportType: true,
-            product: "HylaFAX Enterprise",
-            vendor: "HylaFAX",
-            granularity: "static",
-            id: "001ee852-4ab5-4642-85e1-58f5a477fbb3",
-            version: "6.2",
-            tokensToConsume: 0
-        },
+        DEVICE_A,
         {
             supportType: true,
             product: "Multitech FAX Finder IP FAX server",
@@ -756,8 +763,9 @@ const VENDORS_LIST = {
 };
 
 export const DevicesServiceMock = {
+    mockDeviceA: DEVICE_A,
     devicesListValue: DEVICE_LIST,
-    deviceTypes:DEVICE_TYPES,
+    deviceTypes: DEVICE_TYPES,
     getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string) => {
         return of(
             JSON.parse(JSON.stringify({ devices: DEVICE_LIST.devices.filter(device => device.vendor === vendor) }))
@@ -800,6 +808,18 @@ export const DevicesServiceMock = {
                         }
                     ]
                 }
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        });
+    },
+    deleteDevice: (deviceId) => {
+        return new Observable((observer) => {
+            const removedDevice = DEVICE_LIST.devices.find((device: Device) => device.id === deviceId);
+            observer.next(
+                JSON.parse(JSON.stringify(removedDevice))
             );
             observer.complete();
             return {
