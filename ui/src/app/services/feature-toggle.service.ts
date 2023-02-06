@@ -44,7 +44,7 @@ export class FeatureToggleService {
 
     private setUpPeriodicRefresh(): void {
         this.intervalId = setInterval(() => {
-            this.refreshToggles();
+            this.refreshToggles().subscribe();
         }, this.refreshInterval);
     }
 

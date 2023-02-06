@@ -1,5 +1,5 @@
 // import { instance, mock, verify, when } from "ts-mockito";
-import { HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { ComponentFixture, TestBed} from '@angular/core/testing';
 import { MatDialog} from '@angular/material/dialog';
@@ -22,6 +22,8 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 import { Features } from 'src/app/helpers/features';
 import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
+import { FeatureToggleService } from "../../../services/feature-toggle.service";
+import { FeatureToggleServiceMock } from "../../../../test/mock/services/feature-toggle-service.mock";
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
 const dialogMock = new DialogServiceMock();
@@ -70,7 +72,15 @@ const beforeEachFunction = () => {
       {
         provide: SubAccountService,
         useValue: SubaccountServiceMock
-      }
+      },
+      {
+          provide: HttpBackend,
+          useValue: HttpBackend
+      },
+      {
+          provide: FeatureToggleService,
+          useValue: FeatureToggleServiceMock
+      },
     ]
   });
   fixture = TestBed.createComponent(ModifyCustomerAccountComponent);
