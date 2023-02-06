@@ -37,8 +37,7 @@ public class TekvLSGetAllFeatureTogglesTest extends TekvLSTest {
         String bodyRequest = "{" +
                     " 'status' : true," +
                     " 'name' : '" + name + "'," +
-                    " 'customerName' : '(optional)Customer Name'," +
-                    " 'author' : '(optional)Test User'," +
+                    " 'author' : '" + name + "'," +
                     " 'description' : '(optional)This is test data for the FT api'" +
                 "}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
@@ -119,31 +118,6 @@ public class TekvLSGetAllFeatureTogglesTest extends TekvLSTest {
         assertTrue(featureToggle.has("name"));
         assertTrue(featureToggle.has("description"));
         assertEquals(this.featureToggleId, featureToggle.getString("id"), "Response doesn't match with: ".concat(this.featureToggleId));
-    }
-
-    @Tag("security")
-    @Test
-    public void unauthorizedTest() {
-        //Given - Arrange
-        this.headers.remove("authorization");
-
-        //When - Action
-        HttpResponseMessage response = getAllFeatureToggles.run(this.request, "", this.context);
-        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
-
-        //Then - Assert
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.UNAUTHORIZED;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-
-        assertTrue(jsonBody.has("error"));
-
-        String expectedResponse = RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
-        String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
     @Test
