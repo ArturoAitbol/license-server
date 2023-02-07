@@ -330,7 +330,7 @@ describe('add-other-consumption - On event methods', () => {
         fixture.detectChanges();
         await fixture.whenStable();
         const options = fixture.debugElement.queryAll(By.css('mat-option'));
-        expect(options.length).toBe(1);
+        expect(options.length).toBe(2);
         expect(options[0].nativeElement.textContent).toBe(' Project-Test1 ');
     });
 

@@ -168,6 +168,7 @@ describe('projects - UI verification test', () => {
 describe('Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
     it('should make a call to get licenses and projects after initializing', () => {
+        const subaccountId = 'eea5f3b8-37eb-41fe-adad-5f94da124a5a'
         spyOn(LicenseServiceMock, 'getLicenseList').and.callThrough();
         spyOn(ProjectServiceMock, 'getProjectDetailsBySubAccount').and.callThrough();
 
@@ -176,8 +177,8 @@ describe('Data collection and parsing tests', () => {
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
         expect(CurrentCustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(ProjectServiceMock.setSelectedSubAccount).toHaveBeenCalled();
-        expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
-        expect(projectsComponentTestInstance.projects).toEqual(ProjectServiceMock.projectList.projects);
+        expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalledWith(subaccountId);
+        expect(projectsComponentTestInstance.projects.length).toEqual(6);
     });
 
     it('should change the loading-related variables if getProjects() got an error', () => {
@@ -205,6 +206,8 @@ describe('Dialog calls and interactions', () => {
         spyOn(projectsComponentTestInstance, 'confirmDeleteDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'openConsumptionView').and.callThrough();
         spyOn(dialogService, 'confirmDialog').and.callThrough();
+
+        fixture.detectChanges();
 
         selectedTestData.selectedOption = projectsComponentTestInstance.MODIFY_PROJECT;
         projectsComponentTestInstance.rowAction(selectedTestData);
@@ -337,7 +340,7 @@ describe('test customer false and routing with query params', () => {
                         name: 'Test Customer',
                         status: 'Active',
                         customerType: 'MSP',
-                        subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e',
+                        subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
                         licenseId: 'a3475bf9-41d5-432a-ae2d-ccf7681385cf',
                         subaccountName: 'Default',
                         testCustomer: false,
@@ -361,7 +364,7 @@ describe('test customer false and routing with query params', () => {
 
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
-        expect(projectsComponentTestInstance.projects).toEqual(ProjectServiceMock.projectsListValue.projects);
+        expect(projectsComponentTestInstance.projects.length).toEqual(1);
     });
 
     it('should navigate to license consumption after calling openConsumptionView()', () => {

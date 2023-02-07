@@ -1,5 +1,4 @@
 import {Observable} from 'rxjs';
-import { Project } from 'src/app/model/project.model';
 
 const PROJECT_LIST = {
     projects: [
@@ -51,18 +50,13 @@ const PROJECT_LIST = {
             id: '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d',
             projectName: 'Project-Test4',
             projectNumber: 'test-code4',
-            subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e',
+            subaccountId: 'fbb2d912-b202-432d-8c07-dce0dad51f7f',
             licenseId: 'a3475bf9-41d5-432a-ae2d-ccf7681385cf',
             openDate: '2022-01-25 05:00:00',
             closeDate: '2022-03-30 05:00:00',
             status: 'Open',
             licenseDescription:'DescriptionP'
-        }
-    ]
-};
-
-const ALL_PORJECT_LIST = {
-    projects: [
+        },
         {
             id: '459cf3ca-7365-47a1-8d9b-1abee381545c',
             projectName: 'Project-Test1',
@@ -85,42 +79,8 @@ const ALL_PORJECT_LIST = {
             status: 'Open',
             licenseDescription:'DescriptionO'
         },
-        {
-            id: '234d6482-4004-44ca-a846-f9ec9a7ae1dd',
-            projectName: 'Project-Test3',
-            projectNumber: 'test-code3',
-            subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
-            licenseId: 'a3475bf9-41d5-432a-ae2d-ccf7681385cf',
-            openDate: '2022-01-25 05:00:00',
-            closeDate: '2022-03-30 05:00:00',
-            status: 'Open',
-            licenseDescription:'DescriptionO'
-        },
-        {
-            id: '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d',
-            projectName: 'Project-Test4',
-            projectNumber: 'test-code4',
-            subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
-            licenseId: 'a3475bf9-41d5-432a-ae2d-ccf7681385cf',
-            openDate: '2022-01-25 05:00:00',
-            closeDate: '2022-03-30 05:00:00',
-            status: 'Open',
-            licenseDescription:'DescriptionO'
-        },
-        {
-            id: '2bdaf2af-838f-4053-b3fa-ef22aaa11b0d',
-            projectName: 'Project-Test4',
-            projectNumber: 'test-code4',
-            subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e',
-            licenseId: 'a3475bf9-41d5-432a-ae2d-ccf7681385cf',
-            openDate: '2022-01-25 05:00:00',
-            closeDate: '2022-03-30 05:00:00',
-            status: 'Open',
-            licenseDescription:'DescriptionO'
-        }
     ]
 };
-
 
 const CLOSED_PROJECT = {
     body:[
@@ -145,11 +105,12 @@ const SELECTED_SUBACCOUNT = {
 
 export const ProjectServiceMock = {
     projectsListValue: PROJECT_LIST,
-    projectList: ALL_PORJECT_LIST,
     getProjectDetailsBySubAccount: (id?:string) => {
         return new Observable((observer) => {
+            let projectList;
+            projectList = { projects: PROJECT_LIST.projects.filter((project: any) => (project.subaccountId === id))}
             observer.next(
-                JSON.parse(JSON.stringify(PROJECT_LIST))
+                JSON.parse(JSON.stringify(projectList))
             );
             observer.complete();
             return {
