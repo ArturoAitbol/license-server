@@ -28,6 +28,8 @@ import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldHarness } from '@angular/material/form-field/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { SubAccountService } from 'src/app/services/sub-account.service';
+import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
 
 let projectsComponentTestInstance: ProjectsComponent;
 let fixture: ComponentFixture<ProjectsComponent>;
@@ -85,24 +87,38 @@ const defaultTestBedConfig = {
             {
                 provide: FormBuilder
             },
+            {
+                provide: SubAccountService,
+                useValue: SubaccountServiceMock
+            }
         ]
 };
 
-const beforeEachFunction = () => {
-    TestBed.configureTestingModule(defaultTestBedConfig);
-    fixture = TestBed.createComponent(ProjectsComponent);
-    projectsComponentTestInstance = fixture.componentInstance;
-    projectsComponentTestInstance.ngOnInit();
-    loader = TestbedHarnessEnvironment.loader(fixture);
-    spyOn(console, 'log').and.callThrough();
-    spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
-    spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
+const beforeEachFunction =  async  () => {
+    TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
+        fixture = TestBed.createComponent(ProjectsComponent);
+        projectsComponentTestInstance = fixture.componentInstance;
+        projectsComponentTestInstance.ngOnInit();
+        loader = TestbedHarnessEnvironment.loader(fixture);
+        spyOn(console, 'log').and.callThrough();
+        spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
+        spyOn(ProjectServiceMock, 'setSelectedSubAccount').and.callThrough();
+        spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.returnValue({
+            id: "eea5f3b8-37eb-41fe-adad-5f94da124a5a",
+            name: "testv2Demo",
+            customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
+            services: "tokenConsumption,spotlight",
+            testCustomer: false,
+            companyName:"testComp"
+        });
+    });
 }
 
-describe('UI verification test', () => {
+describe('projects - UI verification test', () => {
     beforeEach(beforeEachFunction);
     it('should display essential UI and components', async () => {
         fixture.detectChanges();
+        await fixture.whenStable();
         spyOn(projectsComponentTestInstance, 'sizeChange').and.callThrough();
 
         const h2 = fixture.nativeElement.querySelector('#page-subtitle');
@@ -157,10 +173,11 @@ describe('Data collection and parsing tests', () => {
 
         fixture.detectChanges();
         projectsComponentTestInstance.currentCustomer = null;
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
         expect(CurrentCustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(ProjectServiceMock.setSelectedSubAccount).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
-        expect(projectsComponentTestInstance.projects).toEqual(ProjectServiceMock.projectsListValue.projects);
+        expect(projectsComponentTestInstance.projects).toEqual(ProjectServiceMock.projectList.projects);
     });
 
     it('should change the loading-related variables if getProjects() got an error', () => {
@@ -269,11 +286,14 @@ describe('Dialog calls and interactions', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Project deleted successfully!');
     });
 
-    it('should execute columnAction', () => {
-        const selectedTestData = { selectedRow: { testProperty: 'testData' }, selectedIndex: '0', columnName: 'Status' };
+    it('should execute columnAction', async  () => {
+        const selectedTestData = { selectedRow: { id: "eea5f3b8-37eb-41fe-adad-5f94da124a5a" }, selectedIndex: '0', columnName: 'Status' };
         spyOn(projectsComponentTestInstance, 'columnAction').and.callThrough();
         spyOn(projectsComponentTestInstance, 'openDialog').and.callThrough();
         spyOn(projectsComponentTestInstance, 'openConsumptionView').and.callThrough();
+
+        fixture.detectChanges();
+        await fixture.detectChanges();
 
         projectsComponentTestInstance.columnAction(selectedTestData);
         expect(projectsComponentTestInstance.openDialog).toHaveBeenCalledWith(ModifyProjectComponent, selectedTestData.selectedRow);
@@ -284,31 +304,29 @@ describe('Dialog calls and interactions', () => {
     });
 
     it('should execute onChangeLicense', () => {
+        spyOn(projectsComponentTestInstance, 'onChangeLicense').and.callThrough();
         fixture.detectChanges();
-        spyOn(projectsComponentTestInstance, 'onChangeLicense').and.callThrough();;
     
-        projectsComponentTestInstance.onChangeLicense('16f4f014-5bed-4166-b10a-808b2e6655e3')
+        projectsComponentTestInstance.onChangeLicense('986137d3-063d-4c0e-9b27-85fcf3b3272e')
         expect(projectsComponentTestInstance.onChangeLicense).toHaveBeenCalled();
     });
 });
 
-describe('navigate', () => {
+describe('projects - navigate', () => {
     beforeEach(beforeEachFunction);
-
-    it('should navigate to license consumption after calling openConsumptionView()', () => {
+    it('should navigate to dashboard after calling goToDashboard()',async () => {
         spyOn(RouterMock, 'navigate');
-        projectsComponentTestInstance.openConsumptionView({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption']);
-    });
-
-    it('should navigate to dashboard after calling goToDashboard()', () => {
-        spyOn(RouterMock, 'navigate');
+        fixture.detectChanges();
+        await fixture.whenStable();
         projectsComponentTestInstance.goToDashboard();
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/dashboard']);
     });
 });
 
-describe('test customer false ', () => {
+describe('test customer false and routing with query params', () => {
+    const RouterMock = {
+        navigate: (commands: string[], queryParams:any) => { }
+    };
     beforeEach(() => {
         TestBed.configureTestingModule(defaultTestBedConfig);
         TestBed.overrideProvider(CustomerService, {
@@ -319,14 +337,17 @@ describe('test customer false ', () => {
                         name: 'Test Customer',
                         status: 'Active',
                         customerType: 'MSP',
-                        subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
-                        licenseId: '16f4f014-5bed-4166-b10a-808b2e6655e3',
+                        subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e',
+                        licenseId: 'a3475bf9-41d5-432a-ae2d-ccf7681385cf',
                         subaccountName: 'Default',
                         testCustomer: false,
                         services: 'tokenConsumption,Ctaas'
                     }
                 }
             }
+        }),
+        TestBed.overrideProvider(Router, {
+            useValue:RouterMock
         })
         fixture = TestBed.createComponent(ProjectsComponent);
         projectsComponentTestInstance = fixture.componentInstance;
@@ -338,7 +359,15 @@ describe('test customer false ', () => {
 
         fixture.detectChanges();
 
+        expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
         expect(ProjectServiceMock.getProjectDetailsBySubAccount).toHaveBeenCalled();
         expect(projectsComponentTestInstance.projects).toEqual(ProjectServiceMock.projectsListValue.projects);
+    });
+
+    it('should navigate to license consumption after calling openConsumptionView()', () => {
+        spyOn(RouterMock, 'navigate').and.callThrough();
+        fixture.detectChanges();
+        projectsComponentTestInstance.openConsumptionView({});
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'], {queryParams:{subaccountId:undefined}});
     });
 });

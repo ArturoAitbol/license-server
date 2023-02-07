@@ -25,7 +25,7 @@ let testInstance: SubscriptionsOverviewComponent;
 let fixture: ComponentFixture<SubscriptionsOverviewComponent>;
 
 const RouterMock = {
-    navigate: (commands: string[]) => { return }
+    navigate: (commands: string[], queryParams:any) => { return }
 };
 
 const beforeEachFunction = async () => {
@@ -223,14 +223,15 @@ describe('Subscriptions Overview - Routing events', () => {
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         testInstance.openLicenseDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith([ '/customer/licenses' ]);
+        expect(RouterMock.navigate).toHaveBeenCalledWith([ '/customer/licenses' ], {queryParams:{subaccountId:undefined}});
     });
 
     it('should navigate to license consumption after calling openLicenseConsumption()', () => {
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
+        fixture.detectChanges();
         testInstance.openLicenseConsumption({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith([ '/customer/consumption' ]);
+        expect(RouterMock.navigate).toHaveBeenCalledWith([ '/customer/consumption' ],{queryParams:{subaccountId:undefined}});
     });
 });
 

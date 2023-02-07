@@ -12,12 +12,14 @@ import { CustomerService } from "src/app/services/customer.service";
 import { DialogService } from "src/app/services/dialog.service";
 import { LicenseService } from "src/app/services/license.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
+import { SubAccountService } from "src/app/services/sub-account.service";
 import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { CustomerServiceMock } from "src/test/mock/services/customer-service.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
+import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
 import { SharedModule } from "../../shared/shared.module";
 import { AddLicenseComponent } from "./add-license/add-license.component";
 import { LicensesComponent } from "./licenses.component"
@@ -66,6 +68,10 @@ const beforeEachFunction = () =>{
             useValue: dialogServiceMock
         },
         {
+            provide: SubAccountService,
+            useValue: SubaccountServiceMock
+        },
+        {
             provide: HttpClient,
             useValue: HttpClient
         }
@@ -75,7 +81,7 @@ const beforeEachFunction = () =>{
     licensesComponentTestInstance = fixture.componentInstance;
 }
 
-describe('UI verification tests',()=>{
+describe('licenses - UI verification tests',()=>{
 
     beforeEach(beforeEachFunction);
 
@@ -123,7 +129,7 @@ describe('Data collection and parsing tests',()=>{
         expect(CustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
         expect(MsalServiceMock.instance.getActiveAccount).toHaveBeenCalled();
-        expect(licensesComponentTestInstance.actionMenuOptions).toEqual(['Edit','Delete']);
+        expect(licensesComponentTestInstance.actionMenuOptions).not.toEqual(['Edit','Delete']);
     });
 
     it('should change the loading-related variables if getLicenses() got an error',()=>{

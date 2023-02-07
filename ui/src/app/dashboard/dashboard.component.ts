@@ -38,6 +38,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     data: CustomerLicense[] = [];
     customerList: any = [];
     filteredCustomerList: any = [];
+    private customerSubaccountDetails: any;
     // flag
     isLoadingResults = true;
     isRequestCompleted = false;
@@ -118,6 +119,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.initColumns();
         this.fetchDataToDisplay();
         localStorage.removeItem(Constants.PROJECT);
+        this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.getActionMenuOptions();
         this.filterForm.valueChanges.pipe(
             debounceTime(300),
@@ -330,7 +332,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     openLicenseDetails(row: any): void {
         this.customerService.setSelectedCustomer(row);
         localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/licenses']);
+        this.router.navigate(['/customer/licenses'], {queryParams:{subaccountId: row.subaccountId}});
     }
 
     /**
@@ -340,7 +342,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     openLicenseConsumption(row: any): void {
         this.customerService.setSelectedCustomer(row);
         localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/consumption']);
+        this.router.navigate(['/customer/consumption'], {queryParams:{subaccountId: this.customerSubaccountDetails.id}});
     }
 
     /**
@@ -350,7 +352,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     openProjectDetails(row: any): void {
         this.customerService.setSelectedCustomer(row);
         localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/projects']);
+        this.router.navigate(['/customer/projects'], {queryParams:{subaccountId: row.subaccountId}});
     }
 
     /**
@@ -376,20 +378,47 @@ export class DashboardComponent implements OnInit, OnDestroy {
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
         switch (object.selectedOption) {
             case this.VIEW_LICENSES:
-                if (object.selectedRow.subaccountId !== undefined)
+                if (object.selectedRow.subaccountId !== undefined){
+                    const selectedSubaccount = {
+                        id: object.selectedRow.subaccountId,
+                        name: object.selectedRow.name,
+                        customerId: object.selectedRow.id,
+                        customerName: object.selectedRow.name,
+                        services: object.selectedRow.services
+                    };
+                    this.subaccountService.setSelectedSubAccount(selectedSubaccount);
                     this.openLicenseDetails(object.selectedRow);
+                }
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
                 break;
             case this.VIEW_CONSUMPTION:
-                if (object.selectedRow.subaccountId !== undefined)
+                if (object.selectedRow.subaccountId !== undefined){
+                    const selectedSubaccount = {
+                        id: object.selectedRow.subaccountId,
+                        name: object.selectedRow.name,
+                        customerId: object.selectedRow.id,
+                        customerName: object.selectedRow.name,
+                        services: object.selectedRow.services
+                    };
+                    this.subaccountService.setSelectedSubAccount(selectedSubaccount);
                     this.openLicenseConsumption(object.selectedRow);
+                }
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
                 break;
             case this.VIEW_PROJECTS:
-                if (object.selectedRow.subaccountId !== undefined)
+                if (object.selectedRow.subaccountId !== undefined){
+                    const selectedSubaccount = {
+                        id: object.selectedRow.subaccountId,
+                        name: object.selectedRow.name,
+                        customerId: object.selectedRow.id,
+                        customerName: object.selectedRow.name,
+                        services: object.selectedRow.services
+                    };
+                    this.subaccountService.setSelectedSubAccount(selectedSubaccount);
                     this.openProjectDetails(object.selectedRow);
+                }
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access Projects view', '');
                 break;

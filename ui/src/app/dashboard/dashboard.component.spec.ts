@@ -40,7 +40,7 @@ const dialogServiceMock = new DialogServiceMock();
 let loader: HarnessLoader;
 
 const RouterMock = {
-    navigate: (commands: string[]) => { }
+    navigate: (commands: string[], queryParams: any) => { }
 };
 
 const defaultTestBedConfig = {
@@ -271,42 +271,33 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/licenses']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/licenses'],{queryParams:{subaccountId: undefined }});
     });
 
     it('should navigate to license consumption after calling openLicenseConsumption()', () => {
+        const selectedTestData = { selectedRow: {
+            name: "testV2",
+            id: "157fdef0-c28e-4764-9023-75c06daad09d",
+            subaccountName: "testv2Demo",
+            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            services: "tokenConsumption,spotlight"
+        }, 
+        selectedOption: 'selectedTestOption', 
+        selectedIndex: '0' };  
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseConsumption({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId }});
     });
 
     it('should navigate to project details after calling openProjectDetails()', () => {
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openProjectDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects'],{queryParams:{subaccountId:undefined }});
     });
 
     if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-        // it('should navigate to Spotlight dashboard ', () => {
-        //     const selectedTestData = { selectedRow: {
-        //         name: "testV2",
-        //         id: "157fdef0-c28e-4764-9023-75c06daad09d",
-        //         subaccountName: "testv2Demo",
-        //         subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-        //         services: "tokenConsumption,spotlight"
-        //     }, 
-        //     selectedOption: 'selectedTestOption', 
-        //     selectedIndex: '0' }; 
-        //     spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-        //     spyOn(RouterMock, 'navigate').and.callThrough();
-
-        //     selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
-        //     dashboardComponentTestInstance.rowAction(selectedTestData);
-        //     expect(TestBed.get(Router).navigate).toHaveBeenCalledWith(['/spotlight/report-dashboards'],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
-        // });
-
         it('should navigate to Spotlight dashboard ', () => {
             const selectedTestData = { selectedRow: {
                 name: "testV2",

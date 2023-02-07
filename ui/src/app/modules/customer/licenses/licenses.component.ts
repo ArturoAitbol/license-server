@@ -12,6 +12,7 @@ import { ModifyLicenseComponent } from './modify-license/modify-license.componen
 import { MsalService } from '@azure/msal-angular';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Utility } from 'src/app/helpers/utils';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-licenses',
@@ -32,6 +33,7 @@ export class LicensesComponent implements OnInit {
   currentCustomer: any;
   licenses: License[] = [];
   licensesBk: License[] = [];
+  private customerSubaccountDetails: any
   // flag
   isLoadingResults = true;
   isRequestCompleted = false;
@@ -53,7 +55,8 @@ export class LicensesComponent implements OnInit {
     private snackBarService: SnackBarService,
     private router: Router,
     public dialog: MatDialog,
-    private msalService: MsalService
+    private msalService: MsalService,
+    private subaccountService: SubAccountService
   ) { }
 
   @HostListener('window:resize')
@@ -64,7 +67,7 @@ export class LicensesComponent implements OnInit {
   private getActionMenuOptions(){
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"licenseOptions");
-    if(this.currentCustomer.testCustomer === false){
+    if(this.customerSubaccountDetails.testCustomer === false){
       const action = (action) => action === 'Delete';
       const index = this.actionMenuOptions.findIndex(action);
       this.actionMenuOptions.splice(index,1);
@@ -84,6 +87,7 @@ export class LicensesComponent implements OnInit {
   ngOnInit(): void {
     this.calculateTableHeight();
     this.currentCustomer = this.customerService.getSelectedCustomer();
+    this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.fetchLicenses();
     this.getActionMenuOptions();
   }
@@ -110,7 +114,7 @@ export class LicensesComponent implements OnInit {
   fetchLicenses(): void {
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
-    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe(res => {
+    this.licenseService.getLicenseList(this.customerSubaccountDetails.id).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
       this.licensesBk = this.licenses = res['licenses'];
