@@ -155,8 +155,6 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 	
 	private void updateADUser(String email, JSONObject jobj, ExecutionContext context) {
 		if(!FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
-		//  if(!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-//			if(FeatureToggleService.isFeatureActiveById("")) {
 			 context.getLogger().info("ad-subaccount-user-creation toggle is not active. Nothing to do at Azure AD");
 			 return;
 		 }

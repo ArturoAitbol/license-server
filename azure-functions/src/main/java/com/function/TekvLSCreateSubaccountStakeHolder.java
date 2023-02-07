@@ -143,8 +143,6 @@ public class TekvLSCreateSubaccountStakeHolder {
 					json.put("subaccountAdminEmail", rs.getString("subaccount_admin_email"));
 
 					if(FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
-						// if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-						//			if(FeatureToggleService.isFeatureActiveById("")) {
 						try {
 							context.getLogger().info("Adding user to Azure AD : " + jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
 							if (GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context))

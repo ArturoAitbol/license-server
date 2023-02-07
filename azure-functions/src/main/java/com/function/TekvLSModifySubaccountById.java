@@ -152,8 +152,6 @@ public class TekvLSModifySubaccountById
 					final String adminEmail = rs.getString("subaccount_admin_email");
 
 					if(FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", id)) {
-					// if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-					// if(FeatureToggleService.isFeatureActiveById("")) {
 						EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
 					}
 				}

@@ -215,8 +215,6 @@ public class TekvLSModifyCtaasSetupById {
                 licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
 
                 if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", jobj.getString("subaccountId"))) {
-                    // if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-                    // if(FeatureToggleService.isFeatureActiveById("")) {
                     this.ADUserCreation(jobj, context, connection);
                 }
 
