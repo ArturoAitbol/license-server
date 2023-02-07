@@ -96,9 +96,6 @@ public class TekvLSCreateSubaccount
 		}
 
 		// Build the sql queries
-
-		//String insertValuesClause = FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation") ?
-		//String insertValuesClause = FeatureToggleService.isFeatureActiveById("") ?
 		String insertValuesClause = "(name, customer_id, services) VALUES (?, ?::uuid, ?)";
 		String insertSql = "INSERT INTO subaccount " + insertValuesClause + " RETURNING id;";
 		String verifyEmailsSql = "SELECT count(*) FROM subaccount_admin WHERE subaccount_admin_email=?;";
