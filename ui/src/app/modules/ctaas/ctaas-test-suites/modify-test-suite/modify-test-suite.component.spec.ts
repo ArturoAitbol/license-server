@@ -105,7 +105,7 @@ const beforeEachFunction = () => {
     spyOn(console, 'log').and.callThrough();
 };
 
-describe('UI verifiaction test', () => {
+describe('UI verification test', () => {
     beforeEach(beforeEachFunction);
     it('should display the essential UI and components', () => {
         fixture.detectChanges();

@@ -24,6 +24,7 @@ export class ModifyDeviceComponent implements OnInit {
   ];
 
   modifyDeviceForm = this.formBuilder.group({
+    id: ['', Validators.required],
     startDate: ['', Validators.required],
     deprecatedDate: [''],
     type: ['', Validators.required],
@@ -77,7 +78,7 @@ export class ModifyDeviceComponent implements OnInit {
     });
   }
 
-  submit(): void {
+  modifyDevice(): void {
     this.isDataLoading = true;
     this.modifyDeviceForm.value.granularity = this.modifyDeviceForm.value.granularity.toLowerCase();
     this.modifyDeviceForm.value.supportType = this.modifyDeviceForm.value.supportType.toString();
@@ -114,7 +115,7 @@ export class ModifyDeviceComponent implements OnInit {
     }
   }
 
-  disableSumbitBtn(): boolean {
-    return JSON.stringify(this.modifyDeviceForm.getRawValue()) === JSON.stringify(this.previousFormValue);
+  disableSubmitBtn(): boolean {
+    return JSON.stringify(this.modifyDeviceForm.value) === JSON.stringify(this.previousFormValue.value);
   }
 }
