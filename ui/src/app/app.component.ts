@@ -46,7 +46,15 @@ export class AppComponent implements OnInit, OnDestroy {
     fullSideBarItems: any = {
         spotlight: [
             {
-                name: 'Dashboard',
+                name: 'Dashboard Preview',
+                iconName: "assets\\images\\analytics.png",
+                path: 'visualization',
+                active: false,
+                materialIcon: 'analytics',
+                baseUrl: '/spotlight/'
+            },
+            {
+                name: 'Dashboard Legacy',
                 iconName: "assets\\images\\dashboard_3.png",
                 path: 'report-dashboards',
                 active: true,
@@ -93,14 +101,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 materialIcon: 'tune',
                 baseUrl: '/spotlight/'
             },
-            {
-                name: 'Power BI Visuals',
-                iconName: "assets\\images\\analytics.png",
-                path: 'visualization',
-                active: false,
-                materialIcon: 'analytics',
-                baseUrl: '/spotlight/'
-            }
+
         ],
         main: [
             {
@@ -183,17 +184,17 @@ export class AppComponent implements OnInit, OnDestroy {
         private subaccountService: SubAccountService,
         private customerService: CustomerService
     ) {
-        this.route.queryParams.subscribe((query:Params) => {
+        this.route.queryParams.subscribe((query: Params) => {
             this.subaccountId = query.subaccountId;
-            if(this.subaccountId) {
+            if (this.subaccountId) {
                 //if subaccountId from url has a value we need to retrieve the details
                 const oldSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-                if(!oldSubaccountDetails.id) {
+                if (!oldSubaccountDetails.id) {
                     //if old subaccount details are empty set only the id before requesting the rest of the data 
-                    this.subaccountService.setSelectedSubAccount({id:this.subaccountId});
+                    this.subaccountService.setSelectedSubAccount({ id: this.subaccountId });
                     this.retrieveSubaccountDetails();
-                } else if(oldSubaccountDetails.id !== this.subaccountId || !oldSubaccountDetails.name ) {
-                     //if old selected subaccount id is different to the new selected subaccount id retrieve the rest of the details
+                } else if (oldSubaccountDetails.id !== this.subaccountId || !oldSubaccountDetails.name) {
+                    //if old selected subaccount id is different to the new selected subaccount id retrieve the rest of the details
                     this.retrieveSubaccountDetails();
                 }
             }
@@ -243,7 +244,9 @@ export class AppComponent implements OnInit, OnDestroy {
     onRouteChanges(): void {
         this.router.events.subscribe((val) => {
             if (val instanceof NavigationEnd) {
+                console.log(val)
                 this.currentRoutePath = val.urlAfterRedirects.split('?')[0];
+                console.log(this.currentRoutePath)
                 switch (this.currentRoutePath) {
                     case this.REDIRECT_ROUTE_PATH:
                         this.tabName = '';
@@ -396,7 +399,7 @@ export class AppComponent implements OnInit, OnDestroy {
     navigateToMainView(): void {
         const accountDetails = this.getAccountDetails();
         const { roles } = accountDetails.idTokenClaims;
-        if(roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER))
+        if (roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER))
             this.router.navigate(['/']);
         else
             this.router.navigate(['/dashboard']);
@@ -458,7 +461,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
         const { baseUrl, path } = item;
         const componentRoute = baseUrl + path;
-        this.router.navigate([componentRoute], {queryParams:{subaccountId: this.subaccountId}});
+        this.router.navigate([componentRoute], { queryParams: { subaccountId: this.subaccountId } });
         if (this.mobileQuery.matches) this.snav.toggle();
     }
 
