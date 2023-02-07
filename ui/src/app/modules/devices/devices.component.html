@@ -5,7 +5,7 @@
     <div class="row align-items-center">
         <div [formGroup]="filterForm" class="row align-items-center col-auto">
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                <mat-label id="name-label">Name Filter</mat-label>
+                <mat-label id="name-filter-label">Name Filter</mat-label>
                 <input matInput type="text" formControlName="nameFilterControl">
                 <button *ngIf="filterForm.get('nameFilterControl').value" matSuffix mat-icon-button
                         aria-label="Clear" (click)="filterForm.get('nameFilterControl').setValue('')">
@@ -13,7 +13,7 @@
                 </button>
             </mat-form-field>
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                <mat-label id="type-label">Device Type</mat-label>
+                <mat-label id="type-filter-label">Device Type</mat-label>
                 <mat-select formControlName="typeFilterControl">
                     <mat-option>None</mat-option>
                     <mat-option *ngFor="let type of deviceTypes" [value]="type.name">
@@ -26,7 +26,7 @@
                 </button>
             </mat-form-field>
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                <mat-label id="vendor-label">Device Vendor</mat-label>
+                <mat-label id="vendor-filter-label">Device Vendor</mat-label>
                 <mat-select formControlName="vendorFilterControl">
                     <mat-option>None</mat-option>
                     <mat-option *ngFor="let vendor of deviceVendors" [value]="vendor">
@@ -39,7 +39,7 @@
                 </button>
             </mat-form-field>
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                <mat-label id="date-label">Start Date Range Filter</mat-label>
+                <mat-label id="date-filter-label">Start Date Range Filter</mat-label>
                 <mat-date-range-input #rangeFilter [disabled]="filterForm.disabled" [rangePicker]="picker">
                     <input matStartDate formControlName="startDateFilterControl" placeholder="Start date">
                     <input matEndDate formControlName="endDateFilterControl" placeholder="End date">
