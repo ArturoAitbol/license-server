@@ -208,24 +208,6 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	Test	Alcatel Lucent OXO	v032/021.001	CPaaS	
 COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 6826a94e-c4da-46e9-8001-668df24877ec	f	ogonzalez@tekvizionlabs.com	Subaccount User Creation	ad-subaccount-user-creation
 950f47c7-a477-455b-b65b-331ecacc88dd	f	ogonzalez@tekvizionlabs.com	Customer User Creation	ad-customer-user-creation
-b88d84ee-70c2-4ed8-9c23-e620f6fff69a	t	\N	Dashboard route	dashboard
-d96d05aa-366a-4cc1-8937-3e0d88aa6ff2	t	\N	Customer route	customer
-93b7d1a7-c0fb-4e1a-a6cb-670da9f42e46	t	\N	Consumption route	consumption
-6edd5a8b-b3c5-471c-b91c-d5149f0ceb58	t	\N	Projects route	projects
-19a69bd5-2bde-4ce3-bb45-6fb3570c7b26	t	\N	Redirect route	redirect
-d795a803-72c1-451d-b866-24142ab0517f	t	\N	Apps route	apps
-52d363e6-0c40-46f8-89f5-01a634c07170	t	\N	Spotlight route	spotlight
-31f9ef07-b9b1-490b-9bac-107ee27d79a9	t	\N	Report Dashboard route	report-dashboards
-221e52ab-2839-4ac6-95c8-d8db60ee323e	t	\N	Test suites route	test-suites
-4521a9a0-5811-4d8f-8db6-bc15a1629853	t	\N	Stakeholders route	stakeholders
-6290ceb7-730b-4c1c-9521-5418e3657aab	t	\N	Setup route	setup
-a10eeef2-14b5-43b2-8266-115ad83d0685	t	\N	Subscriptions overview route	subscriptions-overview
-7b163adc-d9a6-4ec1-8a2f-b8b1e6d3292b	t	\N	Notes route	notes
-f86f3d02-01a5-42e5-9e7a-e47d60d95341	t	\N	Details route	details
-76127132-1671-4849-a972-60f9749c0df7	t	\N	Reports route 	reports
-c3d24232-0510-4252-80bf-e642ec26fec6	t	\N	Consumption matrix route	consumption-matrix
-cdb2a110-9dfa-40d2-968f-40437a48ed4f	t	\N	Visualization route	visualization
-2ba0b34f-0f39-400a-93e6-e3d5e8d75428	t	\N	Licenses route	licenses
 3c9d0d97-7878-4f1f-8ca5-18bf93069691	t	\N	Power Bi feature	powerbiFeature
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
 63f1d301-2d99-448a-9334-5dd10fe98c24	t	\N	Ctaas features	ctaasFeature
