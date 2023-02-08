@@ -1,6 +1,6 @@
 <div class="container" style="text-align: center;">
     <h1 id="dialog-title" mat-dialig-title>Modify Device</h1>
-    <form [formGroup]="modifyDeviceForm" (ngSubmit)="submit()">
+    <form [formGroup]="modifyDeviceForm" (ngSubmit)="modifyDevice()">
         <div class="">
             <div class="loading-shade" *ngIf="isDataLoading">
                 <mat-spinner *ngIf="isDataLoading"></mat-spinner>
@@ -10,7 +10,7 @@
                     <div class="row" style="align-items: center">
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <mat-form-field appearance="outline">
-                                <mat-label>Start Date</mat-label>
+                                <mat-label id="start-date-label">Start Date</mat-label>
                                 <input required matInput [matDatepicker]="picker" formControlName="startDate"
                                     [max]="startDateMax" (dateChange)="onStartDateChange($event.value)">
                                 <mat-datepicker-toggle matSuffix [for]="picker"
@@ -20,7 +20,7 @@
                         </div>
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <mat-form-field appearance="outline">
-                                <mat-label>Deprecated Date</mat-label>
+                                <mat-label id="deprecated-date-label">Deprecated Date</mat-label>
                                 <input matInput [matDatepicker]="renewalDatepicker" formControlName="deprecatedDate"
                                     [min]="deprecatedDateMin" (dateChange)="onRenewalDateChange($event.value)">
                                 <mat-datepicker-toggle matSuffix [for]="renewalDatepicker"
@@ -35,7 +35,7 @@
                     <div class="row" style="align-items: center">
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <mat-form-field appearance="outline">
-                                <mat-label>Device Type</mat-label>
+                                <mat-label id="device-type-label">Device Type</mat-label>
                                 <input type="text" placeholder="Select Device type" aria-label="Type" matInput
                                     formControlName="type" [matAutocomplete]="deviceTypesList"
                                     id="devices-auto-complete">
@@ -50,7 +50,7 @@
                         </div>
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <mat-form-field appearance="outline">
-                                <mat-label>Vendor</mat-label>
+                                <mat-label id="device-vendor-label">Vendor</mat-label>
                                 <input type="text" placeholder="Select Vendor" aria-label="Vendor" matInput
                                     formControlName="vendor" [matAutocomplete]="vendorsList" id="vendor-auto-complete">
                                 <mat-autocomplete #vendorsList="matAutocomplete">
@@ -64,13 +64,13 @@
                     <div class="row" style="align-items: center">
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <mat-form-field class="example-full-width" appearance="outline">
-                                <mat-label>Name</mat-label>
+                                <mat-label id="device-name-label">Name</mat-label>
                                 <input required matInput formControlName="product" id="product-input">
                             </mat-form-field>
                         </div>
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <mat-form-field class="example-full-width" appearance="outline">
-                                <mat-label>Version</mat-label>
+                                <mat-label id="device-version-label">Version</mat-label>
                                 <input required matInput formControlName="version" id="version-input">
                             </mat-form-field>
                         </div>
@@ -78,7 +78,7 @@
                     <div class="row" style="align-items: center">
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <mat-form-field appearance="outline">
-                                <mat-label>Granularity</mat-label>
+                                <mat-label id="granularity-label">Granularity</mat-label>
                                 <input type="text" placeholder="Select Granularity" aria-label="Granularity" matInput
                                     formControlName="granularity" [matAutocomplete]="granularityList"
                                     id="granularity-auto-complete">
@@ -92,7 +92,7 @@
                         </div>
                         <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <mat-form-field class="example-full-width" appearance="outline">
-                                <mat-label>Tokens to Consume</mat-label>
+                                <mat-label id="tokens-consumption-label">Tokens to Consume</mat-label>
                                 <input required matInput formControlName="tokensToConsume" id="tokens-input">
                             </mat-form-field>
                         </div>
@@ -109,7 +109,7 @@
         <mat-dialog-actions>
             <button id="cancel-button" mat-stroked-button (click)="onCancel()" type="button">Cancel</button>
             <button id="submit-button" mat-raised-button color="primary"
-                [disabled]="!modifyDeviceForm.valid || disableSumbitBtn()" type="submit">Submit</button>
+                [disabled]="!modifyDeviceForm.valid || disableSubmitBtn()" type="submit">Submit</button>
         </mat-dialog-actions>
     </form>
 </div>
