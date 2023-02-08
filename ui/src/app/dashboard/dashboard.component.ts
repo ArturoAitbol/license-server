@@ -38,6 +38,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     data: CustomerLicense[] = [];
     customerList: any = [];
     filteredCustomerList: any = [];
+    selectedSubaccount: any
     private customerSubaccountDetails: any;
     // flag
     isLoadingResults = true;
@@ -376,51 +377,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
      */
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+        this.selectedSubaccount = {
+            id: object.selectedRow.subaccountId,
+            name: object.selectedRow.subaccountName,
+            customerId: object.selectedRow.id,
+            customerName: object.selectedRow.name,
+            services: object.selectedRow.services
+        };
         switch (object.selectedOption) {
             case this.VIEW_LICENSES:
                 if (object.selectedRow.subaccountId !== undefined){
-                    const selectedSubaccount = {
-                        id: object.selectedRow.subaccountId,
-                        name: object.selectedRow.name,
-                        customerId: object.selectedRow.id,
-                        customerName: object.selectedRow.name,
-                        services: object.selectedRow.services
-                    };
-                    this.subaccountService.setSelectedSubAccount(selectedSubaccount);
+                    this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
                     this.openLicenseDetails(object.selectedRow);
-                }
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
+                } else this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
                 break;
             case this.VIEW_CONSUMPTION:
                 if (object.selectedRow.subaccountId !== undefined){
-                    const selectedSubaccount = {
-                        id: object.selectedRow.subaccountId,
-                        name: object.selectedRow.name,
-                        customerId: object.selectedRow.id,
-                        customerName: object.selectedRow.name,
-                        services: object.selectedRow.services
-                    };
-                    this.subaccountService.setSelectedSubAccount(selectedSubaccount);
+                    this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
                     this.openLicenseConsumption(object.selectedRow);
-                }
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
+                } else this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
                 break;
             case this.VIEW_PROJECTS:
                 if (object.selectedRow.subaccountId !== undefined){
-                    const selectedSubaccount = {
-                        id: object.selectedRow.subaccountId,
-                        name: object.selectedRow.name,
-                        customerId: object.selectedRow.id,
-                        customerName: object.selectedRow.name,
-                        services: object.selectedRow.services
-                    };
-                    this.subaccountService.setSelectedSubAccount(selectedSubaccount);
+                    this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
                     this.openProjectDetails(object.selectedRow);
-                }
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access Projects view', '');
+                } else this.snackBarService.openSnackBar('Subaccount is missing, create one to access Projects view', '');
                 break;
             case this.VIEW_ADMIN_EMAILS:
                 this.openDialog(object.selectedOption, object.selectedRow);
@@ -428,27 +409,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
             case this.VIEW_SUBACC_ADMIN_EMAILS:
                 if (object.selectedRow.subaccountId !== undefined)
                     this.openDialog(object.selectedOption, object.selectedRow);
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access Subaccount admin emails view', '');
+                else this.snackBarService.openSnackBar('Subaccount is missing, create one to access Subaccount admin emails view', '');
                 break;
             case this.VIEW_CTAAS_DASHBOARD:
-                const { selectedRow: { subaccountId, subaccountName, id, name, services } } = object;
-                const selectedSubaccount = {
-                    id: subaccountId,
-                    name: subaccountName,
-                    customerId: id,
-                    customerName: name,
-                    services: services
-                };
-                this.subaccountService.setSelectedSubAccount(selectedSubaccount);
-                const hasCtaasService = services && services.includes(tekVizionServices.SpotLight);
+                this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
+                const hasCtaasService = object.selectedRow.services && object.selectedRow.services.includes(tekVizionServices.SpotLight);
                 if (hasCtaasService) {
                     const routePath = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ? '/spotlight/visualization' : '/spotlight/report-dashboards';
-                    this.router.navigate([routePath], { queryParams: { subaccountId: selectedSubaccount.id } })
-                }
-                else
-                    this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
-
+                    this.router.navigate([routePath], { queryParams: { subaccountId: this.selectedSubaccount.id } })
+                } else this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
                 break;
             case this.MODIFY_ACCOUNT:
                 this.openDialog(object.selectedOption, object.selectedRow);

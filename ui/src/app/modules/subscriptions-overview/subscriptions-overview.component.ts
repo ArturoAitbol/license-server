@@ -47,6 +47,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
     isLoadingResults = true;
     isRequestCompleted = false;
     actionMenuOptions: string[] = [];
+    selectedSubaccount: any;
     private customerSubaccountDetails: any;
 
     private unsubscribe: Subject<void> = new Subject<void>();
@@ -165,28 +166,21 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      * @param object containing the row object
      */
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+        this.selectedSubaccount = {
+            id: object.selectedRow.subaccountId
+        }
         switch (object.selectedOption) {
             case this.VIEW_LICENSES:
                 if (object.selectedRow.subaccountId !== undefined) {
-                    const selectedSubaccount = {
-                        id: object.selectedRow.subaccountId
-                    }
-                    this.subaccountService.setSelectedSubAccount(selectedSubaccount)
+                    this.subaccountService.setSelectedSubAccount(this.selectedSubaccount)
                     this.openLicenseDetails(object.selectedRow);
-                }
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
+                } else this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
                 break;
             case this.VIEW_CONSUMPTION:
                 if (object.selectedRow.subaccountId !== undefined){
-                    const selectedSubaccount = {
-                        id: object.selectedRow.subaccountId
-                    }
-                    this.subaccountService.setSelectedSubAccount(selectedSubaccount)
+                    this.subaccountService.setSelectedSubAccount(this.selectedSubaccount)
                     this.openLicenseConsumption(object.selectedRow);
-                }
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
+                } else this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
                 break;
         }
     }
