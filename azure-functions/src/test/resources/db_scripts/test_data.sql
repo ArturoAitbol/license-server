@@ -13,7 +13,6 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-
 --
 -- Data for Name: distributor; Type: TABLE DATA; Schema: public; Owner: -
 --
@@ -200,4 +199,25 @@ b66edd36-ee7f-42e7-bfb4-41810ea69fe6	Test	Xmedius FAX server	9.0	Video Collab De
 0e709699-3dab-47f1-a710-ebd2ae78d57b	Test	Alcatel Lucent OmniPCX/OpenTouch.OXE	12.4	CCaaS	week	4	2022-06-17 15:42:48.550405	infinity	\N	f
 ea00b987-0f14-4888-a0ce-f963d1eb7592	Test	Alcatel Lucent OXO	v032/021.001	CPaaS	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
 866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	Test	3CX	18.0.1880	Sandbox	week	2	2022-06-17 15:42:48.550405	infinity	\N	f
+\.
+
+--
+-- Data for Name: feature_toggle; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
+6826a94e-c4da-46e9-8001-668df24877ec	f	ogonzalez@tekvizionlabs.com	Subaccount User Creation	ad-subaccount-user-creation
+950f47c7-a477-455b-b65b-331ecacc88dd	f	ogonzalez@tekvizionlabs.com	Customer User Creation	ad-customer-user-creation
+3c9d0d97-7878-4f1f-8ca5-18bf93069691	t	\N	Power Bi feature	powerbiFeature
+d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
+63f1d301-2d99-448a-9334-5dd10fe98c24	t	\N	Ctaas features	ctaasFeature
+\.
+
+--
+-- Data for Name: feature_toggle_exception; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.feature_toggle_exception (feature_toggle_id, subaccount_id, status) FROM stdin;
+6826a94e-c4da-46e9-8001-668df24877ec	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	f
+950f47c7-a477-455b-b65b-331ecacc88dd	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	f
 \.

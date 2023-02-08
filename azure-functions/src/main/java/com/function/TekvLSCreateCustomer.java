@@ -3,7 +3,7 @@ package com.function;
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.exceptions.ADException;
-import com.function.util.FeatureToggles;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -169,7 +169,7 @@ public class TekvLSCreateCustomer
 			emailStatement.executeUpdate();
 			context.getLogger().info("Admin emails inserted successfully.");
 
-			if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
+			if(FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
 				String customerName = jobj.getString(MANDATORY_PARAMS.CUSTOMER_NAME.value);
 				String customerEmail = jobj.getString(MANDATORY_PARAMS.CUSTOMER_ADMIN_EMAIL.value);
 				GraphAPIClient.createGuestUserWithProperRole(customerName,customerEmail,CUSTOMER_FULL_ADMIN,context);
