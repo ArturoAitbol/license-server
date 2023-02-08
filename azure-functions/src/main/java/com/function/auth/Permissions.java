@@ -18,7 +18,7 @@ public class Permissions {
                         CREATE_CTAAS_SETUP,
                         CREATE_CTAAS_TEST_SUITE,
                         CREATE_SUBACCOUNT_STAKEHOLDER,
-                        CREATE_FEATURE_TOGGLE,
+                        // CREATE_FEATURE_TOGGLE,
                         CREATE_NOTE,
                         // DELETE
                         DELETE_CUSTOMER,
@@ -32,7 +32,7 @@ public class Permissions {
                         DELETE_CTAAS_SETUP,
                         DELETE_CTAAS_TEST_SUITE,
                         DELETE_SUBACCOUNT_STAKEHOLDER,
-                        DELETE_FEATURE_TOGGLE,
+                        // DELETE_FEATURE_TOGGLE,
                         DELETE_NOTE,
                         // READ
                         GET_ALL_CUSTOMERS,
@@ -62,8 +62,8 @@ public class Permissions {
                         MODIFY_LICENSE_USAGE,
                         MODIFY_CTAAS_SETUP,
                         MODIFY_CTAAS_TEST_SUITE,
-                        MODIFY_SUBACCOUNT_STAKEHOLDER,
-                        MODIFY_FEATURE_TOGGLE
+                        MODIFY_SUBACCOUNT_STAKEHOLDER
+                        // MODIFY_FEATURE_TOGGLE
     );
 
         public static final EnumSet<Resource> SaleAdminPermissions = EnumSet.of(
@@ -81,7 +81,8 @@ public class Permissions {
                         GET_CTAAS_DASHBOARD,
                         GET_ALL_REPORTS,
                         GET_SUBSCRIPTIONS_OVERVIEW,
-                        GET_CONSUMPTION_MATRIX);
+                        GET_CONSUMPTION_MATRIX,
+                        GET_ALL_FEATURE_TOGGLES);
 
         public static final EnumSet<Resource> ConfigTesterPermissions = EnumSet.of(
                         // CREATE
@@ -113,6 +114,7 @@ public class Permissions {
                         GET_CTAAS_DASHBOARD,
                         GET_ALL_REPORTS,
                         GET_CONSUMPTION_MATRIX,
+                        GET_ALL_FEATURE_TOGGLES,
                         // UPDATE
                         MODIFY_PROJECT,
                         MODIFY_LICENSE_USAGE,
@@ -126,11 +128,13 @@ public class Permissions {
                         CREATE_DEVICE,
                         CREATE_BUNDLE,
                         CREATE_FEATURE_TOGGLE,
+                        CREATE_FEATURE_TOGGLE_EXCEPTION,
                         CREATE_CONSUMPTION_MATRIX,
                         // DELETE
                         DELETE_DEVICE,
                         DELETE_BUNDLE,
                         DELETE_FEATURE_TOGGLE,
+                        DELETE_FEATURE_TOGGLE_EXCEPTION,
                         DELETE_CONSUMPTION_MATRIX,
                         // READ
                         GET_ALL_DEVICES,
@@ -150,6 +154,7 @@ public class Permissions {
                         CREATE_USAGE_DETAILS,
                         // READ
                         GET_ALL_DEVICES,
+                        GET_ALL_FEATURE_TOGGLES,
                         GET_ALL_DEVICE_TYPES);
 
         public static final EnumSet<Resource> crmPermissions = EnumSet.of(
@@ -167,6 +172,7 @@ public class Permissions {
                         GET_ALL_LICENSE_USAGE_DETAILS,
                         GET_CONSUMPTION_USAGE_DETAILS,
                         GET_SUBSCRIPTIONS_OVERVIEW,
+                        GET_ALL_FEATURE_TOGGLES,
                         // UPDATE
                         MODIFY_CUSTOMER,
                         MODIFY_SUBACCOUNT,
@@ -182,7 +188,8 @@ public class Permissions {
                         GET_ALL_DEVICES,
                         GET_ALL_DEVICE_TYPES,
                         GET_ALL_PROJECTS,
-                        GET_ALL_BUNDLES);
+                        GET_ALL_BUNDLES,
+                        GET_ALL_FEATURE_TOGGLES);
 
         public static final EnumSet<Resource> customerAdminPermissions = EnumSet.of(
                         // CREATE
@@ -206,6 +213,7 @@ public class Permissions {
                         GET_CTAAS_DASHBOARD,
                         GET_ALL_REPORTS,
                         GET_ALL_NOTES,
+                        GET_ALL_FEATURE_TOGGLES,
                         // MODIFY
                         MODIFY_CTAAS_ONBOARDING,
                         MODIFY_SUBACCOUNT_STAKEHOLDER);
@@ -235,6 +243,7 @@ public class Permissions {
                         GET_CTAAS_DASHBOARD,
                         GET_ALL_REPORTS,
                         GET_ALL_NOTES,
+                        GET_ALL_FEATURE_TOGGLES,
                         // MODIFY
                         MODIFY_CTAAS_ONBOARDING,
                         MODIFY_SUBACCOUNT_STAKEHOLDER,
@@ -254,6 +263,7 @@ public class Permissions {
                         GET_ALL_REPORTS,
                         GET_ALL_NOTES,
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
+                        GET_ALL_FEATURE_TOGGLES,
                         // MODIFY
                         MODIFY_AUTH_USER_PROFILE);
 }

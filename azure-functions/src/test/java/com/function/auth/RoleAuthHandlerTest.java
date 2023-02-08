@@ -22,7 +22,6 @@ class RoleAuthHandlerTest extends TekvLSTest {
     @BeforeEach
     void setUp() {
         this.initTestParameters();
-
     }
 
     @Tag("security")
@@ -32,16 +31,16 @@ class RoleAuthHandlerTest extends TekvLSTest {
         Resource[] resources = Resource.values();
         EnumMap<Resource, ExpectedPermissions> verifiers = RBACVerifier.getInstance().verifiers;
 
-        for(String role : roles){
-            for(Resource resource : resources){
+        for (String role : roles) {
+            for (Resource resource : resources) {
                 ExpectedPermissions expectedPermissions = verifiers.get(resource);
-                assertNotNull(expectedPermissions,"RBAC verifier for "+ resource + " has not been defined");
+                assertNotNull(expectedPermissions, "RBAC verifier for " + resource + " has not been defined");
 
                 Boolean expectedPermission = expectedPermissions.getExpectation(role);
-                assertNotNull(expectedPermission,"Expected Permissions for "+ role + " have not been defined");
+                assertNotNull(expectedPermission, "Expected Permissions for " + role + " have not been defined");
 
-                assertEquals(expectedPermission,hasPermission(role,resource),
-                        "The provided Role ("+role+") does not have the expected permission: " + resource);
+                assertEquals(expectedPermission, hasPermission(role, resource),
+                        "The provided Role (" + role + ") does not have the expected permission: " + resource);
             }
         }
     }
@@ -49,221 +48,222 @@ class RoleAuthHandlerTest extends TekvLSTest {
     @Tag("security")
     @Test
     public void invalidRoleTest() {
-        //Given
+        // Given
         String role = "invalid-role";
-        //Then
+        // Then
         assertFalse(hasPermission(role, GET_ALL_CUSTOMERS));
     }
 
     @Tag("security")
     @Test
     public void getRoleFromTokenTest() {
-        //Given
+        // Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        //When
+        // When
         JSONArray roles = getRolesFromToken(this.request, this.context);
-        //Then
+        // Then
         assertEquals(FULL_ADMIN, roles.getString(0));
     }
 
     @Tag("security")
     @Test
     public void noAuthorizationHeaderTest() {
-        //When
+        // When
         Claims tokenClaims = getTokenClaimsFromHeader(this.request, this.context);
-        //Then
+        // Then
         assertNull(tokenClaims);
     }
 
     @Tag("security")
     @Test
     public void invalidHeaderFormatTest() {
-        //Given
+        // Given
         this.headers.put("authorization", Config.getInstance().getToken("fullAdmin"));
-        //When
+        // When
         Claims tokenClaims = getTokenClaimsFromHeader(this.request, this.context);
-        //Then
+        // Then
         assertNull(tokenClaims);
     }
 
     @Tag("security")
     @Test
     public void invalidAuthorizationTypeTest() {
-        //Given
+        // Given
         this.headers.put("authorization", "Basic " + Config.getInstance().getToken("fullAdmin"));
-        //When
+        // When
         Claims tokenClaims = getTokenClaimsFromHeader(this.request, this.context);
-        //Then
+        // Then
         assertNull(tokenClaims);
     }
 
     @Tag("security")
     @Test
     public void invalidTokenFormatTest() {
-        //Given
+        // Given
         this.headers.put("authorization", "Bearer eyJ0eXAiOiJKV1QiLCJ.eyJhdWQiOiJlNjQzZmM5ZC1iMTI3LTQ4ODMtO");
-        //When
+        // When
         Claims tokenClaims = getTokenClaimsFromHeader(this.request, this.context);
-        //Then
+        // Then
         assertNull(tokenClaims);
     }
 
     @Tag("security")
     @Test
     public void invalidTokenSignatureTest() {
-        //Given
+        // Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("test"));
-        //When
+        // When
         Claims tokenClaims = getTokenClaimsFromHeader(this.request, this.context);
-        //Then
+        // Then
         assertNull(tokenClaims);
     }
 
     @Tag("security")
     @Test
     public void ExpiredTokenTest() {
-        //Given
+        // Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getExpiredToken());
-        //When
+        // When
         Claims tokenClaims = getTokenClaimsFromHeader(this.request, this.context);
-        //Then
+        // Then
         assertNull(tokenClaims);
     }
 
     @Tag("security")
     @Test
     public void jwtExceptionTest() {
-        //Given
-        this.headers.put("authorization", "Bearer " + "eyJ0eXAiOiJKV1QiLCJ.eyJhdWQiOiJlNjQzZmM5ZC1iMTI3LTQ4ODMtO.5ZC1iMTI3LTQ4ODMtO");
-        //When
+        // Given
+        this.headers.put("authorization",
+                "Bearer " + "eyJ0eXAiOiJKV1QiLCJ.eyJhdWQiOiJlNjQzZmM5ZC1iMTI3LTQ4ODMtO.5ZC1iMTI3LTQ4ODMtO");
+        // When
         Claims tokenClaims = getTokenClaimsFromHeader(this.request, this.context);
-        //Then
+        // Then
         assertNull(tokenClaims);
     }
 
     @Tag("security")
     @Test
     public void getRoleFromTokenExceptionTest() {
-        //Given
+        // Given
         Claims claims = new DefaultClaims();
-        //When
+        // When
         JSONArray roles = getRolesFromToken(claims, this.context);
-        //Then
-        assertEquals(roles.length(),0);
+        // Then
+        assertEquals(roles.length(), 0);
     }
 
     @Tag("security")
     @Test
     public void getEmailFromTokenTest() {
-        //Given
+        // Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
-        //When
+        // When
         Claims tokenClaims = getTokenClaimsFromHeader(this.request, this.context);
         String email = getEmailFromToken(tokenClaims, this.context);
-        //Then
+        // Then
         assertFalse(email.isEmpty());
     }
 
     @Tag("security")
     @Test
     public void getEmailFromTokenExceptionTest() {
-        //Given
+        // Given
         Claims claims = new DefaultClaims();
-        //When
+        // When
         String role = getEmailFromToken(claims, this.context);
-        //Then
+        // Then
         assertTrue(role.isEmpty());
     }
 
     @Tag("security")
     @Test
     public void getUserIdFromTokenTest() {
-        //Given
+        // Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        //When
+        // When
         Claims tokenClaims = getTokenClaimsFromHeader(this.request, this.context);
         String userId = getUserIdFromToken(tokenClaims, this.context);
-        //Then
+        // Then
         assertFalse(userId.isEmpty());
     }
 
     @Tag("security")
     @Test
     public void getUserIdFromTokenExceptionTest() {
-        //Given
+        // Given
         Claims claims = new DefaultClaims();
-        //When
+        // When
         String userId = getUserIdFromToken(claims, this.context);
-        //Then
+        // Then
         assertTrue(userId.isEmpty());
     }
 
     @Tag("security")
     @Test
-    public void evaluateCustomerRolesTest(){
-        //Given
+    public void evaluateCustomerRolesTest() {
+        // Given
         JSONArray roles = new JSONArray();
         roles.put(SUBACCOUNT_ADMIN);
         roles.put(CUSTOMER_FULL_ADMIN);
-        //When
+        // When
         String role = evaluateRoles(roles);
-        //Then
-        assertEquals(CUSTOMER_FULL_ADMIN,role);
+        // Then
+        assertEquals(CUSTOMER_FULL_ADMIN, role);
     }
 
     @Tag("security")
     @Test
-    public void evaluateTekvizionRolesTest(){
-        //Given
+    public void evaluateTekvizionRolesTest() {
+        // Given
         JSONArray roles = new JSONArray();
         roles.put(CONFIG_TESTER);
         roles.put(FULL_ADMIN);
 
-        //When
+        // When
         String role = evaluateRoles(roles);
-        //Then
-        assertEquals(FULL_ADMIN,role);
+        // Then
+        assertEquals(FULL_ADMIN, role);
     }
 
     @Tag("security")
     @Test
-    public void evaluateTekvizionRolesTest2(){
-        //Given
+    public void evaluateTekvizionRolesTest2() {
+        // Given
         JSONArray roles = new JSONArray();
         roles.put(DEVICES_ADMIN);
         roles.put(CONFIG_TESTER);
 
-        //When
+        // When
         String role = evaluateRoles(roles);
-        //Then
-        assertEquals(CONFIG_TESTER,role);
+        // Then
+        assertEquals(CONFIG_TESTER, role);
     }
 
     @Tag("security")
     @Test
-    public void evaluateTekvizionRolesTest3(){
-        //Given
+    public void evaluateTekvizionRolesTest3() {
+        // Given
         JSONArray roles = new JSONArray();
         roles.put(DEVICES_ADMIN);
         roles.put(SALES_ADMIN);
 
-        //When
+        // When
         String role = evaluateRoles(roles);
-        //Then
-        assertEquals(DEVICES_ADMIN,role);
+        // Then
+        assertEquals(DEVICES_ADMIN, role);
     }
 
     @Tag("security")
     @Test
-    public void evaluateTekvizionRolesOverCustomerRolesTest(){
-        //Given
+    public void evaluateTekvizionRolesOverCustomerRolesTest() {
+        // Given
         JSONArray roles = new JSONArray();
         roles.put(SUBACCOUNT_ADMIN);
         roles.put(CONFIG_TESTER);
 
-        //When
+        // When
         String role = evaluateRoles(roles);
-        //Then
-        assertEquals(CONFIG_TESTER,role);
+        // Then
+        assertEquals(CONFIG_TESTER, role);
     }
 }

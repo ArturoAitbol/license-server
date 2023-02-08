@@ -6,7 +6,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 import java.util.Optional;
-
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,116 +32,123 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
         String bodyRequest = "{'subaccountId': 'f5a609c0-8b70-4a10-9dc8-9536bdb5652c'," +
-                "'subaccountAdminEmail': '"+this.stakeHolderEmail+"'," +
+                "'subaccountAdminEmail': '" + this.stakeHolderEmail + "'," +
                 "'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'tekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-      //When
-        HttpResponseMessage response = tekvLSCreateSubaccountStakeHolder.run(this.request,this.context);
+        // When
+        HttpResponseMessage response = tekvLSCreateSubaccountStakeHolder.run(this.request, this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
-        HttpResponseMessage response = tekvLSDeleteSubaccountStakeHolderByEmail.run(this.request,this.stakeHolderEmail, this.context);
+        HttpResponseMessage response = tekvLSDeleteSubaccountStakeHolderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getStatus().toString());
-        assertEquals(HttpStatus.OK, response.getStatus(),"HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
+        assertEquals(HttpStatus.OK, response.getStatus(),
+                "HTTP status doesn't match with: ".concat(HttpStatus.OK.toString()));
     }
 
     @Tag("acceptance")
     @Test
-    public void modifyStakeHolderTest(){
-        //Given
+    public void modifyStakeHolderTest() {
+        // Given
         String bodyRequest = "{'notifications': 'email,text'," +
-        		 "'name': 'test-customer-subaccount-stakeholder'," +
-                 "'jobTitle': 'Software Engineer'," +
-                 "'companyName': 'tekVizion'," +
-                 "'phoneNumber': '+12142425968'}";
+                "'name': 'test-customer-subaccount-stakeholder'," +
+                "'jobTitle': 'Software Engineer'," +
+                "'companyName': 'tekVizion'," +
+                "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When
-        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
+        // When
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getStatus().toString());
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
-    
+
     @Tag("acceptance")
     @Test
-    public void modifyNotificationTest(){
-    	  //Given
+    public void modifyNotificationTest() {
+        // Given
         String bodyRequest = "{'notifications': 'email,text'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When
-        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
+        // When
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getStatus().toString());
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
-    
+
     @Tag("acceptance")
     @Test
-    public void modifyUserProfileTest(){
-    	  //Given
+    public void modifyUserProfileTest() {
+        // Given
         String bodyRequest = "{'name': 'test-customer-subaccount-stakeholder'," +
-                 "'jobTitle': 'Software Engineer'," +
-                 "'companyName': 'tekVizion'," +
-                 "'phoneNumber': '+12142425968'}";
+                "'jobTitle': 'Software Engineer'," +
+                "'companyName': 'tekVizion'," +
+                "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
-        //When
-        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
+        // When
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getStatus().toString());
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
-    
+
     @Tag("acceptance")
     @Test
-    public void emptyBodyTest(){
-        //Given
+    public void emptyBodyTest() {
+        // Given
         String bodyRequest = "{}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When
-        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
+        // When
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getStatus().toString());
 
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.OK;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
     @Test
-    public void noBodyTest(){
-        //Given
+    public void noBodyTest() {
+        // Given
         String bodyRequest = "";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When
-        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
+        // When
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
@@ -150,24 +156,25 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
 
         String actualResponse = jsonBody.getString("error");
         String expectedResponse = "error: request body is empty.";
-        assertEquals(expectedResponse,actualResponse,"Response doesn't match with: ".concat(expectedResponse));
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
 
     }
 
     @Test
-    public void invalidBodyTest(){
-        //Given - Arrange
+    public void invalidBodyTest() {
+        // Given - Arrange
         String bodyRequest = "invalid-body";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
-        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail,this.context);
+        // When - Action
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.BAD_REQUEST;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
@@ -180,18 +187,20 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void noTokenTest(){
-        //Given
+    public void noTokenTest() {
+        // Given
         this.headers.remove("authorization");
 
-        //When
-        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail, this.context);
+        // When
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expectedStatus = HttpStatus.UNAUTHORIZED;
-        assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+        assertEquals(expectedStatus, actualStatus,
+                "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
@@ -204,18 +213,20 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void invalidRoleTest(){
-        //Given
+    public void invalidRoleTest() {
+        // Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
-        //When
-        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail, this.context);
+        // When
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expectedStatus = HttpStatus.FORBIDDEN;
-        assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+        assertEquals(expectedStatus, actualStatus,
+                "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
@@ -227,24 +238,25 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
     }
 
     @Test
-    public void genericExceptionTest(){
-        //Given
-    	String bodyRequest = "{'notifications': 'email,text'," +
-       		 "'name': 'test-customer-subaccount-stakeholder'," +
+    public void genericExceptionTest() {
+        // Given
+        String bodyRequest = "{'notifications': 'email,text'," +
+                "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
                 "'companyName': 'tekVizion'," +
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
 
-        //When
-        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail, this.context);
+        // When
+        HttpResponseMessage response = tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                this.context);
         this.context.getLogger().info(response.getBody().toString());
 
-        //Then
+        // Then
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
 
         String body = (String) response.getBody();
         JSONObject jsonBody = new JSONObject(body);
@@ -259,7 +271,7 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
 
     @Test
     public void sqlExceptionTest() {
-        //Given
+        // Given
         String bodyRequest = "{'notifications': 'email,text'," +
                 "'name': 'test-customer-subaccount-stakeholder'," +
                 "'jobTitle': 'Software Engineer'," +
@@ -267,16 +279,17 @@ public class TekvLSModifySubaccountStakeholderByEmailTest extends TekvLSTest {
                 "'phoneNumber': '+12142425968'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 
-        //When - Action
+        // When - Action
         HttpResponseMessage response;
         try {
             response = new EnvironmentVariables("POSTGRESQL_SERVER", "test").execute(
-                    () -> tekvLSModifySubaccountStakeholderByEmail.run(this.request,this.stakeHolderEmail, this.context));
+                    () -> tekvLSModifySubaccountStakeholderByEmail.run(this.request, this.stakeHolderEmail,
+                            this.context));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        //Then - Assert
+        // Then - Assert
         HttpStatusType actualStatus = response.getStatus();
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
