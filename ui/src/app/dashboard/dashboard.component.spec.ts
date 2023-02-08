@@ -354,10 +354,10 @@ describe('routes to spothlight dashboard', () => {
             selectedIndex: '0' }; 
             spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
             spyOn(RouterMock2, 'navigate').and.callThrough();
-            const navigatePath = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ? '/spotlight/visualization' : '/spotlight/report-dashboards';
+            const routePath = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ? '/spotlight/visualization' : '/spotlight/report-dashboards';
             selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
             dashboardComponentTestInstance.rowAction(selectedTestData);
-            expect(RouterMock2.navigate).toHaveBeenCalledWith([navigatePath],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
+            expect(RouterMock2.navigate).toHaveBeenCalledWith([routePath],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
         });
     }
 });

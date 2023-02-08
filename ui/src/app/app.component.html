@@ -30,7 +30,7 @@
                                     {{item.name}}
                                 </span>
                                 <span *ngIf="item.isPreview" class="badge"
-                                    [ngClass]="{'preview-active':(item.active),'preview-inactive':!(item.active)}">
+                                    [ngClass]="item.active ? 'preview-active' : 'preview-inactive'">
                                     Preview </span>
                             </button>
                         </div>
