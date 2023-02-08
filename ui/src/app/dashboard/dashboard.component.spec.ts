@@ -349,15 +349,15 @@ describe('routes to spothlight dashboard', () => {
                 subaccountName: "testv2Demo",
                 subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
                 services: "tokenConsumption,spotlight"
-            }, 
+            },
             selectedOption: 'selectedTestOption', 
             selectedIndex: '0' }; 
             spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
             spyOn(RouterMock2, 'navigate').and.callThrough();
-
+            const navigatePath = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ? '/spotlight/visualization' : '/spotlight/report-dashboards';
             selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
             dashboardComponentTestInstance.rowAction(selectedTestData);
-            expect(RouterMock2.navigate).toHaveBeenCalledWith(['/spotlight/report-dashboards'],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
+            expect(RouterMock2.navigate).toHaveBeenCalledWith([navigatePath],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
         });
     }
 });

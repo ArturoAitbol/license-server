@@ -153,6 +153,12 @@ button {
 .badge {
   font-weight: normal !important;
 }
+.preview-active {
+  background-color: gray;
+}
+.preview-inactive {
+  background-color: lightslategray;
+}
 
 @media (max-width: 600px) {
   .logo-changes {

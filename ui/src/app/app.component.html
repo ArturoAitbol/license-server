@@ -29,7 +29,9 @@
                                     title="{{item.name}}">
                                     {{item.name}}
                                 </span>
-                                <span *ngIf = "item.isPreview" class="badge" [style.background] = "item.active ? 'gray' : 'lightslategray'"> Preview </span>
+                                <span *ngIf="item.isPreview" class="badge"
+                                    [ngClass]="{'preview-active':(item.active),'preview-inactive':!(item.active)}">
+                                    Preview </span>
                             </button>
                         </div>
                     </div>
@@ -42,7 +44,7 @@
                     <div style="padding-top: 70px;">
                         <!-- #F9F9F9; -->
                         <!-- <mat-card class="shadow-backdrop" style="background: whitesmoke"> -->
-                            <router-outlet></router-outlet>
+                        <router-outlet></router-outlet>
                         <!-- </mat-card> -->
                     </div>
                 </div>
