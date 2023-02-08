@@ -2143,11 +2143,21 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"status\" : \"On\",\r\n    \"name\" : \"Test FT{{todayDate}}\",\r\n    \"customerName\" : \"(optional)\",\r\n    \"author\" : \"(optional)Test User\",\r\n    \"description\" : \"(optional)This is test data for the FT api\"\r\n}",
+					"raw": "{\r\n    \"status\" : true,\r\n    \"name\" : \"Test FT{{todayDate}}\",\r\n    \"customerName\" : \"(optional)\",\r\n    \"author\" : \"(optional)Test User\",\r\n    \"description\" : \"(optional)This is test data for the FT api\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2180,6 +2190,16 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PUT",
 				"header": [],
 				"body": {
@@ -2249,6 +2269,16 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
