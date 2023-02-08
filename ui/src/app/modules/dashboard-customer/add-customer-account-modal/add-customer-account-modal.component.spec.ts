@@ -18,6 +18,9 @@ import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
 import { Features } from 'src/app/helpers/features';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
+import { HttpBackend } from "@angular/common/http";
+import { FeatureToggleService } from "../../../services/feature-toggle.service";
+import { FeatureToggleServiceMock } from "../../../../test/mock/services/feature-toggle-service.mock";
 
 let addCustomerAccountModalComponentInstance: AddCustomerAccountModalComponent;
 let fixture: ComponentFixture<AddCustomerAccountModalComponent>;
@@ -60,6 +63,14 @@ const beforeEachFunction = async () => {
             {
                 provide: MsalService,
                 useValue: MsalServiceMock
+            },
+            {
+                provide: FeatureToggleService,
+                useValue: FeatureToggleServiceMock
+            },
+            {
+                provide: HttpBackend,
+                useValue: HttpBackend
             }
         ]
     }).compileComponents().then(() => {

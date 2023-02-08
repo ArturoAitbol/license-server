@@ -121,8 +121,7 @@ public class TekvLSGetAllSubaccounts
 				JSONObject item = new JSONObject();
 				item.put("name", rs.getString("name"));
 				item.put("customerId", rs.getString("customer_id"));
-				if (FeatureToggles.INSTANCE.isFeatureActive("services-feature"))
-					item.put("services", rs.getString("services"));
+				item.put("services", rs.getString("services"));
 				if (!id.equals("EMPTY"))
 					item.put("subaccountAdminEmails", adminEmailsMap.get(rs.getString("id")));
 				else

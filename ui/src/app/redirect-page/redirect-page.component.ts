@@ -7,10 +7,9 @@ import { IService } from '../model/service.model';
 import { SubAccount } from '../model/subaccount.model';
 import { SubAccountService } from '../services/sub-account.service';
 import { AvailableServicesService } from '../services/available-services.service';
-import { Features } from '../helpers/features';
-import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
 import { UserProfileService } from '../services/user-profile.service';
 import { tekVizionServices } from '../helpers/tekvizion-services';
+import { FeatureToggleService } from "../services/feature-toggle.service";
 @Component({
   selector: 'app-redirect-page',
   templateUrl: './redirect-page.component.html',
@@ -29,28 +28,33 @@ export class RedirectPageComponent implements OnInit {
     private msalService: MsalService,
     private subaccountService: SubAccountService,
     private userProfileService: UserProfileService,
-    private availabeService: AvailableServicesService
+    private availabeService: AvailableServicesService,
+    private featureTogglesService: FeatureToggleService,
   ) { }
 
   ngOnInit(): void {
-    try {
-      this.getAvailableServices();
-      const accountDetails = this.getAccountDetails();
-      const { idTokenClaims: { roles } } = accountDetails;
-      this.loggedInUserRoles = roles;
-      if (this.loggedInUserRoles.length == 1 && this.loggedInUserRoles[0] === Constants.DEVICES_ADMIN) {
-        // Devices admin does not have permission to access dashboard, so it's a special case
-        this.router.navigate([this.CONSUMPTION_MATRIX_PATH]);
-      } else {
-        //get the user's details only if the user logged is subbaccount admin or stakeholder otherwise redirect to the dashboard
-        if(this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN) ) {
-          this.fetchUserProfileDetails();
-          this.getSubAccountDetails();
+    if (this.featureTogglesService.isFeatureEnabled('ctaasFeature')) {
+      try {
+        this.getAvailableServices();
+        const accountDetails = this.getAccountDetails();
+        const { idTokenClaims: { roles } } = accountDetails;
+        this.loggedInUserRoles = roles;
+        if (this.loggedInUserRoles.length == 1 && this.loggedInUserRoles[0] === Constants.DEVICES_ADMIN) {
+          // Devices admin does not have permission to access dashboard, so it's a special case
+          this.router.navigate([ this.CONSUMPTION_MATRIX_PATH ]);
         } else {
-          this.navigateToDashboard();
-        } 
+          //get the user's details only if the user logged is subbaccount admin or stakeholder otherwise redirect to the dashboard
+          if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
+            this.fetchUserProfileDetails();
+            this.getSubAccountDetails();
+          } else {
+            this.navigateToDashboard();
+          }
+        }
+      } catch (e) {
+        console.error('error at redirect page');
       }
-    } catch (e) { console.error('error at redirect page'); }
+    } else this.router.navigate(['dashboard']);
   }
   /**
    * get all available tekVizion services

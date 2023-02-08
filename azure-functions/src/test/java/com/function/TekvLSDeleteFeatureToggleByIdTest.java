@@ -31,7 +31,7 @@ public class TekvLSDeleteFeatureToggleByIdTest extends TekvLSTest {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
         String name = "featureToggleTest" + LocalDateTime.now();
-        String bodyRequest = "{ 'status' : 'On', 'name' : '" + name + "' }";
+        String bodyRequest = "{ 'status' : true, 'name' : '" + name + "' }";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
         HttpResponseMessage response = this.createFeatureToggleApi.run(this.request, this.context);
         HttpStatusType actualStatus = response.getStatus();

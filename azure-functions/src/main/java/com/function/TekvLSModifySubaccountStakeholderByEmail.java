@@ -11,12 +11,10 @@ import static com.function.auth.RoleAuthHandler.hasPermission;
 import static com.function.auth.Roles.SUBACCOUNT_ADMIN;
 import static com.function.auth.Roles.SUBACCOUNT_STAKEHOLDER;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Optional;
 
+import com.function.db.SelectQueryBuilder;
 import com.microsoft.graph.models.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,7 +23,7 @@ import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
-import com.function.util.FeatureToggles;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -42,6 +40,7 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 	/**
 	 * This function listens at endpoint "/v1.0/subaccountStakeHolders/{id}". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/subaccountStakeHolders/{id}
+	 * @throws Exception
 	 */
 	
 	@FunctionName("TekvLSModifySubaccountStakeholderByEmail")
@@ -53,7 +52,7 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 				route = "subaccountStakeHolders/{email}")
 				HttpRequestMessage<Optional<String>> request,
 				@BindingName("email") String email,
-				final ExecutionContext context) 
+				final ExecutionContext context)
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
@@ -104,24 +103,36 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 				context.getLogger().info("Ignoring exception: " + e);
 			}
 		}
-		if (optionalParamsFound == 0) {
-			updateADUser(email, jobj, context);
-			return request.createResponseBuilder(HttpStatus.OK).build();
-		}
 		queryBuilder.appendWhereStatement("subaccount_admin_email", email, QueryBuilder.DATA_TYPE.VARCHAR);
+
+		SelectQueryBuilder subaccountIdQuery = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
+		subaccountIdQuery.appendEqualsCondition("subaccount_admin_email", email);
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 			+ "&user=" + System.getenv("POSTGRESQL_USER")
 			+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);){
-			PreparedStatement statement = queryBuilder.build(connection);
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			 PreparedStatement statement = queryBuilder.build(connection);
+			 PreparedStatement subaccountIdStmt = subaccountIdQuery.build(connection)){
+
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			String userId = getUserIdFromToken(tokenClaims,context);
+
+			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + subaccountIdStmt);
+			ResultSet subaccountIdRs = subaccountIdStmt.executeQuery();
+			subaccountIdRs.next();
+			String subaccountId = subaccountIdRs.getString("subaccount_id");
+
+			if (optionalParamsFound == 0) {
+				updateADUser(email, subaccountId, jobj, context);
+				return request.createResponseBuilder(HttpStatus.OK).build();
+			}
+
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
 			context.getLogger().info("Subaccount Admin email (stakeholder) updated successfully."); 
-			updateADUser(email, jobj, context);
+			updateADUser(email, subaccountId, jobj, context);
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (SQLException e) {
@@ -152,8 +163,8 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 		}
 	}
 	
-	private void updateADUser(String email, JSONObject jobj, ExecutionContext context) {
-		 if(!FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+	private void updateADUser(String email, String subaccountId, JSONObject jobj, ExecutionContext context) {
+		if(!FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
 			 context.getLogger().info("ad-subaccount-user-creation toggle is not active. Nothing to do at Azure AD");
 			 return;
 		 }

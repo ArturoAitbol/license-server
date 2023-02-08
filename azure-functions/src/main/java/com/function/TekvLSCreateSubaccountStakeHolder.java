@@ -14,11 +14,11 @@ import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.clients.EmailClient;
 import com.function.util.Constants;
+import com.function.util.FeatureToggleService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
-import com.function.util.FeatureToggles;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -89,8 +89,10 @@ public class TekvLSCreateSubaccountStakeHolder {
 			}
 		}
 
+		String subaccountId = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value);
+
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM subaccount_admin");
-		queryBuilder.appendEqualsCondition("subaccount_id", jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value), QueryBuilder.DATA_TYPE.UUID);
+		queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 		
 		String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid) RETURNING subaccount_admin_email;";
 		if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
@@ -120,14 +122,14 @@ public class TekvLSCreateSubaccountStakeHolder {
 					context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 				// Check if ctaas_setup exists and is on Ready status else return Bad Request
-				ctaasSetupStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+				ctaasSetupStmt.setString(1, subaccountId);
 				ResultSet ctaasRs = ctaasSetupStmt.executeQuery();
 
 				if (ctaasRs.next() && Objects.equals(ctaasRs.getString("status"), Constants.CTaaSSetupStatus.READY.value())) {
 
 					// Set statement parameters
 					statement.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
-					statement.setString(2, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
+					statement.setString(2, subaccountId);
 					if (jobj.has(OPTIONAL_PARAMS.NOTIFICATIONS.value)) {
 						statement.setString(3, jobj.getString(OPTIONAL_PARAMS.NOTIFICATIONS.value));
 					}
@@ -140,7 +142,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 					JSONObject json = new JSONObject();
 					json.put("subaccountAdminEmail", rs.getString("subaccount_admin_email"));
 
-					if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
+					if(FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
 						try {
 							context.getLogger().info("Adding user to Azure AD : " + jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
 							if (GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context))

@@ -5,7 +5,7 @@ import com.function.clients.EmailClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.Constants;
-import com.function.util.FeatureToggles;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -88,11 +88,10 @@ public class TekvLSModifySubaccountById
 		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("subaccount");
 		int optionalParamsFound = 0;
 		for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
-			try {
-				if (!param.columnName.equals("services") || FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
-					queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
-					optionalParamsFound++;
-				}
+			try {				
+				queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
+				optionalParamsFound++;
+				
 			} catch (Exception e) {
 				context.getLogger().info("Ignoring exception: " + e);
 			}
@@ -126,38 +125,38 @@ public class TekvLSModifySubaccountById
 			statement.executeUpdate();
 			context.getLogger().info("Subaccount updated successfully."); 
 
-			if (FeatureToggles.INSTANCE.isFeatureActive("services-feature")) {
-				if (jobj.has("services") && jobj.getString("services").contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
-					verifyCtassSetupStmt.setString(1, id);
-		
-					context.getLogger().info("Execute SQL statement: " + verifyCtassSetupStmt);
-					ResultSet rsCtassSetup = verifyCtassSetupStmt.executeQuery();
-					rsCtassSetup.next();
-					if (rsCtassSetup.getInt(1) == 0) {
-						insertCtassSetupStmt.setString(1, id);
-						insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());
-						insertCtassSetupStmt.setBoolean(3, Constants.DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
 			
-						context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
-						insertCtassSetupStmt.executeUpdate();
-						context.getLogger().info("SpotLight setup default values inserted successfully.");
+			if (jobj.has("services") && jobj.getString("services").contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
+				verifyCtassSetupStmt.setString(1, id);
+	
+				context.getLogger().info("Execute SQL statement: " + verifyCtassSetupStmt);
+				ResultSet rsCtassSetup = verifyCtassSetupStmt.executeQuery();
+				rsCtassSetup.next();
+				if (rsCtassSetup.getInt(1) == 0) {
+					insertCtassSetupStmt.setString(1, id);
+					insertCtassSetupStmt.setString(2, Constants.CTaaSSetupStatus.INPROGRESS.value());
+					insertCtassSetupStmt.setBoolean(3, Constants.DEFAULT_CTAAS_ON_BOARDING_COMPLETE);
+		
+					context.getLogger().info("Execute SQL statement: " + insertCtassSetupStmt);
+					insertCtassSetupStmt.executeUpdate();
+					context.getLogger().info("SpotLight setup default values inserted successfully.");
 
-						// Query the database for customer name and first subacc admin email
-						customerNameStmt.setString(1, id);
-						ResultSet rs = customerNameStmt.executeQuery();
-						rs.next();
-						final String  customerName = rs.getString("name");
-						adminEmailStmt.setString(1, id);
-						rs = adminEmailStmt.executeQuery();
-						rs.next();
-						final String adminEmail = rs.getString("subaccount_admin_email");
+					// Query the database for customer name and first subacc admin email
+					customerNameStmt.setString(1, id);
+					ResultSet rs = customerNameStmt.executeQuery();
+					rs.next();
+					final String  customerName = rs.getString("name");
+					adminEmailStmt.setString(1, id);
+					rs = adminEmailStmt.executeQuery();
+					rs.next();
+					final String adminEmail = rs.getString("subaccount_admin_email");
 
-						if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-							EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
-						}
+					if(FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", id)) {
+						EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
 					}
 				}
 			}
+
 
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}

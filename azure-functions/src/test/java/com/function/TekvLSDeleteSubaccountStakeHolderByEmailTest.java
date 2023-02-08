@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doThrow;
 
 import java.util.Optional;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -34,7 +35,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
     }
 
     @Test
-    public void deleteStakeHolderTest(){
+    public void deleteStakeHolderTest() {
         //Given
     	 String bodyRequest = "{'subaccountId': '8acb6997-4d6a-4427-ba2c-7bf463fa08ec'," +
                  "'subaccountAdminEmail': '"+this.stakeHolderEmail +"'," +
@@ -61,7 +62,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void noTokenTest(){
+    public void noTokenTest() {
         //Given
         this.headers.remove("authorization");
 
@@ -85,7 +86,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
 
     @Tag("Security")
     @Test
-    public void invalidRoleTest(){
+    public void invalidRoleTest() {
         //Given
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
 
@@ -109,7 +110,7 @@ public class TekvLSDeleteSubaccountStakeHolderByEmailTest  extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
-    public void genericExceptionTest(){
+    public void genericExceptionTest() {
         //Given
         this.stakeHolderEmail = "test-customer-subaccount-stakeholder1@tekvizion.com";
         doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);

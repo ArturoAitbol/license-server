@@ -31,36 +31,33 @@ public class TekvLSGetAllFeatureToggles {
                     name = "req",
                     methods = {HttpMethod.GET},
                     authLevel = AuthorizationLevel.ANONYMOUS,
-                    route = "featureToggles/{id=EMPTY}")
+                    route = "featureToggles/{featureToggleId=EMPTY}")
             HttpRequestMessage<Optional<String>> request,
-            @BindingName("id") String id,
+            @BindingName("featureToggleId") String featureToggleId,
             final ExecutionContext context) {
-
-        Claims tokenClaims = getTokenClaimsFromHeader(request, context);
-        JSONArray roles = getRolesFromToken(tokenClaims, context);
-        if (roles.isEmpty()) {
-            JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
-            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
-            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
-        }
-        if (!hasPermission(roles, Resource.GET_ALL_FEATURE_TOGGLES)) {
-            JSONObject json = new JSONObject();
-            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
-            json.put("error", MESSAGE_FOR_FORBIDDEN);
-            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
-        }
 
         context.getLogger().info("Entering TekvLSGetAllFeatureToggles Azure function");
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
+        String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 
         // Build SQL statement
         SelectQueryBuilder selectFTQueryBuilder = new SelectQueryBuilder("SELECT * FROM feature_toggle");
+        SelectQueryBuilder selectFTExQueryBuilder = new SelectQueryBuilder("SELECT fte.feature_toggle_id, fte.subaccount_id, s.name as subaccount_name, c.name as customer_name, " +
+                                                                                   "c.id as customer_id, fte.status as status " +
+                                                                                   "FROM feature_toggle_exception fte, subaccount s, customer c " +
+                                                                                   "WHERE fte.subaccount_id = s.id AND s.customer_id = c.id", true);
+        if (!subaccountId.isEmpty()) {
+            // Parameter not found
+            context.getLogger().info("Found subaccount id in query params");
+            selectFTExQueryBuilder.appendCustomCondition("subaccount_id = ?::uuid", subaccountId);
+        }
 
-        if (!id.equals("EMPTY"))
-            selectFTQueryBuilder.appendEqualsCondition("id", id, QueryBuilder.DATA_TYPE.UUID);
-            
+        if (!featureToggleId.equals("EMPTY")) {
+            selectFTQueryBuilder.appendEqualsCondition("id", featureToggleId, QueryBuilder.DATA_TYPE.UUID);
+            selectFTExQueryBuilder.appendEqualsCondition("feature_toggle_id", featureToggleId, QueryBuilder.DATA_TYPE.UUID);
+        }
+
         selectFTQueryBuilder.appendOrderBy("name", ORDER_DIRECTION.ASC);
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -68,27 +65,42 @@ public class TekvLSGetAllFeatureToggles {
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
 
         // Connect to the database
-        try (
-                Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                PreparedStatement statement = selectFTQueryBuilder.build(connection)
-        ) {
+        try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+             PreparedStatement featureToggleStmt = selectFTQueryBuilder.build(connection);
+             PreparedStatement exStmt = selectFTExQueryBuilder.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
+            // Map exceptions using the feature toggle id as key
+            Map<String, List<FeatureToggleException>> exceptionsMap = new HashMap<>();
+            context.getLogger().info("Execute SQL statement: " + exStmt);
+            ResultSet eRS = exStmt.executeQuery();
+            while (eRS.next()) {
+                exceptionsMap.computeIfAbsent(eRS.getString("feature_toggle_id"), k -> new ArrayList<>())
+                             .add(new FeatureToggleException(eRS.getBoolean("status"),
+                                                             eRS.getString("subaccount_name"),
+                                                             eRS.getString("subaccount_id"),
+                                                             eRS.getString("customer_name"),
+                                                             eRS.getString("customer_id")));
+            }
+
             // Retrieve all feature toggles
-            context.getLogger().info("Execute SQL statement: " + statement);
-            ResultSet rs = statement.executeQuery();
+            context.getLogger().info("Execute SQL statement: " + featureToggleStmt);
+            ResultSet rs = featureToggleStmt.executeQuery();
             // Return a JSON array of feature toggles
             JSONObject json = new JSONObject();
             JSONArray array = new JSONArray();
+
             while (rs.next()) {
                 JSONObject item = new JSONObject();
                 item.put("id", rs.getString("id"));
                 item.put("name", rs.getString("name"));
-                item.put("customerName", rs.getString("customer_name"));
-                item.put("status", rs.getString("status"));
+                item.put("status", rs.getBoolean("status"));
                 item.put("author", rs.getString("author"));
                 item.put("description", rs.getString("description"));
+                if (exceptionsMap.containsKey(rs.getString("id"))) {
+                    item.put("exceptions", exceptionsMap.get(rs.getString("id")));
+                }
                 array.put(item);
             }
 
@@ -106,4 +118,41 @@ public class TekvLSGetAllFeatureToggles {
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }
+
+    public static class FeatureToggleException {
+        private final Boolean status;
+        private final String subaccountName;
+        private final String subaccountId;
+        private final String customerName;
+        private final String customerId;
+
+        public FeatureToggleException(Boolean status, String subaccountName, String subaccountId, String customerName, String customerId) {
+            this.status = status;
+            this.subaccountName = subaccountName;
+            this.subaccountId = subaccountId;
+            this.customerName = customerName;
+            this.customerId = customerId;
+        }
+
+        public Boolean getStatus() {
+            return status;
+        }
+
+        public String getSubaccountName() {
+            return subaccountName;
+        }
+
+        public String getSubaccountId() {
+            return subaccountId;
+        }
+
+        public String getCustomerName() {
+            return customerName;
+        }
+
+        public String getCustomerId() {
+            return customerId;
+        }
+    }
+
 }
