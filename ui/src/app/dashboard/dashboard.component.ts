@@ -38,6 +38,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     data: CustomerLicense[] = [];
     customerList: any = [];
     filteredCustomerList: any = [];
+    customerFilter: any;
+    typeFilter: any;
+    statusFilter: any;
     // flag
     isLoadingResults = true;
     isRequestCompleted = false;
@@ -85,13 +88,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
         private msalService: MsalService,
         private fb: FormBuilder
     ) {
+        this.customerFilter = sessionStorage.getItem("cutomerFilter");
+        this.typeFilter = sessionStorage.getItem("typeFilter");
+        this.statusFilter = sessionStorage.getItem("statusFilter");
     }
 
     @HostListener('window:resize')
     sizeChange() {
         this.calculateTableHeight();
     }
-
+    
     private getActionMenuOptions() {
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
         this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "customerOptions");
@@ -122,18 +128,35 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.filterForm.valueChanges.pipe(
             debounceTime(300),
             takeUntil(this.unsubscribe)
-        ).subscribe(value => {
-            const filters = [];
-            if (value.customerFilterControl != '')
-                filters.push(customer => customer.name.toLowerCase().includes(value.customerFilterControl.toLowerCase()) || customer.subaccountName?.toLowerCase().includes(value.customerFilterControl.toLowerCase()));
-            if (value.typeFilterControl != '' && value.typeFilterControl != undefined) filters.push(customer => customer.customerType === value.typeFilterControl);
-            if (value.subStatusFilterControl != '' && value.subStatusFilterControl != undefined) filters.push(customer => customer.status && customer.status === value.subStatusFilterControl);
+            ).subscribe(value => {
+                const filters = [];
+                if (value.customerFilterControl != '') {
+                    filters.push(customer => customer.name.toLowerCase().includes(value.customerFilterControl.toLowerCase()) || customer.subaccountName?.toLowerCase().includes(value.customerFilterControl.toLowerCase()));
+                    sessionStorage.setItem("cutomerFilter",value.customerFilterControl.toLowerCase());
+                }
+            if (value.typeFilterControl != '' && value.typeFilterControl != undefined) {
+                filters.push(customer => customer.customerType === value.typeFilterControl);
+                sessionStorage.setItem("typeFilter", value.typeFilterControl);
+            }
+            if (value.subStatusFilterControl != '' && value.subStatusFilterControl != undefined) {
+                filters.push(customer => customer.status && customer.status === value.subStatusFilterControl);
+                sessionStorage.setItem("statusFilter", value.subStatusFilterControl);
+            } 
             this.isLoadingResults = true;
             this.filteredCustomerList = this.customerList.filter(customer => filters.every(filter => filter(customer)));
             this.isLoadingResults = false;
         })
     }
 
+    clearCustomerFilter(){
+        sessionStorage.setItem("cutomerFilter", '');
+    }
+    clearTypeFilter(){
+        sessionStorage.setItem("typeFilter", '');
+    }
+    clearStatusFilter(){
+        sessionStorage.setItem("statusFilter", '');
+    }
     /**
      * initialize the columns settings
      */
