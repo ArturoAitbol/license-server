@@ -150,6 +150,9 @@ button {
 .sidebar-content {
   margin: 70px -4px -4px -4px !important;
 }
+.badge {
+  font-weight: normal !important;
+}
 
 @media (max-width: 600px) {
   .logo-changes {

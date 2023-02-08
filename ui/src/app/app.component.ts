@@ -46,12 +46,13 @@ export class AppComponent implements OnInit, OnDestroy {
     fullSideBarItems: any = {
         spotlight: [
             {
-                name: 'Dashboard Preview',
+                name: 'Dashboard',
                 iconName: "assets\\images\\analytics.png",
                 path: 'visualization',
                 active: false,
                 materialIcon: 'analytics',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: true
             },
             {
                 name: 'Dashboard Legacy',
@@ -59,7 +60,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'report-dashboards',
                 active: true,
                 materialIcon: 'dashboard',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Notes',
@@ -67,7 +69,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'notes',
                 active: false,
                 materialIcon: 'description',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Test Suites',
@@ -75,7 +78,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'test-suites',
                 active: false,
                 materialIcon: 'folder_open',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Stakeholders',
@@ -83,7 +87,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'stakeholders',
                 active: false,
                 materialIcon: 'groups',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Test Reports',
@@ -91,7 +96,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'reports',
                 active: false,
                 materialIcon: 'folder_copy',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Configuration',
@@ -99,7 +105,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'setup',
                 active: false,
                 materialIcon: 'tune',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
 
         ],
@@ -110,7 +117,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'dashboard',
                 active: true,
                 materialIcon: 'home',
-                baseUrl: '/'
+                baseUrl: '/',
+                isPreview: false
             },
             {
                 name: 'Subscriptions',
@@ -118,7 +126,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'subscriptions-overview',
                 active: false,
                 materialIcon: 'event_repeat',
-                baseUrl: '/'
+                baseUrl: '/',
+                isPreview: false
             },
             {
 
@@ -127,14 +136,16 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'devices',
                 active: false,
                 materialIcon: 'devices',
-                baseUrl: '/'
+                baseUrl: '/',
+                isPreview: false
             },
             {
                 name: 'Consumption Matrix',
                 path: 'consumption-matrix',
                 active: false,
                 materialIcon: 'grid_on',
-                baseUrl: '/'
+                baseUrl: '/',
+                isPreview: false
             },
         ]
     };

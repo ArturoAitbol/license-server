@@ -29,7 +29,7 @@
                                     title="{{item.name}}">
                                     {{item.name}}
                                 </span>
-                                <!-- <span *ngIf = "item.name === 'Dashboard'" class="badge" [style.background] = "item.active ? '#203c66' : 'lightslategray'"> Preview </span> -->
+                                <span *ngIf = "item.isPreview" class="badge" [style.background] = "item.active ? 'gray' : 'lightslategray'"> Preview </span>
                             </button>
                         </div>
                     </div>
