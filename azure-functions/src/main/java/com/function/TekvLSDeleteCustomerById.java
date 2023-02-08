@@ -94,6 +94,7 @@ public class TekvLSDeleteCustomerById
 						String adminEmail = resultSet.getString("admin_email");
 						String subaccountAdminCustomerId =  resultSet.getString("subaccount_customer_id");
 						String subaccountAdminEmail = resultSet.getString("subaccount_admin_email");
+						String subaccountId = resultSet.getString("subaccount_id");
 
 						// if adminCustomerId IS selected id AND (email IS NOT used as subaccount admin OR ad-subaccount-user-creation toggle IS NOT enabled)
 						if(id.equals(adminCustomerId) && (subaccountAdminCustomerId == null || !FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation"))) {
@@ -106,7 +107,7 @@ public class TekvLSDeleteCustomerById
 						}
 
 						// if subaccountAdminCustomerId IS selected id and ad-subaccount-user-creation toggle IS enabled
-						if(id.equals(subaccountAdminCustomerId) && FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+						if(id.equals(subaccountAdminCustomerId) && FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
 							if(adminCustomerId == null || adminCustomerId.equals(id) || id.equals(subaccountAdminCustomerId) && FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
 								GraphAPIClient.deleteGuestUser(subaccountAdminEmail, context);
 								context.getLogger().info("Guest User deleted successfully from Active Directory (email: " + subaccountAdminEmail + ").");

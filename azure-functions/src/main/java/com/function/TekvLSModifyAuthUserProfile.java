@@ -103,6 +103,7 @@ public class TekvLSModifyAuthUserProfile {
 				json.put("error", MESSAGE_FOR_MISSING_CUSTOMER_EMAIL);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
+			String subaccountId = rs.getString("subaccount_id");
 			// Build the sql query
 			UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("subaccount_admin");
 			int optionalParamsFound = 0;
@@ -115,7 +116,7 @@ public class TekvLSModifyAuthUserProfile {
 				}
 			}
 			if (optionalParamsFound == 0) {
-				updateADUser(authEmail, jobj, context);
+				updateADUser(authEmail, subaccountId, jobj, context);
 				return request.createResponseBuilder(HttpStatus.OK).build();
 			}
 			queryBuilder.appendWhereStatement("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
@@ -126,7 +127,7 @@ public class TekvLSModifyAuthUserProfile {
 			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
 			statement.executeUpdate();
 			context.getLogger().info("Subaccount Admin email ( authenticated user ) updated successfully."); 
-			updateADUser(authEmail, jobj, context);
+			updateADUser(authEmail, subaccountId, jobj, context);
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
 		catch (Exception e) {
@@ -151,8 +152,8 @@ public class TekvLSModifyAuthUserProfile {
 		}
 	}
 	
-	private void updateADUser(String email, JSONObject jobj, ExecutionContext context) throws Exception {
-		if(!FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
+	private void updateADUser(String email, String subaccountId, JSONObject jobj, ExecutionContext context) throws Exception {
+		if(!FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
 			 context.getLogger().info("ad-subaccount-user-creation toggle is not active. Nothing to do at Azure AD");
 			 return;
 		}

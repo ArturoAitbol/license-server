@@ -63,6 +63,7 @@ public class FeatureToggleService {
             resultSet.next();
 
             String toggleId = resultSet.getString("id");
+            Boolean toggleStatus = resultSet.getBoolean("status");
             SelectQueryBuilder resultsQueryBuilder = new SelectQueryBuilder("SELECT * FROM feature_toggle_exception");
             resultsQueryBuilder.appendEqualsCondition("feature_toggle_id", toggleId, QueryBuilder.DATA_TYPE.UUID);
             resultsQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
@@ -70,16 +71,12 @@ public class FeatureToggleService {
             ResultSet statusSet = statusStatement.executeQuery();
 
             if (statusSet.next()) {
-                System.out.println("++++++++++++++++++++++++");
-                System.out.println("HERE WWE ARE");
                 return statusSet.getBoolean("status");
             }
 
-            return false;
+            return toggleStatus;
         } catch (Exception e) {
-            System.out.println("++++++++++++++++++++++++");
             System.out.println("Exception found: " + e.getMessage());
-            System.out.println("++++++++++++++++++++++++");
             return false;
         }
 
