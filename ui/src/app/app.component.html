@@ -29,6 +29,9 @@
                                     title="{{item.name}}">
                                     {{item.name}}
                                 </span>
+                                <span *ngIf="item.isPreview" class="badge"
+                                    [ngClass]="item.active ? 'preview-active' : 'preview-inactive'">
+                                    Preview </span>
                             </button>
                         </div>
                     </div>
@@ -189,6 +192,7 @@
         </mat-toolbar>
     </div>
 </ng-template>
+
 
 <ng-template #routerOutletTemplate>
     <router-outlet></router-outlet>
