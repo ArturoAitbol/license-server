@@ -295,11 +295,12 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should make a call to get licenseConsumptionDetails for summary view when calling fetchSummaryData()',()=>{
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
         spyOn(ConsumptionServiceMock,'getLicenseConsumptionDetails').and.callThrough();
         
         fixture.detectChanges();
+        console.log("!!!",licenseConsumptionComponentTestInstance.selectedLicense)
         licenseConsumptionComponentTestInstance.fetchSummaryData();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
@@ -410,13 +411,14 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should throw an error if getting licenseConsumptionDetails failed when calling fetchAggregatedData()',()=>{
-        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseA;
+        licenseConsumptionComponentTestInstance.selectedLicense = LicenseServiceMock.mockLicenseN;
         licenseConsumptionComponentTestInstance.currentCustomer = CurrentCustomerServiceMock.selectedCustomer;
         const error = "some error";
         spyOn(ConsumptionServiceMock,'getLicenseConsumptionDetails').and.returnValue(throwError(error));
         spyOn(console,'error');
         
         fixture.detectChanges();
+        console.log("!!!!", licenseConsumptionComponentTestInstance.selectedLicense)
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
