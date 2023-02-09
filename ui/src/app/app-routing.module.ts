@@ -7,13 +7,10 @@ import { RoleGuard } from './security/role.guard';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
 import { FeatureToggleGuard } from "./modules/shared/feature-toggle.guard";
 import { MyAppsComponent } from './my-apps/my-apps.component';
-import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
 import { RedirectPageComponent } from './redirect-page/redirect-page.component';
 import { DevicesComponent } from './modules/devices/devices.component';
 import { SubscriptionsOverviewComponent } from "./modules/subscriptions-overview/subscriptions-overview.component";
 import { ConsumptionMatrixComponent } from "./modules/consumption-matrix/consumption-matrix.component";
-// set default route based on the feature toggle
-const defaultRoute = FeatureToggleHelper.isFeatureEnabled("ctaasFeature") ? 'redirect' : 'dashboard';
 
 const config: ExtraOptions = {
   onSameUrlNavigation: 'reload',
@@ -22,7 +19,7 @@ const config: ExtraOptions = {
 };
 
 const routes: Routes = [
-  { path: '', redirectTo: defaultRoute, pathMatch: 'full' },
+  { path: '', redirectTo: 'redirect', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent },
   { path: 'no-permissions', component: NoPermissionsPageComponent, canActivate: [MsalGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [MsalGuard, RoleGuard, FeatureToggleGuard] },
@@ -39,7 +36,7 @@ const routes: Routes = [
     loadChildren: () => import('./modules/ctaas/ctaas.module').then(m => m.CtaasModule)
   },
   { path: 'devices', component: DevicesComponent, canActivate: [MsalGuard, RoleGuard] },
-  { path: '**', redirectTo: defaultRoute }
+  { path: '**', redirectTo: 'redirect' }
 ];
 
 @NgModule({

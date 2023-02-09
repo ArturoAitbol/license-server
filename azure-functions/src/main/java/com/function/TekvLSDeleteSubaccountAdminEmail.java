@@ -2,7 +2,9 @@ package com.function;
 
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
-import com.function.util.FeatureToggles;
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
@@ -48,48 +50,60 @@ public class TekvLSDeleteSubaccountAdminEmail {
         context.getLogger().info("Entering TekvLSDeleteSubaccountAdminEmail Azure function");
 
         String sql = "DELETE FROM subaccount_admin WHERE subaccount_admin_email = ?;";
+        SelectQueryBuilder subaccountIdQuery = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
+        subaccountIdQuery.appendEqualsCondition("subaccount_admin_email", email);
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql);
+             PreparedStatement subaccountIdStmt = subaccountIdQuery.build(connection)) {
 
-            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+            context.getLogger().info("Execute SQL statement: " + subaccountIdStmt);
+            ResultSet subaccountIdRs = subaccountIdStmt.executeQuery();
+            if (subaccountIdRs.next()) {
+                String subaccountId = subaccountIdRs.getString("subaccount_id");
+                context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-            if (FeatureToggles.INSTANCE.isFeatureActive("ad-subaccount-user-creation")) {
-                if (FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")) {
-                    String searchAdminEmailSql = "SELECT admin_email FROM customer_admin WHERE admin_email = ?;";
-                    try (PreparedStatement emailStatement = connection.prepareStatement(searchAdminEmailSql)) {
+                if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
+                    if (FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
+                        String searchAdminEmailSql = "SELECT admin_email FROM customer_admin WHERE admin_email = ?;";
+                        try (PreparedStatement emailStatement = connection.prepareStatement(searchAdminEmailSql)) {
                             emailStatement.setString(1, email);
                             context.getLogger().info("Execute SQL statement: " + emailStatement);
                             ResultSet rs = emailStatement.executeQuery();
                             if (rs.next()) {
-                                GraphAPIClient.removeRole(email,SUBACCOUNT_ADMIN,context);
-                                context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+email+").");
+                                GraphAPIClient.removeRole(email, SUBACCOUNT_ADMIN, context);
+                                context.getLogger()
+                                       .info("Guest User Role removed successfully from Active Directory (email: " + email + ").");
                             } else {
-                                GraphAPIClient.deleteGuestUser(email,context);
-                                context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+email+").");
+                                GraphAPIClient.deleteGuestUser(email, context);
+                                context.getLogger()
+                                       .info("Guest User deleted successfully from Active Directory (email: " + email + ").");
                             }
-                    } catch (Exception e) {
-                        context.getLogger().info("AD exception: " + e.getMessage());
-                        JSONObject json = new JSONObject();
-                        json.put("error", "AD Exception: " + e.getMessage());
-                        return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+                        } catch (Exception e) {
+                            context.getLogger().info("AD exception: " + e.getMessage());
+                            JSONObject json = new JSONObject();
+                            json.put("error", "AD Exception: " + e.getMessage());
+                            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString())
+                                          .build();
+                        }
+                    } else {
+                        GraphAPIClient.deleteGuestUser(email, context);
+                        context.getLogger()
+                               .info("Guest User deleted successfully from Active Directory (email: " + email + ").");
                     }
-                } else {
-                    GraphAPIClient.deleteGuestUser(email,context);
-                    context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+email+").");
                 }
-            }
-            statement.setString(1, email);
+                statement.setString(1, email);
 
-            // Delete device
-            String userId = getUserIdFromToken(tokenClaims,context);
-            context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
-            statement.executeUpdate();
-            context.getLogger().info("Subaccount Admin email deleted successfully.");
+                // Delete device
+                String userId = getUserIdFromToken(tokenClaims, context);
+                context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
+                statement.executeUpdate();
+                context.getLogger().info("Subaccount Admin email deleted successfully.");
+            }
 
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {

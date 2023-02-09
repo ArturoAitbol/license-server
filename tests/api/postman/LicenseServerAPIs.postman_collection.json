@@ -2084,6 +2084,215 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"id\");\r",
+							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
+							"});\r",
+							"pm.collectionVariables.set(\"featureToggleId\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");\r",
+							"\r",
+							"const clientId = pm.variables.get(\"CLIENTID_FULLADMIN\");\r",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_FULLADMIN\");\r",
+							"const grantType = pm.variables.get(\"grant_type\");\r",
+							"const scope = pm.variables.get(\"SCOPE\");\r",
+							"\r",
+							"const getTokenRequest = {\r",
+							"  method: 'POST',\r",
+							"  url: tokenUrl,\r",
+							"  body: {\r",
+							"      mode: 'formdata',\r",
+							"      formdata: [\r",
+							"          { key: 'client_id', value: clientId },\r",
+							"          { key: 'client_secret', value: clientSecret },\r",
+							"          { key: 'grant_type', value: grantType },\r",
+							"          { key: 'scope', value: scope}\r",
+							"      ]\r",
+							"  }\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest(getTokenRequest, (err, response) => {\r",
+							"  pm.collectionVariables.set('access_token', response.json().access_token);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"var currentDateTime = new Date().getTime();\r",
+							"pm.collectionVariables.set('name', 'CICDTest'+currentDateTime);\r",
+							"pm.collectionVariables.set('todayDate', currentDateTime);\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\" : true,\r\n    \"name\" : \"Test FT{{todayDate}}\",\r\n    \"customerName\" : \"(optional)\",\r\n    \"author\" : \"(optional)Test User\",\r\n    \"description\" : \"(optional)This is test data for the FT api\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/featureToggles",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"featureToggles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}Modified\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/featureToggles/{{featureToggleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"featureToggles",
+						"{{featureToggleId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"featureToggles\");\r",
+							"    pm.expect(pm.response.json().featureToggles).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/featureToggles",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"featureToggles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "featureToggles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_DA}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/featureToggles/{{featureToggleId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"featureToggles",
+						"{{featureToggleId}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
