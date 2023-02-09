@@ -300,7 +300,6 @@ describe('Data collection and parsing tests', () => {
         spyOn(ConsumptionServiceMock,'getLicenseConsumptionDetails').and.callThrough();
         
         fixture.detectChanges();
-        console.log("!!!",licenseConsumptionComponentTestInstance.selectedLicense)
         licenseConsumptionComponentTestInstance.fetchSummaryData();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
@@ -418,7 +417,6 @@ describe('Data collection and parsing tests', () => {
         spyOn(console,'error');
         
         fixture.detectChanges();
-        console.log("!!!!", licenseConsumptionComponentTestInstance.selectedLicense)
         licenseConsumptionComponentTestInstance.fetchAggregatedData();
 
         expect(ConsumptionServiceMock.getLicenseConsumptionDetails).toHaveBeenCalled();
