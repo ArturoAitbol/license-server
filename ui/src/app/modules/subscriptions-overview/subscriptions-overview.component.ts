@@ -169,20 +169,18 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
         this.selectedSubaccount = {
             id: object.selectedRow.subaccountId
         }
-        switch (object.selectedOption) {
-            case this.VIEW_LICENSES:
-                if (object.selectedRow.subaccountId !== undefined) {
+        if (object.selectedRow.subaccountId !== undefined) {
+            switch (object.selectedOption) {
+                case this.VIEW_LICENSES:
                     this.subaccountService.setSelectedSubAccount(this.selectedSubaccount)
                     this.openLicenseDetails(object.selectedRow);
-                } else this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
-                break;
-            case this.VIEW_CONSUMPTION:
-                if (object.selectedRow.subaccountId !== undefined){
+                    break;
+                case this.VIEW_CONSUMPTION:
                     this.subaccountService.setSelectedSubAccount(this.selectedSubaccount)
                     this.openLicenseConsumption(object.selectedRow);
-                } else this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
-                break;
-        }
+                    break;
+            }
+        }  else this.snackBarService.openSnackBar('Subaccount is missing, create one to access this view', '');
     }
 
     /**
