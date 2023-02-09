@@ -4,6 +4,9 @@ import UserFeatureToggles from 'src/assets/feature-toggles/user-feature-toggles.
 import { environment } from "../../environments/environment";
 
 export class FeatureToggleHelper {
+    /**
+     * @deprecated The method should not be used, please use the service FeatureToggleService
+     */
     static isFeatureEnabled(toggleName: string, msalService?: MsalService) {
         if (FeatureToggles[environment.ENVIRONMENT_NAME].features[toggleName])
             return true;

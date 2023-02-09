@@ -47,11 +47,21 @@ export class AppComponent implements OnInit, OnDestroy {
         spotlight: [
             {
                 name: 'Dashboard',
+                iconName: "assets\\images\\analytics.png",
+                path: 'visualization',
+                active: false,
+                materialIcon: 'analytics',
+                baseUrl: '/spotlight/',
+                isPreview: true
+            },
+            {
+                name: 'Dashboard Legacy',
                 iconName: "assets\\images\\dashboard_3.png",
                 path: 'report-dashboards',
                 active: true,
                 materialIcon: 'dashboard',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Notes',
@@ -59,7 +69,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'notes',
                 active: false,
                 materialIcon: 'description',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Test Suites',
@@ -67,7 +78,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'test-suites',
                 active: false,
                 materialIcon: 'folder_open',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Stakeholders',
@@ -75,7 +87,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'stakeholders',
                 active: false,
                 materialIcon: 'groups',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Test Reports',
@@ -83,7 +96,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'reports',
                 active: false,
                 materialIcon: 'folder_copy',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
             {
                 name: 'Configuration',
@@ -91,16 +105,10 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'setup',
                 active: false,
                 materialIcon: 'tune',
-                baseUrl: '/spotlight/'
+                baseUrl: '/spotlight/',
+                isPreview: false
             },
-            {
-                name: 'Power BI Visuals',
-                iconName: "assets\\images\\analytics.png",
-                path: 'visualization',
-                active: false,
-                materialIcon: 'analytics',
-                baseUrl: '/spotlight/'
-            }
+
         ],
         main: [
             {
@@ -109,7 +117,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'dashboard',
                 active: true,
                 materialIcon: 'home',
-                baseUrl: '/'
+                baseUrl: '/',
+                isPreview: false
             },
             {
                 name: 'Subscriptions',
@@ -117,7 +126,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'subscriptions-overview',
                 active: false,
                 materialIcon: 'event_repeat',
-                baseUrl: '/'
+                baseUrl: '/',
+                isPreview: false
             },
             {
 
@@ -126,14 +136,16 @@ export class AppComponent implements OnInit, OnDestroy {
                 path: 'devices',
                 active: false,
                 materialIcon: 'devices',
-                baseUrl: '/'
+                baseUrl: '/',
+                isPreview: false
             },
             {
                 name: 'Consumption Matrix',
                 path: 'consumption-matrix',
                 active: false,
                 materialIcon: 'grid_on',
-                baseUrl: '/'
+                baseUrl: '/',
+                isPreview: false
             },
         ]
     };
@@ -183,17 +195,17 @@ export class AppComponent implements OnInit, OnDestroy {
         private subaccountService: SubAccountService,
         private customerService: CustomerService
     ) {
-        this.route.queryParams.subscribe((query:Params) => {
+        this.route.queryParams.subscribe((query: Params) => {
             this.subaccountId = query.subaccountId;
-            if(this.subaccountId) {
+            if (this.subaccountId) {
                 //if subaccountId from url has a value we need to retrieve the details
                 const oldSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-                if(!oldSubaccountDetails.id) {
+                if (!oldSubaccountDetails.id) {
                     //if old subaccount details are empty set only the id before requesting the rest of the data 
-                    this.subaccountService.setSelectedSubAccount({id:this.subaccountId});
+                    this.subaccountService.setSelectedSubAccount({ id: this.subaccountId });
                     this.retrieveSubaccountDetails();
-                } else if(oldSubaccountDetails.id !== this.subaccountId || !oldSubaccountDetails.name ) {
-                     //if old selected subaccount id is different to the new selected subaccount id retrieve the rest of the details
+                } else if (oldSubaccountDetails.id !== this.subaccountId || !oldSubaccountDetails.name) {
+                    //if old selected subaccount id is different to the new selected subaccount id retrieve the rest of the details
                     this.retrieveSubaccountDetails();
                 }
             }
@@ -396,7 +408,7 @@ export class AppComponent implements OnInit, OnDestroy {
     navigateToMainView(): void {
         const accountDetails = this.getAccountDetails();
         const { roles } = accountDetails.idTokenClaims;
-        if(roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER))
+        if (roles.includes(Constants.SUBACCOUNT_ADMIN) || roles.includes(Constants.SUBACCOUNT_STAKEHOLDER))
             this.router.navigate(['/']);
         else
             this.router.navigate(['/dashboard']);
@@ -458,7 +470,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
         const { baseUrl, path } = item;
         const componentRoute = baseUrl + path;
-        this.router.navigate([componentRoute], {queryParams:{subaccountId: this.subaccountId}});
+        this.router.navigate([componentRoute], { queryParams: { subaccountId: this.subaccountId } });
         if (this.mobileQuery.matches) this.snav.toggle();
     }
 

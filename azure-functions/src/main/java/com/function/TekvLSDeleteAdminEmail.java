@@ -3,7 +3,7 @@ package com.function;
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
 import com.function.exceptions.ADException;
-import com.function.util.FeatureToggles;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
@@ -59,7 +59,7 @@ public class TekvLSDeleteAdminEmail {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-            if(FeatureToggles.INSTANCE.isFeatureActive("ad-customer-user-creation")){
+			if(FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
                 String searchSubaccountAdminEmailSql = "SELECT subaccount_admin_email FROM subaccount_admin WHERE subaccount_admin_email = ?;";
                 try(PreparedStatement emailStatement = connection.prepareStatement(searchSubaccountAdminEmailSql)){
                     emailStatement.setString(1, email);
