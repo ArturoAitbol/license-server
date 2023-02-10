@@ -5,8 +5,8 @@ const CUSTOMER = {
     name: 'Test Customer',
     status: 'Active',
     customerType: 'MSP',
-    subaccountId: 'ac7a78c2-d0b2-4c81-9538-321562d426c7',
-    licenseId: '16f4f014-5bed-4166-b10a-808b2e6655e3',
+    subaccountId: 'eea5f3b8-37eb-41fe-adad-5f94da124a5a',
+    licenseId: '986137d3-063d-4c0e-9b27-85fcf3b3272e',
     subaccountName: 'Default',
     testCustomer: true,
     services: tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight
