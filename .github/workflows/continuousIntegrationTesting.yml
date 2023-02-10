@@ -33,6 +33,10 @@ jobs:
         check_name: 'API Test Report'
     
     - name: Set Integration test credentials
+      env: # Or as an environment variable
+        POSTGRESQL_SERVER: ${{ secrets.POSTGRESQL_SERVER }}
+        POSTGRESQL_USER: ${{ secrets.POSTGRESQL_USER }}
+        POSTGRESQL_PWD: ${{ secrets.POSTGRESQL_PWD }}
       run: |
         echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "password=${{ secrets.AZURE_TEST_USER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
@@ -40,7 +44,7 @@ jobs:
         echo -e "subaccountAdminPassword=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "stakeholderUser=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "stakeholderPassword=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
-        psql "postgresql://${{ secrets.POSTGRESQL_SERVER }}/licenses?user=${{ secrets.POSTGRESQL_USER }}&password=${{ secrets.POSTGRESQL_PWD }}" < ./db/db_scripts/delete_test_data.sql -q
+        psql "postgresql://$POSTGRESQL_SERVER/licenses?user=$POSTGRESQL_USER&password=$POSTGRESQL_PWD" < ./db/db_scripts/delete_test_data.sql -q
 
     - name: Debug on failure
         if: success() || failure()
