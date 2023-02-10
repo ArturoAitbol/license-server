@@ -37,7 +37,7 @@ let fixture: ComponentFixture<DashboardComponent>;
 const dialogServiceMock = new DialogServiceMock();
 
 const RouterMock = {
-    navigate: (commands: string[]) => { }
+    navigate: (commands: string[], queryParams: any) => { }
 };
 
 const defaultTestBedConfig = {
@@ -272,21 +272,30 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/licenses']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/licenses'],{queryParams:{subaccountId: undefined }});
     });
 
     it('should navigate to license consumption after calling openLicenseConsumption()', () => {
+        const selectedTestData = { selectedRow: {
+            name: "testV2",
+            id: "157fdef0-c28e-4764-9023-75c06daad09d",
+            subaccountName: "testv2Demo",
+            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            services: "tokenConsumption,spotlight"
+        }, 
+        selectedOption: 'selectedTestOption', 
+        selectedIndex: '0' };  
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseConsumption({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId }});
     });
 
     it('should navigate to project details after calling openProjectDetails()', () => {
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openProjectDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects'],{queryParams:{subaccountId:undefined }});
     });
 
     it('should navigate to Spotlight dashboard ', () => {
@@ -361,7 +370,7 @@ describe('.rowAction()', () => {
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_LICENSES;
         selectedTestData.selectedRow.subaccountId = undefined;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -384,7 +393,7 @@ describe('.rowAction()', () => {
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CONSUMPTION;
         selectedTestData.selectedRow.subaccountId = undefined;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekToken Consumption view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -407,7 +416,7 @@ describe('.rowAction()', () => {
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_PROJECTS;
         selectedTestData.selectedRow.subaccountId = undefined;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access Projects view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -418,14 +427,14 @@ describe('.rowAction()', () => {
         const selectedTestData = {
             selectedRow: {
                 testProperty: 'testData',
-                subaccountId: undefined
+                subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e'
             },
             selectedOption: 'selectedTestOption',
             selectedIndex: 'selectedTestItem',
             subaccountId: 'test-id'
         };
         spyOn(dashboardComponentTestInstance, 'openDialog');
-
+        fixture.detectChanges();
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_ADMIN_EMAILS;
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.VIEW_ADMIN_EMAILS, selectedTestData.selectedRow);
@@ -447,7 +456,7 @@ describe('.rowAction()', () => {
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_SUBACC_ADMIN_EMAILS;
         selectedTestData.selectedRow.subaccountId = undefined;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access Subaccount admin emails view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -458,14 +467,14 @@ describe('.rowAction()', () => {
         const selectedTestData = {
             selectedRow: {
                 testProperty: 'testData',
-                subaccountId: undefined
+                subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e'
             },
             selectedOption: 'selectedTestOption',
             selectedIndex: 'selectedTestItem',
             subaccountId: 'test-id'
         };
         spyOn(dashboardComponentTestInstance, 'openDialog');
-
+        fixture.detectChanges();
         selectedTestData.selectedOption = dashboardComponentTestInstance.MODIFY_ACCOUNT;
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.MODIFY_ACCOUNT, selectedTestData.selectedRow);

@@ -7,6 +7,7 @@ import { LicenseService } from 'src/app/services/license.service';
 import { BundleService } from 'src/app/services/bundle.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { renewalDateValidator } from "src/app/helpers/renewal-date.validator";
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-add-license',
@@ -17,6 +18,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
   types: any[] = [];
   selectedType: any;
   private currentCustomer: any;
+  private customerSubaccountDetails;
   addLicenseForm = this.formBuilder.group({
     startDate: ['', Validators.required],
     description: ['', Validators.required],
@@ -34,11 +36,13 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
     private licenseService: LicenseService,
     private bundleService: BundleService,
     private snackBarService: SnackBarService,
+    private subaccountService: SubAccountService,
     public dialogRef: MatDialogRef<AddLicenseComponent>
   ) { }
 
   ngOnInit() {
     this.currentCustomer = this.customerSerivce.getSelectedCustomer();
+    this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.isDataLoading = true;
     this.bundleService.getBundleList().subscribe((res: any) => {
       if (res) this.types = res.bundles;
@@ -55,7 +59,7 @@ export class AddLicenseComponent implements OnInit, OnDestroy {
   submit() {
     this.isDataLoading = true;
     const licenseObject: License | any = {
-      subaccountId: this.currentCustomer.subaccountId,
+      subaccountId: this.customerSubaccountDetails.id,
       startDate: this.addLicenseForm.value.startDate,
       description: this.addLicenseForm.value.description,
       subscriptionType: this.addLicenseForm.value.subscriptionType,
