@@ -37,7 +37,8 @@ jobs:
         echo -e "subaccountAdminPassword=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "stakeholderUser=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "stakeholderPassword=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
-
+        psql "postgresql://${{ secrets.POSTGRESQL_SERVER }}/licenses?user=${{ secrets.POSTGRESQL_USER }}&password=${{ secrets.POSTGRESQL_PWD }}" < ./db/db_scripts/delete_test_data.sql -q
+ 
     - name: Run UI tests
       id: uiTests
       run: |
