@@ -31,9 +31,9 @@ jobs:
     
     - name: Set Integration test credentials
       env:
-        POSTGRESQL_SERVER: ${{ secrets.POSTGRESQL_SERVER }}
-        POSTGRESQL_USER: ${{ secrets.POSTGRESQL_USER }}
-        POSTGRESQL_PWD: ${{ secrets.POSTGRESQL_PWD }}
+        POSTGRESQL_SERVER: ${{ secrets.POSTGRESQL_SERVER_INTEGRATION }}
+        POSTGRESQL_USER: ${{ secrets.POSTGRESQL_USER_INTEGRATION }}
+        POSTGRESQL_PWD: ${{ secrets.POSTGRESQL_PWD_INTEGRATION }}
       run: |
         echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "password=${{ secrets.AZURE_TEST_USER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties

@@ -64,6 +64,10 @@ jobs:
         check_name: 'API Test Report'
 
     - name: Set Production test credentials
+      env:
+        POSTGRESQL_SERVER: ${{ secrets.POSTGRESQL_SERVER_PRODUCTION }}
+        POSTGRESQL_USER: ${{ secrets.POSTGRESQL_USER_PRODUCTION }}
+        POSTGRESQL_PWD: ${{ secrets.POSTGRESQL_PWD_PRODUCTION }}
       run: |
         echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
         echo -e "password=${{ secrets.AZURE_TEST_USER_PWD_PRODUCTION }}" >> ./tests/ui/src/main/resources/production.properties
@@ -71,6 +75,7 @@ jobs:
         echo -e "subaccountAdminPassword=${{ secrets.AZURE_PRODUCTION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/production.properties
         echo -e "stakeholderUser=${{ secrets.AZURE_PRODUCTION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/production.properties
         echo -e "stakeholderPassword=${{ secrets.AZURE_PRODUCTION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/production.properties
+        psql "postgresql://$POSTGRESQL_SERVER/licenses?user=$POSTGRESQL_USER&password=$POSTGRESQL_PWD" < ./db/db_scripts/delete_test_data.sql -q
 
     - name: Run UI tests
       id: uiTests
