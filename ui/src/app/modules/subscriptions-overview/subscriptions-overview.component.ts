@@ -166,20 +166,23 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      * @param object containing the row object
      */
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+        console.log(object.selectedRow);
         if (!object.selectedRow.subaccountId) {
             this.snackBarService.openSnackBar('Subaccount is missing, create one to access this view', '');
         }  else {
             this.selectedSubaccount = {
-                id: object.selectedRow.subaccountId
+                id: object.selectedRow.subaccountId,
+                name: object.selectedRow.subaccountName,
+                customerId: object.selectedRow.id,
+                customerName: object.selectedRow.customerName,
+                services: object.selectedRow.services
             }
             this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
             switch (object.selectedOption) {
                 case this.VIEW_LICENSES:
-                    
                     this.openLicenseDetails(object.selectedRow);
                     break;
                 case this.VIEW_CONSUMPTION:
-                    //this.subaccountService.setSelectedSubAccount(this.selectedSubaccount)
                     this.openLicenseConsumption(object.selectedRow);
                     break;
             }
