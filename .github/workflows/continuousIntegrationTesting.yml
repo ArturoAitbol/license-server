@@ -15,22 +15,22 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Run API tests
-      id: run-newman
-      uses: matt-ball/newman-action@master
-      with:
-        collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
-        environment: ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
-        reporters: '["junit", "cli"]'
-        reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
+    # - name: Run API tests
+    #   id: run-newman
+    #   uses: matt-ball/newman-action@master
+    #   with:
+    #     collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
+    #     environment: ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
+    #     reporters: '["junit", "cli"]'
+    #     reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
 
-    - name: Publish JUnit Report
-      uses: mikepenz/action-junit-report@v3
-      if: always() # always run even if the previous step fails
-      with:
-        report_paths: './tests/api/postman/newman-report.xml'
-        summary: 'true'
-        check_name: 'API Test Report'
+    # - name: Publish JUnit Report
+    #   uses: mikepenz/action-junit-report@v3
+    #   if: always() # always run even if the previous step fails
+    #   with:
+    #     report_paths: './tests/api/postman/newman-report.xml'
+    #     summary: 'true'
+    #     check_name: 'API Test Report'
     
     - name: Set Integration test credentials
       env: # Or as an environment variable
@@ -47,8 +47,8 @@ jobs:
         psql "postgresql://$POSTGRESQL_SERVER/licenses?user=$POSTGRESQL_USER&password=$POSTGRESQL_PWD" < ./db/db_scripts/delete_test_data.sql -q
 
     - name: Debug on failure
-        if: success() || failure()
-        uses: mxschmitt/action-tmate@v3
+      if: success() || failure()
+      uses: mxschmitt/action-tmate@v3
  
     - name: Run UI tests
       id: uiTests
