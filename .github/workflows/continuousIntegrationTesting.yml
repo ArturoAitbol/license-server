@@ -43,8 +43,8 @@ jobs:
         psql "postgresql://${{ secrets.POSTGRESQL_SERVER }}/licenses?user=${{ secrets.POSTGRESQL_USER }}&password=${{ secrets.POSTGRESQL_PWD }}" < ./db/db_scripts/delete_test_data.sql -q
 
     - name: Debug on failure
-        if: success() || failure()
-        uses: mxschmitt/action-tmate@v3
+      if: success() || failure()
+      uses: mxschmitt/action-tmate@v3
  
     - name: Run UI tests
       id: uiTests
