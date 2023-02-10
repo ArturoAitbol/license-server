@@ -22,9 +22,8 @@ import { SubAccount } from '../model/subaccount.model';
 import { FormBuilder } from "@angular/forms";
 import { debounceTime, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs/internal/Subject";
-import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
-import { Features } from '../helpers/features';
 import { tekVizionServices } from '../helpers/tekvizion-services';
+import { FeatureToggleService } from '../services/feature-toggle.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -83,7 +82,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         private snackBarService: SnackBarService,
         private router: Router,
         private msalService: MsalService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private featureToggleService: FeatureToggleService
     ) {
     }
 
@@ -95,11 +95,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private getActionMenuOptions() {
         const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
         this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "customerOptions");
-        // check for CTaas Toggle feature, if false then remove VIEW_CTAAS_DASHBOARD option in action menu
-        if (!FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)) {
-            const index = this.actionMenuOptions.findIndex(option => option === this.VIEW_CTAAS_DASHBOARD);
-            this.actionMenuOptions.splice(index, 1);
-        }
     }
 
     private calculateTableHeight() {
@@ -186,8 +181,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     customerWithDetails.subaccountId = subaccount.id;
                     const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccount.id));
                     customerWithDetails.status = this.getCustomerLicenseStatus(subaccountLicenses);
-                    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService))
-                        customerWithDetails.services = (subaccount.services) ? subaccount.services : null;
+                    customerWithDetails.services = (subaccount.services) ? subaccount.services : null;
                     fullCustomerList.push(customerWithDetails);
                 })
             } else {
@@ -414,12 +408,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.subaccountService.setSelectedSubAccount(selectedSubaccount);
                 const hasCtaasService = services && services.includes(tekVizionServices.SpotLight);
                 if (hasCtaasService) {
-                    const routePath = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ? '/spotlight/visualization' : '/spotlight/report-dashboards';
+                    const routePath = this.featureToggleService.isFeatureEnabled("powerbiFeature", selectedSubaccount.id) ? '/spotlight/visualization' : '/spotlight/report-dashboards';
                     this.router.navigate([routePath], { queryParams: { subaccountId: selectedSubaccount.id } })
-                }
-                else
+                } else
                     this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
-
                 break;
             case this.MODIFY_ACCOUNT:
                 this.openDialog(object.selectedOption, object.selectedRow);

@@ -132,10 +132,8 @@ describe('UI verification test', () => {
         //Buttons
         const addLicenseButton = fixture.nativeElement.querySelector('#add-license-button');
         const addLicenseConsumptionButton = fixture.nativeElement.querySelector('#add-license-consumption');
-        const goBackButton = fixture.nativeElement.querySelector('#back-button');
         expect(addLicenseButton.textContent).toContain('Add tekVizion 360 Subscription');
         expect(addLicenseConsumptionButton.textContent).toContain('Add tekToken Consumption');
-        expect(goBackButton.textContent).toContain('Back');
 
         const cloneConsumptionButton: HTMLElement = fixture.nativeElement.querySelector('#clone-consumption');
         expect(cloneConsumptionButton.textContent).toContain('Clone Consumption');
@@ -205,11 +203,10 @@ describe('UI verification test', () => {
         expect(await detailedConsumptionColumns[0].getText()).toBe('Consumption Date');
         expect(await detailedConsumptionColumns[1].getText()).toBe('Project');
         expect(await detailedConsumptionColumns[2].getText()).toBe('Type');
-        expect(await detailedConsumptionColumns[3].getText()).toBe('Vendor');
-        expect(await detailedConsumptionColumns[4].getText()).toBe('Model');
-        expect(await detailedConsumptionColumns[5].getText()).toBe('Version');
-        expect(await detailedConsumptionColumns[6].getText()).toBe('tekTokens Used');
-        expect(await detailedConsumptionColumns[7].getText()).toBe('Usage Days');
+        expect(await detailedConsumptionColumns[3].getText()).toBe('Device');
+        expect(await detailedConsumptionColumns[4].getText()).toBe('Calling Platform');
+        expect(await detailedConsumptionColumns[5].getText()).toBe('tekTokens Used');
+        expect(await detailedConsumptionColumns[6].getText()).toBe('Usage Days');
     });
 
     it('should load correct data columns for equipmentSummary table',()=>{
@@ -773,13 +770,4 @@ describe('openDialog',()=>{
         expect(licenseConsumptionComponentTestInstance.ngOnInit).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.fetchProjectsList).toHaveBeenCalled();
     }));
-});
-
-describe('navigate', () => {
-    beforeEach(beforeEachFunction);
-    it('should navigate to dashboard after calling goToDashboard()', () => {
-        spyOn(RouterMock, 'navigate');
-        licenseConsumptionComponentTestInstance.goToDashboard();
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/dashboard']);
-    });
 });

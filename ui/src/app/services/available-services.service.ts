@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
-import { Features } from '../helpers/features';
 import { tekVizionServices } from '../helpers/tekvizion-services';
 import { IService } from '../model/service.model';
 @Injectable({
@@ -21,12 +19,11 @@ export class AvailableServicesService {
     {
       "label": "Spotlight",
       "value": tekVizionServices.SpotLight,
-      "enabled": false,
+      "enabled": true,
       "access": false,
       "routePath": "/spotlight/report-dashboards",
       "imagePath": "assets/images/dashboard.png",
-      "tabName": "SpotLight",
-      "featureName": "CTaaS_Feature"
+      "tabName": "SpotLight"
     }
   ];
 
@@ -36,10 +33,6 @@ export class AvailableServicesService {
    * @returns: IService[]
    */
   public fetchAllAvailabeServices(): IService[] {
-    return this.availableServices.map((e: IService) => {
-      if (e.featureName && FeatureToggleHelper.isFeatureEnabled(Features[e.featureName]))
-        e.enabled = true;
-      return e;
-    });
+    return this.availableServices;
   }
 }

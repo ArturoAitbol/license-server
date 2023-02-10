@@ -107,13 +107,11 @@ describe('UI verification test', () => {
 
         const h2 = fixture.nativeElement.querySelector('#page-subtitle');
         const addProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
-        const goBackButton = fixture.nativeElement.querySelector('#go-back-button');
 
         projectsComponentTestInstance.sizeChange();
         expect(projectsComponentTestInstance.sizeChange).toHaveBeenCalled();
         expect(h2.textContent).toBe('Project Summary');
         expect(addProjectButton.textContent).toBe('Add New Project ');
-        expect(goBackButton.textContent).toBe('Back');
 
         // Filters
         const licenseFilterForm = await loader.getHarness(MatFormFieldHarness.with({ selector: "#license-filter-form" }));
@@ -299,12 +297,6 @@ describe('navigate', () => {
         spyOn(RouterMock, 'navigate');
         projectsComponentTestInstance.openConsumptionView({});
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption']);
-    });
-
-    it('should navigate to dashboard after calling goToDashboard()', () => {
-        spyOn(RouterMock, 'navigate');
-        projectsComponentTestInstance.goToDashboard();
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/dashboard']);
     });
 });
 

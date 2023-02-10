@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MsalService } from '@azure/msal-angular';
-import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
-import { Features } from 'src/app/helpers/features';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -77,11 +75,9 @@ export class AddSubaccountModalComponent implements OnInit {
       customerId: this.addSubaccountForm.value.customer,
       subaccountAdminEmail: this.addSubaccountForm.value.subaccountAdminEmail
     };
-    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)){
-      let services; 
-      services = this.getServices();
-      subaccountDetails.services = services;
-    }
+    let services; 
+    services = this.getServices();
+    subaccountDetails.services = services;
     this.subaccountService.createSubAccount(subaccountDetails).subscribe((res: any) => {
       if (!res.error) {
         this.snackBarService.openSnackBar('Subaccount added successfully!', '');

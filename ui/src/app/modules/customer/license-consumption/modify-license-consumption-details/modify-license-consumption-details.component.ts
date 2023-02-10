@@ -218,7 +218,6 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
     const subaccountId = this.currentCustomer.subaccountId;
     forkJoin([
       this.deviceService.getAllDeviceVendors(),
-      this.deviceService.getDeviceById(this.data.deviceId),
       this.projectService.getProjectDetailsByLicense(subaccountId, this.currentCustomer.licenseId),
       this.usageDetailService.getUsageDetailsByConsumptionId(this.data.id)
     ]).subscribe(res => {
@@ -234,12 +233,9 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       });
       this.originalDays = JSON.parse(JSON.stringify(this.days));
       const currentProject = this.projects.filter(project => project.id === this.data.projectId)[0];
-      const currentVendor = resDataObject['devices'][0].vendor;
-      const currentDevice = resDataObject['devices'][0];
       const patchValue = {...this.data};
       patchValue.project = currentProject;
-      patchValue.device = currentDevice;
-      patchValue.vendor = currentVendor;
+      patchValue.vendor = this.data.device.vendor;
       this.updateForm.patchValue(patchValue);
       this.previousFormValue = { ...this.updateForm };
       this.isDataLoading = false;

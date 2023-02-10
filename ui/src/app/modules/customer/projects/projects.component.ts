@@ -108,10 +108,6 @@ export class ProjectsComponent implements OnInit {
     this.getActionMenuOptions();
   }
 
-  goToDashboard(): void {
-    this.router.navigate(['/dashboard']);
-  }
-
   openDialog(component: any, data?: any): void {
     const dialogRef = this.dialog.open(component, {
       width: 'auto',
