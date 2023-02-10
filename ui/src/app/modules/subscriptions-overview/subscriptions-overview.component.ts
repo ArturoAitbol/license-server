@@ -166,7 +166,6 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      * @param object containing the row object
      */
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
-        console.log(object.selectedRow);
         if (!object.selectedRow.subaccountId) {
             this.snackBarService.openSnackBar('Subaccount is missing, create one to access this view', '');
         }  else {
