@@ -24,6 +24,7 @@ import { environment } from 'src/environments/environment';
 import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption/add-new-license-consumption.component';
 import { AddOtherConsumptionComponent } from './add-other-consumption/add-other-consumption.component';
 import { permissions } from 'src/app/helpers/role-permissions';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-license-consumption',
@@ -33,6 +34,7 @@ import { permissions } from 'src/app/helpers/role-permissions';
 export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private readonly TOKEN_CONSUMPTION_DATE = new Date(environment.TOKEN_CONSUMPTION_DATE + ' 00:00:00');
   currentCustomer: any;
+  customerSubaccountDetails: any; 
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
   selectedLicense: any;
@@ -155,7 +157,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     private licenseConsumptionService: LicenseConsumptionService,
     private router: Router,
     public dialog: MatDialog,
-    private msalService: MsalService
+    private msalService: MsalService,
+    private subaccountService: SubAccountService
   ) { }
 
   ngOnInit(): void {
@@ -168,7 +171,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     if (projectItem)
       this.selectedProject = projectObject.id;
     this.currentCustomer = this.customerService.getSelectedCustomer();
-    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
+    this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.licenseService.getLicenseList(this.customerSubaccountDetails.id).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         if (projectItem) {
@@ -199,9 +203,11 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
     this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
     this.currentCustomer.licenseId = license.id;
+    this.customerSubaccountDetails.licenseId = license.id;
     if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
       this.newLicenseConsumptionLogicFlag = true;
     else this.newLicenseConsumptionLogicFlag = false;
+    this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails); 
     this.customerService.setSelectedCustomer(this.currentCustomer);
   }
 
@@ -219,7 +225,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
     const requestObject: any = {
-      subaccount: this.currentCustomer.subaccountId,
+      subaccount: this.customerSubaccountDetails.id,
       licenseId: this.selectedLicense.id,
       view: view,
     };
@@ -241,7 +247,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   fetchProjectsList() {
-    this.projectService.getProjectDetailsByLicense(this.currentCustomer.subaccountId, this.selectedLicense.id).subscribe((res: any) => {
+    this.projectService.getProjectDetailsByLicense(this.customerSubaccountDetails.id, this.selectedLicense.id).subscribe((res: any) => {
       if (!res.error && res.projects) {
         this.projects = res.projects;
       }

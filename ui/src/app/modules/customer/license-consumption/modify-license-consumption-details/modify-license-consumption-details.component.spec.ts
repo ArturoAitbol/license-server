@@ -353,7 +353,7 @@ describe('modify-license-consumption - on event methods', () => {
         fixture.detectChanges();
         await fixture.whenStable();
         const option = fixture.debugElement.queryAll(By.css('mat-option'));
-        expect(option.length).toBe(1);
+        expect(option.length).toBe(2);
         expect(option[0].nativeElement.textContent).toBe(' Project-Test1 ');
     });
 
