@@ -3,6 +3,9 @@ name: Continuous testing in Integration
 on:
   schedule:
     - cron: '0 */2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 permissions: write-all
 
@@ -38,6 +41,10 @@ jobs:
         echo -e "stakeholderUser=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "stakeholderPassword=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
         psql "postgresql://${{ secrets.POSTGRESQL_SERVER }}/licenses?user=${{ secrets.POSTGRESQL_USER }}&password=${{ secrets.POSTGRESQL_PWD }}" < ./db/db_scripts/delete_test_data.sql -q
+
+    - name: Debug on failure
+        if: success() || failure()
+        uses: mxschmitt/action-tmate@v3
  
     - name: Run UI tests
       id: uiTests
