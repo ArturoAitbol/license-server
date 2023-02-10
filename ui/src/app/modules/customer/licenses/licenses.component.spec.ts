@@ -95,7 +95,8 @@ describe('licenses - UI verification tests',()=>{
         const h2: HTMLElement = fixture.nativeElement.querySelector('#table-title');
         const backButton: HTMLElement = fixture.nativeElement.querySelector('#back-button');
         const addLicenseButton: HTMLElement = fixture.nativeElement.querySelector('#add-license-button');
-        expect(h1.textContent).toBe(`${CustomerServiceMock.selectedCustomer.name} - ${CustomerServiceMock.selectedCustomer.subaccountName}`);
+        const currentSubaccount = licensesComponentTestInstance.customerSubaccountDetails;
+        expect(h1.textContent).toBe(`${currentSubaccount.customerName} - ${currentSubaccount.name}`);
         expect(h2.textContent).toBe('tekVizion 360 Subscriptions');
         expect(backButton.textContent).toBe('Back');
         expect(addLicenseButton.textContent).toBe('Add tekVizion 360 Subscription');
@@ -121,12 +122,12 @@ describe('Data collection and parsing tests',()=>{
 
     it('should make a call to get selected Customer, licenses and actionMenuOptions',()=>{
         spyOn(LicenseServiceMock,'getLicenseList').and.callThrough();
-        spyOn(CustomerServiceMock,'getSelectedCustomer').and.callThrough();
+        spyOn(SubaccountServiceMock,'getSelectedSubAccount').and.callThrough();
         spyOn(MsalServiceMock.instance,'getActiveAccount').and.callThrough();
 
         fixture.detectChanges();
         
-        expect(CustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
+        expect(SubaccountServiceMock.getSelectedSubAccount).toHaveBeenCalled();
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
         expect(MsalServiceMock.instance.getActiveAccount).toHaveBeenCalled();
         expect(licensesComponentTestInstance.actionMenuOptions).not.toEqual(['Edit','Delete']);

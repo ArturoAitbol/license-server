@@ -123,8 +123,9 @@ const beforeEachFunction = () => {
         customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
         services: "tokenConsumption,spotlight",
         testCustomer: false,
-        companyName:"testComp"
-    })
+        companyName:"testComp",
+        customerName: "testName"
+    });
 };
 
 describe('license-consumption - UI verification test', () => {
@@ -136,9 +137,9 @@ describe('license-consumption - UI verification test', () => {
         const title = fixture.nativeElement.querySelector('#page-title');
         const firstSectionTitle = fixture.nativeElement.querySelector('#first-section-title');
         const thirdSectionTitle = fixture.nativeElement.querySelector('#third-section-title');
-        const currentCustomer = licenseConsumptionComponentTestInstance.currentCustomer;
+        const currentSubaccount = licenseConsumptionComponentTestInstance.customerSubaccountDetails;
 
-        expect(title.textContent).toBe(`${currentCustomer.name} - ${currentCustomer.subaccountName}`);
+        expect(title.textContent).toBe(`${currentSubaccount.customerName} - ${currentSubaccount.name}`);
         expect(firstSectionTitle.textContent).toBe('tekToken Consumption Summary');
         expect(thirdSectionTitle.textContent).toBe('Equipment Summary');
         

@@ -237,50 +237,50 @@ describe('Subscriptions Overview - Routing events', () => {
 
 describe('Subscriptions Overview - Row actions', () => {
     beforeEach(beforeEachFunction);
-    // it('should make a call to openLicenseDetails or snackBarService if the selected option is VIEW_LICENSES', () => {
-    //     const selectedTestData = {
-    //         selectedRow: {
-    //             testProperty: 'testData',
-    //             subaccountId: undefined,
-    //             id: '821f079f-be9f-4b11-b364-4f9652c581ce'
-    //         },
-    //         selectedOption: 'selectedTestOption',
-    //         selectedIndex: 'selectedTestItem',
-    //         subaccountId: 'test-id'
-    //     };
-    //     spyOn(testInstance, 'openLicenseDetails');
-    //     spyOn(SnackBarServiceMock, 'openSnackBar');
+    it('should make a call to openLicenseDetails or snackBarService if the selected option is VIEW_LICENSES', () => {
+        const selectedTestData = {
+            selectedRow: {
+                testProperty: 'testData',
+                subaccountId: undefined,
+                id: '821f079f-be9f-4b11-b364-4f9652c581ce'
+            },
+            selectedOption: 'selectedTestOption',
+            selectedIndex: 'selectedTestItem',
+            subaccountId: 'test-id'
+        };
+        spyOn(testInstance, 'openLicenseDetails');
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
-    //     selectedTestData.selectedOption = testInstance.VIEW_LICENSES;
-    //     testInstance.rowAction(selectedTestData);
-    //     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
+        selectedTestData.selectedOption = testInstance.VIEW_LICENSES;
+        testInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
-    //     selectedTestData.selectedRow.subaccountId = 'not undefined';
-    //     testInstance.rowAction(selectedTestData);
-    //     expect(testInstance.openLicenseDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
-    // });
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
+        testInstance.rowAction(selectedTestData);
+        expect(testInstance.openLicenseDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
+    });
 
-    // it('should make a call to openLicenseConsumption or snackBarService if the selected option is VIEW_CONSUMPTION', () => {
-    //     const selectedTestData = {
-    //         selectedRow: {
-    //             testProperty: 'testData',
-    //             subaccountId: undefined
-    //         },
-    //         selectedOption: 'selectedTestOption',
-    //         selectedIndex: 'selectedTestItem',
-    //         subaccountId: 'test-id'
-    //     };
-    //     spyOn(testInstance, 'openLicenseConsumption');
-    //     spyOn(SnackBarServiceMock, 'openSnackBar');
+    it('should make a call to openLicenseConsumption or snackBarService if the selected option is VIEW_CONSUMPTION', () => {
+        const selectedTestData = {
+            selectedRow: {
+                testProperty: 'testData',
+                subaccountId: undefined
+            },
+            selectedOption: 'selectedTestOption',
+            selectedIndex: 'selectedTestItem',
+            subaccountId: 'test-id'
+        };
+        spyOn(testInstance, 'openLicenseConsumption');
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
-    //     selectedTestData.selectedOption = testInstance.VIEW_CONSUMPTION;
-    //     testInstance.rowAction(selectedTestData);
-    //     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekToken Consumption view', '');
+        selectedTestData.selectedOption = testInstance.VIEW_CONSUMPTION;
+        testInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
-    //     selectedTestData.selectedRow.subaccountId = 'not undefined';
-    //     testInstance.rowAction(selectedTestData);
-    //     expect(testInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow);
-    // });
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
+        testInstance.rowAction(selectedTestData);
+        expect(testInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow);
+    });
 });
 
 describe('Subscriptions Overview - Column actions', () => {

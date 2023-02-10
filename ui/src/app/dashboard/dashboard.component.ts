@@ -377,25 +377,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * @param object: { selectedRow: any, selectedOption: string, selectedIndex: string }
      */
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
-        this.selectedSubaccount = {
-            id: object.selectedRow.subaccountId,
-            name: object.selectedRow.subaccountName,
-            customerId: object.selectedRow.id,
-            customerName: object.selectedRow.name,
-            services: object.selectedRow.services
-        };
-        if (object.selectedRow.subaccountId !== undefined){
+        if (!object.selectedRow.subaccountId) {
+            this.snackBarService.openSnackBar('Subaccount is missing, create one to access this view', '');
+        } else {
+            this.selectedSubaccount = {
+                id: object.selectedRow.subaccountId,
+                name: object.selectedRow.subaccountName,
+                customerId: object.selectedRow.id,
+                customerName: object.selectedRow.name,
+                services: object.selectedRow.services
+            };
+            this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
             switch (object.selectedOption) {
                 case this.VIEW_LICENSES:
-                    this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
+                   
                     this.openLicenseDetails(object.selectedRow);
                     break;
                 case this.VIEW_CONSUMPTION:
-                    this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
                     this.openLicenseConsumption(object.selectedRow);
                     break;
                 case this.VIEW_PROJECTS:
-                    this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
                     this.openProjectDetails(object.selectedRow);
                     break;
                 case this.VIEW_ADMIN_EMAILS:
@@ -405,7 +406,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.openDialog(object.selectedOption, object.selectedRow);
                     break;
                 case this.VIEW_CTAAS_DASHBOARD:
-                    this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
                     const hasCtaasService = object.selectedRow.services && object.selectedRow.services.includes(tekVizionServices.SpotLight);
                     if (hasCtaasService) {
                         const routePath = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ? '/spotlight/visualization' : '/spotlight/report-dashboards';
@@ -419,8 +419,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.onDeleteAccount(object.selectedRow);
                     break;
             }
-        }else this.snackBarService.openSnackBar('Subaccount is missing, create one to access this view', '');
-        
+        } 
     }
 
     /**

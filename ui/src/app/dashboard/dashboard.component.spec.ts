@@ -355,132 +355,132 @@ describe('routes to spothlight dashboard', () => {
 
 describe('.rowAction()', () => {
     beforeEach(beforeEachFunction);
-    // it('should make a call to openLicenseDetails or snackBarService if the selected option is VIEW_LICENSES', () => {
-    //     const selectedTestData = {
-    //         selectedRow: {
-    //             testProperty: 'testData',
-    //             subaccountId: undefined,
-    //             id: '821f079f-be9f-4b11-b364-4f9652c581ce'
-    //         },
-    //         selectedOption: 'selectedTestOption',
-    //         selectedIndex: 'selectedTestItem',
-    //         subaccountId: 'test-id'
-    //     };
-    //     spyOn(dashboardComponentTestInstance, 'openLicenseDetails');
-    //     spyOn(SnackBarServiceMock, 'openSnackBar');
+    it('should make a call to openLicenseDetails or snackBarService if the selected option is VIEW_LICENSES', () => {
+        const selectedTestData = {
+            selectedRow: {
+                testProperty: 'testData',
+                subaccountId: undefined,
+                id: '821f079f-be9f-4b11-b364-4f9652c581ce'
+            },
+            selectedOption: 'selectedTestOption',
+            selectedIndex: 'selectedTestItem',
+            subaccountId: 'test-id'
+        };
+        spyOn(dashboardComponentTestInstance, 'openLicenseDetails');
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
-    //     selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_LICENSES;
-    //     selectedTestData.selectedRow.subaccountId = undefined;
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_LICENSES;
+        selectedTestData.selectedRow.subaccountId = undefined;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
-    //     selectedTestData.selectedRow.subaccountId = 'not undefined';
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(dashboardComponentTestInstance.openLicenseDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
-    // });
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(dashboardComponentTestInstance.openLicenseDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
+    });
 
-    // it('should make a call to openLicenseConsumption or snackBarService if the selected option is VIEW_CONSUMPTION', () => {
-    //     const selectedTestData = {
-    //         selectedRow: {
-    //             testProperty: 'testData',
-    //             subaccountId: undefined
-    //         },
-    //         selectedOption: 'selectedTestOption',
-    //         selectedIndex: 'selectedTestItem',
-    //         subaccountId: 'test-id'
-    //     };
-    //     spyOn(dashboardComponentTestInstance, 'openLicenseConsumption');
-    //     spyOn(SnackBarServiceMock, 'openSnackBar');
+    it('should make a call to openLicenseConsumption or snackBarService if the selected option is VIEW_CONSUMPTION', () => {
+        const selectedTestData = {
+            selectedRow: {
+                testProperty: 'testData',
+                subaccountId: undefined
+            },
+            selectedOption: 'selectedTestOption',
+            selectedIndex: 'selectedTestItem',
+            subaccountId: 'test-id'
+        };
+        spyOn(dashboardComponentTestInstance, 'openLicenseConsumption');
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
-    //     selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CONSUMPTION;
-    //     selectedTestData.selectedRow.subaccountId = undefined;
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekToken Consumption view', '');
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CONSUMPTION;
+        selectedTestData.selectedRow.subaccountId = undefined;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
-    //     selectedTestData.selectedRow.subaccountId = 'not undefined';
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(dashboardComponentTestInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow);
-    // });
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(dashboardComponentTestInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow);
+    });
 
-    // it('should make a call to openProjectDetails or snackBarService if the selected option is VIEW_PROJECTS', () => {
-    //     const selectedTestData = {
-    //         selectedRow: {
-    //             testProperty: 'testData',
-    //             subaccountId: undefined
-    //         },
-    //         selectedOption: 'selectedTestOption',
-    //         selectedIndex: 'selectedTestItem',
-    //         subaccountId: 'test-id'
-    //     };
-    //     spyOn(dashboardComponentTestInstance, 'openProjectDetails');
-    //     spyOn(SnackBarServiceMock, 'openSnackBar');
+    it('should make a call to openProjectDetails or snackBarService if the selected option is VIEW_PROJECTS', () => {
+        const selectedTestData = {
+            selectedRow: {
+                testProperty: 'testData',
+                subaccountId: undefined
+            },
+            selectedOption: 'selectedTestOption',
+            selectedIndex: 'selectedTestItem',
+            subaccountId: 'test-id'
+        };
+        spyOn(dashboardComponentTestInstance, 'openProjectDetails');
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
-    //     selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_PROJECTS;
-    //     selectedTestData.selectedRow.subaccountId = undefined;
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access Projects view', '');
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_PROJECTS;
+        selectedTestData.selectedRow.subaccountId = undefined;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
-    //     selectedTestData.selectedRow.subaccountId = 'not undefined';
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(dashboardComponentTestInstance.openProjectDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
-    // });
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(dashboardComponentTestInstance.openProjectDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
+    });
 
-    // it('should make a call to openDialog if the selected option is VIEW_ADMIN_EMAILS', () => {
-    //     const selectedTestData = {
-    //         selectedRow: {
-    //             testProperty: 'testData',
-    //             subaccountId: undefined
-    //         },
-    //         selectedOption: 'selectedTestOption',
-    //         selectedIndex: 'selectedTestItem',
-    //         subaccountId: 'test-id'
-    //     };
-    //     spyOn(dashboardComponentTestInstance, 'openDialog');
+    it('should make a call to openDialog if the selected option is VIEW_ADMIN_EMAILS', () => {
+        const selectedTestData = {
+            selectedRow: {
+                testProperty: 'testData',
+                subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e'
+            },
+            selectedOption: 'selectedTestOption',
+            selectedIndex: 'selectedTestItem',
+            subaccountId: 'test-id'
+        };
+        spyOn(dashboardComponentTestInstance, 'openDialog');
+        fixture.detectChanges();
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_ADMIN_EMAILS;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.VIEW_ADMIN_EMAILS, selectedTestData.selectedRow);
+    });
 
-    //     selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_ADMIN_EMAILS;
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.VIEW_ADMIN_EMAILS, selectedTestData.selectedRow);
-    // });
+    it('should make a call to openDialog if the selected option is VIEW_SUBACC_ADMIN_EMAILS', () => {
+        const selectedTestData = {
+            selectedRow: {
+                testProperty: 'testData',
+                subaccountId: undefined
+            },
+            selectedOption: 'selectedTestOption',
+            selectedIndex: 'selectedTestItem',
+            subaccountId: 'test-id'
+        };
+        spyOn(dashboardComponentTestInstance, 'openDialog');
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
-    // it('should make a call to openDialog if the selected option is VIEW_SUBACC_ADMIN_EMAILS', () => {
-    //     const selectedTestData = {
-    //         selectedRow: {
-    //             testProperty: 'testData',
-    //             subaccountId: undefined
-    //         },
-    //         selectedOption: 'selectedTestOption',
-    //         selectedIndex: 'selectedTestItem',
-    //         subaccountId: 'test-id'
-    //     };
-    //     spyOn(dashboardComponentTestInstance, 'openDialog');
-    //     spyOn(SnackBarServiceMock, 'openSnackBar');
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_SUBACC_ADMIN_EMAILS;
+        selectedTestData.selectedRow.subaccountId = undefined;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
-    //     selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_SUBACC_ADMIN_EMAILS;
-    //     selectedTestData.selectedRow.subaccountId = undefined;
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access Subaccount admin emails view', '');
+        selectedTestData.selectedRow.subaccountId = 'not undefined';
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.VIEW_SUBACC_ADMIN_EMAILS, selectedTestData.selectedRow);
+    });
 
-    //     selectedTestData.selectedRow.subaccountId = 'not undefined';
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.VIEW_SUBACC_ADMIN_EMAILS, selectedTestData.selectedRow);
-    // });
-
-    // it('should make a call to openDialog if the selected option is MODIFY_ACCOUNT', () => {
-    //     const selectedTestData = {
-    //         selectedRow: {
-    //             testProperty: 'testData',
-    //             subaccountId: undefined
-    //         },
-    //         selectedOption: 'selectedTestOption',
-    //         selectedIndex: 'selectedTestItem',
-    //         subaccountId: 'test-id'
-    //     };
-    //     spyOn(dashboardComponentTestInstance, 'openDialog');
-
-    //     selectedTestData.selectedOption = dashboardComponentTestInstance.MODIFY_ACCOUNT;
-    //     dashboardComponentTestInstance.rowAction(selectedTestData);
-    //     expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.MODIFY_ACCOUNT, selectedTestData.selectedRow);
-    // });
+    it('should make a call to openDialog if the selected option is MODIFY_ACCOUNT', () => {
+        const selectedTestData = {
+            selectedRow: {
+                testProperty: 'testData',
+                subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e'
+            },
+            selectedOption: 'selectedTestOption',
+            selectedIndex: 'selectedTestItem',
+            subaccountId: 'test-id'
+        };
+        spyOn(dashboardComponentTestInstance, 'openDialog');
+        fixture.detectChanges();
+        selectedTestData.selectedOption = dashboardComponentTestInstance.MODIFY_ACCOUNT;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.MODIFY_ACCOUNT, selectedTestData.selectedRow);
+    });
 
     it('should make a call to onDeleteAccount if the selected option is DELETE_ACCOUNT', async () => {
         const selectedTestData = {

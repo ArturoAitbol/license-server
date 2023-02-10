@@ -94,7 +94,8 @@ const beforeEachFunction = () => {
         customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
         services: "tokenConsumption,spotlight",
         testCustomer: false,
-        companyName:"testComp"
+        companyName:"testComp",
+        customerName:"testName"
     })
 }
 

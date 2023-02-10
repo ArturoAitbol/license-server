@@ -34,7 +34,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private readonly TOKEN_CONSUMPTION_DATE = new Date(environment.TOKEN_CONSUMPTION_DATE + ' 00:00:00');
   currentCustomer: any;
-  private customerSubaccountDetails: any; 
+  customerSubaccountDetails: any; 
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
   selectedLicense: any;

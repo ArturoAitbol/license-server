@@ -30,10 +30,9 @@ export class LicensesComponent implements OnInit {
     { name: 'tekTokens', dataKey: 'tokensPurchased', position: 'left', isSortable: true }
   ];
   tableMaxHeight: number;
-  currentCustomer: any;
   licenses: License[] = [];
   licensesBk: License[] = [];
-  private customerSubaccountDetails: any
+  customerSubaccountDetails: any
   // flag
   isLoadingResults = true;
   isRequestCompleted = false;
@@ -86,7 +85,6 @@ export class LicensesComponent implements OnInit {
 
   ngOnInit(): void {
     this.calculateTableHeight();
-    this.currentCustomer = this.customerService.getSelectedCustomer();
     this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.fetchLicenses();
     this.getActionMenuOptions();

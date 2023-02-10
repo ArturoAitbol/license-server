@@ -2,7 +2,7 @@ export class Constants {
     // Local Storage Keys
     public static readonly CURRENT_USER: string = 'currentUser';
     public static readonly SELECTED_CUSTOMER: string = 'selectedCustomer';
-    public static readonly SELECTED_SUBACCOUNT: string = 'selectedSubAccount';
+    public static readonly SELECTED_SUBACCOUNT: string = 'selectedSubaccount';
     public static readonly PROJECT: string = 'project';
     public static readonly SUBACCOUNT_USER_PROFILE: string = 'subAccountUserProfile';
     public static readonly CURRENT_ENABLED_SERVICES: string = 'currentEnabledServices';

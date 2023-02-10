@@ -56,7 +56,7 @@ export class ProjectsComponent implements OnInit {
   licensesList: [any];
   projects: Project[] = [];
   projectsBk: Project[] = [];
-  private customerSubaccountDetails: any;
+  customerSubaccountDetails: any;
   // flag
   isLoadingResults: boolean;
   isRequestCompleted: boolean;
