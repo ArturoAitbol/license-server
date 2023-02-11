@@ -37,7 +37,7 @@ const dialogService = new DialogServiceMock();
 let loader: HarnessLoader;
 
 const RouterMock = {
-    navigate: (commands: string[]) => { }
+    navigate: (commands: string[], queryParams: any) => { }
 };
 
 const defaultTestBedConfig = {
@@ -320,14 +320,11 @@ describe('projects - navigate', () => {
     it('should navigate to license consumption after calling openConsumptionView()', () => {
         spyOn(RouterMock, 'navigate');
         projectsComponentTestInstance.openConsumptionView({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'], {queryParams: {subaccountId: undefined }});
     });
 });
 
 describe('test customer false and routing with query params', () => {
-    const RouterMock = {
-        navigate: (commands: string[], queryParams:any) => { }
-    };
     beforeEach(() => {
         TestBed.configureTestingModule(defaultTestBedConfig);
         TestBed.overrideProvider(CustomerService, {
