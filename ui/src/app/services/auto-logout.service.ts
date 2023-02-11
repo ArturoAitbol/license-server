@@ -17,7 +17,7 @@ export class AutoLogoutService {
         if (lastActivityTimestamp.getTime() + Constants.LOGOUT_TIME_MS < new Date().getTime()) {
             this.logout();
             this.clearLoginTimeValidator();
-        }
+        } else this.restartTimer();
     }
 
     public restartTimer(): void {

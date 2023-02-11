@@ -26,18 +26,15 @@ import { SnackBarServiceMock } from "../../test/mock/services/snack-bar-service.
 import { SnackBarService } from "../services/snack-bar.service";
 import { DialogServiceMock } from '../../test/mock/services/dialog-service.mock';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
-import { Features } from '../helpers/features';
 import { tekVizionServices } from '../helpers/tekvizion-services';
 import { of, throwError } from 'rxjs';
 import { Sort } from '@angular/material/sort';
-import { HarnessLoader } from '@angular/cdk/testing';
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { FeatureToggleServiceMock } from 'src/test/mock/services/feature-toggle-service.mock';
+import { FeatureToggleService } from '../services/feature-toggle.service';
 
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
 const dialogServiceMock = new DialogServiceMock();
-let loader: HarnessLoader;
 
 const RouterMock = {
     navigate: (commands: string[], queryParams: any) => { }
@@ -78,6 +75,10 @@ const defaultTestBedConfig = {
         {
             provide: MsalService,
             useValue: MsalServiceMock
+        },
+        {
+            provide: FeatureToggleService,
+            useValue: FeatureToggleServiceMock
         },
         {
             provide: HttpClient,
@@ -297,26 +298,24 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects'],{queryParams:{subaccountId:undefined }});
     });
 
-    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-        it('should navigate to Spotlight dashboard ', () => {
-            const selectedTestData = { selectedRow: {
-                name: "testV2",
-                id: "157fdef0-c28e-4764-9023-75c06daad09d",
-                subaccountName: "testv2Demo",
-                subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-                services: "tokenConsumption"
-            }, 
-            selectedOption: 'selectedTestOption', 
-            selectedIndex: '0' }; 
-            spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-            spyOn(RouterMock, 'navigate').and.callThrough();
-            spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+    it('should navigate to Spotlight dashboard ', () => {
+        const selectedTestData = { selectedRow: {
+            name: "testV2",
+            id: "157fdef0-c28e-4764-9023-75c06daad09d",
+            subaccountName: "testv2Demo",
+            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            services: "tokenConsumption"
+        }, 
+        selectedOption: 'selectedTestOption', 
+        selectedIndex: '0' }; 
+        spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
+        spyOn(RouterMock, 'navigate').and.callThrough();
+        spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
 
-            selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
-            dashboardComponentTestInstance.rowAction(selectedTestData);
-            expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight service is not available for this Subaccount', '');
-        });
-    };
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight service is not available for this Subaccount', '');
+    });
 });
 
 describe('routes to spothlight dashboard', () => {
@@ -331,26 +330,25 @@ describe('routes to spothlight dashboard', () => {
         fixture = TestBed.createComponent(DashboardComponent);
         dashboardComponentTestInstance = fixture.componentInstance;
     });
-
-    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-        it('should navigate to Spotlight dashboard ', () => {
-            const selectedTestData = { selectedRow: {
-                name: "testV2",
-                id: "157fdef0-c28e-4764-9023-75c06daad09d",
-                subaccountName: "testv2Demo",
-                subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-                services: "tokenConsumption,spotlight"
-            },
-            selectedOption: 'selectedTestOption', 
-            selectedIndex: '0' }; 
-            spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-            spyOn(RouterMock2, 'navigate').and.callThrough();
-            const routePath = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ? '/spotlight/visualization' : '/spotlight/report-dashboards';
-            selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
-            dashboardComponentTestInstance.rowAction(selectedTestData);
-            expect(RouterMock2.navigate).toHaveBeenCalledWith([routePath],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
-        });
-    }
+    
+    it('should navigate to Spotlight dashboard ', () => {
+        const selectedTestData = { selectedRow: {
+            name: "testV2",
+            id: "157fdef0-c28e-4764-9023-75c06daad09d",
+            subaccountName: "testv2Demo",
+            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            services: "tokenConsumption,spotlight"
+        },
+        selectedOption: 'selectedTestOption', 
+        selectedIndex: '0' }; 
+        spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
+        spyOn(RouterMock2, 'navigate').and.callThrough();
+        const routePath = '/spotlight/visualization';
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(RouterMock2.navigate).toHaveBeenCalledWith([routePath],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
+    });
 });
 
 describe('.rowAction()', () => {
@@ -556,8 +554,7 @@ describe('Filtering table rows', () => {
         await fixture.whenStable();
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
         const objectToCompare: any = { "customerType": "MSP", "testCustomer": false, "name": "Amazon", "id": "aa85399d-1ce9-425d-9df7-d6e8a8baaec2", "subaccountName": "360 Custom (No Tokens)", "subaccountId": "24372e49-5f31-4b38-bc3e-fb6a5c371623", "status": "Inactive" };
-        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature))
-            objectToCompare.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
+        objectToCompare.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
         expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);
     });
 });

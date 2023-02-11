@@ -93,12 +93,10 @@ describe('licenses - UI verification tests',()=>{
 
         const h1: HTMLElement = fixture.nativeElement.querySelector('#page-title');
         const h2: HTMLElement = fixture.nativeElement.querySelector('#table-title');
-        const backButton: HTMLElement = fixture.nativeElement.querySelector('#back-button');
         const addLicenseButton: HTMLElement = fixture.nativeElement.querySelector('#add-license-button');
         const currentSubaccount = licensesComponentTestInstance.customerSubaccountDetails;
         expect(h1.textContent).toBe(`${currentSubaccount.customerName} - ${currentSubaccount.name}`);
         expect(h2.textContent).toBe('tekVizion 360 Subscriptions');
-        expect(backButton.textContent).toBe('Back');
         expect(addLicenseButton.textContent).toBe('Add tekVizion 360 Subscription');
     });
 
@@ -249,12 +247,3 @@ describe('Dialog calls and interactions', ()=>{
     })
 
 });
-
-describe('Navigation', ()=>{
-    beforeEach(beforeEachFunction);
-    it('sould navigate to dashboard after calling goToDashboard()',()=>{
-        spyOn(RouterMock,'navigate');
-        licensesComponentTestInstance.goToDashboard();
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/dashboard']);
-    });
-})

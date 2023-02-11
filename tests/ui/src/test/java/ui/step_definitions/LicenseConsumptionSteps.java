@@ -178,18 +178,16 @@ public class LicenseConsumptionSteps {
 
         String project = consumption.getOrDefault("project", "");
         String type = consumption.getOrDefault("type", "Configuration");
-        String deviceVendor = consumption.getOrDefault("vendor", "");
-        String deviceModel = consumption.getOrDefault("model", "");
-        String deviceVersion = consumption.getOrDefault("version", "");
+        String device = consumption.getOrDefault("device", "");
+        String callingPLatform = consumption.getOrDefault("callingPlatform", "");
         String tekTokens = consumption.getOrDefault("tekTokensUsed", "");
         String usageDays = consumption.getOrDefault("usageDays", "");
 
         this.consumptionRow = new ConsumptionRow(project);
         String actualProject = this.consumptionRow.getColumnValue("Project");
         String actualType = this.consumptionRow.getColumnValue("Type");
-        String actualVendor = this.consumptionRow.getColumnValue("Vendor");
-        String actualModel = this.consumptionRow.getColumnValue("Model");
-        String actualVersion = this.consumptionRow.getColumnValue("Version");
+        String actualDevice = this.consumptionRow.getColumnValue("Device");
+        String actualCallingPlatform = this.consumptionRow.getColumnValue("Calling Platform");
         String actualTekTokens = this.consumptionRow.getColumnValue("tekTokens Used");
         String actualUsageDays = this.consumptionRow.getColumnValue("Usage Days");
 
@@ -198,21 +196,18 @@ public class LicenseConsumptionSteps {
 
         assertEquals("Consumption doesn't have this type: ".concat(type), type, actualType);
 
-        if (!deviceVendor.isEmpty())
-            assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), deviceVendor,
-                    actualVendor);
-        if (!deviceModel.isEmpty())
-            assertEquals("Consumption doesn't have this deviceModel: ".concat(deviceModel), deviceModel,
-                    actualModel);
-        if (!deviceVersion.isEmpty())
-            assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), deviceVersion,
-                    actualVersion);
+        if (!device.isEmpty())
+            assertEquals("Consumption doesn't have this device: ".concat(device), device,
+                    actualDevice);
+        if (!callingPLatform.isEmpty())
+            assertEquals("Consumption doesn't have this callingPLatform: ".concat(callingPLatform), callingPLatform,
+                actualCallingPlatform);
         if (!tekTokens.isEmpty())
             assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), tekTokens,
                     actualTekTokens);
         if (actualTekTokens.equals("0"))
             assertEquals("Consumption doesn't have this UsageDays: ".concat("..."), "...", actualUsageDays);
-        else{
+        else {
             if (!usageDays.isEmpty())
                 assertEquals("Consumption doesn't have this UsageDays: ".concat(usageDays), usageDays,actualUsageDays);
         }

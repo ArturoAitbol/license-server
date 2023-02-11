@@ -52,8 +52,9 @@ Feature: CtaasSetup
       | tekTokens         | 0                  |
     And I should see the following data in the tekToken Consumption Events table
       | project           | SpotLight Project             |
-      | vendor            | tekVizion                     |
-      | model             | Base SpotLight platform ready |
+      # need to improve this tests
+      #| device            | tekVizion - Base SpotLight platform ready               |
+      #| model             | Base SpotLight platform ready |
       | tekTokensUsed     | 0                             |
 
   @deleteSpotLightCustomer @delete

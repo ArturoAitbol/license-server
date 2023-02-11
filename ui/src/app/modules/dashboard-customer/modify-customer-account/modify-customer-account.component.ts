@@ -5,8 +5,6 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { Features } from 'src/app/helpers/features';
-import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
 import { MsalService } from '@azure/msal-angular';
 
 @Component({
@@ -87,10 +85,8 @@ export class ModifyCustomerAccountComponent implements OnInit {
         id: mergedLicenseObject.subaccountId,
         subaccountName: mergedLicenseObject.subaccountName,
       };
-      if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)) {
-        const modifiedServices = this.modifiedServices();
-        subaccount.services = modifiedServices;
-      }
+      const modifiedServices = this.modifiedServices();
+      subaccount.services = modifiedServices;
       requestsArray.push(this.subaccountService.updateSubAccount(subaccount));
     }
     forkJoin(requestsArray).subscribe((res: any) => {
