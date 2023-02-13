@@ -194,7 +194,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      */
     openLicenseDetails(row: any): void {
         this.customerService.setSelectedCustomer(row);
-        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
         this.router.navigate(['/customer/licenses'],{queryParams:{subaccountId:row.subaccountId}});
     }
 
@@ -204,7 +204,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      */
     openLicenseConsumption(row: any): void {
         this.customerService.setSelectedCustomer(row);
-        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
         this.router.navigate(['/customer/consumption'],{queryParams:{subaccountId:row.subaccountId}});
     }
 

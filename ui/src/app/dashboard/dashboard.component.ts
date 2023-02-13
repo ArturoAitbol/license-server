@@ -373,7 +373,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
      */
     openLicenseDetails(row: any): void {
         this.customerService.setSelectedCustomer(row);
-        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
         this.router.navigate(['/customer/licenses'], {queryParams:{subaccountId: row.subaccountId}});
     }
 
@@ -382,14 +382,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * @param row: object
      */
     openLicenseConsumption(row: any, subaccountId:any): void {
-        if( subaccountId !== this.currentCustomer?.subaccountId){
-            sessionStorage.setItem("selectedConsumptionLicense", '')
-            sessionStorage.setItem("selectedType", '')
-            sessionStorage.setItem("selectedProject", '')
-        } 
+        if( subaccountId !== this.currentCustomer?.subaccountId) 
+            this.clearLicenseConsumptionSessionStorage();
         this.customerService.setSelectedCustomer(row);
-        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
         this.router.navigate(['/customer/consumption'], {queryParams:{subaccountId: this.customerSubaccountDetails.id}});
+    }
+
+    clearLicenseConsumptionSessionStorage() {
+        sessionStorage.setItem("selectedConsumptionLicense", '')
+        sessionStorage.setItem("selectedType", '')
+        sessionStorage.setItem("selectedProject", '')
     }
 
     /**
@@ -400,7 +403,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if( subaccountId !== this.currentCustomer?.subaccountId) 
             sessionStorage.setItem("selectedLicense", 'all')
         this.customerService.setSelectedCustomer(row);
-        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
         this.router.navigate(['/customer/projects'], {queryParams:{subaccountId: row.subaccountId}});
     }
 

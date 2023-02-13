@@ -282,7 +282,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   openConsumptionView(row: any): void {
-    localStorage.setItem(Constants.PROJECT, JSON.stringify(row));
+    sessionStorage.setItem(Constants.PROJECT, JSON.stringify(row));
     this.router.navigate(['/customer/consumption'], {queryParams: {subaccountId: this.customerSubaccountDetails.Id}});
   }
 
