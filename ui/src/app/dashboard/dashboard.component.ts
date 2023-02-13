@@ -337,7 +337,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     openLicenseConsumption(row: any): void {
         this.customerService.setSelectedCustomer(row);
         localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/consumption'], {queryParams:{subaccountId: this.customerSubaccountDetails.id}});
+        this.router.navigate(['/customer/consumption'], {queryParams:{subaccountId: row.subaccountId}});
     }
 
     /**

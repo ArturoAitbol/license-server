@@ -288,7 +288,7 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseConsumption({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId }});
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'],{queryParams:{subaccountId: undefined }});
     });
 
     it('should navigate to project details after calling openProjectDetails()', () => {
