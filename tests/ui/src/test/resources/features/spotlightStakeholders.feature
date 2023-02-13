@@ -3,24 +3,24 @@ Feature: Stakeholders
   Background: Login successfully with valid credentials
     Given I am on the landing page
 
-  @createStakeholderTestCustomer
+  @createfunctional-test-stakeholder
   Scenario: Create a test customer for stakeholders tests
     Given I try to login using a "FullAdministrator"
     And I open the Add Customer form
     When I create a customer with the following data
-      | name          | stakeholderTestCustomer           |
+      | name          | functional-test-stakeholder           |
       | type          | MSP                               |
       | adminEmail    | test-stakeholder@tekvizion.com    |
       | subaccount    | Default                           |
       | subAdminEmail | test-stakeholder@tekvizion.com    |
       | spotlight     | yes                               |
       | testCustomer  | yes                               |
-    Then I see the customer "stakeholderTestCustomer" in the table
+    Then I see the customer "functional-test-stakeholder" in the table
 
   @addLicense
   Scenario: Add Basic license
-    Given I see the customer "stakeholderTestCustomer" in the table
-    And I go to the Subscriptions view of "stakeholderTestCustomer"
+    Given I see the customer "functional-test-stakeholder" in the table
+    And I go to the Subscriptions view of "functional-test-stakeholder"
     And I should see the "tekVizion 360 Subscriptions" table
     And I open the Add Subscription form
     When I create a subscription with the following data
@@ -32,8 +32,8 @@ Feature: Stakeholders
 
   @editSpotLight
   Scenario: Edit a spotlight setup
-    Given I see the customer "stakeholderTestCustomer" in the table
-    And I go to the spotlight dashboard for "stakeholderTestCustomer"
+    Given I see the customer "functional-test-stakeholder" in the table
+    And I go to the spotlight dashboard for "functional-test-stakeholder"
     And I go to the spotlight "Configuration" tab
     When I edit the setup details with the following data
       | azureResourceGroup  | az_tap_rg                                  |
@@ -43,8 +43,8 @@ Feature: Stakeholders
 
   @addStakeholder
   Scenario: Add a Stakeholder
-    Given I see the customer "stakeholderTestCustomer" in the table
-    And I go to the spotlight dashboard for "stakeholderTestCustomer"
+    Given I see the customer "functional-test-stakeholder" in the table
+    And I go to the spotlight dashboard for "functional-test-stakeholder"
     And I go to the spotlight "Stakeholders" tab
     And I open the Add Stakeholder form
     When I create a stakeholder with the following data
@@ -66,8 +66,8 @@ Feature: Stakeholders
   @editStakeholder @feature-toggle
   Scenario: Edit a StakeHolder
     Given I try to login using a "FullAdministrator"
-    And I see the customer "stakeholderTestCustomer" in the table
-    And I go to the spotlight dashboard for "stakeholderTestCustomer"
+    And I see the customer "functional-test-stakeholder" in the table
+    And I go to the spotlight dashboard for "functional-test-stakeholder"
     And I go to the spotlight "Stakeholders" tab
     When I edit the stakeholder "stakeholderTest" with the following data
       | name                  | stakeholderTestModified         |
@@ -78,8 +78,8 @@ Feature: Stakeholders
 
   @deleteStakeholder @feature-toggle
   Scenario: Delete Stakeholder Test
-    Given I see the customer "stakeholderTestCustomer" in the table
-    And I go to the spotlight dashboard for "stakeholderTestCustomer"
+    Given I see the customer "functional-test-stakeholder" in the table
+    And I go to the spotlight dashboard for "functional-test-stakeholder"
     And I go to the spotlight "Stakeholders" tab
     And I see the "stakeholderTestModified" stakeholder in the table
     When I delete the "stakeholderTestModified" stakeholder
@@ -87,6 +87,6 @@ Feature: Stakeholders
 
   @deleteStakeholdersTestCustomer @delete
   Scenario: Delete the test customer for stakeholder
-    Given I see the customer "stakeholderTestCustomer" in the table
-    When I delete the customer "stakeholderTestCustomer"
+    Given I see the customer "functional-test-stakeholder" in the table
+    When I delete the customer "functional-test-stakeholder"
     Then I should see the message "Customer deleted successfully!"

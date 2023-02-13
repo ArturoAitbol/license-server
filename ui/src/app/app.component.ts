@@ -10,8 +10,6 @@ import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutModalComponent } from './generics/about-modal/about-modal.component';
-import { FeatureToggleHelper } from "./helpers/feature-toggle.helper";
-import { Features } from './helpers/features';
 import { MatSidenav } from '@angular/material/sidenav';
 import { Constants } from './helpers/constants';
 import { Utility } from './helpers/utils';
@@ -22,6 +20,7 @@ import { SubAccountService } from './services/sub-account.service';
 import { CustomerService } from './services/customer.service';
 import { BehaviorSubject, Subscription } from "rxjs";
 import { ISidebar } from './model/sidebar.model';
+import { FeatureToggleService } from './services/feature-toggle.service';
 
 
 @Component({
@@ -37,9 +36,6 @@ export class AppComponent implements OnInit, OnDestroy {
     currentUser = false;
     // added as part of spotlight feature
     hideToolbar = false;
-    isTransparentToolbar = false;
-    baseCtaasURL = "/spotlight/";
-    // tabName: string = 'tekVizion 360 Portal';
     tabName: string = Constants.TEK_TOKEN_TOOL_BAR;
     previousDisplayedItemsSubscription: Subscription = null;
     @ViewChild('sidenav') sidenav: MatSidenav;
@@ -193,7 +189,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private userProfileService: UserProfileService,
         private route: ActivatedRoute,
         private subaccountService: SubAccountService,
-        private customerService: CustomerService
+        private customerService: CustomerService,
+        private featureToggleService: FeatureToggleService
     ) {
         this.route.queryParams.subscribe((query: Params) => {
             this.subaccountId = query.subaccountId;
@@ -209,6 +206,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     this.retrieveSubaccountDetails();
                 }
             }
+            this.onRouteChanges();
         });
 
         this.mobileQuery = media.matchMedia('(max-width: 600px)');
@@ -234,7 +232,6 @@ export class AppComponent implements OnInit, OnDestroy {
         });
         appInsights.loadAppInsights();
         appInsights.trackPageView();
-        this.onRouteChanges();
     }
 
     private retrieveSubaccountDetails() {
@@ -245,6 +242,11 @@ export class AppComponent implements OnInit, OnDestroy {
                 selectedSubAccount.id = this.subaccountId;
                 selectedSubAccount.customerName = subaccountCustomer.name;
                 selectedSubAccount.testCustomer = subaccountCustomer.testCustomer;
+                selectedSubAccount.customerType = subaccountCustomer.customerType;
+                selectedSubAccount.distributorId = subaccountCustomer.distributorId;
+                selectedSubAccount.adminEmails = subaccountCustomer.adminEmails;
+                selectedSubAccount.customerId = selectedSubAccount.customerId;
+                selectedSubAccount.subaccountId = this.subaccountId;
                 this.subaccountService.setSelectedSubAccount(selectedSubAccount);
             });
         });
@@ -260,13 +262,11 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.REDIRECT_ROUTE_PATH:
                         this.tabName = '';
                         this.hideToolbar = true;
-                        this.isTransparentToolbar = false;
                         this.enableSidebar();
                         break;
                     case this.APPS_ROUTE_PATH:
                         this.tabName = '';
                         this.hideToolbar = false;
-                        this.isTransparentToolbar = true;
                         this.enableSidebar();
                         break;
                     case this.CTAAS_DASHBOARD_ROUTE_PATH:
@@ -278,7 +278,6 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.SPOTLIGHT_TEST_REPORTS:
                         this.tabName = Constants.CTAAS_TOOL_BAR;
                         this.hideToolbar = false;
-                        this.isTransparentToolbar = false;
                         if (this.previousDisplayedItemsSubscription) {
                             this.previousDisplayedItemsSubscription.unsubscribe();
                         }
@@ -293,7 +292,6 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.CONSUMPTION_MATRIX:
                         this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
-                        this.isTransparentToolbar = false;
                         if (this.previousDisplayedItemsSubscription) {
                             this.previousDisplayedItemsSubscription.unsubscribe();
                         }
@@ -322,7 +320,6 @@ export class AppComponent implements OnInit, OnDestroy {
                             });
                         }
                         this.hideToolbar = false;
-                        this.isTransparentToolbar = false;
                         this.enableSidebar();
                         break;
                 }
@@ -333,17 +330,15 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnInit() {
         if (!this.isLoggedIn()) {
             this.router.navigate(['/login']);
-        } else {
-            this.currentUser = this.isLoggedIn();
-            this.autoLogoutService.validateLastActivityTime();
-            this.initalizeSidebarItems();
         }
+        this.currentUser = this.isLoggedIn();
+        this.autoLogoutService.validateLastActivityTime();
         this.broadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS),
             takeUntil(this._destroying$)
         ).subscribe((result: EventMessage) => {
             // Do something with event payload here 
-            this.initalizeSidebarItems();
+            this.initializeSideBarItems();
         });
         this.broadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
@@ -351,46 +346,24 @@ export class AppComponent implements OnInit, OnDestroy {
         ).subscribe(event => {
             this.currentUser = true;
             this.autoLogoutService.restartTimer();
-            this.initalizeSidebarItems();
-            this.onRouteChanges();
         });
     }
 
     /**
      * initalize the items required for side nav bar
      */
-    initalizeSidebarItems(): void {
+    initializeSideBarItems(): void {
         try {
             const accountDetails = this.getAccountDetails();
             const { roles } = accountDetails.idTokenClaims;
             // check for Power Bi feature toggle, if enabled then only we can see the Power Bi Visuals tab on the side bar
-            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = FeatureToggleHelper.isFeatureEnabled("powerbiFeature") ?
+            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = this.featureToggleService.isFeatureEnabled("powerbiFeature", this.subaccountId) ?
                 this.fullSideBarItems.spotlight :
                 this.fullSideBarItems.spotlight.filter((e: ISidebar) => e.path !== 'visualization');
             this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST));
             this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main));
         } catch (e) {
             console.error('Error while initalizing sidebar items: ', e);
-        }
-    }
-
-    /**
-     * perform changes on Toolbar on refresh
-     */
-    private performChangeOnToolbar(): void {
-        const { location: { href } } = window;
-        if (href) {
-            this.currentRoutePath = (href.split('/#').length > 0) ? href.split('/#')[1] : '';
-            console.debug('currentRoute | ', this.currentRoutePath);
-            // this.hideToolbar = (currentRoute !== this.APPS_ROUTE_PATH);
-            // this.isTransparentToolbar = (currentRoute === this.APPS_ROUTE_PATH);
-        }
-        const value = JSON.parse(localStorage.getItem('toolbarDetails'));
-        if (value) {
-            const { tabName, hideToolbar, transparentToolbar } = value;
-            this.tabName = tabName;
-            this.hideToolbar = hideToolbar;
-            this.isTransparentToolbar = transparentToolbar;
         }
     }
 
@@ -476,30 +449,17 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * enable sidebar based on the service and this feature is enabled only when CTaaS_Feature is enabled
+     * enable sidebar based on the service
      * @returns: boolean 
      */
     enableSidebar(): boolean {
-        if ((this.isCtaasFeatureEnabled() && this.currentRoutePath.includes(this.baseCtaasURL)) ||
-            [this.MAIN_DASHBOARD, this.SUBSCRIPTIONS_OVERVIEW, this.CONSUMPTION_MATRIX, this.DEVICES].includes(this.currentRoutePath)) {
-            this.displayedSideBarItems.forEach((e: any) => {
-                if (e.baseUrl + e.path === this.currentRoutePath)
-                    e.active = true;
-                else
-                    e.active = false;
-            });
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * check whether 
-     * @returns: boolean CTaaS_Feature is enabled or not
-     */
-    isCtaasFeatureEnabled(): boolean {
-        return FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService);
+        this.displayedSideBarItems.forEach((e: any) => {
+            if (e.baseUrl + e.path === this.currentRoutePath)
+                e.active = true;
+            else
+                e.active = false;
+        });
+        return true;
     }
 
     /**

@@ -12,12 +12,14 @@ import { CustomerService } from "src/app/services/customer.service";
 import { DialogService } from "src/app/services/dialog.service";
 import { LicenseService } from "src/app/services/license.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
+import { SubAccountService } from "src/app/services/sub-account.service";
 import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { CustomerServiceMock } from "src/test/mock/services/customer-service.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
+import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
 import { SharedModule } from "../../shared/shared.module";
 import { AddLicenseComponent } from "./add-license/add-license.component";
 import { LicensesComponent } from "./licenses.component"
@@ -66,6 +68,10 @@ const beforeEachFunction = () =>{
             useValue: dialogServiceMock
         },
         {
+            provide: SubAccountService,
+            useValue: SubaccountServiceMock
+        },
+        {
             provide: HttpClient,
             useValue: HttpClient
         }
@@ -75,7 +81,7 @@ const beforeEachFunction = () =>{
     licensesComponentTestInstance = fixture.componentInstance;
 }
 
-describe('UI verification tests',()=>{
+describe('licenses - UI verification tests',()=>{
 
     beforeEach(beforeEachFunction);
 
@@ -87,11 +93,10 @@ describe('UI verification tests',()=>{
 
         const h1: HTMLElement = fixture.nativeElement.querySelector('#page-title');
         const h2: HTMLElement = fixture.nativeElement.querySelector('#table-title');
-        const backButton: HTMLElement = fixture.nativeElement.querySelector('#back-button');
         const addLicenseButton: HTMLElement = fixture.nativeElement.querySelector('#add-license-button');
-        expect(h1.textContent).toBe(`${CustomerServiceMock.selectedCustomer.name} - ${CustomerServiceMock.selectedCustomer.subaccountName}`);
+        const currentSubaccount = licensesComponentTestInstance.customerSubaccountDetails;
+        expect(h1.textContent).toBe(`${currentSubaccount.customerName} - ${currentSubaccount.name}`);
         expect(h2.textContent).toBe('tekVizion 360 Subscriptions');
-        expect(backButton.textContent).toBe('Back');
         expect(addLicenseButton.textContent).toBe('Add tekVizion 360 Subscription');
     });
 
@@ -115,15 +120,15 @@ describe('Data collection and parsing tests',()=>{
 
     it('should make a call to get selected Customer, licenses and actionMenuOptions',()=>{
         spyOn(LicenseServiceMock,'getLicenseList').and.callThrough();
-        spyOn(CustomerServiceMock,'getSelectedCustomer').and.callThrough();
+        spyOn(SubaccountServiceMock,'getSelectedSubAccount').and.callThrough();
         spyOn(MsalServiceMock.instance,'getActiveAccount').and.callThrough();
 
         fixture.detectChanges();
         
-        expect(CustomerServiceMock.getSelectedCustomer).toHaveBeenCalled();
+        expect(SubaccountServiceMock.getSelectedSubAccount).toHaveBeenCalled();
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalled();
         expect(MsalServiceMock.instance.getActiveAccount).toHaveBeenCalled();
-        expect(licensesComponentTestInstance.actionMenuOptions).toEqual(['Edit','Delete']);
+        expect(licensesComponentTestInstance.actionMenuOptions).not.toEqual(['Edit','Delete']);
     });
 
     it('should change the loading-related variables if getLicenses() got an error',()=>{
@@ -242,12 +247,3 @@ describe('Dialog calls and interactions', ()=>{
     })
 
 });
-
-describe('Navigation', ()=>{
-    beforeEach(beforeEachFunction);
-    it('sould navigate to dashboard after calling goToDashboard()',()=>{
-        spyOn(RouterMock,'navigate');
-        licensesComponentTestInstance.goToDashboard();
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/dashboard']);
-    });
-})

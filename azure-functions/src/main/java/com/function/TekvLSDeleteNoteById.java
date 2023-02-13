@@ -64,7 +64,7 @@ public class TekvLSDeleteNoteById {
         // Sql query to get the subaccount_id of the note
         String subaccountIdSql = "SELECT subaccount_id, content FROM note WHERE id = ?::uuid";
         // Sql query to get all user that need to be notified
-        String deviceTokensSql = "SELECT sad.* FROM subaccount_admin_device sad, subaccount_admin sae WHERE sad.subaccount_admin_email = sae.subaccount_admin_email and sae.subaccount_id = ?::uuid;";
+        String deviceTokensSql = "SELECT sad.* FROM subaccount_admin_device sad, subaccount_admin sae WHERE sad.subaccount_admin_email = sae.subaccount_admin_email and sae.subaccount_id = ?::uuid and sad.subaccount_admin_email != ?;";
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -91,6 +91,7 @@ public class TekvLSDeleteNoteById {
 
             // Send notifications to subaccount users
             deviceTokensStmt.setString(1, subaccountId);
+            deviceTokensStmt.setString(2, userEmail);
             context.getLogger().info("Execute SQL statement: " + deviceTokensStmt);
             rs = deviceTokensStmt.executeQuery();
             JSONArray deviceTokens = new JSONArray();

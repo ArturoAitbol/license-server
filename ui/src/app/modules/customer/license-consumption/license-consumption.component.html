@@ -1,12 +1,11 @@
 <div class="container-fluid content">
     <main>
         <div class="row mb-2">
-            <div class="col-sm-12 col-md-2 col-lg-2 col-xl-3">
-                <button id="back-button" mat-stroked-button (click)="goToDashboard()">Back</button>
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <h1 id="page-title">{{customerSubaccountDetails.customerName}} - {{customerSubaccountDetails.name}}</h1>
             </div>
-            <div class="col-sm-12 col-md-10 col-lg-10 col-xl-5">
-                <h1 id="page-title">{{currentCustomer.name}} - {{currentCustomer.subaccountName}}</h1>
-                <!-- license filter -->
+            <!-- license filter -->
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-7">
                 <form [formGroup]="licenseForm">
                     <mat-form-field id="license-period-form" appearance="outline" class="full-width example-form-field">
                         <mat-label><b>tekVizion 360 Subscription</b></mat-label>
@@ -19,7 +18,7 @@
                     </mat-form-field>
                 </form>
             </div>
-            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-5">
                 <mat-button-toggle-group class="float-xl-right" name="fontStyle" aria-label="Font Style" id="btn-group">
                     <mat-button-toggle *lcCheckAccessFor="'addLicense'" value="add-new-license" id="add-license-button"
                         (change)="onChangeToggle($event)" class="add-btn">

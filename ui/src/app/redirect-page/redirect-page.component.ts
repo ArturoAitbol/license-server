@@ -33,28 +33,26 @@ export class RedirectPageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if (this.featureTogglesService.isFeatureEnabled('ctaasFeature')) {
-      try {
-        this.getAvailableServices();
-        const accountDetails = this.getAccountDetails();
-        const { idTokenClaims: { roles } } = accountDetails;
-        this.loggedInUserRoles = roles;
-        if (this.loggedInUserRoles.length == 1 && this.loggedInUserRoles[0] === Constants.DEVICES_ADMIN) {
-          // Devices admin does not have permission to access dashboard, so it's a special case
-          this.router.navigate([ this.CONSUMPTION_MATRIX_PATH ]);
+    try {
+      this.getAvailableServices();
+      const accountDetails = this.getAccountDetails();
+      const { idTokenClaims: { roles } } = accountDetails;
+      this.loggedInUserRoles = roles;
+      if (this.loggedInUserRoles.length == 1 && this.loggedInUserRoles[0] === Constants.DEVICES_ADMIN) {
+        // Devices admin does not have permission to access dashboard, so it's a special case
+        this.router.navigate([ this.CONSUMPTION_MATRIX_PATH ]);
+      } else {
+        //get the user's details only if the user logged is subbaccount admin or stakeholder otherwise redirect to the dashboard
+        if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
+          this.fetchUserProfileDetails();
+          this.getSubAccountDetails();
         } else {
-          //get the user's details only if the user logged is subbaccount admin or stakeholder otherwise redirect to the dashboard
-          if (this.loggedInUserRoles.includes(Constants.SUBACCOUNT_STAKEHOLDER) || this.loggedInUserRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
-            this.fetchUserProfileDetails();
-            this.getSubAccountDetails();
-          } else {
-            this.navigateToDashboard();
-          }
+          this.navigateToDashboard();
         }
-      } catch (e) {
-        console.error('error at redirect page');
       }
-    } else this.router.navigate(['dashboard']);
+    } catch (e) {
+      console.error('error at redirect page');
+    }
   }
   /**
    * get all available tekVizion services

@@ -8,44 +8,44 @@ Feature: Subaccounts
   Scenario: Create a test customer for subaccounts tests
     Given I open the Add Customer form
     When I create a customer with the following data
-      | name          | subaccountCustomerTest              |
+      | name          | functional-test-subaccount          |
       | type          | MSP                                 |
       | adminEmail    | test-subaccount@tekvizion.com       |
       | subaccount    | Default                             |
       | subAdminEmail | test-subaccount@tekvizion.com       |
       | testCustomer  | yes                                 |
-    Then I see the customer "subaccountCustomerTest" in the table
+    Then I see the customer "functional-test-subaccount" in the table
 
   @createSubaccount @create
   Scenario: Create a subaccount
-    Given I see the customer "subaccountCustomerTest" in the table
+    Given I see the customer "functional-test-subaccount" in the table
     And I open the Add Subaccount form
     When I create a subaccount with the following data
-      | customer      | subaccountCustomerTest              |
+      | customer      | functional-test-subaccount              |
       | name          | subaccountTest                      |
       | subAdminEmail | test-sub-custom@tekvizion.com       |
     Then I should see the message "Subaccount added successfully!"
-    Then I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
+    Then I see in the table the customer "functional-test-subaccount" and its subaccount "subaccountTest"
 
   @addSubaccountAdmin
   Scenario: Add a subaccount administrator
-    Given I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
-    And I open the Subaccount Administrator Emails of "subaccountCustomerTest"
+    Given I see in the table the customer "functional-test-subaccount" and its subaccount "subaccountTest"
+    And I open the Subaccount Administrator Emails of "functional-test-subaccount"
     When I add an administrator with email "subadmintest@tekvizion.com"
     Then I should see the message "Subaccount admin emails edited successfully!"
 
   @deleteSubaccountAdmin @delete
   Scenario: Delete a subaccount administrator
-    Given I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
-    And I open the Subaccount Administrator Emails of "subaccountCustomerTest"
+    Given I see in the table the customer "functional-test-subaccount" and its subaccount "subaccountTest"
+    And I open the Subaccount Administrator Emails of "functional-test-subaccount"
     When I delete the administrator with email "subadmintest@tekvizion.com"
     Then I should see the message "Subaccount administrator email deleted"
 
   @editSubaccount
   Scenario: Edit a subaccount
-    Given I see in the table the customer "subaccountCustomerTest" and its subaccount "subaccountTest"
-    When I edit the customer "subaccountCustomerTest" with the following data
-      | name          | subCustomTest           |
+    Given I see in the table the customer "functional-test-subaccount" and its subaccount "subaccountTest"
+    When I edit the customer "functional-test-subaccount" with the following data
+      | name          | functional-test-subaccount-modified           |
       | type          | MSP                     |
       | subaccount    | subaccountModified      |
     Then I should see the message "Customer and subaccount edited successfully!"
@@ -53,12 +53,12 @@ Feature: Subaccounts
 
   @deleteSubaccount @delete
   Scenario: Delete a subaccount
-    Given I see in the table the customer "subCustomTest" and its subaccount "subaccountModified"
-    When I delete the subaccount "subaccountModified" of the customer "subCustomTest"
+    Given I see in the table the customer "functional-test-subaccount-modified" and its subaccount "subaccountModified"
+    When I delete the subaccount "subaccountModified" of the customer "functional-test-subaccount-modified"
     Then I should see the message "Subaccount deleted successfully!"
 
   @deleteSubaccountCustomer @delete
   Scenario: Delete the test subaccount customer
-    Given I see the customer "subCustomTest" in the table
-    When I delete the customer "subCustomTest"
+    Given I see the customer "functional-test-subaccount-modified" in the table
+    When I delete the customer "functional-test-subaccount-modified"
     Then I should see the message "Customer deleted successfully!"
