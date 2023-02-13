@@ -1,9 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MsalService } from '@azure/msal-angular';
-import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
-import { Features } from 'src/app/helpers/features';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 import { CustomerService } from 'src/app/services/customer.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -37,8 +34,7 @@ export class AddCustomerAccountModalComponent {
     public dialogRef: MatDialogRef<AddCustomerAccountModalComponent>,
     private snackBarService: SnackBarService,
     private customerService: CustomerService,
-    private subaccountService: SubAccountService,
-    private msalService: MsalService
+    private subaccountService: SubAccountService
   ) { }
 
   /**
@@ -82,10 +78,8 @@ export class AddCustomerAccountModalComponent {
           subaccountName: this.addCustomerForm.value.subaccountName,
           subaccountAdminEmail: this.addCustomerForm.value.subaccountAdminEmail,
         }
-        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature, this.msalService)) {
-          const services = this.getServices();
-          subaccountDetails.services = services
-        }
+        const services = this.getServices();
+        subaccountDetails.services = services
         this.snackBarService.openSnackBar('Customer added successfully!', '');
         this.createSubAccount(subaccountDetails);
       } else {
