@@ -41,6 +41,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     customerFilter: any;
     typeFilter: any;
     statusFilter: any;
+    currentCustomer: any;
     // flag
     isLoadingResults = true;
     isRequestCompleted = false;
@@ -52,6 +53,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     readonly VIEW_CTAAS_DASHBOARD: string = 'View Spotlight Dashboard';
     readonly MODIFY_ACCOUNT: string = 'Edit';
     readonly DELETE_ACCOUNT: string = 'Delete';
+    readonly CUSTOMER_FILTER: string = 'customer';
+    readonly TYPE_FILTER: string = 'type';
+    readonly STATUS_FILTER: string = 'status';
+    readonly NONE_TYPE: string = 'emptyType';
+    readonly NONE_STATUS: string = 'emptyStatus';
 
     readonly options = {
         VIEW_LICENSES: this.VIEW_LICENSES,
@@ -88,7 +94,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         private msalService: MsalService,
         private fb: FormBuilder
     ) {
-        this.customerFilter = sessionStorage.getItem("cutomerFilter");
+        if(this.customerService.getSelectedCustomer) this.customerService.setSelectedCustomer('');
+        this.customerFilter = sessionStorage.getItem("customerFilter");
         this.typeFilter = sessionStorage.getItem("typeFilter");
         this.statusFilter = sessionStorage.getItem("statusFilter");
     }
@@ -120,6 +127,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.filterForm.disable();
+        this.currentCustomer = this.customerService.getSelectedCustomer();
         this.calculateTableHeight();
         this.initColumns();
         this.fetchDataToDisplay();
@@ -127,13 +135,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.getActionMenuOptions();
         this.filterForm.valueChanges.pipe(
             debounceTime(300),
-            takeUntil(this.unsubscribe)
-            ).subscribe(value => {
+            takeUntil(this.unsubscribe)).subscribe(value => {
                 const filters = [];
-                if (value.customerFilterControl != '') {
-                    filters.push(customer => customer.name.toLowerCase().includes(value.customerFilterControl.toLowerCase()) || customer.subaccountName?.toLowerCase().includes(value.customerFilterControl.toLowerCase()));
-                    sessionStorage.setItem("cutomerFilter",value.customerFilterControl.toLowerCase());
-                }
+            if (value.customerFilterControl != null) {
+                filters.push(customer => customer.name.toLowerCase().includes(value.customerFilterControl.toLowerCase()) || customer.subaccountName?.toLowerCase().includes(value.customerFilterControl.toLowerCase()));
+                sessionStorage.setItem("customerFilter",value.customerFilterControl.toLowerCase());
+            }
             if (value.typeFilterControl != '' && value.typeFilterControl != undefined) {
                 filters.push(customer => customer.customerType === value.typeFilterControl);
                 sessionStorage.setItem("typeFilter", value.typeFilterControl);
@@ -148,15 +155,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
         })
     }
 
-    clearCustomerFilter(){
-        sessionStorage.setItem("cutomerFilter", '');
+    testFunc(event:any) {
+        console.log(event)
     }
-    clearTypeFilter(){
-        sessionStorage.setItem("typeFilter", '');
+
+    clearSessionStorage(storage: any){
+        switch(storage){
+            case this.CUSTOMER_FILTER: 
+                sessionStorage.setItem("customerFilter", '');
+                break;
+            case this.TYPE_FILTER: 
+                sessionStorage.setItem("typeFilter", '');
+                break;
+            case this.STATUS_FILTER:
+                sessionStorage.setItem("statusFilter", '');
+                break;
+            case this.NONE_TYPE:
+                sessionStorage.setItem("typeFilter", '');
+                break;
+            case this.NONE_STATUS:
+                sessionStorage.setItem("statusFilter", '');
+                break;
+            default:
+                break;
+        }
     }
-    clearStatusFilter(){
-        sessionStorage.setItem("statusFilter", '');
-    }
+    
     /**
      * initialize the columns settings
      */
@@ -360,7 +384,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
      *
      * @param row: object
      */
-    openLicenseConsumption(row: any): void {
+    openLicenseConsumption(row: any, subaccountId:any): void {
+        if( subaccountId !== this.currentCustomer?.subaccountId){
+            sessionStorage.setItem("selectedConsumptionLicense", '')
+            sessionStorage.setItem("selectedType", '')
+            sessionStorage.setItem("selectedProject", '')
+        } 
         this.customerService.setSelectedCustomer(row);
         localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
         this.router.navigate(['/customer/consumption']);
@@ -370,7 +399,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * open project detail
      * @param row: object
      */
-    openProjectDetails(row: any): void {
+    openProjectDetails(row: any, subaccountId: any): void {
+        if( subaccountId !== this.currentCustomer?.subaccountId) 
+            sessionStorage.setItem("selectedLicense", 'all')
         this.customerService.setSelectedCustomer(row);
         localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
         this.router.navigate(['/customer/projects']);
@@ -406,13 +437,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 break;
             case this.VIEW_CONSUMPTION:
                 if (object.selectedRow.subaccountId !== undefined)
-                    this.openLicenseConsumption(object.selectedRow);
+                    this.openLicenseConsumption(object.selectedRow, object.selectedRow.subaccountId);
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
                 break;
             case this.VIEW_PROJECTS:
                 if (object.selectedRow.subaccountId !== undefined)
-                    this.openProjectDetails(object.selectedRow);
+                    this.openProjectDetails(object.selectedRow, object.selectedRow.subaccountId);
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access Projects view', '');
                 break;
@@ -461,7 +492,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         switch (object.columnName) {
             case 'Subaccount':
                 if (object.selectedRow.subaccountId !== undefined)
-                    this.openLicenseConsumption(object.selectedRow);
+                    this.openLicenseConsumption(object.selectedRow, object.selectedRow.subaccountId);
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
                 break;

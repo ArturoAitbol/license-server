@@ -55,6 +55,7 @@ export class ProjectsComponent implements OnInit {
   licensesList: [any];
   projects: Project[] = [];
   projectsBk: Project[] = [];
+  selecetedLicense: any;
   // flag
   isLoadingResults: boolean;
   isRequestCompleted: boolean;
@@ -143,16 +144,18 @@ export class ProjectsComponent implements OnInit {
         this.licensesList.unshift({ id: 'all', description: 'All' })
         if (updateLicenses)
           this.setSelectedLicense(this.licensesList[0]);
-
-        this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
+        if(sessionStorage.getItem("selectedLicense") !== 'all') 
+          this.licenseForm.patchValue({ selectedLicense: sessionStorage.getItem("selectedLicense")});
+        else
+          this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
 
         this.projects = resDataObject['projects'];
         this.projects.forEach((project: Project) => {
           project.licenseDescription = this.licensesList.find((license: License) => license.id === project.licenseId)['description'];
         });
 
-        if (this.selectedLicense.id !== 'all')
-          this.projects = this.projects.filter((project: Project) => project.licenseId === this.selectedLicense.id);
+        this.filterList(sessionStorage.getItem("selectedLicense"))
+        this.filterList(this.selectedLicense.id)
         this.isLoadingResults = false;
         this.isRequestCompleted = true;
         this.projectsBk = this.projects;
@@ -161,6 +164,11 @@ export class ProjectsComponent implements OnInit {
         this.isLoadingResults = false;
         this.isRequestCompleted = true;
       });
+  }
+
+  filterList(filter:any) {
+    if(filter !== 'all') 
+      this.projects = this.projects.filter((project: Project) => project.licenseId === filter);
   }
   /**
    * sort table
@@ -280,6 +288,7 @@ export class ProjectsComponent implements OnInit {
 
   onChangeLicense(newLicenseId: string) {
     if (newLicenseId) {
+      sessionStorage.setItem("selectedLicense", newLicenseId);
       this.setSelectedLicense(this.licensesList.find(item => item.id === newLicenseId));
       this.fetchProjects();
     }

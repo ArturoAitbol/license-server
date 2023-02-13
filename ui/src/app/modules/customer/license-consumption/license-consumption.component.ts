@@ -156,7 +156,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     private router: Router,
     public dialog: MatDialog,
     private msalService: MsalService
-  ) { }
+  ) { 
+    this.selectedType = sessionStorage.getItem("selectedType");
+    console.log(this.selectedType)
+  }
 
   ngOnInit(): void {
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
@@ -165,6 +168,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.hasAddConsumptionPermission = true;
     const projectItem: string = localStorage.getItem(Constants.PROJECT);
     const projectObject = JSON.parse(projectItem);
+    if(sessionStorage.getItem("selectedProject") !== '')
+      this.selectedProject = sessionStorage.getItem("selectedProject");
     if (projectItem)
       this.selectedProject = projectObject.id;
     this.currentCustomer = this.customerService.getSelectedCustomer();
@@ -176,7 +181,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         } else {
           this.setSelectedLicense(res.licenses[0]);
         }
-        this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
+        if(sessionStorage.getItem("selectedConsumptionLicense") !== '') {
+          this.licenseForm.patchValue({ selectedLicense: sessionStorage.getItem("selectedConsumptionLicense") });
+        } else this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
         this.isLicenseListLoaded = true;
         this.fetchDataToDisplay();
         this.fetchProjectsList();
@@ -224,6 +231,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       view: view,
     };
     if (this.selectedProject) { requestObject.project = this.selectedProject; }
+    if(sessionStorage.getItem("selectedType") !== '') {requestObject.type = sessionStorage.getItem("selectedType")}
     if (this.selectedType) { requestObject.type = this.selectedType; }
     if (pageNumber != null && pageSize != null) {
       requestObject.limit = pageSize;
@@ -431,6 +439,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   onChangeLicense(newLicenseId: string) {
     if (newLicenseId) {
       this.selectedProject = "";
+      sessionStorage.setItem("selectedConsumptionLicense", newLicenseId)
       this.setSelectedLicense(this.licensesList.find(item => item.id === newLicenseId));
       this.resetPeriodFilter();
       this.fetchDataToDisplay();
@@ -573,11 +582,13 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   getProject(projectId: string) {
+    sessionStorage.setItem("selectedProject", projectId);
     this.selectedProject = projectId;
     this.fetchAggregatedData();
   }
 
   getType(type: string) {
+    sessionStorage.setItem("selectedType", type);
     this.selectedType = type;
     this.fetchAggregatedData();
   }

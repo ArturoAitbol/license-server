@@ -125,7 +125,7 @@
             <div class="col-12 col-sm-12 col-md-4 col-lg-4 d-flex justify-content-center">
                 <mat-form-field id="consumption-type-form" appearance="outline">
                     <mat-label>Consumption Type</mat-label>
-                    <mat-select (valueChange)="getType($event)" [disabled]="!isLicenseListLoaded">
+                    <mat-select (valueChange)="getType($event)" [disabled]="!isLicenseListLoaded" [(value)]="selectedType">
                         <mat-option value="">All</mat-option>
                         <mat-option value="Configuration">Configuration</mat-option>
                         <mat-option value="AutomationPlatform">Automation Platform</mat-option>
