@@ -27,8 +27,8 @@ import { FeatureToggleService } from '../services/feature-toggle.service';
 
 @Component({
     selector: 'app-dashboard',
-    templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.css']
+    templateUrl: './customer-dashboard.component.html',
+    styleUrls: ['./customer-dashboard.component.css']
 })
 
 export class DashboardComponent implements OnInit, OnDestroy {

@@ -8,7 +8,7 @@ import { CustomerService } from '../services/customer.service';
 import { DialogService } from '../services/dialog.service';
 import { LicenseService } from '../services/license.service';
 import { SubAccountService } from '../services/sub-account.service';
-import { DashboardComponent } from './dashboard.component';
+import { DashboardComponent } from './customer-dashboard.component';
 import { SharedModule } from '../modules/shared/shared.module';
 import { DataTableComponent } from '../generics/data-table/data-table.component';
 import { AddCustomerAccountModalComponent } from '../modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
