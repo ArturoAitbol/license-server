@@ -55,22 +55,21 @@ public class TekvLSDeleteResidualTestData {
 
         String deleteNoteSql = "SELECT * FROM note WHERE opened_by = ? AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
 //        String deleteNoteSql = "DELETE FROM note WHERE opened_by = ? AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
-        String deleteCustomerSql = "SELECT * FROM customer WHERE name LIKE ?";
+        String deleteCustomerSql = "SELECT * FROM customer WHERE name LIKE ?"; //AND test customer true
 //        String deleteCustomerSql = "DELETE FROM customer WHERE name LIKE ?";
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
-
         try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
             PreparedStatement noteStatement = connection.prepareStatement(deleteNoteSql);
             PreparedStatement customerStatement = connection.prepareStatement(deleteCustomerSql)) {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-            noteStatement.setString(1, "opener@email.com");
-//            statement.setString(1, "test-functional-subaccount-admin@tekvizion360.com");
+
+            noteStatement.setString(1, "test-functional-subaccount-admin@tekvizion360.com");
             context.getLogger().info("Execute SQL statement: " + noteStatement);
             ResultSet rs = noteStatement.executeQuery();
-            JSONObject json = new JSONObject();
+            JSONObject jsonNotes = new JSONObject();
             JSONArray array = new JSONArray();
             while (rs.next()) {
                 JSONObject item = new JSONObject();
@@ -80,7 +79,7 @@ public class TekvLSDeleteResidualTestData {
                 item.put("opened_by", rs.getString("opened_by"));
                 array.put(item);
             }
-            json.put("notes", array);
+            jsonNotes.put("notes", array);
 
             customerStatement.setString(1, "functional-test-%");
             context.getLogger().info("Execute SQL statement: " + customerStatement);
@@ -96,7 +95,7 @@ public class TekvLSDeleteResidualTestData {
                 arrayCustomer.put(item);
             }
             jsonCustomer.put("customers", arrayCustomer);
-            return request.createResponseBuilder(HttpStatus.OK).body(jsonCustomer.toString()).build();
+            return request.createResponseBuilder(HttpStatus.OK).body(jsonNotes.toString()).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
