@@ -56,7 +56,6 @@ export class ProjectsComponent implements OnInit {
   licensesList: [any];
   projects: Project[] = [];
   projectsBk: Project[] = [];
-  selecetedLicense: any;
   customerSubaccountDetails: any;
   // flag
   isLoadingResults: boolean;
@@ -144,18 +143,16 @@ export class ProjectsComponent implements OnInit {
         this.licensesList.unshift({ id: 'all', description: 'All' })
         if (updateLicenses)
           this.setSelectedLicense(this.licensesList[0]);
-        if(sessionStorage.getItem("selectedLicense") !== 'all') 
-          this.licenseForm.patchValue({ selectedLicense: sessionStorage.getItem("selectedLicense")});
-        else
-          this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
+
+        this.licenseForm.patchValue({ selectedLicense: this.selectedLicense.id });
 
         this.projects = resDataObject['projects'];
         this.projects.forEach((project: Project) => {
           project.licenseDescription = this.licensesList.find((license: License) => license.id === project.licenseId)['description'];
         });
 
-        this.filterList(sessionStorage.getItem("selectedLicense"))
-        this.filterList(this.selectedLicense.id)
+        if (this.selectedLicense.id !== 'all')
+          this.projects = this.projects.filter((project: Project) => project.licenseId === this.selectedLicense.id);
         this.isLoadingResults = false;
         this.isRequestCompleted = true;
         this.projectsBk = this.projects;
@@ -164,11 +161,6 @@ export class ProjectsComponent implements OnInit {
         this.isLoadingResults = false;
         this.isRequestCompleted = true;
       });
-  }
-
-  filterList(filter:any) {
-    if(filter !== 'all') 
-      this.projects = this.projects.filter((project: Project) => project.licenseId === filter);
   }
   /**
    * sort table
@@ -282,13 +274,12 @@ export class ProjectsComponent implements OnInit {
   }
 
   openConsumptionView(row: any): void {
-    sessionStorage.setItem(Constants.PROJECT, JSON.stringify(row));
+    localStorage.setItem(Constants.PROJECT, JSON.stringify(row));
     this.router.navigate(['/customer/consumption'], {queryParams: {subaccountId: this.customerSubaccountDetails.Id}});
   }
 
   onChangeLicense(newLicenseId: string) {
     if (newLicenseId) {
-      sessionStorage.setItem("selectedLicense", newLicenseId);
       this.setSelectedLicense(this.licensesList.find(item => item.id === newLicenseId));
       this.fetchProjects();
     }

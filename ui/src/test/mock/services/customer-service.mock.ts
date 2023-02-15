@@ -319,7 +319,9 @@ const CUSTOMER_LIST = {
             customerType: 'MSP',
             testCustomer: true,
             name: '2Degrees',
-            id: '58223065-c200-4f6b-be1a-1579b4eb4971'
+            id: '58223065-c200-4f6b-be1a-1579b4eb4971',
+            services: 'tokenConsumption,spotlight',
+            status:"Active"
         },
         {
             customerType: 'MSP',

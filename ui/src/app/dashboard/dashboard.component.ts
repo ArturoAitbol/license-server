@@ -95,12 +95,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         private msalService: MsalService,
         private fb: FormBuilder,
         private featureToggleService: FeatureToggleService
-    ) {
-        if(this.customerService.getSelectedCustomer) this.customerService.setSelectedCustomer('');
-        this.customerFilter = sessionStorage.getItem("customerFilter");
-        this.typeFilter = sessionStorage.getItem("typeFilter");
-        this.statusFilter = sessionStorage.getItem("statusFilter");
-    }
+    ) { }
 
     @HostListener('window:resize')
     sizeChange() {
@@ -124,6 +119,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.filterForm.disable();
+        if(this.customerService.getSelectedCustomer) 
+            this.customerService.setSelectedCustomer('');
+        this.getFiltersFromSesisonStorage();
         this.currentCustomer = this.customerService.getSelectedCustomer();
         this.calculateTableHeight();
         this.initColumns();
@@ -137,48 +135,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 const filters = [];
             if (value.customerFilterControl != null) {
                 filters.push(customer => customer.name.toLowerCase().includes(value.customerFilterControl.toLowerCase()) || customer.subaccountName?.toLowerCase().includes(value.customerFilterControl.toLowerCase()));
-                sessionStorage.setItem("customerFilter",value.customerFilterControl.toLowerCase());
+                this.setCustomerFilters("customerFilter",value.customerFilterControl);
             }
             if (value.typeFilterControl != '' && value.typeFilterControl != undefined) {
                 filters.push(customer => customer.customerType === value.typeFilterControl);
-                sessionStorage.setItem("typeFilter", value.typeFilterControl);
+                this.setCustomerFilters("typeFilter", value.typeFilterControl);
             }
             if (value.subStatusFilterControl != '' && value.subStatusFilterControl != undefined) {
                 filters.push(customer => customer.status && customer.status === value.subStatusFilterControl);
-                sessionStorage.setItem("statusFilter", value.subStatusFilterControl);
+                this.setCustomerFilters("statusFilter", value.subStatusFilterControl);
             } 
             this.isLoadingResults = true;
             this.filteredCustomerList = this.customerList.filter(customer => filters.every(filter => filter(customer)));
             this.isLoadingResults = false;
         })
     }
-
-    testFunc(event:any) {
-        console.log(event)
+   
+    setCustomerFilters(key:string, filter:any){
+        sessionStorage.setItem(key,filter);
     }
 
-    clearSessionStorage(storage: any){
-        switch(storage){
-            case this.CUSTOMER_FILTER: 
-                sessionStorage.setItem("customerFilter", '');
-                break;
-            case this.TYPE_FILTER: 
-                sessionStorage.setItem("typeFilter", '');
-                break;
-            case this.STATUS_FILTER:
-                sessionStorage.setItem("statusFilter", '');
-                break;
-            case this.NONE_TYPE:
-                sessionStorage.setItem("typeFilter", '');
-                break;
-            case this.NONE_STATUS:
-                sessionStorage.setItem("statusFilter", '');
-                break;
-            default:
-                break;
-        }
+    getFiltersFromSesisonStorage() {
+        this.customerFilter = sessionStorage.getItem("customerFilter");
+        this.typeFilter = sessionStorage.getItem("typeFilter");
+        this.statusFilter = sessionStorage.getItem("statusFilter");
     }
-    
     /**
      * initialize the columns settings
      */
@@ -381,27 +362,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
      *
      * @param row: object
      */
-    openLicenseConsumption(row: any, subaccountId:any): void {
-        if( subaccountId !== this.currentCustomer?.subaccountId) 
-            this.clearLicenseConsumptionSessionStorage();
+    openLicenseConsumption(row: any): void {
         this.customerService.setSelectedCustomer(row);
         sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
         this.router.navigate(['/customer/consumption'], {queryParams:{subaccountId: row.subaccountId}});
-    }
-
-    clearLicenseConsumptionSessionStorage() {
-        sessionStorage.setItem("selectedConsumptionLicense", '')
-        sessionStorage.setItem("selectedType", '')
-        sessionStorage.setItem("selectedProject", '')
     }
 
     /**
      * open project detail
      * @param row: object
      */
-    openProjectDetails(row: any, subaccountId: any): void {
-        if( subaccountId !== this.currentCustomer?.subaccountId) 
-            sessionStorage.setItem("selectedLicense", 'all')
+    openProjectDetails(row: any): void {
         this.customerService.setSelectedCustomer(row);
         sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
         this.router.navigate(['/customer/projects'], {queryParams:{subaccountId: row.subaccountId}});
@@ -445,10 +416,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.openLicenseDetails(object.selectedRow);
                     break;
                 case this.VIEW_CONSUMPTION:
-                    this.openLicenseConsumption(object.selectedRow,object.selectedRow.subaccountId);
+                    this.openLicenseConsumption(object.selectedRow);
                     break;
                 case this.VIEW_PROJECTS:
-                    this.openProjectDetails(object.selectedRow,object.selectedRow.subaccountId);
+                    this.openProjectDetails(object.selectedRow);
                     break;
                 case this.VIEW_ADMIN_EMAILS:
                     this.openDialog(object.selectedOption, object.selectedRow);
@@ -481,7 +452,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         switch (object.columnName) {
             case 'Subaccount':
                 if (object.selectedRow.subaccountId !== undefined)
-                    this.openLicenseConsumption(object.selectedRow, object.selectedRow.subaccountId);
+                    this.openLicenseConsumption(object.selectedRow);
                 else
                     this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
                 break;

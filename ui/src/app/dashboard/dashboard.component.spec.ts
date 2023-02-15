@@ -287,14 +287,14 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         selectedIndex: '0' };  
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
-        dashboardComponentTestInstance.openLicenseConsumption({},'');
+        dashboardComponentTestInstance.openLicenseConsumption({});
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'],{queryParams:{subaccountId: undefined }});
     });
 
     it('should navigate to project details after calling openProjectDetails()', () => {
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
-        dashboardComponentTestInstance.openProjectDetails({},'');
+        dashboardComponentTestInstance.openProjectDetails({});
         expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects'],{queryParams:{subaccountId:undefined }});
     });
 
@@ -397,7 +397,7 @@ describe('.rowAction()', () => {
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(dashboardComponentTestInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow, selectedTestData.selectedRow.subaccountId);
+        expect(dashboardComponentTestInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 
     it('should make a call to openProjectDetails or snackBarService if the selected option is VIEW_PROJECTS', () => {
@@ -420,7 +420,7 @@ describe('.rowAction()', () => {
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(dashboardComponentTestInstance.openProjectDetails).toHaveBeenCalledWith(selectedTestData.selectedRow,selectedTestData.selectedRow.subaccountId);
+        expect(dashboardComponentTestInstance.openProjectDetails).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 
     it('should make a call to openDialog if the selected option is VIEW_ADMIN_EMAILS', () => {
@@ -521,7 +521,7 @@ describe('.columnAction()', () => {
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.columnAction(selectedTestData);
-        expect(dashboardComponentTestInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow, selectedTestData.selectedRow.subAccountId);
+        expect(dashboardComponentTestInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 
     it('should make a call to openLicenseDetails or snackBarService if the column name is "Subaccount"', () => {
@@ -549,11 +549,17 @@ describe('.columnAction()', () => {
 describe('Filtering table rows', () => {
     beforeEach(beforeEachFunction);
     it('should filter the rows in the table based on the name, type and status filters', async () => {
-        dashboardComponentTestInstance.filterForm.patchValue({ customerFilterControl: "Amazon", typeFilterControl: "MSP", subStatusFilterControl: "Inactive" });
+        sessionStorage.setItem("customerFilter",'2Degrees');
+        sessionStorage.setItem("typeFilter", 'MSP');
+        sessionStorage.setItem("statusFilter", 'Active');
+        dashboardComponentTestInstance.filterForm.setValue({ customerFilterControl: "2Degrees", typeFilterControl: "MSP", subStatusFilterControl: "Active" });
+        dashboardComponentTestInstance.filterForm.controls['customerFilterControl'].setValue(sessionStorage.getItem("customerFilter"));
+        dashboardComponentTestInstance.filterForm.controls['typeFilterControl'].setValue(sessionStorage.getItem("typeFilter"));
+        dashboardComponentTestInstance.filterForm.controls['subStatusFilterControl'].setValue(sessionStorage.getItem("statusFilter"));
         fixture.detectChanges();
         await fixture.whenStable();
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
-        const objectToCompare: any = { "customerType": "MSP", "testCustomer": false, "name": "Amazon", "id": "aa85399d-1ce9-425d-9df7-d6e8a8baaec2", "subaccountName": "360 Custom (No Tokens)", "subaccountId": "24372e49-5f31-4b38-bc3e-fb6a5c371623", "status": "Inactive" };
+        const objectToCompare: any = { customerType: 'MSP', testCustomer: true, name: '2Degrees', id: '58223065-c200-4f6b-be1a-1579b4eb4971', services: 'tokenConsumption,spotlight', status:'Active'};
         objectToCompare.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
         expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);
     });

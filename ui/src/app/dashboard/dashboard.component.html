@@ -8,33 +8,33 @@
                 <mat-label>Name Filter</mat-label>
                 <input matInput type="text" formControlName="customerFilterControl" [(ngModel)]="customerFilter">
                 <button *ngIf="filterForm.get('customerFilterControl').value" matSuffix mat-icon-button
-                    aria-label="Clear" (click)="filterForm.get('customerFilterControl').setValue(''); clearSessionStorage('customer')">
+                    aria-label="Clear" (click)="filterForm.get('customerFilterControl').setValue(''); setCustomerFilters('customerFilter','')">
                     <mat-icon>close</mat-icon>
                 </button>
             </mat-form-field>
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
                 <mat-label>Type Filter</mat-label>
                 <mat-select formControlName="typeFilterControl" [(ngModel)]="typeFilter">
-                    <mat-option (click)="clearSessionStorage('emptyType')">None</mat-option>
+                    <mat-option (click)="setCustomerFilters('type','')">None</mat-option>
                     <mat-option *ngFor="let type of subaccountTypes" [value]="type">
                         {{type}}
                     </mat-option>
                 </mat-select>
                 <button *ngIf="filterForm.get('typeFilterControl').value" matSuffix mat-icon-button
-                    aria-label="Clear" (click)="filterForm.get('typeFilterControl').setValue(''); clearSessionStorage('type')">
+                    aria-label="Clear" (click)="filterForm.get('typeFilterControl').setValue(''); setCustomerFilters('typeFilter', '')">
                     <mat-icon>close</mat-icon>
                 </button>
             </mat-form-field>
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
                 <mat-label>Subscription Status Filter</mat-label>
                 <mat-select formControlName="subStatusFilterControl" [(ngModel)]="statusFilter">
-                    <mat-option (click)="clearSessionStorage('emptyStatus')">None</mat-option>
+                    <mat-option (click)="setCustomerFilters('status','')">None</mat-option>
                     <mat-option *ngFor="let subStatus of subscriptionStatus" [value]="subStatus">
                         {{subStatus}}
                     </mat-option>
                 </mat-select>
                 <button *ngIf="filterForm.get('subStatusFilterControl').value" matSuffix mat-icon-button
-                    aria-label="Clear" (click)="filterForm.get('subStatusFilterControl').setValue(''); clearSessionStorage('status')">
+                    aria-label="Clear" (click)="filterForm.get('subStatusFilterControl').setValue(''); setCustomerFilters('statusFilter','')">
                     <mat-icon>close</mat-icon>
                 </button>
             </mat-form-field>
