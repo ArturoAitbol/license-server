@@ -28,7 +28,8 @@ export class CtaasSetupService {
    */
   public getSubaccountCtaasSetupDetails(subaccountId: string) {
     const headers = this.getHeaders();
-    const params = new HttpParams().append('subaccountId', subaccountId);
+    let params = new HttpParams();
+    params = params.set('subaccountId', subaccountId)
     return this.httpClient.get<any>(this.API_URL, { headers, params });
   }
 
