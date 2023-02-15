@@ -55,8 +55,8 @@ public class TekvLSDeleteResidualTestData {
 
         String deleteNoteSql = "SELECT * FROM note WHERE opened_by = ? AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
 //        String deleteNoteSql = "DELETE FROM note WHERE opened_by = ? AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
-        String deleteCustomerSql = "SELECT * FROM customer WHERE name LIKE ?"; //AND test customer true
-//        String deleteCustomerSql = "DELETE FROM customer WHERE name LIKE ?";
+        String deleteCustomerSql = "SELECT * FROM customer WHERE name LIKE ? AND test_customer = ?::boolean"; //AND test customer true
+//        String deleteCustomerSql = "DELETE FROM customer WHERE name LIKE ? AND test_customer = ?::boolean";
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
@@ -66,7 +66,7 @@ public class TekvLSDeleteResidualTestData {
             PreparedStatement customerStatement = connection.prepareStatement(deleteCustomerSql)) {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-            noteStatement.setString(1, "test-functional-subaccount-admin@tekvizion360.com");
+            noteStatement.setString(1, System.getenv("SUB_ACCOUNT_ADMIN"));
             context.getLogger().info("Execute SQL statement: " + noteStatement);
             ResultSet rs = noteStatement.executeQuery();
             JSONObject jsonNotes = new JSONObject();
@@ -82,6 +82,7 @@ public class TekvLSDeleteResidualTestData {
             jsonNotes.put("notes", array);
 
             customerStatement.setString(1, "functional-test-%");
+            customerStatement.setString(2, "true");
             context.getLogger().info("Execute SQL statement: " + customerStatement);
             ResultSet rsc = customerStatement.executeQuery();
             JSONObject jsonCustomer = new JSONObject();
