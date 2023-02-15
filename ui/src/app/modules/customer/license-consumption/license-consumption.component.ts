@@ -4,7 +4,6 @@ import { MatDateRangePicker } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { TableColumn } from 'src/app/model/table-column.model';
-import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { LicenseService } from 'src/app/services/license.service';
@@ -32,7 +31,6 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 })
 export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private readonly TOKEN_CONSUMPTION_DATE = new Date(environment.TOKEN_CONSUMPTION_DATE + ' 00:00:00');
-  currentCustomer: any;
   customerSubaccountDetails: any; 
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
@@ -148,7 +146,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private customerService: CustomerService,
     private dialogService: DialogService,
     private projectService: ProjectService,
     private licenseService: LicenseService,
@@ -167,7 +164,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     const projectObject = JSON.parse(projectItem);
     if (projectItem)
       this.selectedProject = projectObject.id;
-    this.currentCustomer = this.customerService.getSelectedCustomer();
     this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.licenseService.getLicenseList(this.customerSubaccountDetails.id).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
@@ -198,13 +194,11 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.selectedLicense = license;
     this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
     this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
-    this.currentCustomer.licenseId = license.id;
     this.customerSubaccountDetails.licenseId = license.id;
     if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
       this.newLicenseConsumptionLogicFlag = true;
     else this.newLicenseConsumptionLogicFlag = false;
     this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails); 
-    this.customerService.setSelectedCustomer(this.currentCustomer);
     this.getActionMenuOptions();
   }
 
