@@ -34,6 +34,7 @@ public class Permissions {
                         DELETE_SUBACCOUNT_STAKEHOLDER,
                         // DELETE_FEATURE_TOGGLE,
                         DELETE_NOTE,
+                        DELETE_RESIDUAL_TEST_DATA,
                         // READ
                         GET_ALL_CUSTOMERS,
                         GET_ALL_SUBACCOUNTS,
