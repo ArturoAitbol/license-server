@@ -3,7 +3,8 @@ export const permissions = {
         paths: [
             'devices',
             'consumption-matrix',
-            'redirect'
+            'redirect',
+            'feature-toggles'
         ],
         elements: [
             'addDevice',
