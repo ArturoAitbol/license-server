@@ -35,6 +35,10 @@ import { SubscriptionsOverviewComponent } from './modules/subscriptions-overview
 import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
 import { ConsumptionMatrixComponent } from './modules/consumption-matrix/consumption-matrix.component';
 import { FeatureToggleService } from "./services/feature-toggle.service";
+import { FeatureTogglesComponent } from './modules/feature-toggles/feature-toggles.component';
+import { FeatureToggleCardComponent } from './modules/feature-toggles/feature-toggle-card/feature-toggle-card.component';
+import { AddFeatureToggleModalComponent } from './modules/feature-toggles/add-feature-toggle-modal/add-feature-toggle-modal.component';
+import { AddFeatureToggleExceptionModalComponent } from './modules/feature-toggles/add-feature-toggle-exception-modal/add-feature-toggle-exception-modal.component';
 
 @NgModule({
     declarations: [
@@ -55,6 +59,10 @@ import { FeatureToggleService } from "./services/feature-toggle.service";
         ViewProfileComponent,
         SubscriptionsOverviewComponent,
         ConsumptionMatrixComponent,
+        FeatureTogglesComponent,
+        FeatureToggleCardComponent,
+        AddFeatureToggleModalComponent,
+        AddFeatureToggleExceptionModalComponent,
     ],
     imports: [
         AppRoutingModule,

@@ -143,6 +143,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/',
                 isPreview: false
             },
+            {
+                name: 'Feature Toggles',
+                path: 'feature-toggles',
+                active: false,
+                materialIcon: 'toggle_on',
+                baseUrl: '/',
+                isPreview: false
+            },
         ]
     };
     allowedSideBarItems = {
@@ -175,6 +183,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private subaccountId: any;
     readonly DEVICES = '/devices';
     readonly CONSUMPTION_MATRIX = '/consumption-matrix';
+    readonly FEATURE_TOGGLES = '/feature-toggles';
 
     private _mobileQueryListener: () => void;
 
@@ -290,6 +299,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.SUBSCRIPTIONS_OVERVIEW:
                     case this.DEVICES:
                     case this.CONSUMPTION_MATRIX:
+                    case this.FEATURE_TOGGLES:
                         this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
                         if (this.previousDisplayedItemsSubscription) {
