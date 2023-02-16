@@ -8,7 +8,7 @@ let ctaasSetupService = new CtaasSetupService(httpClientSpy);
 const headers = new HttpHeaders();
 headers.append('Content-Type', 'application/json');
 
-fdescribe('Ctaas setup service http reques test', () => {
+describe('Ctaas setup service http reques test', () => {
     beforeEach(async () => {
         httpClientSpy = jasmine.createSpyObj('HttpClient',  ['get', 'put']);
         ctaasSetupService = new CtaasSetupService(httpClientSpy);
@@ -25,7 +25,7 @@ fdescribe('Ctaas setup service http reques test', () => {
         expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/ctaasSetups', { headers, params });
     });
 
-    it('should make the proper http call on update updateCtaasSetupDetailsById()', (done: DoneFn) => {
+    it('should make the proper http call on updateCtaasSetupDetailsById()', (done: DoneFn) => {
         const updateSetup: any = {
             azureResourceGroup: 'az-tap',
             id: 'd973456e-049a-4490-ad4c-c3fc9205d50f',
@@ -40,5 +40,18 @@ fdescribe('Ctaas setup service http reques test', () => {
             error: done.fail
         });
         expect(httpClientSpy.put).toHaveBeenCalledWith(environment.apiEndpoint + '/ctaasSetups' + `/${updateSetup.subaccountId}`,updateSetup, { headers });
+    });
+
+    it('should make the proper call on updateSubaccountCtaasDetails', (done: DoneFn) => {
+        const setupDetails = {
+            onBoardingComplete: true, 
+            ctaasSetupId: 'd973456e-049a-4490-ad4c-c3fc9205d50f'
+        }
+        httpClientSpy.put.and.returnValue(CtaasSetupServiceMock.updateSubaccountCtaasDetails(setupDetails.onBoardingComplete, setupDetails.ctaasSetupId));
+        ctaasSetupService.updateSubaccountCtaasDetails(setupDetails).subscribe({
+            next: () => { done(); },
+            error: done.fail
+        });
+        expect(httpClientSpy.put).toHaveBeenCalledWith(environment.apiEndpoint + '/ctaasSetups' + `/onBoarding/${setupDetails.ctaasSetupId}`, setupDetails)
     });
 });

@@ -84,5 +84,20 @@ export const CtaasSetupServiceMock = {
                 unsubscribe() {}
             };
         });
+    },
+
+    updateSubaccountCtaasDetails: (onBoardingComplete: boolean, ctaasSetupId: string) => {
+        return new Observable((observer) => {
+            observer.next(()=>{
+                const updateSetup = CTAAS_SETUP_LIST.setups.find(user =>
+                user.id === ctaasSetupId);
+                updateSetup.status = 'SETUP_READY';
+            });
+            observer.complete();
+            return {
+                unsubscribe() {}
+            };
+        });
     }
+
 };
