@@ -27,7 +27,8 @@ let fixture: ComponentFixture<CtaasDashboardComponent>;
 const dialogService = new DialogServiceMock();
 
 const RouterMock = {
-    navigate: (commands: string[]) => {}
+    navigate: (commands: string[]) => {},
+    url:('/report-dashboards')
 };
 
 const defaultTestBedConfig = {
@@ -80,3 +81,12 @@ const beforeEachFunction = async () => {
         ctaasDashboardTestInstance.ngOnInit();
     })
 }
+
+describe('fetch the details', () => {
+    beforeEach(beforeEachFunction);
+    it('should fetch the data of the setup', () => {
+        spyOn(console, 'debug').and.callThrough();
+        fixture.detectChanges();
+        expect(console.debug).toHaveBeenCalledWith('Report has loaded')
+    })
+})
