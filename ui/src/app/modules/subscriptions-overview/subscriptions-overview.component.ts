@@ -12,6 +12,7 @@ import { SnackBarService } from "../../services/snack-bar.service";
 import { debounceTime, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs/internal/Subject";
 import moment from "moment";
+import { SubAccountService } from "src/app/services/sub-account.service";
 
 
 @Component({
@@ -46,6 +47,8 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
     isLoadingResults = true;
     isRequestCompleted = false;
     actionMenuOptions: string[] = [];
+    selectedSubaccount: any;
+    private customerSubaccountDetails: any;
 
     private unsubscribe: Subject<void> = new Subject<void>();
 
@@ -54,13 +57,15 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
                 private router: Router,
                 private snackBarService: SnackBarService,
                 private customerService: CustomerService,
-                private subscriptionsOverviewService: SubscriptionsOverviewService) {
+                private subscriptionsOverviewService: SubscriptionsOverviewService,
+                private subaccountService: SubAccountService) {
     }
 
     ngOnInit(): void {
         this.filterForm.disable();
         this.initTable();
         this.loadSubscriptions();
+        this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.filterForm.valueChanges.pipe(
             debounceTime(300),
             takeUntil(this.unsubscribe)
@@ -161,20 +166,26 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      * @param object containing the row object
      */
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
-        switch (object.selectedOption) {
-            case this.VIEW_LICENSES:
-                if (object.selectedRow.subaccountId !== undefined)
+        if (!object.selectedRow.subaccountId) {
+            this.snackBarService.openSnackBar('Subaccount is missing, create one to access this view', '');
+        }  else {
+            this.selectedSubaccount = {
+                id: object.selectedRow.subaccountId,
+                name: object.selectedRow.subaccountName,
+                customerId: object.selectedRow.id,
+                customerName: object.selectedRow.customerName,
+                services: object.selectedRow.services
+            }
+            this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
+            switch (object.selectedOption) {
+                case this.VIEW_LICENSES:
                     this.openLicenseDetails(object.selectedRow);
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
-                break;
-            case this.VIEW_CONSUMPTION:
-                if (object.selectedRow.subaccountId !== undefined)
+                    break;
+                case this.VIEW_CONSUMPTION:
                     this.openLicenseConsumption(object.selectedRow);
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
-                break;
-        }
+                    break;
+            }
+        } 
     }
 
     /**
@@ -184,7 +195,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
     openLicenseDetails(row: any): void {
         this.customerService.setSelectedCustomer(row);
         localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/licenses']);
+        this.router.navigate(['/customer/licenses'],{queryParams:{subaccountId:row.subaccountId}});
     }
 
     /**
@@ -194,7 +205,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
     openLicenseConsumption(row: any): void {
         this.customerService.setSelectedCustomer(row);
         localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/consumption']);
+        this.router.navigate(['/customer/consumption'],{queryParams:{subaccountId:row.subaccountId}});
     }
 
     /**

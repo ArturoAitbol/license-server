@@ -26,21 +26,18 @@ import { SnackBarServiceMock } from "../../test/mock/services/snack-bar-service.
 import { SnackBarService } from "../services/snack-bar.service";
 import { DialogServiceMock } from '../../test/mock/services/dialog-service.mock';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { FeatureToggleHelper } from '../helpers/feature-toggle.helper';
-import { Features } from '../helpers/features';
 import { tekVizionServices } from '../helpers/tekvizion-services';
 import { of, throwError } from 'rxjs';
 import { Sort } from '@angular/material/sort';
-import { HarnessLoader } from '@angular/cdk/testing';
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { FeatureToggleServiceMock } from 'src/test/mock/services/feature-toggle-service.mock';
+import { FeatureToggleService } from '../services/feature-toggle.service';
 
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
 const dialogServiceMock = new DialogServiceMock();
-let loader: HarnessLoader;
 
 const RouterMock = {
-    navigate: (commands: string[]) => { }
+    navigate: (commands: string[], queryParams: any) => { }
 };
 
 const defaultTestBedConfig = {
@@ -78,6 +75,10 @@ const defaultTestBedConfig = {
         {
             provide: MsalService,
             useValue: MsalServiceMock
+        },
+        {
+            provide: FeatureToggleService,
+            useValue: FeatureToggleServiceMock
         },
         {
             provide: HttpClient,
@@ -271,61 +272,50 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/licenses']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/licenses'],{queryParams:{subaccountId: undefined }});
     });
 
     it('should navigate to license consumption after calling openLicenseConsumption()', () => {
+        const selectedTestData = { selectedRow: {
+            name: "testV2",
+            id: "157fdef0-c28e-4764-9023-75c06daad09d",
+            subaccountName: "testv2Demo",
+            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            services: "tokenConsumption,spotlight"
+        }, 
+        selectedOption: 'selectedTestOption', 
+        selectedIndex: '0' };  
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseConsumption({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'],{queryParams:{subaccountId: undefined }});
     });
 
     it('should navigate to project details after calling openProjectDetails()', () => {
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openProjectDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects']);
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects'],{queryParams:{subaccountId:undefined }});
     });
 
-    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-        // it('should navigate to Spotlight dashboard ', () => {
-        //     const selectedTestData = { selectedRow: {
-        //         name: "testV2",
-        //         id: "157fdef0-c28e-4764-9023-75c06daad09d",
-        //         subaccountName: "testv2Demo",
-        //         subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-        //         services: "tokenConsumption,spotlight"
-        //     }, 
-        //     selectedOption: 'selectedTestOption', 
-        //     selectedIndex: '0' }; 
-        //     spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-        //     spyOn(RouterMock, 'navigate').and.callThrough();
+    it('should navigate to Spotlight dashboard ', () => {
+        const selectedTestData = { selectedRow: {
+            name: "testV2",
+            id: "157fdef0-c28e-4764-9023-75c06daad09d",
+            subaccountName: "testv2Demo",
+            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            services: "tokenConsumption"
+        }, 
+        selectedOption: 'selectedTestOption', 
+        selectedIndex: '0' }; 
+        spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
+        spyOn(RouterMock, 'navigate').and.callThrough();
+        spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
 
-        //     selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
-        //     dashboardComponentTestInstance.rowAction(selectedTestData);
-        //     expect(TestBed.get(Router).navigate).toHaveBeenCalledWith(['/spotlight/report-dashboards'],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
-        // });
-
-        it('should navigate to Spotlight dashboard ', () => {
-            const selectedTestData = { selectedRow: {
-                name: "testV2",
-                id: "157fdef0-c28e-4764-9023-75c06daad09d",
-                subaccountName: "testv2Demo",
-                subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-                services: "tokenConsumption"
-            }, 
-            selectedOption: 'selectedTestOption', 
-            selectedIndex: '0' }; 
-            spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-            spyOn(RouterMock, 'navigate').and.callThrough();
-            spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
-
-            selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
-            dashboardComponentTestInstance.rowAction(selectedTestData);
-            expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight service is not available for this Subaccount', '');
-        });
-    };
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight service is not available for this Subaccount', '');
+    });
 });
 
 describe('routes to spothlight dashboard', () => {
@@ -340,26 +330,25 @@ describe('routes to spothlight dashboard', () => {
         fixture = TestBed.createComponent(DashboardComponent);
         dashboardComponentTestInstance = fixture.componentInstance;
     });
-
-    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-        it('should navigate to Spotlight dashboard ', () => {
-            const selectedTestData = { selectedRow: {
-                name: "testV2",
-                id: "157fdef0-c28e-4764-9023-75c06daad09d",
-                subaccountName: "testv2Demo",
-                subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
-                services: "tokenConsumption,spotlight"
-            }, 
-            selectedOption: 'selectedTestOption', 
-            selectedIndex: '0' }; 
-            spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-            spyOn(RouterMock2, 'navigate').and.callThrough();
-
-            selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
-            dashboardComponentTestInstance.rowAction(selectedTestData);
-            expect(RouterMock2.navigate).toHaveBeenCalledWith(['/spotlight/report-dashboards'],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
-        });
-    }
+    
+    it('should navigate to Spotlight dashboard ', () => {
+        const selectedTestData = { selectedRow: {
+            name: "testV2",
+            id: "157fdef0-c28e-4764-9023-75c06daad09d",
+            subaccountName: "testv2Demo",
+            subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+            services: "tokenConsumption,spotlight"
+        },
+        selectedOption: 'selectedTestOption', 
+        selectedIndex: '0' }; 
+        spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
+        spyOn(RouterMock2, 'navigate').and.callThrough();
+        const routePath = '/spotlight/visualization';
+        selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
+        dashboardComponentTestInstance.rowAction(selectedTestData);
+        expect(RouterMock2.navigate).toHaveBeenCalledWith([routePath],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
+    });
 });
 
 describe('.rowAction()', () => {
@@ -381,7 +370,7 @@ describe('.rowAction()', () => {
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_LICENSES;
         selectedTestData.selectedRow.subaccountId = undefined;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -404,7 +393,7 @@ describe('.rowAction()', () => {
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CONSUMPTION;
         selectedTestData.selectedRow.subaccountId = undefined;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekToken Consumption view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -427,7 +416,7 @@ describe('.rowAction()', () => {
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_PROJECTS;
         selectedTestData.selectedRow.subaccountId = undefined;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access Projects view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -438,14 +427,14 @@ describe('.rowAction()', () => {
         const selectedTestData = {
             selectedRow: {
                 testProperty: 'testData',
-                subaccountId: undefined
+                subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e'
             },
             selectedOption: 'selectedTestOption',
             selectedIndex: 'selectedTestItem',
             subaccountId: 'test-id'
         };
         spyOn(dashboardComponentTestInstance, 'openDialog');
-
+        fixture.detectChanges();
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_ADMIN_EMAILS;
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.VIEW_ADMIN_EMAILS, selectedTestData.selectedRow);
@@ -467,7 +456,7 @@ describe('.rowAction()', () => {
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_SUBACC_ADMIN_EMAILS;
         selectedTestData.selectedRow.subaccountId = undefined;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access Subaccount admin emails view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -478,14 +467,14 @@ describe('.rowAction()', () => {
         const selectedTestData = {
             selectedRow: {
                 testProperty: 'testData',
-                subaccountId: undefined
+                subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e'
             },
             selectedOption: 'selectedTestOption',
             selectedIndex: 'selectedTestItem',
             subaccountId: 'test-id'
         };
         spyOn(dashboardComponentTestInstance, 'openDialog');
-
+        fixture.detectChanges();
         selectedTestData.selectedOption = dashboardComponentTestInstance.MODIFY_ACCOUNT;
         dashboardComponentTestInstance.rowAction(selectedTestData);
         expect(dashboardComponentTestInstance.openDialog).toHaveBeenCalledWith(dashboardComponentTestInstance.MODIFY_ACCOUNT, selectedTestData.selectedRow);
@@ -565,8 +554,7 @@ describe('Filtering table rows', () => {
         await fixture.whenStable();
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
         const objectToCompare: any = { "customerType": "MSP", "testCustomer": false, "name": "Amazon", "id": "aa85399d-1ce9-425d-9df7-d6e8a8baaec2", "subaccountName": "360 Custom (No Tokens)", "subaccountId": "24372e49-5f31-4b38-bc3e-fb6a5c371623", "status": "Inactive" };
-        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature))
-            objectToCompare.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
+        objectToCompare.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
         expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);
     });
 });

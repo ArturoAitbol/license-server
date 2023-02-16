@@ -70,7 +70,7 @@
                                     <mat-form-field appearance="outline">
                                         <mat-label>DUT Type</mat-label>
                                         <input type="text" placeholder="Select DUT type" aria-label="DUT" matInput
-                                            formControlName="name" [matAutocomplete]="dutTypesList"
+                                            formControlName="type" [matAutocomplete]="dutTypesList"
                                             id="dut-auto-complete">
                                         <mat-autocomplete #dutTypesList="matAutocomplete"
                                             (optionSelected)="onChangeDutType($event.option.value)">
@@ -124,7 +124,7 @@
                                     <mat-form-field appearance="outline">
                                         <mat-label>Calling Platform Type</mat-label>
                                         <input type="text" placeholder="Select Calling Platform type"
-                                            aria-label="Calling Platform" matInput formControlName="name"
+                                            aria-label="Calling Platform" matInput formControlName="type"
                                             [matAutocomplete]="callingPlatformTypesList"
                                             id="calling-platform-auto-complete">
                                         <mat-autocomplete #callingPlatformTypesList="matAutocomplete"
@@ -183,6 +183,9 @@
                                     style="float: right;" (click)="removeDevice(deviceIndex)">
                                     <mat-icon>clear</mat-icon>
                                 </button>
+                                <label class="subtitle">Type:</label>
+                                <label>{{item.type}}</label>
+                                <br>
                                 <label class="subtitle">Vendor:</label>
                                 <label>{{item.vendor}}</label>
                                 <br>
@@ -199,6 +202,22 @@
                                 </div>
                             </div>
                             <form [formGroup]="addDeviceForm">
+                                <div>
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Device Type</mat-label>
+                                        <input type="text" placeholder="Select a device type"
+                                            aria-label="Device Type" matInput formControlName="type"
+                                            [matAutocomplete]="deviceTypesList"
+                                            id="device-type-auto-complete">
+                                        <mat-autocomplete #deviceTypesList="matAutocomplete"
+                                            (optionSelected)="onChangeDeviceType($event.option.value)">
+                                            <mat-option *ngFor="let item of deviceTypes" [value]="item.name"
+                                                title="{{item.name}}">
+                                                {{item.name}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </div>
                                 <div>
                                     <mat-form-field appearance="outline">
                                         <mat-label>Vendor</mat-label>

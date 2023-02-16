@@ -37,12 +37,12 @@ jobs:
         echo -e "subaccountAdminPassword=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "stakeholderUser=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
         echo -e "stakeholderPassword=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
-
+ 
     - name: Run UI tests
       id: uiTests
       run: |
         cd tests/ui
-        gradle uiTests -Denv=integration -D"cucumber.filter.tags=not (@feature-toggle or @licenseConsumptionTest)"
+        gradle uiTests -Denv=integration -D"cucumber.filter.tags=not @feature-toggle"
     - uses: deblockt/cucumber-report-annotations-action@v1.10
       if: success() || failure()
       name: Publish Cucumber Report

@@ -14,9 +14,8 @@ import {CustomerService} from '../../../services/customer.service';
 import {CustomerServiceMock} from '../../../../test/mock/services/customer-service.mock';
 import { MsalService } from '@azure/msal-angular';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
-import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
-import { Features } from 'src/app/helpers/features';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
+import { HttpBackend } from "@angular/common/http";
 
 let addSubaccountModalComponentInstance: AddSubaccountModalComponent;
 let fixture: ComponentFixture<AddSubaccountModalComponent>;
@@ -57,6 +56,10 @@ const beforeEachFunction = async () => {
                 provide: MsalService,
                 useValue: MsalServiceMock
             },
+            {
+                provide: HttpBackend,
+                useValue: HttpBackend
+            }
         ]
     }).compileComponents().then(() => {
         fixture = TestBed.createComponent(AddSubaccountModalComponent);
@@ -122,10 +125,8 @@ describe('createSubAccount', () => {
             subaccountName: subaccountDetails.subaccountName,
             subaccountAdminEmail: subaccountDetails.subaccountAdminEmail
         });
-        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-            subaccountDetails.services = tekVizionServices.tekTokenConstumption;
-            addSubaccountModalComponentInstance.addSubaccountForm['services'] = subaccountDetails.services;
-        }
+        subaccountDetails.services = tekVizionServices.tekTokenConstumption;
+        addSubaccountModalComponentInstance.addSubaccountForm['services'] = subaccountDetails.services;
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalledWith(subaccountDetails);
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount added successfully!', '');
@@ -160,9 +161,6 @@ describe('createSubAccount', () => {
         spyOn(SubaccountServiceMock, 'createSubAccount').and.returnValue(SubaccountServiceMock.errorResponse());
         spyOn(SnackBarServiceMock, 'openSnackBar');
         spyOn(MatDialogRefMock, 'close');
-        spyOn(FeatureToggleHelper, 'isFeatureEnabled').and.callFake((featureToggle: string, msalService: MsalService) => {
-            return true;
-        });
         addSubaccountModalComponentInstance.addSubaccountForm.patchValue({
             customer: subaccountDetails.customerId,
             subaccountName: subaccountDetails.subaccountName,

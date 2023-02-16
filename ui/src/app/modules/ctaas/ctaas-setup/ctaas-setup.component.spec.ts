@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { LicenseService } from 'src/app/services/license.service';
@@ -24,6 +24,8 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { Observable, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { SubaccountAdminEmailServiceMock } from 'src/test/mock/services/subaccount-admin-email-service.mock';
+import { FeatureToggleService } from "../../../services/feature-toggle.service";
+import { FeatureToggleServiceMock } from "../../../../test/mock/services/feature-toggle-service.mock";
 
 
 let CtaasSetupComponentTestInstance: CtaasSetupComponent;
@@ -73,7 +75,15 @@ const beforeEachFunction = () => {
             {
                 provide: DialogService,
                 useValue: dialogService
-            }
+            },
+            {
+                provide: HttpBackend,
+                useValue: HttpBackend
+            },
+            {
+                provide: FeatureToggleService,
+                useValue: FeatureToggleServiceMock
+            },
         ]
     });
     fixture = TestBed.createComponent(CtaasSetupComponent);
@@ -189,9 +199,7 @@ describe('setup form verifications', () => {
             azureResourceGroup: '',
             tapUrl: '',
             status: '',
-            onBoardingComplete: '',
-            powerBiWorkspaceId: '',
-            powerBiReportId: ''
+            onBoardingComplete: ''            
         });
         expect(setup.hasError('required')).toBeTruthy;
 

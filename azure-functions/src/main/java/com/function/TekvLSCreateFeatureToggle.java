@@ -16,8 +16,8 @@ import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSCreateFeatureToggle {
     /**
-     * This function listens at endpoint "/v1.0/featureToggle". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/v1.0/featureToggle
+     * This function listens at endpoint "/v1.0/featureToggles". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/featureToggles
      */
     @FunctionName("TekvLSCreateFeatureToggle")
     public HttpResponseMessage run(
@@ -76,7 +76,7 @@ public class TekvLSCreateFeatureToggle {
         }
 
         //Build the sql query
-        String insertFeatureToggleSql = "INSERT INTO feature_toggle (status, name, customer_name, author, description) VALUES (?::feature_toggle_status_type_enum, ?, ?, ?, ?) RETURNING id;";
+        String insertFeatureToggleSql = "INSERT INTO feature_toggle (status, name, author, description) VALUES (?::boolean, ?, ?, ?) RETURNING id;";
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -90,12 +90,11 @@ public class TekvLSCreateFeatureToggle {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Set statement parameters
-            insertStatement.setString(1, jobj.getString(MANDATORY_PARAMS.STATUS.value));
+            insertStatement.setBoolean(1, jobj.getBoolean(MANDATORY_PARAMS.STATUS.value));
             insertStatement.setString(2, jobj.getString(MANDATORY_PARAMS.NAME.value));
 
-            insertStatement.setString(3, jobj.has(OPTIONAL_PARAMS.CUSTOMER_NAME.value) ? jobj.getString(OPTIONAL_PARAMS.CUSTOMER_NAME.value) : null);
-            insertStatement.setString(4, jobj.has(OPTIONAL_PARAMS.AUTHOR.value) ? jobj.getString(OPTIONAL_PARAMS.AUTHOR.value) : null);
-            insertStatement.setString(5, jobj.has(OPTIONAL_PARAMS.DESCRIPTION.value) ? jobj.getString(OPTIONAL_PARAMS.DESCRIPTION.value) : null);
+            insertStatement.setString(3, jobj.has(OPTIONAL_PARAMS.AUTHOR.value) ? jobj.getString(OPTIONAL_PARAMS.AUTHOR.value) : null);
+            insertStatement.setString(4, jobj.has(OPTIONAL_PARAMS.DESCRIPTION.value) ? jobj.getString(OPTIONAL_PARAMS.DESCRIPTION.value) : null);
 
             // Insert
             String userId = getUserIdFromToken(tokenClaims, context);
@@ -142,7 +141,6 @@ public class TekvLSCreateFeatureToggle {
     }
 
     private enum OPTIONAL_PARAMS {
-        CUSTOMER_NAME("customerName"),
         AUTHOR("author"),
         DESCRIPTION("description");
 

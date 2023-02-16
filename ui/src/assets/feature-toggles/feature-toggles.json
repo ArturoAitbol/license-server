@@ -21,7 +21,6 @@
       "visualization": true
     },
     "features": {
-      "ctaasFeature": true,
       "notificationFeature": false,
       "powerbiFeature": true
     }
@@ -48,7 +47,6 @@
       "visualization": true
     },
     "features": {
-      "ctaasFeature": true,
       "notificationFeature": false,
       "powerbiFeature": true
     }
@@ -75,7 +73,6 @@
       "visualization": false
     },
     "features": {
-      "ctaasFeature": true,
       "notificationFeature": false,
       "powerbiFeature": false
     }

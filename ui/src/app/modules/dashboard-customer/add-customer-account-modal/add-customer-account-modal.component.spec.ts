@@ -13,11 +13,8 @@ import {SubaccountServiceMock} from '../../../../test/mock/services/subaccount-s
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { MsalService } from '@azure/msal-angular';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
-import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
-import { Features } from 'src/app/helpers/features';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
+import { HttpBackend } from "@angular/common/http";
 
 let addCustomerAccountModalComponentInstance: AddCustomerAccountModalComponent;
 let fixture: ComponentFixture<AddCustomerAccountModalComponent>;
@@ -58,8 +55,8 @@ const beforeEachFunction = async () => {
                 useValue: MatDialogRefMock
             },
             {
-                provide: MsalService,
-                useValue: MsalServiceMock
+                provide: HttpBackend,
+                useValue: HttpBackend
             }
         ]
     }).compileComponents().then(() => {
@@ -134,11 +131,9 @@ describe('addCustomer', () => {
             subaccountName: customerToAdd.subaccountName,
             subaccountAdminEmail: ''
         }
-        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-            expectedCustomerCall.services = tekVizionServices.tekTokenConstumption;
-            customerToAdd.services = tekVizionServices.tekTokenConstumption;
-            addCustomerAccountModalComponentInstance.addCustomerForm['services'] = customerToAdd.services;
-        }
+        expectedCustomerCall.services = tekVizionServices.tekTokenConstumption;
+        customerToAdd.services = tekVizionServices.tekTokenConstumption;
+        addCustomerAccountModalComponentInstance.addCustomerForm['services'] = customerToAdd.services;
         spyOn(CustomerServiceMock, 'createCustomer').and.callThrough();
         spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
@@ -200,9 +195,7 @@ describe('createSubAccount', () => {
             subaccountName: 'test subaccount name',
             subaccountAdminEmail: 'test subaccount admin email',
         };
-        if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-            subaccountDetails.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
-        }
+        subaccountDetails.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
         spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar');
         spyOn(MatDialogRefMock, 'close');

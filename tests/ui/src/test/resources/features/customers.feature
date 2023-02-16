@@ -9,24 +9,24 @@ Feature: Customers
   Scenario: Create a test customer
     Given I open the Add Customer form
     When I create a customer with the following data
-      | name          | customerTest                      |
+      | name          | functional-test-customer          |
       | type          | Reseller                          |
       | adminEmail    | test-customer@tekvizion.com       |
       | subaccount    | subaccountTest                    |
       | subAdminEmail | test-customer@tekvizion.com       |
       | testCustomer  | yes                               |
-    Then I see the customer "customerTest" in the table
+    Then I see the customer "functional-test-customer" in the table
 
   @addCustomerAdmin
   Scenario: Add a customer administrator
-    Given I see the customer "customerTest" in the table
-    And I open the Customer Administrator Emails of "customerTest"
+    Given I see the customer "functional-test-customer" in the table
+    And I open the Customer Administrator Emails of "functional-test-customer"
     When I add an administrator with email "admintest@tekvizion.com"
     Then I should see the message "Customer admin emails edited successfully!"
 
   @subscriptionsView @CTaaSFeature
   Scenario: Go to the subscriptions tab
-    Given I see the customer "customerTest" in the table
+    Given I see the customer "functional-test-customer" in the table
     When I go to dashboard "Subscriptions" tab
     Then I should see the "Subscriptions Overview" page
     And I should see the "name-label" placeholder
@@ -35,16 +35,16 @@ Feature: Customers
 
   @deleteCustomerAdmin
   Scenario: Delete a customer administrator
-    Given I see the customer "customerTest" in the table
-    And I open the Customer Administrator Emails of "customerTest"
+    Given I see the customer "functional-test-customer" in the table
+    And I open the Customer Administrator Emails of "functional-test-customer"
     When I delete the administrator with email "admintest@tekvizion.com"
     Then I should see the message "Customer administrator email deleted"
 
   @editCustomer
   Scenario: Edit a test customer
-    Given I see the customer "customerTest" in the table
-    When I edit the customer "customerTest" with the following data
-      | name          | customerModified        |
+    Given I see the customer "functional-test-customer" in the table
+    When I edit the customer "functional-test-customer" with the following data
+      | name          | functional-test-customer-modified        |
       | type          | MSP                     |
       | subaccount    | subCustomModified       |
     Then I should see the message "Customer and subaccount edited successfully!"
@@ -52,6 +52,6 @@ Feature: Customers
 
   @deleteCustomer @delete
   Scenario: Delete a test customer
-    Given I see the customer "customerModified" in the table
-    When I delete the customer "customerModified"
+    Given I see the customer "functional-test-customer-modified" in the table
+    When I delete the customer "functional-test-customer-modified"
     Then I should see the message "Customer deleted successfully!"

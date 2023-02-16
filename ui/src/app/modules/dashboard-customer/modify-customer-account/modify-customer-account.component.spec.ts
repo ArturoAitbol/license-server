@@ -1,5 +1,5 @@
 // import { instance, mock, verify, when } from "ts-mockito";
-import { HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { ComponentFixture, TestBed} from '@angular/core/testing';
 import { MatDialog} from '@angular/material/dialog';
@@ -19,8 +19,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CurrentCustomerServiceMock } from "src/test/mock/services/current-customer-service.mock";
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { Features } from 'src/app/helpers/features';
-import { FeatureToggleHelper } from 'src/app/helpers/feature-toggle.helper';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
@@ -70,6 +68,10 @@ const beforeEachFunction = () => {
       {
         provide: SubAccountService,
         useValue: SubaccountServiceMock
+      },
+      {
+          provide: HttpBackend,
+          useValue: HttpBackend
       }
     ]
   });
@@ -104,10 +106,8 @@ describe('UI verification test', () => {
     updateCustomerForm.get('customerType').setValue('Reseller');
     updateCustomerForm.get('subaccountName').setValue('subaccountName');
     updateCustomerForm.get('testCustomer').setValue(true);
-    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-      updateCustomerForm.get('services').get(tekVizionServices.SpotLight).setValue(true);
-      updateCustomerForm.get('services').get(tekVizionServices.tekTokenConstumption).setValue(false);
-    }
+    updateCustomerForm.get('services').get(tekVizionServices.SpotLight).setValue(true);
+    updateCustomerForm.get('services').get(tekVizionServices.tekTokenConstumption).setValue(false);
 
     expect(updateCustomerForm.errors).toBeNull();
     expect(fixture.debugElement.nativeElement.querySelector('#submitBtn').disabled).toBeFalsy();
@@ -155,10 +155,8 @@ describe('modify customers flow', () => {
     const updateCustomerForm = CustomerComponentTestInstance.updateCustomerForm;
     CustomerComponentTestInstance.data = CurrentCustomerServiceMock;
     updateCustomerForm.patchValue(CustomerComponentTestInstance.data);
-    if (FeatureToggleHelper.isFeatureEnabled(Features.CTaaS_Feature)){
-      updateCustomerForm.get('services').get(tekVizionServices.SpotLight).setValue(true);
-      updateCustomerForm.get('services').get(tekVizionServices.tekTokenConstumption).setValue(false);
-    }
+    updateCustomerForm.get('services').get(tekVizionServices.SpotLight).setValue(true);
+    updateCustomerForm.get('services').get(tekVizionServices.tekTokenConstumption).setValue(false);
     expect(updateCustomerForm.errors).toBeNull();
     CustomerComponentTestInstance.ngOnInit();
     updateCustomerForm.get('subaccountName').setValue('subaccountNameModified');

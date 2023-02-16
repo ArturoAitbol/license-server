@@ -4,11 +4,11 @@
 
 <ng-template #loggedIn>
     <section>
-        <ng-container *ngIf="hideToolbar; then hideToolbarTemplate else transparentToolbarTemplate">
+        <ng-container *ngIf="!hideToolbar; then showToolbar">
         </ng-container>
     </section>
     <main>
-        <ng-container *ngIf="enableSidebar(); then sidebarTemplate; else nonSidebarTemplate"></ng-container>
+        <ng-container *ngIf="hideToolbar; then nonSidebarTemplate; else sidebarTemplate"></ng-container>
     </main>
 </ng-template>
 <ng-template #sidebarTemplate>
@@ -29,6 +29,9 @@
                                     title="{{item.name}}">
                                     {{item.name}}
                                 </span>
+                                <span *ngIf="item.isPreview" class="badge"
+                                    [ngClass]="item.active ? 'preview-active' : 'preview-inactive'">
+                                    Preview </span>
                             </button>
                         </div>
                     </div>
@@ -41,7 +44,7 @@
                     <div style="padding-top: 70px;">
                         <!-- #F9F9F9; -->
                         <!-- <mat-card class="shadow-backdrop" style="background: whitesmoke"> -->
-                            <router-outlet></router-outlet>
+                        <ng-container *ngTemplateOutlet="routerOutletTemplate"></ng-container>
                         <!-- </mat-card> -->
                     </div>
                 </div>
@@ -51,15 +54,15 @@
 </ng-template>
 
 <ng-template #nonSidebarTemplate>
-    <div [ngClass]="{'main-container':(!hideToolbar && !isTransparentToolbar )}">
+    <div [ngClass]="{'main-container':(!hideToolbar)}">
         <div [ngClass]="{'route-content':(!hideToolbar)}">
-            <router-outlet></router-outlet>
+            <ng-container *ngTemplateOutlet="routerOutletTemplate"></ng-container>
         </div>
     </div>
 </ng-template>
 <ng-template #loggedOut>
     <div class="login-container" *ngIf="!currentUser">
-        <router-outlet></router-outlet>
+        <ng-container *ngTemplateOutlet="routerOutletTemplate"></ng-container>
     </div>
 </ng-template>
 
@@ -70,13 +73,13 @@
                 <mat-icon>menu</mat-icon>
             </button>
             <!-- logo -->
-            <div *lcFeatureToggle="'ctaasFeature'">
+            <div>
                 <span class="logo-changes" (click)="navigateToMainView()" title="tekVizion">
                     <img src="assets/images/logo_1.png" alt="" srcset="">
                 </span>
             </div>
             <!-- divider and service name -->
-            <div *lcFeatureToggle="'ctaasFeature'" fxShow="true" fxHide.lt-md="true">
+            <div fxShow="true" fxHide.lt-md="true">
                 <span>
                     <div class="row">
                         <div class="col-1">
@@ -87,9 +90,6 @@
                         </div>
                     </div>
                 </span>
-            </div>
-            <div *ngIf="!isCtaasFeatureEnabled()" (click)="navigateToMainView()" style="cursor: pointer;">
-                <span class="text-white-color">{{tabName}}</span>
             </div>
             <span class="spacer"></span>
             <!-- notification icon -->
@@ -135,57 +135,8 @@
         </mat-toolbar>
     </div>
 </ng-template>
-<ng-template #hideToolbarTemplate>
-</ng-template>
-<ng-template #transparentToolbarTemplate>
-    <ng-container *ngIf="isTransparentToolbar;then showTransparentToolbarTemp; else showToolbar"></ng-container>
-</ng-template>
-<ng-template #showTransparentToolbarTemp>
-    <div>
-        <mat-toolbar class="position-fixed toolbar-transparent">
-            <!-- logo -->
-            <div *lcFeatureToggle="'ctaasFeature'">
-                <span class="logo-changes" (click)="navigateToMainView()">
-                    <img src="assets/images/logo_1.png" alt="" srcset="">
-                </span>
-            </div>
-            <span class="spacer"></span>
-            <!-- notification icon -->
-            <div *lcFeatureToggle="'notificationFeature'">
-                <button mat-icon-button [matMenuTriggerFor]="notificationMenu">
-                    <mat-icon class="icon" style="color: white;">notifications</mat-icon>
-                    <a class="notify-dot"></a>
-                </button>
-            </div>
-            <!-- notifications menu -->
-            <mat-menu #notificationMenu="matMenu">
-                <mat-list>
-                    <mat-list-item>
-                        <span>
-                            <mat-icon>message</mat-icon>
-                        </span>
-                        <span style="font-size: 13px;padding-left:20px">
-                            Please complete your onboarding process!
-                        </span>
-                    </mat-list-item>
-                </mat-list>
-            </mat-menu>
-            <!-- user name -->
-            <button mat-button [matMenuTriggerFor]="menu" id="settings-button" style="color: white;"
-                aria-label="Example icon-button with a menu">
-                {{getUserName()}} <mat-icon>arrow_drop_down</mat-icon>
-            </button>
-            <!-- user settings menu -->
-            <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="about()" id="about-button">
-                    <mat-icon>info</mat-icon>
-                    <span>About</span>
-                </button>
-                <button mat-menu-item (click)="logout()" id="logout-button">
-                    <mat-icon>logout</mat-icon>
-                    <span>Logout</span>
-                </button>
-            </mat-menu>
-        </mat-toolbar>
-    </div>
+
+
+<ng-template #routerOutletTemplate>
+    <router-outlet></router-outlet>
 </ng-template>

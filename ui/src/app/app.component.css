@@ -150,6 +150,15 @@ button {
 .sidebar-content {
   margin: 70px -4px -4px -4px !important;
 }
+.badge {
+  font-weight: normal !important;
+}
+.preview-active {
+  background-color: gray;
+}
+.preview-inactive {
+  background-color: lightslategray;
+}
 
 @media (max-width: 600px) {
   .logo-changes {

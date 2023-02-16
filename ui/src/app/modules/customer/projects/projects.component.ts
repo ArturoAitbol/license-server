@@ -16,6 +16,7 @@ import { DialogService } from 'src/app/services/dialog.service';
 import { LicenseService } from 'src/app/services/license.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 import { AddProjectComponent } from './add-project/add-project.component';
 import { ModifyProjectComponent } from "./modify-project/modify-project.component";
 
@@ -55,6 +56,7 @@ export class ProjectsComponent implements OnInit {
   licensesList: [any];
   projects: Project[] = [];
   projectsBk: Project[] = [];
+  customerSubaccountDetails: any;
   // flag
   isLoadingResults: boolean;
   isRequestCompleted: boolean;
@@ -66,6 +68,7 @@ export class ProjectsComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private customerService: CustomerService,
+    private subaccountService: SubAccountService,
     private projectService: ProjectService,
     private dialogService: DialogService,
     private licenseService: LicenseService,
@@ -103,13 +106,10 @@ export class ProjectsComponent implements OnInit {
   ngOnInit(): void {
     this.calculateTableHeight();
     this.currentCustomer = this.customerService.getSelectedCustomer();
-    this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
+    this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.projectService.setSelectedSubAccount(this.customerSubaccountDetails.id);
     this.fetchProjects(true);
     this.getActionMenuOptions();
-  }
-
-  goToDashboard(): void {
-    this.router.navigate(['/dashboard']);
   }
 
   openDialog(component: any, data?: any): void {
@@ -134,8 +134,8 @@ export class ProjectsComponent implements OnInit {
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
     forkJoin([
-      this.licenseService.getLicenseList(this.currentCustomer.subaccountId),
-      this.projectService.getProjectDetailsBySubAccount(this.currentCustomer.subaccountId)]).subscribe((responses: any) => {
+      this.licenseService.getLicenseList(this.customerSubaccountDetails.id),
+      this.projectService.getProjectDetailsBySubAccount(this.customerSubaccountDetails.id)]).subscribe((responses: any) => {
         const resDataObject: any = responses.reduce((current: any, next: any) => {
           return { ...current, ...next };
         }, {});
@@ -275,7 +275,7 @@ export class ProjectsComponent implements OnInit {
 
   openConsumptionView(row: any): void {
     localStorage.setItem(Constants.PROJECT, JSON.stringify(row));
-    this.router.navigate(['/customer/consumption']);
+    this.router.navigate(['/customer/consumption'], {queryParams: {subaccountId: this.customerSubaccountDetails.Id}});
   }
 
   onChangeLicense(newLicenseId: string) {

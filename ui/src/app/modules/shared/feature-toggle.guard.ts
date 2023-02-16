@@ -1,38 +1,38 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, RouterStateSnapshot } from '@angular/router';
 import { SnackBarService } from '../../services/snack-bar.service';
-import { environment } from "src/environments/environment";
-import FeatureToggles from 'src/assets/feature-toggles/feature-toggles.json';
-import UserFeatureToggles from 'src/assets/feature-toggles/user-feature-toggles.json';
-import { MsalService } from '@azure/msal-angular';
+import { FeatureToggleService } from "../../services/feature-toggle.service";
+import { SubAccountService } from "../../services/sub-account.service";
 
 @Injectable({
     providedIn: 'root'
 })
 export class FeatureToggleGuard implements CanActivate, CanActivateChild {
-    private environmentFeatureToggles;
-    private environmentUserFeatureToggles;
-
     constructor(private snackBarService: SnackBarService,
-                private msalService: MsalService) {
-        this.environmentFeatureToggles = FeatureToggles[environment.ENVIRONMENT_NAME];
-        this.environmentUserFeatureToggles = UserFeatureToggles[environment.ENVIRONMENT_NAME];
+                private featureToggleService: FeatureToggleService,
+                private subAccountService: SubAccountService) {
     }
 
     canActivate(route: ActivatedRouteSnapshot): boolean {
-        if (this.environmentFeatureToggles.routes[route.url[0].path] || (this.environmentUserFeatureToggles)[this.msalService.instance.getActiveAccount()?.username]?.routes?.[route.url[0].path]) {
+        //This could probably be improved once the subaccountId is in the url as a query parameter.
+        const subaccountId = this.subAccountService.getSelectedSubAccount().id || null;
+        if (this.featureToggleService.isFeatureEnabled(route.url[0].path, subaccountId)) {
             return true;
         } else {
             this.snackBarService.openSnackBar('Feature not available', 'Error');
+            console.log('Feature not available')
             return false;
         }
     }
 
     canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        if (this.environmentFeatureToggles.routes[childRoute.url[0].path] || (this.environmentUserFeatureToggles)[this.msalService.instance.getActiveAccount()?.username]?.routes?.[childRoute.url[0].path]) {
+        //This could probably be improved once the subaccountId is in the url as a query parameter.
+        const subaccountId = this.subAccountService.getSelectedSubAccount().id || null;
+        if (this.featureToggleService.isFeatureEnabled(childRoute.url[0].path, subaccountId)) {
             return true;
         } else {
             this.snackBarService.openSnackBar('Feature not available', 'Error');
+            console.log('Feature not available')
             return false;
         }
     }

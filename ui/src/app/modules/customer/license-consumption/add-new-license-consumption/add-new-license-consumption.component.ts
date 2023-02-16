@@ -28,6 +28,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
   callingPlatformTypes: any[] = [];
   selectedCallingPlatformType: string;
   deviceTypes: any[] = [];
+  selectedDeviceType: string;
 
   vendors: any[] = [];
   callingPlatformVendors: any[] = [];
@@ -75,16 +76,17 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     project: ['', [Validators.required, this.RequireMatch]]
   });
   addDutForm = this.formBuilder.group({
-    name: ['', Validators.required],
+    type: ['', Validators.required],
     vendor: ['', Validators.required],
     product: ['', [this.RequireMatch]]
   });
   addCallingPlatformForm = this.formBuilder.group({
-    name: ['', Validators.required],
+    type: ['', Validators.required],
     vendor: ['', Validators.required],
     product: ['', [this.RequireMatch]]
   });
   addDeviceForm = this.formBuilder.group({
+    type: ['', Validators.required],
     vendor: ['', Validators.required],
     product: ['', [this.RequireMatch]]
   });
@@ -244,6 +246,18 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
+  onChangeDeviceType(value: any): void {
+    this.isDataLoading = true;
+    this.selectedDeviceType = value;
+    this.deviceService.getAllDeviceVendors(this.selectedDeviceType).subscribe(res => {
+      this.deviceVendors = res['vendors'];
+      this.addDeviceForm.patchValue({ vendor: '' });
+      this.addDeviceForm.controls['vendor'].enable();
+      this.addDeviceForm.patchValue({ product: '' });
+      this.isDataLoading = false;
+    });
+  }
+
   /**
    * trigger when user select/change vendor dropdown
    * @param value: string 
@@ -270,7 +284,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   onChangeDeviceVendor(value: any): void {
     this.isDataLoading = true;
-    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
+    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value, this.selectedDeviceType).subscribe(res => {
       this.filterOtherVendorDevices(res['devices']);
       this.addDeviceForm.patchValue({ product: '' });
       this.addDeviceForm.controls['product'].enable();
@@ -394,6 +408,11 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     this.licenseConsumptionService.addLicenseConsumptionEvent(newConsumptionObject).subscribe((response: any) => {
       this.isDataLoading = true;
       if (!response.error) {
+        if (this.otherDevicesUsed.length === 0) {
+          this.isDataLoading = false;
+          this.dialogRef.close(true);
+          return;
+        }
         const newOtherDeviceObject = JSON.parse(JSON.stringify(licenseConsumptionsObject));
         newOtherDeviceObject.supportDevice = true;
         newOtherDeviceObject.consumptionMatrixId = response.consumptionMatrixId;

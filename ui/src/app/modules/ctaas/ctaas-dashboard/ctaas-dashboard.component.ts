@@ -38,11 +38,13 @@ export class CtaasDashboardComponent implements OnInit {
     refreshNotesIntervalSubscription: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
+    powerBiFontStyleControl = new FormControl('');
     resultantImagesList: IDashboardImageResponse[] = [];
     resultantImagesListBk: IDashboardImageResponse[] = [];
     resultant: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
+    featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
     // Hide the report container initially
@@ -74,7 +76,7 @@ export class CtaasDashboardComponent implements OnInit {
                     console.error(event.detail);
                     const { detail: { message, errorCode } } = event;
                     if (message && errorCode && message === 'TokenExpired' && errorCode === '403') {
-                        this.fetchCtaasPowerBiDashboardDetailsBySubaccount();
+                        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
                     }
                 }
             },
@@ -85,9 +87,12 @@ export class CtaasDashboardComponent implements OnInit {
 
     readonly LEGACY_MODE: string = 'legacy_view';
     readonly POWERBI_MODE: string = 'powerbi_view';
-
+    readonly REPORT_TYPE: string = 'report';
     viewMode = new FormControl(this.LEGACY_MODE);
-
+    powerbiReportResponse: {
+        daily: { embedUrl: string, embedToken: string },
+        weekly: { embedUrl: string, embedToken: string }
+    };
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
@@ -107,6 +112,7 @@ export class CtaasDashboardComponent implements OnInit {
     }
     ngOnInit(): void {
         this.fontStyleControl.setValue(this.DAILY);
+        this.powerBiFontStyleControl.setValue(this.DAILY);
         this.isOnboardingComplete = false;
         this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.fetchCtaasSetupDetails();
@@ -133,6 +139,14 @@ export class CtaasDashboardComponent implements OnInit {
     onChangeButtonToggle(): void {
         const { value } = this.fontStyleControl;
         this.resultantImagesList = this.resultantImagesListBk.filter(e => e.reportType.toLowerCase().includes(value));
+    }
+    /**
+     * on change power bi button toggle
+     */
+    onChangePowerBiButtonToggle() {
+        const { value } = this.powerBiFontStyleControl;
+        this.featureToggleKey = value;
+        this.viewDashboardByMode();
     }
     /**
      * fetch SpotLight Setup details by subaccount id
@@ -275,51 +289,82 @@ export class CtaasDashboardComponent implements OnInit {
     /**
      * fetch SpotLight Power BI dashboard required details
      */
-    fetchCtaasPowerBiDashboardDetailsBySubaccount(): void {
-        this.isLoadingResults = true;
-        this.hasDashboardDetails = false;
-        this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
-            .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
-                this.isLoadingResults = false;
-                const { powerBiInfo } = response;
-                if (powerBiInfo) {
-                    const { embedUrl, embedToken } = powerBiInfo;
-                    if (embedUrl && embedToken) {
-                        this.reportConfig = {
-                            type: 'report',
-                            embedUrl,
-                            tokenType: models.TokenType.Embed,
-                            accessToken: embedToken,
-                            settings: {
-                                filterPaneEnabled: false,
-                                navContentPaneEnabled: false,
-                                layoutType: models.LayoutType.Custom,
-                                customLayout: {
-                                    displayOption: models.DisplayOption.FitToWidth
-                                }
-                            }
-                        };
-                        this.hasDashboardDetails = true;
-                    }
-                } else {
+    fetchSpotlightPowerBiDashboardDetailsBySubaccount(): Promise<any> {
+        const promise = new Promise((resolve, reject) => {
+            this.powerbiReportResponse = undefined;
+            this.isLoadingResults = true;
+            this.hasDashboardDetails = false;
+            this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
+                .toPromise()
+                .then((response: { powerBiInfo: IPowerBiReponse }) => {
+                    this.isLoadingResults = false;
+                    const { daily, weekly } = response.powerBiInfo;
+                    this.powerbiReportResponse = { daily, weekly };
+                    resolve("API request is successfull !");
+                }, (err) => {
                     this.hasDashboardDetails = false;
+                    this.isLoadingResults = false;
+                    console.error('Error while loading embedded powerbi report: ', err);
+                    this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
+                    reject("API request is not successfull !");
+                });
+
+        });
+        return promise;
+    }
+
+    /**
+     * configure the embedded powerbi report
+     * @param embedUrl: string 
+     * @param accessToken: string 
+     */
+    configurePowerbiEmbeddedReport(embedUrl: string, accessToken: string) {
+        this.reportConfig = undefined;
+        if (embedUrl && accessToken) {
+            this.reportConfig = {
+                type: this.REPORT_TYPE,
+                embedUrl,
+                tokenType: models.TokenType.Embed,
+                accessToken,
+                settings: {
+                    filterPaneEnabled: false,
+                    navContentPaneEnabled: false,
+                    layoutType: models.LayoutType.Custom,
+                    customLayout: {
+                        displayOption: models.DisplayOption.FitToWidth
+                    }
                 }
-            }, (err) => {
-                this.hasDashboardDetails = false;
-                this.isLoadingResults = false;
-                console.error('Error while loading embedded powerbi report: ', err);
-                this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
-            });
+            };
+            this.hasDashboardDetails = true;
+        }
     }
     /**
      * view dashboard based on the mode
      * PBRS dashboard - LEGACY mode
      * Embedded PowerBi - PowerBi mode
      */
-    viewDashboardByMode(): void {
+    async viewDashboardByMode(): Promise<any> {
         switch (this.viewMode.value) {
             case this.POWERBI_MODE:
-                this.fetchCtaasPowerBiDashboardDetailsBySubaccount();
+                // check for powerbi response, if not make an API request to fetch powerbi dashboard details
+                if (!this.powerbiReportResponse) {
+                    await this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
+                }
+
+                if (this.powerbiReportResponse) {
+                    this.hasDashboardDetails = true;
+                    const { daily, weekly } = this.powerbiReportResponse;
+                    // configure for daily report
+                    if (this.featureToggleKey === this.DAILY) {
+                        const { embedUrl, embedToken } = daily;
+                        this.configurePowerbiEmbeddedReport(embedUrl, embedToken);
+                    } else if (this.featureToggleKey === this.WEEKLY) { // configure for weekly report
+                        const { embedUrl, embedToken } = weekly;
+                        this.configurePowerbiEmbeddedReport(embedUrl, embedToken);
+                    }
+                } else {
+                    this.hasDashboardDetails = false;
+                }
                 this.powerBiEmbeddingFlag = true;
                 break;
             default:

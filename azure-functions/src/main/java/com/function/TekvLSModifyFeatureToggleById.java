@@ -126,7 +126,7 @@ public class TekvLSModifyFeatureToggleById {
         CUSTOMER_NAME("customerName", "customer_name", QueryBuilder.DATA_TYPE.VARCHAR),
         AUTHOR("author", "author", QueryBuilder.DATA_TYPE.VARCHAR),
         DESCRIPTION("description", "description", QueryBuilder.DATA_TYPE.VARCHAR),
-        STATUS("status", "status", "feature_toggle_status_type_enum"),
+        STATUS("status", "status", QueryBuilder.DATA_TYPE.BOOLEAN),
         NAME("name", "name", QueryBuilder.DATA_TYPE.VARCHAR);
 
         private final String jsonAttrib;

@@ -21,6 +21,8 @@ import { SnackBarService } from "src/app/services/snack-bar.service";
 import { LicenseService } from "src/app/services/license.service";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import moment from "moment";
+import { SubAccountService } from "src/app/services/sub-account.service";
+import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
 
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
@@ -73,6 +75,10 @@ const defaultTestBedConfig = {
         {
             provide: SnackBarService,
             useValue: SnackBarServiceMock
+        },
+        {
+            provide: SubAccountService,
+            useValue: SubaccountServiceMock
         }
     ]
 }
@@ -82,6 +88,15 @@ const beforeEachFunction = () => {
     fixture = TestBed.createComponent(ModifyProjectComponent);
     modifyPorjectComponentTestInstance = fixture.componentInstance;
     modifyPorjectComponentTestInstance.ngOnInit();
+    spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.returnValue({
+        id: "eea5f3b8-37eb-41fe-adad-5f94da124a5a",
+        name: "testv2Demo",
+        customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
+        services: "tokenConsumption,spotlight",
+        testCustomer: false,
+        companyName:"testComp",
+        customerName:"testName"
+    })
 }
 
 describe('UI verification test for modify component', () => {
