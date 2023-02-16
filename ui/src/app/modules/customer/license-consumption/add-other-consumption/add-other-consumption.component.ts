@@ -39,8 +39,9 @@ export class AddOtherConsumptionComponent implements OnInit, OnDestroy {
   ];
   filteredProjects: Observable<any[]>;
   deviceTypes: string[] = [
+    Constants.SANDBOX_DEVICE_TYPE,
     Constants.CERT_DEVICE_TYPE,
-    Constants.SANDBOX_DEVICE_TYPE
+    Constants.OTHER_DEVICE_TYPE
   ];
   filteredVendors: Observable<any[]>;
   filteredModels: Observable<any[]>;
