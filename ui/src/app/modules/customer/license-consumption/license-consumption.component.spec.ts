@@ -126,6 +126,7 @@ const beforeEachFunction = () => {
         companyName:"testComp",
         customerName: "testName"
     });
+    spyOn(SubaccountServiceMock, 'setSelectedSubAccount').and.callThrough();
 };
 
 describe('license-consumption - UI verification test', () => {

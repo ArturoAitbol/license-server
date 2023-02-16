@@ -156,6 +156,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.getCutomerDetails()
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     const premissionsMatchIndex = roles?.findIndex((role : string) => permissions[role].elements.indexOf('addLicenseConsumption') !==-1);
     if (premissionsMatchIndex >= 0)
@@ -187,6 +188,12 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         this.isDetailedConsumptionLoadingResults = false;
         this.isDetailedConsumptionRequestCompleted = true;
       }
+    });
+  }
+
+  getCutomerDetails() {
+    this.subaccountService.subaccountData.subscribe(subaccountResp => {
+      this.customerSubaccountDetails = subaccountResp
     });
   }
 

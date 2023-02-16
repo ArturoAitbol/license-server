@@ -517,14 +517,14 @@ describe('.columnAction()', () => {
 
         selectedTestData.columnName = 'Subaccount';
         dashboardComponentTestInstance.columnAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekToken Consumption view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.columnAction(selectedTestData);
         expect(dashboardComponentTestInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 
-    it('should make a call to openLicenseDetails or snackBarService if the column name is "Subaccount"', () => {
+    it('should make a call to openLicenseDetails or snackBarService if the column name is "Subaccount"',  () => {
         const selectedTestData: { selectedRow: any, selectedIndex: string, columnName: string } = {
             selectedRow: {
                 status: undefined
@@ -534,10 +534,23 @@ describe('.columnAction()', () => {
         };
         spyOn(dashboardComponentTestInstance, 'openLicenseDetails').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar');
-
+        
         selectedTestData.columnName = 'Subscription Status';
         dashboardComponentTestInstance.columnAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
+    });
+
+    it('should make a call to openLicenseDetails',  () => {
+        const selectedTestData: { selectedRow: any, selectedIndex: string, columnName: string } = {
+            selectedRow: {
+                status: undefined,
+                subaccountId:'565e134e-62ef-4820-b077-2d8a6f628702'
+            },
+            selectedIndex: 'testSelectedIndex',
+            columnName: 'Subscription Status'
+        };
+        spyOn(dashboardComponentTestInstance, 'openLicenseDetails').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
         selectedTestData.selectedRow.status = 'not undefined';
         dashboardComponentTestInstance.columnAction(selectedTestData);

@@ -84,7 +84,6 @@ export class AddLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-    console.log(this.customerSubaccountDetails)
     this.projectService.setSelectedSubAccount(this.customerSubaccountDetails.id);
     this.fetchData();
     if (this.data) {

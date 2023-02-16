@@ -412,7 +412,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
             switch (object.selectedOption) {
                 case this.VIEW_LICENSES:
-                   
                     this.openLicenseDetails(object.selectedRow);
                     break;
                 case this.VIEW_CONSUMPTION:
@@ -449,19 +448,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * @param object: { selectedRow: any, selectedIndex: string, tableColumn: string }
      */
     columnAction(object: { selectedRow: any, selectedIndex: string, columnName: string }) {
-        switch (object.columnName) {
-            case 'Subaccount':
-                if (object.selectedRow.subaccountId !== undefined)
+        if (!object.selectedRow.subaccountId) {
+            this.snackBarService.openSnackBar('Subaccount is missing, create one to access this view', '');
+        } else {
+            this.selectedSubaccount = {
+                id: object.selectedRow.subaccountId,
+                name: object.selectedRow.subaccountName,
+                customerId: object.selectedRow.id,
+                customerName: object.selectedRow.name,
+                services: object.selectedRow.services
+            };
+            this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
+            switch (object.columnName) {
+                case 'Subaccount':
                     this.openLicenseConsumption(object.selectedRow);
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
-                break;
-            case 'Subscription Status':
-                if (object.selectedRow.status !== undefined)
+                    break;
+                case 'Subscription Status':
                     this.openLicenseDetails(object.selectedRow);
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
-                break;
+                    break;
+            }
         }
     }
 

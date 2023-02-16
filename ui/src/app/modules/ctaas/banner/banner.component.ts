@@ -17,7 +17,7 @@ export class BannerComponent implements OnInit {
   ngOnInit(): void {
     this.cutomerDetails = this.subaccountservice.getSelectedSubAccount();
     this.isCustomerNameAndSubaccountNameIsSame = (this.cutomerDetails.customerName !== this.cutomerDetails.name);
-    this.subaccountservice.subaccountEmitter.subscribe(subaccountResp => {
+    this.subaccountservice.subaccountData.subscribe(subaccountResp => {
       this.cutomerDetails = subaccountResp
       this.isCustomerNameAndSubaccountNameIsSame = (this.cutomerDetails.customerName !== this.cutomerDetails.name);
     });

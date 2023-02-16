@@ -79,6 +79,7 @@ const beforeEachFunction = () =>{
     });
     fixture = TestBed.createComponent(LicensesComponent);
     licensesComponentTestInstance = fixture.componentInstance;
+    spyOn(SubaccountServiceMock, 'setSelectedSubAccount').and.callThrough();
 }
 
 describe('licenses - UI verification tests',()=>{
