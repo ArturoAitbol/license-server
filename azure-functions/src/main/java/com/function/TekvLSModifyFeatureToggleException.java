@@ -9,28 +9,31 @@ import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
 
-public class TekvLSCreateFeatureToggle {
+public class TekvLSModifyFeatureToggleException {
     /**
-     * This function listens at endpoint "/v1.0/featureToggles". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/v1.0/featureToggles
+     * This function listens at endpoint "/v1.0/featureToggleExceptions". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/featureToggleExceptions
      */
-    @FunctionName("TekvLSCreateFeatureToggle")
+    @FunctionName("TekvLSModifyFeatureToggleException")
     public HttpResponseMessage run(
             @HttpTrigger(
                     name = "req",
-                    methods = {HttpMethod.POST},
+                    methods = {HttpMethod.PUT},
                     authLevel = AuthorizationLevel.ANONYMOUS,
-                    route = "featureToggles")
+                    route = "featureToggleExceptions")
             HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
 
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
-        final String  email = getEmailFromToken(tokenClaims, context);
         JSONArray roles = getRolesFromToken(tokenClaims, context);
         if (roles.isEmpty()) {
             JSONObject json = new JSONObject();
@@ -38,7 +41,7 @@ public class TekvLSCreateFeatureToggle {
             json.put("error", MESSAGE_FOR_UNAUTHORIZED);
             return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
         }
-        if (!hasPermission(roles, Resource.CREATE_FEATURE_TOGGLE)) {
+        if (!hasPermission(roles, Resource.MODIFY_FEATURE_TOGGLE_EXCEPTION)) {
             JSONObject json = new JSONObject();
             context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
             json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -77,44 +80,33 @@ public class TekvLSCreateFeatureToggle {
         }
 
         //Build the sql query
-        String insertFeatureToggleSql = "INSERT INTO feature_toggle (status, name, author, description) VALUES (?::boolean, ?, ?, ?) RETURNING id;";
+        String updateSql = "UPDATE feature_toggle_exception SET status=? WHERE feature_toggle_id=?::uuid AND subaccount_id=?::uuid";
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
-        try (
-            Connection connection = DriverManager.getConnection(dbConnectionUrl);
-            PreparedStatement insertStatement = connection.prepareStatement(insertFeatureToggleSql)
-        ){
+        try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+             PreparedStatement updateStmt = connection.prepareStatement(updateSql)){
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
             // Set statement parameters
-            insertStatement.setBoolean(1, jobj.getBoolean(MANDATORY_PARAMS.STATUS.value));
-            insertStatement.setString(2, jobj.getString(MANDATORY_PARAMS.NAME.value));
+            updateStmt.setBoolean(1, jobj.getBoolean(MANDATORY_PARAMS.STATUS.value));
+            updateStmt.setString(2, jobj.getString(MANDATORY_PARAMS.FEATURE_TOGGLE_ID.value));
+            updateStmt.setString(3, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
 
-            insertStatement.setString(3, email);
-            insertStatement.setString(4, jobj.has(OPTIONAL_PARAMS.DESCRIPTION.value) ? jobj.getString(OPTIONAL_PARAMS.DESCRIPTION.value) : null);
-
-            // Insert
+            // Update exception status
             String userId = getUserIdFromToken(tokenClaims, context);
-            context.getLogger().info("Execute SQL statement (User: " + userId + "): " + insertStatement);
-            ResultSet rs = insertStatement.executeQuery();
-            context.getLogger().info("Feature toggle inserted successfully.");
+            context.getLogger().info("Execute SQL statement (User: " + userId + "): " + updateStmt);
+            updateStmt.executeUpdate();
+            context.getLogger().info("Feature toggle exception deleted successfully.");
 
-            // Return the feature toggle id in the response
-            rs.next();
-            String featureToggleId = rs.getString("id");
-            JSONObject json = new JSONObject();
-            json.put("id", featureToggleId);
-
-            return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+            return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
-            String modifiedResponse = nameUnique(e.getMessage());
-            json.put("error", modifiedResponse);
+            json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
@@ -124,29 +116,14 @@ public class TekvLSCreateFeatureToggle {
         }
     }
 
-    private String nameUnique(String errorMessage){
-        if(errorMessage.contains("ft_name_unique"))
-            return "Feature Toggle with that name already exists";
-        return "SQL Exception: " + errorMessage;
-    }
-
     private enum MANDATORY_PARAMS {
-        STATUS("status"),
-        NAME("name");
+        SUBACCOUNT_ID("subaccountId"),
+        FEATURE_TOGGLE_ID("featureToggleId"),
+        STATUS("status");
 
         private final String value;
 
         MANDATORY_PARAMS(String value) {
-            this.value = value;
-        }
-    }
-
-    private enum OPTIONAL_PARAMS {
-        DESCRIPTION("description");
-
-        private final String value;
-
-        OPTIONAL_PARAMS(String value) {
             this.value = value;
         }
     }
