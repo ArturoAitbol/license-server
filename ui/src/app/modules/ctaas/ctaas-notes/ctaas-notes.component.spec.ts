@@ -22,16 +22,16 @@ import { Note } from '../../../model/note.model';
 import { AddNotesComponent } from "./add-notes/add-notes.component";
 import { CtaasHistoricalDashboardComponent } from "../ctaas-historical-dashboard/ctaas-historical-dashboard.component";
 
-let spotlightNotesComponentTestInstance: CtaasNotesComponent;
+let ctaasNotesComponent: CtaasNotesComponent;
 let fixture : ComponentFixture<CtaasNotesComponent>;
 
 const RouterMock = {
-    navigate: (commands: string[]) => {}
+    navigate: (commands: string[]) => { return; }
 };
 
 const dialogServiceMock = new DialogServiceMock();
 
-const beforeEachFunction = () =>{
+const beforeEachFunction = () => {
     TestBed.configureTestingModule({
         declarations:[CtaasNotesComponent],
         imports: [CommonModule,SharedModule,BrowserAnimationsModule],
@@ -71,7 +71,7 @@ const beforeEachFunction = () =>{
         ]
     });
     fixture = TestBed.createComponent(CtaasNotesComponent);
-    spotlightNotesComponentTestInstance = fixture.componentInstance;
+    ctaasNotesComponent = fixture.componentInstance;
 }
 
 describe('Notes UI verification tests',()=>{
@@ -105,7 +105,7 @@ describe('Notes data collection and parsing tests',()=>{
         expect(SubaccountServiceMock.getSelectedSubAccount).toHaveBeenCalled();
         expect(NoteServiceMock.getNoteList).toHaveBeenCalled();
         expect(MsalServiceMock.instance.getActiveAccount).toHaveBeenCalled();
-        expect(spotlightNotesComponentTestInstance.actionMenuOptions).toEqual(['Close Note','View Dashboard']);
+        expect(ctaasNotesComponent.actionMenuOptions).toEqual(['Close Note','View Dashboard']);
     });
 
     it('should change the loading-related variables if getNotes() got an error',()=>{
@@ -113,28 +113,28 @@ describe('Notes data collection and parsing tests',()=>{
 
         fixture.detectChanges();
 
-        expect(spotlightNotesComponentTestInstance.isLoadingResults).toBeFalse();
-        expect(spotlightNotesComponentTestInstance.isRequestCompleted).toBeTrue();
+        expect(ctaasNotesComponent.isLoadingResults).toBeFalse();
+        expect(ctaasNotesComponent.isRequestCompleted).toBeTrue();
     });
 
     it('should sort the table after calling sortData() according to the set arguments',()=>{
-        spotlightNotesComponentTestInstance.notesData = NoteServiceMock.unsortedNotesList.notes;
-        spotlightNotesComponentTestInstance.sortData({active: "status", direction: "asc"});
-        expect(spotlightNotesComponentTestInstance.notesData).toEqual(NoteServiceMock.sortedByStatusAsc.notes);
+        ctaasNotesComponent.notesData = NoteServiceMock.unsortedNotesList.notes;
+        ctaasNotesComponent.sortData({active: "status", direction: "asc"});
+        expect(ctaasNotesComponent.notesData).toEqual(NoteServiceMock.sortedByStatusAsc.notes);
 
-        spotlightNotesComponentTestInstance.sortData({active: "status", direction: "desc"});
-        expect(spotlightNotesComponentTestInstance.notesData).toEqual(NoteServiceMock.sortedByStatusDesc.notes);
+        ctaasNotesComponent.sortData({active: "status", direction: "desc"});
+        expect(ctaasNotesComponent.notesData).toEqual(NoteServiceMock.sortedByStatusDesc.notes);
 
-        spotlightNotesComponentTestInstance.notesDataBk = NoteServiceMock.unsortedNotesList.notes;
-        spotlightNotesComponentTestInstance.sortData({active: "status", direction: ''});
-        expect(spotlightNotesComponentTestInstance.notesData).toEqual(NoteServiceMock.unsortedNotesList.notes);
+        ctaasNotesComponent.notesDataBk = NoteServiceMock.unsortedNotesList.notes;
+        ctaasNotesComponent.sortData({active: "status", direction: ''});
+        expect(ctaasNotesComponent.notesData).toEqual(NoteServiceMock.unsortedNotesList.notes);
 
-        spotlightNotesComponentTestInstance.notesData = NoteServiceMock.unsortedNotesList.notes;
-        spotlightNotesComponentTestInstance.sortData({active: "openDate", direction: "asc"});
-        expect(spotlightNotesComponentTestInstance.notesData).toEqual(NoteServiceMock.sortedByOpenDateAsc.notes);
+        ctaasNotesComponent.notesData = NoteServiceMock.unsortedNotesList.notes;
+        ctaasNotesComponent.sortData({active: "openDate", direction: "asc"});
+        expect(ctaasNotesComponent.notesData).toEqual(NoteServiceMock.sortedByOpenDateAsc.notes);
 
-        spotlightNotesComponentTestInstance.sortData({active: "openDate", direction: "desc"});
-        expect(spotlightNotesComponentTestInstance.notesData).toEqual(NoteServiceMock.sortedByOpenDateDesc.notes);
+        ctaasNotesComponent.sortData({active: "openDate", direction: "desc"});
+        expect(ctaasNotesComponent.notesData).toEqual(NoteServiceMock.sortedByOpenDateDesc.notes);
     });
 });
 
@@ -143,86 +143,86 @@ describe('Notes dialog calls and interactions', ()=>{
     beforeEach(beforeEachFunction);
 
     it('should execute rowAction() with expected data given set arguments',()=>{
-        spyOn(spotlightNotesComponentTestInstance,'onCloseNote');
-        spyOn(spotlightNotesComponentTestInstance,'viewDashboard');
+        spyOn(ctaasNotesComponent,'onCloseNote');
+        spyOn(ctaasNotesComponent,'viewDashboard');
 
         const note: Note = NoteServiceMock.mockNoteA;
         const selectedTestData = { selectedRow: note, selectedOption: undefined, selectedIndex: 'selectedTestItem'};
 
-        selectedTestData.selectedOption = spotlightNotesComponentTestInstance.CLOSE_NOTE;
-        spotlightNotesComponentTestInstance.rowAction(selectedTestData);
-        expect(spotlightNotesComponentTestInstance.onCloseNote).toHaveBeenCalledWith(note);
+        selectedTestData.selectedOption = ctaasNotesComponent.CLOSE_NOTE;
+        ctaasNotesComponent.rowAction(selectedTestData);
+        expect(ctaasNotesComponent.onCloseNote).toHaveBeenCalledWith(note);
 
-        selectedTestData.selectedOption = spotlightNotesComponentTestInstance.VIEW_DASHBOARD;
-        spotlightNotesComponentTestInstance.rowAction(selectedTestData);
-        expect(spotlightNotesComponentTestInstance.viewDashboard).toHaveBeenCalledWith(note);
+        selectedTestData.selectedOption = ctaasNotesComponent.VIEW_DASHBOARD;
+        ctaasNotesComponent.rowAction(selectedTestData);
+        expect(ctaasNotesComponent.viewDashboard).toHaveBeenCalledWith(note);
 
     });
 
     it('should delete note if the operation is confirmed in confirmDialog after calling onCloseNote()',()=>{
         spyOn(dialogServiceMock,'confirmDialog').and.callThrough();
         spyOn(NoteServiceMock,'closeNote').and.callThrough();
-        spyOn(spotlightNotesComponentTestInstance,'fetchNoteList');
+        spyOn(ctaasNotesComponent,'fetchNoteList');
         const note: Note = NoteServiceMock.mockNoteA;
 
         dialogServiceMock.setExpectedConfirmDialogValue(true);
-        spotlightNotesComponentTestInstance.onCloseNote(note);
+        ctaasNotesComponent.onCloseNote(note);
 
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
         expect(NoteServiceMock.closeNote).toHaveBeenCalledWith(note.id);
-        expect(spotlightNotesComponentTestInstance.fetchNoteList).toHaveBeenCalled();
+        expect(ctaasNotesComponent.fetchNoteList).toHaveBeenCalled();
     });
 
 
     it('should not delete note if the operation is NOT confirmed in confirmDialog after calling onCloseNote()',()=>{
         spyOn(dialogServiceMock,'confirmDialog').and.callThrough();
         spyOn(NoteServiceMock,'closeNote').and.callThrough();
-        spyOn(spotlightNotesComponentTestInstance,'fetchNoteList');
+        spyOn(ctaasNotesComponent,'fetchNoteList');
 
         dialogServiceMock.setExpectedConfirmDialogValue(false);
-        spotlightNotesComponentTestInstance.onCloseNote(NoteServiceMock.mockNoteA);
+        ctaasNotesComponent.onCloseNote(NoteServiceMock.mockNoteA);
 
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
         expect(NoteServiceMock.closeNote).not.toHaveBeenCalled();
-        expect(spotlightNotesComponentTestInstance.fetchNoteList).not.toHaveBeenCalled();
+        expect(ctaasNotesComponent.fetchNoteList).not.toHaveBeenCalled();
     });
 
     it('should not delete note if the call closeNote() throws an error',()=>{
         const responseWithError = {error:"some error"};
         spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
         spyOn(NoteServiceMock,'closeNote').and.returnValue(throwError(responseWithError));
-        spyOn(spotlightNotesComponentTestInstance,'fetchNoteList');
+        spyOn(ctaasNotesComponent,'fetchNoteList');
 
-        spotlightNotesComponentTestInstance.closeNote(NoteServiceMock.mockNoteA.id);
+        ctaasNotesComponent.closeNote(NoteServiceMock.mockNoteA.id);
 
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(responseWithError.error, 'Error while deleting Note');
         expect(NoteServiceMock.closeNote).toHaveBeenCalled();
-        expect(spotlightNotesComponentTestInstance.fetchNoteList).not.toHaveBeenCalled();
+        expect(ctaasNotesComponent.fetchNoteList).not.toHaveBeenCalled();
     });
 
     it('should open a dialog with the AddNote component after calling addNote()',()=>{
         spyOn(MatDialogMock,'open').and.callThrough();
-        spyOn(spotlightNotesComponentTestInstance,'fetchNoteList');
-        spyOn(spotlightNotesComponentTestInstance,'addNote').and.callThrough();
-        spyOn(spotlightNotesComponentTestInstance,'openDialog').and.callThrough();
+        spyOn(ctaasNotesComponent,'fetchNoteList');
+        spyOn(ctaasNotesComponent,'addNote').and.callThrough();
+        spyOn(ctaasNotesComponent,'openDialog').and.callThrough();
 
-        spotlightNotesComponentTestInstance.addNote();
+        ctaasNotesComponent.addNote();
 
-        expect(spotlightNotesComponentTestInstance.openDialog).toHaveBeenCalledWith(spotlightNotesComponentTestInstance.ADD_NOTE);
+        expect(ctaasNotesComponent.openDialog).toHaveBeenCalledWith(ctaasNotesComponent.ADD_NOTE);
         expect(MatDialogMock.open).toHaveBeenCalledWith(AddNotesComponent,jasmine.any(Object));
-        expect(spotlightNotesComponentTestInstance.fetchNoteList).toHaveBeenCalled();
+        expect(ctaasNotesComponent.fetchNoteList).toHaveBeenCalled();
     });
 
     it('should show the historical dashboard when calling viewDashboard()',()=>{
         spyOn(MatDialogMock,'open').and.callThrough();
-        spyOn(spotlightNotesComponentTestInstance,'fetchNoteList');
-        spyOn(spotlightNotesComponentTestInstance,'viewDashboard').and.callThrough();
-        spyOn(spotlightNotesComponentTestInstance,'openDialog').and.callThrough();
+        spyOn(ctaasNotesComponent,'fetchNoteList');
+        spyOn(ctaasNotesComponent,'viewDashboard').and.callThrough();
+        spyOn(ctaasNotesComponent,'openDialog').and.callThrough();
         const note: Note = NoteServiceMock.mockNoteA;
 
-        spotlightNotesComponentTestInstance.viewDashboard(note);
+        ctaasNotesComponent.viewDashboard(note);
 
-        expect(spotlightNotesComponentTestInstance.openDialog).toHaveBeenCalledWith(spotlightNotesComponentTestInstance.VIEW_DASHBOARD,note);
+        expect(ctaasNotesComponent.openDialog).toHaveBeenCalledWith(ctaasNotesComponent.VIEW_DASHBOARD,note);
         expect(MatDialogMock.open).toHaveBeenCalledWith(CtaasHistoricalDashboardComponent,jasmine.any(Object));
     });
 });

@@ -19,7 +19,7 @@ export class DialogServiceMock {
             observer.next(this.expectedConfirmDialogValue);
             observer.complete();
             return {
-                unsubscribe() { }
+                unsubscribe() { return; }
             };
         });
     }
@@ -29,7 +29,7 @@ export class DialogServiceMock {
             observer.next(this.expectedResult);
             observer.complete();
             return {
-                unsubscribe() { }
+                unsubscribe() { return; }
             };
         });
     }
@@ -39,7 +39,7 @@ export class DialogServiceMock {
             observer.next({res: 'closed' });
             observer.complete();
             return {
-                unsubscribe() {}
+                unsubscribe() { return; }
             };
         });
     }
@@ -48,9 +48,9 @@ export class DialogServiceMock {
             observer.next({ res: {} });
             observer.complete();
             return {
-                unsubscribe() { }
+                unsubscribe() { return; }
             };
         });
     }
-    close(): void {}
+    close(): void { return; }
 }
