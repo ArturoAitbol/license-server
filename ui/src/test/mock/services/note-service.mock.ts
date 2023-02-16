@@ -1,4 +1,5 @@
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs';
+import { Note } from "../../../app/model/note.model";
 
 const NOTE_A = {
     id: '12341234-1234-1234-1234-123412341234',
@@ -43,6 +44,8 @@ const NOTES_LIST = {
         NOTE_C,
     ]
 };
+
+const ERROR_MSG = 'Expected note service error';
 
 export const NoteServiceMock = {
     projectsListValue: NOTES_LIST,
@@ -95,7 +98,7 @@ export const NoteServiceMock = {
             );
             observer.complete();
             return {
-                unsubscribe() { }
+                unsubscribe() { return; }
             };
         });
     },
@@ -106,8 +109,37 @@ export const NoteServiceMock = {
             );
             observer.complete();
             return {
-                unsubscribe() { }
+                unsubscribe() { return; }
             };
         });
-    }
+    },
+    createNote: (noteToAdd: Note) => {
+        return new Observable((observer) => {
+            observer.next(
+                {
+                    body:[
+                        {
+                            id:'459cf3ca-7365-47a1-8d9b-1abee381545c',
+                        }
+                    ]
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() { return; }
+            };
+        });
+    },
+    errorResponse: () => {
+        return new Observable((observer) => {
+            observer.next({
+                error: ERROR_MSG
+            });
+            observer.complete();
+            return {
+                unsubscribe() { return; }
+            };
+        });
+    },
+    errorMsg: ERROR_MSG
 };
