@@ -1,11 +1,79 @@
 {
 	"info": {
-		"_postman_id": "fa8eb1f5-723b-4d17-ae6d-b29599b78ca1",
+		"_postman_id": "ada5ed5c-1a00-4865-a861-1a3609783c34",
 		"name": "LicenseServerAPIs",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8463466"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "deleteTestData",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");",
+							"",
+							"const clientId = pm.variables.get(\"CLIENTID_FULLADMIN\");",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_FULLADMIN\");",
+							"const grantType = pm.variables.get(\"grant_type\");",
+							"const scope = pm.variables.get(\"SCOPE\");",
+							"",
+							"const getTokenRequest = {",
+							"  method: 'POST',",
+							"  url: tokenUrl,",
+							"  body: {",
+							"      mode: 'formdata',",
+							"      formdata: [",
+							"          { key: 'client_id', value: clientId },",
+							"          { key: 'client_secret', value: clientSecret },",
+							"          { key: 'grant_type', value: grantType },",
+							"          { key: 'scope', value: scope}",
+							"      ]",
+							"  }",
+							"};",
+							"",
+							"pm.sendRequest(getTokenRequest, (err, response) => {",
+							"  pm.collectionVariables.set('access_token', response.json().access_token);",
+							"  console.log(\"Success\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/testData",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"testData"
+					]
+				}
+			},
+			"response": []
+		},
 		{
 			"name": "bundles",
 			"event": [

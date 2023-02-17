@@ -746,5 +746,16 @@ public class RBACVerifier {
                                 false,
                                 false,
                                 false));
+                verifiers.put(DELETE_RESIDUAL_TEST_DATA, new ExpectedPermissions(
+                                true,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false));
         }
 }
