@@ -39,6 +39,7 @@ public class TekvLSModifyFeatureToggleById {
     {
 
         Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+        final String  email = getEmailFromToken(tokenClaims, context);
         JSONArray roles = getRolesFromToken(tokenClaims,context);
         if(roles.isEmpty()){
             JSONObject json = new JSONObject();
@@ -80,7 +81,8 @@ public class TekvLSModifyFeatureToggleById {
 
         for (OPTIONAL_PARAMS param: OPTIONAL_PARAMS.values()) {
             try {
-                queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
+                if (param == OPTIONAL_PARAMS.STATUS) queryBuilder.appendValueModification(param.columnName, String.valueOf(jobj.getBoolean(param.jsonAttrib)), param.dataType);
+                else queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
                 optionalParamsFound++;
             }
             catch (Exception e) {
@@ -90,6 +92,7 @@ public class TekvLSModifyFeatureToggleById {
 
         if (optionalParamsFound == 0) return request.createResponseBuilder(HttpStatus.OK).build();
 
+        queryBuilder.appendValueModification("author", email);
         queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
         // Connect to the database
@@ -124,7 +127,6 @@ public class TekvLSModifyFeatureToggleById {
 
     private enum OPTIONAL_PARAMS {
         CUSTOMER_NAME("customerName", "customer_name", QueryBuilder.DATA_TYPE.VARCHAR),
-        AUTHOR("author", "author", QueryBuilder.DATA_TYPE.VARCHAR),
         DESCRIPTION("description", "description", QueryBuilder.DATA_TYPE.VARCHAR),
         STATUS("status", "status", QueryBuilder.DATA_TYPE.BOOLEAN),
         NAME("name", "name", QueryBuilder.DATA_TYPE.VARCHAR);

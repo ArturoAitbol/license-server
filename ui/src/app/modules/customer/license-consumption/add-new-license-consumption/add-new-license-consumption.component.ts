@@ -380,6 +380,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   submit(): void {
+    this.isDataLoading = true;
     const consumptionRequests: any[] = [];
     const stringDate = this.addLicenseConsumptionForm.value.startWeek.format("YYYY-MM-DD");
     const licenseConsumptionsObject: any = {
@@ -406,7 +407,6 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     }
 
     this.licenseConsumptionService.addLicenseConsumptionEvent(newConsumptionObject).subscribe((response: any) => {
-      this.isDataLoading = true;
       if (!response.error) {
         if (this.otherDevicesUsed.length === 0) {
           this.isDataLoading = false;

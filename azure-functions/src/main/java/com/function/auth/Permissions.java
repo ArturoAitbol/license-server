@@ -147,6 +147,7 @@ public class Permissions {
                         MODIFY_DEVICE,
                         MODIFY_BUNDLE,
                         MODIFY_FEATURE_TOGGLE,
+                        MODIFY_FEATURE_TOGGLE_EXCEPTION,
                         MODIFY_CONSUMPTION_MATRIX);
 
         public static final EnumSet<Resource> automationPlatformPermissions = EnumSet.of(

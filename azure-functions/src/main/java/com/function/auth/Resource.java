@@ -80,5 +80,6 @@ public enum Resource {
         MODIFY_SUBACCOUNT_STAKEHOLDER,//TekvLSModifySubaccountStakeholderByEmail
         MODIFY_AUTH_USER_PROFILE,//TekvLSModifyAuthUserProfile
         MODIFY_FEATURE_TOGGLE, //TekvLSModifyFeatureToggleById
-        MODIFY_CONSUMPTION_MATRIX //TekvLSModifyConsumptionMatrixById
+        MODIFY_CONSUMPTION_MATRIX, //TekvLSModifyConsumptionMatrixById
+        MODIFY_FEATURE_TOGGLE_EXCEPTION //TekvLSModifyFeatureToggleException
 }
