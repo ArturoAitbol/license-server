@@ -24,7 +24,8 @@
     "TAP_USERNAME": "spotlight@tekvizion.com",
     "TAP_PASSWORD": "spotlight123",
     "POWER_BI_CLIENT_ID": "928c5e82-089b-4c3d-8080-29a4008bcccb",
-    "POWER_BI_CLIENT_SECRET": "72h8Q~eEuk1F6ZhZ6z1xmtGQd_-r94a3QuPMaday"
+    "POWER_BI_CLIENT_SECRET": "72h8Q~eEuk1F6ZhZ6z1xmtGQd_-r94a3QuPMaday",
+    "SUB_ACCOUNT_ADMIN": "test-functional-subaccount-admin@tekvizion360.com"
   },
   "Host": {
     "LocalHttpPort": 7071,
