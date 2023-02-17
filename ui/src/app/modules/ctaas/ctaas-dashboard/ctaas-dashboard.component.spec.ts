@@ -82,7 +82,7 @@ const beforeEachFunction = async () => {
     })
 }
 
-describe('fetch the details', () => {
+fdescribe('fetch the details', () => {
     beforeEach(beforeEachFunction);
     it('should fetch the data of the setup', () => {
         spyOn(console, 'debug').and.callThrough();

@@ -54,5 +54,8 @@ export const CtaasDashboardServiceMock = {
                 unsubscribe() { }
             };
         });
+    },
+    setReports:() =>{
+
     }
 };
