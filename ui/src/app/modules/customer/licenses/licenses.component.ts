@@ -1,10 +1,8 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-import { Router } from '@angular/router';
 import { License } from 'src/app/model/license.model';
 import { TableColumn } from 'src/app/model/table-column.model';
-import { CustomerService } from 'src/app/services/customer.service';
 import { LicenseService } from 'src/app/services/license.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { AddLicenseComponent } from './add-license/add-license.component';
@@ -48,11 +46,9 @@ export class LicensesComponent implements OnInit {
   actionMenuOptions: any = [];
 
   constructor(
-    private customerService: CustomerService,
     private licenseService: LicenseService,
     private dialogService: DialogService,
     private snackBarService: SnackBarService,
-    private router: Router,
     public dialog: MatDialog,
     private msalService: MsalService,
     private subaccountService: SubAccountService
@@ -84,10 +80,17 @@ export class LicensesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getCutomerDetails();
     this.calculateTableHeight();
     this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.fetchLicenses();
     this.getActionMenuOptions();
+  }
+
+  getCutomerDetails() {
+    this.subaccountService.subaccountData.subscribe(subaccountResp => {
+      this.customerSubaccountDetails = subaccountResp
+    });
   }
 
   openDialog(component: any, data?: any): void {

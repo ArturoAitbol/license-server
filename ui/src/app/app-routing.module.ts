@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, ExtraOptions } from '@angular/router';
 import { LoginPageComponent } from './views/login-page/login-page.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent } from './customer-dashboard/customer-dashboard.component';
 import { MsalGuard } from '@azure/msal-angular';
 import { RoleGuard } from './security/role.guard';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';

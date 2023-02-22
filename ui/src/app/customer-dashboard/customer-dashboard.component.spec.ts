@@ -8,7 +8,7 @@ import { CustomerService } from '../services/customer.service';
 import { DialogService } from '../services/dialog.service';
 import { LicenseService } from '../services/license.service';
 import { SubAccountService } from '../services/sub-account.service';
-import { DashboardComponent } from './dashboard.component';
+import { DashboardComponent } from './customer-dashboard.component';
 import { SharedModule } from '../modules/shared/shared.module';
 import { DataTableComponent } from '../generics/data-table/data-table.component';
 import { AddCustomerAccountModalComponent } from '../modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
@@ -517,14 +517,14 @@ describe('.columnAction()', () => {
 
         selectedTestData.columnName = 'Subaccount';
         dashboardComponentTestInstance.columnAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekToken Consumption view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         dashboardComponentTestInstance.columnAction(selectedTestData);
         expect(dashboardComponentTestInstance.openLicenseConsumption).toHaveBeenCalledWith(selectedTestData.selectedRow);
     });
 
-    it('should make a call to openLicenseDetails or snackBarService if the column name is "Subaccount"', () => {
+    it('should make a call to openLicenseDetails or snackBarService if the column name is "Subaccount"',  () => {
         const selectedTestData: { selectedRow: any, selectedIndex: string, columnName: string } = {
             selectedRow: {
                 status: undefined
@@ -534,10 +534,23 @@ describe('.columnAction()', () => {
         };
         spyOn(dashboardComponentTestInstance, 'openLicenseDetails').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar');
-
+        
         selectedTestData.columnName = 'Subscription Status';
         dashboardComponentTestInstance.columnAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
+    });
+
+    it('should make a call to openLicenseDetails',  () => {
+        const selectedTestData: { selectedRow: any, selectedIndex: string, columnName: string } = {
+            selectedRow: {
+                status: undefined,
+                subaccountId:'565e134e-62ef-4820-b077-2d8a6f628702'
+            },
+            selectedIndex: 'testSelectedIndex',
+            columnName: 'Subscription Status'
+        };
+        spyOn(dashboardComponentTestInstance, 'openLicenseDetails').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar');
 
         selectedTestData.selectedRow.status = 'not undefined';
         dashboardComponentTestInstance.columnAction(selectedTestData);
@@ -549,11 +562,17 @@ describe('.columnAction()', () => {
 describe('Filtering table rows', () => {
     beforeEach(beforeEachFunction);
     it('should filter the rows in the table based on the name, type and status filters', async () => {
-        dashboardComponentTestInstance.filterForm.patchValue({ customerFilterControl: "Amazon", typeFilterControl: "MSP", subStatusFilterControl: "Inactive" });
+        sessionStorage.setItem("customerFilter",'2Degrees');
+        sessionStorage.setItem("typeFilter", 'MSP');
+        sessionStorage.setItem("statusFilter", 'Active');
+        dashboardComponentTestInstance.filterForm.setValue({ customerFilterControl: "2Degrees", typeFilterControl: "MSP", subStatusFilterControl: "Active" });
+        dashboardComponentTestInstance.filterForm.controls['customerFilterControl'].setValue(sessionStorage.getItem("customerFilter"));
+        dashboardComponentTestInstance.filterForm.controls['typeFilterControl'].setValue(sessionStorage.getItem("typeFilter"));
+        dashboardComponentTestInstance.filterForm.controls['subStatusFilterControl'].setValue(sessionStorage.getItem("statusFilter"));
         fixture.detectChanges();
         await fixture.whenStable();
         expect(dashboardComponentTestInstance.filteredCustomerList.length).toBe(1);
-        const objectToCompare: any = { "customerType": "MSP", "testCustomer": false, "name": "Amazon", "id": "aa85399d-1ce9-425d-9df7-d6e8a8baaec2", "subaccountName": "360 Custom (No Tokens)", "subaccountId": "24372e49-5f31-4b38-bc3e-fb6a5c371623", "status": "Inactive" };
+        const objectToCompare: any = { customerType: 'MSP', testCustomer: true, name: '2Degrees', id: '58223065-c200-4f6b-be1a-1579b4eb4971', services: 'tokenConsumption,spotlight', status:'Active'};
         objectToCompare.services = tekVizionServices.tekTokenConstumption + ',' + tekVizionServices.SpotLight;
         expect(dashboardComponentTestInstance.filteredCustomerList[0]).toEqual(objectToCompare);
     });
