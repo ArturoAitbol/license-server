@@ -114,7 +114,6 @@ describe('AddFeatureToggleExceptionModalComponent - UI verification tests', () =
     expect(featureToggleLabel.textContent).toBe('Feature Toggle');
     expect(descriptionLabel.textContent).toBe('Subaccount');
     expect(enabledToggle.textContent).toBe(' Enabled');
-    console.log(cancelBtn)
     expect(cancelBtn.textContent).toBe('Cancel');
     expect(submitBtn.textContent).toBe('Submit');
   });

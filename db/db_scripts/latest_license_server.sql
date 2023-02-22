@@ -239,7 +239,8 @@ CREATE TABLE public.device (
     deprecated_date timestamp without time zone DEFAULT 'infinity'::timestamp without time zone,
     subaccount_id uuid,
     tombstone boolean DEFAULT false,
-    support_type boolean DEFAULT false
+    support_type boolean DEFAULT false,
+    comment character varying
 );
 
 

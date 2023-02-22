@@ -1,8 +1,8 @@
-import {HttpClient, HttpParams, HttpHeaders} from '@angular/common/http';
-import {DevicesService} from './devices.service';
-import {environment} from '../../environments/environment';
-import {Device} from "../model/device.model";
-import {DevicesServiceMock} from '../../test/mock/services/devices-service.mock';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { DevicesService } from './devices.service';
+import { environment } from '../../environments/environment';
+import { Device } from "../model/device.model";
+import { DevicesServiceMock } from '../../test/mock/services/devices-service.mock';
 
 let httpClientSpy: jasmine.SpyObj<HttpClient>;
 let devicesService: DevicesService;
@@ -35,20 +35,20 @@ describe('Customer service http requests test', () => {
         });
         expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/devices', { headers, params });
 
-        devicesService.getDevicesList(null,'Panasonic').subscribe({
+        devicesService.getDevicesList(null, 'Panasonic').subscribe({
             next: () => { done(); },
             error: done.fail
         });
         expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/devices', { headers, params });
 
-        devicesService.getDevicesList(null,null,'PBX').subscribe({
+        devicesService.getDevicesList(null, null, 'PBX').subscribe({
             next: () => { done(); },
             error: done.fail
         });
         expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/devices', { headers, params });
 
 
-        devicesService.getDevicesList(null,null,null).subscribe({
+        devicesService.getDevicesList(null, null, null).subscribe({
             next: () => { done(); },
             error: done.fail
         });
@@ -77,17 +77,18 @@ describe('Customer service http requests test', () => {
     it('should make the proper http calls on updateDevice())', (done: DoneFn) => {
         const date = new Date();
         const updateDevice: Device = {
-                supportType: false,
-                product: "OfficeServ 7100",
-                vendor: "Samsung",
-                granularity: "week",
-                id: "4119fcd9-b40f-40a1-9d72-0d6f84db04b2",
-                version: "5.0.3",
-                tokensToConsume: 2,
-                type: "test",
-                deprecatedDate: "29-05-2022",
-                startDate: date,
-                subaccountId: "4119fcd9-b40f-40a1-9d72-0d6f84db04b2"
+            supportType: false,
+            product: "OfficeServ 7100",
+            vendor: "Samsung",
+            granularity: "week",
+            id: "4119fcd9-b40f-40a1-9d72-0d6f84db04b2",
+            version: "5.0.3",
+            tokensToConsume: 2,
+            type: "test",
+            deprecatedDate: "29-05-2022",
+            startDate: date,
+            comment: "",
+            subaccountId: "4119fcd9-b40f-40a1-9d72-0d6f84db04b2"
         };
         httpClientSpy.put.and.returnValue(DevicesServiceMock.updateDevice(updateDevice));
         devicesService.updateDevice(updateDevice).subscribe({
@@ -110,8 +111,9 @@ describe('Customer service http requests test', () => {
             type: "test",
             deprecatedDate: "29-05-2022",
             startDate: date,
+            comment: "",
             subaccountId: "4119fcd9-b40f-40a1-9d72-0d6f84db04b2"
-    };
+        };
         httpClientSpy.post.and.returnValue(DevicesServiceMock.createDevice(deviceToCreate));
         devicesService.createDevice(deviceToCreate).subscribe({
             next: () => { done(); },
@@ -119,7 +121,7 @@ describe('Customer service http requests test', () => {
         });
         expect(httpClientSpy.post).toHaveBeenCalledWith(environment.apiEndpoint + '/devices', deviceToCreate);
     });
-    
+
     it('should make the proper calls on getDevicesTypesList()', (done: DoneFn) => {
         httpClientSpy.get.and.returnValue(DevicesServiceMock.getDevicesTypesList());
 

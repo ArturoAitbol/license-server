@@ -70,6 +70,7 @@ describe('UI and component verification tests', () => {
     expect(labels.find(label => label.textContent.includes("Version"))).not.toBeUndefined();
     expect(labels.find(label => label.textContent.includes("Granularity"))).not.toBeUndefined();
     expect(labels.find(label => label.textContent.includes("Tokens to Consume"))).not.toBeUndefined();
+    expect(labels.find(label => label.textContent.includes("Comment"))).not.toBeUndefined();
   });
 });
 
@@ -77,7 +78,7 @@ describe('FormGroup verification tests', () => {
 
   beforeEach(beforeEachFunction);
 
-  it('should create a formGroup with the necesary controls', () => {
+  it('should create a formGroup with the necessary controls', () => {
     expect(addDeviceComponentTestInstance.addDeviceForm.contains('startDate')).toBeTrue();
     expect(addDeviceComponentTestInstance.addDeviceForm.contains('type')).toBeTrue();
     expect(addDeviceComponentTestInstance.addDeviceForm.contains('vendor')).toBeTrue();
@@ -86,6 +87,7 @@ describe('FormGroup verification tests', () => {
     expect(addDeviceComponentTestInstance.addDeviceForm.contains('granularity')).toBeTrue();
     expect(addDeviceComponentTestInstance.addDeviceForm.contains('tokensToConsume')).toBeTrue();
     expect(addDeviceComponentTestInstance.addDeviceForm.contains('supportType')).toBeTrue();
+    expect(addDeviceComponentTestInstance.addDeviceForm.contains('comment')).toBeTrue();
   });
 
   it('should make all the controls required', () => {
@@ -98,6 +100,7 @@ describe('FormGroup verification tests', () => {
       version: '',
       granularity: '',
       tokensToConsume: '',
+      comment: '',
       supportType: ''
     });
 
@@ -107,6 +110,7 @@ describe('FormGroup verification tests', () => {
     expect(addDeviceForm.get('product').valid).toBeFalse();
     expect(addDeviceForm.get('version').valid).toBeFalse();
     expect(addDeviceForm.get('granularity').valid).toBeFalse();
+    expect(addDeviceForm.get('comment').valid).toBeTrue();
     expect(addDeviceForm.get('tokensToConsume').valid).toBeFalse();
   });
 });

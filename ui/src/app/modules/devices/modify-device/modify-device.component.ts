@@ -33,6 +33,7 @@ export class ModifyDeviceComponent implements OnInit {
     version: ['', Validators.required],
     granularity: ['', Validators.required],
     tokensToConsume: ['', Validators.required],
+    comment: [''],
     supportType: [false],
   });
 

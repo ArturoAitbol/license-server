@@ -134,6 +134,7 @@ public class TekvLSGetAllDevices {
 				item.put("supportType", rs.getBoolean("support_type"));
 				item.put("tokensToConsume", rs.getInt("tokens_to_consume"));
 				item.put("granularity", rs.getString("granularity"));
+				item.put("comment", rs.getString("comment"));
 				// Required for list devices
 				item.put("type", rs.getString("type"));
 				item.put("startDate", rs.getString("start_date"));

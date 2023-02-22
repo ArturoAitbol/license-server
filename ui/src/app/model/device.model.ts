@@ -9,5 +9,6 @@ export interface Device {
     deprecatedDate: string;
     startDate: Date;
     subaccountId: string;
+    comment: string;
     supportType: boolean;
 }

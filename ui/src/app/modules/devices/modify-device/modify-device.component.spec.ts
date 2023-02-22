@@ -41,6 +41,7 @@ const currentDevice: Device = {
     deprecatedDate: "",
     startDate: new Date(),
     subaccountId: "",
+    comment: "No Comments",
     supportType: true
 }
 
@@ -155,6 +156,7 @@ describe('modify device details interactions', () => {
         modifyDeviceComponentTestInstance.modifyDeviceForm.get('version').setValue('6.2');
         modifyDeviceComponentTestInstance.modifyDeviceForm.get('granularity').setValue('static');
         modifyDeviceComponentTestInstance.modifyDeviceForm.get('tokensToConsume').setValue('2');
+        modifyDeviceComponentTestInstance.modifyDeviceForm.get('comment').setValue('One Comment');
         modifyDeviceComponentTestInstance.modifyDeviceForm.get('supportType').setValue(true);
         fixture.detectChanges();
         modifyDeviceComponentTestInstance.modifyDevice();
@@ -199,6 +201,7 @@ describe('modify device FormGroup verifications', () => {
         expect(modifyDeviceComponentTestInstance.modifyDeviceForm.get('product')).toBeTruthy();
         expect(modifyDeviceComponentTestInstance.modifyDeviceForm.get('version')).toBeTruthy();
         expect(modifyDeviceComponentTestInstance.modifyDeviceForm.get('granularity')).toBeTruthy();
+        expect(modifyDeviceComponentTestInstance.modifyDeviceForm.get('comment')).toBeTruthy();
         expect(modifyDeviceComponentTestInstance.modifyDeviceForm.get('tokensToConsume')).toBeTruthy();
 
 
@@ -216,6 +219,7 @@ describe('modify device FormGroup verifications', () => {
             tokensToConsume: 0,
             deprecatedDate: "",
             startDate: "",
+            comment: "",
             supportType: true
         });
         expect(modifyDevice.get('id').valid).toBeFalse();
@@ -227,6 +231,7 @@ describe('modify device FormGroup verifications', () => {
         expect(modifyDevice.get('tokensToConsume').valid).toBeTrue();
         expect(modifyDevice.get('deprecatedDate').valid).toBeTrue();
         expect(modifyDevice.get('startDate').valid).toBeFalse();
+        expect(modifyDevice.get('comment').valid).toBeTrue();
         expect(modifyDevice.get('supportType').valid).toBeTrue();
     });
 
@@ -242,6 +247,7 @@ describe('modify device FormGroup verifications', () => {
             tokensToConsume: 0,
             deprecatedDate: "",
             startDate: new Date(),
+            comment: "",
             supportType: true
         });
         fixture.detectChanges();
