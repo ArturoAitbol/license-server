@@ -54,7 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 name: 'Dashboard Legacy',
                 iconName: "assets\\images\\dashboard_3.png",
                 path: 'report-dashboards',
-                active: true,
+                active: false,
                 materialIcon: 'dashboard',
                 baseUrl: '/spotlight/',
                 isPreview: false
@@ -292,6 +292,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
                             this.displayedSideBarItems = res;
+                            this.validateSideBarItem();
                         });
                         this.enableSidebar();
                         break;
@@ -307,6 +308,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.main.subscribe(res => {
                             this.displayedSideBarItems = res;
+                            this.validateSideBarItem();
                         });
                         this.enableSidebar();
                         break;
@@ -333,7 +335,17 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.enableSidebar();
                         break;
                 }
+                this.validateSideBarItem();
             }
+        });
+    }
+
+    private validateSideBarItem() {
+        this.displayedSideBarItems.forEach((e: any) => {
+            if (e.baseUrl + e.path === this.currentRoutePath)
+                e.active = true;
+            else
+                e.active = false;
         });
     }
 
@@ -445,12 +457,6 @@ export class AppComponent implements OnInit, OnDestroy {
      * @param item: any 
      */
     onSelectedNavItem(item: any): void {
-        this.displayedSideBarItems.forEach((e: any) => {
-            if (e.name === item.name)
-                e.active = true;
-            else
-                e.active = false;
-        });
         const { baseUrl, path } = item;
         const componentRoute = baseUrl + path;
         this.router.navigate([componentRoute], { queryParams: { subaccountId: this.subaccountId } });
@@ -494,6 +500,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        if (this.previousDisplayedItemsSubscription) {
+            this.previousDisplayedItemsSubscription.unsubscribe();
+        }
         this._destroying$.next(undefined);
         this._destroying$.complete();
     }
