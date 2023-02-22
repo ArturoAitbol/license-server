@@ -10,12 +10,12 @@ public enum ActiveDirectory {
     INSTANCE;
 
     final private Properties properties = new Properties();
-    final private Logger logger = Logger.getLogger(FeatureToggles.class.getName());
+    final private Logger logger = Logger.getLogger(ActiveDirectory.class.getName());
 
 
     ActiveDirectory() {
         String environment = Optional.ofNullable(System.getenv("ENVIRONMENT_NAME")).orElse("production");
-        try (InputStream input = FeatureToggles.class.getResourceAsStream("/active-directory/active-directory." + environment + ".properties")) {
+        try (InputStream input = ActiveDirectory.class.getResourceAsStream("/active-directory/active-directory." + environment + ".properties")) {
             properties.load(input);
         } catch (IOException ex) {
             logger.warning("Could not load the Active Directory properties for" + environment);
