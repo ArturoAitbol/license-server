@@ -42,6 +42,7 @@ public enum Resource {
         DELETE_NOTE,//TekvLSDeleteNoteById
         DELETE_SUBACCOUNT_ADMIN_DEVICE, // TekvLSDeleteSubaccountAdminDevice
         DELETE_CONSUMPTION_MATRIX, //TekvLSDeleteConsumptionMatrix
+        DELETE_RESIDUAL_TEST_DATA, //TekvLSDeleteResidualTestData
 
         // READ
         GET_ALL_BUNDLES,//TekvLSGetAllBundles
