@@ -321,6 +321,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.isDetailedConsumptionLoadingResults = true;
       this.isDetailedConsumptionRequestCompleted = false;
       this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
+        res['usage'].forEach(item => {
+          item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
+          item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
+        });
         this.detailedConsumptionData = this.formatUsageDays(res.usage);
         this.detailedConsumptionDataLength = res.usageTotalCount;
         this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
@@ -331,10 +335,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         this.isDetailedConsumptionSupplementalRequestCompleted = true;
         this.isDetailedConsumptionLoadingResults = false;
         this.isDetailedConsumptionRequestCompleted = true;
-        res['usage'].forEach(item => {
-          item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
-          item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
-        });
         this.listDetailedConsumptionBK = [...res['usage']];
         this.weeklyConsumptionDataBK = [...res['weeklyConsumption']];
         this.projectConsumptionDataBK = [...res['projectConsumption']];
