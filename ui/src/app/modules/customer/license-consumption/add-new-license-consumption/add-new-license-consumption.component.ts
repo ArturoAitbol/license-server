@@ -443,8 +443,10 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
       } else {
         this.snackBarService.openSnackBar(response.error, 'Error adding license consumption!');
         this.isDataLoading = false;
-        this.dialogRef.close(true);
       }
+    }, error => {
+      console.log(error);
+      this.isDataLoading = false;
     });
   }
 
