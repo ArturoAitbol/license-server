@@ -24,7 +24,7 @@ Feature: LicensesConsumption
     And I open the Add Subscription form from Consumption View
     When I create a subscription with the following data
       | startDate         | 8/20/2022 |
-      | renewalDate       | 2/20/2023 |
+      | renewalDate       | 2/20/2025 |
       | subscriptionType  | Basic     |
       | description       | License1  |
     Then I should see the message "Subscription added successfully!"
