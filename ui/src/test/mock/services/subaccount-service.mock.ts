@@ -1,4 +1,4 @@
-import {Observable, throwError} from 'rxjs';
+import {Observable, Subject, throwError} from 'rxjs';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 
 const TEST_SUBACCOUNT_1 = {
@@ -345,8 +345,10 @@ const SUBACCOUNT_LIST = {
     ]
 };
 const ERROR_MSG = 'Expected subaccount response error';
+const subaccountData =  new Subject<any>()
 
 export const SubaccountServiceMock = {
+    subaccountData: subaccountData,
     subAccountListValue: SUBACCOUNT_LIST,
     testSubaccount1: TEST_SUBACCOUNT_1,
     testSubaccount2: TEST_SUBACCOUNT_2,
@@ -430,12 +432,14 @@ export const SubaccountServiceMock = {
         }
     },
     setSelectedSubAccount: () => {
-        return {
+        subaccountData.next({
             id: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
             name: "testv2Demo",
             customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
-            services: 'spotlight',
+            services: "tokenConsumption,spotlight",
+            testCustomer: false,
+            companyName:"testComp",
             customerName: "testName"
-        }
+        })
     }
 };

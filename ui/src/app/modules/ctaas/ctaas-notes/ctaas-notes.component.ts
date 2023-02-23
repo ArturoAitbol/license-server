@@ -13,7 +13,7 @@ import { CtaasHistoricalDashboardComponent } from '../ctaas-historical-dashboard
 import { DatePipe } from '@angular/common';
 
 @Component({
-    selector: 'spotlight-notes',
+    selector: 'app-ctaas-notes',
     templateUrl: './ctaas-notes.component.html',
     styleUrls: ['./ctaas-notes.component.css'],
     providers: [ DatePipe ]

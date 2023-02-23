@@ -12,7 +12,7 @@ import { LoginPageComponent } from './views/login-page/login-page.component';
 import { LoadingComponent } from './generics/loading/loading.component';
 import { ErrorInterceptor } from './helpers/error.interceptor';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent } from './customer-dashboard/customer-dashboard.component';
 import { MaterialModule } from './modules/material/material.module';
 import { AddCustomerAccountModalComponent } from './modules/dashboard-customer/add-customer-account-modal/add-customer-account-modal.component';
 import { AddSubaccountModalComponent } from './modules/dashboard-customer/add-subaccount-modal/add-subaccount-modal.component';
@@ -35,6 +35,10 @@ import { SubscriptionsOverviewComponent } from './modules/subscriptions-overview
 import { ViewProfileComponent } from './generics/view-profile/view-profile.component';
 import { ConsumptionMatrixComponent } from './modules/consumption-matrix/consumption-matrix.component';
 import { FeatureToggleService } from "./services/feature-toggle.service";
+import { FeatureTogglesComponent } from './modules/feature-toggles/feature-toggles.component';
+import { FeatureToggleCardComponent } from './modules/feature-toggles/feature-toggle-card/feature-toggle-card.component';
+import { AddFeatureToggleModalComponent } from './modules/feature-toggles/add-feature-toggle-modal/add-feature-toggle-modal.component';
+import { AddFeatureToggleExceptionModalComponent } from './modules/feature-toggles/add-feature-toggle-exception-modal/add-feature-toggle-exception-modal.component';
 
 @NgModule({
     declarations: [
@@ -55,6 +59,10 @@ import { FeatureToggleService } from "./services/feature-toggle.service";
         ViewProfileComponent,
         SubscriptionsOverviewComponent,
         ConsumptionMatrixComponent,
+        FeatureTogglesComponent,
+        FeatureToggleCardComponent,
+        AddFeatureToggleModalComponent,
+        AddFeatureToggleExceptionModalComponent,
     ],
     imports: [
         AppRoutingModule,

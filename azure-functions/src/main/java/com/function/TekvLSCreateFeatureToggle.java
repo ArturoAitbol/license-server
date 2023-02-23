@@ -30,6 +30,7 @@ public class TekvLSCreateFeatureToggle {
             final ExecutionContext context) {
 
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+        final String  email = getEmailFromToken(tokenClaims, context);
         JSONArray roles = getRolesFromToken(tokenClaims, context);
         if (roles.isEmpty()) {
             JSONObject json = new JSONObject();
@@ -93,7 +94,7 @@ public class TekvLSCreateFeatureToggle {
             insertStatement.setBoolean(1, jobj.getBoolean(MANDATORY_PARAMS.STATUS.value));
             insertStatement.setString(2, jobj.getString(MANDATORY_PARAMS.NAME.value));
 
-            insertStatement.setString(3, jobj.has(OPTIONAL_PARAMS.AUTHOR.value) ? jobj.getString(OPTIONAL_PARAMS.AUTHOR.value) : null);
+            insertStatement.setString(3, email);
             insertStatement.setString(4, jobj.has(OPTIONAL_PARAMS.DESCRIPTION.value) ? jobj.getString(OPTIONAL_PARAMS.DESCRIPTION.value) : null);
 
             // Insert
@@ -141,7 +142,6 @@ public class TekvLSCreateFeatureToggle {
     }
 
     private enum OPTIONAL_PARAMS {
-        AUTHOR("author"),
         DESCRIPTION("description");
 
         private final String value;

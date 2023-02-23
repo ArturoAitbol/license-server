@@ -5,7 +5,7 @@ import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { DataTableComponent } from 'src/app/generics/data-table/data-table.component';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
@@ -112,6 +112,7 @@ const beforeEachFunction =  async  () => {
             companyName:"testComp",
             customerName:"testName"
         });
+        spyOn(SubaccountServiceMock, 'setSelectedSubAccount').and.callThrough();
     });
 }
 
