@@ -63,6 +63,9 @@
                                 <br>
                                 <label class="subtitle">Device:</label>
                                 <label>{{item.product}}</label>
+                                <br>
+                                <label class="subtitle">Comment:</label>
+                                <label>{{item.comment}}</label>
                                 <div>
                                     <section>
                                         <mat-checkbox class="checkbox-margin"
@@ -77,7 +80,7 @@
                                 <div>
                                     <mat-form-field appearance="outline">
                                         <mat-label>Device Type</mat-label>
-                                        <mat-select formControlName="deviceType"  (valueChange)="onChangeType($event)">
+                                        <mat-select formControlName="deviceType" (valueChange)="onChangeType($event)">
                                             <mat-option *ngFor="let type of deviceTypes" [value]="type">
                                                 {{type}}
                                             </mat-option>
@@ -127,6 +130,14 @@
                                         <mat-hint class="d-flex justify-content-start hint mb-1"
                                             *ngIf="!isWeekDefined()">
                                             Please select a Consumption Week first</mat-hint>
+                                    </section>
+                                </div>
+                                <div>
+                                    <section class="mt-3">
+                                        <mat-form-field class="example-full-width" appearance="outline">
+                                            <mat-label>Comment</mat-label>
+                                            <textarea matInput formControlName="comment" id="comment-input"></textarea>
+                                        </mat-form-field>
                                     </section>
                                 </div>
                                 <div class="mt-3">
