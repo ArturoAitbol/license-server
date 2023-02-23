@@ -19,7 +19,7 @@ export class CustomerService {
   setSelectedCustomer(customer: any) { this.selectedCustomer = customer; }
 
   getSelectedCustomer() {
-    return (this.selectedCustomer) ? this.selectedCustomer : JSON.parse(localStorage.getItem(Constants.SELECTED_CUSTOMER));
+    return (this.selectedCustomer) ? this.selectedCustomer : JSON.parse(sessionStorage.getItem(Constants.SELECTED_CUSTOMER));
   }
 
   setSelectedType(type: string) { this.selectedType = type; }

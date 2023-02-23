@@ -1,6 +1,6 @@
 <div class="container" style="text-align: center;">
     <h1 mat-dialig-title id="main-title">Edit tekToken Consumption</h1>
-    <h3 *lcCheckAccessFor="'auditInfo'">Modified By: {{currentCustomer.modifiedBy}}</h3>
+    <h3 *lcCheckAccessFor="'auditInfo'">Modified By: {{customerSubaccountDetails.modifiedBy}}</h3>
     <form [formGroup]="updateForm" (ngSubmit)="submit()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">

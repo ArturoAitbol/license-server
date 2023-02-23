@@ -415,6 +415,7 @@ export class AppComponent implements OnInit, OnDestroy {
     logout() {
         try {
             this.msalService.logout();
+            sessionStorage.clear();
         } catch (error) {
             console.error('error while logout: ', error);
         }
