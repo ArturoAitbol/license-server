@@ -13,8 +13,8 @@
         </div>
     </div>
     <div>
-        <div class="mt-3 mb-2" *ngFor="let ft of featureToggles">
-            <app-feature-toggle-card [featureToggle]="ft" (reloadFeatureToggles)="reloadFeatureToggles()">
+        <div class="mt-3 mb-2" *ngFor="let ft of featureToggles; trackBy: ftTrackBy">
+            <app-feature-toggle-card [id]="ft.id" [featureToggle]="ft" (reloadFeatureToggles)="reloadFeatureToggles()">
             </app-feature-toggle-card>
         </div>
     </div>
