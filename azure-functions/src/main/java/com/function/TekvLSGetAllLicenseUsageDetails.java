@@ -184,7 +184,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					JSONArray array = new JSONArray();
 
 					//Initialize query builder
-					SelectQueryBuilder queryBuilder = new SelectQueryBuilder("select d.id,d.vendor,d.product,d.version from device d, license_consumption lc where d.id=lc.device_id", true);
+					SelectQueryBuilder queryBuilder = new SelectQueryBuilder("select d.id,d.vendor,d.product,d.version from device d, license_consumption lc where (d.id=lc.device_id OR d.id=lc.calling_platform_id)", true);
 
 					// Append common conditions to builder
 					for (Condition<String, String> commonCondition: commonConditions) {
