@@ -724,11 +724,33 @@ public class RBACVerifier {
                                 false,
                                 false,
                                 false));
+                verifiers.put(MODIFY_FEATURE_TOGGLE_EXCEPTION, new ExpectedPermissions(
+                        false,
+                        false,
+                        false,
+                        true,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false));
                 verifiers.put(MODIFY_CONSUMPTION_MATRIX, new ExpectedPermissions(
                                 false,
                                 false,
                                 false,
                                 true,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false));
+                verifiers.put(DELETE_RESIDUAL_TEST_DATA, new ExpectedPermissions(
+                                true,
+                                false,
+                                false,
+                                false,
                                 false,
                                 false,
                                 false,

@@ -104,12 +104,19 @@ export class ProjectsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getCutomerDetails();
     this.calculateTableHeight();
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.projectService.setSelectedSubAccount(this.customerSubaccountDetails.id);
     this.fetchProjects(true);
     this.getActionMenuOptions();
+  }
+
+  getCutomerDetails() {
+    this.subaccountService.subaccountData.subscribe(subaccountResp => {
+      this.customerSubaccountDetails = subaccountResp
+    });
   }
 
   openDialog(component: any, data?: any): void {

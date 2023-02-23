@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, ExtraOptions } from '@angular/router';
 import { LoginPageComponent } from './views/login-page/login-page.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent } from './customer-dashboard/customer-dashboard.component';
 import { MsalGuard } from '@azure/msal-angular';
 import { RoleGuard } from './security/role.guard';
 import { NoPermissionsPageComponent } from './views/no-permissions-page/no-permissions-page.component';
@@ -11,6 +11,7 @@ import { RedirectPageComponent } from './redirect-page/redirect-page.component';
 import { DevicesComponent } from './modules/devices/devices.component';
 import { SubscriptionsOverviewComponent } from "./modules/subscriptions-overview/subscriptions-overview.component";
 import { ConsumptionMatrixComponent } from "./modules/consumption-matrix/consumption-matrix.component";
+import { FeatureTogglesComponent } from "./modules/feature-toggles/feature-toggles.component";
 
 const config: ExtraOptions = {
   onSameUrlNavigation: 'reload',
@@ -36,6 +37,7 @@ const routes: Routes = [
     loadChildren: () => import('./modules/ctaas/ctaas.module').then(m => m.CtaasModule)
   },
   { path: 'devices', component: DevicesComponent, canActivate: [MsalGuard, RoleGuard] },
+  { path: 'feature-toggles', component: FeatureTogglesComponent, canActivate: [ MsalGuard, RoleGuard, FeatureToggleGuard ] },
   { path: '**', redirectTo: 'redirect' }
 ];
 

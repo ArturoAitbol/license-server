@@ -6,13 +6,13 @@ import { forkJoin, Observable } from 'rxjs';
 import { Device } from 'src/app/model/device.model';
 import { map, startWith } from 'rxjs/operators';
 import { Project } from 'src/app/model/project.model';
-import { CustomerService } from 'src/app/services/customer.service';
 import { DevicesService } from 'src/app/services/devices.service';
 import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { AddProjectComponent } from '../../projects/add-project/add-project.component';
 import { AddLicenseConsumptionComponent } from '../add-license-consumption/add-license-consumption.component';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-add-new-license-consumption',
@@ -90,23 +90,23 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     vendor: ['', Validators.required],
     product: ['', [this.RequireMatch]]
   });
-  currentCustomer: any;
+  customerSubaccountDetails: any;
   isDataLoading = false;
 
   constructor(
-    private customerService: CustomerService,
     private deviceService: DevicesService,
     private projectService: ProjectService,
     private licenseConsumptionService: LicenseConsumptionService,
     private snackBarService: SnackBarService,
     private formBuilder: FormBuilder,
     public dialog: MatDialog,
+    private subaccountService: SubAccountService,
     public dialogRef: MatDialogRef<AddLicenseConsumptionComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit(): void {
-    this.currentCustomer = this.customerService.getSelectedCustomer();
-    this.projectService.setSelectedSubAccount(this.currentCustomer.subaccountId);
+    this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.projectService.setSelectedSubAccount(this.customerSubaccountDetails.id);
     this.fetchData();
     if (this.data) {
       this.startDate = new Date(this.data.startDate + " 00:00:00");
@@ -119,11 +119,11 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
   */
   fetchData(): void {
     this.isDataLoading = true;
-    const subaccountId = this.currentCustomer.subaccountId;
+    const subaccountId = this.customerSubaccountDetails.id;
     forkJoin([
       this.deviceService.getAllDeviceVendors(),
       this.deviceService.getDevicesTypesList(),
-      this.projectService.getProjectDetailsByLicense(subaccountId, this.currentCustomer.licenseId, 'Open')
+      this.projectService.getProjectDetailsByLicense(subaccountId, this.customerSubaccountDetails.licenseId, 'Open')
     ]).subscribe((res: any) => {
       const resDataObject: any = res.reduce((current: any, next: any) => {
         return { ...current, ...next };
@@ -215,7 +215,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   fetchProjects(): void {
     this.isDataLoading = true;
-    this.projectService.getProjectDetailsByLicense(this.currentCustomer.subaccountId, this.currentCustomer.licenseId, 'Open').subscribe((res: any) => {
+    this.projectService.getProjectDetailsByLicense(this.customerSubaccountDetails.id, this.customerSubaccountDetails.licenseId, 'Open').subscribe((res: any) => {
       this.projects = res['projects'];
       this.addLicenseConsumptionForm.patchValue({ project: '' });
       this.isDataLoading = false;
@@ -264,7 +264,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
    */
   onChangeVendor(value: any): void {
     this.isDataLoading = true;
-    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value, this.selectedDutType).subscribe(res => {
+    this.deviceService.getDevicesList(this.customerSubaccountDetails.id, value, this.selectedDutType).subscribe(res => {
       this.filterVendorDevices(res['devices']);
       this.addDutForm.patchValue({ product: '' });
       this.addDutForm.controls['product'].enable();
@@ -274,7 +274,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   onChangeCallingPlatformVendor(value: any): void {
     this.isDataLoading = true;
-    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value, this.selectedCallingPlatformType).subscribe(res => {
+    this.deviceService.getDevicesList(this.customerSubaccountDetails.id, value, this.selectedCallingPlatformType).subscribe(res => {
       this.filterCallingPlatformVendorDevices(res['devices']);
       this.addCallingPlatformForm.patchValue({ product: '' });
       this.addCallingPlatformForm.controls['product'].enable();
@@ -284,7 +284,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
 
   onChangeDeviceVendor(value: any): void {
     this.isDataLoading = true;
-    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value, this.selectedDeviceType).subscribe(res => {
+    this.deviceService.getDevicesList(this.customerSubaccountDetails.id, value, this.selectedDeviceType).subscribe(res => {
       this.filterOtherVendorDevices(res['devices']);
       this.addDeviceForm.patchValue({ product: '' });
       this.addDeviceForm.controls['product'].enable();
@@ -384,7 +384,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     const consumptionRequests: any[] = [];
     const stringDate = this.addLicenseConsumptionForm.value.startWeek.format("YYYY-MM-DD");
     const licenseConsumptionsObject: any = {
-      subaccountId: this.currentCustomer.subaccountId,
+      subaccountId: this.customerSubaccountDetails.id,
       projectId: this.addLicenseConsumptionForm.value.project.id,
       consumptionDate: stringDate,
       type: "Configuration",

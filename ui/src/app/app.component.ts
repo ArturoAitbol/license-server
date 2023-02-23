@@ -54,7 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 name: 'Dashboard Legacy',
                 iconName: "assets\\images\\dashboard_3.png",
                 path: 'report-dashboards',
-                active: true,
+                active: false,
                 materialIcon: 'dashboard',
                 baseUrl: '/spotlight/',
                 isPreview: false
@@ -143,6 +143,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/',
                 isPreview: false
             },
+            {
+                name: 'Feature Toggles',
+                path: 'feature-toggles',
+                active: false,
+                materialIcon: 'toggle_on',
+                baseUrl: '/',
+                isPreview: false
+            },
         ]
     };
     allowedSideBarItems = {
@@ -175,6 +183,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private subaccountId: any;
     readonly DEVICES = '/devices';
     readonly CONSUMPTION_MATRIX = '/consumption-matrix';
+    readonly FEATURE_TOGGLES = '/feature-toggles';
 
     private _mobileQueryListener: () => void;
 
@@ -283,6 +292,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
                             this.displayedSideBarItems = res;
+                            this.validateSideBarItem();
                         });
                         this.enableSidebar();
                         break;
@@ -290,6 +300,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.SUBSCRIPTIONS_OVERVIEW:
                     case this.DEVICES:
                     case this.CONSUMPTION_MATRIX:
+                    case this.FEATURE_TOGGLES:
                         this.tabName = Constants.TEK_TOKEN_TOOL_BAR;
                         this.hideToolbar = false;
                         if (this.previousDisplayedItemsSubscription) {
@@ -297,6 +308,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.main.subscribe(res => {
                             this.displayedSideBarItems = res;
+                            this.validateSideBarItem();
                         });
                         this.enableSidebar();
                         break;
@@ -323,7 +335,17 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.enableSidebar();
                         break;
                 }
+                this.validateSideBarItem();
             }
+        });
+    }
+
+    private validateSideBarItem() {
+        this.displayedSideBarItems.forEach((e: any) => {
+            if (e.baseUrl + e.path === this.currentRoutePath)
+                e.active = true;
+            else
+                e.active = false;
         });
     }
 
@@ -393,6 +415,7 @@ export class AppComponent implements OnInit, OnDestroy {
     logout() {
         try {
             this.msalService.logout();
+            sessionStorage.clear();
         } catch (error) {
             console.error('error while logout: ', error);
         }
@@ -435,12 +458,6 @@ export class AppComponent implements OnInit, OnDestroy {
      * @param item: any 
      */
     onSelectedNavItem(item: any): void {
-        this.displayedSideBarItems.forEach((e: any) => {
-            if (e.name === item.name)
-                e.active = true;
-            else
-                e.active = false;
-        });
         const { baseUrl, path } = item;
         const componentRoute = baseUrl + path;
         this.router.navigate([componentRoute], { queryParams: { subaccountId: this.subaccountId } });
@@ -484,6 +501,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        if (this.previousDisplayedItemsSubscription) {
+            this.previousDisplayedItemsSubscription.unsubscribe();
+        }
         this._destroying$.next(undefined);
         this._destroying$.complete();
     }
