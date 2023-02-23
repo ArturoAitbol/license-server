@@ -220,10 +220,10 @@ describe('license-consumption - UI verification test', () => {
         expect(await detailedConsumptionColumns[0].getText()).toBe('Consumption Date');
         expect(await detailedConsumptionColumns[1].getText()).toBe('Project');
         expect(await detailedConsumptionColumns[2].getText()).toBe('Type');
-        expect(await detailedConsumptionColumns[3].getText()).toBe('Device');
-        expect(await detailedConsumptionColumns[4].getText()).toBe('Calling Platform');
-        expect(await detailedConsumptionColumns[5].getText()).toBe('tekTokens Used');
-        expect(await detailedConsumptionColumns[6].getText()).toBe('Usage Days');
+        expect(await detailedConsumptionColumns[3].getText()).toBe('tekTokens Used');
+        expect(await detailedConsumptionColumns[4].getText()).toBe('Usage Days');
+        expect(await detailedConsumptionColumns[5].getText()).toBe('Device');
+        expect(await detailedConsumptionColumns[6].getText()).toBe('Calling Platform');
     });
 
     it('should load correct data columns for equipmentSummary table',()=>{
