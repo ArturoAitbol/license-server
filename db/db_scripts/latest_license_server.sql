@@ -239,8 +239,7 @@ CREATE TABLE public.device (
     deprecated_date timestamp without time zone DEFAULT 'infinity'::timestamp without time zone,
     subaccount_id uuid,
     tombstone boolean DEFAULT false,
-    support_type boolean DEFAULT false,
-    comment character varying
+    support_type boolean DEFAULT false
 );
 
 
@@ -298,7 +297,8 @@ CREATE TABLE public.license_consumption (
     calling_platform_id uuid,
     tokens_consumed integer DEFAULT 0 NOT NULL,
     modified_date timestamp without time zone,
-    modified_by character varying
+    modified_by character varying,
+    comment character varying
 );
 
 

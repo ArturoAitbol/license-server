@@ -87,7 +87,6 @@ describe('Customer service http requests test', () => {
             type: "test",
             deprecatedDate: "29-05-2022",
             startDate: date,
-            comment: "",
             subaccountId: "4119fcd9-b40f-40a1-9d72-0d6f84db04b2"
         };
         httpClientSpy.put.and.returnValue(DevicesServiceMock.updateDevice(updateDevice));
@@ -111,7 +110,6 @@ describe('Customer service http requests test', () => {
             type: "test",
             deprecatedDate: "29-05-2022",
             startDate: date,
-            comment: "",
             subaccountId: "4119fcd9-b40f-40a1-9d72-0d6f84db04b2"
         };
         httpClientSpy.post.and.returnValue(DevicesServiceMock.createDevice(deviceToCreate));

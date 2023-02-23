@@ -138,8 +138,7 @@ public class TekvLSModifyDeviceById
 		START_DATE("startDate", "start_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
 		DEPRECATED_DATE("deprecatedDate", "deprecated_date", QueryBuilder.DATA_TYPE.TIMESTAMP),
 		SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
-		SUPPORT_TYPE("supportType", "support_type", QueryBuilder.DATA_TYPE.BOOLEAN),
-		COMMENT("comment", "comment", QueryBuilder.DATA_TYPE.VARCHAR);
+		SUPPORT_TYPE("supportType", "support_type", QueryBuilder.DATA_TYPE.BOOLEAN);
 
 		private final String jsonAttrib;
 		private final String columnName;

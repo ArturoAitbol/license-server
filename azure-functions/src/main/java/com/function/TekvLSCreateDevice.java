@@ -83,9 +83,9 @@ public class TekvLSCreateDevice {
 		}
 
 		// Build the sql query
-		String sql = "INSERT INTO device (vendor, product, version, type, support_type, granularity, tokens_to_consume, start_date, subaccount_id, deprecated_date, comment) "
+		String sql = "INSERT INTO device (vendor, product, version, type, support_type, granularity, tokens_to_consume, start_date, subaccount_id, deprecated_date) "
 				+
-				"VALUES (?, ?, ?, ?::device_type_enum, ?::boolean, ?::granularity_type_enum, ?, ?::timestamp, ?::uuid, ?::timestamp, ?) RETURNING id;";
+				"VALUES (?, ?, ?, ?::device_type_enum, ?::boolean, ?::granularity_type_enum, ?, ?::timestamp, ?::uuid, ?::timestamp) RETURNING id;";
 
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"
@@ -113,9 +113,6 @@ public class TekvLSCreateDevice {
 			statement.setString(10, jobj.has(OPTIONAL_PARAMS.DEPRECATED_DATE.value)
 					? jobj.getString(OPTIONAL_PARAMS.DEPRECATED_DATE.value)
 					: "infinity");
-			statement.setString(11, jobj.has(OPTIONAL_PARAMS.COMMENT.value)
-					? jobj.getString(OPTIONAL_PARAMS.COMMENT.value)
-					: "");
 
 			// Insert
 			String userId = getUserIdFromToken(tokenClaims, context);
@@ -163,8 +160,7 @@ public class TekvLSCreateDevice {
 	private enum OPTIONAL_PARAMS {
 
 		SUBACCOUNT_ID("subaccountId"),
-		DEPRECATED_DATE("deprecatedDate"),
-		COMMENT("comment");
+		DEPRECATED_DATE("deprecatedDate");
 
 		private final String value;
 

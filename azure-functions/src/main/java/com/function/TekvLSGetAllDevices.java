@@ -67,7 +67,7 @@ public class TekvLSGetAllDevices {
 		String licenseStartDate = request.getQueryParameters().getOrDefault("date", "");
 		String limit = request.getQueryParameters().getOrDefault("limit", "");
 		String offset = request.getQueryParameters().getOrDefault("offset", "");
-		
+
 		String tombstone = request.getQueryParameters().getOrDefault("tombstone", "false");
 
 		// Build SQL statement
@@ -134,7 +134,6 @@ public class TekvLSGetAllDevices {
 				item.put("supportType", rs.getBoolean("support_type"));
 				item.put("tokensToConsume", rs.getInt("tokens_to_consume"));
 				item.put("granularity", rs.getString("granularity"));
-				item.put("comment", rs.getString("comment"));
 				// Required for list devices
 				item.put("type", rs.getString("type"));
 				item.put("startDate", rs.getString("start_date"));

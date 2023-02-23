@@ -30,7 +30,6 @@ export class AddDeviceComponent implements OnInit {
     version: ['', Validators.required],
     granularity: ['', Validators.required],
     tokensToConsume: ['', Validators.required],
-    comment:[''],
     supportType: [false],
   });
 
@@ -80,7 +79,6 @@ export class AddDeviceComponent implements OnInit {
       version: this.addDeviceForm.value.version,
       granularity: this.addDeviceForm.value.granularity.toLowerCase(),
       tokensToConsume: this.addDeviceForm.value.tokensToConsume,
-      comment: this.addDeviceForm.value.comment,
       supportType: this.addDeviceForm.value.supportType.toString(),
     };
 
