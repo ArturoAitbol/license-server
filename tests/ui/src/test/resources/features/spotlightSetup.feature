@@ -26,7 +26,7 @@ Feature: CtaasSetup
     And I open the Add Subscription form
     When I create a subscription with the following data
       | startDate             | 8/20/2022         |
-      | renewalDate           | 2/20/2023         |
+      | renewalDate           | 2/20/2025         |
       | subscriptionType      | Basic             |
       | description           | Description1      |
     Then I see the "Description1" subscription in the table
