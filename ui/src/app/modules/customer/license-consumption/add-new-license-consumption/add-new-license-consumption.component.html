@@ -175,6 +175,14 @@
                             </form>
                         </div>
                     </div>
+                    <div class="row mt-3">
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <mat-form-field class="example-full-width" appearance="outline">
+                                <mat-label>Comment</mat-label>
+                                <textarea matInput formControlName="comment" id="comment-input"></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col device-container device-container--start">
                             <h2>Other Devices</h2>
@@ -205,9 +213,8 @@
                                 <div>
                                     <mat-form-field appearance="outline">
                                         <mat-label>Device Type</mat-label>
-                                        <input type="text" placeholder="Select a device type"
-                                            aria-label="Device Type" matInput formControlName="type"
-                                            [matAutocomplete]="deviceTypesList"
+                                        <input type="text" placeholder="Select a device type" aria-label="Device Type"
+                                            matInput formControlName="type" [matAutocomplete]="deviceTypesList"
                                             id="device-type-auto-complete">
                                         <mat-autocomplete #deviceTypesList="matAutocomplete"
                                             (optionSelected)="onChangeDeviceType($event.option.value)">

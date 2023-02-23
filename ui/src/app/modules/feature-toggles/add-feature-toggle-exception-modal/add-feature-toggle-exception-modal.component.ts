@@ -62,7 +62,6 @@ export class AddFeatureToggleExceptionModalComponent implements OnInit {
       res = res.reduce((current, next) => {
         return { ...current, ...next };
       }, {});
-      console.log(res)
       res.customers.forEach(customer => {
         res.subaccounts.forEach(subaccount => {
           if (subaccount.customerId === customer.id) {
@@ -72,7 +71,6 @@ export class AddFeatureToggleExceptionModalComponent implements OnInit {
       });
       this.subaccounts = res.subaccounts;
       this.isDataLoading = false;
-      console.log(this.subaccounts)
     });
   }
 

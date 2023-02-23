@@ -98,14 +98,15 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: 'tekTokens', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
-  readonly detailedConsumptionColumns: TableColumn[] = [
+  public detailedConsumptionColumns: TableColumn[];
+  readonly defaultDetailedConsumptionColumns: TableColumn[] = [
     { name: 'Consumption Date', dataKey: 'consumption', position: 'left', isSortable: true },
     { name: 'Project', dataKey: 'projectName', position: 'left', isSortable: true },
     { name: 'Type', dataKey: 'usageType', position: 'left', isSortable: true },
-    { name: 'Device', dataKey: 'deviceInfo', position: 'left', isSortable: true },
-    { name: 'Calling Platform', dataKey: 'callingPlatformInfo', position: 'left', isSortable: true },
     { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true },
-    { name: 'Usage Days', dataKey: 'usageDays', position: 'left', isSortable: false }
+    { name: 'Usage Days', dataKey: 'usageDays', position: 'left', isSortable: false },
+    { name: 'Device', dataKey: 'deviceInfo', position: 'left', isSortable: true },
+    { name: 'Calling Platform', dataKey: 'callingPlatformInfo', position: 'left', isSortable: true }
   ];
   readonly ADD_OTHER_CONSUMPTION = 'add-other-consumption';
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
@@ -156,6 +157,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.detailedConsumptionColumns = this.defaultDetailedConsumptionColumns;
     this.getCutomerDetails()
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     const premissionsMatchIndex = roles?.findIndex((role : string) => permissions[role].elements.indexOf('addLicenseConsumption') !==-1);
@@ -206,6 +208,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.newLicenseConsumptionLogicFlag = true;
     else this.newLicenseConsumptionLogicFlag = false;
     this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails); 
+    this.defineDetailedConsumptionsTableColumns();
     this.getActionMenuOptions();
   }
 
@@ -213,6 +216,12 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.fetchSummaryData();
     this.fetchEquipment();
     this.fetchAggregatedData();
+  }
+
+  private defineDetailedConsumptionsTableColumns() {
+    this.detailedConsumptionColumns = this.defaultDetailedConsumptionColumns;
+    if (!this.newLicenseConsumptionLogicFlag)
+      this.licConsumptionActionMenuOptions.pop();
   }
 
   private getActionMenuOptions() {
@@ -314,6 +323,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.isDetailedConsumptionLoadingResults = true;
       this.isDetailedConsumptionRequestCompleted = false;
       this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
+        res.usage.forEach(item => {
+          item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
+          item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
+        });
         this.detailedConsumptionData = this.formatUsageDays(res.usage);
         this.detailedConsumptionDataLength = res.usageTotalCount;
         this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
@@ -324,10 +337,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         this.isDetailedConsumptionSupplementalRequestCompleted = true;
         this.isDetailedConsumptionLoadingResults = false;
         this.isDetailedConsumptionRequestCompleted = true;
-        res['usage'].forEach(item => {
-          item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
-          item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
-        });
         this.listDetailedConsumptionBK = [...res['usage']];
         this.weeklyConsumptionDataBK = [...res['weeklyConsumption']];
         this.projectConsumptionDataBK = [...res['projectConsumption']];
