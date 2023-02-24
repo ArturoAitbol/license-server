@@ -105,6 +105,7 @@ describe('add-new-license-consumption - UI verification tests', () => {
         const newProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
         const addDeviceButton = fixture.nativeElement.querySelector('#add-device-button');
         const h2 = fixture.debugElement.queryAll(By.css("h2"));
+        const labels: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('label'));
 
         expect(h1.textContent).toBe('Add tekToken Consumption');
         expect(cancelButton.textContent).toBe('Cancel');
@@ -117,6 +118,8 @@ describe('add-new-license-consumption - UI verification tests', () => {
         expect(h2[2].nativeElement.textContent).toBe('Other Devices');
         expect(addDeviceButton.disabled).toBeTrue();
         expect(addDeviceButton.title).toBe('New Device');
+        expect(labels.find(label => label.textContent.includes("Comment"))).not.toBeUndefined();
+
     });
 
     it('should display correctly the object selected in the mat-autocompletes', async () => {
@@ -202,6 +205,7 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
         expect(testInstance.addLicenseConsumptionForm.get('startWeek')).toBeTruthy();
         expect(testInstance.addLicenseConsumptionForm.get('endWeek')).toBeTruthy();
         expect(testInstance.addLicenseConsumptionForm.get('project')).toBeTruthy();
+        expect(testInstance.addLicenseConsumptionForm.get('comment')).toBeTruthy();
         expect(testInstance.addDutForm.get('type')).toBeTruthy();
         expect(testInstance.addDutForm.get('vendor')).toBeTruthy();
         expect(testInstance.addDutForm.get('product')).toBeTruthy();
@@ -224,6 +228,7 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
             startWeek: '',
             endWeek: '',
             project: '',
+            comment:''
         });
 
         addDutForm.setValue({
@@ -247,6 +252,7 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
         expect(addLicenseConsumptionForm.get('startWeek').valid).toBeFalse();
         expect(addLicenseConsumptionForm.get('endWeek').valid).toBeFalse();
         expect(addLicenseConsumptionForm.get('project').valid).toBeFalse();
+        expect(addLicenseConsumptionForm.get('comment').valid).toBeTrue();
         expect(addDutForm.get('type').valid).toBeFalse();
         expect(addDutForm.get('vendor').valid).toBeFalse();
         expect(addDutForm.get('product').valid).toBeFalse();
@@ -293,6 +299,7 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
         addLicenseConsumptionForm.get('startWeek').setValue(new Date());
         addLicenseConsumptionForm.get('endWeek').setValue(new Date());
         addLicenseConsumptionForm.get('project').setValue({ test: "test" });
+        addLicenseConsumptionForm.get('comment').setValue("Single comment");
 
         addDutForm.get('type').setValue('DUTName');
         addDutForm.get('vendor').setValue('DUTVendor');
