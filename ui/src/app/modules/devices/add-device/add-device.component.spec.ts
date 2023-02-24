@@ -77,7 +77,7 @@ describe('FormGroup verification tests', () => {
 
   beforeEach(beforeEachFunction);
 
-  it('should create a formGroup with the necesary controls', () => {
+  it('should create a formGroup with the necessary controls', () => {
     expect(addDeviceComponentTestInstance.addDeviceForm.contains('startDate')).toBeTrue();
     expect(addDeviceComponentTestInstance.addDeviceForm.contains('type')).toBeTrue();
     expect(addDeviceComponentTestInstance.addDeviceForm.contains('vendor')).toBeTrue();
