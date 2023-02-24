@@ -80,6 +80,7 @@ export const permissions = {
                 'DELETE_LICENSE'],
             licConsumptionOptions: [
                 'EDIT',
+                'VIEW_DETAILS',
                 'DELETE'
             ],
             projectOptions: [

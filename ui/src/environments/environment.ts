@@ -16,7 +16,7 @@ export const environment = {
   // BASE URL
   BASE_URL: window.location.origin,
   ENVIRONMENT_NAME: "dev",
-  TOKEN_CONSUMPTION_DATE: "2023-01-09"
+  TOKEN_CONSUMPTION_DATE: "2022-01-09"
 };
 
 /*

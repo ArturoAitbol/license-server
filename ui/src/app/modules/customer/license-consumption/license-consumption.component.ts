@@ -31,7 +31,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 })
 export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private readonly TOKEN_CONSUMPTION_DATE = new Date(environment.TOKEN_CONSUMPTION_DATE + ' 00:00:00');
-  customerSubaccountDetails: any; 
+  customerSubaccountDetails: any;
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
   selectedLicense: any;
@@ -125,10 +125,12 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   detailedConsumptionTableSelectable = false;
   newLicenseConsumptionLogicFlag = false;
   hasAddConsumptionPermission = false;
+  readonly VIEW_DETAILS: string = 'View Details';
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
   readonly options = {
+    VIEW_DETAILS: this.VIEW_DETAILS,
     EDIT: this.EDIT,
     DELETE: this.DELETE
   }
@@ -160,7 +162,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.detailedConsumptionColumns = this.defaultDetailedConsumptionColumns;
     this.getCutomerDetails()
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    const premissionsMatchIndex = roles?.findIndex((role : string) => permissions[role].elements.indexOf('addLicenseConsumption') !==-1);
+    const premissionsMatchIndex = roles?.findIndex((role: string) => permissions[role].elements.indexOf('addLicenseConsumption') !== -1);
     if (premissionsMatchIndex >= 0)
       this.hasAddConsumptionPermission = true;
     const projectItem: string = localStorage.getItem(Constants.PROJECT);
@@ -207,7 +209,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
       this.newLicenseConsumptionLogicFlag = true;
     else this.newLicenseConsumptionLogicFlag = false;
-    this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails); 
+    this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails);
     this.defineDetailedConsumptionsTableColumns();
     this.getActionMenuOptions();
   }
@@ -325,7 +327,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
         res.usage.forEach(item => {
           item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
-          item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
+          item.callingPlatformInfo = !item.callingPlatform ? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
         });
         this.detailedConsumptionData = this.formatUsageDays(res.usage);
         this.detailedConsumptionDataLength = res.usageTotalCount;
@@ -402,7 +404,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
       res.usage.forEach(item => {
         item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
-        item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
+        item.callingPlatformInfo = !item.callingPlatform ? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
       });
       this.detailedConsumptionData = this.formatUsageDays(res.usage);
       this.detailedConsumptionDataLength = res.usageTotalCount;
@@ -555,6 +557,11 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
    */
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
+      case this.VIEW_DETAILS:
+        console.log("Cones here");
+        console.log(object.selectedRow);
+        // this.openDialog(ConsumptionDetailsComponent, dataObject);
+        break;
       case this.EDIT:
         const dataObject: any = { ...object.selectedRow, ...{ endLicensePeriod: this.selectedLicense.renewalDate } };
         if (object.selectedRow.device.granularity.toLowerCase() === "static" || object.selectedRow.usageType === "AutomationPlatform")
