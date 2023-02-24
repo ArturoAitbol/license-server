@@ -8,6 +8,8 @@ import { ICtaasSetup } from "src/app/model/ctaas-setup.model";
 import { LicenseService } from "src/app/services/license.service";
 import { MatDialog } from "@angular/material/dialog";
 import { LicenseConfirmationModalComponent } from "./license-confirmation-modal/license-confirmation-modal.component";
+import { MatCheckboxChange } from "@angular/material/checkbox";
+import { DialogService } from "../../../services/dialog.service";
 
 @Component({
   selector: 'app-ctaas-setup',
@@ -31,7 +33,8 @@ export class CtaasSetupComponent implements OnInit {
     azureResourceGroup: [null, Validators.required],
     tapUrl: [null, Validators.required],
     status: ['SETUP_INPROGRESS', Validators.required],
-    onBoardingComplete: [{ value: false, disabled: true }, Validators.required]
+    onBoardingComplete: [{ value: false, disabled: true }, Validators.required],
+    maintenance: [false, Validators.required]
   });
 
   constructor(
@@ -40,6 +43,7 @@ export class CtaasSetupComponent implements OnInit {
     private snackBarService: SnackBarService,
     private subaccountService: SubAccountService,
     private licenseService: LicenseService,
+    private dialogService: DialogService,
     public dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -79,6 +83,21 @@ export class CtaasSetupComponent implements OnInit {
         const ctaasSetup = this.generateUpdateBody();
         this.editSetup(ctaasSetup);
       }
+    }
+  }
+
+  maintenanceChange(event: MatCheckboxChange) {
+    if (event.checked) {
+      this.dialogService.confirmDialog({
+        title: 'Confirm Maintenance Mode',
+        message: 'If you enable this mode, some of the features in the implementation won\'t be available, are you sure you want to continue?',
+        confirmCaption: 'Confirm',
+        cancelCaption: 'Cancel',
+      }).subscribe((confirmed) => {
+        if (!confirmed) {
+          this.setupForm.get('maintenance').setValue(false);
+        }
+      })
     }
   }
 

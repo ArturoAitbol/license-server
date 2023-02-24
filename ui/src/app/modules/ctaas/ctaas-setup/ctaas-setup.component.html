@@ -9,14 +9,18 @@
                 <h1 mat-dialig-title id="setup-title">Spotlight Setup Details</h1>
             </div>
             <div>
-                <ng-container *ngIf="!isEditing">
-
-                    <div class="col-auto edit-btn d-flex justify-content-end">
+                <div *ngIf="!isEditing" class="group-btn-container d-flex justify-content-end">
+                    <div class="col-auto">
                         <button class="col-auto" mat-raised-button id="edit-details-button" (click)="editForm()">
                             Edit Setup Details
                         </button>
                     </div>
-                </ng-container>
+<!--                    <div class="col-auto">-->
+<!--                        <button class="col-auto" color="warn" mat-raised-button id="edit-details-button" (click)="editForm()">-->
+<!--                            Enable Maintenance Mode-->
+<!--                        </button>-->
+<!--                    </div>-->
+                </div>
             </div>
             <div *ngIf="isEditing" class="group-btn-container d-flex justify-content-end">
                 <ng-container>
@@ -38,8 +42,10 @@
             <form [formGroup]="setupForm" (ngSubmit)="submit()" id="setup-form">
                 <div class="row">
                     <div class="col-md-6 d-flex">
-                        <mat-checkbox class="example-margin" labelPosition="before"
-                            formControlName="onBoardingComplete">On Boarding Complete</mat-checkbox>
+                        <mat-checkbox labelPosition="before" formControlName="maintenance" (change)="maintenanceChange($event)">Maintenance Mode</mat-checkbox>
+                    </div>
+                    <div class="col-md-6 d-flex">
+                        <mat-checkbox labelPosition="before" formControlName="onBoardingComplete">On Boarding Complete</mat-checkbox>
                     </div>
                 </div>
                 <br>
