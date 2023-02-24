@@ -37,8 +37,6 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import io.jsonwebtoken.Claims;
 
-import javax.xml.transform.Result;
-
 public class TekvLSModifyCtaasSetupById {
     /**
      * This function listens at endpoint "/v1.0/ctaasSetups/{id}". Two ways to invoke it using "curl" command in bash:
@@ -126,7 +124,7 @@ public class TekvLSModifyCtaasSetupById {
         int optionalParamsFound = 0;
         for (OPTIONAL_PARAMS param : OPTIONAL_PARAMS.values()) {
             try {
-                String jsonAttribValue = (param.dataType.equals(QueryBuilder.DATA_TYPE.BOOLEAN)) ? String.valueOf(jobj.getBoolean(param.jsonAttrib)) : jobj.getString(param.jsonAttrib);
+                String jsonAttribValue = (param.dataType.equals(QueryBuilder.DATA_TYPE.BOOLEAN.getValue())) ? String.valueOf(jobj.getBoolean(param.jsonAttrib)) : jobj.getString(param.jsonAttrib);
                 queryBuilder.appendValueModification(param.columnName, jsonAttribValue, param.dataType);
                 optionalParamsFound++;
             } catch (Exception e) {
@@ -263,6 +261,7 @@ public class TekvLSModifyCtaasSetupById {
         TAP_URL("tapUrl", "tap_url", QueryBuilder.DATA_TYPE.VARCHAR),
         STATUS("status", "status", QueryBuilder.DATA_TYPE.VARCHAR),
         ON_BOARDING_COMPLETE("onBoardingComplete", "on_boarding_complete", QueryBuilder.DATA_TYPE.BOOLEAN),
+        MAINTENANCE("maintenance", "maintenance", QueryBuilder.DATA_TYPE.BOOLEAN),
     	POWERBI_WORKSPACE_ID("powerBiWorkspaceId", "powerbi_workspace_id", QueryBuilder.DATA_TYPE.VARCHAR),
     	POWERBI_REPORT_ID("powerBiReportId", "powerbi_report_id", QueryBuilder.DATA_TYPE.VARCHAR);
         private final String jsonAttrib;
