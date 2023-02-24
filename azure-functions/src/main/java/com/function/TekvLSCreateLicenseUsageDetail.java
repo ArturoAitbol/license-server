@@ -102,8 +102,8 @@ public class TekvLSCreateLicenseUsageDetail
 
 			// Build the sql query to get tokens consumption and granularity from device table
 			String deviceTokensSql = "SELECT tokens_to_consume, granularity FROM device WHERE id=?::uuid;";
-			String insertSql = "INSERT INTO license_consumption (subaccount_id, device_id, consumption_date, usage_type, tokens_consumed, modified_by, modified_date, project_id, consumption_matrix_id) " +
-							   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid, ?::uuid) RETURNING id;";
+			String insertSql = "INSERT INTO license_consumption (subaccount_id, device_id, consumption_date, usage_type, tokens_consumed, modified_by, modified_date, project_id, consumption_matrix_id, comment) " +
+							   "VALUES (?::uuid, ?::uuid, ?::timestamp, ?::usage_type_enum, ?, ?, ?::timestamp, ?::uuid, ?::uuid, ?) RETURNING id;";
 			String devicePerProjectConsumptionSql = "SELECT id FROM license_consumption WHERE device_id=?::uuid and project_id=?::uuid LIMIT 1;";
 
 			try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
@@ -162,6 +162,7 @@ public class TekvLSCreateLicenseUsageDetail
 				insertStmt.setTimestamp(7, Timestamp.from(Instant.now()));
 				insertStmt.setString(8, jobj.getString(MANDATORY_PARAMS.PROJECT_ID.value));
 				insertStmt.setString(9, consumptionMatrixId);
+				insertStmt.setString(10, jobj.has(OPTIONAL_PARAMS.COMMENT.value) ? jobj.getString(OPTIONAL_PARAMS.COMMENT.value) : "");
 
 				// Insert consumption
 				context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + insertStmt);
@@ -258,7 +259,8 @@ public class TekvLSCreateLicenseUsageDetail
 		MAC_ADDRESS("macAddress"),
 		SERIAL_NUMBER("serialNumber"),
 		CONSUMPTION_MATRIX_ID("consumptionMatrixId"),
-		SUPPORT_DEVICE("supportDevice");
+		SUPPORT_DEVICE("supportDevice"),
+		COMMENT("comment");
 
 		private final String value;
 

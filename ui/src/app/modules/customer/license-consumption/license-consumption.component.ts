@@ -323,11 +323,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.isDetailedConsumptionLoadingResults = true;
       this.isDetailedConsumptionRequestCompleted = false;
       this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
-        res.usage.forEach(item => {
-          item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
-          item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
-        });
-        this.detailedConsumptionData = this.formatUsageDays(res.usage);
+        this.detailedConsumptionData = this.formatUsageData(res.usage);
         this.detailedConsumptionDataLength = res.usageTotalCount;
         this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
         this.projectConsumptionData = res.projectConsumption;
@@ -400,11 +396,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
-      res.usage.forEach(item => {
-        item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
-        item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
-      });
-      this.detailedConsumptionData = this.formatUsageDays(res.usage);
+      this.detailedConsumptionData = this.formatUsageData(res.usage);
       this.detailedConsumptionDataLength = res.usageTotalCount;
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
@@ -415,13 +407,14 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formatUsageDays(usage: any[]) {
+  private formatUsageData(usage: any[]) {
     usage.forEach(item => {
-      if (item.device.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
+      item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
+      item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
+      if (!this.newLicenseConsumptionLogicFlag && (item.device.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform'))
         item.usageDays = "...";
-      } else {
+      else
         this.getNameOfDays(item.usageDays);
-      }
     });
     return usage;
   }
