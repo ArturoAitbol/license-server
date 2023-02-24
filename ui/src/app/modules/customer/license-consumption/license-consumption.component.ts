@@ -411,7 +411,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     usage.forEach(item => {
       item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
       item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
-      if (item.device.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform')
+      if (!this.newLicenseConsumptionLogicFlag && (item.device.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform'))
         item.usageDays = "...";
       else
         this.getNameOfDays(item.usageDays);
