@@ -138,6 +138,8 @@ public class Permissions {
                         DELETE_FEATURE_TOGGLE_EXCEPTION,
                         DELETE_CONSUMPTION_MATRIX,
                         // READ
+                        GET_ALL_CUSTOMERS,
+                        GET_ALL_SUBACCOUNTS,
                         GET_ALL_DEVICES,
                         GET_ALL_DEVICE_TYPES,
                         GET_ALL_BUNDLES,
