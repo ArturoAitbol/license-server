@@ -41,9 +41,11 @@
         <div *ngIf="!isDataLoading">
             <form [formGroup]="setupForm" (ngSubmit)="submit()" id="setup-form">
                 <div class="row">
-                    <div class="col-md-6 d-flex">
-                        <mat-checkbox labelPosition="before" formControlName="maintenance" (change)="maintenanceChange($event)">Maintenance Mode</mat-checkbox>
-                    </div>
+                    <ng-container *lcFeatureToggle="'maintenanceMode'">
+                        <div *lcCheckAccessFor="'maintenanceModeCheckbox'" class="col-md-6 d-flex">
+                            <mat-checkbox labelPosition="before" formControlName="maintenance" (change)="maintenanceChange($event)">Maintenance Mode</mat-checkbox>
+                        </div>
+                    </ng-container>
                     <div class="col-md-6 d-flex">
                         <mat-checkbox labelPosition="before" formControlName="onBoardingComplete">On Boarding Complete</mat-checkbox>
                     </div>

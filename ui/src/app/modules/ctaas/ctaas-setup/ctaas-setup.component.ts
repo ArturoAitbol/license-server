@@ -10,6 +10,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { LicenseConfirmationModalComponent } from "./license-confirmation-modal/license-confirmation-modal.component";
 import { MatCheckboxChange } from "@angular/material/checkbox";
 import { DialogService } from "../../../services/dialog.service";
+import { FeatureToggleService } from "../../../services/feature-toggle.service";
 
 @Component({
   selector: 'app-ctaas-setup',
@@ -44,6 +45,7 @@ export class CtaasSetupComponent implements OnInit {
     private subaccountService: SubAccountService,
     private licenseService: LicenseService,
     private dialogService: DialogService,
+    private featureToggleService: FeatureToggleService,
     public dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -87,7 +89,7 @@ export class CtaasSetupComponent implements OnInit {
   }
 
   maintenanceChange(event: MatCheckboxChange) {
-    if (event.checked) {
+    if (event.checked && this.featureToggleService.isFeatureEnabled('maintenanceMode')) {
       this.dialogService.confirmDialog({
         title: 'Confirm Maintenance Mode',
         message: 'If you enable this mode, some of the features in the implementation won\'t be available, are you sure you want to continue?',
@@ -144,6 +146,7 @@ export class CtaasSetupComponent implements OnInit {
     if (ctaasSetup.status === this.originalCtaasSetupDetails.status) delete ctaasSetup.status;
     ctaasSetup.subaccountId =  this.subaccountDetails.id;
     if (licenseId != null) ctaasSetup.licenseId = licenseId;
+    if (this.setupForm.get('maintenance').pristine) delete ctaasSetup.maintenance;
     return ctaasSetup;
   }
 
