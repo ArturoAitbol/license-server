@@ -8,7 +8,6 @@ import { ICtaasSetup } from "src/app/model/ctaas-setup.model";
 import { LicenseService } from "src/app/services/license.service";
 import { MatDialog } from "@angular/material/dialog";
 import { LicenseConfirmationModalComponent } from "./license-confirmation-modal/license-confirmation-modal.component";
-import { MatCheckboxChange } from "@angular/material/checkbox";
 import { DialogService } from "../../../services/dialog.service";
 import { FeatureToggleService } from "../../../services/feature-toggle.service";
 
@@ -35,7 +34,7 @@ export class CtaasSetupComponent implements OnInit {
     tapUrl: [null, Validators.required],
     status: ['SETUP_INPROGRESS', Validators.required],
     onBoardingComplete: [{ value: false, disabled: true }, Validators.required],
-    maintenance: [false, Validators.required]
+    maintenance: [{ value:false, disabled: true }, Validators.required]
   });
 
   constructor(
@@ -57,6 +56,7 @@ export class CtaasSetupComponent implements OnInit {
   editForm() {
     this.setupForm.enable();
     this.setupForm.get('onBoardingComplete').disable();
+    this.setupForm.get('maintenance').disable();
     if (this.setupForm.value.status === 'SETUP_READY') this.setupForm.get('status').disable();
     this.isEditing = true;
   }
@@ -88,19 +88,49 @@ export class CtaasSetupComponent implements OnInit {
     }
   }
 
-  maintenanceChange(event: MatCheckboxChange) {
-    if (event.checked && this.featureToggleService.isFeatureEnabled('maintenanceMode')) {
-      this.dialogService.confirmDialog({
-        title: 'Confirm Maintenance Mode',
-        message: 'If you enable this mode, some of the features in the implementation won\'t be available, are you sure you want to continue?',
-        confirmCaption: 'Confirm',
-        cancelCaption: 'Cancel',
-      }).subscribe((confirmed) => {
-        if (!confirmed) {
-          this.setupForm.get('maintenance').setValue(false);
-        }
-      })
+  maintenanceToggle(action: string) {
+    if (this.featureToggleService.isFeatureEnabled('maintenanceMode')) {
+      if (action === 'enable') {
+        this.dialogService.confirmDialog({
+          title: 'Confirm Maintenance Mode',
+          message: 'If you enable this mode, some of the features in the implementation won\'t be available, are you sure you want to continue?',
+          confirmCaption: 'Confirm',
+          cancelCaption: 'Cancel',
+        }).subscribe((confirmed) => {
+          if (confirmed) {
+            this.updateMaintenanceMode(true);
+          }
+        });
+      } else if (action === 'disable'){
+        this.dialogService.confirmDialog({
+          title: 'Confirm Maintenance Mode',
+          message: 'Are you sure you want to disable the maintenance mode?',
+          confirmCaption: 'Confirm',
+          cancelCaption: 'Cancel',
+        }).subscribe((confirmed) => {
+          if (confirmed) {
+            this.updateMaintenanceMode(false);
+          }
+        });
+      }
     }
+  }
+
+  private updateMaintenanceMode(maintenance: boolean) {
+    this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, {
+      ...this.originalCtaasSetupDetails,
+      maintenance: maintenance
+    }).subscribe((res: any) => {
+      if (!res?.error) {
+        this.snackBarService.openSnackBar(maintenance ? 'Maintenance mode enabled successfully' : 'Maintenance mode disabled successfully', '');
+        this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, maintenance: maintenance };
+        this.setupForm.patchValue(this.originalCtaasSetupDetails);
+        this.disableForm();
+      } else {
+        this.snackBarService.openSnackBar(res.error, maintenance ? 'Error while enabling maintenance mode' : 'Error while disabling maintenance mode');
+      }
+      this.isDataLoading = false;
+    });
   }
 
   private editSetup(ctaasSetup: any) {
@@ -146,7 +176,6 @@ export class CtaasSetupComponent implements OnInit {
     if (ctaasSetup.status === this.originalCtaasSetupDetails.status) delete ctaasSetup.status;
     ctaasSetup.subaccountId =  this.subaccountDetails.id;
     if (licenseId != null) ctaasSetup.licenseId = licenseId;
-    if (this.setupForm.get('maintenance').pristine) delete ctaasSetup.maintenance;
     return ctaasSetup;
   }
 

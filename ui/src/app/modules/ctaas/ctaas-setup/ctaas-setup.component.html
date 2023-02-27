@@ -10,27 +10,36 @@
             </div>
             <div>
                 <div *ngIf="!isEditing" class="group-btn-container d-flex justify-content-end">
-                    <div class="col-auto">
-                        <button class="col-auto" mat-raised-button id="edit-details-button" (click)="editForm()">
-                            Edit Setup Details
-                        </button>
-                    </div>
-<!--                    <div class="col-auto">-->
-<!--                        <button class="col-auto" color="warn" mat-raised-button id="edit-details-button" (click)="editForm()">-->
-<!--                            Enable Maintenance Mode-->
-<!--                        </button>-->
-<!--                    </div>-->
+                    <ng-container *lcFeatureToggle="'maintenanceMode'">
+                        <ng-container *lcCheckAccessFor="'maintenanceModeCheckbox'">
+                            <div *ngIf="!originalCtaasSetupDetails.maintenance">
+                                <button class="mx-1" mat-raised-button id="enable-maintenance-button"
+                                        (click)="maintenanceToggle('enable')">
+                                    Enable Maintenance Mode
+                                </button>
+                            </div>
+                            <div *ngIf="originalCtaasSetupDetails.maintenance">
+                                <button class="mx-1" mat-raised-button id="disable-maintenance-button"
+                                        (click)="maintenanceToggle('disable')">
+                                    Disable Maintenance Mode
+                                </button>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                    <button class="col-auto" mat-raised-button id="edit-details-button" (click)="editForm()">
+                        Edit Setup Details
+                    </button>
                 </div>
             </div>
             <div *ngIf="isEditing" class="group-btn-container d-flex justify-content-end">
                 <ng-container>
                     <div class="col-auto">
-                        <button color="primary" mat-raised-button id="update-button" (click)="submit()" id="update-button" [disabled]="!setupForm.valid">
+                        <button color="primary" mat-raised-button id="update-button" (click)="submit()" [disabled]="!setupForm.valid">
                             Update
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button color="warn" mat-raised-button id="cancel-button" (click)="cancelEdit()" id="cancel-button">
+                        <button color="warn" mat-raised-button id="cancel-button" (click)="cancelEdit()">
                             Cancel
                         </button>
                     </div>
@@ -43,7 +52,7 @@
                 <div class="row">
                     <ng-container *lcFeatureToggle="'maintenanceMode'">
                         <div *lcCheckAccessFor="'maintenanceModeCheckbox'" class="col-md-6 d-flex">
-                            <mat-checkbox labelPosition="before" formControlName="maintenance" (change)="maintenanceChange($event)">Maintenance Mode</mat-checkbox>
+                            <mat-checkbox labelPosition="before" formControlName="maintenance">Maintenance Mode</mat-checkbox>
                         </div>
                     </ng-container>
                     <div class="col-md-6 d-flex">
