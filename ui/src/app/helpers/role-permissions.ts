@@ -63,6 +63,7 @@ export const permissions = {
             'addStakeholderBtn',
             'changeSpotlightRole',
             'resetFilter',
+            'maintenanceModeCheckbox',
         ],
         tables: {
             customerOptions: [

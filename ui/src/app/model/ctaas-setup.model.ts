@@ -5,4 +5,5 @@ export interface ICtaasSetup {
     status: string;
     subaccountId: string;
     tapUrl: string;
+    maintenance?: boolean;
 }
