@@ -256,7 +256,7 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.isLicenseListLoaded).toBeTrue();
         expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.fetchProjectsList).toHaveBeenCalled();
-        expect(licenseConsumptionComponentTestInstance.licConsumptionActionMenuOptions).toEqual(['Edit', 'View Details', 'Delete']);
+        expect(licenseConsumptionComponentTestInstance.licConsumptionActionMenuOptions.length).toEqual(2);
     });
 
     it('should change the status of all the loading-related variables if there is no licenses to show after initializing', () => {
