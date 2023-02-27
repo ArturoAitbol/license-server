@@ -211,8 +211,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.newLicenseConsumptionLogicFlag = true;
     else this.newLicenseConsumptionLogicFlag = false;
     this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails);
-    this.defineDetailedConsumptionsTableColumns();
     this.getActionMenuOptions();
+    this.defineDetailedConsumptionsTableColumns();
   }
 
   fetchDataToDisplay() {
@@ -221,18 +221,29 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.fetchAggregatedData();
   }
 
+  private checkIfOnlyViewIsPresent(): boolean {
+    if (this.licConsumptionActionMenuOptions.length === 1 && this.licConsumptionActionMenuOptions[0] === this.VIEW_DETAILS)
+      return true;
+    return false;
+  }
+
   private defineDetailedConsumptionsTableColumns() {
     this.detailedConsumptionColumns = this.defaultDetailedConsumptionColumns;
-    if (!this.newLicenseConsumptionLogicFlag)
-      this.licConsumptionActionMenuOptions.pop();
+    if (!this.checkIfOnlyViewIsPresent()) {
+      if (!this.newLicenseConsumptionLogicFlag)
+        this.licConsumptionActionMenuOptions.pop();
+    }
+
   }
 
   private getActionMenuOptions() {
     this.licConsumptionActionMenuOptions = [];
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     this.licConsumptionActionMenuOptions = Utility.getTableOptions(roles, this.options, "licConsumptionOptions");
-    if (this.newLicenseConsumptionLogicFlag)
-      this.licConsumptionActionMenuOptions.shift();
+    if (!this.checkIfOnlyViewIsPresent()) {
+      if (this.newLicenseConsumptionLogicFlag)
+        this.licConsumptionActionMenuOptions.shift();
+    }
   }
 
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
