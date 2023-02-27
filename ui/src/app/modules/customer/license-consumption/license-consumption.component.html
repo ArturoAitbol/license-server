@@ -26,17 +26,17 @@
                     </mat-button-toggle>
                     <mat-button-toggle *ngIf="hasAddConsumptionPermission && !newLicenseConsumptionLogicFlag" value="add-license-consumption"
                         id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
-                        class="add-btn">
+                        class="add-btn" title="add-tek-token-consumption">
                         Add tekToken Consumption
                     </mat-button-toggle>
                     <mat-button-toggle *ngIf="hasAddConsumptionPermission && newLicenseConsumptionLogicFlag" value="add-license-consumption"
                         id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
-                        class="add-btn">
+                        class="add-btn" title="add-labs-consumption">
                         Add Labs Consumption
                     </mat-button-toggle>
                     <mat-button-toggle *ngIf="hasAddConsumptionPermission && newLicenseConsumptionLogicFlag" value="add-other-consumption"
                         id="add-other-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
-                        class="add-btn">
+                        class="add-btn" title="add-other-consumption">
                         Add Other Consumption
                     </mat-button-toggle>
                 </mat-button-toggle-group>
