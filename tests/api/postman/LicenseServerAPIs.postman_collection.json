@@ -1045,7 +1045,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"SETUP_READY\",\r\n    \"onBoardingComplete\": \"false\",\r\n    \"licenseId\": \"{{licenseId}}\"\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"status\": \"SETUP_READY\",\r\n    \"onBoardingComplete\": \"false\",\r\n    \"licenseId\": \"{{licenseId}}\",\r\n    \"maintenance\": true\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

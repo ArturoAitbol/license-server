@@ -142,6 +142,7 @@ public class TekvLSGetAllCtaasSetups {
 				item.put("azureResourceGroup", rs.getString("azure_resource_group"));
 				item.put("tapUrl", rs.getString("tap_url"));
 				item.put("onBoardingComplete", rs.getBoolean("on_boarding_complete"));
+				item.put("maintenance", rs.getBoolean("maintenance"));
 				array.put(item);
 			}
 
