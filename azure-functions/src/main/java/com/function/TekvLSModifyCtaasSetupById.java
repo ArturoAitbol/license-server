@@ -1,17 +1,11 @@
 package com.function;
 
-import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_FORBIDDEN;
-import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_UNAUTHORIZED;
-import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
-import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
-import static com.function.auth.RoleAuthHandler.getRolesFromToken;
-import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
-import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
-import static com.function.auth.RoleAuthHandler.hasPermission;
+import static com.function.auth.RoleAuthHandler.*;
 import static com.function.auth.Roles.*;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.function.clients.EmailClient;
@@ -118,13 +112,17 @@ public class TekvLSModifyCtaasSetupById {
             );
         }
 
-
+        String currentRole = evaluateRoles(roles);
         // Build the sql query for SpotLight setup
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
         int optionalParamsFound = 0;
         for (OPTIONAL_PARAMS param : OPTIONAL_PARAMS.values()) {
             try {
                 String jsonAttribValue = (param.dataType.equals(QueryBuilder.DATA_TYPE.BOOLEAN.getValue())) ? String.valueOf(jobj.getBoolean(param.jsonAttrib)) : jobj.getString(param.jsonAttrib);
+                if (param == OPTIONAL_PARAMS.MAINTENANCE && !currentRole.equals(FULL_ADMIN)) {
+                    // Skip maintenance update if the user doesn't have the FULL_ADMIN role
+                    continue;
+                }
                 queryBuilder.appendValueModification(param.columnName, jsonAttribValue, param.dataType);
                 optionalParamsFound++;
             } catch (Exception e) {
