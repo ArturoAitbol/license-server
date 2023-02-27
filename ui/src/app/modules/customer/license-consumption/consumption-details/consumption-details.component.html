@@ -49,37 +49,31 @@
             </section>
             <hr>
             <section id="device-data">
-            <div class="row mt-3">
-                <div class="col">
-                    <label class="subtitle">Device Information:</label>
+                <div class="row mt-3">
+                    <div class="col">
+                        <label class="subtitle">Device Information:</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label class="key-label">Device Name:</label>
-                    <label>{{data.device.product}}</label>
+                <div class="row">
+                    <div class="col">
+                        <label class="key-label">Type:</label>
+                        <label>{{data.device.type}}</label>
+                    </div>
+                    <div class="col">
+                        <label class="key-label">Vendor:</label>
+                        <label>{{data.device.vendor}}</label>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label class="key-label">Vendor:</label>
-                    <label>{{data.device.vendor}}</label>
+                <div class="row">
+                    <div class="col">
+                        <label class="key-label">Model:</label>
+                        <label>{{data.device.product}}</label>
+                    </div>
+                    <div class="col">
+                        <label class="key-label">Version:</label>
+                        <label>{{data.device.version}}</label>
+                    </div>
                 </div>
-                <div class="col">
-                    <label class="key-label">Version:</label>
-                    <label>{{data.device.version}}</label>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label class="key-label">Type:</label>
-                    <label>{{data.device.type}}</label>
-                </div>
-                <div class="col">
-                    <label class="key-label">Granularity:</label>
-                    <label>{{data.device.granularity}}</label>
-                </div>
-            </div>
             </section>
             <section id="platform-data" *ngIf="data.callingPlatform">
                 <hr>
@@ -90,24 +84,22 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <label class="key-label">Platform Name:</label>
-                        <label>{{data.callingPlatform.product}}</label>
+                        <label class="key-label">Type:</label>
+                        <label>{{data.callingPlatform.type}}</label>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col">
                         <label class="key-label">Vendor:</label>
                         <label>{{data.callingPlatform.vendor}}</label>
                     </div>
-                    <div class="col">
-                        <label class="key-label">Version:</label>
-                        <label>{{data.callingPlatform.version}}</label>
-                    </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <label class="key-label">Type:</label>
-                        <label>{{data.callingPlatform.type}}</label>
+                        <label class="key-label">Model:</label>
+                        <label>{{data.callingPlatform.product}}</label>
+                    </div>
+                    <div class="col">
+                        <label class="key-label">Version:</label>
+                        <label>{{data.callingPlatform.version}}</label>
                     </div>
                 </div>
             </section>
