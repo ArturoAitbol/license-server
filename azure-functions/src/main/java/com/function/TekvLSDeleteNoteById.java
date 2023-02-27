@@ -53,7 +53,7 @@ public class TekvLSDeleteNoteById {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSDeleteProjectById Azure function");
+        context.getLogger().info("Entering TekvLSDeleteNoteById Azure function");
         String userEmail = getEmailFromToken(tokenClaims,context);
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("note");
         queryBuilder.appendValueModification("status","Closed","note_status_type_enum");

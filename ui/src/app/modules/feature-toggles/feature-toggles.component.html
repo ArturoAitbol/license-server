@@ -1,0 +1,21 @@
+<div class="container-fluid pad-20">
+    <div class="loading-shade" *ngIf="isDataLoading">
+        <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+    </div>
+    <main>
+        <h1 id="page-title">Feature Toggles</h1>
+    </main>
+    <div class="row align-items-center">
+        <div class="col-auto ms-auto justify-content-end gy-3">
+            <button class="me-1" mat-raised-button (click)="addFeatureToggle()"
+                    id="add-ft-btn" color="primary">Add Feature Toggle
+            </button>
+        </div>
+    </div>
+    <div>
+        <div class="mt-3 mb-2" *ngFor="let ft of featureToggles; trackBy: ftTrackBy">
+            <app-feature-toggle-card [id]="ft.id" [featureToggle]="ft" (reloadFeatureToggles)="reloadFeatureToggles()">
+            </app-feature-toggle-card>
+        </div>
+    </div>
+</div>

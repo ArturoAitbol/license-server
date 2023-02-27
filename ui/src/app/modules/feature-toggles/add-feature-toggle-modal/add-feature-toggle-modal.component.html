@@ -1,0 +1,25 @@
+<div class="container" style="text-align: center;">
+    <h1  id="page-title" mat-dialig-title>Add Feature Toggle</h1>
+
+    <form [formGroup]="addFeatureToggleForm" (ngSubmit)="submit()">
+        <div class="flex-container">
+            <mat-dialog-content>
+                <mat-form-field appearance="outline">
+                    <mat-label id="name-label">Name</mat-label>
+                    <input required matInput value="" formControlName="name" id="name">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label id="description-label">Description</mat-label>
+                    <textarea required matInput value="" formControlName="description" id="description"></textarea>
+                </mat-form-field>
+                <div class="d-flex flex-column align-items-start">
+                    <mat-checkbox id="enabled-toggle" class="checkbox-margin" [color]="'primary'" formControlName="status">Enabled</mat-checkbox>
+                </div>
+            </mat-dialog-content>
+            <mat-dialog-actions>
+                <button mat-stroked-button type="button" id="cancelBtn" (click)="onCancel()">Cancel</button>
+                <button mat-raised-button color="primary" [disabled]="!addFeatureToggleForm.valid" type="submit"  id="submitBtn">Submit</button>
+            </mat-dialog-actions>
+        </div>
+    </form>
+</div>

@@ -22,32 +22,27 @@ import static com.function.auth.RoleAuthHandler.*;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSCreateDevice
-{
+public class TekvLSCreateDevice {
 	/**
-	 * This function listens at endpoint "/v1.0/devices". Two ways to invoke it using "curl" command in bash:
+	 * This function listens at endpoint "/v1.0/devices". Two ways to invoke it
+	 * using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/devices
 	 */
 	@FunctionName("TekvLSCreateDevice")
 	public HttpResponseMessage run(
-			@HttpTrigger(
-				name = "req",
-				methods = {HttpMethod.POST},
-				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "devices")
-				HttpRequestMessage<Optional<String>> request,
-				final ExecutionContext context)
-	{
+			@HttpTrigger(name = "req", methods = {
+					HttpMethod.POST }, authLevel = AuthorizationLevel.ANONYMOUS, route = "devices") HttpRequestMessage<Optional<String>> request,
+			final ExecutionContext context) {
 
-		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
-		JSONArray roles = getRolesFromToken(tokenClaims,context);
-		if(roles.isEmpty()){
+		Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+		JSONArray roles = getRolesFromToken(tokenClaims, context);
+		if (roles.isEmpty()) {
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
 			json.put("error", MESSAGE_FOR_UNAUTHORIZED);
 			return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
 		}
-		if(!hasPermission(roles, Resource.CREATE_DEVICE)){
+		if (!hasPermission(roles, Resource.CREATE_DEVICE)) {
 			JSONObject json = new JSONObject();
 			context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
 			json.put("error", MESSAGE_FOR_FORBIDDEN);
@@ -69,8 +64,7 @@ public class TekvLSCreateDevice
 		JSONObject jobj;
 		try {
 			jobj = new JSONObject(requestBody);
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
@@ -78,7 +72,7 @@ public class TekvLSCreateDevice
 		}
 
 		// Check mandatory params to be present
-		for (MANDATORY_PARAMS mandatoryParam: MANDATORY_PARAMS.values()) {
+		for (MANDATORY_PARAMS mandatoryParam : MANDATORY_PARAMS.values()) {
 			if (!jobj.has(mandatoryParam.value)) {
 				// Parameter not found
 				context.getLogger().info("Missing mandatory parameter: " + mandatoryParam.value);
@@ -89,17 +83,19 @@ public class TekvLSCreateDevice
 		}
 
 		// Build the sql query
-		String sql = "INSERT INTO device (vendor, product, version, type, support_type, granularity, tokens_to_consume, start_date, subaccount_id, deprecated_date) " +
-					 "VALUES (?, ?, ?, ?::device_type_enum, ?::boolean, ?::granularity_type_enum, ?, ?::timestamp, ?::uuid, ?::timestamp) RETURNING id;";
+		String sql = "INSERT INTO device (vendor, product, version, type, support_type, granularity, tokens_to_consume, start_date, subaccount_id, deprecated_date) "
+				+
+				"VALUES (?, ?, ?, ?::device_type_enum, ?::boolean, ?::granularity_type_enum, ?, ?::timestamp, ?::uuid, ?::timestamp) RETURNING id;";
 
 		// Connect to the database
-		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
-			+ "&user=" + System.getenv("POSTGRESQL_USER")
-			+ "&password=" + System.getenv("POSTGRESQL_PWD");
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"
+				+ System.getenv("POSTGRESQL_SECURITY_MODE")
+				+ "&user=" + System.getenv("POSTGRESQL_USER")
+				+ "&password=" + System.getenv("POSTGRESQL_PWD");
 		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = connection.prepareStatement(sql)) {
-			
+				Connection connection = DriverManager.getConnection(dbConnectionUrl);
+				PreparedStatement statement = connection.prepareStatement(sql)) {
+
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 			// Set statement parameters
@@ -111,13 +107,16 @@ public class TekvLSCreateDevice
 			statement.setString(6, jobj.getString(MANDATORY_PARAMS.GRANULARITY.value));
 			statement.setInt(7, jobj.getInt(MANDATORY_PARAMS.TOKENS_TO_CONSUME.value));
 			statement.setString(8, jobj.getString(MANDATORY_PARAMS.START_DATE.value));
-
-			statement.setString(9, jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.value) ? jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.value) : null);
-			statement.setString(10, jobj.has(OPTIONAL_PARAMS.DEPRECATED_DATE.value) ? jobj.getString(OPTIONAL_PARAMS.DEPRECATED_DATE.value) : "infinity");
+			statement.setString(9, jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.value)
+					? jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.value)
+					: null);
+			statement.setString(10, jobj.has(OPTIONAL_PARAMS.DEPRECATED_DATE.value)
+					? jobj.getString(OPTIONAL_PARAMS.DEPRECATED_DATE.value)
+					: "infinity");
 
 			// Insert
-			String userId = getUserIdFromToken(tokenClaims,context);
-			context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
+			String userId = getUserIdFromToken(tokenClaims, context);
+			context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
 			ResultSet rs = statement.executeQuery();
 			context.getLogger().info("Device inserted successfully.");
 
@@ -127,14 +126,12 @@ public class TekvLSCreateDevice
 			json.put("id", rs.getString("id"));
 
 			return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			context.getLogger().info("SQL exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());

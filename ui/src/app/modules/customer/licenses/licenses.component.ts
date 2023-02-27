@@ -1,10 +1,8 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-import { Router } from '@angular/router';
 import { License } from 'src/app/model/license.model';
 import { TableColumn } from 'src/app/model/table-column.model';
-import { CustomerService } from 'src/app/services/customer.service';
 import { LicenseService } from 'src/app/services/license.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { AddLicenseComponent } from './add-license/add-license.component';
@@ -12,6 +10,7 @@ import { ModifyLicenseComponent } from './modify-license/modify-license.componen
 import { MsalService } from '@azure/msal-angular';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { Utility } from 'src/app/helpers/utils';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-licenses',
@@ -29,9 +28,9 @@ export class LicensesComponent implements OnInit {
     { name: 'tekTokens', dataKey: 'tokensPurchased', position: 'left', isSortable: true }
   ];
   tableMaxHeight: number;
-  currentCustomer: any;
   licenses: License[] = [];
   licensesBk: License[] = [];
+  customerSubaccountDetails: any
   // flag
   isLoadingResults = true;
   isRequestCompleted = false;
@@ -47,13 +46,12 @@ export class LicensesComponent implements OnInit {
   actionMenuOptions: any = [];
 
   constructor(
-    private customerService: CustomerService,
     private licenseService: LicenseService,
     private dialogService: DialogService,
     private snackBarService: SnackBarService,
-    private router: Router,
     public dialog: MatDialog,
-    private msalService: MsalService
+    private msalService: MsalService,
+    private subaccountService: SubAccountService
   ) { }
 
   @HostListener('window:resize')
@@ -64,7 +62,7 @@ export class LicensesComponent implements OnInit {
   private getActionMenuOptions(){
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     this.actionMenuOptions = Utility.getTableOptions(roles,this.options,"licenseOptions");
-    if(this.currentCustomer.testCustomer === false){
+    if(this.customerSubaccountDetails.testCustomer === false){
       const action = (action) => action === 'Delete';
       const index = this.actionMenuOptions.findIndex(action);
       this.actionMenuOptions.splice(index,1);
@@ -82,14 +80,17 @@ export class LicensesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getCutomerDetails();
     this.calculateTableHeight();
-    this.currentCustomer = this.customerService.getSelectedCustomer();
+    this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.fetchLicenses();
     this.getActionMenuOptions();
   }
 
-  goToDashboard(): void {
-    this.router.navigate(['/dashboard']);
+  getCutomerDetails() {
+    this.subaccountService.subaccountData.subscribe(subaccountResp => {
+      this.customerSubaccountDetails = subaccountResp
+    });
   }
 
   openDialog(component: any, data?: any): void {
@@ -110,7 +111,7 @@ export class LicensesComponent implements OnInit {
   fetchLicenses(): void {
     this.isLoadingResults = true;
     this.isRequestCompleted = false;
-    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe(res => {
+    this.licenseService.getLicenseList(this.customerSubaccountDetails.id).subscribe(res => {
       this.isLoadingResults = false;
       this.isRequestCompleted = true;
       this.licensesBk = this.licenses = res['licenses'];

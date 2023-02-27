@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { EventEmitter, Injectable, Output } from '@angular/core';
+import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Constants } from '../helpers/constants';
 import { SubAccount } from '../model/subaccount.model';
@@ -10,7 +11,7 @@ import { SubAccount } from '../model/subaccount.model';
 export class SubAccountService {
   private readonly API_URL: string = environment.apiEndpoint + '/subaccounts';
   private selectedSubAccount: any;
-  @Output() subaccountEmitter =  new EventEmitter<any>();
+  subaccountData =  new Subject<any>();
 
   constructor(private httpClient: HttpClient) { }
 
@@ -19,7 +20,7 @@ export class SubAccountService {
     sessionStorage.setItem(Constants.SELECTED_SUBACCOUNT, JSON.stringify(subaccount));
     this.selectedSubAccount = subaccount;
 
-    this.subaccountEmitter.emit(this.selectedSubAccount)
+    this.subaccountData.next(this.selectedSubAccount);
   }
   //get the selected subaccount
   getSelectedSubAccount() {

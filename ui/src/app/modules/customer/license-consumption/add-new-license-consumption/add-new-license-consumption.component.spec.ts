@@ -105,6 +105,7 @@ describe('add-new-license-consumption - UI verification tests', () => {
         const newProjectButton = fixture.nativeElement.querySelector('#add-new-project-button');
         const addDeviceButton = fixture.nativeElement.querySelector('#add-device-button');
         const h2 = fixture.debugElement.queryAll(By.css("h2"));
+        const labels: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('label'));
 
         expect(h1.textContent).toBe('Add tekToken Consumption');
         expect(cancelButton.textContent).toBe('Cancel');
@@ -117,6 +118,8 @@ describe('add-new-license-consumption - UI verification tests', () => {
         expect(h2[2].nativeElement.textContent).toBe('Other Devices');
         expect(addDeviceButton.disabled).toBeTrue();
         expect(addDeviceButton.title).toBe('New Device');
+        expect(labels.find(label => label.textContent.includes("Comment"))).not.toBeUndefined();
+
     });
 
     it('should display correctly the object selected in the mat-autocompletes', async () => {
@@ -162,14 +165,15 @@ describe('add-new-license-consumption - UI verification tests', () => {
 
         addLicenseConsumptionForm.get('project').setValue({ projectName: 'TestProject' });
 
-        addDutForm.get('name').setValue('TestDUT');
+        addDutForm.get('type').setValue('TestDUT');
         addDutForm.get('vendor').setValue('TestDUTVendor');
         addDutForm.get('product').setValue({ product: 'TestDUTProduct' });
 
-        addCallingPlatformForm.get('name').setValue('TestCallingPlatform');
+        addCallingPlatformForm.get('type').setValue('TestCallingPlatform');
         addCallingPlatformForm.get('vendor').setValue('TestCallingPlatformVendor');
         addCallingPlatformForm.get('product').setValue({ product: 'TestCallingPlatformProduct' });
 
+        addDeviceForm.get('type').setValue('TestDevice');
         addDeviceForm.get('vendor').setValue('TestVendor');
         addDeviceForm.get('product').setValue({ product: 'TestProduct' });
 
@@ -201,12 +205,14 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
         expect(testInstance.addLicenseConsumptionForm.get('startWeek')).toBeTruthy();
         expect(testInstance.addLicenseConsumptionForm.get('endWeek')).toBeTruthy();
         expect(testInstance.addLicenseConsumptionForm.get('project')).toBeTruthy();
-        expect(testInstance.addDutForm.get('name')).toBeTruthy();
+        expect(testInstance.addLicenseConsumptionForm.get('comment')).toBeTruthy();
+        expect(testInstance.addDutForm.get('type')).toBeTruthy();
         expect(testInstance.addDutForm.get('vendor')).toBeTruthy();
         expect(testInstance.addDutForm.get('product')).toBeTruthy();
-        expect(testInstance.addCallingPlatformForm.get('name')).toBeTruthy();
+        expect(testInstance.addCallingPlatformForm.get('type')).toBeTruthy();
         expect(testInstance.addCallingPlatformForm.get('vendor')).toBeTruthy();
         expect(testInstance.addCallingPlatformForm.get('product')).toBeTruthy();
+        expect(testInstance.addDeviceForm.get('type')).toBeTruthy();
         expect(testInstance.addDeviceForm.get('vendor')).toBeTruthy();
         expect(testInstance.addDeviceForm.get('product')).toBeTruthy();
 
@@ -222,21 +228,23 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
             startWeek: '',
             endWeek: '',
             project: '',
+            comment:''
         });
 
         addDutForm.setValue({
-            name: '',
+            type: '',
             vendor: '',
             product: ''
         });
 
         addCallingPlatformForm.setValue({
-            name: '',
+            type: '',
             vendor: '',
             product: ''
         });
 
         addDeviceForm.setValue({
+            type: '',
             vendor: '',
             product: ''
         });
@@ -244,12 +252,14 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
         expect(addLicenseConsumptionForm.get('startWeek').valid).toBeFalse();
         expect(addLicenseConsumptionForm.get('endWeek').valid).toBeFalse();
         expect(addLicenseConsumptionForm.get('project').valid).toBeFalse();
-        expect(addDutForm.get('name').valid).toBeFalse();
+        expect(addLicenseConsumptionForm.get('comment').valid).toBeTrue();
+        expect(addDutForm.get('type').valid).toBeFalse();
         expect(addDutForm.get('vendor').valid).toBeFalse();
         expect(addDutForm.get('product').valid).toBeFalse();
-        expect(addCallingPlatformForm.get('name').valid).toBeFalse();
+        expect(addCallingPlatformForm.get('type').valid).toBeFalse();
         expect(addCallingPlatformForm.get('vendor').valid).toBeFalse();
         expect(addCallingPlatformForm.get('product').valid).toBeFalse();
+        expect(addDeviceForm.get('type').valid).toBeFalse();
         expect(addDeviceForm.get('vendor').valid).toBeFalse();
         expect(addDeviceForm.get('product').valid).toBeFalse();
 
@@ -263,18 +273,19 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
 
 
         addLicenseConsumptionForm.get('project').setValue('test');
-        addDutForm.get('name').setValue('DUTName');
+        addDutForm.get('type').setValue('DUTName');
         addDutForm.get('vendor').enable();
         addDutForm.get('vendor').setValue('DUTVendor');
         addDutForm.get('product').enable();
         addDutForm.get('product').setValue('DUTProduct');
 
-        addCallingPlatformForm.get('name').setValue('CPName');
+        addCallingPlatformForm.get('type').setValue('CPName');
         addCallingPlatformForm.get('vendor').enable();
         addCallingPlatformForm.get('vendor').setValue('CPVendor');
         addCallingPlatformForm.get('product').enable();
         addCallingPlatformForm.get('product').setValue('CPProduct');
 
+        addDeviceForm.get('type').setValue('TestDevice');
         addDeviceForm.get('vendor').setValue('test');
         addDeviceForm.get('product').enable();
         addDeviceForm.get('product').setValue('test');
@@ -288,15 +299,17 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
         addLicenseConsumptionForm.get('startWeek').setValue(new Date());
         addLicenseConsumptionForm.get('endWeek').setValue(new Date());
         addLicenseConsumptionForm.get('project').setValue({ test: "test" });
+        addLicenseConsumptionForm.get('comment').setValue("Single comment");
 
-        addDutForm.get('name').setValue('DUTName');
+        addDutForm.get('type').setValue('DUTName');
         addDutForm.get('vendor').setValue('DUTVendor');
         addDutForm.get('product').setValue({ test: 'DUTProduct' });
 
-        addCallingPlatformForm.get('name').setValue('CPName');
+        addCallingPlatformForm.get('type').setValue('CPName');
         addCallingPlatformForm.get('vendor').setValue('CPVendor');
         addCallingPlatformForm.get('product').setValue({ test: 'CPProduct' });
 
+        addDeviceForm.get('type').setValue('TestDevice');
         addDeviceForm.get('vendor').setValue("test");
         addDeviceForm.get('product').setValue({ test: "test" });
 

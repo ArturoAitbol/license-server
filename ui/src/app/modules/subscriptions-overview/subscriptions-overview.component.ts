@@ -12,6 +12,7 @@ import { SnackBarService } from "../../services/snack-bar.service";
 import { debounceTime, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs/internal/Subject";
 import moment from "moment";
+import { SubAccountService } from "src/app/services/sub-account.service";
 
 
 @Component({
@@ -46,6 +47,12 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
     isLoadingResults = true;
     isRequestCompleted = false;
     actionMenuOptions: string[] = [];
+    selectedSubaccount: any;
+    customerFilter: any;
+    statusFilter: any;
+    startDateFilter: any;
+    endDateFilter: any;
+    private customerSubaccountDetails: any;
 
     private unsubscribe: Subject<void> = new Subject<void>();
 
@@ -54,27 +61,41 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
                 private router: Router,
                 private snackBarService: SnackBarService,
                 private customerService: CustomerService,
-                private subscriptionsOverviewService: SubscriptionsOverviewService) {
+                private subscriptionsOverviewService: SubscriptionsOverviewService,
+                private subaccountService: SubAccountService) {
+        this.getFiltersFromSesisonStorage();
     }
 
     ngOnInit(): void {
+        this.getDateFilters(sessionStorage.getItem("startDateFilter"), "startDateFilterControl");
+        this.getDateFilters(sessionStorage.getItem("endDateFilter"), "endDateFilterControl");
         this.filterForm.disable();
         this.initTable();
         this.loadSubscriptions();
+        this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.filterForm.valueChanges.pipe(
             debounceTime(300),
-            takeUntil(this.unsubscribe)
-        ).subscribe(value => {
+            takeUntil(this.unsubscribe)).subscribe(value => {
             const filters = [];
-            if (value.customerFilterControl != '')
+            if (value.customerFilterControl != '' && value.customerFilterControl != null){
                 filters.push(subscription => subscription.customerName.toLowerCase().includes(value.customerFilterControl.toLowerCase()) || 
-                    subscription.subaccountName?.toLowerCase().includes(value.customerFilterControl.toLowerCase()));
-            if (value.subStatusFilterControl != '' && value.subStatusFilterControl != null)
+                subscription.subaccountName?.toLowerCase().includes(value.customerFilterControl.toLowerCase()));
+                this.setCustomerOverviewFilters("customerOverviewFilter",value.customerFilterControl);
+            }
+            if (value.subStatusFilterControl != '' && value.subStatusFilterControl != null) {
                 filters.push(subscription => subscription.licenseStatus && subscription.licenseStatus === value.subStatusFilterControl);
-            if (value.startDateFilterControl != '' && value.startDateFilterControl != null)
+                this.setCustomerOverviewFilters("statusOverviewFilter", value.subStatusFilterControl);
+            }
+            if (value.startDateFilterControl != '' && value.startDateFilterControl != null) {
                 filters.push(subscription => subscription.licenseStartDate != null && moment(subscription.licenseStartDate, 'YYYY-MM-DD').isSameOrAfter(value.startDateFilterControl));
-            if (value.endDateFilterControl != '' && value.endDateFilterControl != null)
+                let date = moment(value.startDateFilterControl).format('YYYY-DD-MM');
+                this.setCustomerOverviewFilters("startDateFilter", date);
+            }
+            if (value.endDateFilterControl != '' && value.endDateFilterControl != null) {
                 filters.push(subscription => subscription.licenseRenewalDate != null && moment(subscription.licenseStartDate, 'YYYY-MM-DD').isSameOrBefore(value.endDateFilterControl));
+                let date = moment(value.endDateFilterControl).format('YYYY-DD-MM');
+                this.setCustomerOverviewFilters("endDateFilter", date);
+            }
             this.isLoadingResults = true;
             this.filteredSubscriptions = this.allSubscriptions.filter(customer => filters.every(filter => filter(customer)));
             this.isLoadingResults = false;
@@ -84,6 +105,25 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.unsubscribe.next();
         this.unsubscribe.complete();
+    }
+
+    setCustomerOverviewFilters(key:string, filter:any){
+        sessionStorage.setItem(key,filter);
+    }
+
+    getDateFilters(filter: any, control:any) {
+        if(filter !== '' || filter !== null){
+            this.filterForm.controls[control].setValue(filter);
+        } else {
+            this.setCustomerOverviewFilters(filter,'')
+        }
+    }
+
+    getFiltersFromSesisonStorage() {
+        this.customerFilter = sessionStorage.getItem("customerOverviewFilter");
+        this.statusFilter = sessionStorage.getItem("statusOverviewFilter");
+        this.startDateFilter = sessionStorage.getItem("startDateFilter");
+        this.endDateFilter = sessionStorage.getItem("endDateFilter");
     }
 
     /**
@@ -161,20 +201,26 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      * @param object containing the row object
      */
     rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
-        switch (object.selectedOption) {
-            case this.VIEW_LICENSES:
-                if (object.selectedRow.subaccountId !== undefined)
+        if (!object.selectedRow.subaccountId) {
+            this.snackBarService.openSnackBar('Subaccount is missing, create one to access this view', '');
+        }  else {
+            this.selectedSubaccount = {
+                id: object.selectedRow.subaccountId,
+                name: object.selectedRow.subaccountName,
+                customerId: object.selectedRow.id,
+                customerName: object.selectedRow.customerName,
+                services: object.selectedRow.services
+            }
+            this.subaccountService.setSelectedSubAccount(this.selectedSubaccount);
+            switch (object.selectedOption) {
+                case this.VIEW_LICENSES:
                     this.openLicenseDetails(object.selectedRow);
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
-                break;
-            case this.VIEW_CONSUMPTION:
-                if (object.selectedRow.subaccountId !== undefined)
+                    break;
+                case this.VIEW_CONSUMPTION:
                     this.openLicenseConsumption(object.selectedRow);
-                else
-                    this.snackBarService.openSnackBar('Subaccount is missing, create one to access tekToken Consumption view', '');
-                break;
-        }
+                    break;
+            }
+        } 
     }
 
     /**
@@ -183,8 +229,8 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      */
     openLicenseDetails(row: any): void {
         this.customerService.setSelectedCustomer(row);
-        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/licenses']);
+        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        this.router.navigate(['/customer/licenses'],{queryParams:{subaccountId:row.subaccountId}});
     }
 
     /**
@@ -193,8 +239,8 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      */
     openLicenseConsumption(row: any): void {
         this.customerService.setSelectedCustomer(row);
-        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/consumption']);
+        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        this.router.navigate(['/customer/consumption'],{queryParams:{subaccountId:row.subaccountId}});
     }
 
     /**

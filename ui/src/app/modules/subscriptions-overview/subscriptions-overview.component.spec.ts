@@ -25,49 +25,51 @@ let testInstance: SubscriptionsOverviewComponent;
 let fixture: ComponentFixture<SubscriptionsOverviewComponent>;
 
 const RouterMock = {
-    navigate: (commands: string[]) => { return }
+    navigate: (commands: string[], queryParams:any) => { return }
 };
 
+const defaultTestBedConfig = {
+    declarations: [SubscriptionsOverviewComponent, DataTableComponent],
+    imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
+    providers: [
+        {
+            provide: Router,
+            useValue: RouterMock
+        },
+        {
+            provide: MatDialog,
+            useValue: MatDialogMock
+        },
+        {
+            provide: SnackBarService,
+            useValue: SnackBarServiceMock
+        },
+        {
+            provide: CustomerService,
+            useValue: CustomerServiceMock
+        },
+        {
+            provide: SubscriptionsOverviewService,
+            useValue: SubscriptionsOverviewServiceMock
+        },
+        {
+            provide: MsalService,
+            useValue: MsalServiceMock
+        },
+        {
+            provide: HttpClient,
+            useValue: HttpClient
+        }
+    ]
+}
+
 const beforeEachFunction = async () => {
-    TestBed.configureTestingModule({
-        declarations: [SubscriptionsOverviewComponent, DataTableComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: CustomerService,
-                useValue: CustomerServiceMock
-            },
-            {
-                provide: SubscriptionsOverviewService,
-                useValue: SubscriptionsOverviewServiceMock
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            }
-        ]
-    }).compileComponents().then(() => {
-        fixture = TestBed.createComponent(SubscriptionsOverviewComponent);
+    TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
+        fixture = TestBed.createComponent(SubscriptionsOverviewComponent)
         testInstance = fixture.componentInstance;
         testInstance.ngOnInit();
     });
-};
+}
 
 describe('Subscriptions Overview - UI verification tests', () => {
     beforeEach(beforeEachFunction);
@@ -223,14 +225,15 @@ describe('Subscriptions Overview - Routing events', () => {
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         testInstance.openLicenseDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith([ '/customer/licenses' ]);
+        expect(RouterMock.navigate).toHaveBeenCalledWith([ '/customer/licenses' ], {queryParams:{subaccountId:undefined}});
     });
 
     it('should navigate to license consumption after calling openLicenseConsumption()', () => {
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
+        fixture.detectChanges();
         testInstance.openLicenseConsumption({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith([ '/customer/consumption' ]);
+        expect(RouterMock.navigate).toHaveBeenCalledWith([ '/customer/consumption' ],{queryParams:{subaccountId:undefined}});
     });
 });
 
@@ -252,7 +255,7 @@ describe('Subscriptions Overview - Row actions', () => {
 
         selectedTestData.selectedOption = testInstance.VIEW_LICENSES;
         testInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekVizion360 Subscriptions view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         testInstance.rowAction(selectedTestData);
@@ -274,7 +277,7 @@ describe('Subscriptions Overview - Row actions', () => {
 
         selectedTestData.selectedOption = testInstance.VIEW_CONSUMPTION;
         testInstance.rowAction(selectedTestData);
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access tekToken Consumption view', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount is missing, create one to access this view', '');
 
         selectedTestData.selectedRow.subaccountId = 'not undefined';
         testInstance.rowAction(selectedTestData);
@@ -332,70 +335,79 @@ describe('Subscriptions Overview - Column actions', () => {
     });
 });
 
-describe('Subscriptions Overview - Filtering table rows', () => {
-    beforeEach(beforeEachFunction);
+
+describe('subscriptions overview - filter test of the subscriptions overview', () => {
+    beforeEach(() => {
+        TestBed.configureTestingModule(defaultTestBedConfig);
+        fixture = TestBed.createComponent(SubscriptionsOverviewComponent);
+        testInstance = fixture.componentInstance
+        sessionStorage.setItem("customerOverviewFilter", 'Test Customer');
+        sessionStorage.setItem('statusOverviewFilter','Active');
+        sessionStorage.setItem("startDateFilter", '2022-10-10');
+        sessionStorage.setItem("endDateFilter", '2023-02-02');
+    })
+
     it('should filter the rows in the table based on the name and status filters', async () => {
+        sessionStorage.setItem("customerOverviewFilter", 'Test Customer');
+        sessionStorage.setItem('statusOverviewFilter','Active');
+        spyOn(sessionStorage, 'getItem').and.callThrough();
         testInstance.filterForm.patchValue({ customerFilterControl: "Test Customer", subStatusFilterControl: "Active" });
-        fixture.detectChanges();
-        await fixture.whenStable();
-        expect(testInstance.filteredSubscriptions.length).toBe(1);
-        const objectToCompare: any = {
-                "subaccountId": "6fe7d952-13cd-4b5d-90bd-6dce6c2ed475",
-                "licenseRenewalDate": "2023-02-02",
-                "licenseTokens": 150,
-                "licenseDescription": "test",
-                "licenseStatus": "Active",
-                "licenseStartDate": "2022-10-10",
-                "customerId": "0ec98484-2215-ea11-a811-000d3a31cd00",
-                "licensePackageType": "Small",
-                "subaccountName": "Test Sub",
-                "licenseId": "71dd76db-615f-4173-83cf-a12603c560de",
-                "licenseTokensConsumed": 0,
-                "customerName": "Test Customer"
-        };
-        expect(testInstance.filteredSubscriptions[0]).toEqual(objectToCompare);
-    });
+        testInstance.filterForm.controls['customerFilterControl'].setValue("Test Customer 2");
 
-    it('should filter the rows in the table based on the name', async () => {
-        testInstance.filterForm.patchValue({ customerFilterControl: "Test Sub 3"});
         fixture.detectChanges();
         await fixture.whenStable();
-        expect(testInstance.filteredSubscriptions.length).toBe(1);
-        const objectToCompare: any = {
-                "subaccountId": "966b6161-e28d-497b-8244-e3880b142584",
-                "licenseTokens": 0,
-                "customerId": "b062d227-5b26-4343-920a-9f3693d47c8a",
-                "subaccountName": "Test Sub 3",
-                "licenseTokensConsumed": 0,
-                "customerName": "Test Customer 3",
-                "licenseStatus": 'Inactive'
-        };
-        expect(testInstance.filteredSubscriptions[0]).toEqual(objectToCompare);
-    });
 
-    it('should filter the rows in the table based on the name and dates filters', async () => {
-        testInstance.filterForm.patchValue({
-            customerFilterControl: "Test Sub 2",
-            startDateFilterControl: moment('2022-07-10', 'YYYY-MM-DD'),
-            renewalDateFilterControl: moment('2022-07-26', 'YYYY-MM-DD')
-        });
-        fixture.detectChanges();
-        await fixture.whenStable();
         expect(testInstance.filteredSubscriptions.length).toBe(1);
         const objectToCompare: any = {
-            "subaccountId": "31d81e5c-a916-470b-aabe-6860f8464211",
-            "licenseRenewalDate": "2022-07-26",
-            "licenseTokens": 500,
-            "licenseDescription": "License description",
-            "licenseStatus": "Expired",
-            "licenseStartDate": "2022-07-10",
-            "customerId": "467aee0e-0cc8-4822-9789-fc90acea0a04",
-            "licensePackageType": "Large",
-            "subaccountName": "Test Sub 2",
-            "licenseId": "31b92e5c-b811-460b-ccbe-6860f8464233",
+            "subaccountId": "6fe7d952-13cd-4b5d-90bd-6dce6c2ed475",
+            "licenseRenewalDate": "2023-02-02",
+            "licenseTokens": 150,
+            "licenseDescription": "test",
+            "licenseStatus": "Active",
+            "licenseStartDate": "2022-10-10",
+            "customerId": "0ec98484-2215-ea11-a811-000d3a31cd00",
+            "licensePackageType": "Small",
+            "subaccountName": "Test Sub",
+            "licenseId": "71dd76db-615f-4173-83cf-a12603c560de",
             "licenseTokensConsumed": 0,
-            "customerName": "Test Customer 2"
+            "customerName": "Test Customer"
         };
         expect(testInstance.filteredSubscriptions[0]).toEqual(objectToCompare);
     });
-});
+    
+    it('should filter the rows in the table based on the name and dates filters', async () => {
+        sessionStorage.setItem("customerOverviewFilter", 'Test Sub');
+        sessionStorage.setItem('statusOverviewFilter','Active');
+        testInstance.filterForm.patchValue({
+            customerFilterControl: "Test Sub",
+            startDateFilterControl: moment('2022-10-10', 'YYYY-MM-DD'),
+            renewalDateFilterControl: moment('2023-02-02', 'YYYY-MM-DD'),
+            subStatusFilterControl: "Active"
+        });
+        testInstance.filterForm.controls['customerFilterControl'].setValue("Test Sub");
+        testInstance.filterForm.controls['subStatusFilterControl'].setValue("Active");
+        testInstance.filterForm.controls['startDateFilterControl'].setValue(moment('2022-10-10', 'YYYY-MM-DD'));
+        testInstance.filterForm.controls['endDateFilterControl'].setValue(moment('2023-02-02', 'YYYY-MM-DD'));
+
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(testInstance.filteredSubscriptions.length).toBe(1);
+        const objectToCompare: any = {
+            "subaccountId": "6fe7d952-13cd-4b5d-90bd-6dce6c2ed475",
+            "licenseRenewalDate": "2023-02-02",
+            "licenseTokens": 150,
+            "licenseDescription": "test",
+            "licenseStatus": "Active",
+            "licenseStartDate": "2022-10-10",
+            "customerId": "0ec98484-2215-ea11-a811-000d3a31cd00",
+            "licensePackageType": "Small",
+            "subaccountName": "Test Sub",
+            "licenseId": "71dd76db-615f-4173-83cf-a12603c560de",
+            "licenseTokensConsumed": 0,
+            "customerName": "Test Customer"
+        };
+        expect(testInstance.filteredSubscriptions[0]).toEqual(objectToCompare);
+    });
+})
+

@@ -3,9 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDateRangePicker } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Router } from '@angular/router';
 import { TableColumn } from 'src/app/model/table-column.model';
-import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { LicenseService } from 'src/app/services/license.service';
@@ -24,6 +22,7 @@ import { environment } from 'src/environments/environment';
 import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption/add-new-license-consumption.component';
 import { AddOtherConsumptionComponent } from './add-other-consumption/add-other-consumption.component';
 import { permissions } from 'src/app/helpers/role-permissions';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-license-consumption',
@@ -32,7 +31,7 @@ import { permissions } from 'src/app/helpers/role-permissions';
 })
 export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private readonly TOKEN_CONSUMPTION_DATE = new Date(environment.TOKEN_CONSUMPTION_DATE + ' 00:00:00');
-  currentCustomer: any;
+  customerSubaccountDetails: any; 
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
   selectedLicense: any;
@@ -99,15 +98,15 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     { name: 'tekTokens', dataKey: 'tokensConsumed', position: 'left', isSortable: true }
   ];
 
-  readonly detailedConsumptionColumns: TableColumn[] = [
+  public detailedConsumptionColumns: TableColumn[];
+  readonly defaultDetailedConsumptionColumns: TableColumn[] = [
     { name: 'Consumption Date', dataKey: 'consumption', position: 'left', isSortable: true },
     { name: 'Project', dataKey: 'projectName', position: 'left', isSortable: true },
     { name: 'Type', dataKey: 'usageType', position: 'left', isSortable: true },
-    { name: 'Vendor', dataKey: 'vendor', position: 'left', isSortable: true },
-    { name: 'Model', dataKey: 'product', position: 'left', isSortable: true },
-    { name: 'Version', dataKey: 'version', position: 'left', isSortable: true },
     { name: 'tekTokens Used', dataKey: 'tokensConsumed', position: 'left', isSortable: true },
-    { name: 'Usage Days', dataKey: 'usageDays', position: 'left', isSortable: false }
+    { name: 'Usage Days', dataKey: 'usageDays', position: 'left', isSortable: false },
+    { name: 'Device', dataKey: 'deviceInfo', position: 'left', isSortable: true },
+    { name: 'Calling Platform', dataKey: 'callingPlatformInfo', position: 'left', isSortable: true }
   ];
   readonly ADD_OTHER_CONSUMPTION = 'add-other-consumption';
   readonly ADD_LICENSE_CONSUMPTION = 'add-license-consumption';
@@ -134,7 +133,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     DELETE: this.DELETE
   }
 
-  licConsumptionActionMenuOptions: any = [];
+  licConsumptionActionMenuOptions: string[] = [];
 
   daysOfWeek = {
     0: 'Sun',
@@ -148,17 +147,18 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private customerService: CustomerService,
     private dialogService: DialogService,
     private projectService: ProjectService,
     private licenseService: LicenseService,
     private licenseConsumptionService: LicenseConsumptionService,
-    private router: Router,
     public dialog: MatDialog,
-    private msalService: MsalService
+    private msalService: MsalService,
+    private subaccountService: SubAccountService
   ) { }
 
   ngOnInit(): void {
+    this.detailedConsumptionColumns = this.defaultDetailedConsumptionColumns;
+    this.getCutomerDetails()
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     const premissionsMatchIndex = roles?.findIndex((role : string) => permissions[role].elements.indexOf('addLicenseConsumption') !==-1);
     if (premissionsMatchIndex >= 0)
@@ -167,8 +167,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     const projectObject = JSON.parse(projectItem);
     if (projectItem)
       this.selectedProject = projectObject.id;
-    this.currentCustomer = this.customerService.getSelectedCustomer();
-    this.licenseService.getLicenseList(this.currentCustomer.subaccountId).subscribe((res: any) => {
+    this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.licenseService.getLicenseList(this.customerSubaccountDetails.id).subscribe((res: any) => {
       if (!res.error && res.licenses.length > 0) {
         this.licensesList = res.licenses;
         if (projectItem) {
@@ -191,18 +191,25 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
         this.isDetailedConsumptionRequestCompleted = true;
       }
     });
-    this.getActionMenuOptions();
+  }
+
+  getCutomerDetails() {
+    this.subaccountService.subaccountData.subscribe(subaccountResp => {
+      this.customerSubaccountDetails = subaccountResp
+    });
   }
 
   private setSelectedLicense(license: License) {
     this.selectedLicense = license;
     this.startDate = new Date(this.selectedLicense.startDate + ' 00:00:00');
     this.endDate = new Date(this.selectedLicense.renewalDate + ' 00:00:00');
-    this.currentCustomer.licenseId = license.id;
+    this.customerSubaccountDetails.licenseId = license.id;
     if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
       this.newLicenseConsumptionLogicFlag = true;
     else this.newLicenseConsumptionLogicFlag = false;
-    this.customerService.setSelectedCustomer(this.currentCustomer);
+    this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails); 
+    this.defineDetailedConsumptionsTableColumns();
+    this.getActionMenuOptions();
   }
 
   fetchDataToDisplay() {
@@ -211,15 +218,23 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.fetchAggregatedData();
   }
 
+  private defineDetailedConsumptionsTableColumns() {
+    this.detailedConsumptionColumns = this.defaultDetailedConsumptionColumns;
+    if (!this.newLicenseConsumptionLogicFlag)
+      this.licConsumptionActionMenuOptions.pop();
+  }
+
   private getActionMenuOptions() {
     this.licConsumptionActionMenuOptions = [];
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     this.licConsumptionActionMenuOptions = Utility.getTableOptions(roles, this.options, "licConsumptionOptions");
+    if (this.newLicenseConsumptionLogicFlag)
+      this.licConsumptionActionMenuOptions.shift();
   }
 
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
     const requestObject: any = {
-      subaccount: this.currentCustomer.subaccountId,
+      subaccount: this.customerSubaccountDetails.id,
       licenseId: this.selectedLicense.id,
       view: view,
     };
@@ -241,7 +256,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   }
 
   fetchProjectsList() {
-    this.projectService.getProjectDetailsByLicense(this.currentCustomer.subaccountId, this.selectedLicense.id).subscribe((res: any) => {
+    this.projectService.getProjectDetailsByLicense(this.customerSubaccountDetails.id, this.selectedLicense.id).subscribe((res: any) => {
       if (!res.error && res.projects) {
         this.projects = res.projects;
       }
@@ -308,7 +323,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.isDetailedConsumptionLoadingResults = true;
       this.isDetailedConsumptionRequestCompleted = false;
       this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
-        this.detailedConsumptionData = this.formatUsageDays(res.usage);
+        this.detailedConsumptionData = this.formatUsageData(res.usage);
         this.detailedConsumptionDataLength = res.usageTotalCount;
         this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
         this.projectConsumptionData = res.projectConsumption;
@@ -381,7 +396,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
-      this.detailedConsumptionData = this.formatUsageDays(res.usage);
+      this.detailedConsumptionData = this.formatUsageData(res.usage);
       this.detailedConsumptionDataLength = res.usageTotalCount;
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
@@ -392,13 +407,14 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formatUsageDays(usage: any[]) {
+  private formatUsageData(usage: any[]) {
     usage.forEach(item => {
-      if (item.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
+      item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
+      item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
+      if (!this.newLicenseConsumptionLogicFlag && (item.device.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform'))
         item.usageDays = "...";
-      } else {
+      else
         this.getNameOfDays(item.usageDays);
-      }
     });
     return usage;
   }
@@ -470,10 +486,6 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  goToDashboard(): void {
-    this.router.navigate(['/dashboard']);
-  }
-
   openDialog(component: any, data?: any): void {
     const dialogRef: any = this.dialog.open(component, {
       width: 'auto',
@@ -538,11 +550,10 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     switch (object.selectedOption) {
       case this.EDIT:
         const dataObject: any = { ...object.selectedRow, ...{ endLicensePeriod: this.selectedLicense.renewalDate } };
-        if (object.selectedRow.granularity.toLowerCase() === "static" || object.selectedRow.usageType === "AutomationPlatform")
+        if (object.selectedRow.device.granularity.toLowerCase() === "static" || object.selectedRow.usageType === "AutomationPlatform")
           this.openDialog(StaticConsumptionDetailsComponent, dataObject);
-        else {
+        else
           this.openDialog(ModifyLicenseConsumptionDetailsComponent, dataObject);
-        }
         break;
       case this.DELETE:
         this.onDelete(object.selectedRow);

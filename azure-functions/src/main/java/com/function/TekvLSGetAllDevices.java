@@ -67,7 +67,7 @@ public class TekvLSGetAllDevices {
 		String licenseStartDate = request.getQueryParameters().getOrDefault("date", "");
 		String limit = request.getQueryParameters().getOrDefault("limit", "");
 		String offset = request.getQueryParameters().getOrDefault("offset", "");
-		
+
 		String tombstone = request.getQueryParameters().getOrDefault("tombstone", "false");
 
 		// Build SQL statement

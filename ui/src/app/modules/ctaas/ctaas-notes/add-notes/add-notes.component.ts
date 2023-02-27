@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import { FormBuilder, Validators } from "@angular/forms";
 import { SubAccountService } from "src/app/services/sub-account.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
@@ -8,11 +8,11 @@ import { Note } from '../../../../model/note.model';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 
 @Component({
-    selector: 'add-notes-modal',
+    selector: 'app-add-notes-modal',
     templateUrl: './add-notes.component.html',
     styleUrls: ['./add-notes.component.css']
 })
-export class AddNotesComponent implements OnInit {
+export class AddNotesComponent {
 
     isDataLoading = false;
 
@@ -28,15 +28,14 @@ export class AddNotesComponent implements OnInit {
         private ctaasDashboardService: CtaasDashboardService,
         public dialogRef: MatDialogRef<AddNotesComponent>) {}
 
-    ngOnInit(): void {
-    }
+
 
     addNote() {
         this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.isDataLoading = true;
         const currentReports = this.ctaasDashboardService.getReports();
-        if(currentReports!==null){
-            let noteToAdd: Note = {
+        if (currentReports !== null) {
+            const noteToAdd: Note = {
                 content: this.noteForm.get('content').value,
                 subaccountId: this.subaccountDetails.id,
                 status: 'Open',
@@ -52,8 +51,8 @@ export class AddNotesComponent implements OnInit {
                     this.isDataLoading = false;
                 }
             });
-        }else{
-            this.snackBarService.openSnackBar("Reports are missing", 'Error adding note!');
+        } else {
+            this.snackBarService.openSnackBar('Reports are missing', 'Error adding note!');
         }
     }
 

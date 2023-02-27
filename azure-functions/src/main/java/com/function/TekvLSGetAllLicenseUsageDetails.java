@@ -3,6 +3,7 @@ package com.function;
 import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
+import com.function.db.QueryBuilder.DATA_TYPE;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
@@ -183,7 +184,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 					JSONArray array = new JSONArray();
 
 					//Initialize query builder
-					SelectQueryBuilder queryBuilder = new SelectQueryBuilder("select d.id,d.vendor,d.product,d.version from device d, license_consumption lc where d.id=lc.device_id", true);
+					SelectQueryBuilder queryBuilder = new SelectQueryBuilder("select d.id,d.vendor,d.product,d.version from device d, license_consumption lc where (d.id=lc.device_id OR d.id=lc.calling_platform_id)", true);
 
 					// Append common conditions to builder
 					for (Condition<String, String> commonCondition: commonConditions) {
@@ -223,9 +224,9 @@ public class TekvLSGetAllLicenseUsageDetails {
 					JSONArray array = new JSONArray();
 
 					// Initialize query builders
-					SelectQueryBuilder allQueryBuilder = new SelectQueryBuilder("SELECT lc.id, lc.consumption_date, lc.usage_type, lc.tokens_consumed, lc.device_id," +
+					SelectQueryBuilder allQueryBuilder = new SelectQueryBuilder("SELECT lc.id, lc.consumption_date, lc.usage_type, lc.tokens_consumed, lc.device_id, lc.calling_platform_id," +
 							" CONCAT('Week ',DATE_PART('week',consumption_date+'1 day'::interval)) AS consumption," +
-							" lc.project_id, p.name ,d.vendor, d.product, d.version, d.granularity, d.support_type, json_agg(DISTINCT day_of_week) AS usage_days" +
+							" lc.project_id, p.name ,d.vendor, d.product, d.version, d.granularity, d.support_type, d.type, json_agg(DISTINCT day_of_week) AS usage_days" +
 							" FROM device d, license_consumption lc, usage_detail u, project p, license l " +
 							" WHERE d.id = lc.device_id AND u.consumption_id = lc.id AND p.id = lc.project_id", true);
 					SelectQueryBuilder weeklyConfigTokensConsumedQueryBuilder = new SelectQueryBuilder("SELECT consumption_date, CONCAT('Week ', " +
@@ -246,7 +247,7 @@ public class TekvLSGetAllLicenseUsageDetails {
 
 					// Conditions for all query
 					allQueryBuilder.appendGroupBy("lc.id, lc.consumption_date, lc.usage_type, lc.tokens_consumed, lc.device_id,consumption,lc.project_id,p.name,d.vendor, d.product, " +
-							"d.version, d.granularity, d.support_type");
+							"d.version, d.granularity, d.support_type, d.type");
 					allQueryBuilder.appendOrderBy("consumption_date", SelectQueryBuilder.ORDER_DIRECTION.DESC);
 					allQueryBuilder.appendLimit(limit);
 					allQueryBuilder.appendOffset(offset);
@@ -270,19 +271,44 @@ public class TekvLSGetAllLicenseUsageDetails {
 						while (rs.next()) {
 							JSONObject item = new JSONObject();
 							item.put("id", rs.getString("id"));
-							item.put("deviceId", rs.getString("device_id"));
 							item.put("projectId", rs.getString("project_id"));
 							item.put("projectName", rs.getString("name"));
 							item.put("consumptionDate", rs.getString("consumption_date").split(" ")[0]);
-							item.put("vendor", rs.getString("vendor"));
-							item.put("product", rs.getString("product"));
-							item.put("version", rs.getString("version"));
-							item.put("granularity", rs.getString("granularity"));
-							item.put("supportType", rs.getBoolean("support_type"));
 							item.put("usageType", rs.getString("usage_type"));
 							item.put("tokensConsumed", rs.getInt("tokens_consumed"));
 							item.put("consumption", item.getString("consumptionDate") + " - " + rs.getString("consumption"));
 							item.put("usageDays", new JSONArray(rs.getString("usage_days")));
+							// generating device info object and assigning to response item
+							JSONObject device = new JSONObject();
+							device.put("id", rs.getString("device_id"));
+							device.put("type", rs.getString("type"));
+							device.put("vendor", rs.getString("vendor"));
+							device.put("product", rs.getString("product"));
+							device.put("version", rs.getString("version"));
+							device.put("granularity", rs.getString("granularity"));
+							device.put("supportType", rs.getBoolean("support_type"));
+							item.put("device", device);
+							String callingPlatformId = rs.getString("calling_platform_id");
+							// if calling platform defined, generating calling platform info object and assigning to response item
+							if (callingPlatformId != null && !callingPlatformId.isEmpty()) {
+								// query for the calling platform information
+								SelectQueryBuilder callingPlatformQueryBuilder = new SelectQueryBuilder("SELECT d.* FROM device d, license_consumption lc WHERE d.id = lc.calling_platform_id", true);
+								callingPlatformQueryBuilder.appendEqualsCondition("d.id", callingPlatformId, DATA_TYPE.UUID);
+
+								try (PreparedStatement callingPlatformStmt = callingPlatformQueryBuilder.build(connection)) {
+									context.getLogger().info("Execute SQL get calling platform by id statement: " + callingPlatformStmt);
+									ResultSet cpResultSet = callingPlatformStmt.executeQuery();
+									if (cpResultSet.next()) {
+										JSONObject callingPlatform = new JSONObject();
+										callingPlatform.put("id", callingPlatformId);
+										callingPlatform.put("type", cpResultSet.getString("type"));
+										callingPlatform.put("vendor", cpResultSet.getString("vendor"));
+										callingPlatform.put("product", cpResultSet.getString("product"));
+										callingPlatform.put("version", cpResultSet.getString("version"));
+										item.put("callingPlatform", callingPlatform);
+									}
+								}
+							}
 							array.put(item);
 						}
 						json.put("usage", array);

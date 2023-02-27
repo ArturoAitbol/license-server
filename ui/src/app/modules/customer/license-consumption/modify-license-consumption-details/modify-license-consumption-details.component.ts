@@ -6,11 +6,11 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { map, startWith } from 'rxjs/operators';
 import { Device } from 'src/app/model/device.model';
 import { Project } from 'src/app/model/project.model';
-import { CustomerService } from 'src/app/services/customer.service';
 import { DevicesService } from 'src/app/services/devices.service';
 import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { SubAccountService } from 'src/app/services/sub-account.service';
 import { UsageDetailService } from 'src/app/services/usage-detail.service';
 
 @Component({
@@ -46,17 +46,17 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
   endDate: any;
   isDataLoading = false;
   edited = false;
-  currentCustomer: any;
+  customerSubaccountDetails: any;
   private previousFormValue: any;
 
   constructor(
     private formBuilder: FormBuilder,
-    private customerService: CustomerService,
     private deviceService: DevicesService,
     private projectService: ProjectService,
     private licenseConsumptionService: LicenseConsumptionService,
     private usageDetailService: UsageDetailService,
     private snackBarService: SnackBarService,
+    private subaccountService: SubAccountService,
     public dialogRef: MatDialogRef<ModifyLicenseConsumptionDetailsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
@@ -65,7 +65,8 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       this.isDataLoading = true;
       this.data.consDate = new Date(this.data.consumptionDate + " 00:00:00");
       this.enableUsageDays();
-      this.currentCustomer = this.customerService.getSelectedCustomer();
+      //this.currentCustomer = this.customerService.getSelectedCustomer();
+      this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
       this.fetchData();
       this.filteredProjects = this.updateForm.controls['project'].valueChanges.pipe(
         startWith(''),
@@ -89,7 +90,7 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    */
   onChangeVendor(value: any): void {
     this.isDataLoading = true;
-    this.deviceService.getDevicesList(this.currentCustomer.subaccountId, value).subscribe(res => {
+    this.deviceService.getDevicesList(this.customerSubaccountDetails.id, value).subscribe(res => {
       this.updateForm.controls.device.disable();
       this.filterVendorDevices(res['devices']);
       this.updateForm.controls.device.enable();
@@ -215,17 +216,16 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
    * fetch data
    */
   fetchData(): void {
-    const subaccountId = this.currentCustomer.subaccountId;
+    const subaccountId = this.customerSubaccountDetails.id;
     forkJoin([
       this.deviceService.getAllDeviceVendors(),
-      this.deviceService.getDeviceById(this.data.deviceId),
-      this.projectService.getProjectDetailsByLicense(subaccountId, this.currentCustomer.licenseId),
+      this.projectService.getProjectDetailsByLicense(subaccountId, this.customerSubaccountDetails.licenseId),
       this.usageDetailService.getUsageDetailsByConsumptionId(this.data.id)
     ]).subscribe(res => {
       const resDataObject: any = res.reduce((current: any, next: any) => {
         return { ...current, ...next };
       }, {});
-      this.currentCustomer.modifiedBy = resDataObject['modifiedBy'];
+      this.customerSubaccountDetails.modifiedBy = resDataObject['modifiedBy'];
       this.vendors = [...new Set([...resDataObject['vendors'], ...resDataObject['supportVendors']])];
       this.projects = resDataObject['projects'];
       resDataObject['usageDays'].forEach((day) => {
@@ -234,12 +234,9 @@ export class ModifyLicenseConsumptionDetailsComponent implements OnInit {
       });
       this.originalDays = JSON.parse(JSON.stringify(this.days));
       const currentProject = this.projects.filter(project => project.id === this.data.projectId)[0];
-      const currentVendor = resDataObject['devices'][0].vendor;
-      const currentDevice = resDataObject['devices'][0];
       const patchValue = {...this.data};
       patchValue.project = currentProject;
-      patchValue.device = currentDevice;
-      patchValue.vendor = currentVendor;
+      patchValue.vendor = this.data.device.vendor;
       this.updateForm.patchValue(patchValue);
       this.previousFormValue = { ...this.updateForm };
       this.isDataLoading = false;

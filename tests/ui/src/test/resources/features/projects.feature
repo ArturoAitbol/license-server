@@ -24,7 +24,7 @@ Feature: Projects
     And I open the Add Subscription form
     When I create a subscription with the following data
       | startDate         | 8/20/2022         |
-      | renewalDate       | 2/20/2023         |
+      | renewalDate       | 2/20/2025         |
       | subscriptionType  | Basic             |
       | description       | SubscriptionTest  |
     Then I see the "Basic" subscription in the table

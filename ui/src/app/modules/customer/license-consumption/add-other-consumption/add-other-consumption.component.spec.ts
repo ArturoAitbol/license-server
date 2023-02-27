@@ -156,6 +156,7 @@ describe('add-other-consumption - FormGroup verification tests', () => {
         expect(testInstance.addDeviceForm.get('deviceType')).toBeTruthy();
         expect(testInstance.addDeviceForm.get('vendor')).toBeTruthy();
         expect(testInstance.addDeviceForm.get('product')).toBeTruthy();
+        expect(testInstance.addDeviceForm.get('comment')).toBeTruthy();
     });
 
     it('should make all the controls required', () => {
@@ -169,7 +170,8 @@ describe('add-other-consumption - FormGroup verification tests', () => {
         addDeviceForm.setValue({
             deviceType: '',
             vendor: '',
-            product: ''
+            product: '',
+            comment:''
         });
 
         expect(addLicenseConsumptionForm.get('startWeek').valid).toBeFalse();
@@ -178,6 +180,7 @@ describe('add-other-consumption - FormGroup verification tests', () => {
         expect(addDeviceForm.get('deviceType').valid).toBeFalse();
         expect(addDeviceForm.get('vendor').valid).toBeFalse();
         expect(addDeviceForm.get('product').valid).toBeFalse();
+        expect(addDeviceForm.get('comment').valid).toBeTrue();
     });
 
     it('should validate autocomplete forms are not of type string', () => {
@@ -189,6 +192,7 @@ describe('add-other-consumption - FormGroup verification tests', () => {
         addDeviceForm.get('vendor').setValue('CERT');
         addDeviceForm.get('product').enable();
         addDeviceForm.get('product').setValue('CERT');
+        addDeviceForm.get('comment').setValue('Comment A');
         fixture.detectChanges();
         expect(addLicenseConsumptionForm.valid).toBeFalse();
         expect(addDeviceForm.valid).toBeFalse();
@@ -199,6 +203,7 @@ describe('add-other-consumption - FormGroup verification tests', () => {
         addDeviceForm.get('deviceType').setValue("CERT");
         addDeviceForm.get('vendor').setValue("CERT");
         addDeviceForm.get('product').setValue({ test: "CERT" });
+        addDeviceForm.get('comment').setValue('Comment A');
         expect(addLicenseConsumptionForm.valid).toBeTrue();
         expect(addDeviceForm.valid).toBeTrue();
     });
@@ -286,6 +291,7 @@ describe('add-other-consumption - Add device, remove device methods', () => {
         addDeviceForm.get('product').enable();
         addDeviceForm.get('deviceType').setValue("CERT");
         addDeviceForm.get('vendor').setValue("3CX");
+        addDeviceForm.get('comment').setValue('Comment A');
         addDeviceForm.get('product').setValue({
             "id": "ef7a4bcd-fc3f-4f87-bf87-ae934799690b",
             "vendor": "3CX",
@@ -330,7 +336,7 @@ describe('add-other-consumption - On event methods', () => {
         fixture.detectChanges();
         await fixture.whenStable();
         const options = fixture.debugElement.queryAll(By.css('mat-option'));
-        expect(options.length).toBe(1);
+        expect(options.length).toBe(2);
         expect(options[0].nativeElement.textContent).toBe(' Project-Test1 ');
     });
 
@@ -447,7 +453,8 @@ describe('add-other-consumption - deviceInvalid', () => {
         addDeviceForm.setValue({
             deviceType: 'CERT',
             vendor: 'CERT',
-            product: { test: 'CERT' }
+            product: { test: 'CERT' },
+            comment:'Comment A'
         });
 
         expect(testInstance.deviceInvalid()).toBeFalse();

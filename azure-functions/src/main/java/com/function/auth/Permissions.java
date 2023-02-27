@@ -34,6 +34,7 @@ public class Permissions {
                         DELETE_SUBACCOUNT_STAKEHOLDER,
                         // DELETE_FEATURE_TOGGLE,
                         DELETE_NOTE,
+                        DELETE_RESIDUAL_TEST_DATA,
                         // READ
                         GET_ALL_CUSTOMERS,
                         GET_ALL_SUBACCOUNTS,
@@ -137,6 +138,8 @@ public class Permissions {
                         DELETE_FEATURE_TOGGLE_EXCEPTION,
                         DELETE_CONSUMPTION_MATRIX,
                         // READ
+                        GET_ALL_CUSTOMERS,
+                        GET_ALL_SUBACCOUNTS,
                         GET_ALL_DEVICES,
                         GET_ALL_DEVICE_TYPES,
                         GET_ALL_BUNDLES,
@@ -146,6 +149,7 @@ public class Permissions {
                         MODIFY_DEVICE,
                         MODIFY_BUNDLE,
                         MODIFY_FEATURE_TOGGLE,
+                        MODIFY_FEATURE_TOGGLE_EXCEPTION,
                         MODIFY_CONSUMPTION_MATRIX);
 
         public static final EnumSet<Resource> automationPlatformPermissions = EnumSet.of(
