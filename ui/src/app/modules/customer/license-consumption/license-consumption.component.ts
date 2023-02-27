@@ -23,6 +23,7 @@ import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption
 import { AddOtherConsumptionComponent } from './add-other-consumption/add-other-consumption.component';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+import { ConsumptionDetailsComponent } from './consumption-details/consumption-details.component';
 
 @Component({
   selector: 'app-license-consumption',
@@ -325,11 +326,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
       this.isDetailedConsumptionLoadingResults = true;
       this.isDetailedConsumptionRequestCompleted = false;
       this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
-        res.usage.forEach(item => {
-          item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
-          item.callingPlatformInfo = !item.callingPlatform ? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
-        });
-        this.detailedConsumptionData = this.formatUsageDays(res.usage);
+        this.detailedConsumptionData = this.formatUsageData(res.usage);
         this.detailedConsumptionDataLength = res.usageTotalCount;
         this.weeklyConsumptionData = this.getWeeksDetail(res.weeklyConsumption);
         this.projectConsumptionData = res.projectConsumption;
@@ -402,11 +399,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.isDetailedConsumptionLoadingResults = true;
     this.isDetailedConsumptionRequestCompleted = false;
     this.licenseConsumptionService.getLicenseConsumptionDetails(this.buildRequestObject('', pageNumber, pageSize)).subscribe((res: any) => {
-      res.usage.forEach(item => {
-        item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
-        item.callingPlatformInfo = !item.callingPlatform ? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
-      });
-      this.detailedConsumptionData = this.formatUsageDays(res.usage);
+      this.detailedConsumptionData = this.formatUsageData(res.usage);
       this.detailedConsumptionDataLength = res.usageTotalCount;
       this.isDetailedConsumptionLoadingResults = false;
       this.isDetailedConsumptionRequestCompleted = true;
@@ -417,13 +410,14 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formatUsageDays(usage: any[]) {
+  private formatUsageData(usage: any[]) {
     usage.forEach(item => {
-      if (item.device.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform') {
+      item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
+      item.callingPlatformInfo = !item.callingPlatform ? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
+      if (!this.newLicenseConsumptionLogicFlag && (item.device.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform'))
         item.usageDays = "...";
-      } else {
+      else
         this.getNameOfDays(item.usageDays);
-      }
     });
     return usage;
   }
@@ -495,9 +489,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  openDialog(component: any, data?: any): void {
+  openDialog(component: any, data?: any, width?: any): void {
     const dialogRef: any = this.dialog.open(component, {
-      width: 'auto',
+      width: width ? width : 'auto',
       data: data,
       disableClose: true
     });
@@ -558,9 +552,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
       case this.VIEW_DETAILS:
-        console.log("Cones here");
-        console.log(object.selectedRow);
-        // this.openDialog(ConsumptionDetailsComponent, dataObject);
+        this.openDialog(ConsumptionDetailsComponent, object.selectedRow, '600px');
         break;
       case this.EDIT:
         const dataObject: any = { ...object.selectedRow, ...{ endLicensePeriod: this.selectedLicense.renewalDate } };
