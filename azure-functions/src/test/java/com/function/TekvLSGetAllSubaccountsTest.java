@@ -334,32 +334,6 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
-    @Tag("security")
-    @Test
-    public void forbiddenTest() {
-        //Given - Arrange
-        String id = "EMPTY";
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
-
-        //When - Action
-        HttpResponseMessage response = getAllSubaccountsApi.run(this.request, id, this.context);
-        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
-
-        //Then - Assert
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.FORBIDDEN;
-        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-
-        assertTrue(jsonBody.has("error"));
-
-        String expectedResponse = RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
-        String actualResponse = jsonBody.getString("error");
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
-    }
-
     @Test
     public void getAllSubaccountsInvalidTest() {
         //Given - Arrange

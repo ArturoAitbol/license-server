@@ -34,6 +34,10 @@ export class FeatureTogglesComponent implements OnInit {
     this.fetchFeatureToggles();
   }
 
+  ftTrackBy(index, ft) {
+    return ft.id;
+  }
+
   private fetchFeatureToggles() {
     this.featureToggleService.getFeatureToggles().subscribe((res: { featureToggles: FeatureToggle[] }) => {
       this.featureToggles = res.featureToggles;
