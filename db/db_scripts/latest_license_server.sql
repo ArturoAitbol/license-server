@@ -297,7 +297,8 @@ CREATE TABLE public.license_consumption (
     calling_platform_id uuid,
     tokens_consumed integer DEFAULT 0 NOT NULL,
     modified_date timestamp without time zone,
-    modified_by character varying
+    modified_by character varying,
+    comment character varying
 );
 
 

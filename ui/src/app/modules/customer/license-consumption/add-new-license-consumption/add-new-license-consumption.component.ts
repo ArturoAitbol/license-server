@@ -73,7 +73,8 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
   addLicenseConsumptionForm = this.formBuilder.group({
     startWeek: ['', Validators.required],
     endWeek: ['', Validators.required],
-    project: ['', [Validators.required, this.RequireMatch]]
+    project: ['', [Validators.required, this.RequireMatch]],
+    comment: ['']
   });
   addDutForm = this.formBuilder.group({
     type: ['', Validators.required],
@@ -183,10 +184,10 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
           return vendor ? this.filterVendors(vendor, true) : this.callingPlatformVendors.slice();
         })
       );
-      
+
       this.addCallingPlatformForm.controls['product'].disable();
       this.addCallingPlatformForm.patchValue({ product: '' });
-      
+
       this.filteredCallingPlatformModels = this.addCallingPlatformForm.controls['product'].valueChanges.pipe(
         startWith(''),
         map(value => (typeof value === 'string' ? value : value ? value.product : '')),
@@ -386,6 +387,7 @@ export class AddNewLicenseConsumptionComponent implements OnInit, OnDestroy {
     const licenseConsumptionsObject: any = {
       subaccountId: this.customerSubaccountDetails.id,
       projectId: this.addLicenseConsumptionForm.value.project.id,
+      comment: this.addLicenseConsumptionForm.value.comment,
       consumptionDate: stringDate,
       type: "Configuration",
       macAddress: "",
