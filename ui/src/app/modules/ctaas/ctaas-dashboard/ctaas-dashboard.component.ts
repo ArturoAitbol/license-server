@@ -91,14 +91,14 @@ export class CtaasDashboardComponent implements OnInit {
                     console.error(event.detail);
                     const { detail: { message, errorCode } } = event;
                     if (message && errorCode && message === 'TokenExpired' && errorCode === '403') {
-                        localStorage.removeItem(Constants.POWERBI_REPORT);
+                        this.setPbiReportDetailsInSubaccountDetails(null);
                         this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
                     }
                 }
             },
         ],
         ['visualClicked', () => console.debug('visual clicked')],
-        ['pageChanged', (event) => console.debug(event)],
+        ['pageChanged', () => console.debug('Page changed')]
     ]);
 
     readonly LEGACY_MODE: string = 'legacy_view';
@@ -307,14 +307,13 @@ export class CtaasDashboardComponent implements OnInit {
      * fetch SpotLight Power BI dashboard required details
      */
     fetchSpotlightPowerBiDashboardDetailsBySubaccount(): Promise<any> {
-        if (this.enableEmbedTokenCache) {        // get the POWERBI_REPORT from localstorage
-            const pbiLS = localStorage.getItem(Constants.POWERBI_REPORT);
-            // if localstorage has the data, then set those details to powerbiReportResponse
-            if (pbiLS) {
+        if (this.enableEmbedTokenCache) { // check whether cache embed token is enabled/disabled
+            const { pbiReport } = this.subaccountDetails;
+            // check if pbiReport is there in the subaccount object from session storage
+            if (pbiReport) {
                 return new Promise((resolve, reject) => {
                     try {
-                        const reportDetails = JSON.parse(pbiLS);
-                        const { daily, weekly } = reportDetails;
+                        const { daily, weekly } = pbiReport;
                         this.powerbiReportResponse = { daily, weekly };
                         resolve("API request is successful!");
                     } catch (error) {
@@ -335,13 +334,14 @@ export class CtaasDashboardComponent implements OnInit {
                     this.isLoadingResults = false;
                     const { daily, weekly } = response.powerBiInfo;
                     this.powerbiReportResponse = { daily, weekly };
-                    localStorage.setItem(Constants.POWERBI_REPORT, JSON.stringify({ daily, weekly }));
+                    this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly } };
+                    this.setPbiReportDetailsInSubaccountDetails({ daily, weekly });
                     resolve("API request is successful!");
                 }, (err) => {
                     this.hasDashboardDetails = false;
                     this.isLoadingResults = false;
                     console.error('Error while loading embedded powerbi report: ', err);
-                    localStorage.removeItem(Constants.POWERBI_REPORT);
+                    this.setPbiReportDetailsInSubaccountDetails(null);
                     this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
                     reject("API request is failed!");
                 });
@@ -398,6 +398,14 @@ export class CtaasDashboardComponent implements OnInit {
                 this.fetchCtaasDashboardDetailsBySubaccount();
                 break;
         }
+    }
+    /**
+     * set powerbi report details in subaccount object in session storage
+     * @param data: { daily: any, weekly: any } | null
+     */
+    setPbiReportDetailsInSubaccountDetails(data: { daily: any, weekly: any } | null): void {
+        this.subaccountDetails = { ... this.subaccountDetails, pbiReport: data };
+        this.subaccountService.setSelectedSubAccount(this.subaccountDetails);
     }
 
     ngOnDestroy(): void {
