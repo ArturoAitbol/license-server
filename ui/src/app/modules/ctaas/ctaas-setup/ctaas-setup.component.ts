@@ -117,10 +117,7 @@ export class CtaasSetupComponent implements OnInit {
   }
 
   private updateMaintenanceMode(maintenance: boolean) {
-    this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, {
-      ...this.originalCtaasSetupDetails,
-      maintenance: maintenance
-    }).subscribe((res: any) => {
+    this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, { maintenance: maintenance }).subscribe((res: any) => {
       if (!res?.error) {
         this.snackBarService.openSnackBar(maintenance ? 'Maintenance mode enabled successfully' : 'Maintenance mode disabled successfully', '');
         this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, maintenance: maintenance };
