@@ -110,7 +110,7 @@ export class CtaasDashboardComponent implements OnInit {
         daily: { embedUrl: string, embedToken: string },
         weekly: { embedUrl: string, embedToken: string }
     };
-    enableTokenCache: boolean = true;
+    enableEmbedTokenCache: boolean = true;
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
@@ -308,24 +308,24 @@ export class CtaasDashboardComponent implements OnInit {
      * fetch SpotLight Power BI dashboard required details
      */
     fetchSpotlightPowerBiDashboardDetailsBySubaccount(): Promise<any> {
-        if (this.enableTokenCache) {        // get the POWERBI_REPORT from localstorage
-            const pbiLC = localStorage.getItem(Constants.POWERBI_REPORT);
+        if (this.enableEmbedTokenCache) {        // get the POWERBI_REPORT from localstorage
+            const pbiLS = localStorage.getItem(Constants.POWERBI_REPORT);
             // if localstorage has the data, then set those details to powerbiReportResponse
-            if (pbiLC) {
+            if (pbiLS) {
                 return new Promise((resolve, reject) => {
                     try {
-                        const reportDetails = JSON.parse(pbiLC);
+                        const reportDetails = JSON.parse(pbiLS);
                         const { daily, weekly } = reportDetails;
                         this.powerbiReportResponse = { daily, weekly };
-                        resolve("API request is successfull !");
+                        resolve("API request is successful!");
                     } catch (error) {
                         this.powerbiReportResponse = undefined;
-                        reject("API request is not successfull !");
+                        reject("API request is failed!");
                     }
                 });
             }
         }
-        // if localstorage is null/undefined, then make an API to fetch embedURL and embedToken for daily & weekly
+        // make an API call to fetch Embedded Powerbi details 
         return new Promise((resolve, reject) => {
             this.powerbiReportResponse = undefined;
             this.isLoadingResults = true;
@@ -337,14 +337,14 @@ export class CtaasDashboardComponent implements OnInit {
                     const { daily, weekly } = response.powerBiInfo;
                     this.powerbiReportResponse = { daily, weekly };
                     localStorage.setItem(Constants.POWERBI_REPORT, JSON.stringify({ daily, weekly }));
-                    resolve("API request is successfull !");
+                    resolve("API request is successful!");
                 }, (err) => {
                     this.hasDashboardDetails = false;
                     this.isLoadingResults = false;
                     console.error('Error while loading embedded powerbi report: ', err);
                     localStorage.removeItem(Constants.POWERBI_REPORT);
                     this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
-                    reject("API request is not successfull !");
+                    reject("API request is failed!");
                 });
         });
     }
