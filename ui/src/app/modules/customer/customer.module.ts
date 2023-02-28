@@ -21,6 +21,7 @@ import { ModifyProjectComponent } from './projects/modify-project/modify-project
 import { DevicesComponent } from '../devices/devices.component';
 import { AddDeviceComponent } from '../devices/add-device/add-device.component';
 import { ModifyDeviceComponent } from '../devices/modify-device/modify-device.component';
+import { ConsumptionDetailsComponent } from './license-consumption/consumption-details/consumption-details.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { ModifyDeviceComponent } from '../devices/modify-device/modify-device.co
     DevicesComponent,
     AddDeviceComponent,
     ModifyDeviceComponent,
+    ConsumptionDetailsComponent,
   ],
   imports: [
     CommonModule,

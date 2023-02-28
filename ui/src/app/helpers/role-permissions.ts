@@ -81,6 +81,7 @@ export const permissions = {
                 'DELETE_LICENSE'],
             licConsumptionOptions: [
                 'EDIT',
+                'VIEW_DETAILS',
                 'DELETE'
             ],
             projectOptions: [
@@ -142,6 +143,7 @@ export const permissions = {
             licenseOptions: [
             ],
             licConsumptionOptions: [
+                'VIEW_DETAILS',
             ],
             projectOptions: [
                 'VIEW_CONSUMPTION'
@@ -194,6 +196,7 @@ export const permissions = {
             licenseOptions: [],
             licConsumptionOptions: [
                 'EDIT',
+                'VIEW_DETAILS',
                 'DELETE'
             ],
             projectOptions: [
@@ -243,7 +246,9 @@ export const permissions = {
                 'VIEW_CTAAS_DASHBOARD'
             ],
             licenseOptions: [],
-            licConsumptionOptions: [],
+            licConsumptionOptions: [
+                'VIEW_DETAILS',
+            ],
             projectOptions: [
                 'VIEW_CONSUMPTION'
             ],
@@ -287,7 +292,9 @@ export const permissions = {
                 'VIEW_CTAAS_DASHBOARD'
             ],
             licenseOptions: [],
-            licConsumptionOptions: [],
+            licConsumptionOptions: [
+                'VIEW_DETAILS',
+            ],
             projectOptions: [
                 'VIEW_CONSUMPTION'
             ],
@@ -341,7 +348,9 @@ export const permissions = {
                 'VIEW_CTAAS_DASHBOARD'
             ],
             licenseOptions: [],
-            licConsumptionOptions: [],
+            licConsumptionOptions: [
+                'VIEW_DETAILS',
+            ],
             projectOptions: [
                 'VIEW_CONSUMPTION'
             ],
