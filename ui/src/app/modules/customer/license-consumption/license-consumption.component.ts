@@ -23,6 +23,7 @@ import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption
 import { AddOtherConsumptionComponent } from './add-other-consumption/add-other-consumption.component';
 import { permissions } from 'src/app/helpers/role-permissions';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+import { ConsumptionDetailsComponent } from './consumption-details/consumption-details.component';
 
 @Component({
   selector: 'app-license-consumption',
@@ -31,7 +32,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 })
 export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private readonly TOKEN_CONSUMPTION_DATE = new Date(environment.TOKEN_CONSUMPTION_DATE + ' 00:00:00');
-  customerSubaccountDetails: any; 
+  customerSubaccountDetails: any;
   @ViewChild(MatSort) sort: MatSort;
   projects: any[];
   selectedLicense: any;
@@ -125,10 +126,12 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   detailedConsumptionTableSelectable = false;
   newLicenseConsumptionLogicFlag = false;
   hasAddConsumptionPermission = false;
+  readonly VIEW_DETAILS: string = 'View Details';
   readonly EDIT: string = 'Edit';
   readonly DELETE: string = 'Delete';
 
   readonly options = {
+    VIEW_DETAILS: this.VIEW_DETAILS,
     EDIT: this.EDIT,
     DELETE: this.DELETE
   }
@@ -160,7 +163,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.detailedConsumptionColumns = this.defaultDetailedConsumptionColumns;
     this.getCutomerDetails()
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    const premissionsMatchIndex = roles?.findIndex((role : string) => permissions[role].elements.indexOf('addLicenseConsumption') !==-1);
+    const premissionsMatchIndex = roles?.findIndex((role: string) => permissions[role].elements.indexOf('addLicenseConsumption') !== -1);
     if (premissionsMatchIndex >= 0)
       this.hasAddConsumptionPermission = true;
     const projectItem: string = localStorage.getItem(Constants.PROJECT);
@@ -207,9 +210,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
       this.newLicenseConsumptionLogicFlag = true;
     else this.newLicenseConsumptionLogicFlag = false;
-    this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails); 
-    this.defineDetailedConsumptionsTableColumns();
+    this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails);
     this.getActionMenuOptions();
+    this.defineDetailedConsumptionsTableColumns();
   }
 
   fetchDataToDisplay() {
@@ -218,18 +221,29 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.fetchAggregatedData();
   }
 
+  private checkIfOnlyViewIsPresent(): boolean {
+    if (this.licConsumptionActionMenuOptions.length === 1 && this.licConsumptionActionMenuOptions[0] === this.VIEW_DETAILS)
+      return true;
+    return false;
+  }
+
   private defineDetailedConsumptionsTableColumns() {
     this.detailedConsumptionColumns = this.defaultDetailedConsumptionColumns;
-    if (!this.newLicenseConsumptionLogicFlag)
-      this.licConsumptionActionMenuOptions.pop();
+    if (!this.checkIfOnlyViewIsPresent()) {
+      if (!this.newLicenseConsumptionLogicFlag)
+        this.licConsumptionActionMenuOptions.pop();
+    }
+
   }
 
   private getActionMenuOptions() {
     this.licConsumptionActionMenuOptions = [];
     const roles = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
     this.licConsumptionActionMenuOptions = Utility.getTableOptions(roles, this.options, "licConsumptionOptions");
-    if (this.newLicenseConsumptionLogicFlag)
-      this.licConsumptionActionMenuOptions.shift();
+    if (!this.checkIfOnlyViewIsPresent()) {
+      if (this.newLicenseConsumptionLogicFlag)
+        this.licConsumptionActionMenuOptions.shift();
+    }
   }
 
   private buildRequestObject(view: string, pageNumber?: number, pageSize?: number) {
@@ -410,7 +424,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   private formatUsageData(usage: any[]) {
     usage.forEach(item => {
       item.deviceInfo = `${item.device.type}: ${item.device.vendor} - ${item.device.product} ${item.device.version}`;
-      item.callingPlatformInfo = !item.callingPlatform? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
+      item.callingPlatformInfo = !item.callingPlatform ? "" : `${item.callingPlatform.type}: ${item.callingPlatform.vendor} - ${item.callingPlatform.product} ${item.callingPlatform.version}`;
       if (!this.newLicenseConsumptionLogicFlag && (item.device.granularity.toLowerCase() === 'static' || item.usageType === 'AutomationPlatform'))
         item.usageDays = "...";
       else
@@ -486,9 +500,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  openDialog(component: any, data?: any): void {
+  openDialog(component: any, data?: any, width?: any): void {
     const dialogRef: any = this.dialog.open(component, {
-      width: 'auto',
+      width: width ? width : 'auto',
       data: data,
       disableClose: true
     });
@@ -548,6 +562,9 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
    */
   licConsumptionRowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
     switch (object.selectedOption) {
+      case this.VIEW_DETAILS:
+        this.openDialog(ConsumptionDetailsComponent, object.selectedRow, '600px');
+        break;
       case this.EDIT:
         const dataObject: any = { ...object.selectedRow, ...{ endLicensePeriod: this.selectedLicense.renewalDate } };
         if (object.selectedRow.device.granularity.toLowerCase() === "static" || object.selectedRow.usageType === "AutomationPlatform")
