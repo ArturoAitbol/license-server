@@ -55,7 +55,6 @@ export class CtaasDashboardComponent implements OnInit {
     powerBiEmbeddingFlag: boolean = false;
     reportConfig: IReportEmbedConfiguration = {
         type: "report",
-        // id: undefined,
         embedUrl: undefined,
         accessToken: undefined, // Keep as empty string, null or undefined
         tokenType: models.TokenType.Embed,
@@ -355,24 +354,7 @@ export class CtaasDashboardComponent implements OnInit {
      * @param accessToken: string 
      */
     configurePowerbiEmbeddedReport(embedUrl: string, accessToken: string) {
-        // this.reportConfig = undefined;
         if (embedUrl && accessToken) {
-            // this.reportConfig = {
-            //     type: this.REPORT_TYPE,
-            //     embedUrl,
-            //     tokenType: models.TokenType.Embed,
-            //     accessToken,
-            //     hostname: "https://app.powerbi.com",
-            //     settings: {
-            //         filterPaneEnabled: false,
-            //         navContentPaneEnabled: false,
-            //         // layoutType: models.LayoutType.Custom,
-            //         // customLayout: {
-            //         //     displayOption: models.DisplayOption.FitToWidth
-            //         // }
-            //     },
-            //     viewMode: models.ViewMode.View
-            // };
             this.reportConfig = {
                 ... this.reportConfig,
                 embedUrl,
