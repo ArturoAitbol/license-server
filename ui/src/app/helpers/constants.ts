@@ -8,6 +8,7 @@ export class Constants {
     public static readonly CURRENT_ENABLED_SERVICES: string = 'currentEnabledServices';
     public static readonly TOOLBAR_DETAILS: string = 'toolbarDetails';
     public static readonly CURRENT_REPORTS: string = 'currentReports';
+    public static readonly POWERBI_REPORT: string = 'pbi-report';
 
     // Session Storage Keys
     public static readonly ACCESS_TOKEN: string = 'access_token';
@@ -35,6 +36,6 @@ export class Constants {
     // Timer constants
     public static readonly DASHBOARD_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes * 60 seconds * 1000 milliseconds
     public static readonly DASHBOARD_NOTE_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes * 60 seconds * 1000 milliseconds
-
+    
 }
 
