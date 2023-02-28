@@ -53,7 +53,20 @@ export class CtaasDashboardComponent implements OnInit {
     // Flag which specify the type of embedding
     phasedEmbeddingFlag = false;
     powerBiEmbeddingFlag: boolean = false;
-    reportConfig: IReportEmbedConfiguration;
+    reportConfig: IReportEmbedConfiguration = {
+        type: 'report',
+        embedUrl: undefined,
+        tokenType: models.TokenType.Embed,
+        accessToken: undefined,
+        settings: {
+            filterPaneEnabled: false,
+            navContentPaneEnabled: false,
+            layoutType: models.LayoutType.Custom,
+            customLayout: {
+                displayOption: models.DisplayOption.FitToWidth
+            }
+        }
+    }
     /**
      * Map of event handlers to be applied to the embedded report
      */
@@ -319,22 +332,27 @@ export class CtaasDashboardComponent implements OnInit {
      * @param accessToken: string 
      */
     configurePowerbiEmbeddedReport(embedUrl: string, accessToken: string) {
-        this.reportConfig = undefined;
+        // this.reportConfig = undefined;
         if (embedUrl && accessToken) {
+            // this.reportConfig = {
+            //     type: this.REPORT_TYPE,
+            //     embedUrl,
+            //     tokenType: models.TokenType.Embed,
+            //     accessToken,
+            //     settings: {
+            //         filterPaneEnabled: false,
+            //         navContentPaneEnabled: false,
+            //         layoutType: models.LayoutType.Custom,
+            //         customLayout: {
+            //             displayOption: models.DisplayOption.FitToWidth
+            //         }
+            //     }
+            // };
             this.reportConfig = {
-                type: this.REPORT_TYPE,
+                ...this.reportConfig,
                 embedUrl,
-                tokenType: models.TokenType.Embed,
-                accessToken,
-                settings: {
-                    filterPaneEnabled: false,
-                    navContentPaneEnabled: false,
-                    layoutType: models.LayoutType.Custom,
-                    customLayout: {
-                        displayOption: models.DisplayOption.FitToWidth
-                    }
-                }
-            };
+                accessToken
+            }
             this.hasDashboardDetails = true;
         }
     }
