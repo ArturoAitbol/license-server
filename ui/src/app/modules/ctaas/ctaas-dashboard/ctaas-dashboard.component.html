@@ -3,7 +3,8 @@
     <app-banner [stylesflag]="'dashboard'" *lcCheckAccessFor="'showBanner'">
     </app-banner>
     <div class="container-fluid controls" id="reportContainer">
-      <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container>
+      <!-- <ng-container *ngIf="hasDashboardDetails; then reportView;else blankView"></ng-container> -->
+      <ng-container [ngTemplateOutlet]="reportView"></ng-container>
     </div>
     <!-- blank view -->
     <ng-template #blankView>
