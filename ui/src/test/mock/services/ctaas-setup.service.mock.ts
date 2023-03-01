@@ -36,7 +36,7 @@ const TEST_SETUP_4 ={
 const TEST_SETUP_5 ={   
     azureResourceGroup: 'ad-tap',
     id: '1e22eb0d-e499-4dbc-8f68-3dff5a42086b',
-    onBoardingComplete: true,
+    onBoardingComplete: false,
     status: 'SETUP_INPROGRESS',
     subaccountId: 'fbb2d912-b202-432d-8c07-dce0dad51f7f',
     tapUrl: 'www.taptekvizion.com'

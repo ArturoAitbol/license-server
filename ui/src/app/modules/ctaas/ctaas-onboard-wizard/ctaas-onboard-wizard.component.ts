@@ -12,8 +12,8 @@ import {UserProfileService} from 'src/app/services/user-profile.service';
 
 @Component({
     selector: 'app-onboard-wizard',
-    templateUrl: './onboard-wizard.component.html',
-    styleUrls: ['./onboard-wizard.component.css']
+    templateUrl: './ctaas-onboard-wizard.component.html',
+    styleUrls: ['./ctaas-onboard-wizard.component.css']
 })
 export class OnboardWizardComponent implements OnInit {
     userInteraction = false;
@@ -140,7 +140,6 @@ export class OnboardWizardComponent implements OnInit {
         switch (value) { 
             case 'yes':
                 this.stakeholderService.getStakeholderList(subaccountDetails.id).subscribe(res => {
-                    const {stakeHolders} = res;
                     if(res.stakeHolders.length < 10){
                         this.addAnotherStakeHolder = true;
                         this.interaction = '4';
@@ -181,36 +180,36 @@ export class OnboardWizardComponent implements OnInit {
                 } else {
                     this.interaction = '3';
                 }
-            } else {
-                this.interaction = '3';
             }
         });
     }
 
-    /**
-     *
-     * @param event: any
-     * @param item: any
-     */
-    onFormCheckboxChange(event: any, item: any): void {
-        const {target: {checked}} = event;
-        const {value: selectedItemValue} = item;
-        const formArray: FormArray = ((this.interaction === '2') ? this.userProfileForm.get('notifications') : this.stakeholderForm.get('notifications')) as FormArray;
-        /* Selected */
-        if (checked) {
-            // Add a new control in the arrayForm
-            formArray.push(new FormControl(selectedItemValue));
-        } else { /* unselected */
-            // find the unselected element
-            formArray.controls.forEach((ctrl: FormControl, index: number) => {
-                if (ctrl.value == selectedItemValue) {
-                    // Remove the unselected element from the arrayForm
-                    formArray.removeAt(index);
-                    return;
-                }
-            });
-        }
-    }
+
+    //commented unused code if we are not going to use it in the future please delete it
+    // /**
+    //  *
+    //  * @param event: any
+    //  * @param item: any
+    //  */
+    // onFormCheckboxChange(event: any, item: any): void {
+    //     const {target: {checked}} = event;
+    //     const {value: selectedItemValue} = item;
+    //     const formArray: FormArray = ((this.interaction === '2') ? this.userProfileForm.get('notifications') : this.stakeholderForm.get('notifications')) as FormArray;
+    //     /* Selected */
+    //     if (checked) {
+    //         // Add a new control in the arrayForm
+    //         formArray.push(new FormControl(selectedItemValue));
+    //     } else { /* unselected */
+    //         // find the unselected element
+    //         formArray.controls.forEach((ctrl: FormControl, index: number) => {
+    //             if (ctrl.value == selectedItemValue) {
+    //                 // Remove the unselected element from the arrayForm
+    //                 formArray.removeAt(index);
+    //                 return;
+    //             }
+    //         });
+    //     }
+    // }
 
     /**
      * on cancel dialog

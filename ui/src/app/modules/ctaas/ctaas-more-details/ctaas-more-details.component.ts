@@ -9,8 +9,8 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-more-details',
-  templateUrl: './more-details.component.html',
-  styleUrls: ['./more-details.component.css']
+  templateUrl: './ctaas-more-details.component.html',
+  styleUrls: ['./ctaas-more-details.component.css']
 })
 export class MoreDetailsComponent implements OnInit {
 
@@ -79,65 +79,58 @@ export class MoreDetailsComponent implements OnInit {
    * fetch detailed dashboard report
    */
   public fetchDashboardReportDetails(): void {
-    try {
-      this.isRequestCompleted = false;
-      this.hasDashboardDetails = false;
-      this.isLoadingResults = true;
-      const PARSED_REPORT_TYPE = this.type === this.FEATURE_FUNCTIONALITY ? 'LTS' :
-        (this.type === this.CALL_RELIABILITY) ? 'STS' : this.type;
-      this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr)
-        .subscribe((res: any) => {
-          this.isRequestCompleted = true;
-          this.isLoadingResults = false;
-          const { response: { report, reportType } } = res;
-          if (report && reportType) {
-            this.reportResponse = report;
-            const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
-            detailedResponseObj[this.type] = JSON.parse(JSON.stringify(report));
-            this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
-            this.filename = reportType;
-            this.hasDashboardDetails = true;
-            const { summary, endpoints, results, type } = this.reportResponse;
-            if (endpoints && endpoints.length > 0) {
-              this.reportResponse.endpoints = endpoints.map((e: any) => {
-                if (e.city && e.country && e.state && e.zipcode) {
-                  e.region = `${e.city}, ${e.state}, ${e.country}, ${e.zipcode}`;
-                } else {
-                  e.region = "";
-                }
-                return e;
-              });
-            } else {
-              this.reportResponse.endpoints = [];
-            }
-            this.detailedTestReport = (results && results.length > 0) ? results : [];
-            this.detailedTestReport.forEach((obj: any) => {
-              obj.closeKey = false;
-              obj.fromnoDataFoundFlag = false;
-              obj.tonoDataFoundFlag = false;
-              obj.otherPartynoDataFoundFlag = false;
-              obj.panelOpenState = true;
-              obj.from.mediaStats.sort((a, b) => {
-                return a.timestamp - b.timestamp
-              })
-              // filter the array without media stats details 
-              obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
+    this.isRequestCompleted = false;
+    this.hasDashboardDetails = false;
+    this.isLoadingResults = true;
+    const PARSED_REPORT_TYPE = this.type === this.FEATURE_FUNCTIONALITY ? 'LTS' :
+      (this.type === this.CALL_RELIABILITY) ? 'STS' : this.type;
+    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr)
+      .subscribe((res: any) => {
+        this.isRequestCompleted = true;
+        this.isLoadingResults = false;
+        if (res.response.report && res.response.reportType) {
+          this.reportResponse = res.response.report;
+          const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
+          detailedResponseObj[this.type] = JSON.parse(JSON.stringify(res.response.report));
+          this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
+          this.filename = res.response.reportType;
+          this.hasDashboardDetails = true;
+          if (this.reportResponse.endpoints && this.reportResponse.endpoints.length > 0) {
+            this.reportResponse.endpoints = this.reportResponse.endpoints.map((e: any) => {
+              if (e.city && e.country && e.state && e.zipcode) {
+                e.region = `${e.city}, ${e.state}, ${e.country}, ${e.zipcode}`;
+              } else {
+                e.region = "";
+              }
+              return e;
             });
           } else {
-            this.hasDashboardDetails = false;
-            this.reportResponse = {};
+            this.reportResponse.endpoints = [];
           }
-        }, (error) => {
+          this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
+          this.detailedTestReport.forEach((obj: any) => {
+            obj.closeKey = false;
+            obj.fromnoDataFoundFlag = false;
+            obj.tonoDataFoundFlag = false;
+            obj.otherPartynoDataFoundFlag = false;
+            obj.panelOpenState = true;
+            obj.from.mediaStats.sort((a, b) => {
+              return a.timestamp - b.timestamp
+            })
+            // filter the array without media stats details 
+            obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
+          });
+        } else {
           this.hasDashboardDetails = false;
-          this.isLoadingResults = false;
-          this.isRequestCompleted = true;
-        });
-    } catch (error) {
-      this.hasDashboardDetails = false;
-      this.isLoadingResults = false;
-      this.isRequestCompleted = true;
-      console.error("Error while fetching dashboard report: " + error);
-    }
+          this.reportResponse = {};
+        }
+      }, (error) => {
+        this.hasDashboardDetails = false;
+        this.isLoadingResults = false;
+        this.isRequestCompleted = true;
+        console.error("Error while fetching dashboard report: " + error.error);
+        this.snackBarService.openSnackBar("Error while fetching dashboard report",'');
+      });
   }
 
   getSelectedFromTimeStamp(event) {
@@ -334,11 +327,10 @@ export class MoreDetailsComponent implements OnInit {
       if (reportResponse) {
         this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(reportResponse)
           .subscribe((res: any) => {
-            const { error } = res;
-            if (!error) this.downloadExcelFile(res);
+            if (!res.error) this.downloadExcelFile(res);
           }, (error) => {
             this.canDisableDownloadBtn = false;
-            console.error('Error with download report request: ' + error);
+            console.error('Error with download report request: ' + error.error);
             this.snackBarService.openSnackBar('Error loading downloading report', 'Ok');
           });
       }
