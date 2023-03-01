@@ -21,8 +21,8 @@ public class LicenseConsumptionSteps {
     Customers customers;
     Consumptions consumptions;
     ConsumptionForm consumptionForm;
-    String startWeek, endWeek, project, device = "", deviceType="", deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens = "",
-            supportVendor, supportModel, usageDays = "", callingPlatform = "";
+    String startWeek, endWeek, project, device = "", deviceType = "", deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens = "",
+            supportDevice = "", supportVendor, supportModel, usageDays = "", callingPlatform = "";
     String dutType, dutVendor, dutDevice, callingType, callingVendor, callingDevice;
     ConsumptionRow consumptionRow;
     private final String consumptionSummaryTableId = "tektokens-summary-table";
@@ -53,6 +53,11 @@ public class LicenseConsumptionSteps {
         this.consumptionForm = this.consumptions.openLabsConsumptionForm();
     }
 
+    @And("I select subscription {string}")
+    public void iSelectSubscription(String license) {
+        this.consumptions = this.consumptions.selectSubscription(license);
+    }
+
     @When("I add a consumption with the following data")
     public void iAddAConsumptionWithTheFollowingData(DataTable dataTable) throws InterruptedException {
         this.consumptionForm.waitSpinner();
@@ -63,9 +68,12 @@ public class LicenseConsumptionSteps {
         this.deviceModel = consumption.getOrDefault("deviceModel", "");
         this.deviceVersion = consumption.get("deviceVersion");
         this.deviceGranularity = consumption.get("deviceGranularity");
-        this.device = this.deviceVendor + " - " + this.deviceModel + " " + this.deviceVersion;
+        if (!this.deviceVendor.isEmpty())
+            this.device = this.deviceVendor + " - " + this.deviceModel + " " + this.deviceVersion;
         this.supportVendor = consumption.getOrDefault("supportVendor", "");
         this.supportModel = consumption.getOrDefault("supportModel", "");
+        if (!this.supportVendor.isEmpty())
+            this.supportDevice =this.supportVendor + " - " + this.supportModel+ " " + this.deviceVersion;
         this.tekTokens = consumption.get("tekTokens");
         this.usageDays = consumption.getOrDefault("usageDays", "");
         this.consumptions = this.consumptionForm.addConsumption(startWeek, endWeek, project, deviceType, deviceVendor, deviceModel,
@@ -79,12 +87,14 @@ public class LicenseConsumptionSteps {
         this.project = consumption.get("project");
         this.dutType = consumption.getOrDefault("dutType", "");
         this.dutVendor = consumption.getOrDefault("dutVendor", "");
-        this.dutDevice = consumption.get("dutDevice");
-        this.device = this.dutType + ": " + this.dutVendor + " - " + this.dutDevice;
-        this.callingType = consumption.get("callingType");
-        this.callingVendor = consumption.get("callingVendor");
-        this.callingDevice = consumption.get("callingDevice");
-        this.callingPlatform = this.callingType + ": " + this.callingVendor + " - " + this.callingDevice;
+        this.dutDevice = consumption.getOrDefault("dutDevice","");
+        if (!this.dutType.isEmpty())
+            this.device = this.dutType + ": " + this.dutVendor + " - " + this.dutDevice;
+        this.callingType = consumption.getOrDefault("callingType","");
+        this.callingVendor = consumption.getOrDefault("callingVendor","");
+        this.callingDevice = consumption.getOrDefault("callingDevice","");
+        if (!this.callingType.isEmpty())
+            this.callingPlatform = this.callingType + ": " + this.callingVendor + " - " + this.callingDevice;
         this.usageDays = consumption.getOrDefault("usageDays", "");
         this.consumptions = this.consumptionForm.addLabsConsumption(startWeek, endWeek, project, dutType, dutVendor,
                 dutDevice, callingType, callingVendor, callingDevice, usageDays);
@@ -104,8 +114,7 @@ public class LicenseConsumptionSteps {
         this.deviceVersion = consumption.getOrDefault("deviceVersion", "");
         this.deviceGranularity = consumption.getOrDefault("deviceGranularity", "");
         if (!this.deviceModel.isEmpty())
-            this.device = this.deviceVendor + "-" + this.deviceModel + " " + this.deviceVersion;
-        this.supportModel = consumption.getOrDefault("supportModel", "");
+            this.device = this.deviceVendor + " - " + this.deviceModel + " " + this.deviceVersion;
         this.tekTokens = consumption.getOrDefault("tekTokens", "");
         this.usageDays = consumption.getOrDefault("usageDays", "");
         this.consumptions = this.consumptionForm.editConsumption(currentProject, this.project, deviceVendor,
@@ -187,7 +196,9 @@ public class LicenseConsumptionSteps {
                         actualUsageDays);
         }
         if (!this.device.isEmpty())
-            assertTrue("Consumption doesn't have this device: ".concat(device), actualDevice.contains(this.device));
+            assertTrue("Consumption doesn't have this device: ".concat(this.device), actualDevice.contains(this.device));
+        if (!this.supportDevice.isEmpty())
+            assertTrue("Consumption doesn't have this support device: ".concat(this.supportDevice), actualDevice.contains(this.supportDevice));
         if (!this.callingPlatform.isEmpty())
             assertTrue("Consumption doesn't have this calling platform: ".concat(callingPlatform), actualCallingPlatform.contains(this.callingPlatform));
     }
@@ -234,4 +245,6 @@ public class LicenseConsumptionSteps {
         ActionMenu actionMenu = this.consumptionRow.openActionMenu();
         actionMenu.delete("licenseConsumption");
     }
+
+
 }

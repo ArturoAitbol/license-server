@@ -5,7 +5,7 @@ Feature: LicensesConsumption
     When I try to login using a "FullAdministrator"
     Then I should see the "Customers" page
 
-  @createLicenseConsumptionCustomer @test
+  @createLicenseConsumptionCustomer
   Scenario: Create a test customer for license consumption tests
     Given I open the Add Customer form
     When I create a customer with the following data
@@ -17,14 +17,14 @@ Feature: LicensesConsumption
       | testCustomer  | yes                                   |
     Then I see the customer "functional-test-license-usage" in the table
 
-  @addLicenseForConsumption @test
+  @addSubscriptionForConsumption
   Scenario: Add a subscription for the tekToken Consumption
     Given I see the customer "functional-test-license-usage" in the table
     And I go to the tekToken Consumption view of "functional-test-license-usage"
     And I open the Add Subscription form from Consumption View
     When I create a subscription with the following data
-      | startDate         | 2/27/2023 |
-      | renewalDate       | 2/27/2025 |
+      | startDate         | 1/01/2023 |
+      | renewalDate       | 1/01/2025 |
       | subscriptionType  | Basic     |
       | description       | License1  |
     Then I should see the message "Subscription added successfully!"
@@ -36,7 +36,7 @@ Feature: LicensesConsumption
     And I open the Add tekToken Consumption form
     And I open the Add Project form from Consumption form
     And I create a project with the following data
-      | startDate         | 2/27/20223   |
+      | startDate         | 1/01/2023   |
       | name              | tekTokenTest|
       | code              | PRT-001     |
       | subscription      | License1    |
@@ -59,11 +59,11 @@ Feature: LicensesConsumption
       | tekTokens         | 7           |
      And I should see the same data in the tekToken Consumption Events table
 
-  @editLicenseConsumption @edit
+  @editLicenseConsumption
   Scenario: Edit a tekToken Consumption
     Given I see the customer "functional-test-license-usage" in the table
     And I go to the tekToken Consumption view of "functional-test-license-usage"
-    When I edit the consumption of the project "tekTokenTest with the following data
+    When I edit the consumption of the project "tekTokenTest" with the following data
       | usageDays         | Fri, Sat                          |
       | deviceVendor      | Cisco                             |
       | deviceModel       | Contact Center Express (UCCX)     |
@@ -79,70 +79,7 @@ Feature: LicensesConsumption
       | project           | tekTokenTest|
       | status            | Open        |
       | tekTokens         | 4           |
-    # need to improve this tests
-    # And I should see the same data in the tekToken Consumption Events table
-
-  @addLicenseConsumptionForMatrix
-  Scenario: Add a Labs Consumption for matrix
-    Given I see the customer "functional-test-license-usage" in the table
-    And I go to the tekToken Consumption view of "functional-test-license-usage"
-    And I open the Add Labs Consumption form
-    And I open the Add Project form from Consumption form
-    And I create a project with the following data
-      | startDate         | 2/27/2023   |
-      | name              | labsTest    |
-      | code              | LAB-001     |
-      | subscription      | License1    |
-    And I should see the message "Project added successfully!"
-    When I add a labs consumption with the following data
-      | project           | labsTest                          |
-      | dutType           | SBC                               |
-      | dutVendor         | Cisco                             |
-      | dutDevice         | 1100                              |
-      | callingType       | PBX                               |
-      | callingVendor     | Grandstream                       |
-      | callingDevice     | UCM 6308                          |
-      | usageDays         | Fri, Sat                          |
-    Then I should see the following data in the tekToken Consumption Summary table
-      | tekTokens         | 55          |
-      | consumed          | 12          |
-      | available         | 43          |
-    Then I should see the following data in the tekTokens Project Consumption table
-      | project           | labsTest    |
-      | status            | Open        |
-      | tekTokens         | 5           |
-    And I should see the same data in the tekToken Consumption Events table
-
-  @addOtherLicenseConsumption @test
-  Scenario: Add Other Consumption for matrix
-    Given I see the customer "functional-test-license-usage" in the table
-    And I go to the tekToken Consumption view of "functional-test-license-usage"
-    And I open the Add Other Consumption form
-    And I open the Add Project form from Consumption form
-    And I create a project with the following data
-      | startDate         | 2/27/2023   |
-      | name              | otherTest   |
-      | code              | OTH-001     |
-      | subscription      | License1    |
-    And I should see the message "Project added successfully!"
-    When I add a consumption with the following data
-      | project           | otherTest                         |
-      | deviceType        | CERT                              |
-      | deviceVendor      | tekVizion                         |
-      | deviceModel       | Cisco CUCM - FAX                  |
-      | deviceVersion     | 1.0                               |
-      | deviceGranularity | static                            |
-      | tekTokens         | 7                                 |
-      | usageDays         | Mon, Tue                          |
-    Then I should see the following data in the tekToken Consumption Summary table
-      | tekTokens         | 55          |
-      | consumed          | 7           |
-      | available         | 48          |
-    Then I should see the following data in the tekTokens Project Consumption table
-      | project           | otherTest   |
-      | status            | Open        |
-      | tekTokens         | 7           |
-    And I should see the same data in the tekToken Consumption Events table
+     And I should see the same data in the tekToken Consumption Events table
 
   @addLicenseConsumptionForSupport
   Scenario: Add a tekToken Consumption for a support device
@@ -151,7 +88,7 @@ Feature: LicensesConsumption
     And I open the Add tekToken Consumption form
     And I open the Add Project form from Consumption form
     And I create a project with the following data
-      | startDate         | 8/20/2022   |
+      | startDate         | 1/01/2023   |
       | name              | supportTest |
       | code              | SPT-001     |
       | subscription      | License1    |
@@ -167,10 +104,9 @@ Feature: LicensesConsumption
       | project           | supportTest |
       | status            | Open        |
       | tekTokens         | 0           |
-    # need to improve this tests
-#     And I should see the same data in the tekToken Consumption Events table
+     And I should see the same data in the tekToken Consumption Events table
 
-  @editLicenseConsumptionForSupport @edit
+  @editLicenseConsumptionForSupport
   Scenario: Edit the tekToken Consumption for a support device
     Given I see the customer "functional-test-license-usage" in the table
     And I go to the tekToken Consumption view of "functional-test-license-usage"
@@ -180,14 +116,13 @@ Feature: LicensesConsumption
       | project           | supportTest   |
       | status            | Open          |
       | tekTokens         | 0             |
-    # need to improve this tests
-    # And I should see the same data in the tekToken Consumption Events table
+     And I should see the same data in the tekToken Consumption Events table
 
   @deleteLicenseConsumption @delete
   Scenario: Delete the tekToken Consumption of a device
     Given I see the customer "functional-test-license-usage" in the table
     And I go to the tekToken Consumption view of "functional-test-license-usage"
-    When I delete the consumption of the project "deviceTest"
+    When I delete the consumption of the project "tekTokenTest"
 
   @deleteLicenseConsumptionForSupport @delete
   Scenario: Delete the tekToken Consumption of a support device

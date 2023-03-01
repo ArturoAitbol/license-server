@@ -12,6 +12,8 @@ public class Consumptions extends AbstractPageObject {
     WebElement addOtherConsumptionButton;
     @FindBy(css = "[title='add-labs-consumption']")
     WebElement addLabsConsumptionButton;
+    @FindBy(css = "[formcontrolname='selectedLicense']")
+    WebElement subscriptionSelectBox;
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public ConsumptionForm openConsumptionForm() {
@@ -58,5 +60,11 @@ public class Consumptions extends AbstractPageObject {
     public void waitData(){
         By spinnerSelector = By.cssSelector("#tektokens-summary-table [src*='spinner']");
         this.action.waitSpinner(spinnerSelector);
+    }
+
+    public Consumptions selectSubscription(String license) {
+        By subscriptionSelector = By.cssSelector(String.format("[title=%s]", license));
+        this.action.selectOption(subscriptionSelectBox, subscriptionSelector);
+        return new Consumptions();
     }
 }

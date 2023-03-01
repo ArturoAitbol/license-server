@@ -11,7 +11,7 @@
                         <mat-label><b>tekVizion 360 Subscription</b></mat-label>
                         <mat-select class="bold-field" formControlName="selectedLicense"
                             (valueChange)="onChangeLicense($event)">
-                            <mat-option *ngFor="let license of licensesList" [value]="license.id">
+                            <mat-option *ngFor="let license of licensesList" [value]="license.id" title="{{license.description}}">
                                 {{license.description}} ({{license.startDate}} - {{license.renewalDate}})
                             </mat-option>
                         </mat-select>
