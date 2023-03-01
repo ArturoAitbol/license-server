@@ -101,6 +101,15 @@ public class TekvLSModifyCtaasSetupById {
             }
         }
 
+        if (jobj.has(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib)) {
+            if (!jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib)) {
+                context.getLogger().info("error: subaccountId is missing.");
+                JSONObject json = new JSONObject();
+                json.put("error", "error: subaccountId is missing.");
+                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+            }
+        }
+
         // Create license verifier query builder
         SelectQueryBuilder verificationBuilder = null;
         if (jobj.has("licenseId") && jobj.has("subaccountId")) {
@@ -170,6 +179,7 @@ public class TekvLSModifyCtaasSetupById {
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
             statement.executeUpdate();            
             context.getLogger().info("Ctaas_setup updated successfully.");
+            verifyMaintenance(jobj, userId, connection, context);
             if (isSetupReady) {
                 String today = LocalDate.now().toString();
                 /**
@@ -249,6 +259,27 @@ public class TekvLSModifyCtaasSetupById {
                 if (GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"), rs.getString("subaccount_admin_email"), SUBACCOUNT_ADMIN, context))
                     // Send second email with link to portal
                     EmailClient.sendSpotlightReadyEmail(rs.getString("subaccount_admin_email"), customerName, context);
+            }
+        }
+    }
+
+    private void verifyMaintenance(JSONObject jobj, String userId, Connection connection, ExecutionContext context) throws SQLException {
+        final String subaccountId = jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib);
+        if (jobj.has(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib) && FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode", subaccountId)) {
+            String emailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
+            try (PreparedStatement emailsStmt = connection.prepareStatement(emailsSql)) {
+                emailsStmt.setString(1, subaccountId);
+                boolean newMaintenanceState = jobj.getBoolean(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib);
+                context.getLogger().info("Execute SQL projectStatement (User: " + userId + "): " + emailsStmt);
+                ResultSet rs = emailsStmt.executeQuery();
+                rs.next();
+                String emails = rs.getString("emails");
+                if (newMaintenanceState) {
+                    EmailClient.sendMaintenanceModeEnabledAlert(emails, context);
+                } else {
+                    EmailClient.sendMaintenanceModeDisabledAlert(emails, context);
+                }
+
             }
         }
     }
