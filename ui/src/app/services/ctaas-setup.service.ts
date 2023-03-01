@@ -33,7 +33,7 @@ export class CtaasSetupService {
     return this.httpClient.get<any>(this.API_URL, { headers, params });
   }
 
-  public updateCtaasSetupDetailsById(id: string, ctaasSetup: ICtaasSetup) {
+  public updateCtaasSetupDetailsById(id: string, ctaasSetup: any) {
     const headers = this.getHeaders();
     return this.httpClient.put(this.API_URL + `/${id}`,ctaasSetup, { headers });
   }

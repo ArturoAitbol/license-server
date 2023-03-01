@@ -1,0 +1,111 @@
+<div class="container">
+    <h1 id="dialog-title" style="text-align: center;" mat-dialig-title>Consumption Details</h1>
+    <div class="flex-container">
+        <mat-dialog-content>
+            <section id="consumption-data">
+                <div class="row">
+                    <div class="col-7">
+                        <label class="key-label">Consumption Week:</label>
+                        <label>{{data.consumption}}</label>
+                    </div>
+                    <div class="col-5">
+                        <label class="key-label">Tokens Consumed:</label>
+                        <label>{{data.tokensConsumed}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-7">
+                        <label class="key-label">Project Name:</label>
+                        <label>{{data.projectName}}</label>
+                    </div>
+                    <div class="col-5">
+                        <label class="key-label">Type:</label>
+                        <label>{{data.usageType}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label class="key-label">Usage Days:</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div>
+                            <section>
+                                <mat-checkbox class="checkbox-margin usage-info"
+                                    *ngFor="let day of data.usageDays; let daysIndex = index" color="primary"
+                                    [checked]="true" disabled="true">
+                                    {{day}} </mat-checkbox>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label class="key-label">Comment:</label>
+                        <p>{{data.comment?data.comment : "No comments"}}</p>
+                    </div>
+                </div>
+            </section>
+            <hr>
+            <section id="device-data">
+                <div class="row mt-3">
+                    <div class="col">
+                        <label class="subtitle">Device Information:</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label class="key-label">Type:</label>
+                        <label>{{data.device.type}}</label>
+                    </div>
+                    <div class="col">
+                        <label class="key-label">Vendor:</label>
+                        <label>{{data.device.vendor}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label class="key-label">Model:</label>
+                        <label>{{data.device.product}}</label>
+                    </div>
+                    <div class="col">
+                        <label class="key-label">Version:</label>
+                        <label>{{data.device.version}}</label>
+                    </div>
+                </div>
+            </section>
+            <section id="platform-data" *ngIf="data.callingPlatform">
+                <hr>
+                <div class="row mt-3">
+                    <div class="col">
+                        <label class="subtitle">Calling Platform Information:</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label class="key-label">Type:</label>
+                        <label>{{data.callingPlatform.type}}</label>
+                    </div>
+                    <div class="col">
+                        <label class="key-label">Vendor:</label>
+                        <label>{{data.callingPlatform.vendor}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label class="key-label">Model:</label>
+                        <label>{{data.callingPlatform.product}}</label>
+                    </div>
+                    <div class="col">
+                        <label class="key-label">Version:</label>
+                        <label>{{data.callingPlatform.version}}</label>
+                    </div>
+                </div>
+            </section>
+        </mat-dialog-content>
+    </div>
+    <mat-dialog-actions>
+        <button id="close-button" mat-stroked-button type="button" (click)="close()">Close</button>
+    </mat-dialog-actions>
+</div>
