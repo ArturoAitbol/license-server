@@ -266,14 +266,30 @@ public class TekvLSModifyCtaasSetupById {
     private void verifyMaintenance(JSONObject jobj, String userId, Connection connection, ExecutionContext context) throws SQLException {
         final String subaccountId = jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib);
         if (jobj.has(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib) && FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode", subaccountId)) {
-            String emailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
-            try (PreparedStatement emailsStmt = connection.prepareStatement(emailsSql)) {
-                emailsStmt.setString(1, subaccountId);
+            String subaccountUserEmailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
+            String customerAdminEmailsSql = null;
+            if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-customer-user-creation", subaccountId)) {
+                customerAdminEmailsSql = "SELECT array_to_string(array_agg(distinct \"admin_email\"),',') AS emails FROM customer_admin " +
+                        "WHERE customer_id = (SELECT customer_id FROM subaccount WHERE id = ?::uuid LIMIT 1);";
+            }
+            try (PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountUserEmailsSql);
+                 PreparedStatement customerAdminEmailsStmt = customerAdminEmailsSql != null ? connection.prepareStatement(
+                         customerAdminEmailsSql) : null) {
+                subaccountEmailsStmt.setString(1, subaccountId);
                 boolean newMaintenanceState = jobj.getBoolean(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib);
-                context.getLogger().info("Execute SQL projectStatement (User: " + userId + "): " + emailsStmt);
-                ResultSet rs = emailsStmt.executeQuery();
+                context.getLogger().info("Execute SQL projectStatement (User: " + userId + "): " + subaccountEmailsStmt);
+                ResultSet rs = subaccountEmailsStmt.executeQuery();
                 rs.next();
                 String emails = rs.getString("emails");
+                if (customerAdminEmailsStmt != null) {
+                    customerAdminEmailsStmt.setString(1, subaccountId);
+                    context.getLogger().info("Execute SQL projectStatement (User: " + userId + "): " + customerAdminEmailsStmt);
+                    rs = customerAdminEmailsStmt.executeQuery();
+                    rs.next();
+                    String customerAdminEmails = rs.getString("emails");
+                    emails = emails + "," + customerAdminEmails;
+                }
+                System.out.println(emails);
                 if (newMaintenanceState) {
                     EmailClient.sendMaintenanceModeEnabledAlert(emails, context);
                 } else {
