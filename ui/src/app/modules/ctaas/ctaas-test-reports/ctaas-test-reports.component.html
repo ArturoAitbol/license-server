@@ -1,11 +1,13 @@
 <app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
 <div class="btn-container">
-    <div class="test-reports-heading">
-        <h2 id="main-title">Test Reports</h2>
+    <div class="row">
+        <div class="col">
+            <h2 id="main-title">Test Reports</h2>
+        </div>
     </div>
-    <div class="row justify-content-end">
-        <div class="col-auto ms-auto">
-            <div [formGroup]="filterForm" class="row" id="form" >
+    <div class="row d-flex justify-content-start">
+        <div class="col-3 ms-auto">
+            <div [formGroup]="filterForm" class="row" id="form">
                 <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
                     <mat-label id="type-filter-label">Filter by report type</mat-label>
                     <mat-select formControlName="typeFilterControl" (valueChange)="toggleOptionValue($event)">
@@ -20,39 +22,27 @@
                 </mat-form-field>
             </div>
         </div>
-        <div class="col-auto">
-            <div>
-                <mat-form-field appearance="outline">
-                    <mat-label id="date-filter-label">Filter by date</mat-label>
-                    <input matInput [matDatepicker]="picker" [max]="maxDate" (dateChange)="toggleDateValue($event)" 
-                    name="date" [(ngModel)]="date" id="custom-input" (input)="restoreTable($event)">
-                    <mat-datepicker-toggle matSuffix [for]="picker" id="start-date-calendar"></mat-datepicker-toggle>
-                    <mat-datepicker-toggle matSuffix (click)="clearDateFilter()">
-                        <mat-icon matDatepickerToggleIcon>clear</mat-icon>
-                    </mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-            </div>
+        <div class="col">
+            <mat-form-field appearance="outline">
+                <mat-label id="date-filter-label">Start date</mat-label>
+                <input matInput type="datetime-local" name="startDate" [max]="maxDate" [(ngModel)]="startDate"
+                    id="start-custom-input" (dateChange)="toggleDateValue($event)" >
+                <mat-datepicker-toggle matSuffix (click)="clearDateFilter('start')">
+                    <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="col">
+            <mat-form-field appearance="outline">
+                <mat-label id="date-filter-label">End date</mat-label>
+                <input matInput type="datetime-local" name="endDate" [min]="minEndDate" [max]="maxDate"
+                    [(ngModel)]="endDate" id="end-custom-input">
+                <mat-datepicker-toggle matSuffix (click)="clearDateFilter('end')">
+                    <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
         </div>
     </div>
 </div>
-
-<section class="table-section">
-    <div id="test-reports-table" class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
-        <app-data-table 
-        [tableData]="testReportsData" 
-        [tableColumns]="displayedColumns" 
-        [isFilterable]="false"
-        [isPageable]="false" 
-        [paginationSizes]="[5,10,20]" 
-        [isLoadingResults]="isLoadingResults" 
-        [isRequestCompleted]="isRequestCompleted"
-        [defaultPageSize]="5"
-        (sort)="sortData($event)"
-        (rowAction)="rowAction($event)"
-        [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"
-        [actionMenuList]="actionMenuOptions">
-        </app-data-table>
-    </div>
-</section>
-
