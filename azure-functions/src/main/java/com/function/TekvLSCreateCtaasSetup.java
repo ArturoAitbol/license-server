@@ -94,11 +94,7 @@ public class TekvLSCreateCtaasSetup {
         }
 
         String sql;
-        if (jobj.has(OPTIONAL_PARAMS.ON_BOARDING_COMPLETE.value)) {
-            sql = "INSERT INTO public.ctaas_setup(subaccount_id, status, on_boarding_complete) VALUES (?::uuid, ?, ?) RETURNING id;";
-        } else {
-            sql = "INSERT INTO public.ctaas_setup(subaccount_id, status, on_boarding_complete) VALUES (?::uuid, ?, ?) RETURNING id;";
-        }
+        sql = "INSERT INTO public.ctaas_setup(subaccount_id, status, on_boarding_complete, maintenance) VALUES (?::uuid, ?, ?, ?) RETURNING id;";
 
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -111,11 +107,10 @@ public class TekvLSCreateCtaasSetup {
             // Set statement parameters
             statement.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
             statement.setString(2, jobj.getString(MANDATORY_PARAMS.STATUS.value));
-
-            if (jobj.has(OPTIONAL_PARAMS.ON_BOARDING_COMPLETE.value))
-                statement.setBoolean(3, jobj.getBoolean(OPTIONAL_PARAMS.ON_BOARDING_COMPLETE.value));
-            else
-                statement.setBoolean(3, false);
+            final boolean onBoardingComplete = jobj.has(OPTIONAL_PARAMS.ON_BOARDING_COMPLETE.value) && jobj.getBoolean(OPTIONAL_PARAMS.ON_BOARDING_COMPLETE.value);
+            statement.setBoolean(3, onBoardingComplete);
+            final boolean maintenance = jobj.has(OPTIONAL_PARAMS.MAINTENANCE.value) && jobj.getBoolean(OPTIONAL_PARAMS.MAINTENANCE.value);
+            statement.setBoolean(4, maintenance);
             // Insert
             String userId = getUserIdFromToken(tokenClaims, context);
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
@@ -152,7 +147,8 @@ public class TekvLSCreateCtaasSetup {
     }
 
     private enum OPTIONAL_PARAMS {
-        ON_BOARDING_COMPLETE("onBoardingComplete");
+        ON_BOARDING_COMPLETE("onBoardingComplete"),
+        MAINTENANCE("maintenance");
 
         private final String value;
 

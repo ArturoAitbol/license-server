@@ -189,6 +189,7 @@ describe('setup form verifications', () => {
         expect(CtaasSetupComponentTestInstance.setupForm.get('tapUrl')).toBeTruthy();
         expect(CtaasSetupComponentTestInstance.setupForm.get('status')).toBeTruthy();
         expect(CtaasSetupComponentTestInstance.setupForm.get('onBoardingComplete')).toBeTruthy();
+        expect(CtaasSetupComponentTestInstance.setupForm.get('maintenance')).toBeTruthy();
     });
 
     // test 8
@@ -199,7 +200,8 @@ describe('setup form verifications', () => {
             azureResourceGroup: '',
             tapUrl: '',
             status: '',
-            onBoardingComplete: ''            
+            onBoardingComplete: '',
+            maintenance: ''
         });
         expect(setup.hasError('required')).toBeTruthy;
 
@@ -207,6 +209,7 @@ describe('setup form verifications', () => {
         expect(setup.get('tapUrl').valid).toBeFalse();
         expect(setup.get('status').valid).toBeFalse();
         expect(setup.get('onBoardingComplete').valid).toBeFalse();
+        expect(setup.get('maintenance').valid).toBeFalse();
         expect(setup.valid).toBeFalsy();
     });
 
