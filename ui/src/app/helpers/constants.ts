@@ -12,8 +12,8 @@ export class Constants {
     // Session Storage Keys
     public static readonly ACCESS_TOKEN: string = 'access_token';
 
-    // Logout time after inactivity in ms (1Hr x 60 min x 60 seg x 1000 ms
-    public static readonly LOGOUT_TIME_MS = 1 * 60 * 60 * 1000;
+    // Logout time after inactivity in ms (12Hr x 60 min x 60 seg x 1000 ms)
+    public static readonly LOGOUT_TIME_MS = 12 * 60 * 60 * 1000;
 
     // Tool bar constants
     public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekVizion 360 Portal';
