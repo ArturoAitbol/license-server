@@ -5,44 +5,59 @@
             <h2 id="main-title">Test Reports</h2>
         </div>
     </div>
-    <div class="row d-flex justify-content-start">
-        <div class="col-3 ms-auto">
-            <div [formGroup]="filterForm" class="row" id="form">
-                <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
-                    <mat-label id="type-filter-label">Filter by report type</mat-label>
-                    <mat-select formControlName="typeFilterControl" (valueChange)="toggleOptionValue($event)">
-                        <mat-option *ngFor="let type of reportsTypes" [value]="type">
-                            {{type}}
-                        </mat-option>
-                    </mat-select>
-                    <button *ngIf="filterForm.get('typeFilterControl').value" matSuffix mat-icon-button
-                        aria-label="Clear" (click)="filterForm.get('typeFilterControl').setValue('')">
-                        <mat-icon>close</mat-icon>
-                    </button>
+    <form [formGroup]="filterForm" (ngSubmit)="filterReport()">
+        <div class="row d-flex justify-content-start">
+            <div class="col-3">
+                <div class="row" id="form">
+                    <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                        <mat-label id="type-filter-label">Choose report type</mat-label>
+                        <mat-select required formControlName="reportType">
+                            <mat-option value="none" disabled>None</mat-option>
+                            <mat-option *ngFor="let type of reportsTypes" [value]="type">
+                                {{type}}
+                            </mat-option>
+                        </mat-select>
+                        <button *ngIf="filterForm.get('reportType').value" matSuffix mat-icon-button aria-label="Clear"
+                            (click)="filterForm.get('reportType').setValue('')">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="col-2">
+                <mat-form-field appearance="outline">
+                    <mat-label id="start-date-filter-label">Choose Start Date</mat-label>
+                    <input matInput type="datetime-local" name="startDate" step="1" [max]="maxDate" required
+                        formControlName="startDate" id="start-custom-input"
+                        (change)="toggleDateValue($event.target.value)">
+                    <mat-hint>mm/dd/yyyy, hh:mm:ss</mat-hint>
+                    <mat-datepicker-toggle matSuffix (click)="clearDateFilter('start')">
+                        <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
             </div>
+            <div class="col-2">
+                <mat-form-field appearance="outline">
+                    <mat-label id="end-date-filter-label">Choose End Date</mat-label>
+                    <input matInput type="datetime-local" name="endDate" step="1" [min]="minEndDate" [max]="maxDate"
+                        required formControlName="endDate" id="end-custom-input">
+                    <mat-hint>mm/dd/yyyy, hh:mm:ss</mat-hint>
+                    <mat-datepicker-toggle matSuffix (click)="clearDateFilter('end')">
+                        <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-3">
+                <button class="mt-2" color="primary" mat-raised-button id="submit-filters"
+                    [disabled]="filterForm.invalid" type="submit">
+                    Search
+                </button>
+            </div>
         </div>
-        <div class="col">
-            <mat-form-field appearance="outline">
-                <mat-label id="date-filter-label">Start date</mat-label>
-                <input matInput type="datetime-local" name="startDate" [max]="maxDate" [(ngModel)]="startDate"
-                    id="start-custom-input" (dateChange)="toggleDateValue($event)" >
-                <mat-datepicker-toggle matSuffix (click)="clearDateFilter('start')">
-                    <mat-icon matDatepickerToggleIcon>clear</mat-icon>
-                </mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
+        <div class="row d-flex justify-content-start">
+            <mat-label id="utc-notice">Please notice that selected dates will be used in UTC</mat-label>
         </div>
-        <div class="col">
-            <mat-form-field appearance="outline">
-                <mat-label id="date-filter-label">End date</mat-label>
-                <input matInput type="datetime-local" name="endDate" [min]="minEndDate" [max]="maxDate"
-                    [(ngModel)]="endDate" id="end-custom-input">
-                <mat-datepicker-toggle matSuffix (click)="clearDateFilter('end')">
-                    <mat-icon matDatepickerToggleIcon>clear</mat-icon>
-                </mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
-        </div>
-    </div>
+    </form>
 </div>

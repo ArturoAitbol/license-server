@@ -1,17 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { Sort } from '@angular/material/sort';
-import { MsalService } from '@azure/msal-angular';
+import { FormBuilder, Validators } from '@angular/forms';
 import moment from 'moment';
 import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { ReportType } from 'src/app/helpers/report-type';
-import { Utility } from 'src/app/helpers/utils';
-import { ITestReports } from 'src/app/model/test-reports.model';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { TestReportsService } from 'src/app/services/test-reports.service';
 import { environment } from 'src/environments/environment';
+import { Utility } from 'src/app/helpers/utils';
+import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -19,95 +13,55 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./ctaas-test-reports.component.css']
 })
 export class CtaasTestReportsComponent implements OnInit {
-  currentCustomer: any;
-  selectedTypeFilter: any = '';
-  // selectedDateFilter: any = '';
-  public startDate: Date;
-  public endDate: Date;
   public maxDate: any;
   public minEndDate: any;
   private subaccountDetails: any;
-  readonly VIEW_REPORT = 'View Report';
 
-  readonly options = {
-    VIEW_REPORT: this.VIEW_REPORT
-  }
+  readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
 
-  readonly reportsTypes = ['None', 'Daily-FeatureFunctionality', 'Daily-CallingReliability'];
-
-  filterForm = this.fb.group({
-    typeFilterControl: [''],
-    dateFilterControl: ['']
+  filterForm = this.formBuilder.group({
+    reportType: ['', Validators.required],
+    startDate: ['', Validators.required],
+    endDate: ['', Validators.required]
   });
 
   private unsubscribe: Subject<void> = new Subject<void>();
 
   constructor(
     private msalService: MsalService,
-    public dialog: MatDialog,
     private subaccountService: SubAccountService,
-    private testReportsService: TestReportsService,
-    private fb: FormBuilder) { }
+    private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
-    this.maxDate = moment().toDate()
+    this.maxDate = moment().format("YYYY-MM-DD[T]HH:mm:ss");
   }
 
-  // rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
-  //   const { selectedRow, selectedOption, selectedIndex } = object;
-  //   switch (selectedOption) {
-  //     case this.VIEW_REPORT:
-  //       this.onClickMoreDetails(selectedIndex);
-  //       break;
-  //   }
-  // }
 
-  toggleOptionValue(type: any) {
-    switch (type) {
-      case 'Daily-FeatureFunctionality':
-        this.selectedTypeFilter = 'feature';
-        break;
-      case 'Daily-CallingReliability':
-        this.selectedTypeFilter = 'calling';
-        break;
-      case 'None':
-        this.selectedTypeFilter = ''
-        break;
-      default:
-        break;
-    }
-  }
-
-  onClickMoreDetails(): void {
-
-    // const type = (reportType === 'Daily-FeatureFunctionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Daily-CallingReliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-    const type = ReportType.DAILY_FEATURE_FUNCTIONALITY;
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${this.startDate}&end=${this.endDate}`;
+  filterReport(): void {
+    const details = this.filterForm.value;
+    const parsedStartTime = Utility.parseReportDate(new Date(details.startDate));
+    const parsedEndTime = Utility.parseReportDate(new Date(details.endDate));
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${details.reportType}&start=${parsedStartTime}&end=${parsedEndTime}`;
     window.open(url);
     window.close();
   }
 
   toggleDateValue(date: any) {
-    console.log(date);
-    console.log(this.startDate);
-    // this.minEndDate = '';
-    // this.endDate = null;
+    this.minEndDate = date;
   }
 
   clearDateFilter(selector: string) {
+    console.log(selector);
     if (selector === 'start') {
-      this.startDate = null;
-      // if (this.endDate < this.minEndDate)
-      //   this.endDate = null;
-      // this.minEndDate = '';
+      this.filterForm.get('startDate').setValue('');
+      this.filterForm.get('endDate').setValue('');
     } else
-      this.endDate = null;
+      this.filterForm.get('endDate').setValue('')
   }
 
   ngOnDestroy() {
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }
-
 }
