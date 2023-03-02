@@ -80,8 +80,8 @@
                                 <div>
                                     <mat-form-field appearance="outline">
                                         <mat-label>Device Type</mat-label>
-                                        <mat-select formControlName="deviceType" (valueChange)="onChangeType($event)">
-                                            <mat-option *ngFor="let type of deviceTypes" [value]="type">
+                                        <mat-select formControlName="deviceType" (valueChange)="onChangeType($event)" id="type-auto-complete">
+                                            <mat-option *ngFor="let type of deviceTypes" [value]="type" title="{{type}}">
                                                 {{type}}
                                             </mat-option>
                                         </mat-select>

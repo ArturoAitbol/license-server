@@ -6,7 +6,7 @@ import { Constants } from '../helpers/constants';
 import {tekVizionServices} from '../helpers/tekvizion-services';
 import {ICtaasSetup} from '../model/ctaas-setup.model';
 import {IService} from '../model/service.model';
-import {OnboardWizardComponent} from '../modules/ctaas/onboard-wizard/onboard-wizard.component';
+import {OnboardWizardComponent} from '../modules/ctaas/ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import {AvailableServicesService} from '../services/available-services.service';
 import {CtaasSetupService} from '../services/ctaas-setup.service';
 import {SubAccountService} from '../services/sub-account.service';
