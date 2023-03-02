@@ -13,7 +13,7 @@ public class TekvLSKeepAlive {
      */
     @FunctionName("keepAlive")
     public void keepAlive(
-            @TimerTrigger(name = "keepAliveTrigger", schedule = "0 */2 * * * *") String timerInfo,
+            @TimerTrigger(name = "keepAliveTrigger", schedule = "0 */10 * * * *") String timerInfo,
             final ExecutionContext context) {
         context.getLogger().info("======================================");
         context.getLogger().info("Timer is triggered: " + timerInfo);
