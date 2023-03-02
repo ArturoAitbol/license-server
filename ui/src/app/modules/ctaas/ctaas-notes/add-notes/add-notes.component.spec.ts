@@ -7,7 +7,7 @@ import { SubaccountServiceMock } from "../../../../../test/mock/services/subacco
 import { DialogServiceMock } from "../../../../../test/mock/services/dialog-service.mock";
 import { TestBedConfigBuilder } from "../../../../../test/mock/TestBedConfigHelper.mock";
 import { CtaasDashboardServiceMock } from "../../../../../test/mock/services/ctaas-dashboard-service.mock";
-import { NoteServiceMock } from "../../../../../test/mock/services/note-service.mock";
+import { NoteServiceMock } from "../../../../../test/mock/services/ctaas-note-service.mock";
 
 let addNotesComponentInstance: AddNotesComponent;
 let fixture : ComponentFixture<AddNotesComponent>;

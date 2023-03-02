@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { NoteService } from './notes.service';
 import { environment } from '../../environments/environment';
-import { NoteServiceMock } from '../../test/mock/services/note-service.mock';
+import { NoteServiceMock } from '../../test/mock/services/ctaas-note-service.mock';
 
 let httpClientSpy: jasmine.SpyObj<HttpClient>;
 let noteService: NoteService;
