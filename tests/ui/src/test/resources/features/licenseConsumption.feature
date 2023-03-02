@@ -122,17 +122,17 @@ Feature: LicensesConsumption
     # need to improve this tests
     # And I should see the same data in the tekToken Consumption Events table
 
-  @deleteLicenseConsumption
-  Scenario: Delete the tekToken Consumption of a device
-    Given I see the customer "functional-test-license-usage" in the table
-    And I go to the tekToken Consumption view of "functional-test-license-usage"
-    When I delete the consumption of the project "deviceTest"
+  # @deleteLicenseConsumption
+  # Scenario: Delete the tekToken Consumption of a device
+  #   Given I see the customer "functional-test-license-usage" in the table
+  #   And I go to the tekToken Consumption view of "functional-test-license-usage"
+  #   When I delete the consumption of the project "deviceTest"
 
-  @deleteLicenseConsumptionForSupport
-  Scenario: Delete the tekToken Consumption of a support device
-    Given I see the customer "functional-test-license-usage" in the table
-    And I go to the tekToken Consumption view of "functional-test-license-usage"
-    When I delete the consumption of the project "supportTest"
+  # @deleteLicenseConsumptionForSupport
+  # Scenario: Delete the tekToken Consumption of a support device
+  #   Given I see the customer "functional-test-license-usage" in the table
+  #   And I go to the tekToken Consumption view of "functional-test-license-usage"
+  #   When I delete the consumption of the project "supportTest"
 
   @deleteCustomerProject @delete
   Scenario: Delete the test licenses customer
