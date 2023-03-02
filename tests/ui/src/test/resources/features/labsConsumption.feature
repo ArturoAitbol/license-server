@@ -33,7 +33,6 @@ Feature: LicensesConsumption
   Scenario: Add a Labs Consumption for matrix
     Given I see the customer "functional-test-license-usage" in the table
     And I go to the tekToken Consumption view of "functional-test-license-usage"
-    And I select subscription "License2"
     And I open the Add Labs Consumption form
     And I open the Add Project form from Consumption form
     And I create a project with the following data

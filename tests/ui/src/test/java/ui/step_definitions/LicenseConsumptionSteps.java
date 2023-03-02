@@ -244,6 +244,8 @@ public class LicenseConsumptionSteps {
         this.consumptionRow = new ConsumptionRow(project);
         ActionMenu actionMenu = this.consumptionRow.openActionMenu();
         actionMenu.delete("licenseConsumption");
+        this.consumptions = new Consumptions();
+        this.consumptions.waitData();
     }
 
 
