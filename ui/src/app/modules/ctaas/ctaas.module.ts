@@ -6,7 +6,7 @@ import { CtaasDashboardComponent } from './ctaas-dashboard/ctaas-dashboard.compo
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
-import { OnboardWizardComponent } from './onboard-wizard/onboard-wizard.component';
+import { OnboardWizardComponent } from './ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.component';
 import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component';
 import { CtaasNotesComponent } from './ctaas-notes/ctaas-notes.component';
@@ -19,7 +19,7 @@ import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/
 import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
-import { MoreDetailsComponent } from './more-details/more-details.component';
+import { MoreDetailsComponent } from './ctaas-more-details/ctaas-more-details.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 
 

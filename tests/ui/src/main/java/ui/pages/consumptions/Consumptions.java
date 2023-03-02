@@ -6,12 +6,30 @@ import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 
 public class Consumptions extends AbstractPageObject {
-    @FindBy(css = "#add-license-consumption-button")
+    @FindBy(css = "[title='add-tek-token-consumption']")
     WebElement addConsumptionButton;
+    @FindBy(css = "[title='add-other-consumption']")
+    WebElement addOtherConsumptionButton;
+    @FindBy(css = "[title='add-labs-consumption']")
+    WebElement addLabsConsumptionButton;
+    @FindBy(css = "[formcontrolname='selectedLicense']")
+    WebElement subscriptionSelectBox;
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public ConsumptionForm openConsumptionForm() {
         this.action.click(this.addConsumptionButton);
+        this.action.waitSpinner(this.spinnerSelector);
+        return new ConsumptionForm();
+    }
+
+    public ConsumptionForm openOtherConsumptionForm() {
+        this.action.click(this.addOtherConsumptionButton);
+        this.action.waitSpinner(this.spinnerSelector);
+        return new ConsumptionForm();
+    }
+
+    public ConsumptionForm openLabsConsumptionForm() {
+        this.action.click(this.addLabsConsumptionButton);
         this.action.waitSpinner(this.spinnerSelector);
         return new ConsumptionForm();
     }
@@ -42,5 +60,11 @@ public class Consumptions extends AbstractPageObject {
     public void waitData(){
         By spinnerSelector = By.cssSelector("#tektokens-summary-table [src*='spinner']");
         this.action.waitSpinner(spinnerSelector);
+    }
+
+    public Consumptions selectSubscription(String license) {
+        By subscriptionSelector = By.cssSelector(String.format("[title=%s]", license));
+        this.action.selectOption(subscriptionSelectBox, subscriptionSelector);
+        return new Consumptions();
     }
 }
