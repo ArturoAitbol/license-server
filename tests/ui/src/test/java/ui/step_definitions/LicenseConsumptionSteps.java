@@ -13,6 +13,7 @@ import ui.pages.customer.CustomerRow;
 import ui.pages.customer.Customers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
@@ -20,8 +21,9 @@ public class LicenseConsumptionSteps {
     Customers customers;
     Consumptions consumptions;
     ConsumptionForm consumptionForm;
-    String startWeek, endWeek, project, deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens,
-            supportVendor, supportModel, usageDays;
+    String startWeek, endWeek, project, device = "", deviceType = "", deviceVendor, deviceModel, deviceVersion, deviceGranularity, tekTokens = "",
+            supportDevice = "", supportVendor, supportModel, usageDays = "", callingPlatform = "";
+    String dutType, dutVendor, dutDevice, callingType, callingVendor, callingDevice;
     ConsumptionRow consumptionRow;
     private final String consumptionSummaryTableId = "tektokens-summary-table";
 
@@ -38,29 +40,64 @@ public class LicenseConsumptionSteps {
 
     @And("I open the Add tekToken Consumption form")
     public void iOpenTheAddTekTokenConsumptionForm() throws InterruptedException {
-        // Thread.sleep(3000);
         this.consumptionForm = this.consumptions.openConsumptionForm();
+    }
+
+    @And("I open the Add Other Consumption form")
+    public void iOpenTheAddOtherConsumptionForm() throws InterruptedException {
+        this.consumptionForm = this.consumptions.openOtherConsumptionForm();
+    }
+
+    @And("I open the Add Labs Consumption form")
+    public void iOpenTheAddLabdsConsumptionForm() throws InterruptedException {
+        this.consumptionForm = this.consumptions.openLabsConsumptionForm();
+    }
+
+    @And("I select subscription {string}")
+    public void iSelectSubscription(String license) {
+        this.consumptions = this.consumptions.selectSubscription(license);
     }
 
     @When("I add a consumption with the following data")
     public void iAddAConsumptionWithTheFollowingData(DataTable dataTable) throws InterruptedException {
         this.consumptionForm.waitSpinner();
         Map<String, String> consumption = dataTable.asMap(String.class, String.class);
-        /*
-         * this.startWeek = consumption.get("startWeek");
-         * this.endWeek = consumption.get("endWeek");
-         */
         this.project = consumption.get("project");
+        this.deviceType = consumption.getOrDefault("deviceType", "");
         this.deviceVendor = consumption.getOrDefault("deviceVendor", "");
         this.deviceModel = consumption.getOrDefault("deviceModel", "");
-        this.supportVendor = consumption.getOrDefault("supportVendor", "");
-        this.supportModel = consumption.getOrDefault("supportModel", "");
         this.deviceVersion = consumption.get("deviceVersion");
         this.deviceGranularity = consumption.get("deviceGranularity");
+        if (!this.deviceVendor.isEmpty())
+            this.device = this.deviceVendor + " - " + this.deviceModel + " " + this.deviceVersion;
+        this.supportVendor = consumption.getOrDefault("supportVendor", "");
+        this.supportModel = consumption.getOrDefault("supportModel", "");
+        if (!this.supportVendor.isEmpty())
+            this.supportDevice =this.supportVendor + " - " + this.supportModel+ " " + this.deviceVersion;
         this.tekTokens = consumption.get("tekTokens");
         this.usageDays = consumption.getOrDefault("usageDays", "");
-        this.consumptions = this.consumptionForm.addConsumption(startWeek, endWeek, project, deviceVendor, deviceModel,
+        this.consumptions = this.consumptionForm.addConsumption(startWeek, endWeek, project, deviceType, deviceVendor, deviceModel,
                 supportVendor, supportModel, deviceVersion, deviceGranularity, tekTokens, usageDays);
+    }
+
+    @When("I add a labs consumption with the following data")
+    public void iAddALabsConsumptionWithTheFollowingData(DataTable dataTable) {
+        this.consumptionForm.waitSpinner();
+        Map<String, String> consumption = dataTable.asMap(String.class, String.class);
+        this.project = consumption.get("project");
+        this.dutType = consumption.getOrDefault("dutType", "");
+        this.dutVendor = consumption.getOrDefault("dutVendor", "");
+        this.dutDevice = consumption.getOrDefault("dutDevice","");
+        if (!this.dutType.isEmpty())
+            this.device = this.dutType + ": " + this.dutVendor + " - " + this.dutDevice;
+        this.callingType = consumption.getOrDefault("callingType","");
+        this.callingVendor = consumption.getOrDefault("callingVendor","");
+        this.callingDevice = consumption.getOrDefault("callingDevice","");
+        if (!this.callingType.isEmpty())
+            this.callingPlatform = this.callingType + ": " + this.callingVendor + " - " + this.callingDevice;
+        this.usageDays = consumption.getOrDefault("usageDays", "");
+        this.consumptions = this.consumptionForm.addLabsConsumption(startWeek, endWeek, project, dutType, dutVendor,
+                dutDevice, callingType, callingVendor, callingDevice, usageDays);
     }
 
     @When("I edit the consumption of the project {string} with the following data")
@@ -74,9 +111,10 @@ public class LicenseConsumptionSteps {
         this.project = consumption.getOrDefault("project", "");
         this.deviceVendor = consumption.getOrDefault("deviceVendor", "");
         this.deviceModel = consumption.getOrDefault("deviceModel", "");
-        this.supportModel = consumption.getOrDefault("supportModel", "");
         this.deviceVersion = consumption.getOrDefault("deviceVersion", "");
         this.deviceGranularity = consumption.getOrDefault("deviceGranularity", "");
+        if (!this.deviceModel.isEmpty())
+            this.device = this.deviceVendor + " - " + this.deviceModel + " " + this.deviceVersion;
         this.tekTokens = consumption.getOrDefault("tekTokens", "");
         this.usageDays = consumption.getOrDefault("usageDays", "");
         this.consumptions = this.consumptionForm.editConsumption(currentProject, this.project, deviceVendor,
@@ -122,7 +160,6 @@ public class LicenseConsumptionSteps {
         // in case there are more consumptions than just one then get from table
         String tekTokens = consumption.getOrDefault("tekTokens", this.tekTokens);
         this.consumptionRow = new ConsumptionRow(project);
-
         String actualProject = this.consumptionRow.getColumnValue("Project Name");
         String actualStatus = this.consumptionRow.getColumnValue("Status");
         String actualTekTokens = this.consumptionRow.getColumnValue("tekTokens");
@@ -141,25 +178,13 @@ public class LicenseConsumptionSteps {
         this.consumptionRow = new ConsumptionRow(this.project);
         String actualProject = this.consumptionRow.getColumnValue("Project");
         String actualType = this.consumptionRow.getColumnValue("Type");
-        String actualVendor = this.consumptionRow.getColumnValue("Vendor");
-        String actualModel = this.consumptionRow.getColumnValue("Model");
-        String actualVersion = this.consumptionRow.getColumnValue("Version");
         String actualTekTokens = this.consumptionRow.getColumnValue("tekTokens Used");
         String actualUsageDays = this.consumptionRow.getColumnValue("Usage Days");
-        // if (this.startWeek.isEmpty()) assertEquals("Consumption doesn't have
-        // consumptionDate: ".concat(startWeek), startWeek, actualConsumptionDate);
+        String actualDevice = this.consumptionRow.getColumnValue("Device");
+        String actualCallingPlatform = this.consumptionRow.getColumnValue("Calling Platform");
         if (!this.project.isEmpty())
             assertEquals("Consumption doesn't have this project name: ".concat(project), this.project, actualProject);
         assertEquals("Consumption doesn't have this type: ".concat(defaultType), defaultType, actualType);
-        if (!this.deviceVendor.isEmpty())
-            assertEquals("Consumption doesn't have this deviceVendor: ".concat(deviceVendor), this.deviceVendor,
-                    actualVendor);
-        if (!this.deviceModel.isEmpty())
-            assertEquals("Consumption doesn't have this deviceModel: ".concat(deviceModel), this.deviceModel,
-                    actualModel);
-        if (!this.deviceVersion.isEmpty())
-            assertEquals("Consumption doesn't have this deviceVersion: ".concat(deviceVersion), this.deviceVersion,
-                    actualVersion);
         if (!this.tekTokens.isEmpty())
             assertEquals("Consumption doesn't have this amount of tekTokens used: ".concat(tekTokens), this.tekTokens,
                     actualTekTokens);
@@ -170,19 +195,23 @@ public class LicenseConsumptionSteps {
                 assertEquals("Consumption doesn't have this UsageDays: ".concat(usageDays), this.usageDays,
                         actualUsageDays);
         }
+        if (!this.device.isEmpty())
+            assertTrue("Consumption doesn't have this device: ".concat(this.device), actualDevice.contains(this.device));
+        if (!this.supportDevice.isEmpty())
+            assertTrue("Consumption doesn't have this support device: ".concat(this.supportDevice), actualDevice.contains(this.supportDevice));
+        if (!this.callingPlatform.isEmpty())
+            assertTrue("Consumption doesn't have this calling platform: ".concat(callingPlatform), actualCallingPlatform.contains(this.callingPlatform));
     }
 
     @And("I should see the following data in the tekToken Consumption Events table")
     public void iShouldSeeTheFollowingDataInTheTekTokenConsumptionEventsTable(DataTable dataTable) {
         Map<String,String> consumption = dataTable.asMap(String.class,String.class);
-
         String project = consumption.getOrDefault("project", "");
         String type = consumption.getOrDefault("type", "Configuration");
         String device = consumption.getOrDefault("device", "");
         String callingPLatform = consumption.getOrDefault("callingPlatform", "");
         String tekTokens = consumption.getOrDefault("tekTokensUsed", "");
         String usageDays = consumption.getOrDefault("usageDays", "");
-
         this.consumptionRow = new ConsumptionRow(project);
         String actualProject = this.consumptionRow.getColumnValue("Project");
         String actualType = this.consumptionRow.getColumnValue("Type");
@@ -190,12 +219,9 @@ public class LicenseConsumptionSteps {
         String actualCallingPlatform = this.consumptionRow.getColumnValue("Calling Platform");
         String actualTekTokens = this.consumptionRow.getColumnValue("tekTokens Used");
         String actualUsageDays = this.consumptionRow.getColumnValue("Usage Days");
-
         if (!project.isEmpty())
             assertEquals("Consumption doesn't have this project name: ".concat(project), project, actualProject);
-
         assertEquals("Consumption doesn't have this type: ".concat(type), type, actualType);
-
         if (!device.isEmpty())
             assertEquals("Consumption doesn't have this device: ".concat(device), device,
                     actualDevice);
@@ -218,6 +244,9 @@ public class LicenseConsumptionSteps {
         this.consumptionRow = new ConsumptionRow(project);
         ActionMenu actionMenu = this.consumptionRow.openActionMenu();
         actionMenu.delete("licenseConsumption");
+        this.consumptions = new Consumptions();
+        this.consumptions.waitData();
     }
+
 
 }
