@@ -60,6 +60,8 @@ public class ProjectSteps {
         this.license = projectTable.get("subscription");
         this.projects = this.projectForm.createProject(startDate, name, code, license);
         this.actualMessage = this.projects.getMessage();
+        this.projectForm.isClosed();
+        this.projects.waitSpinner();
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
