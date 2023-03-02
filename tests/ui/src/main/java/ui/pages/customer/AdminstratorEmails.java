@@ -23,8 +23,9 @@ public class AdminstratorEmails extends AbstractPageObject {
         this.action.click(this.addButton);
         this.action.sendText(this.emailInput, DriverManager.getInstance().addTimeStampToEmail(adminEmail));
         this.action.click(this.submitButton);
+        String text = this.action.getText(this.messageSelector);
         this.action.waitSpinner(this.spinnerSelector);
-        return this.action.getText(this.messageSelector);
+        return text;
     }
 
     public String deleteAdministrator(String adminEmail){

@@ -11,7 +11,7 @@
                         <mat-label><b>tekVizion 360 Subscription</b></mat-label>
                         <mat-select class="bold-field" formControlName="selectedLicense"
                             (valueChange)="onChangeLicense($event)">
-                            <mat-option *ngFor="let license of licensesList" [value]="license.id">
+                            <mat-option *ngFor="let license of licensesList" [value]="license.id" title="{{license.description}}">
                                 {{license.description}} ({{license.startDate}} - {{license.renewalDate}})
                             </mat-option>
                         </mat-select>
@@ -26,17 +26,17 @@
                     </mat-button-toggle>
                     <mat-button-toggle *ngIf="hasAddConsumptionPermission && !newLicenseConsumptionLogicFlag" value="add-license-consumption"
                         id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
-                        class="add-btn">
+                        class="add-btn" title="add-tek-token-consumption">
                         Add tekToken Consumption
                     </mat-button-toggle>
                     <mat-button-toggle *ngIf="hasAddConsumptionPermission && newLicenseConsumptionLogicFlag" value="add-license-consumption"
                         id="add-license-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
-                        class="add-btn">
+                        class="add-btn" title="add-labs-consumption">
                         Add Labs Consumption
                     </mat-button-toggle>
                     <mat-button-toggle *ngIf="hasAddConsumptionPermission && newLicenseConsumptionLogicFlag" value="add-other-consumption"
                         id="add-other-consumption" [disabled]="!isLicenseListLoaded" (change)="onChangeToggle($event)"
-                        class="add-btn">
+                        class="add-btn" title="add-other-consumption">
                         Add Other Consumption
                     </mat-button-toggle>
                 </mat-button-toggle-group>
