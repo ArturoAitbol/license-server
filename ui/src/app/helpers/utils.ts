@@ -135,4 +135,21 @@ export class Utility {
         return [...list];
     }
 
+    public static parseReportDate(incomingDate: Date): string {
+        let parsedDate = "";
+        const parsedYear = incomingDate.getFullYear().toString().slice(-2);
+        let parsedMonth: any = incomingDate.getMonth() + 1;
+        parsedMonth = parsedMonth > 9 ? parsedMonth : '0' + parsedMonth.toString();
+        let parsedDay: any = incomingDate.getDate();
+        parsedDay = parsedDay > 9 ? parsedDay : '0' + parsedDay.toString();
+        let parsedHours: any = incomingDate.getHours();
+        parsedHours = parsedHours > 9 ? parsedHours : '0' + parsedHours.toString();
+        let parsedMinutes: any = incomingDate.getMinutes();
+        parsedMinutes = parsedMinutes > 9 ? parsedMinutes : '0' + parsedMinutes.toString();
+        let parsedSeconds: any = incomingDate.getSeconds();
+        parsedSeconds = parsedSeconds > 9 ? parsedSeconds : '0' + parsedSeconds.toString();
+        parsedDate = `${parsedYear}${parsedMonth}${parsedDay}${parsedHours}${parsedMinutes}${parsedSeconds}`;
+        return parsedDate;
+    }
+
 }
