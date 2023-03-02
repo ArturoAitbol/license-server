@@ -48,9 +48,9 @@ export class CtaasDashboardService {
    * @returns: Observable<any> 
    */
   public getCtaasDashboardDetails(subaccountId: string, reportType: string, timestampId?: string): Observable<any> {
-    let params;
+    let params = new HttpParams();
     if (timestampId)
-      params = new HttpParams().append('timestampId', timestampId);
+    params = params.set('timestampId', timestampId);
     const url = this.FETCH_DASHBOARD_URL.replace(/{subaccountId}/g, subaccountId).replace(/{reportType}/g, reportType);
     return this.httpClient.get(url, { params });
   }

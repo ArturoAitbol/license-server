@@ -14,7 +14,7 @@ import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { SharedModule } from "../../shared/shared.module";
 import { CtaasNotesComponent } from './ctaas-notes.component';
-import { NoteServiceMock } from '../../../../test/mock/services/note-service.mock';
+import { NoteServiceMock } from '../../../../test/mock/services/ctaas-note-service.mock';
 import { NoteService } from '../../../services/notes.service';
 import { SubAccountService } from '../../../services/sub-account.service';
 import { SubaccountServiceMock } from '../../../../test/mock/services/subaccount-service.mock';
@@ -224,5 +224,24 @@ describe('Notes dialog calls and interactions', ()=>{
 
         expect(ctaasNotesComponent.openDialog).toHaveBeenCalledWith(ctaasNotesComponent.VIEW_DASHBOARD,note);
         expect(MatDialogMock.open).toHaveBeenCalledWith(CtaasHistoricalDashboardComponent,jasmine.any(Object));
+    });
+
+    it('should call onChangeTogle with true', () => {
+        spyOn(ctaasNotesComponent, 'onChangeToggle').and.callThrough();
+
+        fixture.detectChanges();
+        ctaasNotesComponent.actionMenuOptions = ['Close Note', 'View Dashboard'];
+        ctaasNotesComponent.onChangeToggle(true);
+
+        expect(ctaasNotesComponent.toggleStatus).toBeTrue();
+    });
+
+    it('should call onChangeTogle with false', () => {
+        spyOn(ctaasNotesComponent, 'onChangeToggle').and.callThrough();
+
+        fixture.detectChanges();
+        ctaasNotesComponent.onChangeToggle(false);
+
+        expect(ctaasNotesComponent.toggleStatus).toBeFalse();
     });
 });

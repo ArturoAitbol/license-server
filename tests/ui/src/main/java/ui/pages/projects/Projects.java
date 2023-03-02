@@ -28,4 +28,7 @@ public class Projects extends AbstractPageObject {
         }
         return message;
     }
+    public void waitSpinner() {
+        this.action.waitSpinner(this.spinnerSelector);
+    }
 }
