@@ -441,5 +441,15 @@ export const SubaccountServiceMock = {
             companyName:"testComp",
             customerName: "testName"
         })
+    },
+    getSubaccountUserProfileDetails: () => {
+        return {
+            subaccountId: "2c8e386b-d1bd-48b3-b73a-12bfa5d00805",
+            phoneNumber: "+1111111111",
+            jobTitle: "Subaccount Admin",
+            companyName: "tekVizion",
+            name: "Subaccount Admin",
+            email: "test-customer-subaccount-admin@tekvizionlabs.com"
+        }
     }
 };
