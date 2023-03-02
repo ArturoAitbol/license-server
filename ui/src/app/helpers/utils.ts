@@ -135,4 +135,22 @@ export class Utility {
         return [...list];
     }
 
+    public static sortingDataTable(data: any, keyName: string, direction: string): any[] {
+        let sortedData; 
+        sortedData = data.sort((a: any, b: any) => {
+            if(a[keyName] == null && b[keyName] == null) 
+                return 0;
+            else if(a[keyName] == null && b[keyName] != null)
+                return (direction === 'asc') ? 1 : -1;
+            else if(a[keyName] != null && b[keyName] == null)
+                return (direction === 'asc')? -1 : 1;
+            else if (typeof a[keyName] === 'number') {
+                if(direction === 'asc')
+                    return +a[keyName] > +b[keyName] ? 1 : (+a[keyName] < +b[keyName] ? -1 : 0);
+                return +a[keyName] < +b[keyName] ? 1 : (+a[keyName] > +b[keyName] ? -1 : 0);
+            }
+            return (direction === 'asc')? a[keyName].localeCompare(b[keyName]) : b[keyName].localeCompare(a[keyName]);
+        })
+        return sortedData;
+    }
 }
