@@ -100,15 +100,19 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
   beforeEach(beforeEachFunction);
 
   it('should make a call to get the dashboard details (reports)', () => {
+    const cancelButton = fixture.nativeElement.querySelector('#cancel-button');
     spyOn(ctaasHistoricalDashboardComponentTestInstance,'fetchCtaasDashboardDetailsBySubaccount').and.callThrough();
     spyOn(ctaasHistoricalDashboardComponentTestInstance,'onChangeButtonToggle').and.callThrough();
     spyOn(CtaasDashboardServiceMock,'getCtaasDashboardDetails').and.callThrough();
+    spyOn(ctaasHistoricalDashboardComponentTestInstance, 'onClose').and.callThrough();
 
     fixture.detectChanges();
-   
+    cancelButton.click();
+
     expect(ctaasHistoricalDashboardComponentTestInstance.fetchCtaasDashboardDetailsBySubaccount).toHaveBeenCalled();
     expect(CtaasDashboardServiceMock.getCtaasDashboardDetails).toHaveBeenCalledTimes(ctaasHistoricalDashboardComponentTestInstance.note.reports.length);
     expect(ctaasHistoricalDashboardComponentTestInstance.onChangeButtonToggle).toHaveBeenCalled();
+    expect(ctaasHistoricalDashboardComponentTestInstance.onClose).toHaveBeenCalled();
   });
 
   it('should show an error if note is null', () => {
@@ -154,6 +158,39 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
 
     ctaasHistoricalDashboardComponentTestInstance.resultantImagesList.length = 2;
     expect(ctaasHistoricalDashboardComponentTestInstance.checkForDashboardDetails()).toBeTrue();
-  })
+  });
 
-})
+  it('should call onClickMoreDetails with Feature Functionality', () => {
+    spyOn(ctaasHistoricalDashboardComponentTestInstance, 'onClickMoreDetails').and.callThrough();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+
+    fixture.detectChanges();
+    ctaasHistoricalDashboardComponentTestInstance.onClickMoreDetails('0');
+    expect(ctaasHistoricalDashboardComponentTestInstance.onClickMoreDetails).toHaveBeenCalledWith('0');
+
+  });
+
+  it('should call onClickMoreDetails with Calling Reliability', () => {
+    spyOn(ctaasHistoricalDashboardComponentTestInstance, 'onClickMoreDetails').and.callThrough();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+
+    fixture.detectChanges();
+    ctaasHistoricalDashboardComponentTestInstance.onClickMoreDetails('1');
+    expect(ctaasHistoricalDashboardComponentTestInstance.onClickMoreDetails).toHaveBeenCalledWith('1');
+
+  });
+
+  it('should call onClickMoreDetails with Calling Reliability', () => {
+    spyOn(ctaasHistoricalDashboardComponentTestInstance, 'onClickMoreDetails').and.callThrough();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+
+    fixture.detectChanges();
+    ctaasHistoricalDashboardComponentTestInstance.resultantImagesList[0].imagesList['1'].reportType = ''
+    ctaasHistoricalDashboardComponentTestInstance.onClickMoreDetails('1');
+    expect(ctaasHistoricalDashboardComponentTestInstance.onClickMoreDetails).toHaveBeenCalledWith('1');
+
+  });
+});
