@@ -57,6 +57,7 @@ public class ConsumptionForm extends AbstractPageObject {
         if (!deviceType.isEmpty()){
             By typeSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceType));
             this.action.selectOption(this.deviceTypeInput, typeSelector);
+            this.waitSpinner();
         }
         String deviceFieldContent = getDeviceFieldContent(deviceModel, supportModel, deviceVersion, deviceGranularity, tekTokens);
         By modelSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceFieldContent));
@@ -123,6 +124,7 @@ public class ConsumptionForm extends AbstractPageObject {
             }
         }
         this.action.click(this.submitButton);
+        this.waitSpinner();
         return new Consumptions();
     }
 
