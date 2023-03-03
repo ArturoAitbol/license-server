@@ -262,9 +262,12 @@ public class StorageBlobClient {
                         creationTimestamp = range[0];
                         startTimestamp = range[1];
                         endTimestamp = range[2];
-                    } else {
+                    } else if(range.length == 2) {
                         startTimestamp = range[0];
                         endTimestamp = range[1];
+                    } else {
+                        // Skip the blob item if name doesn't have at least start and end timestamps
+                        continue;
                     }
 
                     JSONObject jsonObj = new JSONObject();
