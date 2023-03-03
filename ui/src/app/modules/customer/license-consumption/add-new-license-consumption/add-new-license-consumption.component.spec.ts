@@ -23,9 +23,11 @@ import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mo
 import { AddNewLicenseConsumptionComponent } from './add-new-license-consumption.component';
 import moment from "moment";
 import { of, throwError } from "rxjs";
+import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 
 let testInstance: AddNewLicenseConsumptionComponent;
 let fixture: ComponentFixture<AddNewLicenseConsumptionComponent>;
+const dialogService = new DialogServiceMock();
 
 const MatDialogRefMock = {
     close: () => {
@@ -78,6 +80,10 @@ const defaultTestBedConfig = {
         {
             provide: MatDialogRef,
             useValue: MatDialogRefMock
+        },
+        {
+            provide: DialogService,
+            useValue: dialogService
         },
         {
             provide: MAT_DIALOG_DATA,
@@ -344,5 +350,267 @@ describe('add-new-license-consumption - Dialog calls and interactions', () => {
         fixture.detectChanges();
         testInstance.onCancel();
         expect(testInstance.dialogRef.close).toHaveBeenCalled();
+    });
+});
+
+describe('diplay of data and interactions', () => {
+    beforeEach(beforeEachFunction);
+    it('add new license consumption - should fecth projects', () => {
+        spyOn(testInstance, 'onAddProject').and.callThrough();
+        spyOn(dialogService, 'afterClosed').and.callThrough();
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+        spyOn(testInstance, 'fetchProjects').and.callThrough();
+        fixture.detectChanges();
+
+        testInstance.onAddProject();
+        dialogService.afterClosed();
+
+        expect(testInstance.fetchProjects).toHaveBeenCalled();
+        expect(testInstance.isDataLoading).toBeFalse();
+    });
+
+    it('should make a call to onChangeDutType', () => {
+        spyOn(testInstance, 'onChangeDutType').and.callThrough();
+        spyOn(DevicesServiceMock, 'getAllDeviceVendors').and.callThrough();
+
+        fixture.detectChanges();
+        testInstance.onChangeDutType("Soft Client/UC Client");
+
+        expect(DevicesServiceMock.getAllDeviceVendors).toHaveBeenCalled();
+        expect(testInstance.isDataLoading).toBeFalse();
+        expect(testInstance.vendors).toEqual(DevicesServiceMock.vendorList.vendors)
+    });
+
+    it('should make a call to onChangeCallingPlatformType', () => {
+        spyOn(testInstance, 'onChangeCallingPlatformType').and.callThrough();
+        spyOn(DevicesServiceMock, 'getAllDeviceVendors').and.callThrough();
+
+        fixture.detectChanges();
+        testInstance.onChangeCallingPlatformType("PBX");
+
+        expect(testInstance.selectedCallingPlatformType).toBe("PBX");
+        expect(DevicesServiceMock.getAllDeviceVendors).toHaveBeenCalled();
+        expect(testInstance.callingPlatformVendors).toEqual(DevicesServiceMock.vendorList.vendors)
+    });
+
+    it('should make a call to onChangeDeviceType', () => {
+        spyOn(testInstance, 'onChangeDeviceType').and.callThrough();
+        spyOn(DevicesServiceMock, 'getAllDeviceVendors').and.callThrough();
+
+        fixture.detectChanges();
+        testInstance.onChangeDeviceType("PBX");
+
+        expect(testInstance.selectedDeviceType).toBe("PBX");
+        expect(DevicesServiceMock.getAllDeviceVendors).toHaveBeenCalled();
+        expect(testInstance.deviceVendors).toEqual(DevicesServiceMock.vendorList.vendors)
+    });
+
+    it('should make a call to onChangeVendor', () => {
+        spyOn(testInstance, 'onChangeVendor').and.callThrough();
+        spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
+
+        fixture.detectChanges();
+        testInstance.onChangeVendor("Test");
+
+        expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
+        expect(testInstance.isDataLoading).toBeFalse();
+    });
+    
+    it('should make a call to onChangeCallingPlatformVendor', () => {
+        spyOn(testInstance, 'onChangeCallingPlatformVendor').and.callThrough();
+        spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
+
+        fixture.detectChanges();
+        testInstance.onChangeCallingPlatformVendor("Test");
+
+        expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
+        expect(testInstance.isDataLoading).toBeFalse();
+    });
+
+    it('should make a call to onChangeDeviceVendor', () => {
+        spyOn(testInstance, 'onChangeDeviceVendor').and.callThrough();
+        spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
+
+        fixture.detectChanges();
+        testInstance.onChangeDeviceVendor("Mitel");
+
+        expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
+        expect(testInstance.isDataLoading).toBeFalse();
+    });
+
+    it('should make a call to pickStartWeek', () => {
+        spyOn(testInstance, 'toggleUsageDays').and.callThrough();
+        fixture.detectChanges();
+        testInstance.addDeviceForm.value.product = DevicesServiceMock.device;
+        testInstance.addDevice();
+        testInstance.addLicenseConsumptionForm.get('startWeek').setValue(moment());
+        testInstance.addLicenseConsumptionForm.get('endWeek').setValue(moment());
+
+        testInstance.pickStartWeek();
+
+        expect(testInstance.toggleUsageDays).toHaveBeenCalled();
+    });
+
+    it('should make a call to setChecked with null device index', () => {
+        spyOn(testInstance, 'setChecked').and.callThrough();
+
+        testInstance.setChecked(true,0,undefined);
+        fixture.detectChanges();
+
+        expect(testInstance.deviceDays[0].used).toBeTrue();
+    });
+
+    it('should make a call to setChecked with a device index', () => {
+        spyOn(testInstance, 'setChecked').and.callThrough();
+        spyOn(testInstance, 'addDevice').and.callThrough();
+        testInstance.addDeviceForm.value.product = DevicesServiceMock.device;
+        testInstance.addDevice();
+        testInstance.setChecked(true,0,0);
+        fixture.detectChanges();
+
+        expect(testInstance.otherDevicesUsed[0].days[0].used).toBeTrue();
+    });
+
+    it('should call to setConsumption and set consumptionsDays', () => {
+        spyOn(testInstance, 'setConsumptionDays').and.callThrough();
+
+        fixture.detectChanges();
+        testInstance.setConsumptionDays(true,0);
+
+        expect(testInstance.consumptionDays[0].used).toBeTrue();
+    });
+
+    it('should make a call to submit', () => {
+        spyOn(testInstance, 'submit').and.callThrough();
+        spyOn(testInstance, 'addDut').and.callThrough();
+        spyOn(testInstance, 'setChecked').and.callThrough();
+        spyOn(testInstance, 'addCallingPlatform').and.callThrough();
+        spyOn(testInstance, 'setConsumptionDays').and.callThrough();
+        spyOn(ConsumptionServiceMock, 'addLicenseConsumptionEvent').and.callThrough();
+        testInstance.addLicenseConsumptionForm.value.startWeek = moment();
+        testInstance.addDeviceForm.value.product = DevicesServiceMock.device;
+        testInstance.addDutForm.value.product = DevicesServiceMock.device;
+        testInstance.addCallingPlatformForm.value.product = DevicesServiceMock.device;
+
+        testInstance.setConsumptionDays(true,0);
+        testInstance.setChecked(true,0);
+        testInstance.addDevice();
+        testInstance.addDut();
+        testInstance.addCallingPlatform();
+
+        fixture.detectChanges();
+        testInstance.submit();
+
+
+        expect(ConsumptionServiceMock.addLicenseConsumptionEvent).toHaveBeenCalled();
+    });
+
+    it('should make a call to submit with empty otherDevicesUsed', () => {
+        spyOn(testInstance, 'submit').and.callThrough();
+        spyOn(testInstance, 'addDut').and.callThrough();
+        spyOn(testInstance, 'addCallingPlatform').and.callThrough();
+        spyOn(testInstance, 'setConsumptionDays').and.callThrough();
+        spyOn(ConsumptionServiceMock, 'addLicenseConsumptionEvent').and.callThrough();
+        testInstance.addLicenseConsumptionForm.value.startWeek = moment();
+
+        testInstance.addDutForm.value.product =[];
+        testInstance.addCallingPlatformForm.value.product = [];
+        
+        fixture.detectChanges();
+        testInstance.otherDevicesUsed = []
+        testInstance.submit();
+
+
+        expect(testInstance.isDataLoading ).toBeFalse();
+    });
+});
+
+describe('add new license consumption - testing errors thrown by functions', () => {
+    beforeEach(beforeEachFunction);
+    it('should throw an error if something wrong happened in submit', () => {
+        const response = {error: 'some error'}
+        spyOn(testInstance, 'submit').and.callThrough();
+        spyOn(testInstance, 'addDut').and.callThrough();
+        spyOn(testInstance, 'addCallingPlatform').and.callThrough();
+        spyOn(ConsumptionServiceMock, 'addLicenseConsumptionDetails').and.returnValue(of(response));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        testInstance.addLicenseConsumptionForm.value.startWeek = moment();
+        testInstance.addDeviceForm.value.product = DevicesServiceMock.device;
+        testInstance.addDutForm.value.product = DevicesServiceMock.device;
+        testInstance.addCallingPlatformForm.value.product = DevicesServiceMock.device;
+
+        testInstance.addDevice();
+        testInstance.addDut();
+        testInstance.addCallingPlatform();
+
+        fixture.detectChanges();
+        testInstance.submit();
+
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith("some error",'Error adding some devices for this license consumption!');
+    });
+
+    it('should throw an error if something wrong happened in submit', () => {
+        spyOn(testInstance, 'submit').and.callThrough();
+        spyOn(testInstance, 'addDut').and.callThrough();
+        spyOn(testInstance, 'addCallingPlatform').and.callThrough();
+        spyOn(ConsumptionServiceMock, 'addLicenseConsumptionDetails').and.returnValue(throwError('some error'));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        testInstance.addLicenseConsumptionForm.value.startWeek = moment();
+        testInstance.addDeviceForm.value.product = DevicesServiceMock.device;
+        testInstance.addDutForm.value.product = DevicesServiceMock.device;
+        testInstance.addCallingPlatformForm.value.product = DevicesServiceMock.device;
+
+        testInstance.addDevice();
+        testInstance.addDut();
+        testInstance.addCallingPlatform();
+
+        fixture.detectChanges();
+        testInstance.submit();
+
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith("some error",'Error adding some devices for this license consumption!');
+    });
+
+    it('should throw an error if something wrong happened in submit', () => {
+        spyOn(testInstance, 'submit').and.callThrough();
+        spyOn(testInstance, 'addDut').and.callThrough();
+        spyOn(testInstance, 'addCallingPlatform').and.callThrough();
+        spyOn(ConsumptionServiceMock, 'addLicenseConsumptionEvent').and.returnValue(throwError('some error'));
+        testInstance.addLicenseConsumptionForm.value.startWeek = moment();
+        testInstance.addDeviceForm.value.product = DevicesServiceMock.device;
+        testInstance.addDutForm.value.product = DevicesServiceMock.device;
+        testInstance.addCallingPlatformForm.value.product = DevicesServiceMock.device;
+
+        testInstance.addDevice();
+        testInstance.addDut();
+        testInstance.addCallingPlatform();
+
+        fixture.detectChanges();
+        testInstance.submit();
+
+        expect(console.log).toHaveBeenCalledWith('some error');
+        expect(testInstance.isDataLoading).toBeFalse();
+    });
+
+    it('should throw an error if something wrong happened in submit', () => {
+        const response = {error: 'some error'}
+        spyOn(testInstance, 'submit').and.callThrough();
+        spyOn(testInstance, 'addDut').and.callThrough();
+        spyOn(testInstance, 'addCallingPlatform').and.callThrough();
+        spyOn(ConsumptionServiceMock, 'addLicenseConsumptionEvent').and.returnValue(of(response));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        testInstance.addLicenseConsumptionForm.value.startWeek = moment();
+        testInstance.addDeviceForm.value.product = DevicesServiceMock.device;
+        testInstance.addDutForm.value.product = DevicesServiceMock.device;
+        testInstance.addCallingPlatformForm.value.product = DevicesServiceMock.device;
+
+        testInstance.addDevice();
+        testInstance.addDut();
+        testInstance.addCallingPlatform();
+
+        fixture.detectChanges();
+        testInstance.submit();
+
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(response.error, 'Error adding license consumption!');
+        expect(testInstance.isDataLoading).toBeFalse();
     });
 });

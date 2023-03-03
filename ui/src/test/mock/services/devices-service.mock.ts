@@ -762,9 +762,53 @@ const VENDORS_LIST = {
     ]
 };
 
+const DEVICE = {
+    days:[
+        {
+            "name": "Sun",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Mon",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Tue",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Wed",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Thu",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Fri",
+            "used": true,
+            "disabled": false
+        },
+        {
+            "name": "Sat",
+            "used": true,
+            "disabled": false
+        }
+    ],id: "f2cd6098-be9e-4d6e-a059-e9070c1222ca",
+    product:"MiVoice Office 250 Phone System - v.6.3 SP2",
+    vendor:"Mitel"
+}
+
 export const DevicesServiceMock = {
     mockDeviceA: DEVICE_A,
     devicesListValue: DEVICE_LIST,
+    vendorList: VENDORS_LIST,
+    device: DEVICE,
     deviceTypes: DEVICE_TYPES,
     getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string) => {
         return of(
