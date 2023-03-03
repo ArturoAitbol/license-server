@@ -75,7 +75,33 @@ public class EmailClient {
         }
     }
 
-    public static void sendEmail(String toEmail, String subject, String html, ExecutionContext context) throws MessagingException{
+    public static void sendMaintenanceModeEnabledAlert(String emailList, ExecutionContext context) {
+        try {
+            String html = getResourceFileAsString("/maintenance-mode-emails/maintenance-mode-enabled.html");
+            context.getLogger().info("Loading maintenance enabled alert html");
+            if (html != null) {
+                sendEmail(emailList,"Maintenance mode was enabled", html, context);
+            }
+        } catch (Exception e) {
+            context.getLogger().severe("Could not send admin welcome email: " + e);
+        }
+    }
+
+    public static void sendMaintenanceModeDisabledAlert(String emailList, ExecutionContext context) {
+        try {
+            String html = getResourceFileAsString("/maintenance-mode-emails/maintenance-mode-disabled.html");
+            context.getLogger().info("Loading maintenance disabled alert html");
+            if (html != null) {
+                String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
+                html = html.replace("%REDIRECT_URL%", inviteRedirectUrl);
+                sendEmail(emailList,"Maintenance mode was disabled", html, context);
+            }
+        } catch (Exception e) {
+            context.getLogger().severe("Could not send admin welcome email: " + e);
+        }
+    }
+
+    public static void sendEmail(String emailList, String subject, String html, ExecutionContext context) throws MessagingException{
             MimeMessage msg = new MimeMessage(getSession());
             //set message headers
             msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
@@ -84,7 +110,7 @@ public class EmailClient {
             msg.setSubject(subject, "UTF-8");
             msg.setSentDate(new Date());
             msg.setFrom(new InternetAddress(System.getenv("SMTP_USER")));
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailList, false));
 
             // Create a multipart message
             Multipart multipart = new MimeMultipart("related");

@@ -117,29 +117,33 @@ export class CtaasSetupComponent implements OnInit {
   }
 
   private updateMaintenanceMode(maintenance: boolean) {
-    this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, { maintenance: maintenance }).subscribe((res: any) => {
+    this.isDataLoading = true;
+    this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, {
+      subaccountId: this.originalCtaasSetupDetails.subaccountId,
+      maintenance: maintenance
+    }).subscribe((res: any) => {
       if (!res?.error) {
         this.snackBarService.openSnackBar(maintenance ? 'Maintenance mode enabled successfully' : 'Maintenance mode disabled successfully', '');
         this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, maintenance: maintenance };
-        this.setupForm.patchValue(this.originalCtaasSetupDetails);
-        this.disableForm();
       } else {
         this.snackBarService.openSnackBar(res.error, maintenance ? 'Error while enabling maintenance mode' : 'Error while disabling maintenance mode');
       }
+      this.fetchSetupInfo();
       this.isDataLoading = false;
     });
   }
 
   private editSetup(ctaasSetup: any) {
+    this.isDataLoading = true;
     this.ctaasSetupService.updateCtaasSetupDetailsById(this.ctaasSetupId, ctaasSetup).subscribe((res: any) => {
       if (!res?.error) {
         this.snackBarService.openSnackBar('Spotlight Setup edited successfully!', '');
         this.isEditing = false;
-        this.originalCtaasSetupDetails = { ...this.originalCtaasSetupDetails, ...this.setupForm.value };
-        this.disableForm();
       } else {
         this.snackBarService.openSnackBar(res.error, 'Error updating Spotlight Setup!');
       }
+      this.disableForm();
+      this.fetchSetupInfo();
       this.isDataLoading = false;
     });
   }
