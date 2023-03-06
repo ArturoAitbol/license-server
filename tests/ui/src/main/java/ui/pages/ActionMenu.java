@@ -11,6 +11,8 @@ import ui.pages.projects.Projects;
 import ui.pages.spotlight.Dashboard;
 import ui.pages.subscriptions.Subscriptions;
 
+import java.util.ArrayList;
+
 public class ActionMenu extends AbstractPageObject {
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
     @FindBy(css = "button#Delete")
@@ -88,6 +90,9 @@ public class ActionMenu extends AbstractPageObject {
         executor.executeScript("arguments[0].click();", this.spotlightDashboardButton);
         By messageSelector = By.xpath("//simple-snack-bar");
         this.action.waitSpinner(messageSelector);
+        //Switch to new Spotlight Dashboard tab
+        ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
         return new Dashboard();
     }
 

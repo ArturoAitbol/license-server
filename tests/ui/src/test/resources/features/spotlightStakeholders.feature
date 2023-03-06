@@ -3,7 +3,7 @@ Feature: Stakeholders
   Background: Login successfully with valid credentials
     Given I am on the landing page
 
-  @createfunctional-test-stakeholder
+  @createfunctional-test-stakeholder @test
   Scenario: Create a test customer for stakeholders tests
     Given I try to login using a "FullAdministrator"
     And I open the Add Customer form
@@ -17,7 +17,7 @@ Feature: Stakeholders
       | testCustomer  | yes                               |
     Then I see the customer "functional-test-stakeholder" in the table
 
-  @addLicense
+  @addLicense @test
   Scenario: Add Basic license
     Given I see the customer "functional-test-stakeholder" in the table
     And I go to the Subscriptions view of "functional-test-stakeholder"
@@ -30,7 +30,7 @@ Feature: Stakeholders
       | description           | Description1      |
     Then I see the "Description1" subscription in the table
 
-  @editSpotLight
+  @editSpotLight @spotLightDashboard @test
   Scenario: Edit a spotlight setup
     Given I see the customer "functional-test-stakeholder" in the table
     And I go to the spotlight dashboard for "functional-test-stakeholder"
@@ -41,7 +41,7 @@ Feature: Stakeholders
       | status              | READY                                |
     Then I should see the modified data in spotlight configuration view
 
-  @addStakeholder
+  @addStakeholder @spotLightDashboard @test
   Scenario: Add a Stakeholder
     Given I see the customer "functional-test-stakeholder" in the table
     And I go to the spotlight dashboard for "functional-test-stakeholder"
@@ -63,7 +63,7 @@ Feature: Stakeholders
       | Dashboard     |
     And I logout
 
-  @editStakeholder @feature-toggle
+  @editStakeholder @feature-toggle @spotLightDashboard
   Scenario: Edit a StakeHolder
     Given I try to login using a "FullAdministrator"
     And I see the customer "functional-test-stakeholder" in the table
@@ -76,7 +76,7 @@ Feature: Stakeholders
       | phoneNumber           | 6524352354                      |
     Then I should see the message "Updated stake holder details successfully"
 
-  @deleteStakeholder @feature-toggle
+  @deleteStakeholder @feature-toggle @spotLightDashboard
   Scenario: Delete Stakeholder Test
     Given I see the customer "functional-test-stakeholder" in the table
     And I go to the spotlight dashboard for "functional-test-stakeholder"

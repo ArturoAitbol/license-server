@@ -31,7 +31,7 @@ Feature: CtaasSetup
       | description           | Description1      |
     Then I see the "Description1" subscription in the table
 
-  @editSpotLight
+  @editSpotLight @spotLightDashboard
   Scenario: Edit a spotlight setup
     Given I see the customer "functional-test-spotlight" in the table
     And I go to the spotlight dashboard for "functional-test-spotlight"
