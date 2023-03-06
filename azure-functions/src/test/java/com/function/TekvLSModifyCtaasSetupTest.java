@@ -2,11 +2,12 @@ package com.function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
+import com.function.clients.EmailClient;
+import com.function.util.FeatureToggleService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
+import org.mockito.MockedStatic;
 
 public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
 
@@ -396,5 +398,131 @@ public class TekvLSModifyCtaasSetupTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
 
         this.initTestParameters();
+    }
+
+    @Test
+    public void maintenanceModeToggleOnTest(){
+        //Given
+        String bodyRequest = "{'maintenance': true," +
+                             "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        String emails = "maintenance_test@test.com";
+        try (MockedStatic<FeatureToggleService> mockedFeatureToggleService = mockStatic(FeatureToggleService.class);
+             MockedStatic<EmailClient> mockedEmailClient = mockStatic(EmailClient.class)) {
+            mockedFeatureToggleService.when(() -> FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode",
+                                                                                                     "b5b91753-4c2b-43f5-afa0-feb22cefa901"))
+                                      .thenReturn(true);
+            //When
+            HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+            this.context.getLogger().info(response.getStatus().toString());
+
+            //Then
+            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeEnabledAlert(emails, context));
+            HttpStatusType actualStatus = response.getStatus();
+            HttpStatus expected = HttpStatus.OK;
+            assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        }
+    }
+
+    @Test
+    public void maintenanceModeToggleOnWithAdCustomerCreationOnTest(){
+        //Given
+        String bodyRequest = "{'maintenance': true," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        String emails = "maintenance_test@test.com,maintenance_test2@test.com,test-customer-full-admin2@tekvizionlabs.com";
+        try (MockedStatic<FeatureToggleService> mockedFeatureToggleService = mockStatic(FeatureToggleService.class);
+             MockedStatic<EmailClient> mockedEmailClient = mockStatic(EmailClient.class)) {
+            mockedFeatureToggleService.when(() -> FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode",
+                                                                                                     "b5b91753-4c2b-43f5-afa0-feb22cefa901"))
+                                      .thenReturn(true);
+            mockedFeatureToggleService.when(() -> FeatureToggleService.isFeatureActiveBySubaccountId("ad-customer-user-creation",
+                                                                                                     "b5b91753-4c2b-43f5-afa0-feb22cefa901"))
+                                      .thenReturn(true);
+            //When
+            HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+            this.context.getLogger().info(response.getStatus().toString());
+
+            //Then
+            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeEnabledAlert(emails, context));
+            HttpStatusType actualStatus = response.getStatus();
+            HttpStatus expected = HttpStatus.OK;
+            assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        }
+    }
+
+    @Test
+    public void maintenanceModeToggleOnWithoutSubaccountIdTest(){
+        //Given
+        String bodyRequest = "{'maintenance': true}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+        this.context.getLogger().info(response.getStatus().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "error: subaccountId is missing.";
+        assertEquals(expectedResponse,actualResponse,"Response doesn't match with: ".concat(expectedResponse));
+
+    }
+
+    @Test
+    public void maintenanceModeToggleOffTest(){
+        //Given
+        String bodyRequest = "{'maintenance': false," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        String emails = "maintenance_test@test.com";
+        try (MockedStatic<FeatureToggleService> mockedFeatureToggleService = mockStatic(FeatureToggleService.class);
+             MockedStatic<EmailClient> mockedEmailClient = mockStatic(EmailClient.class)) {
+            mockedFeatureToggleService.when(() -> FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode",
+                                                                                                     "b5b91753-4c2b-43f5-afa0-feb22cefa901"))
+                                      .thenReturn(true);
+            //When
+            HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+            this.context.getLogger().info(response.getStatus().toString());
+
+            //Then
+            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeDisabledAlert(emails, context));
+            HttpStatusType actualStatus = response.getStatus();
+            HttpStatus expected = HttpStatus.OK;
+            assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        }
+    }
+
+    @Test
+    public void maintenanceModeToggleOffWithAdCustomerCreationOnTest(){
+        //Given
+        String bodyRequest = "{'maintenance': false," +
+                "'subaccountId': 'b5b91753-4c2b-43f5-afa0-feb22cefa901'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        String emails = "maintenance_test@test.com,maintenance_test2@test.com,test-customer-full-admin2@tekvizionlabs.com";
+        try (MockedStatic<FeatureToggleService> mockedFeatureToggleService = mockStatic(FeatureToggleService.class);
+             MockedStatic<EmailClient> mockedEmailClient = mockStatic(EmailClient.class)) {
+            mockedFeatureToggleService.when(() -> FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode",
+                                                                                                     "b5b91753-4c2b-43f5-afa0-feb22cefa901"))
+                                      .thenReturn(true);
+            mockedFeatureToggleService.when(() -> FeatureToggleService.isFeatureActiveBySubaccountId("ad-customer-user-creation",
+                                                                                                     "b5b91753-4c2b-43f5-afa0-feb22cefa901"))
+                                      .thenReturn(true);
+            //When
+            HttpResponseMessage response = tekvLSModifyCtaasSetupById.run(this.request,this.ctaasSetupId,this.context);
+            this.context.getLogger().info(response.getStatus().toString());
+
+            //Then
+            mockedEmailClient.verify(() -> EmailClient.sendMaintenanceModeDisabledAlert(emails, context));
+            HttpStatusType actualStatus = response.getStatus();
+            HttpStatus expected = HttpStatus.OK;
+            assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        }
     }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.component';
+import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { ICtaasSetup } from 'src/app/model/ctaas-setup.model';
@@ -36,7 +36,6 @@ export class CtaasDashboardComponent implements OnInit {
     dailyImagesList: string[] = [];
     weeklyImagesList: string[] = [];
     refreshIntervalSubscription: Subscription;
-    refreshNotesIntervalSubscription: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
     powerBiFontStyleControl = new FormControl('');
@@ -213,8 +212,6 @@ export class CtaasDashboardComponent implements OnInit {
      * fetch SpotLight Setup details by subaccount id
      */
     fetchCtaasSetupDetails(): void {
-        // const currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
-        // const { id } = currentSubaccountDetails;
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
@@ -294,9 +291,6 @@ export class CtaasDashboardComponent implements OnInit {
                     }
                 }
                 this.hasDashboardDetails = this.checkForDashboardDetails();
-            } else {
-                this.resultantImagesList = this.resultantImagesListBk = [];
-                this.hasDashboardDetails = this.checkForDashboardDetails();
             }
         }, (e) => {
             this.resultantImagesList = this.resultantImagesListBk = [];
@@ -311,9 +305,9 @@ export class CtaasDashboardComponent implements OnInit {
      * @param index: string 
      * @returns: boolean 
      */
-    showLastUpdatedTSByCondition(index: string): boolean {
-        return this.lastModifiedDate && (+index) === 0;
-    }
+    // showLastUpdatedTSByCondition(index: string): boolean {
+    //     return this.lastModifiedDate && (+index) === 0;
+    // }
     /**
      * get report name by report type
      * @param reportType: string 
@@ -421,8 +415,8 @@ export class CtaasDashboardComponent implements OnInit {
                 // check for powerbi response, if not make an API request to fetch powerbi dashboard details
                 if (!this.powerbiReportResponse) {
                     await this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
+                    this.hasDashboardDetails = false;
                 }
-
                 if (this.powerbiReportResponse) {
                     this.hasDashboardDetails = true;
                     const { daily, weekly } = this.powerbiReportResponse;
@@ -435,8 +429,6 @@ export class CtaasDashboardComponent implements OnInit {
 
                         this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     }
-                } else {
-                    this.hasDashboardDetails = false;
                 }
                 this.powerBiEmbeddingFlag = true;
                 break;
@@ -458,7 +450,5 @@ export class CtaasDashboardComponent implements OnInit {
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
-        if (this.refreshNotesIntervalSubscription)
-            this.refreshNotesIntervalSubscription.unsubscribe();
     }
 }

@@ -17,6 +17,8 @@ public class ActionMenu extends AbstractPageObject {
     WebElement deleteButton;
     @FindBy(css = "button#Edit")
     WebElement editButton;
+    @FindBy(xpath = "//button[@id='View Details']")
+    WebElement viewDetailsButton;
     @FindBy(css = "button#Close")
     WebElement closeButton;
     @FindBy(xpath = "//button[@id='View Projects List']")

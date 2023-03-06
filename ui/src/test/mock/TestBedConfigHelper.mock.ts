@@ -18,7 +18,7 @@ import { TestSuitesMock } from "./services/ctaas-test-suites.service.mock";
 import {CtaasSetupService} from "../../app/services/ctaas-setup.service";
 import {CtaasSetupServiceMock} from "./services/ctaas-setup.service.mock";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {NoteServiceMock} from "./services/note-service.mock";
+import {NoteServiceMock} from "./services/ctaas-note-service.mock";
 import {CtaasDashboardServiceMock} from "./services/ctaas-dashboard-service.mock";
 import {NoteService} from "../../app/services/notes.service";
 import {CtaasDashboardService} from "../../app/services/ctaas-dashboard.service";

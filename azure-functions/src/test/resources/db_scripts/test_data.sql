@@ -50,6 +50,7 @@ test1@tekvizion.com	0b1ef03f-98d8-4fa3-8f9f-6b0013ce5848
 test2@tekvizion.com	0856df81-8d32-4adb-941a-c0d9187f36a7
 test-customer-subaccount-stakeholder@tekvizionlabs.com	b995ecaa-d64e-4067-90e5-cbc80935d1e0
 test-customer-full-admin2@tekvizionlabs.com	950f47c7-a477-455b-b65b-331ecacc88dd
+maintenance_test2@test.com	950f47c7-a477-455b-b65b-331ecacc88dd
 \.
 
 
@@ -90,6 +91,7 @@ test-customer-subaccount-admin@tekvizionlabs.com	2c8e386b-d1bd-48b3-b73a-12bfa5d
 test1@tekvizion.com	ac7a78c2-d0b2-4c81-9538-321562d426c7
 test2@tekvizion.com	069dc3aa-dcb1-45e6-886f-be8f2345080f
 test-customer-subaccount-stakeholder@tekvizionlabs.com	2c8e386b-d1bd-48b3-b73a-12bfa5d00805
+maintenance_test@test.com	b5b91753-4c2b-43f5-afa0-feb22cefa901
 \.
 
 

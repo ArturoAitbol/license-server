@@ -104,18 +104,16 @@ describe('UI verification test', () => {
     });
 
     it('should execute sortData()', () => {
-        const sort: Sort = { active: 'type', direction: 'desc' }
-        fixture.detectChanges();
-        spyOn(ctaasStakeholderComponentTestInstance, 'sortData').and.callThrough();
+        ctaasStakeholderComponentTestInstance.stakeholdersData = StakeHolderServiceMock.unsortedStakeholderList.stakeHolders;
+        ctaasStakeholderComponentTestInstance.sortData({ active: 'jobTitle', direction: 'desc' })
+        expect(ctaasStakeholderComponentTestInstance.stakeholdersData).toEqual(StakeHolderServiceMock.sortedJobDes.stakeHolders);
         
-        ctaasStakeholderComponentTestInstance.sortData(sort);
-        expect(ctaasStakeholderComponentTestInstance.sortData).toHaveBeenCalledWith(sort);
-        
-        sort.direction = 'asc';
-        ctaasStakeholderComponentTestInstance.sortData(sort);
-        
-        sort.direction = '';
-        ctaasStakeholderComponentTestInstance.sortData(sort);
+        ctaasStakeholderComponentTestInstance.sortData({ active: 'jobTitle', direction: 'asc' })
+        expect(ctaasStakeholderComponentTestInstance.stakeholdersData).toEqual(StakeHolderServiceMock.sortedJobAsc.stakeHolders);
+
+        ctaasStakeholderComponentTestInstance.sortData({ active: 'jobTitle', direction: '' })
+        expect(ctaasStakeholderComponentTestInstance.stakeholdersData).toEqual(StakeHolderServiceMock.unsortedStakeholderList.stakeHolders);
+    
     });
 });
 
@@ -166,6 +164,15 @@ describe('dialog calls and interactions',() => {
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
     });
 
+    it('should call onChangeToggle with false flag', () => {
+        spyOn(ctaasStakeholderComponentTestInstance, 'onChangeToggle').and.callThrough();
+
+        ctaasStakeholderComponentTestInstance.toggleStatus = true;
+        fixture.detectChanges();
+
+        expect(ctaasStakeholderComponentTestInstance.onChangeToggle).toHaveBeenCalledWith(true);
+    });
+
     it('should show a messge if an error ocurred while deleteing stakeholder', () => {
         const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '1' }
         const response = {error: "some error message"};
@@ -209,6 +216,16 @@ describe('dialog calls and interactions',() => {
         expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error', 'Error while loading stake holders');
             
+    });
+
+    it('should throw a error if you exceeded the amount of stakeholders created', () => {
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+        fixture.detectChanges();
+        ctaasStakeholderComponentTestInstance.stakeholdersCount = 10;
+        ctaasStakeholderComponentTestInstance.addStakeholder();
+
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of stakeholders per subaccount was exceeded', '');
     });
 
     it('should display an error message if an error ocurred in fetchStakeholderList', () => {
