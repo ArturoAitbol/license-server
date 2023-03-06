@@ -1,17 +1,11 @@
 package com.function;
 
-import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_FORBIDDEN;
-import static com.function.auth.RoleAuthHandler.LOG_MESSAGE_FOR_UNAUTHORIZED;
-import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_FORBIDDEN;
-import static com.function.auth.RoleAuthHandler.MESSAGE_FOR_UNAUTHORIZED;
-import static com.function.auth.RoleAuthHandler.getRolesFromToken;
-import static com.function.auth.RoleAuthHandler.getTokenClaimsFromHeader;
-import static com.function.auth.RoleAuthHandler.getUserIdFromToken;
-import static com.function.auth.RoleAuthHandler.hasPermission;
+import static com.function.auth.RoleAuthHandler.*;
 import static com.function.auth.Roles.*;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.function.clients.EmailClient;
@@ -36,8 +30,6 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import io.jsonwebtoken.Claims;
-
-import javax.xml.transform.Result;
 
 public class TekvLSModifyCtaasSetupById {
     /**
@@ -109,6 +101,15 @@ public class TekvLSModifyCtaasSetupById {
             }
         }
 
+        if (jobj.has(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib)) {
+            if (!jobj.has(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib)) {
+                context.getLogger().info("error: subaccountId is missing.");
+                JSONObject json = new JSONObject();
+                json.put("error", "error: subaccountId is missing.");
+                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+            }
+        }
+
         // Create license verifier query builder
         SelectQueryBuilder verificationBuilder = null;
         if (jobj.has("licenseId") && jobj.has("subaccountId")) {
@@ -120,13 +121,17 @@ public class TekvLSModifyCtaasSetupById {
             );
         }
 
-
+        String currentRole = evaluateRoles(roles);
         // Build the sql query for SpotLight setup
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("ctaas_setup");
         int optionalParamsFound = 0;
         for (OPTIONAL_PARAMS param : OPTIONAL_PARAMS.values()) {
             try {
-                String jsonAttribValue = (param.dataType.equals(QueryBuilder.DATA_TYPE.BOOLEAN)) ? String.valueOf(jobj.getBoolean(param.jsonAttrib)) : jobj.getString(param.jsonAttrib);
+                String jsonAttribValue = (param.dataType.equals(QueryBuilder.DATA_TYPE.BOOLEAN.getValue())) ? String.valueOf(jobj.getBoolean(param.jsonAttrib)) : jobj.getString(param.jsonAttrib);
+                if (param == OPTIONAL_PARAMS.MAINTENANCE && !currentRole.equals(FULL_ADMIN)) {
+                    // Skip maintenance update if the user doesn't have the FULL_ADMIN role
+                    continue;
+                }
                 queryBuilder.appendValueModification(param.columnName, jsonAttribValue, param.dataType);
                 optionalParamsFound++;
             } catch (Exception e) {
@@ -174,6 +179,7 @@ public class TekvLSModifyCtaasSetupById {
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
             statement.executeUpdate();            
             context.getLogger().info("Ctaas_setup updated successfully.");
+            verifyMaintenance(jobj, userId, connection, context);
             if (isSetupReady) {
                 String today = LocalDate.now().toString();
                 /**
@@ -257,12 +263,53 @@ public class TekvLSModifyCtaasSetupById {
         }
     }
 
+    private void verifyMaintenance(JSONObject jobj, String userId, Connection connection, ExecutionContext context) throws SQLException {
+        if (jobj.has(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib)) {
+            final String subaccountId = jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib);
+            if (FeatureToggleService.isFeatureActiveBySubaccountId("maintenanceMode", subaccountId)) {
+                String subaccountUserEmailsSql = "SELECT array_to_string(array_agg(distinct \"subaccount_admin_email\"),',') AS emails FROM subaccount_admin WHERE subaccount_id = ?::uuid;";
+                String customerAdminEmailsSql = null;
+                if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-customer-user-creation", subaccountId)) {
+                    customerAdminEmailsSql = "SELECT array_to_string(array_agg(distinct \"admin_email\"),',') AS emails FROM customer_admin " +
+                            "WHERE customer_id = (SELECT customer_id FROM subaccount WHERE id = ?::uuid LIMIT 1);";
+                }
+                try (PreparedStatement subaccountEmailsStmt = connection.prepareStatement(subaccountUserEmailsSql);
+                     PreparedStatement customerAdminEmailsStmt = customerAdminEmailsSql != null ? connection.prepareStatement(customerAdminEmailsSql) : null) {
+                    subaccountEmailsStmt.setString(1, subaccountId);
+                    boolean newMaintenanceState = jobj.getBoolean(OPTIONAL_PARAMS.MAINTENANCE.jsonAttrib);
+                    context.getLogger()
+                           .info("Execute SQL projectStatement (User: " + userId + "): " + subaccountEmailsStmt);
+                    ResultSet rs = subaccountEmailsStmt.executeQuery();
+                    rs.next();
+                    String emails = rs.getString("emails");
+                    if (customerAdminEmailsStmt != null) {
+                        customerAdminEmailsStmt.setString(1, subaccountId);
+                        context.getLogger()
+                               .info("Execute SQL projectStatement (User: " + userId + "): " + customerAdminEmailsStmt);
+                        rs = customerAdminEmailsStmt.executeQuery();
+                        rs.next();
+                        String customerAdminEmails = rs.getString("emails");
+                        emails = emails + "," + customerAdminEmails;
+                    }
+                    System.out.println(emails);
+                    if (newMaintenanceState) {
+                        EmailClient.sendMaintenanceModeEnabledAlert(emails, context);
+                    } else {
+                        EmailClient.sendMaintenanceModeDisabledAlert(emails, context);
+                    }
+
+                }
+            }
+        }
+    }
+
     private enum OPTIONAL_PARAMS {
         SUBACCOUNT_ID("subaccountId", "subaccount_id", QueryBuilder.DATA_TYPE.UUID),
         AZURE_RESOURCE_GROUP("azureResourceGroup", "azure_resource_group", QueryBuilder.DATA_TYPE.VARCHAR),
         TAP_URL("tapUrl", "tap_url", QueryBuilder.DATA_TYPE.VARCHAR),
         STATUS("status", "status", QueryBuilder.DATA_TYPE.VARCHAR),
         ON_BOARDING_COMPLETE("onBoardingComplete", "on_boarding_complete", QueryBuilder.DATA_TYPE.BOOLEAN),
+        MAINTENANCE("maintenance", "maintenance", QueryBuilder.DATA_TYPE.BOOLEAN),
     	POWERBI_WORKSPACE_ID("powerBiWorkspaceId", "powerbi_workspace_id", QueryBuilder.DATA_TYPE.VARCHAR),
     	POWERBI_REPORT_ID("powerBiReportId", "powerbi_report_id", QueryBuilder.DATA_TYPE.VARCHAR);
         private final String jsonAttrib;

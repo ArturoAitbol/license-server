@@ -381,7 +381,8 @@ CREATE TABLE public.ctaas_setup
     tap_url character varying,
     status character varying,
     on_boarding_complete boolean,
-    subaccount_id uuid NOT NULL
+    subaccount_id uuid NOT NULL,
+    maintenance boolean default false
 );
 
 CREATE TABLE public.feature_toggle (

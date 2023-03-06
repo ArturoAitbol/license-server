@@ -19,6 +19,8 @@ public class ConsumptionForm extends AbstractPageObject {
     WebElement endWeekInput;
     @FindBy(css = "[formcontrolname='project']")
     WebElement projectInput;
+    @FindBy(css = "#type-auto-complete")
+    WebElement deviceTypeInput;
     @FindBy(css = "#vendor-auto-complete")
     WebElement deviceVendorInput;
     @FindBy(css = "#device-auto-complete")
@@ -27,6 +29,18 @@ public class ConsumptionForm extends AbstractPageObject {
     WebElement supportVendorInput;
     @FindBy(css = "#support-device-auto-complete")
     WebElement supportModelInput;
+    @FindBy(css = "#dut-auto-complete")
+    WebElement dutTypeInput;
+    @FindBy(css = "#dut-vendor-auto-complete")
+    WebElement dutVendorInput;
+    @FindBy(css = "#dut-device-auto-complete")
+    WebElement dutDeviceInput;
+    @FindBy(css = "#calling-platform-auto-complete")
+    WebElement callingTypeInput;
+    @FindBy(css = "#calling-platform-vendor-auto-complete")
+    WebElement callingVendorInput;
+    @FindBy(css = "#calling-platform-device-auto-complete")
+    WebElement callingDeviceInput;
     @FindBy(css = "#submit-button")
     WebElement submitButton;
     @FindBy(css = "#close-button")
@@ -34,23 +48,26 @@ public class ConsumptionForm extends AbstractPageObject {
     private String[] daysArray;
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
-    public Consumptions addConsumption(String startWeek, String endWeek, String project, String deviceVendor,
+    public Consumptions addConsumption(String startWeek, String endWeek, String project, String deviceType, String deviceVendor,
                         String deviceModel, String supportVendor, String supportModel, String deviceVersion, String deviceGranularity, String tekTokens, String usageDays) {
-/*        this.action.sendText(this.startWeekInput, startWeek);
-        this.action.sendText(this.endWeekInput, endWeek);*/
         this.action.selectToday(this.calendarButton);
+        String deviceTypeSelector = "";
         By projectSelector = By.cssSelector(String.format("mat-option[title='%s']", project));
         this.action.selectOption(this.projectInput, projectSelector);
+        if (!deviceType.isEmpty()){
+            By typeSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceType));
+            this.action.selectOption(this.deviceTypeInput, typeSelector);
+            this.waitSpinner();
+        }
         String deviceFieldContent = getDeviceFieldContent(deviceModel, supportModel, deviceVersion, deviceGranularity, tekTokens);
         By modelSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceFieldContent));
-        String deviceType = "";
         if (!deviceVendor.isEmpty()){
             By vendorSelector = By.cssSelector(String.format("mat-option[title='%s']", deviceVendor));
             this.action.selectOption(this.deviceVendorInput, vendorSelector);
             this.waitSpinner();
             if (!deviceModel.isEmpty())
                 this.action.selectOption(this.deviceModelInput, modelSelector);
-            deviceType = "#device-usage-days > ";
+            deviceTypeSelector = "#device-usage-days > ";
         }
         if (!supportVendor.isEmpty()){
             By vendorSelector = By.cssSelector(String.format("mat-option[title='%s']", supportVendor));
@@ -58,7 +75,45 @@ public class ConsumptionForm extends AbstractPageObject {
             this.waitSpinner();
             if (!supportModel.isEmpty())
                 this.action.selectOption(this.supportModelInput, modelSelector);
-            deviceType = "#support-usage-days > ";
+            deviceTypeSelector = "#support-usage-days > ";
+        }
+        By daySelector;
+        if (!usageDays.isEmpty()){
+            this.daysArray = usageDays.split("[ ,]+");
+            for (String day: daysArray){
+                daySelector = By.cssSelector(deviceTypeSelector + String.format("mat-checkbox[title='%s']", day));
+                this.action.click(daySelector);
+            }
+        }
+        this.action.click(this.submitButton);
+        return new Consumptions();
+    }
+
+    public Consumptions addLabsConsumption(String startWeek, String endWeek, String project, String dutType, String dutVendor, String
+                                           dutDevice, String callingType, String callingVendor, String callingDevice, String usageDays) {
+        this.action.selectToday(this.calendarButton);
+        By projectSelector = By.cssSelector(String.format("mat-option[title='%s']", project));
+        this.action.selectOption(this.projectInput, projectSelector);
+        String deviceType = "#consumption-usage-days >";
+        if (!dutType.isEmpty()){
+            By typeSelector = By.cssSelector(String.format("mat-option[title='%s']", dutType));
+            this.action.selectOption(this.dutTypeInput, typeSelector);
+            this.waitSpinner();
+            By vendorSelector = By.cssSelector(String.format("mat-option[title='%s']", dutVendor));
+            this.action.selectOption(this.dutVendorInput, vendorSelector);
+            this.waitSpinner();
+            By deviceSelector = By.cssSelector(String.format("mat-option[title*='%s']", dutDevice));
+            this.action.selectOption(this.dutDeviceInput, deviceSelector);
+        }
+        if (!callingType.isEmpty()){
+            By typeSelector = By.cssSelector(String.format("mat-option[title='%s']", callingType));
+            this.action.selectOption(this.callingTypeInput, typeSelector);
+            this.waitSpinner();
+            By vendorSelector = By.cssSelector(String.format("mat-option[title='%s']", callingVendor));
+            this.action.selectOption(this.callingVendorInput, vendorSelector);
+            this.waitSpinner();
+            By deviceSelector = By.cssSelector(String.format("mat-option[title*='%s']", callingDevice));
+            this.action.selectOption(this.callingDeviceInput, deviceSelector);
         }
         By daySelector;
         if (!usageDays.isEmpty()){
@@ -69,6 +124,7 @@ public class ConsumptionForm extends AbstractPageObject {
             }
         }
         this.action.click(this.submitButton);
+        this.waitSpinner();
         return new Consumptions();
     }
 

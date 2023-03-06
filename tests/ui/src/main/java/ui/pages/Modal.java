@@ -21,5 +21,10 @@ public class Modal extends AbstractPageObject {
         String button = this.action.getText(confirmButton);
         System.out.println(button);
         this.action.click(confirmButton);
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 }

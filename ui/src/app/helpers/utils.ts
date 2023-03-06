@@ -135,4 +135,40 @@ export class Utility {
         return [...list];
     }
 
+    public static sortingDataTable(data: any, keyName: string, direction: string): any[] {
+        let sortedData; 
+        sortedData = data.sort((a: any, b: any) => {
+            if(a[keyName] == null && b[keyName] == null) 
+                return 0;
+            else if(a[keyName] == null && b[keyName] != null)
+                return (direction === 'asc') ? 1 : -1;
+            else if(a[keyName] != null && b[keyName] == null)
+                return (direction === 'asc')? -1 : 1;
+            else if (typeof a[keyName] === 'number') {
+                if(direction === 'asc')
+                    return +a[keyName] > +b[keyName] ? 1 : (+a[keyName] < +b[keyName] ? -1 : 0);
+                return +a[keyName] < +b[keyName] ? 1 : (+a[keyName] > +b[keyName] ? -1 : 0);
+            }
+            return (direction === 'asc')? a[keyName].localeCompare(b[keyName]) : b[keyName].localeCompare(a[keyName]);
+        })
+        return sortedData;
+    }
+    
+    public static parseReportDate(incomingDate: Date): string {
+        let parsedDate = "";
+        const parsedYear = incomingDate.getFullYear().toString().slice(-2);
+        let parsedMonth: any = incomingDate.getMonth() + 1;
+        parsedMonth = parsedMonth > 9 ? parsedMonth : '0' + parsedMonth.toString();
+        let parsedDay: any = incomingDate.getDate();
+        parsedDay = parsedDay > 9 ? parsedDay : '0' + parsedDay.toString();
+        let parsedHours: any = incomingDate.getHours();
+        parsedHours = parsedHours > 9 ? parsedHours : '0' + parsedHours.toString();
+        let parsedMinutes: any = incomingDate.getMinutes();
+        parsedMinutes = parsedMinutes > 9 ? parsedMinutes : '0' + parsedMinutes.toString();
+        let parsedSeconds: any = incomingDate.getSeconds();
+        parsedSeconds = parsedSeconds > 9 ? parsedSeconds : '0' + parsedSeconds.toString();
+        parsedDate = `${parsedYear}${parsedMonth}${parsedDay}${parsedHours}${parsedMinutes}${parsedSeconds}`;
+        return parsedDate;
+    }
+
 }

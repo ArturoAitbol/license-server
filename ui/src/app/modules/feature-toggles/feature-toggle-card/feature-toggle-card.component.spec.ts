@@ -220,6 +220,7 @@ describe('Feature Toggle Card - Basic add FT exception functionality', () => {
     expect(MatDialogMock.open).toHaveBeenCalledWith(AddFeatureToggleExceptionModalComponent, {
       width: '400px',
       disableClose: true,
+      autoFocus: false,
       data: { featureToggle: testInstance.featureToggle }
     });
     expect(testInstance.reloadFeatureToggles.emit).toHaveBeenCalled();

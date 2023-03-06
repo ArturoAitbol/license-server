@@ -12,8 +12,8 @@ export class Constants {
     // Session Storage Keys
     public static readonly ACCESS_TOKEN: string = 'access_token';
 
-    // Logout time after inactivity in ms (1Hr x 60 min x 60 seg x 1000 ms
-    public static readonly LOGOUT_TIME_MS = 1 * 60 * 60 * 1000;
+    // Logout time after inactivity in ms (12Hr x 60 min x 60 seg x 1000 ms)
+    public static readonly LOGOUT_TIME_MS = 12 * 60 * 60 * 1000;
 
     // Tool bar constants
     public static readonly TEK_TOKEN_TOOL_BAR: string = 'tekVizion 360 Portal';
@@ -26,7 +26,7 @@ export class Constants {
     public static readonly SUBACCOUNT_ADMIN = 'customer.SubaccountAdmin';
     public static readonly SUBACCOUNT_STAKEHOLDER = 'customer.SubaccountStakeholder';
     public static readonly DEVICES_ADMIN = 'tekvizion.DevicesAdmin';
-    
+
     // Types contants
     public static readonly SANDBOX_DEVICE_TYPE = 'Sandbox';
     public static readonly CERT_DEVICE_TYPE = 'CERT';
@@ -35,6 +35,6 @@ export class Constants {
     // Timer constants
     public static readonly DASHBOARD_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes * 60 seconds * 1000 milliseconds
     public static readonly DASHBOARD_NOTE_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes * 60 seconds * 1000 milliseconds
-
+    
 }
 

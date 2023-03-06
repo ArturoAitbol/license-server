@@ -69,7 +69,7 @@ public class StorageBlobClient {
      * @return Map<String, String>
      */
     public Map<String, String> getBlobAsBase64(ExecutionContext context, final String customerName,
-                                               final String subaccountName, final String type) {
+            final String subaccountName, final String type) {
         return getBlobAsBase64(context, customerName, subaccountName, type, "");
     }
 
@@ -84,7 +84,7 @@ public class StorageBlobClient {
      * @return Map<String, String>
      */
     public Map<String, String> getBlobAsBase64(ExecutionContext context, final String customerName,
-                                               final String subaccountName, final String type, final String timestamp) {
+            final String subaccountName, final String type, final String timestamp) {
         try {
             // Check if container exist or not
             if (!blobContainerClient.exists()) {
@@ -94,8 +94,8 @@ public class StorageBlobClient {
             // Form the filter string to fetch only that particular customer-subaccount
             // images from blob
             String filterImageString = timestamp.isEmpty()
-                        ? String.format("%s/%s-%s-Image-", customerName, subaccountName, type)
-                        : String.format("%s/%s-%s-Image-%s", customerName, subaccountName, type, timestamp);
+                    ? String.format("%s/%s-%s-Image-", customerName, subaccountName, type)
+                    : String.format("%s/%s-%s-Image-%s", customerName, subaccountName, type, timestamp);
             Iterator<BlobItem> iterator = blobContainerClient.listBlobs().iterator();
             List<BlobItem> blobItemList = StreamSupport
                     .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
@@ -103,26 +103,29 @@ public class StorageBlobClient {
                     .collect(Collectors.toList());
             int BLOB_LIST_SIZE = blobItemList.size();
             int MAX_VALUE = Math.max(BLOB_LIST_SIZE - 1, 0);
-            context.getLogger().info("Type: " + type + " | Max value: " + MAX_VALUE + " | Blob List size: " + BLOB_LIST_SIZE);
+            context.getLogger()
+                    .info("Type: " + type + " | Max value: " + MAX_VALUE + " | Blob List size: " + BLOB_LIST_SIZE);
             context.getLogger().info("Filtered files path: " + filterImageString);
             // sort the list by ascending order with file name
             Collections.sort(blobItemList,
                     (blobItem1, blobItem2) -> blobItem1.getName().compareTo(blobItem2.getName()));
-                    
+
             BlobItem blobItem = blobItemList.subList(MAX_VALUE, BLOB_LIST_SIZE).get(0);
 
             Map<String, String> blobMap = new HashMap<>();
 
             String blobItemName = blobItem.getName();
             context.getLogger().info("File name: " + blobItemName);
-            // e.g: Daily file name {customer_name}/{subaccount_name}-{report_type}-Image-{start_date}-{end_date}.jpg
-            // e.g: Weekly file name  {customer_name}/{subaccount_name}-{report_type}-Image-{timestamp}.jpg
+            // e.g: Daily file name
+            // {customer_name}/{subaccount_name}-{report_type}-Image-{start_date}-{end_date}.jpg
+            // e.g: Weekly file name
+            // {customer_name}/{subaccount_name}-{report_type}-Image-{timestamp}.jpg
             // set start date and end date from the blob file name
             this.getStartDateAndEndDateFromBlobItem(context, blobMap, blobItemName);
 
             if (!timestamp.isEmpty())
                 blobMap.put("timestampId", timestamp);
-            else{
+            else {
                 String timestampID = getTimestampFromBlobName(blobItemName);
                 if (timestampID != null) {
                     blobMap.put("timestampId", timestampID);
@@ -259,9 +262,12 @@ public class StorageBlobClient {
                         creationTimestamp = range[0];
                         startTimestamp = range[1];
                         endTimestamp = range[2];
-                    } else {
+                    } else if(range.length == 2) {
                         startTimestamp = range[0];
                         endTimestamp = range[1];
+                    } else {
+                        // Skip the blob item if name doesn't have at least start and end timestamps
+                        continue;
                     }
 
                     JSONObject jsonObj = new JSONObject();
