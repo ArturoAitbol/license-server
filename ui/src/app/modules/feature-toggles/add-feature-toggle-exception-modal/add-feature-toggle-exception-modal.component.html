@@ -12,11 +12,22 @@
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                     <mat-label id="subaccount-label">Subaccount</mat-label>
-                    <mat-select required formControlName="subaccount">
-                        <mat-option *ngFor="let subaccount of subaccounts" [value]="subaccount.id" title="{{subaccount.name}}">
-                            {{ subaccount.customerName }} - {{subaccount.name}}
+
+                    <input type="text" placeholder="Select a subaccount" matInput
+                           formControlName="subaccount" [matAutocomplete]="subaccountsAutocomplete"
+                           id="project-auto-complete">
+                    <mat-autocomplete #subaccountsAutocomplete="matAutocomplete"
+                                      [displayWith]="displayFnProject">
+                        <mat-option *ngFor="let subaccount of filteredSubaccounts | async"
+                                    [value]="subaccount" title="{{subaccount.customerName}}">
+                            {{subaccount.name}}
                         </mat-option>
-                    </mat-select>
+                    </mat-autocomplete>
+<!--                    <mat-select required formControlName="subaccount">-->
+<!--                        <mat-option *ngFor="let subaccount of subaccounts" [value]="subaccount.id" title="{{subaccount.name}}">-->
+<!--                            {{ subaccount.customerName }} - {{subaccount.name}}-->
+<!--                        </mat-option>-->
+<!--                    </mat-select>-->
                 </mat-form-field>
                 <div class="d-flex flex-column align-items-start">
                     <mat-checkbox id="enabled-toggle" class="checkbox-margin" [color]="'primary'" formControlName="status">Enabled</mat-checkbox>
