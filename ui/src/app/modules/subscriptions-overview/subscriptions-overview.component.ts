@@ -40,6 +40,8 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
         endDateFilterControl: [''],
     });
 
+    dataSubscriptionsBK: any[] = [];
+    dataWithFiltersBK: any[] = [];
     allSubscriptions: SubscriptionOverview[] = [];
     filteredSubscriptions: SubscriptionOverview[] = [];
     tableMaxHeight: number;
@@ -97,6 +99,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
                 this.setCustomerOverviewFilters("endDateFilter", date);
             }
             this.isLoadingResults = true;
+            this.dataWithFiltersBK = [...this.allSubscriptions.filter(customer => filters.every(filter => filter(customer)))]
             this.filteredSubscriptions = this.allSubscriptions.filter(customer => filters.every(filter => filter(customer)));
             this.isLoadingResults = false;
         })
@@ -170,6 +173,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
             res.subscriptions.forEach(sub => {
                 if (sub.licenseStatus == null && sub.subaccountId != null) sub.licenseStatus = 'Inactive';
             });
+            this.dataSubscriptionsBK = [...res.subscriptions]
             this.allSubscriptions = res.subscriptions;
             this.filteredSubscriptions = res.subscriptions;
             this.isLoadingResults = false;
@@ -187,12 +191,15 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
      * @param sortParameters: Sort
      * @returns customerList
      */
-    sortData(sortParameters: Sort): void {
+    sortData(sortParameters: Sort): any[] {
         const keyName = sortParameters.active;
-        if (sortParameters.direction === 'asc') {
-            this.filteredSubscriptions = this.filteredSubscriptions.sort((a: any, b: any) => a[keyName].localeCompare(b[keyName]));
-        } else if (sortParameters.direction === 'desc') {
-            this.filteredSubscriptions = this.filteredSubscriptions.sort((a: any, b: any) => b[keyName].localeCompare(a[keyName]));
+        if(sortParameters.direction !== ''){
+            this.filteredSubscriptions = Utility.sortingDataTable(this.filteredSubscriptions, keyName, sortParameters.direction);
+        } else {
+            if(this.customerFilter != '' || this.statusFilter != '' || this.startDateFilter != '' || this.endDateFilter != '')
+                return this.filteredSubscriptions = [...this.dataWithFiltersBK];
+            else 
+                return this.filteredSubscriptions = [...this.dataSubscriptionsBK];
         }
     }
 
