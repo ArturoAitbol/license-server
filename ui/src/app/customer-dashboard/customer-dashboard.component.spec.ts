@@ -31,6 +31,7 @@ import { of, throwError } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import { FeatureToggleServiceMock } from 'src/test/mock/services/feature-toggle-service.mock';
 import { FeatureToggleService } from '../services/feature-toggle.service';
+import { environment } from 'src/environments/environment';
 
 let dashboardComponentTestInstance: DashboardComponent;
 let fixture: ComponentFixture<DashboardComponent>;
@@ -311,6 +312,7 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
         spyOn(RouterMock, 'navigate').and.callThrough();
         spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
+        spyOn(window, 'open').and.returnValue(null);
 
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
         dashboardComponentTestInstance.rowAction(selectedTestData);
@@ -344,10 +346,12 @@ describe('routes to spothlight dashboard', () => {
         spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
         spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
         spyOn(RouterMock2, 'navigate').and.callThrough();
+        spyOn(window, 'open').and.returnValue(null);
+
         const routePath = '/spotlight/visualization';
         selectedTestData.selectedOption = dashboardComponentTestInstance.VIEW_CTAAS_DASHBOARD;
         dashboardComponentTestInstance.rowAction(selectedTestData);
-        expect(RouterMock2.navigate).toHaveBeenCalledWith([routePath],{queryParams:{subaccountId: selectedTestData.selectedRow.subaccountId}});
+        expect(window.open).toHaveBeenCalledWith(`${environment.BASE_URL}/#${routePath}?subaccountId=${selectedTestData.selectedRow.subaccountId}`)
     });
 });
 
