@@ -15,7 +15,6 @@ import { CustomerServiceMock } from "../../../../test/mock/services/customer-ser
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SubaccountServiceMock } from "../../../../test/mock/services/subaccount-service.mock";
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { DialogService } from "../../../services/dialog.service";
 import { DialogServiceMock } from "../../../../test/mock/services/dialog-service.mock";
 import { of, throwError } from "rxjs";
 import { MatDialogMock } from "../../../../test/mock/components/mat-dialog.mock";
