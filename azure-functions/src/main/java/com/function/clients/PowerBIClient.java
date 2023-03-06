@@ -50,26 +50,10 @@ public class PowerBIClient {
         }
         context.getLogger().info("Power bI workspace details for the customer: " + customer + " | Workspace: " + workspaceId);
         JSONObject response = getPowerBiReportDetails(token, workspaceId, subaccount, context);
-//        JSONObject powerBiReport = getPowerBiReportDetails(token, workspaceId, subaccount, REPORT_TYPE_DAILY, context);
-//        response.put("daily", powerBiReport);
-//        powerBiReport = getPowerBiReportDetails(token, workspaceId, subaccount, REPORT_TYPE_WEEKLY, context);
-//        response.put("weekly", powerBiReport);
         return response;
     }
 
-    //	static public JSONObject getPowerBiReportDetails(String token, String workspaceId, String subaccount, String type, ExecutionContext context) throws Exception {
-//		JSONObject report = getReport(token, workspaceId, subaccount, type, context);
-//		if(report==null) {
-//			context.getLogger().severe("Failed to fetch "+type+" report of the subaccount. Subaccount: "+subaccount);
-//			throw new ADException("Failed to fetch "+type+" report of the subaccount. Subaccount: "+subaccount);
-//		}
-//		String embedToken = getEmbedToken(token, workspaceId, report.getString("id"),  report.getString("datasetId"), context);
-//		JSONObject response = new JSONObject();
-//		response.put("embedUrl", report.getString("embedUrl"));
-//		response.put("embedToken", embedToken);
-//		context.getLogger().info("Power bI "+type+" report details of subaccount - "+subaccount+" | Report Id: "+report.getString("id"));
-//		return response;
-//	}
+
     static public JSONObject getPowerBiReportDetails(String token, String workspaceId, String subaccount, ExecutionContext context) throws Exception {
         JSONObject dailyReport = getReport(token, workspaceId, subaccount, REPORT_TYPE_DAILY, context);
         if (dailyReport == null) {
@@ -110,11 +94,6 @@ public class PowerBIClient {
         response.put("daily", daily_response);
         response.put("weekly", weekly_response);
         response.put("expiresAt", expiresAt);
-//        String embedToken = getEmbedToken(token, workspaceId, report.getString("id"), report.getString("datasetId"), context);
-//        JSONObject response = new JSONObject();
-//        response.put("embedUrl", report.getString("embedUrl"));
-//        response.put("embedToken", embedToken);
-//        context.getLogger().info("Power bI " + type + " report details of subaccount - " + subaccount + " | Report Id: " + report.getString("id"));
         return response;
     }
 
@@ -171,33 +150,6 @@ public class PowerBIClient {
         return report;
     }
 
-    //    static private String getEmbedToken(String token, String workspaceId, String reportId, String datasetId, ExecutionContext context) throws Exception {
-//        String url = baseURL + "/generatetoken";
-//        HashMap<String, String> headers = new HashMap<>();
-//        headers.put("Authorization", "Bearer " + token);
-//
-//        JSONArray jsonDatasets = new JSONArray();
-//        jsonDatasets.put(new JSONObject().put("id", datasetId));
-//
-//        JSONArray jsonReports = new JSONArray();
-//        jsonReports.put(new JSONObject().put("id", reportId));
-//
-//        JSONArray jsonWorkspaces = new JSONArray();
-//        jsonWorkspaces.put(new JSONObject().put("id", workspaceId));
-//
-//        JSONObject requestBody = new JSONObject();
-//        requestBody.put("datasets", jsonDatasets);
-//        requestBody.put("reports", jsonReports);
-//        requestBody.put("targetWorkspaces", jsonWorkspaces);
-//
-//        JSONObject response = HttpClient.get(url, requestBody.toString(), headers);
-//        if (response.has("error")) {
-//            context.getLogger().severe("Request url: " + url + ", Request params: " + requestBody);
-//            context.getLogger().severe("Error response: " + response);
-//            throw new ADException("Failed to get embed token for power Bi: " + response.getJSONObject("error").getString("message"));
-//        }
-//        return response.has("token") ? response.getString("token") : "";
-//    }
     static private JSONObject getEmbedToken(String token, String workspaceId, JSONArray reportIds, JSONArray datasetIds, ExecutionContext context) throws Exception {
         String url = baseURL + "/generatetoken";
         HashMap<String, String> headers = new HashMap<>();
