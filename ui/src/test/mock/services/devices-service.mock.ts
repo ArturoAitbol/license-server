@@ -15,6 +15,85 @@ const DEVICE_A = {
     supportType: true
 };
 
+const DEVICE_B:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "AHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
+    "tokensToConsume": 1,
+    "startDate": new Date()
+}
+const DEVICE_C:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "BHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
+    "tokensToConsume": 2,
+    "startDate": new Date()
+}
+const DEVICE_D:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "CHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
+    "tokensToConsume": 3,
+    "startDate": new Date()
+}
+const DEVICE_E:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "DHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
+    "tokensToConsume": 4,
+    "startDate": new Date()
+}
+
+const UNSORTED_DEVICE_LIST = {
+    devices:[
+        DEVICE_B,
+        DEVICE_D,
+        DEVICE_C,
+        DEVICE_E
+    ]
+}
+
+const ASC_SORTED_LIST = {
+    devices: [
+        DEVICE_B,
+        DEVICE_C,
+        DEVICE_D,
+        DEVICE_E
+    ]
+}
+
+const DESC_SORTED_LIST = {
+    devices:[
+        DEVICE_E,
+        DEVICE_D,
+        DEVICE_C,
+        DEVICE_B
+    ]
+}
 const DEVICE_LIST = {
     devices: [
         DEVICE_A,
@@ -808,6 +887,9 @@ export const DevicesServiceMock = {
     mockDeviceA: DEVICE_A,
     devicesListValue: DEVICE_LIST,
     vendorList: VENDORS_LIST,
+    unsortedDeviceList: UNSORTED_DEVICE_LIST,
+    ascSortedList: ASC_SORTED_LIST,
+    descSortedList: DESC_SORTED_LIST,
     device: DEVICE,
     deviceTypes: DEVICE_TYPES,
     getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string) => {

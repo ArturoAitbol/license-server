@@ -111,6 +111,24 @@ describe('UI verification tests', () => {
         expect(headers[2].innerText).toBe('Vendor');
         expect(headers[3].innerText).toBe('Device Name');
     });
+
+    it('should sort the data table', () => {
+        devicesComponentTestInstance.devicesBk = DevicesServiceMock.unsortedDeviceList.devices;
+        devicesComponentTestInstance.sortData({active: "vendor", direction:"asc"});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.ascSortedList.devices);
+
+        devicesComponentTestInstance.sortData({active: "vendor", direction:"desc"});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.descSortedList.devices);
+
+        devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:"asc"});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.ascSortedList.devices);
+
+        devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:"desc"});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.descSortedList.devices);
+        
+        // devicesComponentTestInstance.sortData({active: "vendor", direction:""});
+        // expect(devicesComponentTestInstance.devices).toEqual(DevicesServiceMock.unsortedDeviceList.devices);
+    });
 });
 
 

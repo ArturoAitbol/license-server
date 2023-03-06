@@ -101,7 +101,7 @@ const beforeEachFunction = () => {
 };
 
 
-fdescribe('add-new-license-consumption - UI verification tests', () => {
+describe('add-new-license-consumption - UI verification tests', () => {
     beforeEach(beforeEachFunction);
     it('should display UI elements correctly', () => {
         fixture.detectChanges();
@@ -202,7 +202,7 @@ fdescribe('add-new-license-consumption - UI verification tests', () => {
     });
 });
 
-fdescribe('add-new-license-consumption - FormGroup verification tests', () => {
+describe('add-new-license-consumption - FormGroup verification tests', () => {
 
     beforeEach(beforeEachFunction);
 
@@ -327,7 +327,7 @@ fdescribe('add-new-license-consumption - FormGroup verification tests', () => {
     });
 });
 
-fdescribe('add-new-license-consumption - Data collection and parsing tests', () => {
+describe('add-new-license-consumption - Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
 
     it('should make a call to get device list, device types and project list', () => {
@@ -342,7 +342,7 @@ fdescribe('add-new-license-consumption - Data collection and parsing tests', () 
 
 });
 
-fdescribe('add-new-license-consumption - Dialog calls and interactions', () => {
+describe('add-new-license-consumption - Dialog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     it('should close the openDialog when calling onCancel()', () => {
@@ -353,7 +353,7 @@ fdescribe('add-new-license-consumption - Dialog calls and interactions', () => {
     });
 });
 
-fdescribe('diplay of data and interactions', () => {
+describe('diplay of data and interactions', () => {
     beforeEach(beforeEachFunction);
     it('add new license consumption - should fecth projects', () => {
         spyOn(testInstance, 'onAddProject').and.callThrough();
@@ -546,7 +546,7 @@ fdescribe('diplay of data and interactions', () => {
     });
 });
 
-fdescribe('add new license consumption - testing errors thrown by functions', () => {
+describe('add new license consumption - testing errors thrown by functions', () => {
     beforeEach(beforeEachFunction);
     it('should throw an error if something wrong happened in submit', () => {
         const response = {error: 'some error'}
