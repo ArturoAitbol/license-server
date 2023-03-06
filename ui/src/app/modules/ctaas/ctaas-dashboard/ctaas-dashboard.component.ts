@@ -367,8 +367,7 @@ export class CtaasDashboardComponent implements OnInit {
             this.isLoadingResults = true;
             this.hasDashboardDetails = false;
             this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
-                .toPromise()
-                .then((response: { powerBiInfo: IPowerBiReponse }) => {
+                .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
                     this.pbiErrorCounter = true;
                     this.isLoadingResults = false;
                     const { daily, weekly, expiresAt } = response.powerBiInfo;
