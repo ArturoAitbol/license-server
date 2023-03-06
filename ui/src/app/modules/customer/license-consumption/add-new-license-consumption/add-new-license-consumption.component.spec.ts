@@ -101,7 +101,7 @@ const beforeEachFunction = () => {
 };
 
 
-describe('add-new-license-consumption - UI verification tests', () => {
+fdescribe('add-new-license-consumption - UI verification tests', () => {
     beforeEach(beforeEachFunction);
     it('should display UI elements correctly', () => {
         fixture.detectChanges();
@@ -202,7 +202,7 @@ describe('add-new-license-consumption - UI verification tests', () => {
     });
 });
 
-describe('add-new-license-consumption - FormGroup verification tests', () => {
+fdescribe('add-new-license-consumption - FormGroup verification tests', () => {
 
     beforeEach(beforeEachFunction);
 
@@ -327,7 +327,7 @@ describe('add-new-license-consumption - FormGroup verification tests', () => {
     });
 });
 
-describe('add-new-license-consumption - Data collection and parsing tests', () => {
+fdescribe('add-new-license-consumption - Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
 
     it('should make a call to get device list, device types and project list', () => {
@@ -342,7 +342,7 @@ describe('add-new-license-consumption - Data collection and parsing tests', () =
 
 });
 
-describe('add-new-license-consumption - Dialog calls and interactions', () => {
+fdescribe('add-new-license-consumption - Dialog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     it('should close the openDialog when calling onCancel()', () => {
@@ -353,7 +353,7 @@ describe('add-new-license-consumption - Dialog calls and interactions', () => {
     });
 });
 
-describe('diplay of data and interactions', () => {
+fdescribe('diplay of data and interactions', () => {
     beforeEach(beforeEachFunction);
     it('add new license consumption - should fecth projects', () => {
         spyOn(testInstance, 'onAddProject').and.callThrough();
@@ -523,9 +523,30 @@ describe('diplay of data and interactions', () => {
 
         expect(testInstance.isDataLoading ).toBeFalse();
     });
+
+    // it('should call filters of vendors, device vendors and models', () => {
+    //     const addCallingPlatformForm = testInstance.addCallingPlatformForm;
+    //     spyOn(testInstance, 'fetchData').and.callThrough();
+    //     spyOn(testInstance, 'onChangeCallingPlatformType').and.callThrough();
+    //     addCallingPlatformForm.get('vendor').setValue('Edgemarc');
+    //     testInstance.onChangeCallingPlatformType("PBX");
+    //     testInstance.callingPlatformVendors = ["Edgemarc", "AudioCodes", "Ingate", "Cisco", "Oracle", "Adtran", "Ribbon"]
+    //     testInstance.vendors = ["Edgemarc", "AudioCodes", "Ingate", "Cisco", "Oracle", "Adtran", "Ribbon"]
+    //     fixture.detectChanges();
+    // });
+
+    it('should make a call to dutCallingAnddeviceInvalid', async () => {
+        spyOn(testInstance, 'dutCallingAndDeviceInvalid').and.callThrough();
+
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const value = testInstance.dutCallingAndDeviceInvalid();
+
+        expect(value).toBeTrue();
+    });
 });
 
-describe('add new license consumption - testing errors thrown by functions', () => {
+fdescribe('add new license consumption - testing errors thrown by functions', () => {
     beforeEach(beforeEachFunction);
     it('should throw an error if something wrong happened in submit', () => {
         const response = {error: 'some error'}
