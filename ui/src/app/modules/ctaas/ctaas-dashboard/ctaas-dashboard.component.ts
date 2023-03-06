@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../onboard-wizard/onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -16,6 +16,7 @@ import { IReportEmbedConfiguration, models, service } from 'powerbi-client';
 import { Router } from '@angular/router';
 import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
 import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
+import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -53,7 +54,7 @@ export class CtaasDashboardComponent implements OnInit {
     // Flag which specify the type of embedding
     phasedEmbeddingFlag = false;
     powerBiEmbeddingFlag: boolean = false;
-    reportConfig: IReportEmbedConfiguration = {
+    reportConfig: IReportEmbedConfiguration | any = {
         id: undefined,
         type: "report",
         embedUrl: undefined,
@@ -63,13 +64,28 @@ export class CtaasDashboardComponent implements OnInit {
         settings: {
             filterPaneEnabled: false,
             navContentPaneEnabled: false,
+            background: models.BackgroundType.Transparent,
             layoutType: models.LayoutType.Custom,
             customLayout: {
                 displayOption: models.DisplayOption.FitToWidth
+            },
+            panes: {
+                filters: {
+                    visible: false
+                },
+                pageNavigation: {
+                    visible: false
+                }
+            },
+            panels: {
+                scrollable: true
             }
         },
         viewMode: models.ViewMode.View
-    };
+    }
+    @ViewChild(PowerBIReportEmbedComponent) reportObj!: PowerBIReportEmbedComponent;
+    report: any;
+    pbiErrorCounter: boolean = false;
     /**
      * Map of event handlers to be applied to the embedded report
      */
@@ -91,7 +107,8 @@ export class CtaasDashboardComponent implements OnInit {
                 if (event) {
                     console.error(event.detail);
                     const { detail: { message, errorCode } } = event;
-                    if (message && errorCode && message === 'TokenExpired' && errorCode === '403') {
+                    if (message && errorCode && message === 'TokenExpired' && (errorCode === '403' || errorCode === '401') && !this.pbiErrorCounter) {
+                        this.pbiErrorCounter = true;
                         this.setPbiReportDetailsInSubaccountDetails(null);
                         this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
                     }
@@ -108,6 +125,7 @@ export class CtaasDashboardComponent implements OnInit {
     viewMode = new FormControl(this.LEGACY_MODE);
     powerbiReportResponse: IPowerBiReponse;
     enableEmbedTokenCache: boolean = true;
+    @ViewChild('reportEmbed') reportContainerDivElement: any;
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
@@ -124,6 +142,10 @@ export class CtaasDashboardComponent implements OnInit {
      */
     private getAccountDetails(): any | null {
         return this.msalService.instance.getActiveAccount() || null;
+    }
+    ngAfterViewInit(): void {
+        this.report = this.reportObj.getReport();
+        this.reportObj.powerbi.bootstrap(this.reportContainerDivElement, this.reportConfig);
     }
     ngOnInit(): void {
         this.fontStyleControl.setValue(this.DAILY);
@@ -162,8 +184,10 @@ export class CtaasDashboardComponent implements OnInit {
                         console.log('timeDiff: ', timeDiff);
                         // Check if the difference is less than or equal to 5 minutes (300,000 milliseconds)
                         const within5Mins = timeDiff <= 300000;
-                        if (within5Mins)
+                        if (within5Mins) {
+                            this.setPbiReportDetailsInSubaccountDetails(null);
                             this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
+                        }
                     }
                 }
             });
@@ -181,6 +205,8 @@ export class CtaasDashboardComponent implements OnInit {
     onChangePowerBiButtonToggle() {
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
+        this.report = this.reportObj.getReport();
+        this.reportObj.powerbi.reset(this.reportContainerDivElement.containerRef.nativeElement);
         this.viewDashboardByMode();
     }
     /**
@@ -349,6 +375,7 @@ export class CtaasDashboardComponent implements OnInit {
             this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
                 .toPromise()
                 .then((response: { powerBiInfo: IPowerBiReponse }) => {
+                    this.pbiErrorCounter = true;
                     this.isLoadingResults = false;
                     const { daily, weekly, expiresAt } = response.powerBiInfo;
                     this.powerbiReportResponse = { daily, weekly, expiresAt };
