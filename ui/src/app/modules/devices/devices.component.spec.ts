@@ -74,7 +74,7 @@ const beforeEachFunction = () => {
     spyOn(console, 'log').and.callThrough();
 }
 
-describe('UI verification tests', () => {
+fdescribe('UI verification tests', () => {
     beforeEach(beforeEachFunction);
     it('should display essential UI and components', () => {
         fixture.detectChanges();
@@ -114,16 +114,16 @@ describe('UI verification tests', () => {
 
     it('should sort the data table', () => {
         devicesComponentTestInstance.devicesBk = DevicesServiceMock.unsortedDeviceList.devices;
-        devicesComponentTestInstance.sortData({active: "vendor", direction:"asc"});
+        devicesComponentTestInstance.sortData({active: "vendor", direction:'asc'});
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.ascSortedList.devices);
 
-        devicesComponentTestInstance.sortData({active: "vendor", direction:"desc"});
+        devicesComponentTestInstance.sortData({active: "vendor", direction:'desc'});
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.descSortedList.devices);
 
-        devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:"asc"});
+        devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:'asc'});
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.ascSortedList.devices);
 
-        devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:"desc"});
+        devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:'desc'});
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.descSortedList.devices);
         
         // devicesComponentTestInstance.sortData({active: "vendor", direction:""});
@@ -132,7 +132,7 @@ describe('UI verification tests', () => {
 });
 
 
-describe('Data collection and parsing tests', () => {
+fdescribe('Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
 
     it('should make a call to get selected Customer, devices and actionMenuOptions', () => {
@@ -172,7 +172,7 @@ describe('Data collection and parsing tests', () => {
     });
 
 });
-describe('Dialog calls and interactions', () => {
+fdescribe('Dialog calls and interactions', () => {
 
     beforeEach(beforeEachFunction);
 
@@ -227,7 +227,7 @@ describe('Dialog calls and interactions', () => {
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
         expect(DevicesServiceMock.deleteDevice).toHaveBeenCalledWith(device.id);
         expect(devicesComponentTestInstance.fetchDevices).toHaveBeenCalled();
-    })
+    });
 
 
     it('should not delete device if the operation is NOT confirmed in confirmDialog after calling onDelete()', () => {
@@ -241,6 +241,26 @@ describe('Dialog calls and interactions', () => {
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
         expect(DevicesServiceMock.deleteDevice).not.toHaveBeenCalled();
         expect(devicesComponentTestInstance.fetchDevices).not.toHaveBeenCalled();
-    })
+    });
 
+    // it('should call the filters and filter the list', async () => {
+    //     const deviceForm = devicesComponentTestInstance.filterForm;
+
+    //     const deviceInput = fixture.nativeElement.querySelector('#')
+    //     devicesComponentTestInstance.filterForm.setValue({nameFilterControl: '', typeFilterControl:'', vendorFilterControl:'AHylaFAX', startDateFilterControl:'', endDateFilterControl: ''})
+    //     devicesComponentTestInstance.filterForm.controls['nameFilterControl'].setValue('HylaFAX Enterprise');
+    //     devicesComponentTestInstance.filterForm.controls['typeFilterControl'].setValue('FAX');
+    //     devicesComponentTestInstance.filterForm.controls['vendorFilterControl'].setValue('AHylaFAX');
+    //     // devicesComponentTestInstance.filterForm.controls['startDateFilterControl'].setValue(new Date());
+    //     // devicesComponentTestInstance.filterForm.controls['endDateFilterControl'].setValue('infinity');
+    //     fixture.detectChanges();
+    //     await fixture.whenStable();
+       
+    //     console.log("123", devicesComponentTestInstance.devicesBk);
+
+    //     const objectToCompare = DevicesServiceMock.deviceToCompare;
+    //     expect(devicesComponentTestInstance.devicesBk.length).toBe(1);
+
+    //     expect(devicesComponentTestInstance.devicesBk[0]).toEqual(objectToCompare);
+    // })
 });

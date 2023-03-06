@@ -111,6 +111,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
       takeUntil(this.unsubscribe)
     ).subscribe(value => {
       const filters = [];
+      console.log(this.filterForm.controls['typeFilterControl'])
       if (value.nameFilterControl != '')
         filters.push(device => device.product.toLowerCase().includes(value.nameFilterControl.toLowerCase()));
 

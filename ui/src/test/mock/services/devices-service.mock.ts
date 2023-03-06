@@ -890,6 +890,7 @@ export const DevicesServiceMock = {
     unsortedDeviceList: UNSORTED_DEVICE_LIST,
     ascSortedList: ASC_SORTED_LIST,
     descSortedList: DESC_SORTED_LIST,
+    deviceToCompare: DEVICE_B,
     device: DEVICE,
     deviceTypes: DEVICE_TYPES,
     getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string) => {
