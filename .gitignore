@@ -10,6 +10,7 @@ dist
 */.settings/*
 .project
 *.prefs
+.vscode
 
 azure-functions/logs/logger.*
 .DS_Store
