@@ -11,7 +11,6 @@ dist
 .project
 *.prefs
 .vscode
-
 azure-functions/logs/logger.*
 .DS_Store
 
