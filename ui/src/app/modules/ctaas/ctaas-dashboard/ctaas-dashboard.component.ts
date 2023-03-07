@@ -143,8 +143,10 @@ export class CtaasDashboardComponent implements OnInit {
         return this.msalService.instance.getActiveAccount() || null;
     }
     ngAfterViewInit(): void {
-        this.report = this.reportObj.getReport();
-        this.reportObj.powerbi.bootstrap(this.reportContainerDivElement, this.reportConfig);
+        if(this.reportObj){
+            this.report = this.reportObj.getReport();
+            this.reportObj.powerbi.bootstrap(this.reportContainerDivElement, this.reportConfig);
+        }
     }
     ngOnInit(): void {
         this.fontStyleControl.setValue(this.DAILY);
@@ -204,8 +206,10 @@ export class CtaasDashboardComponent implements OnInit {
     onChangePowerBiButtonToggle() {
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
-        this.report = this.reportObj.getReport();
-        this.reportObj.powerbi.reset(this.reportContainerDivElement.containerRef.nativeElement);
+        if(this.reportObj){
+            this.report = this.reportObj.getReport();
+            this.reportObj.powerbi.reset(this.reportContainerDivElement.containerRef.nativeElement);
+        }
         this.viewDashboardByMode();
     }
     /**
