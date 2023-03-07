@@ -209,7 +209,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.customerSubaccountDetails.licenseId = license.id;
     if (this.startDate >= this.TOKEN_CONSUMPTION_DATE)
       this.newLicenseConsumptionLogicFlag = true;
-    else this.newLicenseConsumptionLogicFlag = false;
+    else
+      this.newLicenseConsumptionLogicFlag = false;
     this.subaccountService.setSelectedSubAccount(this.customerSubaccountDetails);
     this.getActionMenuOptions();
     this.defineDetailedConsumptionsTableColumns();
@@ -231,9 +232,8 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
     this.detailedConsumptionColumns = this.defaultDetailedConsumptionColumns;
     if (!this.checkIfOnlyViewIsPresent()) {
       if (!this.newLicenseConsumptionLogicFlag)
-        this.licConsumptionActionMenuOptions.pop();
+        this.licConsumptionActionMenuOptions.splice(1, 1);
     }
-
   }
 
   private getActionMenuOptions() {
