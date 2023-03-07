@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -16,6 +16,7 @@ import { IReportEmbedConfiguration, models, service } from 'powerbi-client';
 import { Router } from '@angular/router';
 import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
 import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
+import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -52,7 +53,8 @@ export class CtaasDashboardComponent implements OnInit {
     // Flag which specify the type of embedding
     phasedEmbeddingFlag = false;
     powerBiEmbeddingFlag: boolean = false;
-    reportConfig: IReportEmbedConfiguration = {
+    reportConfig: IReportEmbedConfiguration | any = {
+        id: undefined,
         type: "report",
         embedUrl: undefined,
         accessToken: undefined, // Keep as empty string, null or undefined
@@ -61,13 +63,28 @@ export class CtaasDashboardComponent implements OnInit {
         settings: {
             filterPaneEnabled: false,
             navContentPaneEnabled: false,
+            background: models.BackgroundType.Transparent,
             layoutType: models.LayoutType.Custom,
             customLayout: {
                 displayOption: models.DisplayOption.FitToWidth
+            },
+            panes: {
+                filters: {
+                    visible: false
+                },
+                pageNavigation: {
+                    visible: false
+                }
+            },
+            panels: {
+                scrollable: true
             }
         },
         viewMode: models.ViewMode.View
-    };
+    }
+    @ViewChild(PowerBIReportEmbedComponent) reportObj!: PowerBIReportEmbedComponent;
+    report: any;
+    pbiErrorCounter: boolean = false;
     /**
      * Map of event handlers to be applied to the embedded report
      */
@@ -89,7 +106,8 @@ export class CtaasDashboardComponent implements OnInit {
                 if (event) {
                     console.error(event.detail);
                     const { detail: { message, errorCode } } = event;
-                    if (message && errorCode && message === 'TokenExpired' && errorCode === '403') {
+                    if (message && errorCode && message === 'TokenExpired' && (errorCode === '403' || errorCode === '401') && !this.pbiErrorCounter) {
+                        this.pbiErrorCounter = true;
                         this.setPbiReportDetailsInSubaccountDetails(null);
                         this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
                     }
@@ -104,11 +122,9 @@ export class CtaasDashboardComponent implements OnInit {
     readonly POWERBI_MODE: string = 'powerbi_view';
     readonly REPORT_TYPE: string = 'report';
     viewMode = new FormControl(this.LEGACY_MODE);
-    powerbiReportResponse: {
-        daily: { embedUrl: string, embedToken: string },
-        weekly: { embedUrl: string, embedToken: string }
-    };
+    powerbiReportResponse: IPowerBiReponse;
     enableEmbedTokenCache: boolean = true;
+    @ViewChild('reportEmbed') reportContainerDivElement: any;
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
@@ -125,6 +141,12 @@ export class CtaasDashboardComponent implements OnInit {
      */
     private getAccountDetails(): any | null {
         return this.msalService.instance.getActiveAccount() || null;
+    }
+    ngAfterViewInit(): void {
+        if(this.reportObj){
+            this.report = this.reportObj.getReport();
+            this.reportObj.powerbi.bootstrap(this.reportContainerDivElement, this.reportConfig);
+        }
     }
     ngOnInit(): void {
         this.fontStyleControl.setValue(this.DAILY);
@@ -148,6 +170,28 @@ export class CtaasDashboardComponent implements OnInit {
                 if (!this.powerBiEmbeddingFlag)
                     this.fetchCtaasDashboardDetailsBySubaccount();
             });
+        // fetch dashboard report for every 15 minutes interval
+        interval(30000)
+            .subscribe(() => {
+                // Make an http request only in PowerBi mode
+                if (this.powerBiEmbeddingFlag && this.subaccountDetails) {
+                    const { pbiReport: { expiresAt } } = this.subaccountDetails;
+                    if (expiresAt) {
+                        // Convert the expiration date string to a Date object
+                        const tokenExpireDate = new Date(expiresAt);
+                        console.log(tokenExpireDate);
+                        // Calculate the difference between the expiration date and the current time in milliseconds
+                        const timeDiff = tokenExpireDate.getTime() - Date.now();
+                        console.log('timeDiff: ', timeDiff);
+                        // Check if the difference is less than or equal to 5 minutes (300,000 milliseconds)
+                        const within5Mins = timeDiff <= 300000;
+                        if (within5Mins) {
+                            this.setPbiReportDetailsInSubaccountDetails(null);
+                            this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
+                        }
+                    }
+                }
+            });
     }
     /**
     * on change button toggle
@@ -162,6 +206,10 @@ export class CtaasDashboardComponent implements OnInit {
     onChangePowerBiButtonToggle() {
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
+        if(this.reportObj){
+            this.report = this.reportObj.getReport();
+            this.reportObj.powerbi.reset(this.reportContainerDivElement.containerRef.nativeElement);
+        }
         this.viewDashboardByMode();
     }
     /**
@@ -307,8 +355,8 @@ export class CtaasDashboardComponent implements OnInit {
             if (pbiReport) {
                 return new Promise((resolve, reject) => {
                     try {
-                        const { daily, weekly } = pbiReport;
-                        this.powerbiReportResponse = { daily, weekly };
+                        const { daily, weekly, expiresAt } = pbiReport;
+                        this.powerbiReportResponse = { daily, weekly, expiresAt };
                         resolve("API request is successful!");
                     } catch (error) {
                         this.powerbiReportResponse = undefined;
@@ -324,11 +372,13 @@ export class CtaasDashboardComponent implements OnInit {
             this.hasDashboardDetails = false;
             this.ctaasDashboardService.getCtaasPowerBiDashboardDetails(this.subaccountDetails.id)
                 .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
+                    this.pbiErrorCounter = true;
                     this.isLoadingResults = false;
-                    const { daily, weekly } = response.powerBiInfo;
-                    this.powerbiReportResponse = { daily, weekly };
-                    this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly } };
-                    this.setPbiReportDetailsInSubaccountDetails({ daily, weekly });
+                    const { daily, weekly, expiresAt } = response.powerBiInfo;
+                    this.powerbiReportResponse = { daily, weekly, expiresAt };
+                    this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly, expiresAt } };
+                    this.setPbiReportDetailsInSubaccountDetails({ daily, weekly, expiresAt });
+                    this.hasDashboardDetails = true;
                     resolve("API request is successful!");
                 }, (err) => {
                     this.hasDashboardDetails = false;
@@ -346,10 +396,11 @@ export class CtaasDashboardComponent implements OnInit {
      * @param embedUrl: string 
      * @param accessToken: string 
      */
-    configurePowerbiEmbeddedReport(embedUrl: string, accessToken: string) {
+    configurePowerbiEmbeddedReport(id: string, embedUrl: string, accessToken: string) {
         if (embedUrl && accessToken) {
             this.reportConfig = {
                 ... this.reportConfig,
+                id,
                 embedUrl,
                 accessToken
             };
@@ -374,12 +425,12 @@ export class CtaasDashboardComponent implements OnInit {
                     const { daily, weekly } = this.powerbiReportResponse;
                     // configure for daily report
                     if (this.featureToggleKey === this.DAILY) {
-                        const { embedUrl, embedToken } = daily;
-                        this.configurePowerbiEmbeddedReport(embedUrl, embedToken);
+                        const { id, embedUrl, embedToken } = daily;
+                        this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     } else if (this.featureToggleKey === this.WEEKLY) { // configure for weekly report
-                        const { embedUrl, embedToken } = weekly;
+                        const { id, embedUrl, embedToken } = weekly;
 
-                        this.configurePowerbiEmbeddedReport(embedUrl, embedToken);
+                        this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     }
                 }
                 this.powerBiEmbeddingFlag = true;
@@ -394,7 +445,7 @@ export class CtaasDashboardComponent implements OnInit {
      * set powerbi report details in subaccount object in session storage
      * @param data: { daily: any, weekly: any } | null
      */
-    setPbiReportDetailsInSubaccountDetails(data: { daily: any, weekly: any } | null): void {
+    setPbiReportDetailsInSubaccountDetails(data: IPowerBiReponse | null): void {
         this.subaccountDetails = { ... this.subaccountDetails, pbiReport: data };
         this.subaccountService.setSelectedSubAccount(this.subaccountDetails);
     }
