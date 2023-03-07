@@ -69,6 +69,7 @@ export class FeatureToggleCardComponent {
     this.dialog.open(AddFeatureToggleExceptionModalComponent, {
       width: '400px',
       disableClose: true,
+      autoFocus: false,
       data: { featureToggle: this.featureToggle }
     }).afterClosed().subscribe(() => {
       this.reloadFeatureToggles.emit();
