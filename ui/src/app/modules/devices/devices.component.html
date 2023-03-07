@@ -27,12 +27,15 @@
             </mat-form-field>
             <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
                 <mat-label id="vendor-filter-label">Device Vendor</mat-label>
-                <mat-select formControlName="vendorFilterControl">
-                    <mat-option>None</mat-option>
-                    <mat-option *ngFor="let vendor of deviceVendors" [value]="vendor">
+                <input type="text" placeholder="Select a vendor" aria-label="vendor" matInput
+                    formControlName="vendorFilterControl" [matAutocomplete]="vendorsList"
+                    id="dut-auto-complete">
+                <mat-autocomplete #vendorsList="matAutocomplete">
+                    <mat-option *ngFor="let vendor of deviceVendors" [value]="vendor"
+                        title="{{vendor}}">
                         {{vendor}}
                     </mat-option>
-                </mat-select>
+                </mat-autocomplete>
                 <button *ngIf="filterForm.get('vendorFilterControl').value" matSuffix mat-icon-button
                         aria-label="Clear" (click)="filterForm.get('vendorFilterControl').setValue('')">
                     <mat-icon>close</mat-icon>

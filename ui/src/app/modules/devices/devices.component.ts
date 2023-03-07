@@ -108,23 +108,22 @@ export class DevicesComponent implements OnInit, OnDestroy {
 
     this.filterForm.valueChanges.pipe(
       debounceTime(300),
-      takeUntil(this.unsubscribe)
-    ).subscribe(value => {
-      const filters = [];
+      takeUntil(this.unsubscribe)).subscribe(value => {
+        const filters = [];
       if (value.nameFilterControl != '')
         filters.push(device => device.product.toLowerCase().includes(value.nameFilterControl.toLowerCase()));
-
-      if (value.typeFilterControl != '')
+      
+      if (value.typeFilterControl != '' && value.typeFilterControl != null)
         filters.push(device => device.type.toLowerCase().includes(value.typeFilterControl.toLowerCase()));
 
-      if (value.vendorFilterControl != '')
+      if (value.vendorFilterControl != '' && value.vendorFilterControl != null)
         filters.push(device => device.vendor.toLowerCase().includes(value.vendorFilterControl.toLowerCase()));
 
       if (value.startDateFilterControl != '' && value.startDateFilterControl != null)
-        filters.push(device => device.licenseStartDate != null && moment(device.licenseStartDate, 'YYYY-MM-DD').isSameOrAfter(value.startDateFilterControl));
+        filters.push(device => device.startDate != null && moment(device.startDate).isSameOrAfter(value.startDateFilterControl));
 
       if (value.endDateFilterControl != '' && value.endDateFilterControl != null)
-        filters.push(device => device.licenseRenewalDate != null && moment(device.licenseStartDate, 'YYYY-MM-DD').isSameOrBefore(value.endDateFilterControl));
+        filters.push(device => device.startDate != null && moment(device.startDate).isSameOrBefore(moment(value.endDateFilterControl.format('MM/DD/YYYY'))));
 
       this.isLoadingResults = true;
       this.devicesBk = this.devices.filter(device => filters.every(filter => filter(device)));
