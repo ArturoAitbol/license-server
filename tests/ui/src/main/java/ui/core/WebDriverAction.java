@@ -121,6 +121,15 @@ public class WebDriverAction {
     public void waitVisibilityElement(WebElement element) {
         wait.until(ExpectedConditions.visibilityOf(element));
     }
+    public void waitInvisibilityElement(WebElement element) {
+        try{
+            wait.until(ExpectedConditions.invisibilityOf(element));
+            System.out.println("Element is not displayed anymore");
+        } catch (Exception e) {
+            System.out.println("Element not found:" + element.toString());
+            System.out.println(e);
+        }
+    }
 
     public WebElement waitVisibilityElement(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));

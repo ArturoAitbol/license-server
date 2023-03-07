@@ -36,6 +36,7 @@ public class LicenseConsumptionSteps {
         CustomerRow customerRow = this.customers.getCustomer(customerName);
         ActionMenu actionMenu = customerRow.openActionMenu();
         this.consumptions = actionMenu.goToConsumption();
+        this.consumptions.waitData();
     }
 
     @And("I open the Add tekToken Consumption form")

@@ -27,6 +27,9 @@ public class ProjectForm extends AbstractPageObject {
     WebElement projectCalendar;
     @FindBy(css = "#close-project-calendar")
     WebElement closeProjectCalendar;
+//    @FindBy(css = "[title='add-project-modal']")
+    @FindBy(css = "app-add-project")
+    WebElement projectModal;
 
     public Projects createProject(String openDate, String name, String code, String license) {
         this.action.sendText(this.projectName, name);
@@ -59,5 +62,9 @@ public class ProjectForm extends AbstractPageObject {
         }
         this.action.click(this.submitButton);
         return new Projects();
+    }
+
+    public void isClosed() {
+        this.action.waitInvisibilityElement(projectModal);
     }
 }
