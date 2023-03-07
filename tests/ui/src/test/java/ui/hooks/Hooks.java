@@ -1,5 +1,6 @@
 package ui.hooks;
 
+import org.openqa.selenium.JavascriptExecutor;
 import ui.core.DriverManager;
 import io.cucumber.java.After;
 import io.cucumber.java.Scenario;
@@ -7,6 +8,8 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import ui.pages.Header;
+
+import java.util.ArrayList;
 
 public class Hooks {
     /*    @After
@@ -28,6 +31,17 @@ public class Hooks {
             Header header = new Header();
             boolean result = header.logout();
             System.out.println("Logout: " + result);
+        }
+    }
+
+    @After("@spotLightDashboard")
+    public static void closeSpotlightTab() {
+        WebDriver driver = DriverManager.getInstance().getDriver();
+        ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+        if (tabs.size() > 1) {
+            driver.switchTo().window(tabs.get(1));
+            driver.close();
+            driver.switchTo().window(tabs.get(0));
         }
     }
 }

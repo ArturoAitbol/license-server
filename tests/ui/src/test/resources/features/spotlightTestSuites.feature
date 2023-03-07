@@ -18,7 +18,7 @@ Feature: TestSuites
       | testCustomer  | yes                                   |
     Then I see the customer "functional-test-suite" in the table
   
-  @addTestSuite
+  @addTestSuite @spotLightDashboard
   Scenario: Add a Test Suite for customer
     Given I see the customer "functional-test-suite" in the table
     And I go to the spotlight dashboard for "functional-test-suite"
@@ -30,7 +30,7 @@ Feature: TestSuites
       | frequency     | Hourly       |
     Then I should see the message "Test Suite added successfully!"
   
-  @editTestSuite
+  @editTestSuite @spotLightDashboard
   Scenario: Edit a Test Suite
     Given I see the customer "functional-test-suite" in the table
     And I go to the spotlight dashboard for "functional-test-suite"
@@ -43,7 +43,7 @@ Feature: TestSuites
       | frequency     | Monthly       |
     Then I should see the message "Test Suite successfully edited!"
 
-  @deleteTestSuite @delete
+  @deleteTestSuite @delete @spotLightDashboard
   Scenario: Delete Test Suite A Updated
       Given I see the customer "functional-test-suite" in the table
       And I go to the spotlight dashboard for "functional-test-suite"

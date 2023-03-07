@@ -24,6 +24,7 @@ import { debounceTime, takeUntil } from "rxjs/operators";
 import { Subject } from "rxjs/internal/Subject";
 import { tekVizionServices } from '../helpers/tekvizion-services';
 import { FeatureToggleService } from '../services/feature-toggle.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-dashboard',
@@ -430,7 +431,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     const hasCtaasService = object.selectedRow.services && object.selectedRow.services.includes(tekVizionServices.SpotLight);
                     if (hasCtaasService) {
                         const routePath = this.featureToggleService.isFeatureEnabled("powerbiFeature", this.selectedSubaccount.id) ? '/spotlight/visualization' : '/spotlight/report-dashboards';
-                        this.router.navigate([routePath], { queryParams: { subaccountId: this.selectedSubaccount.id } })
+                        const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
+                        window.open(url);
                     } else this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
                     break;
                 case this.MODIFY_ACCOUNT:
