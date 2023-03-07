@@ -26,6 +26,11 @@
     margin-top: 50px;
 }
 
+.col-3 {
+    width: 20%;
+    float: left;
+}
+
 @media (orientation: landscape) and (min-width: 1282px){
     #customCol {
       margin-top: 4%;
@@ -35,5 +40,16 @@
 @media (orientation: landscape) and (max-width: 1281px){
     #customCol {
       margin-top: 4%;
+    }
+}
+
+@media (max-width: 426px) {
+    .col-3 {
+      width: 80%;
+      float: none;
+    }
+    #form-styles {
+        display: flex;
+        flex-direction: column;
     }
 }
