@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -74,7 +74,7 @@ const beforeEachFunction = () => {
     spyOn(console, 'log').and.callThrough();
 }
 
-fdescribe('UI verification tests', () => {
+describe('UI verification tests', () => {
     beforeEach(beforeEachFunction);
     it('should display essential UI and components', () => {
         fixture.detectChanges();
@@ -112,27 +112,28 @@ fdescribe('UI verification tests', () => {
         expect(headers[3].innerText).toBe('Device Name');
     });
 
-    it('should sort the data table', () => {
+    it('should sort the data table',() => {
         devicesComponentTestInstance.devicesBk = DevicesServiceMock.unsortedDeviceList.devices;
+        devicesComponentTestInstance.devices = DevicesServiceMock.unsortedDeviceList.devices;
         devicesComponentTestInstance.sortData({active: "vendor", direction:'asc'});
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.ascSortedList.devices);
-
+        
         devicesComponentTestInstance.sortData({active: "vendor", direction:'desc'});
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.descSortedList.devices);
-
+        
         devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:'asc'});
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.ascSortedList.devices);
-
+        
         devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:'desc'});
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.descSortedList.devices);
         
-        // devicesComponentTestInstance.sortData({active: "vendor", direction:""});
-        // expect(devicesComponentTestInstance.devices).toEqual(DevicesServiceMock.unsortedDeviceList.devices);
+        devicesComponentTestInstance.sortData({active: "vendor", direction:""});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.unsortedDeviceList.devices);
     });
 });
 
 
-fdescribe('Data collection and parsing tests', () => {
+describe('Data collection and parsing tests', () => {
     beforeEach(beforeEachFunction);
 
     it('should make a call to get selected Customer, devices and actionMenuOptions', () => {
@@ -170,9 +171,8 @@ fdescribe('Data collection and parsing tests', () => {
         expect(devicesComponentTestInstance.actionMenuOptions).toContain('Delete');
         expect(devicesComponentTestInstance.actionMenuOptions).toContain('Edit');
     });
-
 });
-fdescribe('Dialog calls and interactions', () => {
+describe('Dialog calls and interactions', () => {
 
     beforeEach(beforeEachFunction);
 
@@ -243,24 +243,18 @@ fdescribe('Dialog calls and interactions', () => {
         expect(devicesComponentTestInstance.fetchDevices).not.toHaveBeenCalled();
     });
 
-    // it('should call the filters and filter the list', async () => {
-    //     const deviceForm = devicesComponentTestInstance.filterForm;
+    it('should call the filters and filter the list', async () => {
+        devicesComponentTestInstance.loadFilters();
+        
+        devicesComponentTestInstance.filterForm.get('vendorFilterControl').setValue('HylaFAX');
+        devicesComponentTestInstance.filterForm.get('nameFilterControl').setValue('HylaFAX Enterprise');
+        devicesComponentTestInstance.filterForm.get('typeFilterControl').setValue('PBX');
+        devicesComponentTestInstance.filterForm.get('startDateFilterControl').setValue(new Date());
+        devicesComponentTestInstance.filterForm.get('endDateFilterControl').setValue('3/7/2023');
 
-    //     const deviceInput = fixture.nativeElement.querySelector('#')
-    //     devicesComponentTestInstance.filterForm.setValue({nameFilterControl: '', typeFilterControl:'', vendorFilterControl:'AHylaFAX', startDateFilterControl:'', endDateFilterControl: ''})
-    //     devicesComponentTestInstance.filterForm.controls['nameFilterControl'].setValue('HylaFAX Enterprise');
-    //     devicesComponentTestInstance.filterForm.controls['typeFilterControl'].setValue('FAX');
-    //     devicesComponentTestInstance.filterForm.controls['vendorFilterControl'].setValue('AHylaFAX');
-    //     // devicesComponentTestInstance.filterForm.controls['startDateFilterControl'].setValue(new Date());
-    //     // devicesComponentTestInstance.filterForm.controls['endDateFilterControl'].setValue('infinity');
-    //     fixture.detectChanges();
-    //     await fixture.whenStable();
-       
-    //     console.log("123", devicesComponentTestInstance.devicesBk);
+        fixture.detectChanges();
+        await fixture.whenStable();
 
-    //     const objectToCompare = DevicesServiceMock.deviceToCompare;
-    //     expect(devicesComponentTestInstance.devicesBk.length).toBe(1);
-
-    //     expect(devicesComponentTestInstance.devicesBk[0]).toEqual(objectToCompare);
-    // })
+        expect(devicesComponentTestInstance.devicesBk.length).toBe(0);
+    })
 });

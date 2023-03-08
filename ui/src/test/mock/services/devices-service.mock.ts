@@ -104,7 +104,8 @@ const DEVICE_LIST = {
             granularity: "static",
             id: "936662a7-febd-4cbf-bc58-477e5d5a9d10",
             version: "5.0",
-            tokensToConsume: 0
+            tokensToConsume: 0,
+            startDate: new Date()
         },
         {
             supportType: true,
@@ -113,7 +114,8 @@ const DEVICE_LIST = {
             granularity: "static",
             id: "9ba1f445-28da-4e36-907c-6864c98b6928",
             version: "20.2",
-            tokensToConsume: 0
+            tokensToConsume: 0,
+            startDate: new Date()
         },
         {
             supportType: true,
@@ -895,7 +897,7 @@ export const DevicesServiceMock = {
     deviceTypes: DEVICE_TYPES,
     getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string) => {
         return of(
-            JSON.parse(JSON.stringify({ devices: DEVICE_LIST.devices.filter(device => device.vendor === vendor) }))
+            JSON.parse(JSON.stringify({ devices: vendor ? DEVICE_LIST.devices.filter(device => device.vendor === vendor) : DEVICE_LIST.devices }))
         );
     },
     getDevicesTypesList: () => {
