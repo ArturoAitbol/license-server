@@ -13,6 +13,8 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MsalService } from '@azure/msal-angular';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
+import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
+import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.service.mock';
 
 
 let ctaasTestReportComponentTestInstance: CtaasTestReportsComponent;
@@ -40,6 +42,10 @@ const beforeEachFunction = () => {
       {
         provide: SubAccountService,
         useValue: SubaccountServiceMock
+      },
+      {
+        provide: CtaasSetupService,
+        useValue: CtaasSetupServiceMock
       }
     ]
   });
