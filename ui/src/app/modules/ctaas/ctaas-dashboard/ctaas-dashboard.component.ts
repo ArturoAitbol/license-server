@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
 import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
 import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
+import { BannerService } from "../../../services/alert-banner.service";
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -132,7 +133,8 @@ export class CtaasDashboardComponent implements OnInit {
         private ctaasDashboardService: CtaasDashboardService,
         private subaccountService: SubAccountService,
         private snackBarService: SnackBarService,
-        private router: Router
+        private router: Router,
+        private bannerService: BannerService
     ) { }
 
     /**
@@ -219,10 +221,18 @@ export class CtaasDashboardComponent implements OnInit {
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
-                const { onBoardingComplete, status } = this.ctaasSetupDetails;
+                const { onBoardingComplete, status, maintenance } = this.ctaasSetupDetails;
                 this.isOnboardingComplete = onBoardingComplete;
                 this.onboardSetupStatus = status;
                 this.setupCustomerOnboardDetails();
+                if (maintenance) {
+                    this.fontStyleControl.setValue(this.WEEKLY);
+                    this.fontStyleControl.disable();
+                    this.powerBiFontStyleControl.setValue(this.WEEKLY);
+                    this.powerBiFontStyleControl.disable();
+                    this.bannerService.open("Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", [ "Dismiss" ])
+                        .subscribe();
+                }
             });
     }
 
