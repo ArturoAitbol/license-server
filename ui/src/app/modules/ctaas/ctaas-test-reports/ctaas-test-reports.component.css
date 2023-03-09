@@ -53,3 +53,40 @@
         flex-direction: column;
     }
 }
+
+.text-container{
+    /* text-align: center; */
+    display: flex;
+    position: relative;
+    width:38%;
+    margin: 0 auto;
+}
+
+.text-content1{
+    display: flex;
+    align-items: center;
+    font-size:large;
+    margin-left: 8%;
+}
+
+.text-content2{
+    display: flex;
+    align-items: center;
+    font-size:large;
+    margin-left: 5%;
+    margin-right: 2%;
+}
+
+.example-card {
+    max-width: 35vw;
+    max-height: 40vh;
+    
+}
+
+::ng-deep .mat-card-header {
+    justify-content: center;
+}
+
+::ng-deep .mat-card {
+    background-color: rgb(252, 252, 182);
+}

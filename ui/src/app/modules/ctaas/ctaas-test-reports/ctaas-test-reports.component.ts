@@ -6,6 +6,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
 import { Utility } from 'src/app/helpers/utils';
 import { MsalService } from '@azure/msal-angular';
+import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -16,6 +17,7 @@ export class CtaasTestReportsComponent implements OnInit {
   public maxDate: any;
   public minEndDate: any;
   private subaccountDetails: any;
+  tapURLFlag: string;
 
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
 
@@ -30,10 +32,12 @@ export class CtaasTestReportsComponent implements OnInit {
   constructor(
     private msalService: MsalService,
     private subaccountService: SubAccountService,
-    private formBuilder: FormBuilder) { }
+    private formBuilder: FormBuilder,
+    private ctaasSetupService: CtaasSetupService) { }
 
   ngOnInit(): void {
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
+    this.userSetupData();
     this.maxDate = moment().format("YYYY-MM-DD[T]HH:mm:ss");
   }
 
@@ -56,8 +60,23 @@ export class CtaasTestReportsComponent implements OnInit {
     if (selector === 'start') {
       this.filterForm.get('startDate').setValue('');
       this.filterForm.get('endDate').setValue('');
+      this.minEndDate = null;
     } else
-      this.filterForm.get('endDate').setValue('')
+      this.filterForm.get('endDate').setValue('');
+      this.minEndDate = null;
+  }
+  
+  userSetupData() {
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).subscribe(res => {
+      if(res.ctaasSetups[0]){
+        if(res.ctaasSetups[0].tapUrl !== '' && res.ctaasSetups[0].tapUrl !== undefined) 
+          this.tapURLFlag = 'withTapURL';
+        else 
+          this.tapURLFlag = 'withoutTapURL';
+      } else {
+        this.tapURLFlag = 'withoutData';
+      }
+    });
   }
 
   ngOnDestroy() {
