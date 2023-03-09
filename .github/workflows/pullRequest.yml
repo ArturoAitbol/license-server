@@ -12,11 +12,19 @@ env:
   DB_USERNAME: 'postgres'
 
 jobs:
+      
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            frontend:
+              - 'ui/**'
+            backend:
+              - 'azure-functions/**'
       - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
@@ -24,6 +32,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: 'Restore Project Dependencies Using Mvn and Run Unit Tests'
+        if: steps.changes.outputs.backend == 'true'
         shell: bash
         run: |
           pushd './${{ env.POM_XML_DIRECTORY }}'
@@ -42,6 +51,7 @@ jobs:
           summary: 'true'
       
       - name: Angular Test web app
+        if: steps.changes.outputs.frontend == 'true'
         run: |
           cd ./ui
           npm install
@@ -55,7 +65,7 @@ jobs:
     
       - name: Comment Test Coverage
         uses: AthleticNet/comment-test-coverage@1.1
-        if: always()
+        if: steps.changes.outputs.frontend == 'true'
         with:
           token: ${{ github.token }}
           path: ui/test-results/coverage-summary.json
