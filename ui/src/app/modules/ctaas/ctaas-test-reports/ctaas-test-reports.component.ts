@@ -56,8 +56,10 @@ export class CtaasTestReportsComponent implements OnInit {
     if (selector === 'start') {
       this.filterForm.get('startDate').setValue('');
       this.filterForm.get('endDate').setValue('');
+      this.minEndDate = null;
     } else
-      this.filterForm.get('endDate').setValue('')
+      this.filterForm.get('endDate').setValue('');
+      this.minEndDate = null;
   }
 
   ngOnDestroy() {
