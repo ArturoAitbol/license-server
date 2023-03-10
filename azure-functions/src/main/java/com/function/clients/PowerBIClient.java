@@ -1,6 +1,7 @@
 package com.function.clients;
 
 import com.function.exceptions.ADException;
+import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -79,36 +80,50 @@ public class PowerBIClient {
                     "Failed to fetch " + REPORT_TYPE_DAILY + " report of the subaccount. Subaccount: " + subaccount);
         }
         // Test reports
-        JSONObject test1Report = getReport(token, workspaceId, subaccount, REPORT_TYPE_TEST1, context);
-        if (test1Report == null) {
-            context.getLogger().severe(
-                    "Failed to fetch " + REPORT_TYPE_TEST1 + " report of the subaccount. Subaccount: " + subaccount);
-            throw new ADException(
-                    "Failed to fetch " + REPORT_TYPE_TEST1 + " report of the subaccount. Subaccount: " + subaccount);
-        }
-        String test1ReportId = test1Report.getString("id");
+        JSONObject test1Report = null;
+        String test1ReportId = null;
+        JSONObject test2Report = null;
+        String test2ReportId = null;
+        if (FeatureToggleService.isFeatureActiveByName("powerbiTestReport")) {
+            test1Report = getReport(token, workspaceId, subaccount, REPORT_TYPE_TEST1, context);
+            if (test1Report == null) {
+                context.getLogger().severe(
+                        "Failed to fetch " + REPORT_TYPE_TEST1 + " report of the subaccount. Subaccount: "
+                                + subaccount);
+                throw new ADException(
+                        "Failed to fetch " + REPORT_TYPE_TEST1 + " report of the subaccount. Subaccount: "
+                                + subaccount);
+            }
+            test1ReportId = test1Report.getString("id");
 
-        JSONObject test2Report = getReport(token, workspaceId, subaccount, REPORT_TYPE_TEST2, context);
-        if (test2Report == null) {
-            context.getLogger().severe(
-                    "Failed to fetch " + REPORT_TYPE_TEST2 + " report of the subaccount. Subaccount: " + subaccount);
-            throw new ADException(
-                    "Failed to fetch " + REPORT_TYPE_TEST2 + " report of the subaccount. Subaccount: " + subaccount);
+            test2Report = getReport(token, workspaceId, subaccount, REPORT_TYPE_TEST2, context);
+            if (test2Report == null) {
+                context.getLogger().severe(
+                        "Failed to fetch " + REPORT_TYPE_TEST2 + " report of the subaccount. Subaccount: "
+                                + subaccount);
+                throw new ADException(
+                        "Failed to fetch " + REPORT_TYPE_TEST2 + " report of the subaccount. Subaccount: "
+                                + subaccount);
+            }
+            test2ReportId = test2Report.getString("id");
         }
-        String test2ReportId = test2Report.getString("id");
 
         String weeklyReportId = weeklyReport.getString("id");
         JSONArray reportIds = new JSONArray();
         reportIds.put(new JSONObject().put("id", dailyReportId));
         reportIds.put(new JSONObject().put("id", weeklyReportId));
-        reportIds.put(new JSONObject().put("id", test1ReportId));
-        reportIds.put(new JSONObject().put("id", test2ReportId));
+        if (test1ReportId != null)
+            reportIds.put(new JSONObject().put("id", test1ReportId));
+        if (test2ReportId != null)
+            reportIds.put(new JSONObject().put("id", test2ReportId));
 
         JSONArray datasetIds = new JSONArray();
         datasetIds.put(new JSONObject().put("id", dailyReport.getString("datasetId")));
         datasetIds.put(new JSONObject().put("id", weeklyReport.getString("datasetId")));
-        datasetIds.put(new JSONObject().put("id", test1Report.getString("datasetId")));
-        datasetIds.put(new JSONObject().put("id", test2Report.getString("datasetId")));
+        if (test1Report != null)
+            datasetIds.put(new JSONObject().put("id", test1Report.getString("datasetId")));
+        if (test2Report != null)
+            datasetIds.put(new JSONObject().put("id", test2Report.getString("datasetId")));
 
         JSONObject groupEmbedTokenDetails = getEmbedToken(token, workspaceId, reportIds, datasetIds, context);
         String embedToken = groupEmbedTokenDetails.has("token") ? groupEmbedTokenDetails.getString("token") : "";
@@ -127,19 +142,25 @@ public class PowerBIClient {
 
         // Test reports
         JSONObject test1_response = new JSONObject();
-        test1_response.put("id", test1ReportId);
-        test1_response.put("embedToken", embedToken);
-        test1_response.put("embedUrl", test1Report.getString("embedUrl"));
+        if (test1Report != null && test1ReportId != null) {
+            test1_response.put("id", test1ReportId);
+            test1_response.put("embedToken", embedToken);
+            test1_response.put("embedUrl", test1Report.getString("embedUrl"));
+        }
         JSONObject test2_response = new JSONObject();
-        test2_response.put("id", test2ReportId);
-        test2_response.put("embedToken", embedToken);
-        test2_response.put("embedUrl", test2Report.getString("embedUrl"));
+        if (test2Report != null && test2ReportId != null) {
+            test2_response.put("id", test2ReportId);
+            test2_response.put("embedToken", embedToken);
+            test2_response.put("embedUrl", test2Report.getString("embedUrl"));
+        }
 
         JSONObject response = new JSONObject();
         response.put("daily", daily_response);
         response.put("weekly", weekly_response);
-        response.put("test1", test1_response);
-        response.put("test2", test2_response);
+        if (!test1_response.isEmpty())
+            response.put("test1", test1_response);
+        if (!test2_response.isEmpty())
+            response.put("test2", test2_response);
         response.put("expiresAt", expiresAt);
         return response;
     }
