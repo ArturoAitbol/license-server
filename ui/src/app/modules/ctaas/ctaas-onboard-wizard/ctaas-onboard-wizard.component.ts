@@ -140,12 +140,12 @@ export class OnboardWizardComponent implements OnInit {
         switch (value) { 
             case 'yes':
                 this.stakeholderService.getStakeholderList(subaccountDetails.id).subscribe(res => {
-                    if(res.stakeHolders.length < 10){
+                    if(res.stakeHolders.length < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT){
                         this.addAnotherStakeHolder = true;
                         this.interaction = '4';
                         this.stakeholderForm.reset();
                     } else {
-                        this.snackBarService.openSnackBar('The maximum amount of stakeholders per subaccount was exceeded', '');
+                        this.snackBarService.openSnackBar('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
                     }
                 });
                 break;

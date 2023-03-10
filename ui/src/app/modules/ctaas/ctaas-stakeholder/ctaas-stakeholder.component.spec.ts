@@ -10,7 +10,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MsalService } from "@azure/msal-angular";
 import { of, throwError } from "rxjs";
-import { permissions } from "src/app/helpers/role-permissions";
+import { Constants } from "src/app/helpers/constants";
 import { DialogService } from "src/app/services/dialog.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
 import { StakeHolderService } from "src/app/services/stake-holder.service";
@@ -222,10 +222,10 @@ describe('dialog calls and interactions',() => {
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
 
         fixture.detectChanges();
-        ctaasStakeholderComponentTestInstance.stakeholdersCount = 10;
+        ctaasStakeholderComponentTestInstance.stakeholdersCount = Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT;
         ctaasStakeholderComponentTestInstance.addStakeholder();
 
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of stakeholders per subaccount was exceeded', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
     });
 
     it('should display an error message if an error ocurred in fetchStakeholderList', () => {

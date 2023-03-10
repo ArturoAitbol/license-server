@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.function.auth.Resource;
+import com.function.auth.Roles;
 import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
@@ -168,21 +169,21 @@ public class TekvLSGetAllStakeholders {
         JSONObject userProfile = null;
         for (Object obj : array) {
             json = (JSONObject) obj;
+            json.put("role", Roles.SUBACCOUNT_ADMIN);
             try {
                 userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"), context);
-                if (userProfile == null) {
-                    continue;
+                if (userProfile != null) {
+                    if (userProfile.has("role")) 
+                        json.put("role", userProfile.getString("role"));
+                    json.put("name", userProfile.get("displayName"));
+                    json.put("jobTitle", userProfile.get("jobTitle"));
+                    json.put("companyName", userProfile.get("companyName"));
+                    json.put("phoneNumber", userProfile.get("mobilePhone"));
                 }
-                String userRole = userProfile.getString("role");
-                json.put("name", userProfile.get("displayName"));
-                json.put("jobTitle", userProfile.get("jobTitle"));
-                json.put("companyName", userProfile.get("companyName"));
-                json.put("phoneNumber", userProfile.get("mobilePhone"));
-                json.put("role", userRole);
-                stakeHolders.put(json);
             } catch (Exception e) {
                 context.getLogger().info("Caught exception: " + e.getMessage());
             }
+            stakeHolders.put(json);
         }
         return stakeHolders;
     }

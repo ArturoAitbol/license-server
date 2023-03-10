@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { of, throwError } from "rxjs";
+import { Constants } from "src/app/helpers/constants";
 import { DialogService } from "src/app/services/dialog.service";
 import { StakeHolderService } from "src/app/services/stake-holder.service";
 import { UserProfileService } from "src/app/services/user-profile.service";
@@ -204,7 +205,7 @@ describe('testing the error thrown by the functions', () => {
         onboardWizardComponentInstance.addStakeholdersConfirmation('yes');
 
         expect(StakeHolderServiceMock.getStakeholderList).toHaveBeenCalled();
-        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of stakeholders per subaccount was exceeded', '');
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
     });
 
     it('should thorw a error if something went wrong in updateOnboardingStatus', () => {
