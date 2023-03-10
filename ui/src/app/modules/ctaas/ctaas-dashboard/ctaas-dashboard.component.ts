@@ -44,6 +44,8 @@ export class CtaasDashboardComponent implements OnInit {
     resultant: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
+    readonly TEST1: string = 'test1';
+    readonly TEST2: string = 'test2';
     featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
@@ -143,7 +145,7 @@ export class CtaasDashboardComponent implements OnInit {
         return this.msalService.instance.getActiveAccount() || null;
     }
     ngAfterViewInit(): void {
-        if(this.reportObj){
+        if (this.reportObj) {
             this.report = this.reportObj.getReport();
             this.reportObj.powerbi.bootstrap(this.reportContainerDivElement, this.reportConfig);
         }
@@ -206,7 +208,7 @@ export class CtaasDashboardComponent implements OnInit {
     onChangePowerBiButtonToggle() {
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
-        if(this.reportObj){
+        if (this.reportObj) {
             this.report = this.reportObj.getReport();
             this.reportObj.powerbi.reset(this.reportContainerDivElement.containerRef.nativeElement);
         }
@@ -355,8 +357,8 @@ export class CtaasDashboardComponent implements OnInit {
             if (pbiReport) {
                 return new Promise((resolve, reject) => {
                     try {
-                        const { daily, weekly, expiresAt } = pbiReport;
-                        this.powerbiReportResponse = { daily, weekly, expiresAt };
+                        const { daily, weekly, test1, test2, expiresAt } = pbiReport;
+                        this.powerbiReportResponse = { daily, weekly, test1, test2, expiresAt };
                         resolve("API request is successful!");
                     } catch (error) {
                         this.powerbiReportResponse = undefined;
@@ -374,10 +376,10 @@ export class CtaasDashboardComponent implements OnInit {
                 .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
                     this.pbiErrorCounter = true;
                     this.isLoadingResults = false;
-                    const { daily, weekly, expiresAt } = response.powerBiInfo;
-                    this.powerbiReportResponse = { daily, weekly, expiresAt };
-                    this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly, expiresAt } };
-                    this.setPbiReportDetailsInSubaccountDetails({ daily, weekly, expiresAt });
+                    const { daily, weekly, expiresAt, test1, test2 } = response.powerBiInfo;
+                    this.powerbiReportResponse = { daily, weekly, test1, test2, expiresAt };
+                    this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly, test1, test2, expiresAt } };
+                    this.setPbiReportDetailsInSubaccountDetails({ daily, weekly, test1, test2, expiresAt });
                     this.hasDashboardDetails = true;
                     resolve("API request is successful!");
                 }, (err) => {
@@ -422,14 +424,19 @@ export class CtaasDashboardComponent implements OnInit {
                 }
                 if (this.powerbiReportResponse) {
                     this.hasDashboardDetails = true;
-                    const { daily, weekly } = this.powerbiReportResponse;
+                    const { daily, weekly, test1, test2 } = this.powerbiReportResponse;
                     // configure for daily report
                     if (this.featureToggleKey === this.DAILY) {
                         const { id, embedUrl, embedToken } = daily;
                         this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     } else if (this.featureToggleKey === this.WEEKLY) { // configure for weekly report
                         const { id, embedUrl, embedToken } = weekly;
-
+                        this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
+                    } else if (this.featureToggleKey === this.TEST1) { // configure for test1 report
+                        const { id, embedUrl, embedToken } = test1;
+                        this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
+                    } else if (this.featureToggleKey === this.TEST2) { // configure for test2 report
+                        const { id, embedUrl, embedToken } = test2;
                         this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     }
                 }
