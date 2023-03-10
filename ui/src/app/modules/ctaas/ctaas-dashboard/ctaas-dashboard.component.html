@@ -29,6 +29,8 @@
                 (change)="onChangePowerBiButtonToggle()">
                 <mat-button-toggle [value]="DAILY">{{DAILY | titlecase}}</mat-button-toggle>
                 <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
+                <mat-button-toggle *lcFeatureToggle="'powerbiTestReport';subaccountId:getSubaccountId()" [value]="TEST1">{{TEST1 | titlecase}}</mat-button-toggle>
+                <mat-button-toggle *lcFeatureToggle="'powerbiTestReport';subaccountId:getSubaccountId()" [value]="TEST2">{{TEST2 | titlecase}}</mat-button-toggle>
               </mat-button-toggle-group>
             </div>
           </div>

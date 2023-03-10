@@ -18,6 +18,7 @@ import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
 import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
 import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { BannerService } from "../../../services/alert-banner.service";
+import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -45,6 +46,8 @@ export class CtaasDashboardComponent implements OnInit {
     resultant: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
+    readonly TEST1: string = 'test1';
+    readonly TEST2: string = 'test2';
     featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
@@ -133,6 +136,7 @@ export class CtaasDashboardComponent implements OnInit {
         private ctaasDashboardService: CtaasDashboardService,
         private subaccountService: SubAccountService,
         private snackBarService: SnackBarService,
+        private featureToggleService: FeatureToggleService,
         private router: Router,
         private bannerService: BannerService
     ) { }
@@ -145,7 +149,7 @@ export class CtaasDashboardComponent implements OnInit {
         return this.msalService.instance.getActiveAccount() || null;
     }
     ngAfterViewInit(): void {
-        if(this.reportObj){
+        if (this.reportObj) {
             this.report = this.reportObj.getReport();
             this.reportObj.powerbi.bootstrap(this.reportContainerDivElement, this.reportConfig);
         }
@@ -181,10 +185,10 @@ export class CtaasDashboardComponent implements OnInit {
                     if (expiresAt) {
                         // Convert the expiration date string to a Date object
                         const tokenExpireDate = new Date(expiresAt);
-                        console.log(tokenExpireDate);
+                        console.debug('token expires at: ', tokenExpireDate);
                         // Calculate the difference between the expiration date and the current time in milliseconds
                         const timeDiff = tokenExpireDate.getTime() - Date.now();
-                        console.log('timeDiff: ', timeDiff);
+                        console.debug('timeDiff: ', timeDiff);
                         // Check if the difference is less than or equal to 5 minutes (300,000 milliseconds)
                         const within5Mins = timeDiff <= 300000;
                         if (within5Mins) {
@@ -208,7 +212,7 @@ export class CtaasDashboardComponent implements OnInit {
     onChangePowerBiButtonToggle() {
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
-        if(this.reportObj){
+        if (this.reportObj) {
             this.report = this.reportObj.getReport();
             this.reportObj.powerbi.reset(this.reportContainerDivElement.containerRef.nativeElement);
         }
@@ -365,8 +369,8 @@ export class CtaasDashboardComponent implements OnInit {
             if (pbiReport) {
                 return new Promise((resolve, reject) => {
                     try {
-                        const { daily, weekly, expiresAt } = pbiReport;
-                        this.powerbiReportResponse = { daily, weekly, expiresAt };
+                        const { daily, weekly, test1, test2, expiresAt } = pbiReport;
+                        this.powerbiReportResponse = { daily, weekly, test1, test2, expiresAt };
                         resolve("API request is successful!");
                     } catch (error) {
                         this.powerbiReportResponse = undefined;
@@ -384,10 +388,10 @@ export class CtaasDashboardComponent implements OnInit {
                 .subscribe((response: { powerBiInfo: IPowerBiReponse }) => {
                     this.pbiErrorCounter = true;
                     this.isLoadingResults = false;
-                    const { daily, weekly, expiresAt } = response.powerBiInfo;
-                    this.powerbiReportResponse = { daily, weekly, expiresAt };
-                    this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly, expiresAt } };
-                    this.setPbiReportDetailsInSubaccountDetails({ daily, weekly, expiresAt });
+                    const { daily, weekly, expiresAt, test1, test2 } = response.powerBiInfo;
+                    this.powerbiReportResponse = { daily, weekly, test1, test2, expiresAt };
+                    this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly, test1, test2, expiresAt } };
+                    this.setPbiReportDetailsInSubaccountDetails({ daily, weekly, test1, test2, expiresAt });
                     this.hasDashboardDetails = true;
                     resolve("API request is successful!");
                 }, (err) => {
@@ -432,14 +436,19 @@ export class CtaasDashboardComponent implements OnInit {
                 }
                 if (this.powerbiReportResponse) {
                     this.hasDashboardDetails = true;
-                    const { daily, weekly } = this.powerbiReportResponse;
+                    const { daily, weekly, test1, test2 } = this.powerbiReportResponse;
                     // configure for daily report
                     if (this.featureToggleKey === this.DAILY) {
                         const { id, embedUrl, embedToken } = daily;
                         this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     } else if (this.featureToggleKey === this.WEEKLY) { // configure for weekly report
                         const { id, embedUrl, embedToken } = weekly;
-
+                        this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
+                    } else if (this.featureToggleKey === this.TEST1) { // configure for test1 report
+                        const { id, embedUrl, embedToken } = test1;
+                        this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
+                    } else if (this.featureToggleKey === this.TEST2) { // configure for test2 report
+                        const { id, embedUrl, embedToken } = test2;
                         this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     }
                 }
@@ -458,6 +467,13 @@ export class CtaasDashboardComponent implements OnInit {
     setPbiReportDetailsInSubaccountDetails(data: IPowerBiReponse | null): void {
         this.subaccountDetails = { ... this.subaccountDetails, pbiReport: data };
         this.subaccountService.setSelectedSubAccount(this.subaccountDetails);
+    }
+    /**
+     * get subaccount id
+     * @returns: string
+     */
+    getSubaccountId(): string {
+        return this.subaccountDetails ? this.subaccountDetails.id : "";
     }
 
     ngOnDestroy(): void {
