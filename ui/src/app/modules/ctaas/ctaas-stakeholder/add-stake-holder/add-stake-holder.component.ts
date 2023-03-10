@@ -91,7 +91,6 @@ export class AddStakeHolderComponent implements OnInit {
         const { error } = response;
         if (error) {
           this.snackBarService.openSnackBar(response.error, 'Error adding stakeholder');
-          this.dialogRef.close(response);
           this.isDataLoading = false;
         } else {
           this.isDataLoading = false;
