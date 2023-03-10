@@ -1,11 +1,4 @@
 <div [@growDown] class="banner-container" *ngIf="opened">
-    <p class="message" [innerHTML]="message"></p>
-    <div class="action-row">
-        <button *ngFor="let action of actions; let idx=index;"
-                type="button" mat-button
-                (click)="actionClicked(idx)"
-                color="primary">
-            {{action}}
-        </button>
-    </div>
+        <p class="col-12 title" [innerHTML]="title"></p>
+        <p class="message" [innerHTML]="message"></p>
 </div>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { GROW_DOWN_ANIMATION } from "./animations";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { BannerService } from "../../services/alert-banner.service";
 
 @Component({
@@ -10,47 +10,35 @@ import { BannerService } from "../../services/alert-banner.service";
   animations: [ GROW_DOWN_ANIMATION ],
 })
 export class AlertBannerComponent {
+  // Text title to display
+  title?: string;
+
   // Text message to display
   message?: string;
 
   // List of button labels to show
-  actions?: string[];
+  onComponentDestructionSubscription: Subscription;
 
-  // Emits one value when the user picks an action
-  private clicks?: Subject<number>;
-  // True if the panel is opened
-  public get opened(): boolean { return !!this.clicks; }
+  opened = false;
 
   constructor(bannerService: BannerService) {
     bannerService.init(this);
   }
 
   // Open this banner with a message and at least one action
-  open(message: string, actions: string[]): Observable<number> {
-    if (this.clicks) {
+  open(title: string, message: string, onComponentDestruction: Observable<void>) {
+    if (this.opened) {
       console.error("Tried to open banner when outlet was already opened.");
     }
 
-    if (actions.length === 0) {
-      console.error("Tried to open banner without any action buttons.");
-    }
-
+    this.title = title;
     this.message = message;
-    this.actions = actions;
-    this.clicks = new Subject();
-    return this.clicks.asObservable();
+    this.opened = true;
+    this.onComponentDestructionSubscription = onComponentDestruction.subscribe(() => this.opened = false);
   }
 
-  actionClicked(idx: number): void {
-    if (!this.clicks) {
-      console.error("Developer Error: banner action clicked but observable available!");
-      return;
-    }
-
-    // Click subject can only ever emit one value
-    this.clicks.next(idx);
-    this.clicks.complete();
-    this.clicks.unsubscribe();
-    this.clicks = undefined;
+  close() {
+    this.opened = false;
+    this.onComponentDestructionSubscription.unsubscribe();
   }
 }
