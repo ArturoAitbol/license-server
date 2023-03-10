@@ -39,7 +39,8 @@ public class PowerBIClient {
         return response.get("access_token").toString();
     }
 
-    static public JSONObject getPowerBiDetails(String customer, String subaccount, ExecutionContext context)
+    static public JSONObject getPowerBiDetails(String customer, String subaccount, String subaccountId,
+                                               ExecutionContext context)
             throws Exception {
         if (customer == null || customer.equals("null") || subaccount == null || subaccount.equals("null")) {
             context.getLogger().severe("Failed to fetch power bi details. Invaid customer/subaccount. Customer: "
@@ -57,12 +58,13 @@ public class PowerBIClient {
         }
         context.getLogger()
                 .info("Power bI workspace details for the customer: " + customer + " | Workspace: " + workspaceId);
-        JSONObject response = getPowerBiReportDetails(token, workspaceId, subaccount, context);
+        JSONObject response = getPowerBiReportDetails(token, workspaceId, subaccount, subaccountId, context);
         return response;
     }
 
     static public JSONObject getPowerBiReportDetails(String token, String workspaceId, String subaccount,
-            ExecutionContext context) throws Exception {
+                                                     String subaccountId,
+                                                     ExecutionContext context) throws Exception {
         JSONObject dailyReport = getReport(token, workspaceId, subaccount, REPORT_TYPE_DAILY, context);
         if (dailyReport == null) {
             context.getLogger().severe(
@@ -79,12 +81,13 @@ public class PowerBIClient {
             throw new ADException(
                     "Failed to fetch " + REPORT_TYPE_DAILY + " report of the subaccount. Subaccount: " + subaccount);
         }
+        String weeklyReportId = weeklyReport.getString("id");
         // Test reports
         JSONObject test1Report = null;
         String test1ReportId = null;
         JSONObject test2Report = null;
         String test2ReportId = null;
-        if (FeatureToggleService.isFeatureActiveByName("powerbiTestReport")) {
+        if (FeatureToggleService.isFeatureActiveBySubaccountId("powerbiTestReport", subaccountId)) {
             test1Report = getReport(token, workspaceId, subaccount, REPORT_TYPE_TEST1, context);
             if (test1Report == null) {
                 context.getLogger().severe(
@@ -108,7 +111,6 @@ public class PowerBIClient {
             test2ReportId = test2Report.getString("id");
         }
 
-        String weeklyReportId = weeklyReport.getString("id");
         JSONArray reportIds = new JSONArray();
         reportIds.put(new JSONObject().put("id", dailyReportId));
         reportIds.put(new JSONObject().put("id", weeklyReportId));
@@ -192,7 +194,7 @@ public class PowerBIClient {
     }
 
     static private JSONObject getReport(String token, String workspaceId, String name, String type,
-            ExecutionContext context) throws Exception {
+                                        ExecutionContext context) throws Exception {
         String url = baseURL + "/groups/" + workspaceId + "/reports";
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);
@@ -219,7 +221,7 @@ public class PowerBIClient {
     }
 
     static private JSONObject getEmbedToken(String token, String workspaceId, JSONArray reportIds, JSONArray datasetIds,
-            ExecutionContext context) throws Exception {
+                                            ExecutionContext context) throws Exception {
         String url = baseURL + "/generatetoken";
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);
