@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -19,13 +19,14 @@ import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.
 import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
+import { Subject } from "rxjs/internal/Subject";
 
 @Component({
     selector: 'app-ctaas-dashboard',
     templateUrl: './ctaas-dashboard.component.html',
     styleUrls: ['./ctaas-dashboard.component.css']
 })
-export class CtaasDashboardComponent implements OnInit {
+export class CtaasDashboardComponent implements OnInit, OnDestroy {
 
     onboardSetupStatus = '';
     isOnboardingComplete: boolean;
@@ -89,6 +90,8 @@ export class CtaasDashboardComponent implements OnInit {
     @ViewChild(PowerBIReportEmbedComponent) reportObj!: PowerBIReportEmbedComponent;
     report: any;
     pbiErrorCounter: boolean = false;
+    private onDestroy: Subject<void> = new Subject<void>();
+
     /**
      * Map of event handlers to be applied to the embedded report
      */
@@ -234,8 +237,9 @@ export class CtaasDashboardComponent implements OnInit {
                     this.fontStyleControl.disable();
                     this.powerBiFontStyleControl.setValue(this.WEEKLY);
                     this.powerBiFontStyleControl.disable();
-                    this.bannerService.open("Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", [ "Dismiss" ])
-                        .subscribe();
+                    this.featureToggleKey = this.WEEKLY;
+                    this.bannerService.open("WARNING", "Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", this.onDestroy);
+                    this.viewDashboardByMode();
                 }
             });
     }
@@ -479,5 +483,7 @@ export class CtaasDashboardComponent implements OnInit {
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
+        this.onDestroy.next();
+        this.onDestroy.complete();
     }
 }
