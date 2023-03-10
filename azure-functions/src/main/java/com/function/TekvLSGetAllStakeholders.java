@@ -146,7 +146,7 @@ public class TekvLSGetAllStakeholders {
                 json.put("error", customerRoles.contains(currentRole) ? MESSAGE_FOR_INVALID_ID : MESSAGE_ID_NOT_FOUND);
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
-            JSONArray stakeHolders = filterStakeHolders(array, context);
+            JSONArray stakeHolders = getStakeholdersInfo(array, context);
             context.getLogger().info("List total " + stakeHolders.length() + " stakeholders");
             json.put("stakeHolders", stakeHolders);
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
@@ -163,7 +163,7 @@ public class TekvLSGetAllStakeholders {
         }
     }
 
-    private JSONArray filterStakeHolders(JSONArray array, ExecutionContext context) {
+    private JSONArray getStakeholdersInfo(JSONArray array, ExecutionContext context) {
         JSONArray stakeHolders = new JSONArray();
         JSONObject json = null;
         JSONObject userProfile = null;
