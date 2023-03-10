@@ -195,7 +195,7 @@ describe('testing the error thrown by the functions', () => {
     });
 
     it('onboard - should throw a message if the amount of stakeholders created was exceeded', async () => {
-        const response = {stakeHolders:[{},{},{},{},{},{},{},{},{},{}]}
+        const response = {stakeHolders:[{},{},{},{},{},{},{},{},{},{},{}]}
         spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
         spyOn(StakeHolderServiceMock, 'getStakeholderList').and.returnValue(of(response));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
