@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -17,14 +17,16 @@ import { Router } from '@angular/router';
 import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
 import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
 import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
+import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
+import { Subject } from "rxjs/internal/Subject";
 
 @Component({
     selector: 'app-ctaas-dashboard',
     templateUrl: './ctaas-dashboard.component.html',
     styleUrls: ['./ctaas-dashboard.component.css']
 })
-export class CtaasDashboardComponent implements OnInit {
+export class CtaasDashboardComponent implements OnInit, OnDestroy {
 
     onboardSetupStatus = '';
     isOnboardingComplete: boolean;
@@ -88,6 +90,8 @@ export class CtaasDashboardComponent implements OnInit {
     @ViewChild(PowerBIReportEmbedComponent) reportObj!: PowerBIReportEmbedComponent;
     report: any;
     pbiErrorCounter: boolean = false;
+    private onDestroy: Subject<void> = new Subject<void>();
+
     /**
      * Map of event handlers to be applied to the embedded report
      */
@@ -136,7 +140,8 @@ export class CtaasDashboardComponent implements OnInit {
         private subaccountService: SubAccountService,
         private snackBarService: SnackBarService,
         private featureToggleService: FeatureToggleService,
-        private router: Router
+        private router: Router,
+        private bannerService: BannerService
     ) { }
 
     /**
@@ -223,10 +228,19 @@ export class CtaasDashboardComponent implements OnInit {
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
-                const { onBoardingComplete, status } = this.ctaasSetupDetails;
+                const { onBoardingComplete, status, maintenance } = this.ctaasSetupDetails;
                 this.isOnboardingComplete = onBoardingComplete;
                 this.onboardSetupStatus = status;
                 this.setupCustomerOnboardDetails();
+                if (maintenance) {
+                    this.fontStyleControl.setValue(this.WEEKLY);
+                    this.fontStyleControl.disable();
+                    this.powerBiFontStyleControl.setValue(this.WEEKLY);
+                    this.powerBiFontStyleControl.disable();
+                    this.featureToggleKey = this.WEEKLY;
+                    this.bannerService.open("WARNING", "Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", this.onDestroy);
+                    this.viewDashboardByMode();
+                }
             });
     }
 
@@ -460,7 +474,7 @@ export class CtaasDashboardComponent implements OnInit {
     }
     /**
      * get subaccount id
-     * @returns: string 
+     * @returns: string
      */
     getSubaccountId(): string {
         return this.subaccountDetails ? this.subaccountDetails.id : "";
@@ -469,5 +483,7 @@ export class CtaasDashboardComponent implements OnInit {
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
+        this.onDestroy.next();
+        this.onDestroy.complete();
     }
 }
