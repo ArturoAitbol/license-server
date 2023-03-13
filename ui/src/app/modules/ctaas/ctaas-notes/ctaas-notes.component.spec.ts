@@ -21,6 +21,9 @@ import { SubaccountServiceMock } from '../../../../test/mock/services/subaccount
 import { Note } from '../../../model/note.model';
 import { AddNotesComponent } from "./add-notes/add-notes.component";
 import { CtaasHistoricalDashboardComponent } from "../ctaas-historical-dashboard/ctaas-historical-dashboard.component";
+import { CtaasSetupService } from "../../../services/ctaas-setup.service";
+import { CtaasSetupServiceMock } from "../../../../test/mock/services/ctaas-setup.service.mock";
+import { BannerService } from "../../../services/alert-banner.service";
 
 let ctaasNotesComponent: CtaasNotesComponent;
 let fixture : ComponentFixture<CtaasNotesComponent>;
@@ -67,6 +70,10 @@ const beforeEachFunction = () => {
             {
                 provide: HttpClient,
                 useValue: HttpClient
+            },
+            {
+                provide: CtaasSetupService,
+                useValue: CtaasSetupServiceMock
             }
         ]
     });

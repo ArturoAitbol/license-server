@@ -8,6 +8,7 @@ public abstract class Constants {
     public static String DEFAULT_CTAAS_PROJECT_OWNER = null;
     public static String DEFAULT_CTAAS_DEVICE = "Base SpotLight platform ready";
     public static String DEFAULT_CONSUMPTION_TYPE = "Configuration";
+    public static int STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
 
     
     // ENUMS
