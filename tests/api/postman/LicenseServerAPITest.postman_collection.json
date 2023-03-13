@@ -7,75 +7,6 @@
 	},
 	"item": [
 		{
-			"name": "deleteTestData",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");",
-							"",
-							"const clientId = pm.variables.get(\"CLIENTID_FULLADMIN\");",
-							"const clientSecret = pm.variables.get(\"CLIENTSECRET_FULLADMIN\");",
-							"const grantType = pm.variables.get(\"grant_type\");",
-							"const scope = pm.variables.get(\"SCOPE\");",
-							"",
-							"const getTokenRequest = {",
-							"  method: 'POST',",
-							"  url: tokenUrl,",
-							"  body: {",
-							"      mode: 'formdata',",
-							"      formdata: [",
-							"          { key: 'client_id', value: clientId },",
-							"          { key: 'client_secret', value: clientSecret },",
-							"          { key: 'grant_type', value: grantType },",
-							"          { key: 'scope', value: scope}",
-							"      ]",
-							"  }",
-							"};",
-							"",
-							"pm.sendRequest(getTokenRequest, (err, response) => {",
-							"  pm.collectionVariables.set('access_token', response.json().access_token);",
-							"  console.log(\"Success\");",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "default",
-						"disabled": true
-					}
-				],
-				"url": {
-					"raw": "{{HOST}}/testData",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"testData"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "bundles",
 			"event": [
 				{
@@ -182,34 +113,6 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "{{HOST}}/bundles/{{bundleId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"bundles",
-						"{{bundleId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "bundles",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{access_token_DA}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "DELETE",
-				"header": [],
 				"url": {
 					"raw": "{{HOST}}/bundles/{{bundleId}}",
 					"host": [
