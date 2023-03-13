@@ -15,7 +15,7 @@ jobs:
       id: run-newman
       uses: matt-ball/newman-action@master
       with:
-        collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
+        collection: ./tests/api/postman/LicenseServerAPITest.postman_collection.json
         environment: ./tests/api/postman/LicenseServerAPIsEnvTest.postman_environment.json
         reporters: '["junit", "cli"]'
         reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
@@ -53,9 +53,9 @@ jobs:
     #       name: UI Test Report
     #       access-token: ${{ secrets.GITHUB_TOKEN }}
     #       path: "**/cucumber.json"
-    - uses: actions/upload-artifact@v3
-      if: ${{ failure() || success() }}
-      name: Archive test results
-      with:
-        name: ui-test-report
-        path: tests/ui/reports/html/
+    # - uses: actions/upload-artifact@v3
+    #   if: ${{ failure() && steps.uiTests.conclusion == 'failure' }}
+    #   name: Archive test results
+    #   with:
+    #     name: ui-test-report
+    #     path: tests/ui/reports/html/
