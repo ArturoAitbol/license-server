@@ -19,6 +19,8 @@ import { of } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import { TestReportsServiceMock } from 'src/test/mock/services/ctaas-test-reports.service.mock';
 import { Utility } from 'src/app/helpers/utils';
+import { BannerService } from 'src/app/services/alert-banner.service';
+import { BannerServiceMock } from 'src/test/mock/services/alert-banner-service.mock';
 
 
 let ctaasTestReportComponentTestInstance: CtaasTestReportsComponent;
@@ -50,6 +52,10 @@ const beforeEachFunction = () => {
       {
         provide: CtaasSetupService,
         useValue: CtaasSetupServiceMock
+      },
+      {
+        provide: BannerService,
+        useValue: BannerServiceMock
       }
     ]
   });
@@ -59,7 +65,7 @@ const beforeEachFunction = () => {
   spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
 };
 
-fdescribe('UI verification test', () => {
+describe('UI verification test', () => {
   beforeEach(beforeEachFunction);
   it('should display essential UI and components', () => {
     fixture.detectChanges();
@@ -78,7 +84,7 @@ fdescribe('UI verification test', () => {
   });
 });
 
-fdescribe('Data collection and parsing test', () => {
+describe('Data collection and parsing test', () => {
   beforeEach(beforeEachFunction);
   it('should make a call to get the selected subaccount', () => {
     fixture.detectChanges();
@@ -87,7 +93,7 @@ fdescribe('Data collection and parsing test', () => {
   });
 });
 
-fdescribe('interaction with selected filters', () => {
+describe('interaction with selected filters', () => {
   beforeEach(beforeEachFunction);
   it('should create a formGroup with necessary controls', () => {
     fixture.detectChanges();
@@ -152,6 +158,19 @@ fdescribe('interaction with selected filters', () => {
 
     ctaasTestReportComponentTestInstance.userSetupData();
     expect(ctaasTestReportComponentTestInstance.tapURLFlag).toBe('withoutTapURL');
+  });
+
+  it('should setup and call bannerService ', () => {
+    fixture.detectChanges();
+    const res = {ctaasSetups:[{maintenance:true}]}
+    spyOn(ctaasTestReportComponentTestInstance, 'userSetupData').and.callThrough();
+    spyOn(BannerServiceMock, 'open').and.callThrough();
+    spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(of(res));
+
+    fixture.detectChanges();
+
+    ctaasTestReportComponentTestInstance.userSetupData();
+    expect(ctaasTestReportComponentTestInstance.submitDisabled).toBeTrue();
   });
 
   it('should setup the flags with withoutData', () => {
@@ -235,22 +254,23 @@ fdescribe('interaction with selected filters', () => {
     expect(ctaasTestReportComponentTestInstance.minEndDate).toEqual(null);
   });
 
-  it(' test reports - should filter the list of reports',async () => {
-    ctaasTestReportComponentTestInstance.dateList = TestReportsServiceMock.unsortedDateList;
-    ctaasTestReportComponentTestInstance.filterForm.patchValue({reportType:'Daily-FeatureFunctionality', startDate:'2023-03-01T11:16', endDate:'2023-03-04T11:16', todayReportType: 'Daily-FeatureFunctionality'})
-    ctaasTestReportComponentTestInstance.filterForm.get('reportType').setValue('Daily-FeatureFunctionality');
-    ctaasTestReportComponentTestInstance.filterForm.get('startDate').setValue('2023-03-01T11:16');
-    ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
-    
-    ctaasTestReportComponentTestInstance.filterForm.controls['reportType'].setValue('Daily-FeatureFunctionality');
-    ctaasTestReportComponentTestInstance.filterForm.controls['startDate'].setValue('2023-03-01T11:16');
-    ctaasTestReportComponentTestInstance.filterForm.controls['endDate'].setValue('2023-03-04T11:16');
-    
+  it(' test reports - should filter the list of reports', fakeAsync(() => {
+    ctaasTestReportComponentTestInstance.filterForm.patchValue({
+        reportType:'Daily-FeatureFunctionality', 
+        startDate:'2023-03-01T11:16', 
+        endDate:'2023-03-04T11:16', 
+        todayReportType: 'Daily-FeatureFunctionality'
+      })
+    tick(1000)
     fixture.detectChanges();
-    await fixture.whenStable();
+
+    ctaasTestReportComponentTestInstance.filterForm.updateValueAndValidity();
+    tick(1000)
+    fixture.detectChanges();
+   
 
     expect(ctaasTestReportComponentTestInstance.searchFlag).toBeFalse();
-  });
+  }));
 
   it('should call toggleDateValue', () => {
     fixture.detectChanges();

@@ -99,15 +99,13 @@ export class CtaasTestReportsComponent implements OnInit {
       debounceTime(300),
       takeUntil(this.unsubscribe)).subscribe(value => {
         let searchValidator = true;
-        let todaSearchValidator = true;
-        if(value.reportType !== '' && value.startDate !== '' && value.endDate !== ''){
-          console.log(value.startDate)
+        let todaySearchValidator = true;
+        if(value.reportType !== '' && value.startDate !== '' && value.endDate !== '')
           searchValidator= false;
-        }
         if(value.todayReportType !== '' && value.todayReportType !== undefined)
-          todaSearchValidator = false;
+          todaySearchValidator = false;
         this.searchFlag = searchValidator;
-        this.todaySearchFlag = todaSearchValidator;
+        this.todaySearchFlag = todaySearchValidator;
       })
   }
 
