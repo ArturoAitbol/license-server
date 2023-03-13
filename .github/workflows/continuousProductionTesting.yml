@@ -48,8 +48,8 @@ jobs:
       id: run-newman
       uses: matt-ball/newman-action@master
       with:
-        collection: ./tests/api/postman/LicenseServerAPITest.postman_collection.json
-        environment: ./tests/api/postman/LicenseServerAPIsProdEnvTest.postman_environment.json
+        collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
+        environment: ./tests/api/postman/LicenseServerAPIsProdEnv.postman_environment.json
         reporters: '["junit", "cli"]'
         reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
         envVar: '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_PRODUCTION}}" },
