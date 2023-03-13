@@ -16,7 +16,7 @@ jobs:
       uses: matt-ball/newman-action@master
       with:
         collection: ./tests/api/postman/LicenseServerAPITest.postman_collection.json
-        environment: ./tests/api/postman/LicenseServerAPIsEnvTest.postman_environment.json
+        environment: ./tests/api/postman/LicenseServerAPIsEnv.postman_environment.json
         reporters: '["junit", "cli"]'
         reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
         envVar: '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_INTEGRATION}}" },

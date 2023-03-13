@@ -9,46 +9,46 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - name: Download Version artifact
-      uses: dawidd6/action-download-artifact@v2
-      with:
-        github_token: ${{secrets.GITHUB_TOKEN}}
-        workflow: pushRelease.yml
-        name: prod-released-version
-        workflow_conclusion: success        
+    # - name: Download Version artifact
+    #   uses: dawidd6/action-download-artifact@v2
+    #   with:
+    #     github_token: ${{secrets.GITHUB_TOKEN}}
+    #     workflow: pushRelease.yml
+    #     name: prod-released-version
+    #     workflow_conclusion: success        
 
-    - name: Set release Version variable
-      run: echo "build_version=$(cat ./ReleaseBuild.txt | cut -d "-" -f2-)" >> $GITHUB_ENV
+    # - name: Set release Version variable
+    #   run: echo "build_version=$(cat ./ReleaseBuild.txt | cut -d "-" -f2-)" >> $GITHUB_ENV
     
-    - name: Get release details
-      id: release_details
-      uses: cardinalby/git-get-release-action@v1
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      with:
-        tag: ${{ env.build_version }}
+    # - name: Get release details
+    #   id: release_details
+    #   uses: cardinalby/git-get-release-action@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ github.token }}
+    #   with:
+    #     tag: ${{ env.build_version }}
 
-    - name: Get Latest Release commit hash
-      id: get_commit
-      uses: actions/github-script@0.9.0
-      with:
-        script: |
-          const commit = "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();
-          core.setOutput('commit', commit);
+    # - name: Get Latest Release commit hash
+    #   id: get_commit
+    #   uses: actions/github-script@0.9.0
+    #   with:
+    #     script: |
+    #       const commit = "${{fromJSON(steps.release_details.outputs.assets)[0].name}}".split('-').pop().split('.').shift();
+    #       core.setOutput('commit', commit);
     
     - name: Download Repository code
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
       
-    - name: Checkout specific commit 
-      run: git checkout ${{steps.get_commit.outputs.commit}}
+    # - name: Checkout specific commit 
+    #   run: git checkout ${{steps.get_commit.outputs.commit}}
 
     - name: Run API tests
       id: run-newman
       uses: matt-ball/newman-action@master
       with:
-        collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
+        collection: ./tests/api/postman/LicenseServerAPITest.postman_collection.json
         environment: ./tests/api/postman/LicenseServerAPIsProdEnvTest.postman_environment.json
         reporters: '["junit", "cli"]'
         reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
