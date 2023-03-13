@@ -1,6 +1,6 @@
 
-import { ComponentFixture, TestBed, } from '@angular/core/testing';
-import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick, } from '@angular/core/testing';
+import { MatSnackBarModule} from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -15,6 +15,10 @@ import { MsalService } from '@azure/msal-angular';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.service.mock';
+import { of } from 'rxjs';
+import { Sort } from '@angular/material/sort';
+import { TestReportsServiceMock } from 'src/test/mock/services/ctaas-test-reports.service.mock';
+import { Utility } from 'src/app/helpers/utils';
 
 
 let ctaasTestReportComponentTestInstance: CtaasTestReportsComponent;
@@ -55,10 +59,11 @@ const beforeEachFunction = () => {
   spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
 };
 
-describe('UI verification test', () => {
+fdescribe('UI verification test', () => {
   beforeEach(beforeEachFunction);
   it('should display essential UI and components', () => {
     fixture.detectChanges();
+    spyOn(ctaasTestReportComponentTestInstance, 'sizeChange').and.callThrough();
     const h2 = fixture.nativeElement.querySelector('#main-title');
     const typeFilterLabel = fixture.nativeElement.querySelector('#type-filter-label');
     const startDateFilterLabel = fixture.nativeElement.querySelector('#start-date-filter-label');
@@ -73,7 +78,7 @@ describe('UI verification test', () => {
   });
 });
 
-describe('Data collection and parsing test', () => {
+fdescribe('Data collection and parsing test', () => {
   beforeEach(beforeEachFunction);
   it('should make a call to get the selected subaccount', () => {
     fixture.detectChanges();
@@ -82,24 +87,13 @@ describe('Data collection and parsing test', () => {
   });
 });
 
-describe('interaction with selected filters', () => {
+fdescribe('interaction with selected filters', () => {
   beforeEach(beforeEachFunction);
   it('should create a formGroup with necessary controls', () => {
     fixture.detectChanges();
     expect(ctaasTestReportComponentTestInstance.filterForm.get('reportType')).toBeTruthy();
     expect(ctaasTestReportComponentTestInstance.filterForm.get('startDate')).toBeTruthy();
     expect(ctaasTestReportComponentTestInstance.filterForm.get('endDate')).toBeTruthy();
-  });
-  it('should make all the controls required', () => {
-    const filterForm = ctaasTestReportComponentTestInstance.filterForm;
-    filterForm.setValue({
-      reportType: '',
-      startDate: '',
-      endDate: '',
-    });
-    expect(filterForm.get('reportType').valid).toBeFalse();
-    expect(filterForm.get('startDate').valid).toBeFalse();
-    expect(filterForm.get('endDate').valid).toBeFalse();
   });
 
   it('should execute action with expected data given set arguments', () => {
@@ -108,7 +102,8 @@ describe('interaction with selected filters', () => {
     filterForm.setValue({
       reportType: "Daily-FeatureFunctionality",
       endDate: "2023-01-10T03:44:09",
-      startDate: "2023-01-09T:11:36:17"
+      startDate: "2023-01-09T:11:36:17",
+      todayReportType: ''
     });
 
     spyOn(ctaasTestReportComponentTestInstance, 'filterReport').and.callThrough();
@@ -116,4 +111,154 @@ describe('interaction with selected filters', () => {
     spyOn(window, 'close').and.returnValue(null);
 
   });
-})
+
+  it('should call to rowAction with Daily-featureFunctionality', () => {
+    fixture.detectChanges();
+    const selectedTestData = {selectedRow: {
+      startDate: '2023-01-10T00:00:00',
+      endDate: '2023-01-10T:11:36:17'
+    },
+    selectedOption: 'Daily-FeatureFunctionality', 
+    selectedIndex: '0' }
+    spyOn(ctaasTestReportComponentTestInstance, 'rowAction').and.callThrough();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+
+    ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
+    expect(window.open).toHaveBeenCalled();
+  });
+
+  it('should call to rowAction with Daily-CallingReliability', () => {
+    fixture.detectChanges();
+    const selectedTestData = {selectedRow: {
+      startDate: '2023-01-10T00:00:00',
+      endDate: '2023-01-10T:11:36:17'
+    },
+    selectedOption: 'Daily-CallingReliability', 
+    selectedIndex: '0' }
+    spyOn(ctaasTestReportComponentTestInstance, 'rowAction').and.callThrough();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+
+    ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
+    expect(window.open).toHaveBeenCalled();
+  });
+
+  it('should setup the flags with withoutTapURL', () => {
+    fixture.detectChanges();
+    const res = {ctaasSetups:[{tapUrl:''}]}
+    spyOn(ctaasTestReportComponentTestInstance, 'userSetupData').and.callThrough();
+    spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(of(res));
+
+    ctaasTestReportComponentTestInstance.userSetupData();
+    expect(ctaasTestReportComponentTestInstance.tapURLFlag).toBe('withoutTapURL');
+  });
+
+  it('should setup the flags with withoutData', () => {
+    fixture.detectChanges();
+    const res = {ctaasSetups:[]}
+    spyOn(ctaasTestReportComponentTestInstance, 'userSetupData').and.callThrough();
+    spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(of(res));
+
+    ctaasTestReportComponentTestInstance.userSetupData();
+    expect(ctaasTestReportComponentTestInstance.tapURLFlag).toBe('withoutData');
+  });
+
+  it('test reports - should sort data table', () => {
+    const sort: Sort = { active: 'startDate', direction: 'desc' }
+    spyOn(ctaasTestReportComponentTestInstance,'sortData').and.callThrough();
+    ctaasTestReportComponentTestInstance.dateList = TestReportsServiceMock.unsortedDateList;
+
+    ctaasTestReportComponentTestInstance.sortData(sort);
+    expect(ctaasTestReportComponentTestInstance.dateList).toEqual(TestReportsServiceMock.descSortedDateList);
+
+    sort.direction = 'asc';
+    ctaasTestReportComponentTestInstance.sortData(sort);
+    expect(ctaasTestReportComponentTestInstance.dateList).toEqual(TestReportsServiceMock.ascSortedDateList);
+
+    sort.direction = '';
+    fixture.detectChanges();
+    ctaasTestReportComponentTestInstance.sortData(sort);
+    expect(ctaasTestReportComponentTestInstance.dateList).toEqual(TestReportsServiceMock.unsortedDateList);
+  });
+
+  it('test reports - should call to todayReport', () => {
+    fixture.detectChanges();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+    spyOn(Utility, 'parseReportDate').and.callThrough();
+    spyOn(ctaasTestReportComponentTestInstance, 'todayReport').and.callThrough();
+    ctaasTestReportComponentTestInstance.filterForm.get('todayReportType').setValue('Daily-FeatureFunctionality');
+    fixture.detectChanges();
+    ctaasTestReportComponentTestInstance.todayReport();
+    expect(Utility.parseReportDate).toHaveBeenCalled();
+  });
+
+  it('test reports - should make a call with filterReport', () => {
+    fixture.detectChanges();
+    spyOn(window, 'open').and.returnValue(null);
+    spyOn(window, 'close').and.returnValue(null);
+    spyOn(Utility, 'parseReportDate').and.callThrough();
+    spyOn(ctaasTestReportComponentTestInstance, 'filterReport').and.callThrough();
+
+    ctaasTestReportComponentTestInstance.filterForm.get('reportType').setValue('Daily-FeatureFunctionality');
+    ctaasTestReportComponentTestInstance.filterForm.get('startDate').setValue('2023-03-01T11:16');
+    ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
+
+    fixture.detectChanges();
+    ctaasTestReportComponentTestInstance.filterReport();
+
+    expect(Utility.parseReportDate).toHaveBeenCalledWith(new Date('2023-03-01T11:16'));
+    expect(Utility.parseReportDate).toHaveBeenCalledWith(new Date('2023-03-04T11:16'));
+  });
+
+  it('test report - should clear the start date data', () => {
+    fixture.detectChanges();
+    ctaasTestReportComponentTestInstance.filterForm.get('startDate').setValue('2023-03-01T11:16');
+    ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
+
+    fixture.detectChanges();
+    ctaasTestReportComponentTestInstance.clearDateFilter('start');
+
+    expect(ctaasTestReportComponentTestInstance.filterForm.get('startDate').value).toBe('');
+    expect(ctaasTestReportComponentTestInstance.filterForm.get('endDate').value).toBe('');
+  });
+
+  it('test reports - should clear the end date data', () => {
+    fixture.detectChanges();
+    ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
+
+    fixture.detectChanges();
+    ctaasTestReportComponentTestInstance.clearDateFilter('endDate');
+
+    expect(ctaasTestReportComponentTestInstance.filterForm.get('endDate').value).toBe('');
+    expect(ctaasTestReportComponentTestInstance.minEndDate).toEqual(null);
+  });
+
+  it(' test reports - should filter the list of reports',async () => {
+    ctaasTestReportComponentTestInstance.dateList = TestReportsServiceMock.unsortedDateList;
+    ctaasTestReportComponentTestInstance.filterForm.patchValue({reportType:'Daily-FeatureFunctionality', startDate:'2023-03-01T11:16', endDate:'2023-03-04T11:16', todayReportType: 'Daily-FeatureFunctionality'})
+    ctaasTestReportComponentTestInstance.filterForm.get('reportType').setValue('Daily-FeatureFunctionality');
+    ctaasTestReportComponentTestInstance.filterForm.get('startDate').setValue('2023-03-01T11:16');
+    ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
+    
+    ctaasTestReportComponentTestInstance.filterForm.controls['reportType'].setValue('Daily-FeatureFunctionality');
+    ctaasTestReportComponentTestInstance.filterForm.controls['startDate'].setValue('2023-03-01T11:16');
+    ctaasTestReportComponentTestInstance.filterForm.controls['endDate'].setValue('2023-03-04T11:16');
+    
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(ctaasTestReportComponentTestInstance.searchFlag).toBeFalse();
+  });
+
+  it('should call toggleDateValue', () => {
+    fixture.detectChanges();
+    spyOn(ctaasTestReportComponentTestInstance, 'toggleDateValue').and.callThrough();
+
+    ctaasTestReportComponentTestInstance.toggleDateValue('2023-03-01T11:16');
+
+    expect(ctaasTestReportComponentTestInstance.minEndDate).toEqual('2023-03-01T11:16')
+
+  });
+});

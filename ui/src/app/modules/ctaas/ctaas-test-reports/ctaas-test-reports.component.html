@@ -6,12 +6,20 @@
         </div>
     </div>
     <form [formGroup]="filterForm" *ngIf="tapURLFlag === 'withTapURL'" (ngSubmit)="filterReport()">
+        <div class="row">
+            <div  class="row d-flex justify-content-start" style="margin-bottom: 1%;">
+                <mat-label id="utc-notice">Please notice that selected dates will be used in UTC</mat-label>
+            </div>
+            <div class="row d-flex justify-content-start">
+                <mat-label id="utc-frame-notice">Select a specific time frame</mat-label>
+            </div>
+        </div>
         <div class="row d-flex justify-content-start" id="form-styles">
             <div class="col-3">
                 <div class="row" id="form">
                     <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
                         <mat-label id="type-filter-label">Choose report type</mat-label>
-                        <mat-select required formControlName="reportType">
+                        <mat-select formControlName="reportType">
                             <mat-option value="none" disabled>None</mat-option>
                             <mat-option *ngFor="let type of reportsTypes" [value]="type">
                                 {{type}}
@@ -28,7 +36,7 @@
                 <div class="row" id="form">
                     <mat-form-field appearance="outline">
                         <mat-label id="start-date-filter-label">Choose Start Date</mat-label>
-                        <input matInput type="datetime-local" name="startDate" step="60" [max]="maxDate" required
+                        <input matInput type="datetime-local" name="startDate" step="60" [max]="maxDate"
                             formControlName="startDate" id="start-custom-input"
                             (change)="toggleDateValue($event.target.value)">
                         <mat-hint>dd-mm-yyyy hh:mm</mat-hint>
@@ -44,7 +52,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label id="end-date-filter-label">Choose End Date</mat-label>
                         <input matInput type="datetime-local" name="endDate" step="60" [min]="minEndDate" [max]="maxDate"
-                            required formControlName="endDate" id="end-custom-input">
+                            formControlName="endDate" id="end-custom-input">
                         <mat-hint>dd-mm-yyyy hh:mm</mat-hint>
                         <mat-datepicker-toggle matSuffix (click)="clearDateFilter('end')">
                             <mat-icon matDatepickerToggleIcon>clear</mat-icon>
@@ -55,15 +63,66 @@
             </div>
             <div class="col-3">
                 <button class="mt-2" color="primary" mat-raised-button id="submit-filters"
-                    [disabled]="filterForm.invalid" type="submit">
+                    [disabled]="searchFlag" type="submit">
                     Search
                 </button>
             </div>
         </div>
-        <div class="row d-flex justify-content-start">
-            <mat-label id="utc-notice">Please notice that selected dates will be used in UTC</mat-label>
-        </div>
     </form>
+    <div *ngIf="tapURLFlag === 'withTapURL'">
+        <form [formGroup]="filterForm" (ngSubmit)="todayReport()">
+            <div class="row">
+                <div class="col">
+                    <h2 id="main-title">Report for today</h2>
+                    <mat-label id="utc-table-notice">(Starting at midnight, ending at the current time)</mat-label>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-start" id="form-styles">
+                <div class="col-3">
+                    <div class="row" id="form">
+                        <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+                            <mat-label id="type-filter-label">Choose report type</mat-label>
+                            <mat-select formControlName="todayReportType">
+                                <mat-option *ngFor="let type of reportsTypes" [value]="type">
+                                    {{type}}
+                                </mat-option>
+                            </mat-select>
+                            <button *ngIf="filterForm.get('todayReportType').value" matSuffix mat-icon-button aria-label="Clear"
+                                (click)="filterForm.get('todayReportType').setValue('')">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <button class="mt-2" color="primary" style="margin-bottom: 1%;" mat-raised-button id="submit-filters" 
+                    [disabled]="todaySearchFlag" type="submit">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div  *ngIf="tapURLFlag === 'withTapURL'">
+        <div class="row">
+            <div class="col" style="margin-top: 1%;">
+                <h2 id="main-title">15 Latest reports</h2>
+            </div>
+            <div class="row d-flex justify-content-start"  style="margin-bottom: 1%;">
+                <mat-label id="utc-table-notice">Or select one of the 15 latest reports</mat-label>
+            </div>
+        </div>
+        <section class="table-section">
+            <div class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
+                <app-data-table [tableData]="dateList" [tableColumns]="displayedColumns" [isFilterable]="false"
+                    [isPageable]="false" [isLoadingResults]="isLoadingResults" [isRequestCompleted]="isRequestCompleted"
+                    [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
+                    [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'" (rowAction)="rowAction($event)"
+                    [actionMenuList]="actionMenuOptions">
+                </app-data-table>
+            </div>
+        </section>
+    </div>
     <div *ngIf="tapURLFlag === 'withoutTapURL'">
         <div class='text-container'>
             <mat-card class="example-card">

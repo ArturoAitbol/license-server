@@ -19,7 +19,7 @@ import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/
 import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
-import { MoreDetailsComponent } from './ctaas-more-details/ctaas-more-details.component';
+import { MoreDetailsComponent } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 
 

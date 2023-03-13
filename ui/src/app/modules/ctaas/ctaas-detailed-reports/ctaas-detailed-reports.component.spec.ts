@@ -7,7 +7,7 @@ import { CtaasDashboardServiceMock } from "src/test/mock/services/ctaas-dashboar
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { TestBedConfigBuilder } from "src/test/mock/TestBedConfigHelper.mock";
-import { MoreDetailsComponent } from "./ctaas-more-details.component";
+import { MoreDetailsComponent } from "./ctaas-detailed-reports.component";
 
 let onboardWizardComponentInstance: MoreDetailsComponent;
 let fixture : ComponentFixture<MoreDetailsComponent>;

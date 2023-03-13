@@ -108,7 +108,8 @@ export const permissions = {
                 'DELETE_DEVICE',
             ],
             testReportsOptions: [
-                'VIEW_REPORT',
+                'DAILY_FEATURE_FUNCTIONALITY',
+                'DAILY_CALLING_RELIABILITY'
             ]
         }
     },
@@ -215,7 +216,8 @@ export const permissions = {
             subscriptionsOverviewOptions: [],
             deviceOptions: [],
             testReportsOptions: [
-                'VIEW_REPORT',
+                'DAILY_FEATURE_FUNCTIONALITY',
+                'DAILY_CALLING_RELIABILITY'
             ]
         }
     },
@@ -308,7 +310,8 @@ export const permissions = {
                 'VIEW_DASHBOARD'
             ],
             testReportsOptions: [
-                'VIEW_REPORT',
+                'DAILY_FEATURE_FUNCTIONALITY',
+                'DAILY_CALLING_RELIABILITY'
             ]
         }
     },
@@ -364,7 +367,8 @@ export const permissions = {
                 'VIEW_DASHBOARD'
             ],
             testReportsOptions: [
-                'VIEW_REPORT',
+                'DAILY_FEATURE_FUNCTIONALITY',
+                'DAILY_CALLING_RELIABILITY'
             ]
         }
     },
@@ -397,7 +401,8 @@ export const permissions = {
                 'VIEW_DASHBOARD'
             ],
             testReportsOptions: [
-                'VIEW_REPORT',
+                'DAILY_FEATURE_FUNCTIONALITY',
+                'DAILY_CALLING_RELIABILITY'
             ]
         }
     }
