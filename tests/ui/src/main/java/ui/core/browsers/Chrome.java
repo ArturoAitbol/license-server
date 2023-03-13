@@ -10,8 +10,10 @@ public class Chrome extends AbstractDriver {
     @Override
     public WebDriver initDriver() {
         WebDriverManager.chromedriver().setup();
+        System.setProperty("webdriver.chrome.driver","/Users/arturoamorosogarcia/Downloads/chromedriver_mac_arm64/chromedriver");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--lang=en");
+        options.addArguments("--remote-allow-origins=*");
 /*        DesiredCapabilities cap = DesiredCapabilities.chrome();
         cap.setCapability(ChromeOptions.CAPABILITY, options);
         LoggingPreferences logPrefs = new LoggingPreferences();
