@@ -26,6 +26,11 @@
     margin-top: 50px;
 }
 
+.col-3 {
+    width: 20%;
+    float: left;
+}
+
 @media (orientation: landscape) and (min-width: 1282px){
     #customCol {
       margin-top: 4%;
@@ -36,4 +41,52 @@
     #customCol {
       margin-top: 4%;
     }
+}
+
+@media (max-width: 426px) {
+    .col-3 {
+      width: 80%;
+      float: none;
+    }
+    #form-styles {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.text-container{
+    /* text-align: center; */
+    display: flex;
+    position: relative;
+    width:38%;
+    margin: 0 auto;
+}
+
+.text-content1{
+    display: flex;
+    align-items: center;
+    font-size:large;
+    margin-left: 8%;
+}
+
+.text-content2{
+    display: flex;
+    align-items: center;
+    font-size:large;
+    margin-left: 5%;
+    margin-right: 2%;
+}
+
+.example-card {
+    max-width: 35vw;
+    max-height: 40vh;
+    
+}
+
+::ng-deep .mat-card-header {
+    justify-content: center;
+}
+
+::ng-deep .mat-card {
+    background-color: rgb(252, 252, 182);
 }
