@@ -15,11 +15,14 @@ jobs:
       id: run-newman
       uses: matt-ball/newman-action@master
       with:
-        collection: ./tests/api/postman/LicenseServerAPITest.postman_collection.json
+        collection: ./tests/api/postman/LicenseServerAPIs.postman_collection.json
         environment: ./tests/api/postman/LicenseServerAPIsEnvTest.postman_environment.json
         reporters: '["junit", "cli"]'
         reporter: "{ \"junit\": { \"export\": \"./tests/api/postman/newman-report.xml\" } }"
-        envVar: '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_INTEGRATION}}" }, { "key": "CLIENTSECRET_DEVICESADMIN", "value": "${{ secrets.CLIENT_SECRET_DEVICES_ADMIN_INTEGRATION}}" }, { "key": "CLIENTID_FULLADMIN", "value": "${{ secrets.CLIENT_ID_FULLADMIN_INTEGRATION}}" }, { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_INTEGRATION}}" }]'
+        envVar: '[{ "key": "CLIENTID_DEVICESADMIN", "value": "${{ secrets.CLIENT_ID_DEVICES_ADMIN_INTEGRATION}}" },
+          { "key": "CLIENTSECRET_DEVICESADMIN", "value": "${{ secrets.CLIENT_SECRET_DEVICES_ADMIN_INTEGRATION}}" },
+          { "key": "CLIENTID_FULLADMIN", "value": "${{ secrets.CLIENT_ID_FULLADMIN_INTEGRATION}}" },
+          { "key": "CLIENTSECRET_FULLADMIN", "value": "${{ secrets.CLIENT_SECRET_FULLADMIN_INTEGRATION}}"}]'
 
     - name: Publish JUnit Report
       uses: mikepenz/action-junit-report@v3
