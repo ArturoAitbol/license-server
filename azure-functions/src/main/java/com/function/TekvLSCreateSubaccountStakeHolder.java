@@ -91,7 +91,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 
 		String subaccountId = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value);
 
-		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM subaccount_admin");
+		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT COUNT(subaccount_admin_email) FROM subaccount_admin");
 		queryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 		
 		String sql = "INSERT INTO subaccount_admin (subaccount_admin_email, subaccount_id) VALUES (?, ?::uuid) RETURNING subaccount_admin_email;";
@@ -106,19 +106,15 @@ public class TekvLSCreateSubaccountStakeHolder {
 		+ "&password=" + System.getenv("POSTGRESQL_PWD");
 
 		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-		     PreparedStatement statement = connection.prepareStatement(sql);
-			 PreparedStatement subaccountStakeholders = queryBuilder.build(connection);
-			  PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql);) {
-				ResultSet stakeholderset;
-				stakeholderset = subaccountStakeholders.executeQuery();
-				JSONArray array = new JSONArray();
-				while (stakeholderset.next()){
-					JSONObject item = new JSONObject();
-					item.put("email", stakeholderset.getString("subaccount_admin_email"));
-					array.put(item);
-				}
-				int actualStakholdersCount = countStakeholders(array, context);
-			if(actualStakholdersCount < 10) {
+		    PreparedStatement statement = connection.prepareStatement(sql);
+			PreparedStatement subaccountStakeholders = queryBuilder.build(connection);
+			PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql);) {
+			ResultSet stakeholderset;
+			int subaccountUsersCount = 0;
+			stakeholderset = subaccountStakeholders.executeQuery();
+			if (stakeholderset.next())
+				subaccountUsersCount = stakeholderset.getInt(1);
+			if (subaccountUsersCount < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT) {
 					context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
 				// Check if ctaas_setup exists and is on Ready status else return Bad Request
@@ -170,7 +166,7 @@ public class TekvLSCreateSubaccountStakeHolder {
 				}
 			} else {
 				JSONObject json = new JSONObject();
-				json.put("error", "The amount of stakeholders created was exceeded");
+				json.put("error", "The maximum amount of users per customer (" + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ") has been reached");
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}    	
 		} catch (SQLException e) {
@@ -185,23 +181,6 @@ public class TekvLSCreateSubaccountStakeHolder {
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
 
-	}
-
-	private int countStakeholders(JSONArray array, ExecutionContext context) throws Exception{
-		int stakeholdersCount = 0;
-		JSONObject json = null;
-		JSONObject subaccountProfile = null;
-		for(Object obj: array) {
-			json = (JSONObject) obj;
-			subaccountProfile = GraphAPIClient.getUserProfileWithRoleByEmail(json.getString("email"), context);
-			if (subaccountProfile != null) {
-				String subaccountRole = subaccountProfile.getString("role");
-				if (subaccountRole.equals(SUBACCOUNT_STAKEHOLDER)) {
-					stakeholdersCount = stakeholdersCount + 1;
-				}
-			}
-		}
-		return stakeholdersCount;
 	}
 
 	private enum MANDATORY_PARAMS {

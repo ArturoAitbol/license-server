@@ -150,7 +150,7 @@ public class TekvLSGetSpotlightDashboard {
 				json.put("error",MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
-			JSONObject powerBiInfo = PowerBIClient.getPowerBiDetails(item.getString("customerName"), item.getString("subaccountName"), context);
+			JSONObject powerBiInfo = PowerBIClient.getPowerBiDetails(item.getString("customerName"), item.getString("subaccountName"),subaccountId ,context);
 			json.put("powerBiInfo", powerBiInfo);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}

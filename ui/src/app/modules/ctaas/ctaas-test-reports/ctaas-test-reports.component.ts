@@ -9,6 +9,7 @@ import { MsalService } from '@azure/msal-angular';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { Sort } from '@angular/material/sort';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+import { BannerService } from "../../../services/alert-banner.service";
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -30,6 +31,8 @@ export class CtaasTestReportsComponent implements OnInit {
   actionMenuOptions: string[] = [];
   searchFlag: boolean = true;
   todaySearchFlag: boolean = true;
+  submitDisabled = false;
+
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
   readonly DAILY_FEATURE_FUNCTIONALITY: string = 'Daily-FeatureFunctionality';
   readonly DAILY_CALLING_RELIABILITY: string = 'Daily-CallingReliability';
@@ -48,7 +51,8 @@ export class CtaasTestReportsComponent implements OnInit {
   private msalService: MsalService,
   private subaccountService: SubAccountService,
   private formBuilder: FormBuilder,
-  private ctaasSetupService: CtaasSetupService) { }
+  private ctaasSetupService: CtaasSetupService,
+  private bannerService: BannerService) { }
 
   @HostListener('window:resize')
   sizeChange() {
@@ -147,6 +151,11 @@ export class CtaasTestReportsComponent implements OnInit {
           this.tapURLFlag = 'withTapURL';
         else 
           this.tapURLFlag = 'withoutTapURL';
+        if (res.ctaasSetups[0].maintenance) {
+          this.bannerService.open("WARNING", "Spotlight service is under maintenance, this function is disabled until the service resumes. ", this.unsubscribe);
+          this.filterForm.disable();
+          this.submitDisabled = true;
+        }
       } else {
         this.tapURLFlag = 'withoutData';
       }
