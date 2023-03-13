@@ -11,11 +11,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Set secrets keys for API funcional tests
-      run: |
-        echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME }}"
-        sed 's,${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_PWD }},https://tekvlicenseserverpocfunction.azurewebsites.net/v1.0,g' src/environments/environment.ts > changed.ts && mv changed.ts src/environments/environment.ts
-
     - name: Run API tests
       id: run-newman
       uses: matt-ball/newman-action@master
