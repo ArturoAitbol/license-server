@@ -48,15 +48,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 active: false,
                 materialIcon: 'analytics',
                 baseUrl: '/spotlight/',
-                isPreview: true
-            },
-            {
-                name: 'Dashboard Legacy',
-                iconName: "assets\\images\\dashboard_3.png",
-                path: 'report-dashboards',
-                active: false,
-                materialIcon: 'dashboard',
-                baseUrl: '/spotlight/',
                 isPreview: false
             },
             {
