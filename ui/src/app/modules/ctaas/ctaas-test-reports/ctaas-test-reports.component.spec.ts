@@ -95,60 +95,60 @@ describe('Data collection and parsing test', () => {
 
 describe('interaction with selected filters', () => {
   beforeEach(beforeEachFunction);
-  it('should create a formGroup with necessary controls', () => {
-    fixture.detectChanges();
-    expect(ctaasTestReportComponentTestInstance.filterForm.get('reportType')).toBeTruthy();
-    expect(ctaasTestReportComponentTestInstance.filterForm.get('startDate')).toBeTruthy();
-    expect(ctaasTestReportComponentTestInstance.filterForm.get('endDate')).toBeTruthy();
-  });
+  // it('should create a formGroup with necessary controls', () => {
+  //   fixture.detectChanges();
+  //   expect(ctaasTestReportComponentTestInstance.filterForm.get('reportType')).toBeTruthy();
+  //   expect(ctaasTestReportComponentTestInstance.filterForm.get('startDate')).toBeTruthy();
+  //   expect(ctaasTestReportComponentTestInstance.filterForm.get('endDate')).toBeTruthy();
+  // });
 
-  it('should execute action with expected data given set arguments', () => {
-    fixture.detectChanges();
-    const filterForm = ctaasTestReportComponentTestInstance.filterForm;
-    filterForm.setValue({
-      reportType: "Daily-FeatureFunctionality",
-      endDate: "2023-01-10T03:44:09",
-      startDate: "2023-01-09T:11:36:17",
-      todayReportType: ''
-    });
+  // it('should execute action with expected data given set arguments', () => {
+  //   fixture.detectChanges();
+  //   const filterForm = ctaasTestReportComponentTestInstance.filterForm;
+  //   filterForm.setValue({
+  //     reportType: "Daily-FeatureFunctionality",
+  //     endDate: "2023-01-10T03:44:09",
+  //     startDate: "2023-01-09T:11:36:17",
+  //     todayReportType: ''
+  //   });
 
-    spyOn(ctaasTestReportComponentTestInstance, 'filterReport').and.callThrough();
-    spyOn(window, 'open').and.returnValue(null);
-    spyOn(window, 'close').and.returnValue(null);
+  //   spyOn(ctaasTestReportComponentTestInstance, 'filterReport').and.callThrough();
+  //   spyOn(window, 'open').and.returnValue(null);
+  //   spyOn(window, 'close').and.returnValue(null);
 
-  });
+  // });
 
-  it('should call to rowAction with Daily-featureFunctionality', () => {
-    fixture.detectChanges();
-    const selectedTestData = {selectedRow: {
-      startDate: '2023-01-10T00:00:00',
-      endDate: '2023-01-10T:11:36:17'
-    },
-    selectedOption: 'Daily-FeatureFunctionality', 
-    selectedIndex: '0' }
-    spyOn(ctaasTestReportComponentTestInstance, 'rowAction').and.callThrough();
-    spyOn(window, 'open').and.returnValue(null);
-    spyOn(window, 'close').and.returnValue(null);
+  // it('should call to rowAction with Daily-featureFunctionality', () => {
+  //   fixture.detectChanges();
+  //   const selectedTestData = {selectedRow: {
+  //     startDate: '2023-01-10T00:00:00',
+  //     endDate: '2023-01-10T:11:36:17'
+  //   },
+  //   selectedOption: 'Daily-FeatureFunctionality', 
+  //   selectedIndex: '0' }
+  //   spyOn(ctaasTestReportComponentTestInstance, 'rowAction').and.callThrough();
+  //   spyOn(window, 'open').and.returnValue(null);
+  //   spyOn(window, 'close').and.returnValue(null);
 
-    ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
-    expect(window.open).toHaveBeenCalled();
-  });
+  //   ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
+  //   expect(window.open).toHaveBeenCalled();
+  // });
 
-  it('should call to rowAction with Daily-CallingReliability', () => {
-    fixture.detectChanges();
-    const selectedTestData = {selectedRow: {
-      startDate: '2023-01-10T00:00:00',
-      endDate: '2023-01-10T:11:36:17'
-    },
-    selectedOption: 'Daily-CallingReliability', 
-    selectedIndex: '0' }
-    spyOn(ctaasTestReportComponentTestInstance, 'rowAction').and.callThrough();
-    spyOn(window, 'open').and.returnValue(null);
-    spyOn(window, 'close').and.returnValue(null);
+  // it('should call to rowAction with Daily-CallingReliability', () => {
+  //   fixture.detectChanges();
+  //   const selectedTestData = {selectedRow: {
+  //     startDate: '2023-01-10T00:00:00',
+  //     endDate: '2023-01-10T:11:36:17'
+  //   },
+  //   selectedOption: 'Daily-CallingReliability', 
+  //   selectedIndex: '0' }
+  //   spyOn(ctaasTestReportComponentTestInstance, 'rowAction').and.callThrough();
+  //   spyOn(window, 'open').and.returnValue(null);
+  //   spyOn(window, 'close').and.returnValue(null);
 
-    ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
-    expect(window.open).toHaveBeenCalled();
-  });
+  //   ctaasTestReportComponentTestInstance.rowAction(selectedTestData);
+  //   expect(window.open).toHaveBeenCalled();
+  // });
 
   it('should setup the flags with withoutTapURL', () => {
     fixture.detectChanges();
@@ -213,46 +213,46 @@ describe('interaction with selected filters', () => {
     expect(Utility.parseReportDate).toHaveBeenCalled();
   });
 
-  it('test reports - should make a call with filterReport', () => {
-    fixture.detectChanges();
-    spyOn(window, 'open').and.returnValue(null);
-    spyOn(window, 'close').and.returnValue(null);
-    spyOn(Utility, 'parseReportDate').and.callThrough();
-    spyOn(ctaasTestReportComponentTestInstance, 'filterReport').and.callThrough();
+  // it('test reports - should make a call with filterReport', () => {
+  //   fixture.detectChanges();
+  //   spyOn(window, 'open').and.returnValue(null);
+  //   spyOn(window, 'close').and.returnValue(null);
+  //   spyOn(Utility, 'parseReportDate').and.callThrough();
+  //   spyOn(ctaasTestReportComponentTestInstance, 'filterReport').and.callThrough();
 
-    ctaasTestReportComponentTestInstance.filterForm.get('reportType').setValue('Daily-FeatureFunctionality');
-    ctaasTestReportComponentTestInstance.filterForm.get('startDate').setValue('2023-03-01T11:16');
-    ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
+  //   ctaasTestReportComponentTestInstance.filterForm.get('reportType').setValue('Daily-FeatureFunctionality');
+  //   ctaasTestReportComponentTestInstance.filterForm.get('startDate').setValue('2023-03-01T11:16');
+  //   ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
 
-    fixture.detectChanges();
-    ctaasTestReportComponentTestInstance.filterReport();
+  //   fixture.detectChanges();
+  //   ctaasTestReportComponentTestInstance.filterReport();
 
-    expect(Utility.parseReportDate).toHaveBeenCalledWith(new Date('2023-03-01T11:16'));
-    expect(Utility.parseReportDate).toHaveBeenCalledWith(new Date('2023-03-04T11:16'));
-  });
+  //   expect(Utility.parseReportDate).toHaveBeenCalledWith(new Date('2023-03-01T11:16'));
+  //   expect(Utility.parseReportDate).toHaveBeenCalledWith(new Date('2023-03-04T11:16'));
+  // });
 
-  it('test report - should clear the start date data', () => {
-    fixture.detectChanges();
-    ctaasTestReportComponentTestInstance.filterForm.get('startDate').setValue('2023-03-01T11:16');
-    ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
+  // it('test report - should clear the start date data', () => {
+  //   fixture.detectChanges();
+  //   ctaasTestReportComponentTestInstance.filterForm.get('startDate').setValue('2023-03-01T11:16');
+  //   ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
 
-    fixture.detectChanges();
-    ctaasTestReportComponentTestInstance.clearDateFilter('start');
+  //   fixture.detectChanges();
+  //   ctaasTestReportComponentTestInstance.clearDateFilter('start');
 
-    expect(ctaasTestReportComponentTestInstance.filterForm.get('startDate').value).toBe('');
-    expect(ctaasTestReportComponentTestInstance.filterForm.get('endDate').value).toBe('');
-  });
+  //   expect(ctaasTestReportComponentTestInstance.filterForm.get('startDate').value).toBe('');
+  //   expect(ctaasTestReportComponentTestInstance.filterForm.get('endDate').value).toBe('');
+  // });
 
-  it('test reports - should clear the end date data', () => {
-    fixture.detectChanges();
-    ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
+  // it('test reports - should clear the end date data', () => {
+  //   fixture.detectChanges();
+  //   ctaasTestReportComponentTestInstance.filterForm.get('endDate').setValue('2023-03-04T11:16');
 
-    fixture.detectChanges();
-    ctaasTestReportComponentTestInstance.clearDateFilter('endDate');
+  //   fixture.detectChanges();
+  //   ctaasTestReportComponentTestInstance.clearDateFilter('endDate');
 
-    expect(ctaasTestReportComponentTestInstance.filterForm.get('endDate').value).toBe('');
-    expect(ctaasTestReportComponentTestInstance.minEndDate).toEqual(null);
-  });
+  //   expect(ctaasTestReportComponentTestInstance.filterForm.get('endDate').value).toBe('');
+  //   expect(ctaasTestReportComponentTestInstance.minEndDate).toEqual(null);
+  // });
 
   it(' test reports - should filter the list of reports', fakeAsync(() => {
     ctaasTestReportComponentTestInstance.filterForm.patchValue({

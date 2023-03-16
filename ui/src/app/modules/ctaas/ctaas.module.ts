@@ -21,6 +21,8 @@ import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 import { MoreDetailsComponent } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
+import { SearchConsolidateDateComponent } from './ctaas-test-reports/search-consolidate-date/search-consolidate-date.component';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 
 
 
@@ -41,7 +43,8 @@ import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-repor
     AddNotesComponent,
     CtaasHistoricalDashboardComponent,
     MoreDetailsComponent,
-    CtaasTestReportsComponent
+    CtaasTestReportsComponent,
+    SearchConsolidateDateComponent
   ],
   imports: [
     CommonModule,
@@ -49,7 +52,8 @@ import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-repor
     ReactiveFormsModule,
     MaterialModule,
     SharedModule,
-    FormsModule
+    FormsModule,
+    NgxMatTimepickerModule
   ],
   entryComponents: [
     OnboardWizardComponent,

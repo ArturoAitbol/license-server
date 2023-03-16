@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl } from '@angular/forms';
 import moment from 'moment';
 import { Subject } from 'rxjs';
 import { SubAccountService } from 'src/app/services/sub-account.service';
@@ -10,6 +10,9 @@ import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { Sort } from '@angular/material/sort';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { BannerService } from "../../../services/alert-banner.service";
+import { DialogService } from 'src/app/services/dialog.service';
+import { MatDialog } from '@angular/material/dialog';
+import { SearchConsolidateDateComponent } from './search-consolidate-date/search-consolidate-date.component';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -32,6 +35,9 @@ export class CtaasTestReportsComponent implements OnInit {
   searchFlag: boolean = true;
   todaySearchFlag: boolean = true;
   submitDisabled = false;
+  readonly CALLING: string = 'calling';
+  readonly FEATURE: string = 'feature';
+  fontStyleControl = new FormControl('');
 
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
   readonly DAILY_FEATURE_FUNCTIONALITY: string = 'Daily-FeatureFunctionality';
@@ -39,8 +45,6 @@ export class CtaasTestReportsComponent implements OnInit {
 
   filterForm = this.formBuilder.group({
     reportType: [''],
-    startDate: [''],
-    endDate: [''],
     todayReportType: ['']
   });
 
@@ -48,11 +52,12 @@ export class CtaasTestReportsComponent implements OnInit {
   private unsubscribe: Subject<void> = new Subject<void>();
 
   constructor(
-  private msalService: MsalService,
   private subaccountService: SubAccountService,
   private formBuilder: FormBuilder,
   private ctaasSetupService: CtaasSetupService,
-  private bannerService: BannerService) { }
+  private bannerService: BannerService,
+  private dialogService: DialogService,
+  public dialog: MatDialog) { }
 
   @HostListener('window:resize')
   sizeChange() {
@@ -71,6 +76,7 @@ export class CtaasTestReportsComponent implements OnInit {
 
   initColumns(): void {
     this.displayedColumns = [
+      { name: 'Title', dataKey: 'title', position: 'left', isSortable: true },
       { name: 'Start Date', dataKey: 'startDate', position: 'left', isSortable: true },
       { name: 'End Date', dataKey: 'endDate', position: 'left', isSortable: true }
     ];
@@ -81,16 +87,9 @@ export class CtaasTestReportsComponent implements OnInit {
     DAILY_CALLING_RELIABILITY:'Daily-CallingReliability'
   }
 
-
-  private getActionMenuOptions() {
-    const roles = this.msalService.instance.getActiveAccount().idTokenClaims['roles'];
-    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "testReportsOptions");
-  }
-
   ngOnInit(): void { 
     this.initColumns();
     this.sizeChange();
-    this.getActionMenuOptions();
     this.dateTable();
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.userSetupData();
@@ -109,37 +108,34 @@ export class CtaasTestReportsComponent implements OnInit {
       })
   }
 
-
-  filterReport(): void {
-    const details = this.filterForm.value;
-    const parsedStartTime = Utility.parseReportDate(new Date(details.startDate));
-    const parsedEndTime = Utility.parseReportDate(new Date(details.endDate));
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${details.reportType}&start=${parsedStartTime}&end=${parsedEndTime}`;
-    window.open(url);
-    window.close();
-  }
-
   dateTable() {
     this.isLoadingResults = true;
-    for(let i = 0 ; i < 15 ; i++ ){
-      this.dateList[i] = {startDate:moment.utc().subtract(i + 1,'days').format("MM-DD-YYYY 00:00:00 UTC"), endDate:moment.utc().subtract(i + 1,'days').format("MM-DD-YYYY 23:59:59 UTC")};
+    const dateList = [];
+    for (let i = 0; i < 15; i++) {
+
+      const date = moment.utc().subtract(i + 1, 'days').format('MM-DD-YYYY');
+
+      dateList.push({
+        title: 'CR'+ moment.utc().subtract(i + 1,'days').format("_MM_DD"),
+        startDate: date + ' ' + '00:00:00 UTC',
+        endDate: date + ' ' + '23:59:59 UTC',
+        report: 'calling',
+      });
+
+      dateList.push({
+        title: 'FF' + moment.utc().subtract(i + 1,'days').format("_MM_DD"),
+        startDate: date + ' ' + '00:00:00 UTC',
+        endDate: date + ' ' + '23:59:59 UTC',
+        report: 'feature',
+      });
     }
-    this.dateListBK = [...this.dateList];
+    this.dateList = dateList;
+    this.dateListBK = this.dateList.filter(res => res.report === 'calling')
     this.isLoadingResults = false;
   }
 
   toggleDateValue(date: any) {
     this.minEndDate = date;
-  }
-
-  clearDateFilter(selector: string) {
-    if (selector === 'start') {
-      this.filterForm.get('startDate').setValue('');
-      this.filterForm.get('endDate').setValue('');
-      this.minEndDate = null;
-    } else
-      this.filterForm.get('endDate').setValue('');
-      this.minEndDate = null;
   }
   
   userSetupData() {
@@ -163,31 +159,31 @@ export class CtaasTestReportsComponent implements OnInit {
   sortData(sortParameters: Sort): any[]{
     const keyName = sortParameters.active
     if(sortParameters.direction !== '') {
-      this.dateList =  Utility.sortingDataTable(this.dateList, keyName, sortParameters.direction);
+      this.dateListBK =  Utility.sortingDataTable(this.dateListBK, keyName, sortParameters.direction);
     } else {
-      return this.dateList = [...this.dateListBK];
+      return this.dateListBK = [...this.dateListBK];
     }
   }
 
-  rowAction(object:{ selectedRow: any, selectedOption: any, selectedIndex: string}){
-    switch(object.selectedOption) {
-      case this.DAILY_FEATURE_FUNCTIONALITY: 
-        this.redirectFunction('Daily-FeatureFunctionality', object);
-      case this.DAILY_CALLING_RELIABILITY:
-        this.redirectFunction('Daily-CallingReliability', object);
-    }
-  }
+  // rowAction(object:{ selectedRow: any, selectedOption: any, selectedIndex: string}){
+  //   switch(object.selectedOption) {
+  //     case this.DAILY_FEATURE_FUNCTIONALITY: 
+  //       this.redirectFunction('Daily-FeatureFunctionality', object);
+  //     case this.DAILY_CALLING_RELIABILITY:
+  //       this.redirectFunction('Daily-CallingReliability', object);
+  //   }
+  // }
 
-  redirectFunction(reportType: string, selectedObject: any){
-    const callingDetails = selectedObject.selectedRow;
-    const utcCallingStartDate = callingDetails.startDate.split('UTC')[0];
-    const utcCallingEndDate = callingDetails.endDate.split('UTC')[0];
-    const callingParsedStartTime = Utility.parseReportDate(new Date(utcCallingStartDate));
-    const callingParsedEndTime = Utility.parseReportDate(new Date(utcCallingEndDate));
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${callingParsedStartTime}&end=${callingParsedEndTime}`;
-    window.open(url);
-    window.close();
-  } 
+  // redirectFunction(reportType: string, selectedObject: any){
+  //   const callingDetails = selectedObject.selectedRow;
+  //   const utcCallingStartDate = callingDetails.startDate.split('UTC')[0];
+  //   const utcCallingEndDate = callingDetails.endDate.split('UTC')[0];
+  //   const callingParsedStartTime = Utility.parseReportDate(new Date(utcCallingStartDate));
+  //   const callingParsedEndTime = Utility.parseReportDate(new Date(utcCallingEndDate));
+  //   const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${callingParsedStartTime}&end=${callingParsedEndTime}`;
+  //   window.open(url);
+  //   window.close();
+  // } 
 
   todayReport() {
     const todayDetails = this.filterForm.value
@@ -198,6 +194,27 @@ export class CtaasTestReportsComponent implements OnInit {
     const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${todayDetails.todayReportType}&start=${featureParsedStartTime}&end=${featureParsedEndTime}`;
     window.open(featureUrl);
     window.close();
+  }
+
+  searchConsolidatedReport() {
+    let dialogRef
+    dialogRef = this.dialog.open(SearchConsolidateDateComponent, {
+      width:'450px',
+      disableClose: true
+    });
+    dialogRef.afterClosed().subscribe(res => {
+      if(res) {
+        console.debug(`dialog closed: ${res}`);
+      }
+    });
+  }
+
+  onChangeButtonToggle() {
+    const { value } = this.fontStyleControl;
+    if(value === 'calling')
+      this.dateListBK = this.dateList.filter(res => res.report === 'calling');
+    else if (value === 'feature')
+      this.dateListBK = this.dateList.filter(res => res.report === 'feature');
   }
 
   ngOnDestroy() {
