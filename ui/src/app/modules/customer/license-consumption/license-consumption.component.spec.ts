@@ -245,11 +245,12 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.selectedProject).toBe(project.id);
     });
 
-    it('should make a call to get licenses, projects, dataToDisplay and actionMenuOptions after initializing', () => {
+    it('should make a call to get licenses, projects, dataToDisplay and actionMenuOptions after initializing', fakeAsync(() => {
         spyOn(LicenseServiceMock, 'getLicenseList').and.callThrough();
         spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, "fetchDataToDisplay").and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, "fetchProjectsList").and.callThrough();
+        tick(500);
         fixture.detectChanges();
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalledWith(CurrentCustomerServiceMock.selectedCustomer.subaccountId);
         expect(licenseConsumptionComponentTestInstance.licensesList).toEqual([LicenseServiceMock.mockLicenseN, LicenseServiceMock.mockLicenseO],);
@@ -257,7 +258,7 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.fetchDataToDisplay).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.fetchProjectsList).toHaveBeenCalled();
         expect(licenseConsumptionComponentTestInstance.licConsumptionActionMenuOptions.length).toEqual(2);
-    });
+    }));
 
     it('should change the status of all the loading-related variables if there is no licenses to show after initializing', () => {
         spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of({ licenses: [] }));

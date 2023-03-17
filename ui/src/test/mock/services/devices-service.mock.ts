@@ -25,7 +25,7 @@ const DEVICE_B:Device = {
     "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
     "type": "FAX",
     "version": "6.2",
-    "tokensToConsume": 1,
+    "tokensToConsume": 5,
     "startDate": new Date()
 }
 const DEVICE_C:Device = {
@@ -38,7 +38,7 @@ const DEVICE_C:Device = {
     "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
     "type": "FAX",
     "version": "6.2",
-    "tokensToConsume": 2,
+    "tokensToConsume": 0,
     "startDate": new Date()
 }
 const DEVICE_D:Device = {
@@ -51,7 +51,7 @@ const DEVICE_D:Device = {
     "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
     "type": "FAX",
     "version": "6.2",
-    "tokensToConsume": 3,
+    "tokensToConsume": 48,
     "startDate": new Date()
 }
 const DEVICE_E:Device = {
@@ -64,30 +64,65 @@ const DEVICE_E:Device = {
     "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
     "type": "FAX",
     "version": "6.2",
+    "tokensToConsume": 48,
+    "startDate": new Date()
+}
+
+const DEVICE_F:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "EHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
     "tokensToConsume": 4,
     "startDate": new Date()
 }
 
 const UNSORTED_DEVICE_LIST = {
     devices:[
+        DEVICE_F,
         DEVICE_B,
         DEVICE_D,
         DEVICE_C,
         DEVICE_E
     ]
 }
+const ASC_TOKEN_SORTED_LIST = {
+    devices: [
+        DEVICE_C,
+        DEVICE_F,
+        DEVICE_B,
+        DEVICE_E,
+        DEVICE_D,
+    ]
+}
 
+const DESC_TOKEN_SORTED_LIST = {
+    devices: [
+        DEVICE_D,
+        DEVICE_E,
+        DEVICE_B,
+        DEVICE_F,
+        DEVICE_C,
+    ]
+}
 const ASC_SORTED_LIST = {
     devices: [
         DEVICE_B,
         DEVICE_C,
         DEVICE_D,
-        DEVICE_E
+        DEVICE_E,
+        DEVICE_F
     ]
 }
 
 const DESC_SORTED_LIST = {
     devices:[
+        DEVICE_F,
         DEVICE_E,
         DEVICE_D,
         DEVICE_C,
@@ -735,7 +770,7 @@ const DEVICE_LIST = {
             vendor: "TestSupport",
             granularity: "week",
             id: "eb2e8d89-b5a0-4e6c-8b11-83aad3674d7f",
-            version: null,
+            version: '2.1',
             tokensToConsume: 2
         },
         {
@@ -895,6 +930,8 @@ export const DevicesServiceMock = {
     deviceToCompare: DEVICE_B,
     device: DEVICE,
     deviceTypes: DEVICE_TYPES,
+    tokenAscSortedList: ASC_TOKEN_SORTED_LIST,
+    tokenDescSortedList: DESC_TOKEN_SORTED_LIST,
     getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string) => {
         return of(
             JSON.parse(JSON.stringify({ devices: vendor ? DEVICE_LIST.devices.filter(device => device.vendor === vendor) : DEVICE_LIST.devices }))

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -410,6 +410,17 @@ describe('diplay of data and interactions', () => {
         spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
 
         fixture.detectChanges();
+        testInstance.onChangeVendor("TestSupport");
+
+        expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
+        expect(testInstance.isDataLoading).toBeFalse();
+    });
+
+    it('should make a call to onChangeVendor', () => {
+        spyOn(testInstance, 'onChangeVendor').and.callThrough();
+        spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
+
+        fixture.detectChanges();
         testInstance.onChangeVendor("Test");
 
         expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
@@ -427,6 +438,16 @@ describe('diplay of data and interactions', () => {
         expect(testInstance.isDataLoading).toBeFalse();
     });
 
+    it('should make a call to onChangeCallingPlatformVendor', () => {
+        spyOn(testInstance, 'onChangeCallingPlatformVendor').and.callThrough();
+        spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
+
+        fixture.detectChanges();
+        testInstance.onChangeCallingPlatformVendor("TestSupport");
+
+        expect(DevicesServiceMock.getDevicesList).toHaveBeenCalled();
+        expect(testInstance.isDataLoading).toBeFalse();
+    });
     it('should make a call to onChangeDeviceVendor', () => {
         spyOn(testInstance, 'onChangeDeviceVendor').and.callThrough();
         spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
@@ -524,16 +545,91 @@ describe('diplay of data and interactions', () => {
         expect(testInstance.isDataLoading ).toBeFalse();
     });
 
-    // it('should call filters of vendors, device vendors and models', () => {
-    //     const addCallingPlatformForm = testInstance.addCallingPlatformForm;
-    //     spyOn(testInstance, 'fetchData').and.callThrough();
-    //     spyOn(testInstance, 'onChangeCallingPlatformType').and.callThrough();
-    //     addCallingPlatformForm.get('vendor').setValue('Edgemarc');
-    //     testInstance.onChangeCallingPlatformType("PBX");
-    //     testInstance.callingPlatformVendors = ["Edgemarc", "AudioCodes", "Ingate", "Cisco", "Oracle", "Adtran", "Ribbon"]
-    //     testInstance.vendors = ["Edgemarc", "AudioCodes", "Ingate", "Cisco", "Oracle", "Adtran", "Ribbon"]
-    //     fixture.detectChanges();
-    // });
+    it('should call filters of vendors, device vendors and models', fakeAsync(() => {
+        spyOn(testInstance, 'fetchData').and.callThrough();
+        spyOn(testInstance, 'onChangeCallingPlatformType').and.callThrough();
+        spyOn(testInstance, 'onChangeDutType').and.callThrough();
+        spyOn(testInstance, 'onChangeDeviceType').and.callThrough();
+        spyOn(DevicesServiceMock, 'getAllDeviceVendors').and.callThrough();
+        spyOn(testInstance, 'onChangeVendor').and.callThrough();
+        spyOn(testInstance, 'onChangeDeviceVendor').and.callThrough();
+        spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
+        testInstance.models = [{
+            "id": "eb2e8d89-b5a0-4e6c-8b11-83aad3674d7f",
+            "vendor": "TestSupport",
+            "product": "Test"
+        }]
+        testInstance.deviceModels = [{
+            "supportType": false,
+            "product": "Test",
+            "vendor": "TestSupport",
+            "granularity": "week",
+            "id": "eb2e8d89-b5a0-4e6c-8b11-83aad2674d7f",
+            "version": null,
+            "tokensToConsume": 2
+        }];
+
+        tick(500);
+        fixture.detectChanges();
+        testInstance.addCallingPlatformForm.controls['product'].setValue('Test');
+        testInstance.addDutForm.controls['product'].setValue("Test");
+        testInstance.onChangeVendor("Test");
+        testInstance.onChangeDeviceVendor("Test");
+        testInstance.onChangeDutType("Soft Client/UC Client");
+        testInstance.addDutForm.controls['vendor'].setValue("Test");
+        testInstance.addDeviceForm.controls['vendor'].setValue("TestSupport");
+        testInstance.addDeviceForm.controls['product'].setValue("Test");
+        tick(500);
+        fixture.detectChanges();
+        testInstance.removeDevice(2);
+
+        expect(testInstance.filteredVendors).not.toBeNull();
+        expect(testInstance.deviceModels).not.toBeNull();
+        expect(testInstance.models).not.toBeNull();
+    }));
+
+    it('should call filters of vendors, device vendors and models', fakeAsync(() => {
+        spyOn(testInstance, 'fetchData').and.callThrough();
+        spyOn(testInstance, 'onChangeCallingPlatformType').and.callThrough();
+        spyOn(testInstance, 'onChangeDutType').and.callThrough();
+        spyOn(testInstance, 'onChangeDeviceType').and.callThrough();
+        spyOn(DevicesServiceMock, 'getAllDeviceVendors').and.callThrough();
+        spyOn(testInstance, 'onChangeVendor').and.callThrough();
+        spyOn(testInstance, 'onChangeDeviceVendor').and.callThrough();
+        spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
+        testInstance.models = [{
+            "id": "eb2e8d89-b5a0-4e6c-8b11-83aad2674d7f",
+            "vendor": "Test",
+            "product": "TestSupport"
+        }]
+        testInstance.deviceModels = [{
+            "supportType": false,
+            "product": "Test",
+            "vendor": "TestSupport",
+            "granularity": "week",
+            "id": "eb2e8d89-b5a0-4e6c-8b11-83aad2674d7f",
+            "version": '2.1',
+            "tokensToConsume": 2
+        }];
+
+        tick(500);
+        fixture.detectChanges();
+        testInstance.addCallingPlatformForm.controls['product'].setValue('Test');
+        testInstance.addDutForm.controls['product'].setValue(1);
+        testInstance.onChangeVendor("Test");
+        testInstance.onChangeDeviceVendor("Test");
+        testInstance.onChangeDutType("Soft Client/UC Client");
+        testInstance.addDutForm.controls['vendor'].setValue("Test");
+        testInstance.addDeviceForm.controls['vendor'].setValue("Test");
+        testInstance.addDeviceForm.controls['product'].setValue(1);
+        tick(500);
+        fixture.detectChanges();
+        testInstance.removeDevice(2);
+
+        expect(testInstance.filteredVendors).not.toBeNull();
+        expect(testInstance.deviceModels).not.toBeNull();
+        expect(testInstance.models).not.toBeNull();
+    }));
 
     it('should make a call to dutCallingAnddeviceInvalid', async () => {
         spyOn(testInstance, 'dutCallingAndDeviceInvalid').and.callThrough();

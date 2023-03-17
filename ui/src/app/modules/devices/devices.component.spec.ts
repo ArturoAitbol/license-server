@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
+import moment from 'moment';
 import { throwError } from 'rxjs';
 import { Device } from 'src/app/model/device.model';
 import { DevicesService } from 'src/app/services/devices.service';
@@ -113,6 +114,7 @@ describe('UI verification tests', () => {
     });
 
     it('should sort the data table',() => {
+        fixture.detectChanges();
         devicesComponentTestInstance.devicesBk = DevicesServiceMock.unsortedDeviceList.devices;
         devicesComponentTestInstance.devices = DevicesServiceMock.unsortedDeviceList.devices;
         devicesComponentTestInstance.sortData({active: "vendor", direction:'asc'});
@@ -122,10 +124,12 @@ describe('UI verification tests', () => {
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.descSortedList.devices);
         
         devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:'asc'});
-        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.ascSortedList.devices);
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.tokenAscSortedList.devices);
         
+        devicesComponentTestInstance.devicesBk = DevicesServiceMock.unsortedDeviceList.devices;
+        devicesComponentTestInstance.devices = DevicesServiceMock.unsortedDeviceList.devices;
         devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:'desc'});
-        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.descSortedList.devices);
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.tokenDescSortedList.devices);
         
         devicesComponentTestInstance.sortData({active: "vendor", direction:""});
         expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.unsortedDeviceList.devices);
@@ -245,16 +249,28 @@ describe('Dialog calls and interactions', () => {
 
     it('should call the filters and filter the list', async () => {
         devicesComponentTestInstance.loadFilters();
-        
+
         devicesComponentTestInstance.filterForm.get('vendorFilterControl').setValue('HylaFAX');
         devicesComponentTestInstance.filterForm.get('nameFilterControl').setValue('HylaFAX Enterprise');
         devicesComponentTestInstance.filterForm.get('typeFilterControl').setValue('PBX');
-        devicesComponentTestInstance.filterForm.get('startDateFilterControl').setValue(new Date());
-        devicesComponentTestInstance.filterForm.get('endDateFilterControl').setValue('3/7/2023');
+        devicesComponentTestInstance.filterForm.get('startDateFilterControl').setValue(moment());
+        devicesComponentTestInstance.filterForm.get('endDateFilterControl').setValue(moment());
 
         fixture.detectChanges();
         await fixture.whenStable();
 
         expect(devicesComponentTestInstance.devicesBk.length).toBe(0);
     })
+
+    it('should call the endDatefilter and filter the list', fakeAsync(() => {
+        devicesComponentTestInstance.loadFilters();
+        tick(500);
+        devicesComponentTestInstance.filterForm.get('endDateFilterControl').setValue(moment());
+
+        fixture.detectChanges();
+        tick(500);
+        
+
+        expect(devicesComponentTestInstance.devicesBk.length).toBe(3);
+    }))
 });

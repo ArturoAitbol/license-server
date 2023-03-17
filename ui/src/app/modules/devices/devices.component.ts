@@ -127,7 +127,6 @@ export class DevicesComponent implements OnInit, OnDestroy {
 
       this.isLoadingResults = true;
       this.devicesBk = this.devices.filter(device => filters.every(filter => filter(device)));
-      console.log(this.devicesBk)
       this.isLoadingResults = false;
     })
   }
