@@ -21,3 +21,22 @@ mat-form-field {
 .checkbox-hint{
     margin-top: -10px;
 }
+
+.mat-dialog-content{
+    padding-left: 2%;
+    padding-right: 3%;
+    /*max-height: initial!important;*/
+    max-height: 75vh;
+}
+
+.mat-dialog-container {
+    max-height: initial!important;
+}
+
+.note-content {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 9999;
+}
+
