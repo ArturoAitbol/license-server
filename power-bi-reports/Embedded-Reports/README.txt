@@ -1,5 +1,5 @@
 Embedded Dashboard Report Version - V31
-Realse Date - 14-03-2023
+Release Date - 14-03-2023
 Fixes - Performance tuning and Visual loading locking conflicts
 
 
