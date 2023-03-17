@@ -1,4 +1,4 @@
-<div class="container" style="text-align: center;">
+<div class="container-fluid" style="text-align: center;">
     <h1 id="page-title" mat-dialog-title>Add Note</h1>
     <form [formGroup]="noteForm" (ngSubmit)="addNote()">
         <div class="flex-container">
@@ -6,13 +6,14 @@
                 <mat-spinner *ngIf="isDataLoading"></mat-spinner>
             </div>
             <mat-dialog-content>
-                <div>
+                <div class="note-content">
                     <mat-form-field appearance="outline">
                         <mat-label id="content-label"> Note content</mat-label>
                         <input required matInput #noteInput value="" formControlName="content" id="content" maxlength="80">
                         <mat-hint align="end">{{noteInput.value?.length || 0}}/80</mat-hint>
                     </mat-form-field>
                 </div>
+                <app-ctaas-dashboard openedAsModal="true"></app-ctaas-dashboard>
             </mat-dialog-content>
         </div>
         <mat-dialog-actions>

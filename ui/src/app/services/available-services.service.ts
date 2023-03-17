@@ -21,7 +21,7 @@ export class AvailableServicesService {
       "value": tekVizionServices.SpotLight,
       "enabled": true,
       "access": false,
-      "routePath": "/spotlight/report-dashboards",
+      "routePath": "/spotlight/visualization",
       "imagePath": "assets/images/dashboard.png",
       "tabName": "SpotLight"
     }

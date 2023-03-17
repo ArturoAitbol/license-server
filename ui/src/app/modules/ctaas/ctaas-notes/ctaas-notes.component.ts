@@ -191,7 +191,9 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
         switch (type) {
             case this.ADD_NOTE:
                 dialogRef = this.dialog.open(AddNotesComponent, {
-                    width: '400px',
+                    width: '85vw',
+                    maxHeight: '90vh',
+                    maxWidth: '85vw',
                     disableClose: false
                 });
                 break;
