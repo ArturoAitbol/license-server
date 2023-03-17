@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -27,6 +27,7 @@ import { Subject } from "rxjs/internal/Subject";
     styleUrls: ['./ctaas-dashboard.component.css']
 })
 export class CtaasDashboardComponent implements OnInit, OnDestroy {
+    @Input() openedAsModal  = false;
 
     onboardSetupStatus = '';
     isOnboardingComplete: boolean;
@@ -167,7 +168,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
         // load the view based on the route
-        if (this.router.url.includes('/report-dashboards'))
+        if (this.router.url.includes('/report-dashboards') || this.openedAsModal)
             this.viewMode.setValue(this.LEGACY_MODE);
         else
             this.viewMode.setValue(this.POWERBI_MODE);

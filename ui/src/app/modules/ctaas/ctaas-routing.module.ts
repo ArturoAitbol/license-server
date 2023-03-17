@@ -12,11 +12,6 @@ import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-repor
 const routes: Routes = [
   { path: '', redirectTo: 'report-dashboards', pathMatch: 'full' },
   {
-    path: 'report-dashboards',
-    component: CtaasDashboardComponent,
-    canActivate: [RoleGuard]
-  },
-  {
     path: 'visualization',
     component: CtaasDashboardComponent,
     canActivate: [RoleGuard]
