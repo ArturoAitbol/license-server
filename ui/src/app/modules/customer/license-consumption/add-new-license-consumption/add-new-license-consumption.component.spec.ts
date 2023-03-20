@@ -569,7 +569,7 @@ describe('diplay of data and interactions', () => {
             "tokensToConsume": 2
         }];
 
-        tick(500);
+        tick(200);
         fixture.detectChanges();
         testInstance.addCallingPlatformForm.controls['product'].setValue('Test');
         testInstance.addDutForm.controls['product'].setValue("Test");
@@ -579,7 +579,7 @@ describe('diplay of data and interactions', () => {
         testInstance.addDutForm.controls['vendor'].setValue("Test");
         testInstance.addDeviceForm.controls['vendor'].setValue("TestSupport");
         testInstance.addDeviceForm.controls['product'].setValue("Test");
-        tick(500);
+        tick(200);
         fixture.detectChanges();
         testInstance.removeDevice(2);
 
@@ -612,7 +612,7 @@ describe('diplay of data and interactions', () => {
             "tokensToConsume": 2
         }];
 
-        tick(500);
+        tick(200);
         fixture.detectChanges();
         testInstance.addCallingPlatformForm.controls['product'].setValue('Test');
         testInstance.addDutForm.controls['product'].setValue(1);
@@ -622,7 +622,7 @@ describe('diplay of data and interactions', () => {
         testInstance.addDutForm.controls['vendor'].setValue("Test");
         testInstance.addDeviceForm.controls['vendor'].setValue("Test");
         testInstance.addDeviceForm.controls['product'].setValue(1);
-        tick(500);
+        tick(200);
         fixture.detectChanges();
         testInstance.removeDevice(2);
 
