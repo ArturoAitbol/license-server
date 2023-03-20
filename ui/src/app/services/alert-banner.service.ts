@@ -18,7 +18,7 @@ export class BannerService {
     // emit the index of the selected action once the user clicks a button.
     public open(title: string, message: string, onComponentDestruction: Observable<void>): void{
         if (!this.outlet) {
-            console.log("Tried to open banner but no outlet was defined. ", title, message);
+            console.error("Tried to open banner but no outlet was defined. ", title, message);
             return;
         }
         if (!this.active) {
