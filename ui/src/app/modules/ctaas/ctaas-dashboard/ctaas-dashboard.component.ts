@@ -40,7 +40,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     dailyImagesList: string[] = [];
     weeklyImagesList: string[] = [];
     refreshIntervalSubscription: Subscription;
-    subscriptionToFecthDashboard: Subscription;
+    subscriptionToFetchDashboard: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
     powerBiFontStyleControl = new FormControl('');
@@ -113,7 +113,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             'error',
             (event?: service.ICustomEvent<any>) => {
                 if (event) {
-                    console.error(event.detail);
                     const { detail: { message, errorCode } } = event;
                     if (message && errorCode && message === 'TokenExpired' && (errorCode === '403' || errorCode === '401') && !this.pbiErrorCounter) {
                         this.pbiErrorCounter = true;
@@ -182,7 +181,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.fetchCtaasDashboardDetailsBySubaccount();
             });
         // fetch dashboard report for every 30 seconds interval
-        this.subscriptionToFecthDashboard = interval(30000)
+        this.subscriptionToFetchDashboard = interval(30000)
             .subscribe(() => {
                 // Make an http request only in PowerBi mode
                 if (this.powerBiEmbeddingFlag && this.subaccountDetails) {
@@ -486,8 +485,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
-        if (this.subscriptionToFecthDashboard)
-            this.subscriptionToFecthDashboard.unsubscribe();
+        if (this.subscriptionToFetchDashboard)
+            this.subscriptionToFetchDashboard.unsubscribe();
         this.onDestroy.next();
         this.onDestroy.complete();
     }
