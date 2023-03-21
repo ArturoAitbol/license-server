@@ -107,10 +107,7 @@ export const permissions = {
                 'MODIFY_DEVICE',
                 'DELETE_DEVICE',
             ],
-            testReportsOptions: [
-                'DAILY_FEATURE_FUNCTIONALITY',
-                'DAILY_CALLING_RELIABILITY'
-            ]
+            testReportsOptions: []
         }
     },
     'tekvizion.SalesAdmin': {
@@ -215,10 +212,7 @@ export const permissions = {
             ],
             subscriptionsOverviewOptions: [],
             deviceOptions: [],
-            testReportsOptions: [
-                'DAILY_FEATURE_FUNCTIONALITY',
-                'DAILY_CALLING_RELIABILITY'
-            ]
+            testReportsOptions: []
         }
     },
     'distributor.FullAdmin': {
@@ -309,10 +303,7 @@ export const permissions = {
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
             ],
-            testReportsOptions: [
-                'DAILY_FEATURE_FUNCTIONALITY',
-                'DAILY_CALLING_RELIABILITY'
-            ]
+            testReportsOptions: []
         }
     },
     'customer.SubaccountAdmin': {
@@ -366,10 +357,7 @@ export const permissions = {
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
             ],
-            testReportsOptions: [
-                'DAILY_FEATURE_FUNCTIONALITY',
-                'DAILY_CALLING_RELIABILITY'
-            ]
+            testReportsOptions: []
         }
     },
     'customer.SubaccountStakeholder': {

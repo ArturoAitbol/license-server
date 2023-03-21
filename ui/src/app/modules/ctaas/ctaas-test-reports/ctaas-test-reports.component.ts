@@ -40,8 +40,6 @@ export class CtaasTestReportsComponent implements OnInit {
   fontStyleControl = new FormControl('');
 
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
-  readonly DAILY_FEATURE_FUNCTIONALITY: string = 'Daily-FeatureFunctionality';
-  readonly DAILY_CALLING_RELIABILITY: string = 'Daily-CallingReliability';
 
   filterForm = this.formBuilder.group({
     reportType: [''],
@@ -56,7 +54,6 @@ export class CtaasTestReportsComponent implements OnInit {
   private formBuilder: FormBuilder,
   private ctaasSetupService: CtaasSetupService,
   private bannerService: BannerService,
-  private dialogService: DialogService,
   public dialog: MatDialog) { }
 
   @HostListener('window:resize')
@@ -163,26 +160,6 @@ export class CtaasTestReportsComponent implements OnInit {
       return this.dateListBK;
     }
   }
-
-  // rowAction(object:{ selectedRow: any, selectedOption: any, selectedIndex: string}){
-  //   switch(object.selectedOption) {
-  //     case this.DAILY_FEATURE_FUNCTIONALITY: 
-  //       this.redirectFunction('Daily-FeatureFunctionality', object);
-  //     case this.DAILY_CALLING_RELIABILITY:
-  //       this.redirectFunction('Daily-CallingReliability', object);
-  //   }
-  // }
-
-  // redirectFunction(reportType: string, selectedObject: any){
-  //   const callingDetails = selectedObject.selectedRow;
-  //   const utcCallingStartDate = callingDetails.startDate.split('UTC')[0];
-  //   const utcCallingEndDate = callingDetails.endDate.split('UTC')[0];
-  //   const callingParsedStartTime = Utility.parseReportDate(new Date(utcCallingStartDate));
-  //   const callingParsedEndTime = Utility.parseReportDate(new Date(utcCallingEndDate));
-  //   const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${callingParsedStartTime}&end=${callingParsedEndTime}`;
-  //   window.open(url);
-  //   window.close();
-  // } 
 
   todayReport() {
     const todayDetails = this.filterForm.value
