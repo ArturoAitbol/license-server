@@ -90,7 +90,7 @@ export class CtaasTestReportsComponent implements OnInit {
   ngOnInit(): void { 
     this.initColumns();
     this.sizeChange();
-    this.dateTable();
+    this.dataTable();
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.userSetupData();
     this.maxDate = moment().format("YYYY-MM-DD[T]HH:mm:ss");
@@ -108,11 +108,10 @@ export class CtaasTestReportsComponent implements OnInit {
       })
   }
 
-  dateTable() {
+  dataTable() {
     this.isLoadingResults = true;
     const dateList = [];
     for (let i = 0; i < 15; i++) {
-
       const date = moment.utc().subtract(i + 1, 'days').format('MM-DD-YYYY');
 
       dateList.push({
@@ -161,7 +160,7 @@ export class CtaasTestReportsComponent implements OnInit {
     if(sortParameters.direction !== '') {
       this.dateListBK =  Utility.sortingDataTable(this.dateListBK, keyName, sortParameters.direction);
     } else {
-      return this.dateListBK = [...this.dateListBK];
+      return this.dateListBK;
     }
   }
 
@@ -197,8 +196,7 @@ export class CtaasTestReportsComponent implements OnInit {
   }
 
   searchConsolidatedReport() {
-    let dialogRef
-    dialogRef = this.dialog.open(SearchConsolidateDateComponent, {
+    let dialogRef = this.dialog.open(SearchConsolidateDateComponent, {
       width:'450px',
       disableClose: true
     });
