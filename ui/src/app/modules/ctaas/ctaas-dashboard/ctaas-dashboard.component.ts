@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -28,6 +28,7 @@ import { connectableObservableDescriptor } from 'rxjs/internal/observable/Connec
     styleUrls: ['./ctaas-dashboard.component.css']
 })
 export class CtaasDashboardComponent implements OnInit, OnDestroy {
+    @Input() openedAsModal  = false;
 
     onboardSetupStatus = '';
     isOnboardingComplete: boolean;
@@ -173,7 +174,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         this.isFeatureEnabled = this.featureToggleService.isFeatureEnabled("powerbiRefreshFeature", this.subaccountDetails.id);
         this.canRefreshDashboard = this.featureToggleService.isFeatureEnabled("", this.subaccountDetails.id);
         // load the view based on the route
-        if (this.router.url.includes('/report-dashboards'))
+        if (this.router.url.includes('/report-dashboards') || this.openedAsModal)
             this.viewMode.setValue(this.LEGACY_MODE);
         else
             this.viewMode.setValue(this.POWERBI_MODE);
