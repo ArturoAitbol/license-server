@@ -27,7 +27,7 @@ import { Subject } from "rxjs/internal/Subject";
     styleUrls: ['./ctaas-dashboard.component.css']
 })
 export class CtaasDashboardComponent implements OnInit, OnDestroy {
-    @Input() openedAsModal  = false;
+    @Input() openedAsModal = false;
 
     onboardSetupStatus = '';
     isOnboardingComplete: boolean;
@@ -398,6 +398,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly, test1, test2, expiresAt } };
                     this.setPbiReportDetailsInSubaccountDetails({ daily, weekly, test1, test2, expiresAt });
                     this.hasDashboardDetails = true;
+                    this.viewDashboardByMode();
                     resolve("API request is successful!");
                 }, (err) => {
                     this.hasDashboardDetails = false;
