@@ -15,6 +15,120 @@ const DEVICE_A = {
     supportType: true
 };
 
+const DEVICE_B:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "AHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
+    "tokensToConsume": 5,
+    "startDate": new Date()
+}
+const DEVICE_C:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "BHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
+    "tokensToConsume": 0,
+    "startDate": new Date()
+}
+const DEVICE_D:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "CHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
+    "tokensToConsume": 48,
+    "startDate": new Date()
+}
+const DEVICE_E:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "DHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
+    "tokensToConsume": 48,
+    "startDate": new Date()
+}
+
+const DEVICE_F:Device = {
+    "supportType": true,
+    "product": "HylaFAX Enterprise",
+    "deprecatedDate": "infinity",
+    "vendor": "EHylaFAX",
+    "granularity": "static",
+    "subaccountId": "fbb2d912-b202-432d-8c07-dce0dad51f7f",
+    "id": "c49a3148-1e74-4090-9876-d062011d9bcb",
+    "type": "FAX",
+    "version": "6.2",
+    "tokensToConsume": 4,
+    "startDate": new Date()
+}
+
+const UNSORTED_DEVICE_LIST = {
+    devices:[
+        DEVICE_F,
+        DEVICE_B,
+        DEVICE_D,
+        DEVICE_C,
+        DEVICE_E
+    ]
+}
+const ASC_TOKEN_SORTED_LIST = {
+    devices: [
+        DEVICE_C,
+        DEVICE_F,
+        DEVICE_B,
+        DEVICE_E,
+        DEVICE_D,
+    ]
+}
+
+const DESC_TOKEN_SORTED_LIST = {
+    devices: [
+        DEVICE_D,
+        DEVICE_E,
+        DEVICE_B,
+        DEVICE_F,
+        DEVICE_C,
+    ]
+}
+const ASC_SORTED_LIST = {
+    devices: [
+        DEVICE_B,
+        DEVICE_C,
+        DEVICE_D,
+        DEVICE_E,
+        DEVICE_F
+    ]
+}
+
+const DESC_SORTED_LIST = {
+    devices:[
+        DEVICE_F,
+        DEVICE_E,
+        DEVICE_D,
+        DEVICE_C,
+        DEVICE_B
+    ]
+}
 const DEVICE_LIST = {
     devices: [
         DEVICE_A,
@@ -25,7 +139,8 @@ const DEVICE_LIST = {
             granularity: "static",
             id: "936662a7-febd-4cbf-bc58-477e5d5a9d10",
             version: "5.0",
-            tokensToConsume: 0
+            tokensToConsume: 0,
+            startDate: new Date()
         },
         {
             supportType: true,
@@ -34,7 +149,8 @@ const DEVICE_LIST = {
             granularity: "static",
             id: "9ba1f445-28da-4e36-907c-6864c98b6928",
             version: "20.2",
-            tokensToConsume: 0
+            tokensToConsume: 0,
+            startDate: new Date()
         },
         {
             supportType: true,
@@ -654,7 +770,7 @@ const DEVICE_LIST = {
             vendor: "TestSupport",
             granularity: "week",
             id: "eb2e8d89-b5a0-4e6c-8b11-83aad3674d7f",
-            version: null,
+            version: '2.1',
             tokensToConsume: 2
         },
         {
@@ -762,13 +878,63 @@ const VENDORS_LIST = {
     ]
 };
 
+const DEVICE = {
+    days:[
+        {
+            "name": "Sun",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Mon",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Tue",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Wed",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Thu",
+            "used": false,
+            "disabled": true
+        },
+        {
+            "name": "Fri",
+            "used": true,
+            "disabled": false
+        },
+        {
+            "name": "Sat",
+            "used": true,
+            "disabled": false
+        }
+    ],id: "f2cd6098-be9e-4d6e-a059-e9070c1222ca",
+    product:"MiVoice Office 250 Phone System - v.6.3 SP2",
+    vendor:"Mitel"
+}
+
 export const DevicesServiceMock = {
     mockDeviceA: DEVICE_A,
     devicesListValue: DEVICE_LIST,
+    vendorList: VENDORS_LIST,
+    unsortedDeviceList: UNSORTED_DEVICE_LIST,
+    ascSortedList: ASC_SORTED_LIST,
+    descSortedList: DESC_SORTED_LIST,
+    deviceToCompare: DEVICE_B,
+    device: DEVICE,
     deviceTypes: DEVICE_TYPES,
+    tokenAscSortedList: ASC_TOKEN_SORTED_LIST,
+    tokenDescSortedList: DESC_TOKEN_SORTED_LIST,
     getDevicesList: (subaccountId?: string, vendor?: string, product?: string, version?: string) => {
         return of(
-            JSON.parse(JSON.stringify({ devices: DEVICE_LIST.devices.filter(device => device.vendor === vendor) }))
+            JSON.parse(JSON.stringify({ devices: vendor ? DEVICE_LIST.devices.filter(device => device.vendor === vendor) : DEVICE_LIST.devices }))
         );
     },
     getDevicesTypesList: () => {
