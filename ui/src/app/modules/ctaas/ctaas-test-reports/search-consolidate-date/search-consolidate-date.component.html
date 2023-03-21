@@ -19,7 +19,7 @@
                 <div class="row">
                     <div class="col-8">
                         <mat-form-field appearance="outline">
-                            <mat-label>Start Date</mat-label>
+                            <mat-label id="start-date-label">Start Date</mat-label>
                             <input required matInput [matDatepicker]="picker" formControlName="startDate" [max]="maxDate"  step="60" (dateChange)="toggleDateValue($event.value); validateTimers()">
                             <mat-datepicker-toggle matSuffix [for]="picker" id="start-date-calendar"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
@@ -50,7 +50,7 @@
                 <div class="row">
                     <div class="col-8">
                         <mat-form-field appearance="outline">
-                            <mat-label>End Date</mat-label>
+                            <mat-label id="end-date-label">End Date</mat-label>
                             <input required matInput [matDatepicker]="endPicker" formControlName="endDate" (dateChange)="toggleEndDate($event.value); validateTimers()" step="60" [min]="minEndDate" [max]="maxDate">
                             <mat-datepicker-toggle matSuffix [for]="endPicker" id="start-date-calendar"></mat-datepicker-toggle>
                             <mat-datepicker #endPicker></mat-datepicker>
@@ -84,7 +84,7 @@
         </div>
         <mat-dialog-actions>
             <button id="cancelBtn" type="button" mat-stroked-button (click)="onCancel()">Cancel</button>
-            <button id="submitBtn" mat-raised-button color="primary" [disabled]="searchForm.invalid"
+            <button id="searchBtn" mat-raised-button color="primary" [disabled]="searchForm.invalid"
                 type="submit">Search</button>
         </mat-dialog-actions>
     </form>
