@@ -19,10 +19,12 @@
     </ng-template>
 
 
+    
     <div>
       <ng-template #reportView>
+        
         <div *ngIf="powerBiEmbeddingFlag">
-
+          
           <div class="flex-container">
             <div class="banner-container">
               <mat-button-toggle-group [formControl]="powerBiFontStyleControl" aria-label="Font Style"
@@ -32,6 +34,13 @@
                 <mat-button-toggle *lcFeatureToggle="'powerbiTestReport';subaccountId:getSubaccountId()" [value]="TEST1">{{TEST1 | titlecase}}</mat-button-toggle>
                 <mat-button-toggle *lcFeatureToggle="'powerbiTestReport';subaccountId:getSubaccountId()" [value]="TEST2">{{TEST2 | titlecase}}</mat-button-toggle>
               </mat-button-toggle-group>
+            </div>
+            <div *ngIf="isFeatureEnabled">
+              <div >
+                <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="refreshDashboard()">
+                  <mat-icon>refresh</mat-icon>
+                </button>
+              </div>
             </div>
           </div>
           <!-- power bi report view -->
@@ -53,6 +62,13 @@
                   <mat-button-toggle [value]="DAILY">{{DAILY | titlecase}}</mat-button-toggle>
                   <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
                 </mat-button-toggle-group>
+              </div>
+              <div *ngIf="isFeatureEnabled">
+                <div >
+                  <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="refreshDashboard()">
+                    <mat-icon>refresh</mat-icon>
+                  </button>
+                </div>
               </div>
             </div>
             <ng-container *ngIf="checkForDashboardDetails(); then withReport;else noReport"> </ng-container>
@@ -85,9 +101,11 @@
 </ng-template>
 
 <ng-template #noReport>
-  <div class="jumbotron d-flex align-items-center bg-transparent justify-content-center">
-    <h2>
-      No Reports available
-    </h2>
+  <div *ngIf = "!refresh">
+    <div class="jumbotron d-flex align-items-center bg-transparent justify-content-center">
+      <h2>
+        No Reports available
+      </h2>
+    </div>
   </div>
 </ng-template>

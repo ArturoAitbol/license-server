@@ -123,6 +123,7 @@ button:hover {
   flex-wrap: wrap;
   align-items: center;
   align-content: space-between;
+  justify-content: space-between;
 }
 .right {
   margin-left: auto;
@@ -203,4 +204,19 @@ button:hover {
 }
 ::ng-deep powerbi-report > div {
   height: 90vh !important;
+}
+
+.refreshButton{
+  background: white;
+  border: 0;
+  border-radius: 5px;
+  color: rgba(0, 0, 0, 0.87);
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 16px;
+  height: 35px;
+  margin-right: 15px;
+  width: 10px;
+}
+.refreshButton:hover {
+  background-color: whitesmoke;
 }

@@ -20,6 +20,7 @@ import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 import { Subject } from "rxjs/internal/Subject";
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -131,6 +132,9 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     viewMode = new FormControl(this.LEGACY_MODE);
     powerbiReportResponse: IPowerBiReponse;
     enableEmbedTokenCache: boolean = true;
+    canRefreshDashboard: boolean = false;
+    refresh: boolean = false;
+    isFeatureEnabled: boolean = false;
     @ViewChild('reportEmbed') reportContainerDivElement: any;
     constructor(
         private dialog: MatDialog,
@@ -166,6 +170,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const accountDetails = this.getAccountDetails();
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
+        this.isFeatureEnabled = this.featureToggleService.isFeatureEnabled("powerbiRefreshFeature", this.subaccountDetails.id);
+        this.canRefreshDashboard = this.featureToggleService.isFeatureEnabled("", this.subaccountDetails.id);
         // load the view based on the route
         if (this.router.url.includes('/report-dashboards'))
             this.viewMode.setValue(this.LEGACY_MODE);
@@ -215,6 +221,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     onChangePowerBiButtonToggle() {
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
+        console.log(this.featureToggleKey);
         if (this.reportObj) {
             this.report = this.reportObj.getReport();
             this.reportObj.powerbi.reset(this.reportContainerDivElement.containerRef.nativeElement);
@@ -433,36 +440,51 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     async viewDashboardByMode(): Promise<any> {
         switch (this.viewMode.value) {
             case this.POWERBI_MODE:
+                console.log("POWERBI_MODE");
                 // check for powerbi response, if not make an API request to fetch powerbi dashboard details
                 if (!this.powerbiReportResponse) {
+                    console.log("Entra al if");
                     await this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
                     this.hasDashboardDetails = false;
                 }
                 if (this.powerbiReportResponse) {
+                    console.log("segundo if");
+                    console.log(this.featureToggleKey);
                     this.hasDashboardDetails = true;
                     const { daily, weekly, test1, test2 } = this.powerbiReportResponse;
+                    
                     // configure for daily report
                     if (this.featureToggleKey === this.DAILY) {
+                        console.log("entra a daily");
                         const { id, embedUrl, embedToken } = daily;
+                        console.log(daily);
                         this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     } else if (this.featureToggleKey === this.WEEKLY) { // configure for weekly report
+                        console.log("entra a weekly");
                         const { id, embedUrl, embedToken } = weekly;
+                        console.log(weekly);
                         this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     } else if (this.featureToggleKey === this.TEST1) { // configure for test1 report
+                        console.log("entra a test1");
                         const { id, embedUrl, embedToken } = test1;
+                        console.log(test1);
                         this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     } else if (this.featureToggleKey === this.TEST2) { // configure for test2 report
+                        console.log("entra a test2");
                         const { id, embedUrl, embedToken } = test2;
+                        console.log(test2);
                         this.configurePowerbiEmbeddedReport(id, embedUrl, embedToken);
                     }
                 }
                 this.powerBiEmbeddingFlag = true;
                 break;
             default:
+                console.log("default");
                 this.powerBiEmbeddingFlag = false;
                 this.fetchCtaasDashboardDetailsBySubaccount();
                 break;
         }
+        console.log("finish");
     }
     /**
      * set powerbi report details in subaccount object in session storage
@@ -485,5 +507,23 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             this.refreshIntervalSubscription.unsubscribe();
         this.onDestroy.next();
         this.onDestroy.complete();
+    }
+    delay(ms: number) {
+        return new Promise( resolve => setTimeout(resolve, ms) );
+    }
+    async refreshDashboard() {
+        this.refresh = true;
+        console.log(this.powerBiEmbeddingFlag);
+        // this.configurePowerbiEmbeddedReport("","","");
+        // this.featureToggleKey = "";
+        // this.powerbiReportResponse = undefined;
+        const { value } = this.powerBiFontStyleControl;
+        this.powerBiEmbeddingFlag = false;
+        await this.delay(1);
+        this.featureToggleKey = value;
+        // this.powerBiEmbeddingFlag = true;
+        await this.viewDashboardByMode();
+        this.refresh = false;
+        console.log(this.powerBiEmbeddingFlag);
     }
 }
