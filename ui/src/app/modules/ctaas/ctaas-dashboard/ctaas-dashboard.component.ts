@@ -40,6 +40,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     dailyImagesList: string[] = [];
     weeklyImagesList: string[] = [];
     refreshIntervalSubscription: Subscription;
+    subscriptionToFecthDashboard: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
     powerBiFontStyleControl = new FormControl('');
@@ -180,8 +181,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                 if (!this.powerBiEmbeddingFlag)
                     this.fetchCtaasDashboardDetailsBySubaccount();
             });
-        // fetch dashboard report for every 15 minutes interval
-        interval(30000)
+        // fetch dashboard report for every 30 seconds interval
+        this.subscriptionToFecthDashboard = interval(30000)
             .subscribe(() => {
                 // Make an http request only in PowerBi mode
                 if (this.powerBiEmbeddingFlag && this.subaccountDetails) {
@@ -485,6 +486,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
+        if (this.subscriptionToFecthDashboard)
+            this.subscriptionToFecthDashboard.unsubscribe();
         this.onDestroy.next();
         this.onDestroy.complete();
     }
