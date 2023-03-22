@@ -93,7 +93,7 @@ const beforeEachFunction = () => {
     spyOn(console, 'log').and.callThrough();
 }
 
-fdescribe('UI verification test', () => {
+describe('UI verification test', () => {
     beforeEach(beforeEachFunction);
 
     //test 1
@@ -122,7 +122,7 @@ fdescribe('UI verification test', () => {
     });
 });
 
-fdescribe('make method calls', () => {
+describe('make method calls', () => {
     beforeEach(beforeEachFunction);
 
     // test 3
@@ -179,7 +179,7 @@ fdescribe('make method calls', () => {
     });
 });
 
-fdescribe('setup form verifications', () => {
+describe('setup form verifications', () => {
     beforeEach(beforeEachFunction);
 
     // test 7
@@ -215,7 +215,7 @@ fdescribe('setup form verifications', () => {
 
 });
 
-fdescribe('dialog calls and interactions', () => {
+describe('dialog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     // test 9
@@ -337,7 +337,7 @@ fdescribe('dialog calls and interactions', () => {
     });
 });
 
-fdescribe('check for error and success messages', () => {
+describe('check for error and success messages', () => {
     beforeEach(beforeEachFunction);
 
     // test 12
@@ -367,13 +367,14 @@ fdescribe('check for error and success messages', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error updating Spotlight Setup!');
     });
 
-    it('should make a call to maintenanceToggle and return error message', () => {
+    it('should make a call to maintenanceToggle with disable and return error message', () => {
         dialogService.expectedConfirmDialogValue = true;
         const errorResponse = { error: 'some error' };
         spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
         spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(of(errorResponse));
         spyOn(CtaasSetupComponentTestInstance, 'maintenanceToggle').and.callThrough();
         spyOn(dialogService, 'confirmDialog').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
 
         CtaasSetupComponentTestInstance.maintenanceToggle('disable');
 
@@ -383,6 +384,49 @@ fdescribe('check for error and success messages', () => {
             confirmCaption: 'Confirm',
             cancelCaption: 'Cancel',
         });
+
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error,'Error while disabling maintenance mode');
+    });
+
+    it('should make a call to maintenanceToggle with enable and return error message', () => {
+        dialogService.expectedConfirmDialogValue = true;
+        const errorResponse = { error: 'some error' };
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
+        spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(of(errorResponse));
+        spyOn(CtaasSetupComponentTestInstance, 'maintenanceToggle').and.callThrough();
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+        CtaasSetupComponentTestInstance.maintenanceToggle('enable');
+
+        expect(dialogService.confirmDialog).toHaveBeenCalledWith({
+            title: 'Confirm Maintenance Mode',
+            message: 'If you enable this mode, some of the features in the implementation won\'t be available, are you sure you want to continue?',
+            confirmCaption: 'Confirm',
+            cancelCaption: 'Cancel',
+        });
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error,'Error while enabling maintenance mode' );
+    });
+
+    it('should make a call to maintenanceToggle and return a null response', () => {
+        dialogService.expectedConfirmDialogValue = true;
+        const errorResponse = null;
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
+        spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(of(errorResponse));
+        spyOn(CtaasSetupComponentTestInstance, 'maintenanceToggle').and.callThrough();
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+
+        CtaasSetupComponentTestInstance.maintenanceToggle('disable');
+
+        expect(dialogService.confirmDialog).toHaveBeenCalledWith({
+            title: 'Confirm Maintenance Mode',
+            message: 'Are you sure you want to disable the maintenance mode?',
+            confirmCaption: 'Confirm',
+            cancelCaption: 'Cancel',
+        });
+
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Maintenance mode disabled successfully', '');
     });
     // test 14
     it('should display a message when update is successful', () => {
@@ -398,6 +442,20 @@ fdescribe('check for error and success messages', () => {
                 };
             });
         });
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        fixture.detectChanges();
+
+        CtaasSetupComponentTestInstance.editForm();
+        CtaasSetupComponentTestInstance.submit();
+        expect(CtaasSetupComponentTestInstance.submit).toHaveBeenCalled();
+        expect(CtaasSetupServiceMock.updateCtaasSetupDetailsById).toHaveBeenCalled();
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Spotlight Setup edited successfully!', '');
+    });
+
+    it('should display a message when update is successful and the response is null', () => {
+        const testResponse = null;
+        spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
+        spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(of(testResponse));
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
         fixture.detectChanges();
 
