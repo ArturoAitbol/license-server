@@ -14,6 +14,8 @@ public class Consumptions extends AbstractPageObject {
     WebElement addLabsConsumptionButton;
     @FindBy(css = "[formcontrolname='selectedLicense']")
     WebElement subscriptionSelectBox;
+
+    By cancelSelector = By.cssSelector("#cancel-button");
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public ConsumptionForm openConsumptionForm() {
@@ -25,6 +27,8 @@ public class Consumptions extends AbstractPageObject {
     public ConsumptionForm openOtherConsumptionForm() {
         this.action.click(this.addOtherConsumptionButton);
         this.action.waitSpinner(this.spinnerSelector);
+        this.action.clickable(this.cancelSelector);
+        this.action.checkText(this.cancelSelector, "Cancel");
         return new ConsumptionForm();
     }
 
