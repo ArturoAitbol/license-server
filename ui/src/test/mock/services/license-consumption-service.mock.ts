@@ -334,5 +334,31 @@ export const ConsumptionServiceMock = {
                 unsubscribe() { }
             };
         });
+    },
+    addLicenseConsumptionEvent: () => {
+        return new Observable((observer) => {
+            observer.next(
+                {
+                    "consumptionDate": "2023-03-03",
+                    "subaccountId": "97ea3d88-f358-4ed9-bbca-696e8aedfaea",
+                    "serialNumber": "",
+                    "usageDays": [5,6],
+                    "dutId": "7564aab0-5331-4ab5-85f7-e37acbdfd90d",
+                    "consumptionMatrixId": "a8654484-1cb2-4fec-adf4-ee7ddc17375d",
+                    "type": "Configuration",
+                    "userId": "38cf9684-af9d-4919-b35f-fe24e115fe10",
+                    "macAddress": "",
+                    "callingPlatformId": "3baa5c29-f94d-4281-83b0-d705c2e2f5ad",
+                    "comment": "",
+                    "userEmail": "vtorrico@tekvizionlabs.com",
+                    "id": "5ddd3e5d-1944-4a3e-b64f-fa963fc327db",
+                    "projectId": "b436183f-5c15-4e84-9520-5bbda3a20493"
+                }
+            );
+            observer.complete();
+            return {
+                unsubscribe() { }
+            };
+        })
     }
 };

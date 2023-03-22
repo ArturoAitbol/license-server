@@ -1,5 +1,6 @@
+import { Observable } from "rxjs";
+
 export const BannerServiceMock = {
-    open: () => {
-        
-    }
+    init: () => { return },
+    open: (title: string, message: string, onComponentDestruction: Observable<void>) => { return },
 }

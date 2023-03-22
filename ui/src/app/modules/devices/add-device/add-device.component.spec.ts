@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import moment from 'moment';
 import { of } from 'rxjs';
 import { DevicesService } from 'src/app/services/devices.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -155,5 +156,41 @@ describe('Calls and interactions', () => {
     expect(DevicesServiceMock.createDevice).toHaveBeenCalled();
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error message', 'Error adding Device!');
 
+  });
+
+  it('should call onChangeDeviceType', () => {
+    fixture.detectChanges();
+    spyOn(addDeviceComponentTestInstance, 'onChangeDeviceType').and.callThrough();
+
+    fixture.detectChanges();
+
+    addDeviceComponentTestInstance.onChangeDeviceType('PBX');
+    expect(addDeviceComponentTestInstance.vendors.length).toBe(28);
+    expect(addDeviceComponentTestInstance.isDataLoading).toBeFalse();
+  });
+
+  it('should call onStartDateChange', () => {
+    fixture.detectChanges();
+    spyOn(addDeviceComponentTestInstance, 'onStartDateChange').and.callThrough();
+
+    fixture.detectChanges();
+
+    addDeviceComponentTestInstance.onStartDateChange(moment());
+    const actualDate = new Date()
+    actualDate.setDate(actualDate.getDate() + 1)
+    expect(addDeviceComponentTestInstance.deprecatedDateMin).toEqual(actualDate);
+    
+  });
+
+  it('should call onRenewalDateChange', () => {
+    fixture.detectChanges();
+    spyOn(addDeviceComponentTestInstance, 'onRenewalDateChange').and.callThrough();
+
+    fixture.detectChanges();
+
+    addDeviceComponentTestInstance.onRenewalDateChange(moment());
+    const actualDate = new Date()
+    actualDate.setDate(actualDate.getDate() - 1)
+    expect(addDeviceComponentTestInstance.startDateMax).toEqual(actualDate);
   });
 });
