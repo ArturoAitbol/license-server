@@ -1,5 +1,5 @@
 
-import { ComponentFixture, TestBed, } from '@angular/core/testing';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick, } from '@angular/core/testing';
 import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,6 +15,10 @@ import { MsalService } from '@azure/msal-angular';
 import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.service.mock';
+import { of } from "rxjs";
+import { BannerServiceMock } from "../../../../test/mock/services/alert-banner-service.mock";
+import { BannerService } from "../../../services/alert-banner.service";
+import { BannerComponent } from "../banner/banner.component";
 
 
 let ctaasTestReportComponentTestInstance: CtaasTestReportsComponent;
@@ -28,7 +32,7 @@ const RouterMock = {
 
 const beforeEachFunction = () => {
   TestBed.configureTestingModule({
-    declarations: [CtaasTestReportsComponent],
+    declarations: [CtaasTestReportsComponent, BannerComponent],
     imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
     providers: [
       {
@@ -46,6 +50,10 @@ const beforeEachFunction = () => {
       {
         provide: CtaasSetupService,
         useValue: CtaasSetupServiceMock
+      },
+      {
+        provide: BannerService,
+        useValue: BannerServiceMock
       }
     ]
   });
@@ -116,4 +124,16 @@ describe('interaction with selected filters', () => {
     spyOn(window, 'close').and.returnValue(null);
 
   });
-})
+});
+
+describe('Ctaas Test Reports - maintenance mode', () => {
+  beforeEach(beforeEachFunction);
+  it('should open an alert banner when maintenance mode is enabled',fakeAsync(() => {
+    spyOn(CtaasSetupServiceMock, "getSubaccountCtaasSetupDetails").and.returnValue(of({ ctaasSetups: [CtaasSetupServiceMock.testSetupMaintenance] }));
+    spyOn(BannerServiceMock, "open").and.callThrough();
+    fixture.detectChanges();
+    tick();
+    expect(BannerServiceMock.open).toHaveBeenCalledWith('WARNING', 'Spotlight service is under maintenance, this function is disabled until the service resumes. ', jasmine.any(Object));
+    discardPeriodicTasks();
+  }));
+});
