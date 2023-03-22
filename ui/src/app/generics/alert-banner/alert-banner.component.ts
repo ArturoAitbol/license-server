@@ -34,7 +34,7 @@ export class AlertBannerComponent {
     this.title = title;
     this.message = message;
     this.opened = true;
-    this.onComponentDestructionSubscription = onComponentDestruction.subscribe(() => this.opened = false);
+    this.onComponentDestructionSubscription = onComponentDestruction.subscribe(() => this.close());
   }
 
   close() {

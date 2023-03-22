@@ -469,7 +469,7 @@ describe('add-license-consumption - On event methods', () => {
         await fixture.whenStable();
         const options = fixture.debugElement.queryAll(By.css('mat-option'));
         expect(options.length).toBe(1);
-        expect(options[0].nativeElement.textContent).toBe(' Test (week - 2) ');
+        expect(options[0].nativeElement.textContent).toBe(' Test - v.2.1 (week - 2) ');
     });
 });
 

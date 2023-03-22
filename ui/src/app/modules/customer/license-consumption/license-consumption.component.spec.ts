@@ -245,12 +245,13 @@ describe('Data collection and parsing tests', () => {
         expect(licenseConsumptionComponentTestInstance.selectedProject).toBe(project.id);
     });
 
-    it('should make a call to get licenses, projects, dataToDisplay and actionMenuOptions after initializing', () => {
+    it('should make a call to get licenses, projects, dataToDisplay and actionMenuOptions after initializing', async () => {
         spyOn(LicenseServiceMock, 'getLicenseList').and.callThrough();
         spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, "fetchDataToDisplay").and.callThrough();
         spyOn(licenseConsumptionComponentTestInstance, "fetchProjectsList").and.callThrough();
         fixture.detectChanges();
+        await fixture.whenStable();
         expect(LicenseServiceMock.getLicenseList).toHaveBeenCalledWith(CurrentCustomerServiceMock.selectedCustomer.subaccountId);
         expect(licenseConsumptionComponentTestInstance.licensesList).toEqual([LicenseServiceMock.mockLicenseN, LicenseServiceMock.mockLicenseO],);
         expect(licenseConsumptionComponentTestInstance.isLicenseListLoaded).toBeTrue();
