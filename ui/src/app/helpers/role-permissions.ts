@@ -388,10 +388,7 @@ export const permissions = {
             noteOptions: [
                 'VIEW_DASHBOARD'
             ],
-            testReportsOptions: [
-                'DAILY_FEATURE_FUNCTIONALITY',
-                'DAILY_CALLING_RELIABILITY'
-            ]
+            testReportsOptions: []
         }
     }
 };
