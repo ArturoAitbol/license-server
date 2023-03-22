@@ -135,7 +135,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     enableEmbedTokenCache: boolean = true;
     canRefreshDashboard: boolean = false;
     refresh: boolean = false;
-    isFeatureEnabled: boolean = false;
     @ViewChild('reportEmbed') reportContainerDivElement: any;
     constructor(
         private dialog: MatDialog,
@@ -171,7 +170,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const accountDetails = this.getAccountDetails();
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
-        this.isFeatureEnabled = this.featureToggleService.isFeatureEnabled("powerbiRefreshFeature", this.subaccountDetails.id);
         // load the view based on the route
         if (this.router.url.includes('/report-dashboards') || this.openedAsModal)
             this.viewMode.setValue(this.LEGACY_MODE);

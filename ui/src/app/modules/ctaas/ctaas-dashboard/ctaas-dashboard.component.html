@@ -35,7 +35,7 @@
                 <mat-button-toggle *lcFeatureToggle="'powerbiTestReport';subaccountId:getSubaccountId()" [value]="TEST2">{{TEST2 | titlecase}}</mat-button-toggle>
               </mat-button-toggle-group>
             </div>
-            <div *ngIf="isFeatureEnabled">
+            <div *lcFeatureToggle="'powerbiRefreshFeature';subaccountId:getSubaccountId()">
               <div >
                 <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="refreshDashboard()">
                   <mat-icon>refresh</mat-icon>
@@ -63,7 +63,7 @@
                   <mat-button-toggle [value]="WEEKLY">{{WEEKLY | titlecase}}</mat-button-toggle>
                 </mat-button-toggle-group>
               </div>
-              <div *ngIf="isFeatureEnabled">
+              <div *lcFeatureToggle="'powerbiRefreshFeature';subaccountId:getSubaccountId()">
                 <div >
                   <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="refreshDashboard()">
                     <mat-icon>refresh</mat-icon>
