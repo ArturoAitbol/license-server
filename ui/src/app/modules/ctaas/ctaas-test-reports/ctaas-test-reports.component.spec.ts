@@ -18,7 +18,7 @@ import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.servic
 import { Sort } from '@angular/material/sort';
 import { TestReportsServiceMock } from 'src/test/mock/services/ctaas-test-reports.service.mock';
 import { Utility } from 'src/app/helpers/utils';
-import { SearchConsolidateDateComponent } from './search-consolidate-date/search-consolidate-date.component';
+import { SearchConsolidatedReportComponent } from './search-consolidate-date/search-consolidated-report.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { of } from "rxjs";
@@ -100,7 +100,7 @@ describe('Data collection and parsing test', () => {
     spyOn(ctaasTestReportComponentTestInstance, 'searchConsolidatedReport').and.callThrough();
     spyOn(MatDialogMock, 'open').and.callThrough();
     ctaasTestReportComponentTestInstance.searchConsolidatedReport();
-    expect(ctaasTestReportComponentTestInstance.dialog.open).toHaveBeenCalledWith(SearchConsolidateDateComponent, {
+    expect(ctaasTestReportComponentTestInstance.dialog.open).toHaveBeenCalledWith(SearchConsolidatedReportComponent, {
       width:'450px',
       disableClose: true
     });

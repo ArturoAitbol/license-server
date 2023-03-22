@@ -12,7 +12,7 @@ import { debounceTime, takeUntil } from 'rxjs/operators';
 import { BannerService } from "../../../services/alert-banner.service";
 import { DialogService } from 'src/app/services/dialog.service';
 import { MatDialog } from '@angular/material/dialog';
-import { SearchConsolidateDateComponent } from './search-consolidate-date/search-consolidate-date.component';
+import { SearchConsolidatedReportComponent } from './search-consolidate-date/search-consolidated-report.component';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -173,7 +173,7 @@ export class CtaasTestReportsComponent implements OnInit {
   }
 
   searchConsolidatedReport() {
-    let dialogRef = this.dialog.open(SearchConsolidateDateComponent, {
+    let dialogRef = this.dialog.open(SearchConsolidatedReportComponent, {
       width:'450px',
       disableClose: true
     });

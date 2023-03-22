@@ -7,11 +7,11 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-search-consolidate-date',
-  templateUrl: './search-consolidate-date.component.html',
-  styleUrls: ['./search-consolidate-date.component.css']
+  selector: 'app-search-consolidated-report',
+  templateUrl: './search-consolidated-report.component.html',
+  styleUrls: ['./search-consolidated-report.component.css']
 })
-export class SearchConsolidateDateComponent implements OnInit {
+export class SearchConsolidatedReportComponent implements OnInit {
   public maxDate: any;
   public minEndDate: any;
   subaccountDetails:any;
@@ -36,7 +36,7 @@ export class SearchConsolidateDateComponent implements OnInit {
   constructor(
     private subaccountService: SubAccountService,
     private formBuilder: FormBuilder,
-    public dialogRef: MatDialogRef<SearchConsolidateDateComponent>) { }
+    public dialogRef: MatDialogRef<SearchConsolidatedReportComponent>) { }
 
   ngOnInit(): void {
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();

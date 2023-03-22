@@ -6,14 +6,14 @@ import { of } from "rxjs";
 import { DialogService } from "src/app/services/dialog.service";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { TestBedConfigBuilder } from "src/test/mock/TestBedConfigHelper.mock";
-import { SearchConsolidateDateComponent } from "./search-consolidate-date.component";
+import { SearchConsolidatedReportComponent } from "./search-consolidated-report.component";
 
-let consolidatedDateInstance: SearchConsolidateDateComponent;
-let fixture : ComponentFixture<SearchConsolidateDateComponent>;
+let consolidatedDateInstance: SearchConsolidatedReportComponent;
+let fixture : ComponentFixture<SearchConsolidatedReportComponent>;
 const dialogService = new DialogServiceMock();
 
 const beforeEachFunction = () => {
-    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(SearchConsolidateDateComponent);
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(SearchConsolidatedReportComponent);
     configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
     configBuilder.addProvider({ provide: MatDialogRef, useValue: dialogService });
     configBuilder.addProvider({provide: ActivatedRoute, useValue: {
@@ -23,7 +23,7 @@ const beforeEachFunction = () => {
         })
     }})
     TestBed.configureTestingModule(configBuilder.getConfig());
-    fixture = TestBed.createComponent(SearchConsolidateDateComponent);
+    fixture = TestBed.createComponent(SearchConsolidatedReportComponent);
     consolidatedDateInstance = fixture.componentInstance;
     fixture.detectChanges();
 }
