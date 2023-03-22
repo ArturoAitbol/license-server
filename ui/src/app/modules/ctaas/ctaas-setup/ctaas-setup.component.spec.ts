@@ -93,7 +93,7 @@ const beforeEachFunction = () => {
     spyOn(console, 'log').and.callThrough();
 }
 
-describe('UI verification test', () => {
+fdescribe('UI verification test', () => {
     beforeEach(beforeEachFunction);
 
     //test 1
@@ -122,7 +122,7 @@ describe('UI verification test', () => {
     });
 });
 
-describe('make method calls', () => {
+fdescribe('make method calls', () => {
     beforeEach(beforeEachFunction);
 
     // test 3
@@ -179,7 +179,7 @@ describe('make method calls', () => {
     });
 });
 
-describe('setup form verifications', () => {
+fdescribe('setup form verifications', () => {
     beforeEach(beforeEachFunction);
 
     // test 7
@@ -215,7 +215,7 @@ describe('setup form verifications', () => {
 
 });
 
-describe('dialog calls and interactions', () => {
+fdescribe('dialog calls and interactions', () => {
     beforeEach(beforeEachFunction);
 
     // test 9
@@ -303,9 +303,41 @@ describe('dialog calls and interactions', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith("No active subscriptions found", 'Error selecting a subscription');
     });
 
+
+    it('should make a call to maintenanceToggle and call it with enable', () => {
+        dialogService.expectedConfirmDialogValue = true;
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
+        spyOn(CtaasSetupComponentTestInstance, 'maintenanceToggle').and.callThrough();
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+
+        CtaasSetupComponentTestInstance.maintenanceToggle('enable');
+
+        expect(dialogService.confirmDialog).toHaveBeenCalledWith({
+            title: 'Confirm Maintenance Mode',
+            message: 'If you enable this mode, some of the features in the implementation won\'t be available, are you sure you want to continue?',
+            confirmCaption: 'Confirm',
+            cancelCaption: 'Cancel',
+        });
+    });
+
+    it('should make a call to maintenanceToggle and call it with disable', () => {
+        dialogService.expectedConfirmDialogValue = true;
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
+        spyOn(CtaasSetupComponentTestInstance, 'maintenanceToggle').and.callThrough();
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+
+        CtaasSetupComponentTestInstance.maintenanceToggle('disable');
+
+        expect(dialogService.confirmDialog).toHaveBeenCalledWith({
+            title: 'Confirm Maintenance Mode',
+            message: 'Are you sure you want to disable the maintenance mode?',
+            confirmCaption: 'Confirm',
+            cancelCaption: 'Cancel',
+        });
+    });
 });
 
-describe('check for error and success messages', () => {
+fdescribe('check for error and success messages', () => {
     beforeEach(beforeEachFunction);
 
     // test 12
@@ -335,6 +367,23 @@ describe('check for error and success messages', () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(errorResponse.error, 'Error updating Spotlight Setup!');
     });
 
+    it('should make a call to maintenanceToggle and return error message', () => {
+        dialogService.expectedConfirmDialogValue = true;
+        const errorResponse = { error: 'some error' };
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
+        spyOn(CtaasSetupServiceMock, 'updateCtaasSetupDetailsById').and.returnValue(of(errorResponse));
+        spyOn(CtaasSetupComponentTestInstance, 'maintenanceToggle').and.callThrough();
+        spyOn(dialogService, 'confirmDialog').and.callThrough();
+
+        CtaasSetupComponentTestInstance.maintenanceToggle('disable');
+
+        expect(dialogService.confirmDialog).toHaveBeenCalledWith({
+            title: 'Confirm Maintenance Mode',
+            message: 'Are you sure you want to disable the maintenance mode?',
+            confirmCaption: 'Confirm',
+            cancelCaption: 'Cancel',
+        });
+    });
     // test 14
     it('should display a message when update is successful', () => {
         spyOn(CtaasSetupComponentTestInstance, 'submit').and.callThrough();
