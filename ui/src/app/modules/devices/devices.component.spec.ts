@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
+import moment from 'moment';
 import { throwError } from 'rxjs';
 import { Device } from 'src/app/model/device.model';
 import { DevicesService } from 'src/app/services/devices.service';
@@ -111,6 +112,28 @@ describe('UI verification tests', () => {
         expect(headers[2].innerText).toBe('Vendor');
         expect(headers[3].innerText).toBe('Device Name');
     });
+
+    it('should sort the data table',() => {
+        fixture.detectChanges();
+        devicesComponentTestInstance.devicesBk = DevicesServiceMock.unsortedDeviceList.devices;
+        devicesComponentTestInstance.devices = DevicesServiceMock.unsortedDeviceList.devices;
+        devicesComponentTestInstance.sortData({active: "vendor", direction:'asc'});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.ascSortedList.devices);
+        
+        devicesComponentTestInstance.sortData({active: "vendor", direction:'desc'});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.descSortedList.devices);
+        
+        devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:'asc'});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.tokenAscSortedList.devices);
+        
+        devicesComponentTestInstance.devicesBk = DevicesServiceMock.unsortedDeviceList.devices;
+        devicesComponentTestInstance.devices = DevicesServiceMock.unsortedDeviceList.devices;
+        devicesComponentTestInstance.sortData({active: "tokensToConsume", direction:'desc'});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.tokenDescSortedList.devices);
+        
+        devicesComponentTestInstance.sortData({active: "vendor", direction:""});
+        expect(devicesComponentTestInstance.devicesBk).toEqual(DevicesServiceMock.unsortedDeviceList.devices);
+    });
 });
 
 
@@ -152,7 +175,6 @@ describe('Data collection and parsing tests', () => {
         expect(devicesComponentTestInstance.actionMenuOptions).toContain('Delete');
         expect(devicesComponentTestInstance.actionMenuOptions).toContain('Edit');
     });
-
 });
 describe('Dialog calls and interactions', () => {
 
@@ -209,7 +231,7 @@ describe('Dialog calls and interactions', () => {
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
         expect(DevicesServiceMock.deleteDevice).toHaveBeenCalledWith(device.id);
         expect(devicesComponentTestInstance.fetchDevices).toHaveBeenCalled();
-    })
+    });
 
 
     it('should not delete device if the operation is NOT confirmed in confirmDialog after calling onDelete()', () => {
@@ -223,6 +245,32 @@ describe('Dialog calls and interactions', () => {
         expect(dialogServiceMock.confirmDialog).toHaveBeenCalled();
         expect(DevicesServiceMock.deleteDevice).not.toHaveBeenCalled();
         expect(devicesComponentTestInstance.fetchDevices).not.toHaveBeenCalled();
+    });
+
+    it('should call the filters and filter the list', async () => {
+        devicesComponentTestInstance.loadFilters();
+
+        devicesComponentTestInstance.filterForm.get('vendorFilterControl').setValue('HylaFAX');
+        devicesComponentTestInstance.filterForm.get('nameFilterControl').setValue('HylaFAX Enterprise');
+        devicesComponentTestInstance.filterForm.get('typeFilterControl').setValue('PBX');
+        devicesComponentTestInstance.filterForm.get('startDateFilterControl').setValue(moment());
+        devicesComponentTestInstance.filterForm.get('endDateFilterControl').setValue(moment());
+
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(devicesComponentTestInstance.devicesBk.length).toBe(0);
     })
 
+    it('should call the endDatefilter and filter the list', fakeAsync(() => {
+        devicesComponentTestInstance.loadFilters();
+        tick(500);
+        devicesComponentTestInstance.filterForm.get('endDateFilterControl').setValue(moment());
+
+        fixture.detectChanges();
+        tick(500);
+        
+
+        expect(devicesComponentTestInstance.devicesBk.length).toBe(3);
+    }))
 });
