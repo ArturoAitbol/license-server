@@ -172,7 +172,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
         this.isFeatureEnabled = this.featureToggleService.isFeatureEnabled("powerbiRefreshFeature", this.subaccountDetails.id);
-        this.canRefreshDashboard = this.featureToggleService.isFeatureEnabled("", this.subaccountDetails.id);
         // load the view based on the route
         if (this.router.url.includes('/report-dashboards') || this.openedAsModal)
             this.viewMode.setValue(this.LEGACY_MODE);
