@@ -20,6 +20,7 @@ import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 import { Subject } from "rxjs/internal/Subject";
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -132,6 +133,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     viewMode = new FormControl(this.LEGACY_MODE);
     powerbiReportResponse: IPowerBiReponse;
     enableEmbedTokenCache: boolean = true;
+    canRefreshDashboard: boolean = false;
+    refresh: boolean = false;
     @ViewChild('reportEmbed') reportContainerDivElement: any;
     constructor(
         private dialog: MatDialog,
@@ -444,6 +447,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                 if (this.powerbiReportResponse) {
                     this.hasDashboardDetails = true;
                     const { daily, weekly, test1, test2 } = this.powerbiReportResponse;
+                    
                     // configure for daily report
                     if (this.featureToggleKey === this.DAILY) {
                         const { id, embedUrl, embedToken } = daily;
@@ -490,5 +494,17 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             this.subscriptionToFetchDashboard.unsubscribe();
         this.onDestroy.next();
         this.onDestroy.complete();
+    }
+    delay(ms: number) {
+        return new Promise( resolve => setTimeout(resolve, ms) );
+    }
+    async refreshDashboard() {
+        this.refresh = true;
+        const { value } = this.powerBiFontStyleControl;
+        this.powerBiEmbeddingFlag = false;
+        await this.delay(1);
+        this.featureToggleKey = value;
+        await this.viewDashboardByMode();
+        this.refresh = false;
     }
 }

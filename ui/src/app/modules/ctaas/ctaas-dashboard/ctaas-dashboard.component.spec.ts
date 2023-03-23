@@ -6,7 +6,7 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MsalService } from "@azure/msal-angular";
-import { Observable, of, throwError } from "rxjs";
+import { of, throwError } from "rxjs";
 import { Constants } from "src/app/helpers/constants";
 import { CtaasDashboardService } from "src/app/services/ctaas-dashboard.service";
 import { CtaasSetupService } from "src/app/services/ctaas-setup.service";
@@ -25,6 +25,8 @@ import { SharedModule } from "../../shared/shared.module";
 import { BannerComponent } from "../banner/banner.component";
 import { OnboardWizardComponent } from "../ctaas-onboard-wizard/ctaas-onboard-wizard.component";
 import { CtaasDashboardComponent } from "./ctaas-dashboard.component";
+import { BannerService } from "../../../services/alert-banner.service";
+import { BannerServiceMock } from "../../../../test/mock/services/alert-banner-service.mock";
 
 let ctaasDashboardTestInstance: CtaasDashboardComponent;
 let fixture: ComponentFixture<CtaasDashboardComponent>;
@@ -74,6 +76,10 @@ const defaultTestBedConfig = {
         {
             provide: HttpClient,
             useValue: HttpClient
+        },
+        {
+            provide: BannerService,
+            useValue: BannerServiceMock
         }
     ]
 };
@@ -211,4 +217,16 @@ describe('test without report-dashboard route', () => {
         expect(ctaasDashboardTestInstance.viewDashboardByMode).toHaveBeenCalled();
     });
     
+});
+
+describe('Ctaas Dashboard - maintenance mode', () => {
+    beforeEach(beforeEachFunction);
+    it('should open an alert banner when maintenance mode is enabled',fakeAsync(() => {
+        spyOn(CtaasSetupServiceMock, "getSubaccountCtaasSetupDetails").and.returnValue(of({ ctaasSetups: [CtaasSetupServiceMock.testSetupMaintenance] }));
+        spyOn(BannerServiceMock, "open").and.callThrough();
+        fixture.detectChanges();
+        tick();
+        expect(BannerServiceMock.open).toHaveBeenCalledWith('WARNING', 'Spotlight service is under maintenance, the most recent data is shown until the service resumes. ', jasmine.any(Object));
+        discardPeriodicTasks();
+    }));
 });
