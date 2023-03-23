@@ -118,7 +118,11 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     if (message && errorCode && message === 'TokenExpired' && (errorCode === '403' || errorCode === '401') && !this.pbiErrorCounter) {
                         this.pbiErrorCounter = true;
                         this.setPbiReportDetailsInSubaccountDetails(null);
-                        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
+                        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount().then((res) => {
+                            if (res === 'API request is successful!') {
+                                this.viewDashboardByMode();
+                            }
+                        });
                     }
                 }
             },
@@ -402,7 +406,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.setPbiReportDetailsInSubaccountDetails({ daily, weekly, test1, test2, expiresAt });
                     this.hasDashboardDetails = true;
                     //this seems to be the cause of the problem in the unit tests. it seems to be causing some kind of loop 
-                    //this.viewDashboardByMode();
+                    // this.viewDashboardByMode();
                     resolve("API request is successful!");
                 }, (err) => {
                     this.hasDashboardDetails = false;
@@ -447,7 +451,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                 if (this.powerbiReportResponse) {
                     this.hasDashboardDetails = true;
                     const { daily, weekly, test1, test2 } = this.powerbiReportResponse;
-                    
+
                     // configure for daily report
                     if (this.featureToggleKey === this.DAILY) {
                         const { id, embedUrl, embedToken } = daily;
@@ -465,7 +469,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                 }
                 this.powerBiEmbeddingFlag = true;
                 break;
-            default:
+            case this.LEGACY_MODE:
                 this.powerBiEmbeddingFlag = false;
                 this.fetchCtaasDashboardDetailsBySubaccount();
                 break;
@@ -496,7 +500,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         this.onDestroy.complete();
     }
     delay(ms: number) {
-        return new Promise( resolve => setTimeout(resolve, ms) );
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
     async refreshDashboard() {
         this.refresh = true;
