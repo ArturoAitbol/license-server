@@ -7,14 +7,14 @@ import { CtaasDashboardServiceMock } from "src/test/mock/services/ctaas-dashboar
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { TestBedConfigBuilder } from "src/test/mock/TestBedConfigHelper.mock";
-import { MoreDetailsComponent } from "./ctaas-detailed-reports.component";
+import { DetailedReportsCompoment } from "./ctaas-detailed-reports.component";
 
-let onboardWizardComponentInstance: MoreDetailsComponent;
-let fixture : ComponentFixture<MoreDetailsComponent>;
+let onboardWizardComponentInstance: DetailedReportsCompoment;
+let fixture : ComponentFixture<DetailedReportsCompoment>;
 const dialogService = new DialogServiceMock();
 
 const beforeEachFunction = () => {
-    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(MoreDetailsComponent);
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(DetailedReportsCompoment);
     configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
     configBuilder.addProvider({ provide: MatDialogRef, useValue: dialogService });
     configBuilder.addProvider({provide: ActivatedRoute, useValue: {
@@ -24,7 +24,7 @@ const beforeEachFunction = () => {
         })
     }})
     TestBed.configureTestingModule(configBuilder.getConfig());
-    fixture = TestBed.createComponent(MoreDetailsComponent);
+    fixture = TestBed.createComponent(DetailedReportsCompoment);
     onboardWizardComponentInstance = fixture.componentInstance;
     fixture.detectChanges();
 }

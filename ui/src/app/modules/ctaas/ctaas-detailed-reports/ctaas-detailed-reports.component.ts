@@ -12,7 +12,7 @@ import { SubAccountService } from 'src/app/services/sub-account.service';
   templateUrl: './ctaas-detailed-reports.component.html',
   styleUrls: ['./ctaas-detailed-reports.component.css']
 })
-export class MoreDetailsComponent implements OnInit {
+export class DetailedReportsCompoment implements OnInit {
 
   endpointDisplayedColumns: any = [];
   filename: string = '';
