@@ -18,7 +18,7 @@ import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.servic
 import { Sort } from '@angular/material/sort';
 import { TestReportsServiceMock } from 'src/test/mock/services/ctaas-test-reports.service.mock';
 import { Utility } from 'src/app/helpers/utils';
-import { SearchConsolidatedReportComponent } from './search-consolidate-date/search-consolidated-report.component';
+import { SearchConsolidatedReportComponent } from './search-consolidated-report/search-consolidated-report.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { of } from "rxjs";

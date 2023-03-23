@@ -106,8 +106,7 @@ export const permissions = {
             deviceOptions: [
                 'MODIFY_DEVICE',
                 'DELETE_DEVICE',
-            ],
-            testReportsOptions: []
+            ]
         }
     },
     'tekvizion.SalesAdmin': {
@@ -211,8 +210,7 @@ export const permissions = {
                 'DELETE_STAKEHOLDER'
             ],
             subscriptionsOverviewOptions: [],
-            deviceOptions: [],
-            testReportsOptions: []
+            deviceOptions: []
         }
     },
     'distributor.FullAdmin': {
@@ -302,8 +300,7 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
-            ],
-            testReportsOptions: []
+            ]
         }
     },
     'customer.SubaccountAdmin': {
@@ -356,8 +353,7 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
-            ],
-            testReportsOptions: []
+            ]
         }
     },
     'customer.SubaccountStakeholder': {
@@ -387,8 +383,7 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'
-            ],
-            testReportsOptions: []
+            ]
         }
     }
 };
