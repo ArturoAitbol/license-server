@@ -118,7 +118,11 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     if (message && errorCode && message === 'TokenExpired' && (errorCode === '403' || errorCode === '401') && !this.pbiErrorCounter) {
                         this.pbiErrorCounter = true;
                         this.setPbiReportDetailsInSubaccountDetails(null);
-                        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
+                        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount().then((res) => {
+                            if (res === 'API request is successful!') {
+                                this.viewDashboardByMode();
+                            }
+                        });
                     }
                 }
             },
