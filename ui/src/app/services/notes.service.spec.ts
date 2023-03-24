@@ -38,4 +38,24 @@ describe('Note service http requests test', () => {
         expect(httpClientSpy.delete).toHaveBeenCalledWith(environment.apiEndpoint + '/notes/' + noteToDelete.id);
     });
 
+    it('should make the proper http calls on createNote', (done: DoneFn) => {
+        const testNote = {
+            id: '56785678-5678-5678-5678-567856785678',
+            subaccountId: 'fbb2d912-b202-432d-8c07-dce0dad51f7f',
+            openDate: '2022-01-24 05:00:00',
+            closeDate: '2022-05-29 05:00:00',
+            openedBy: 'test@unit.test',
+            closedBy: '',
+            status: 'Open',
+            content: 'Test content 2',
+            reports: [{timestampId:"221207090048",reportType:"Daily-FeatureFunctionality"}]
+        }
+        httpClientSpy.post.and.returnValue(NoteServiceMock.createNote(testNote));
+        noteService.createNote(testNote).subscribe({
+            next: () => {done();},
+            error: done.fail
+        });
+
+        expect(httpClientSpy.post).toHaveBeenCalledWith(environment.apiEndpoint + '/notes', testNote);
+    });
 });
