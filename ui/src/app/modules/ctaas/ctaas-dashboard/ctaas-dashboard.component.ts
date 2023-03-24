@@ -119,7 +119,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     if (message && errorCode && message === 'TokenExpired' && (errorCode === '403' || errorCode === '401') && !this.pbiErrorCounter) {
                         this.pbiErrorCounter = true;
                         this.setPbiReportDetailsInSubaccountDetails(null);
-                        this.getNewTokenDetails();
+                        this.getRefreshAccessToken();
                     }
                 }
             },
@@ -203,7 +203,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                         const within5Mins = timeDiff <= 300000;
                         if (within5Mins) {
                             this.setPbiReportDetailsInSubaccountDetails(null);
-                            this.getNewTokenDetails();
+                            this.getRefreshAccessToken();
                         }
                     }
                 }
@@ -498,14 +498,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         return this.subaccountDetails ? this.subaccountDetails.id : "";
     }
 
-    getNewTokenDetails() {
-        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount().then(async (res) => {
-            if (res === 'API request is successful!') {
-                await this.viewDashboardByMode();
-            }
-        });
-    }
-
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
@@ -526,6 +518,14 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         this.featureToggleKey = value;
         await this.viewDashboardByMode();
         this.refresh = false;
+    }
+
+    getRefreshAccessToken() {
+        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount().then(async (res) => {
+            if (res === 'API request is successful!') {
+                await this.viewDashboardByMode();
+            }
+        });
     }
 
 }
