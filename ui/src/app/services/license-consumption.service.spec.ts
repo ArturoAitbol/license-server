@@ -176,4 +176,39 @@ describe('Customer service http requests test', () => {
         });
         expect(httpClientSpy.get).toHaveBeenCalled();
     });  
+
+    it('should make the proper http calls on addLicenseConsumptionEvent', (done: DoneFn) =>{
+        const testLicenseConsumption = { 
+            consumptionDate: "2022-08-21",
+            usageDays: [0,3],
+            consumption: "2022-08-21 - Week 34",
+            device: {
+                id: "51fc2c47-b066-46f2-a613-93c350da9869",
+                type: "SBC",
+                product: "Connect 530",
+                version: "9.0.4.7",
+                vendor: "Allworx",
+                granularity: "week",
+            },
+            callingPlatform: {
+                id: "51fc2c47-b066-46f2-a613-93c350da9869",
+                type: "PBX",
+                product: "908E",
+                version: "9.0.4.7",
+                vendor: "Allworx"
+            },
+            id: "bc12f1d1-8cf0-4d20-af81-fc11c12bf152",
+            tokensConsumed: 2,
+            projectName: "test",
+            projectId: "403e139b-5d28-42cc-b339-7a5ef20f416b",
+            usageType: "Configuration"
+        }
+        httpClientSpy.post.and.returnValue(ConsumptionServiceMock.addLicenseConsumptionEvent());
+        licenseConsumptionService.addLicenseConsumptionEvent(testLicenseConsumption).subscribe({
+            next: () => {done();},
+            error: done.fail
+        });
+
+        expect(httpClientSpy.post).toHaveBeenCalledWith(environment.apiEndpoint + '/consumptionEvent', testLicenseConsumption);
+    }); 
 });

@@ -42,6 +42,16 @@ const TEST_SETUP_5 ={
     tapUrl: 'www.taptekvizion.com'
 };
 
+const TEST_SETUP_MAINTENANCE = {
+    azureResourceGroup: 'az-tap',
+    id: 'd973456e-049a-4490-ad4c-c3fc9205d50f',
+    onBoardingComplete: true,
+    status: 'SETUP_READY',
+    subaccountId: 'fc7a78c2-d0b2-4c81-9538-321562d426c7',
+    tapUrl: 'www.taptekvizion.com',
+    maintenance: true
+};
+
 const CTAAS_SETUP_LIST = {
     setups: [
         TEST_SETUP_1,
@@ -57,6 +67,7 @@ export const CtaasSetupServiceMock = {
     usersListValue: CTAAS_SETUP_LIST,
     testSetup1: TEST_SETUP_1,
     testSetup2: TEST_SETUP_5,
+    testSetupMaintenance: TEST_SETUP_MAINTENANCE,
 
     getSubaccountCtaasSetupDetails: (id) => {
         return new Observable( (observer) => {

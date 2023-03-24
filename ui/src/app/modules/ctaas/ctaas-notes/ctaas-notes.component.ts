@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { MsalService } from '@azure/msal-angular';
@@ -11,6 +11,9 @@ import {AddNotesComponent} from './add-notes/add-notes.component';
 import { Note } from 'src/app/model/note.model';
 import { CtaasHistoricalDashboardComponent } from '../ctaas-historical-dashboard/ctaas-historical-dashboard.component';
 import { DatePipe } from '@angular/common';
+import { BannerService } from "../../../services/alert-banner.service";
+import { CtaasSetupService } from "../../../services/ctaas-setup.service";
+import { Subject } from "rxjs";
 
 @Component({
     selector: 'app-ctaas-notes',
@@ -18,7 +21,7 @@ import { DatePipe } from '@angular/common';
     styleUrls: ['./ctaas-notes.component.css'],
     providers: [ DatePipe ]
 })
-export class CtaasNotesComponent implements OnInit {
+export class CtaasNotesComponent implements OnInit, OnDestroy {
     tableMaxHeight: number;
     displayedColumns: any[] = [];
     notesData: any = [];
@@ -27,7 +30,9 @@ export class CtaasNotesComponent implements OnInit {
     isLoadingResults = false;
     isRequestCompleted = false;
     toggleStatus = false;
+    addNoteDisabled = false;
     private subaccountDetails: any;
+    private onDestroy: Subject<void> = new Subject<void>();
     readonly CLOSE_NOTE = 'Close Note';
     readonly ADD_NOTE = 'Close Note';
     readonly VIEW_DASHBOARD = 'View Dashboard';
@@ -43,6 +48,8 @@ export class CtaasNotesComponent implements OnInit {
         private dialogService: DialogService,
         private noteService: NoteService,
         private subAccountService: SubAccountService,
+        private bannerService: BannerService,
+        private ctaasSetupService: CtaasSetupService,
         private datePipe: DatePipe) {}
     /**
      * calculate table height based on the window height
@@ -106,6 +113,7 @@ export class CtaasNotesComponent implements OnInit {
         this.getActionMenuOptions();
         this.initColumns();
         this.fetchNoteList();
+        this.checkMaintenanceMode();
     }
 
     /**
@@ -183,7 +191,9 @@ export class CtaasNotesComponent implements OnInit {
         switch (type) {
             case this.ADD_NOTE:
                 dialogRef = this.dialog.open(AddNotesComponent, {
-                    width: '400px',
+                    width: '85vw',
+                    maxHeight: '90vh',
+                    maxWidth: '85vw',
                     disableClose: false
                 });
                 break;
@@ -220,5 +230,20 @@ export class CtaasNotesComponent implements OnInit {
             this.getActionMenuOptions();
             this.notesData = this.notesDataBk.filter(x => x.status === 'Open');
         }
+    }
+
+    ngOnDestroy() {
+        this.onDestroy.next();
+        this.onDestroy.complete();
+    }
+
+    private checkMaintenanceMode() {
+        this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id).subscribe(res => {
+            const ctaasSetupDetails = res['ctaasSetups'][0];
+            if (ctaasSetupDetails.maintenance) {
+                this.addNoteDisabled = true;
+                this.bannerService.open("WARNING", "Spotlight service is under maintenance, the add note functionality is disabled until the service resumes. ", this.onDestroy);
+            }
+        })
     }
 }

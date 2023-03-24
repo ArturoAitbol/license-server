@@ -55,7 +55,7 @@
             </div>
             <div class="col-3">
                 <button class="mt-2" color="primary" mat-raised-button id="submit-filters"
-                    [disabled]="filterForm.invalid" type="submit">
+                    [disabled]="filterForm.invalid || submitDisabled" type="submit">
                     Search
                 </button>
             </div>

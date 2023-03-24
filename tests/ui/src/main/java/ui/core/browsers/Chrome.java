@@ -12,6 +12,7 @@ public class Chrome extends AbstractDriver {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--lang=en");
+        options.addArguments("--remote-allow-origins=*");
 /*        DesiredCapabilities cap = DesiredCapabilities.chrome();
         cap.setCapability(ChromeOptions.CAPABILITY, options);
         LoggingPreferences logPrefs = new LoggingPreferences();

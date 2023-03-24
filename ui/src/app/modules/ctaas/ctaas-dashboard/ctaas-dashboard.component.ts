@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -17,14 +17,18 @@ import { Router } from '@angular/router';
 import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
 import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
 import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
+import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
+import { Subject } from "rxjs/internal/Subject";
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
     selector: 'app-ctaas-dashboard',
     templateUrl: './ctaas-dashboard.component.html',
     styleUrls: ['./ctaas-dashboard.component.css']
 })
-export class CtaasDashboardComponent implements OnInit {
+export class CtaasDashboardComponent implements OnInit, OnDestroy {
+    @Input() openedAsModal = false;
 
     onboardSetupStatus = '';
     isOnboardingComplete: boolean;
@@ -37,6 +41,7 @@ export class CtaasDashboardComponent implements OnInit {
     dailyImagesList: string[] = [];
     weeklyImagesList: string[] = [];
     refreshIntervalSubscription: Subscription;
+    subscriptionToFetchDashboard: Subscription;
     lastModifiedDate: string;
     fontStyleControl = new FormControl('');
     powerBiFontStyleControl = new FormControl('');
@@ -88,6 +93,8 @@ export class CtaasDashboardComponent implements OnInit {
     @ViewChild(PowerBIReportEmbedComponent) reportObj!: PowerBIReportEmbedComponent;
     report: any;
     pbiErrorCounter: boolean = false;
+    private onDestroy: Subject<void> = new Subject<void>();
+
     /**
      * Map of event handlers to be applied to the embedded report
      */
@@ -107,12 +114,15 @@ export class CtaasDashboardComponent implements OnInit {
             'error',
             (event?: service.ICustomEvent<any>) => {
                 if (event) {
-                    console.error(event.detail);
                     const { detail: { message, errorCode } } = event;
                     if (message && errorCode && message === 'TokenExpired' && (errorCode === '403' || errorCode === '401') && !this.pbiErrorCounter) {
                         this.pbiErrorCounter = true;
                         this.setPbiReportDetailsInSubaccountDetails(null);
-                        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
+                        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount().then((res) => {
+                            if (res === 'API request is successful!') {
+                                this.viewDashboardByMode();
+                            }
+                        });
                     }
                 }
             },
@@ -127,6 +137,8 @@ export class CtaasDashboardComponent implements OnInit {
     viewMode = new FormControl(this.LEGACY_MODE);
     powerbiReportResponse: IPowerBiReponse;
     enableEmbedTokenCache: boolean = true;
+    canRefreshDashboard: boolean = false;
+    refresh: boolean = false;
     @ViewChild('reportEmbed') reportContainerDivElement: any;
     constructor(
         private dialog: MatDialog,
@@ -136,7 +148,8 @@ export class CtaasDashboardComponent implements OnInit {
         private subaccountService: SubAccountService,
         private snackBarService: SnackBarService,
         private featureToggleService: FeatureToggleService,
-        private router: Router
+        private router: Router,
+        private bannerService: BannerService
     ) { }
 
     /**
@@ -162,7 +175,7 @@ export class CtaasDashboardComponent implements OnInit {
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
         // load the view based on the route
-        if (this.router.url.includes('/report-dashboards'))
+        if (this.router.url.includes('/report-dashboards') || this.openedAsModal)
             this.viewMode.setValue(this.LEGACY_MODE);
         else
             this.viewMode.setValue(this.POWERBI_MODE);
@@ -174,8 +187,8 @@ export class CtaasDashboardComponent implements OnInit {
                 if (!this.powerBiEmbeddingFlag)
                     this.fetchCtaasDashboardDetailsBySubaccount();
             });
-        // fetch dashboard report for every 15 minutes interval
-        interval(30000)
+        // fetch dashboard report for every 30 seconds interval
+        this.subscriptionToFetchDashboard = interval(30000)
             .subscribe(() => {
                 // Make an http request only in PowerBi mode
                 if (this.powerBiEmbeddingFlag && this.subaccountDetails) {
@@ -223,10 +236,19 @@ export class CtaasDashboardComponent implements OnInit {
         this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountDetails.id)
             .subscribe((response: { ctaasSetups: ICtaasSetup[] }) => {
                 this.ctaasSetupDetails = response['ctaasSetups'][0];
-                const { onBoardingComplete, status } = this.ctaasSetupDetails;
+                const { onBoardingComplete, status, maintenance } = this.ctaasSetupDetails;
                 this.isOnboardingComplete = onBoardingComplete;
                 this.onboardSetupStatus = status;
                 this.setupCustomerOnboardDetails();
+                if (maintenance) {
+                    this.fontStyleControl.setValue(this.WEEKLY);
+                    this.fontStyleControl.disable();
+                    this.powerBiFontStyleControl.setValue(this.WEEKLY);
+                    this.powerBiFontStyleControl.disable();
+                    this.featureToggleKey = this.WEEKLY;
+                    this.bannerService.open("WARNING", "Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", this.onDestroy);
+                    this.viewDashboardByMode();
+                }
             });
     }
 
@@ -383,6 +405,8 @@ export class CtaasDashboardComponent implements OnInit {
                     this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly, test1, test2, expiresAt } };
                     this.setPbiReportDetailsInSubaccountDetails({ daily, weekly, test1, test2, expiresAt });
                     this.hasDashboardDetails = true;
+                    //this seems to be the cause of the problem in the unit tests. it seems to be causing some kind of loop 
+                    // this.viewDashboardByMode();
                     resolve("API request is successful!");
                 }, (err) => {
                     this.hasDashboardDetails = false;
@@ -427,6 +451,7 @@ export class CtaasDashboardComponent implements OnInit {
                 if (this.powerbiReportResponse) {
                     this.hasDashboardDetails = true;
                     const { daily, weekly, test1, test2 } = this.powerbiReportResponse;
+
                     // configure for daily report
                     if (this.featureToggleKey === this.DAILY) {
                         const { id, embedUrl, embedToken } = daily;
@@ -444,7 +469,7 @@ export class CtaasDashboardComponent implements OnInit {
                 }
                 this.powerBiEmbeddingFlag = true;
                 break;
-            default:
+            case this.LEGACY_MODE:
                 this.powerBiEmbeddingFlag = false;
                 this.fetchCtaasDashboardDetailsBySubaccount();
                 break;
@@ -460,7 +485,7 @@ export class CtaasDashboardComponent implements OnInit {
     }
     /**
      * get subaccount id
-     * @returns: string 
+     * @returns: string
      */
     getSubaccountId(): string {
         return this.subaccountDetails ? this.subaccountDetails.id : "";
@@ -469,5 +494,21 @@ export class CtaasDashboardComponent implements OnInit {
     ngOnDestroy(): void {
         if (this.refreshIntervalSubscription)
             this.refreshIntervalSubscription.unsubscribe();
+        if (this.subscriptionToFetchDashboard)
+            this.subscriptionToFetchDashboard.unsubscribe();
+        this.onDestroy.next();
+        this.onDestroy.complete();
+    }
+    delay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    async refreshDashboard() {
+        this.refresh = true;
+        const { value } = this.powerBiFontStyleControl;
+        this.powerBiEmbeddingFlag = false;
+        await this.delay(1);
+        this.featureToggleKey = value;
+        await this.viewDashboardByMode();
+        this.refresh = false;
     }
 }

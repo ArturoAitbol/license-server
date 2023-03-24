@@ -24,6 +24,10 @@ public class WebDriverAction {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(this.defaultTimeout));
     }
 
+    public void clickable(By locator){
+        wait.until(ExpectedConditions.elementToBeClickable(locator));
+    }
+
     public void click(WebElement element) {
         wait.until(ExpectedConditions.elementToBeClickable(element));
         element.click();
@@ -117,10 +121,6 @@ public class WebDriverAction {
     public String getText(WebElement element) {
         return wait.until(ExpectedConditions.visibilityOf(element)).getText();
     }
-
-    public void waitVisibilityElement(WebElement element) {
-        wait.until(ExpectedConditions.visibilityOf(element));
-    }
     public void waitInvisibilityElement(WebElement element) {
         try{
             wait.until(ExpectedConditions.invisibilityOf(element));
@@ -130,7 +130,9 @@ public class WebDriverAction {
             System.out.println(e);
         }
     }
-
+    public void waitVisibilityElement(WebElement element) {
+        wait.until(ExpectedConditions.visibilityOf(element));
+    }
     public WebElement waitVisibilityElement(By locator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }

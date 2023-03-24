@@ -27,6 +27,9 @@ export class Constants {
     public static readonly SUBACCOUNT_STAKEHOLDER = 'customer.SubaccountStakeholder';
     public static readonly DEVICES_ADMIN = 'tekvizion.DevicesAdmin';
 
+    //LIMITS
+    public static readonly STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
+
     // Types contants
     public static readonly SANDBOX_DEVICE_TYPE = 'Sandbox';
     public static readonly CERT_DEVICE_TYPE = 'CERT';

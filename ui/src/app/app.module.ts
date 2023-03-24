@@ -39,6 +39,7 @@ import { FeatureTogglesComponent } from './modules/feature-toggles/feature-toggl
 import { FeatureToggleCardComponent } from './modules/feature-toggles/feature-toggle-card/feature-toggle-card.component';
 import { AddFeatureToggleModalComponent } from './modules/feature-toggles/add-feature-toggle-modal/add-feature-toggle-modal.component';
 import { AddFeatureToggleExceptionModalComponent } from './modules/feature-toggles/add-feature-toggle-exception-modal/add-feature-toggle-exception-modal.component';
+import { AlertBannerComponent } from './generics/alert-banner/alert-banner.component';
 
 @NgModule({
     declarations: [
@@ -63,6 +64,7 @@ import { AddFeatureToggleExceptionModalComponent } from './modules/feature-toggl
         FeatureToggleCardComponent,
         AddFeatureToggleModalComponent,
         AddFeatureToggleExceptionModalComponent,
+        AlertBannerComponent,
     ],
     imports: [
         AppRoutingModule,

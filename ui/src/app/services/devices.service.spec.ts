@@ -129,4 +129,26 @@ describe('Customer service http requests test', () => {
         });
         expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/deviceTypes', { headers });
     });
+
+    it('should make the proper http calls on deleteDevice', (done: DoneFn) => {
+        const deviceId = '4119fcd9-b40f-40a1-9d72-0d6f84db04b2';
+        httpClientSpy.delete.and.returnValue(DevicesServiceMock.deleteDevice(deviceId));
+        devicesService.deleteDevice(deviceId).subscribe({
+            next: () => {done();},
+            error: done.fail
+        });
+        expect(httpClientSpy.delete).toHaveBeenCalledWith(environment.apiEndpoint + '/devices' + `/${deviceId}`);
+    });
+
+    it('should make the proper http calls on getAllDeviceVendors', (done:DoneFn) => {
+        const params = new HttpParams();
+        httpClientSpy.get.and.returnValue(DevicesServiceMock.getAllDeviceVendors());
+
+        devicesService.getAllDeviceVendors().subscribe({
+            next: () => {done();},
+            error: done.fail
+        });
+
+        expect(httpClientSpy.get).toHaveBeenCalledWith(environment.apiEndpoint + '/vendors', {headers, params});
+    });
 });

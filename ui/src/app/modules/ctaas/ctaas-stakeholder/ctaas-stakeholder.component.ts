@@ -154,11 +154,10 @@ export class CtaasStakeholderComponent implements OnInit {
    * open add stake holder component in dialog
    */
   addStakeholder(): void {
-    if(this.stakeholdersCount < 10){
+    if(this.stakeholdersCount < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT)
       this.openDialog(this.ADD_STAKEHOLDER);
-    } else {
-      this.snackBarService.openSnackBar('The maximum amount of stakeholders per subaccount was exceeded', '');
-    }
+    else
+      this.snackBarService.openSnackBar('The maximum amount of users per customer (' + Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT + ') has been reached', '');
   }
   /**
    * open dialog
