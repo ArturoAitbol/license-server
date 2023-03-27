@@ -10,6 +10,7 @@ import { DeleteCustomerModalComponent } from "../../dialogs/delete-customer/dele
 import { FeatureToggleDirective } from "../../directives/feature-toggle.directive";
 import { DateRangeDirective } from 'src/app/directives/date-range-directive';
 import { PowerBIEmbedModule } from 'powerbi-client-angular';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { PowerBIEmbedModule } from 'powerbi-client-angular';
   imports: [
     CommonModule,
     MaterialModule,
-    PowerBIEmbedModule
+    PowerBIEmbedModule,
+    NgxMatTimepickerModule
   ],
   exports: [
     NaPipe,

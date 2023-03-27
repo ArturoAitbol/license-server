@@ -8,11 +8,11 @@ import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
-  selector: 'app-more-details',
-  templateUrl: './ctaas-more-details.component.html',
-  styleUrls: ['./ctaas-more-details.component.css']
+  selector: 'app-detailed-reports',
+  templateUrl: './ctaas-detailed-reports.component.html',
+  styleUrls: ['./ctaas-detailed-reports.component.css']
 })
-export class MoreDetailsComponent implements OnInit {
+export class DetailedReportsCompoment implements OnInit {
 
   endpointDisplayedColumns: any = [];
   filename: string = '';
@@ -42,6 +42,8 @@ export class MoreDetailsComponent implements OnInit {
   fromMediaStats: any;
   toMediaStats: any;
   otherpartyMediaStat: any;
+ 
+
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
   public readonly FEATURE_FUNCTIONALITY: string = ReportType.DAILY_FEATURE_FUNCTIONALITY;
   public readonly CALL_RELIABILITY: string = ReportType.DAILY_CALLING_RELIABILITY;
