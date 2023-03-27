@@ -86,7 +86,6 @@ export class AddFeatureToggleExceptionModalComponent implements OnInit {
       res = res.reduce((current, next) => {
         return { ...current, ...next };
       }, {});
-      console.log(res.customers)
       res.customers.forEach(customer => {
         res.subaccounts.forEach(subaccount => {
           if (subaccount.customerId === customer.id) {

@@ -30,7 +30,7 @@ export class LicensesComponent implements OnInit {
   tableMaxHeight: number;
   licenses: License[] = [];
   licensesBk: License[] = [];
-  private customerSubaccountDetails: any
+  customerSubaccountDetails: any
   // flag
   isLoadingResults = true;
   isRequestCompleted = false;

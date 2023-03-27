@@ -273,7 +273,7 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/licenses'],{queryParams:{subaccountId: undefined }});
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/licenses'],{queryParams:{subaccountId: 'fbb2d912-b202-432d-8c07-dce0dad51f7f' }});
     });
 
     it('should navigate to license consumption after calling openLicenseConsumption()', () => {
@@ -289,14 +289,14 @@ describe('openLicenseDetails() openLicenseConsumption() openProjectDetails()', (
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openLicenseConsumption({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'],{queryParams:{subaccountId: undefined }});
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/consumption'],{queryParams:{subaccountId: 'fbb2d912-b202-432d-8c07-dce0dad51f7f' }});
     });
 
     it('should navigate to project details after calling openProjectDetails()', () => {
         spyOn(CustomerServiceMock, 'setSelectedCustomer');
         spyOn(RouterMock, 'navigate');
         dashboardComponentTestInstance.openProjectDetails({});
-        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects'],{queryParams:{subaccountId:undefined }});
+        expect(RouterMock.navigate).toHaveBeenCalledWith(['/customer/projects'],{queryParams:{subaccountId:'fbb2d912-b202-432d-8c07-dce0dad51f7f' }});
     });
 
     it('should navigate to Spotlight dashboard ', () => {
