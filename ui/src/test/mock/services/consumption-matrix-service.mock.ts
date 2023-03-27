@@ -16,7 +16,8 @@ const CONSUMPTION_MATRIX_AS_LIST = {
             "callingPlatform": "CPaaS"
         },
         {
-            "tokens": "5",
+            "updatedBy": "rvasquez@tekvizionlabs.com",
+            "tokens": "",
             "id": "eea27aa4-f2b7-455a-a8ea-af85ee6ac25e",
             "dutType": "SBC",
             "callingPlatform": "PBX"
@@ -46,8 +47,8 @@ const CONSUMPTION_MATRIX_AS_LIST = {
             "callingPlatform": "CPaaS"
         },
         {
+            "updatedBy": "rvasquez@tekvizionlabs.com",
             "tokens": "3",
-            "id": "7f6c9fec-978f-41a6-ba38-117611f0dfa3",
             "dutType": "Application",
             "callingPlatform": "PBX"
         },
@@ -76,6 +77,7 @@ const CONSUMPTION_MATRIX_AS_LIST = {
             "callingPlatform": "CPaaS"
         },
         {
+            "updatedBy": undefined,
             "tokens": "5",
             "id": "9c0cc4a5-a773-46f3-b73e-a09c55080b1f",
             "dutType": "Headset",

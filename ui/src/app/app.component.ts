@@ -237,6 +237,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private retrieveSubaccountDetails() {
         this.subaccountService.getSubAccountDetails(this.subaccountId).subscribe((subaccountsResp: any) => {
             let selectedSubAccount = subaccountsResp.subaccounts[0];
+            console.log("sub",selectedSubAccount)
             this.customerService.getCustomerById(selectedSubAccount.customerId).subscribe((customersResp: any) => {
                 const subaccountCustomer = customersResp.customers[0];
                 selectedSubAccount.id = this.subaccountId;
@@ -246,7 +247,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 selectedSubAccount.distributorId = subaccountCustomer.distributorId;
                 selectedSubAccount.adminEmails = subaccountCustomer.adminEmails;
                 selectedSubAccount.customerId = selectedSubAccount.customerId;
-                selectedSubAccount.subaccountId = this.subaccountId;
                 this.subaccountService.setSelectedSubAccount(selectedSubAccount);
             });
         });

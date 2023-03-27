@@ -56,7 +56,7 @@ export class ProjectsComponent implements OnInit {
   licensesList: [any];
   projects: Project[] = [];
   projectsBk: Project[] = [];
-  customerSubaccountDetails: any;
+  private customerSubaccountDetails: any;
   // flag
   isLoadingResults: boolean;
   isRequestCompleted: boolean;
@@ -108,6 +108,7 @@ export class ProjectsComponent implements OnInit {
     this.calculateTableHeight();
     this.currentCustomer = this.customerService.getSelectedCustomer();
     this.customerSubaccountDetails = this.subaccountService.getSelectedSubAccount();
+    console.log("proj",this.customerSubaccountDetails)
     this.projectService.setSelectedSubAccount(this.customerSubaccountDetails.id);
     this.fetchProjects(true);
     this.getActionMenuOptions();

@@ -355,8 +355,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
      */
     openLicenseDetails(row: any): void {
         this.customerService.setSelectedCustomer(row);
-        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/licenses'], {queryParams:{subaccountId: row.subaccountId}});
+        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        this.router.navigate(['/customer/licenses'], {queryParams:{subaccountId: this.customerSubaccountDetails.id}});
     }
 
     /**
@@ -365,8 +365,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
      */
     openLicenseConsumption(row: any): void {
         this.customerService.setSelectedCustomer(row);
-        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/consumption'], {queryParams:{subaccountId: row.subaccountId}});
+        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        this.router.navigate(['/customer/consumption'], {queryParams:{subaccountId: this.customerSubaccountDetails.id}});
     }
 
     /**
@@ -374,9 +374,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * @param row: object
      */
     openProjectDetails(row: any): void {
-        this.customerService.setSelectedCustomer(row);
-        sessionStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
-        this.router.navigate(['/customer/projects'], {queryParams:{subaccountId: row.subaccountId}});
+        this.customerService.setSelectedCustomer(row);;
+        localStorage.setItem(Constants.SELECTED_CUSTOMER, JSON.stringify(row));
+        this.router.navigate(['/customer/projects'], {queryParams:{subaccountId: this.customerSubaccountDetails.id}});
     }
 
     /**

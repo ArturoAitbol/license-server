@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AddFeatureToggleExceptionModalComponent } from './add-feature-toggle-exception-modal.component';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -155,4 +155,13 @@ describe('AddFeatureToggleExceptionModalComponent - Basic functionality', () => 
     testInstance.submit();
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error while creating feature toggle exception!');
   });
+
+  it('should display an error message', fakeAsync(() => {
+    fixture.detectChanges();
+    testInstance.addFeatureToggleExceptionForm.controls['subaccount'].setValue('test subaccount');
+    tick(500);
+    fixture.detectChanges();
+    tick(500);
+    expect(testInstance.subaccounts).not.toBeNull();
+  }));
 });
