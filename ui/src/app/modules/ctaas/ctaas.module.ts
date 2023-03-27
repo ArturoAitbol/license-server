@@ -19,8 +19,10 @@ import { ModifyTestSuiteComponent } from './ctaas-test-suites/modify-test-suite/
 import { BannerComponent } from './banner/banner.component';
 import {AddNotesComponent} from './ctaas-notes/add-notes/add-notes.component';
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard/ctaas-historical-dashboard.component';
-import { MoreDetailsComponent } from './ctaas-more-details/ctaas-more-details.component';
+import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
+import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-consolidated-report/search-consolidated-report.component';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 
 
 
@@ -40,8 +42,9 @@ import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-repor
     CtaasNotesComponent,
     AddNotesComponent,
     CtaasHistoricalDashboardComponent,
-    MoreDetailsComponent,
-    CtaasTestReportsComponent
+    DetailedReportsCompoment,
+    CtaasTestReportsComponent,
+    SearchConsolidatedReportComponent
   ],
   imports: [
     CommonModule,
@@ -49,7 +52,8 @@ import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-repor
     ReactiveFormsModule,
     MaterialModule,
     SharedModule,
-    FormsModule
+    FormsModule,
+    NgxMatTimepickerModule
   ],
   entryComponents: [
     OnboardWizardComponent,

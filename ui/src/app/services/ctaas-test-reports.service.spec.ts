@@ -1,17 +1,17 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { environment } from "src/environments/environment";
 import { TestReportsServiceMock } from "src/test/mock/services/ctaas-test-reports.service.mock";
-import { TestReportsService } from "./test-reports.service";
+import { CtaasTestReportsService } from "./ctaas-test-reports.service";
 
 let httpClientSpy: jasmine.SpyObj<HttpClient>;
-let testReportsService: TestReportsService;
+let testReportsService: CtaasTestReportsService;
 const headers = new HttpHeaders();
 headers.append('Content-Type', 'application/json');
 
 describe('Note service http requests test', () => {
     beforeEach(async () => {
         httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-        testReportsService = new TestReportsService(httpClientSpy);
+        testReportsService = new CtaasTestReportsService(httpClientSpy);
     });
 
     it('it should make the proper call to getTestReportsList()', (done: DoneFn) => {

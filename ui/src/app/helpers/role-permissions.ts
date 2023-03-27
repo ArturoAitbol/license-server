@@ -106,9 +106,6 @@ export const permissions = {
             deviceOptions: [
                 'MODIFY_DEVICE',
                 'DELETE_DEVICE',
-            ],
-            testReportsOptions: [
-                'VIEW_REPORT',
             ]
         }
     },
@@ -213,10 +210,7 @@ export const permissions = {
                 'DELETE_STAKEHOLDER'
             ],
             subscriptionsOverviewOptions: [],
-            deviceOptions: [],
-            testReportsOptions: [
-                'VIEW_REPORT',
-            ]
+            deviceOptions: []
         }
     },
     'distributor.FullAdmin': {
@@ -306,9 +300,6 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
-            ],
-            testReportsOptions: [
-                'VIEW_REPORT',
             ]
         }
     },
@@ -362,9 +353,6 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
-            ],
-            testReportsOptions: [
-                'VIEW_REPORT',
             ]
         }
     },
@@ -395,9 +383,6 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'
-            ],
-            testReportsOptions: [
-                'VIEW_REPORT',
             ]
         }
     }
