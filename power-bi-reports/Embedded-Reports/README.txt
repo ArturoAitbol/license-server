@@ -1,6 +1,6 @@
-Embedded Dashboard Report Version - V31
-Release Date - 14-03-2023
-Fixes - Performance tuning and Visual loading locking conflicts
+Embedded Dashboard Report Version - V34
+Release Date - 20-03-2023
+Fixes - Fixed query folding issue on clicking Customer Network Quality
 
 
 Changes need to do be done before publishing to Power BI Service Workspace:
