@@ -246,6 +246,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 selectedSubAccount.distributorId = subaccountCustomer.distributorId;
                 selectedSubAccount.adminEmails = subaccountCustomer.adminEmails;
                 selectedSubAccount.customerId = selectedSubAccount.customerId;
+                selectedSubAccount.subaccountId = this.subaccountId;
                 this.subaccountService.setSelectedSubAccount(selectedSubAccount);
             });
         });
