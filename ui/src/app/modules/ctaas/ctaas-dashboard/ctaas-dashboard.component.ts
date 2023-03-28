@@ -338,10 +338,13 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
      */
     getReportNameByType(reportType: string): string {
         switch (reportType) {
-            case ReportType.DAILY_FEATURE_FUNCTIONALITY: return 'Feature Functionality';
-            case ReportType.DAILY_CALLING_RELIABILITY: return 'Calling Reliability';
-            // case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';  // as media injection is not ready yet, hence disabling PESQ for now.
-            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return 'Feature Functionality & Calling Reliability'
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
+            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
+                return 'Feature Functionality';
+            case ReportType.DAILY_CALLING_RELIABILITY:
+            // case ReportType.WEEKLY_CALLING_RELIABILITY:
+                return 'Calling Reliability';
+            // case ReportType.DAILY_VQ: case ReportType.WEEKLY_VQ: return 'Voice Quality';  // as media injection is not ready yet, hence disabling VQ for now.
         }
     }
     /**
