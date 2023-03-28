@@ -47,7 +47,10 @@ public class TekvLSTest {
             "DASHBOARD_APP_CLIENT_ID", Config.getInstance().getDashboardAppClientId(),
             "DASHBOARD_APP_SECRET_ID", Config.getInstance().getDashboardAppClientSecret(),
             "STORAGE_ACCOUNT_NAME", Config.getInstance().getStorageAccountName(),
-            "STORAGE_CONTAINER_NAME", Config.getInstance().getStorageContainerName()
+            "STORAGE_CONTAINER_NAME", Config.getInstance().getStorageContainerName(),
+            "POWER_BI_CLIENT_ID", Config.getInstance().getPowerbiClientId(),
+            "POWER_BI_CLIENT_SECRET", Config.getInstance().getpowerbiClientSecret(),
+            "POWER_BI_TENANT_ID", Config.getInstance().getPowerbiTenantId()
     );
 
     public void initTestParameters() {
