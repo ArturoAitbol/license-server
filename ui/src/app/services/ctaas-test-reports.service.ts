@@ -7,7 +7,7 @@ import { ITestReports, TestReportsAPIResponse } from '../model/test-reports.mode
 @Injectable({
   providedIn: 'root'
 })
-export class TestReportsService {
+export class CtaasTestReportsService {
 
   private readonly API_URL: string = environment.apiEndpoint + '/reports';
   private readonly DOWNLOAD_REPORT_URL: string = this.API_URL + '/downloadReport/{subaccountId}/{reportType}';
