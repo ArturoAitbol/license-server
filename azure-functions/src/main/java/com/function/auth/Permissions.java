@@ -113,6 +113,7 @@ public class Permissions {
                         GET_ALL_CTAAS_TEST_SUITES,
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
                         GET_CTAAS_DASHBOARD,
+                        GET_ALL_NOTES,
                         GET_ALL_REPORTS,
                         GET_CONSUMPTION_MATRIX,
                         GET_ALL_FEATURE_TOGGLES,

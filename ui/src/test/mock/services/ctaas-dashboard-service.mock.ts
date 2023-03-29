@@ -15,7 +15,7 @@ const TEST_DASHBOARD_2 = {
 const TEST_DASHBOARD_3 = {
     imageBase64:"data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD",
     lastUpdatedTS:"Thu, 08 Dec 2022 11:04:55 BOT",
-    reportType:"Daily-PESQ",
+    reportType:"Daily-VQ",
     timestampId:"221208090142"
 };
 const TEST_DASHBOARD_4 = {
@@ -27,7 +27,13 @@ const TEST_DASHBOARD_4 = {
 const TEST_DASHBOARD_5 = {
     imageBase64:"data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD",
     lastUpdatedTS:"Thu, 08 Dec 2022 11:04:57 BOT",
-    reportType:"Weekly-PESQ",
+    reportType:"Weekly-CallingReliability",
+    timestampId:"221208090132"
+};
+const TEST_DASHBOARD_6 = {
+    imageBase64:"data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD",
+    lastUpdatedTS:"Thu, 08 Dec 2022 11:04:57 BOT",
+    reportType:"Weekly-VQ",
     timestampId:"221208090150"
 };
 
@@ -36,7 +42,8 @@ const CTAAS_DASHBOARD_LIST = [
         TEST_DASHBOARD_2,
         TEST_DASHBOARD_3,
         TEST_DASHBOARD_4,
-        TEST_DASHBOARD_5
+        TEST_DASHBOARD_5,
+        TEST_DASHBOARD_6
 ]
 
 const DASHBOARD_DETAIL_REPORT = {

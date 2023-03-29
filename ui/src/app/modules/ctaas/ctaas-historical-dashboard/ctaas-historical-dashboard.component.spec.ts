@@ -21,9 +21,10 @@ const note = {
   openedBy: "arasguido@tekvizionlabs.com",
   reports: [{reportType: "Daily-FeatureFunctionality",timestampId: "221207090048"},
             {reportType: "Daily-CallingReliability",timestampId:"221207194605"},
-            {reportType:"Daily-PESQ",timestampId:"221207090122"},
+            {reportType: "Daily-VQ",timestampId:"221207090122"},
             {reportType: "Weekly-FeatureFunctionality",timestampId:"221207090111"},
-            {reportType:"Weekly-PESQ",timestampId:"221207090130"}] ,
+            {reportType: "Weekly-CallingReliability",timestampId:"221207090111"},
+            {reportType: "Weekly-VQ",timestampId:"221207090130"}] ,
   status:"Open",
   subaccountId:"b5b91753-4c2b-43f5-afa0-feb00cefa981"
 }
@@ -113,12 +114,12 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
     reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_CALLING_RELIABILITY);
     expect(reportName).toBe("Calling Reliability");
 
-    // as media injection is not ready yet, hence disabling PESQ for now.
-    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_PESQ);
-    // expect(reportName).toBe("PESQ");
+    // as media injection is not ready yet, hence disabling VQ for now.
+    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_VQ);
+    // expect(reportName).toBe("VQ");
 
-    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.WEEKLY_PESQ);
-    // expect(reportName).toBe("PESQ");
+    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.WEEKLY_VQ);
+    // expect(reportName).toBe("VQ");
   })
 
   it('should heck whether dashboard has any data to display or not when calling checkForDashboardDetails()',()=>{
