@@ -1,99 +1,31 @@
-import { HarnessLoader } from "@angular/cdk/testing";
-import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { MatSnackBarModule, MatSnackBarRef } from "@angular/material/snack-bar";
+import { MatDialogRef } from "@angular/material/dialog";
 import { Sort } from "@angular/material/sort";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Router } from "@angular/router";
-import { MsalService } from "@azure/msal-angular";
 import { throwError } from "rxjs";
-import { CtaasTestSuiteService } from "src/app/services/ctaas-test-suite.service";
 import { DialogService } from "src/app/services/dialog.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
-import { SubAccountService } from "src/app/services/sub-account.service";
-import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { TestSuitesMock } from "src/test/mock/services/ctaas-test-suites.service.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
-import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
-import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
-import { SharedModule } from "../../shared/shared.module";
 import { AddTestSuiteComponent } from "./add-test-suite/add-test-suite.component";
 import { CtaasTestSuitesComponent } from "./ctaas-test-suites.component";
-import { ModifyTestSuiteComponent } from "./modify-test-suite/modify-test-suite.component";
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let ctaasTestSuitesComponentTestInstance: CtaasTestSuitesComponent;
 let fixture: ComponentFixture<CtaasTestSuitesComponent>;
 const dialogService = new DialogServiceMock();
-let loader: HarnessLoader;
-
-const RouterMock = {
-    navigate: (commands: string[]) => { }
-};
-
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [CtaasTestSuitesComponent,AddTestSuiteComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: MatSnackBarRef,
-                useValue: {}
-            },
-            {
-                provide: CtaasTestSuiteService,
-                useValue: TestSuitesMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogService
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: FormBuilder
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            },
-            {
-                provide: MatDialogRef,
-                useValue: {}
-            }
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasTestSuitesComponent);
+    configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+    configBuilder.addProvider({ provide: MatDialogRef, useValue: dialogService });
+    configBuilder.addDeclaration(AddTestSuiteComponent);
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(CtaasTestSuitesComponent);
     ctaasTestSuitesComponentTestInstance = fixture.componentInstance;
-    loader = TestbedHarnessEnvironment.loader(fixture);
-    spyOn(console, 'log').and.callThrough();
 };
 
-describe('UI verification test', () => {
+describe('UI verification test test suites component', () => {
     beforeEach(beforeEachFunction);
-    it('should display the essential UI and components', () => {
+    it('should display the test suite UI', () => {
         fixture.detectChanges();
         const h1 = fixture.nativeElement.querySelector('#page-title');
         const submitButton = fixture.nativeElement.querySelector('#add-test-suite-button');
@@ -118,7 +50,7 @@ describe('UI verification test', () => {
         expect(ctaasTestSuitesComponentTestInstance.sizeChange).toHaveBeenCalled();
     });
 
-    it('should sort data ofthe table', () => {
+    it('should sort data of the table', () => {
         fixture.detectChanges();
 
         const sort: Sort = { active: 'name', direction: 'desc' }
@@ -138,13 +70,13 @@ describe('UI verification test', () => {
 
 describe('Data collection test', () => {
     beforeEach(beforeEachFunction);
-    it('shold make a call to fetchDataToDisplay()', () => {
+    it('should make a call to fetchDataToDisplay()', () => {
         spyOn(TestSuitesMock, 'getTestSuitesBySubAccount').and.callThrough();
         fixture.detectChanges();
 
         expect(TestSuitesMock.getTestSuitesBySubAccount).toHaveBeenCalled();
     });
-    it('shold no load data if an error occured in fetchDataToDisplay()', () => {
+    it('should no load data if an error occurred in fetchDataToDisplay()', () => {
         spyOn(TestSuitesMock, 'getTestSuitesBySubAccount').and.returnValue(throwError(""));
         fixture.detectChanges();
 

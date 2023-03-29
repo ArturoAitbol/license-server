@@ -1,81 +1,32 @@
-
 import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick, } from '@angular/core/testing';
-import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CtaasTestReportsComponent } from './ctaas-test-reports.component';
-import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
-import { SharedModule } from '../../shared/shared.module';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
-import { HarnessLoader } from '@angular/cdk/testing';
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { MsalService } from '@azure/msal-angular';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
-import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.service.mock';
 import { Sort } from '@angular/material/sort';
 import { TestReportsServiceMock } from 'src/test/mock/services/ctaas-test-reports.service.mock';
 import { Utility } from 'src/app/helpers/utils';
 import { SearchConsolidatedReportComponent } from './search-consolidated-report/search-consolidated-report.component';
-import { MatDialog } from '@angular/material/dialog';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { of } from "rxjs";
 import { BannerServiceMock } from "../../../../test/mock/services/alert-banner-service.mock";
-import { BannerService } from "../../../services/alert-banner.service";
 import { BannerComponent } from "../banner/banner.component";
-
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let ctaasTestReportComponentTestInstance: CtaasTestReportsComponent;
 let fixture: ComponentFixture<CtaasTestReportsComponent>;
-const dialogService = new DialogServiceMock();
-let loader: HarnessLoader;
-
-const RouterMock = {
-  navigate: (commands: string[]) => { }
-};
 
 const beforeEachFunction = () => {
-  TestBed.configureTestingModule({
-    declarations: [CtaasTestReportsComponent, BannerComponent],
-    imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-    providers: [
-      {
-        provide: Router,
-        useValue: RouterMock
-      },
-      {
-        provide: MsalService,
-        useValue: MsalServiceMock
-      },
-      {
-        provide: SubAccountService,
-        useValue: SubaccountServiceMock
-      },
-      {
-        provide: CtaasSetupService,
-        useValue: CtaasSetupServiceMock
-      },
-      {
-        provide: BannerService,
-        useValue: BannerServiceMock
-      },
-      {
-        provide: MatDialog,
-        useValue: MatDialogMock
-      }
-    ]
-  });
+  const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasTestReportsComponent);
+  configBuilder.addDeclaration(BannerComponent);
+  TestBed.configureTestingModule(configBuilder.getConfig());
   fixture = TestBed.createComponent(CtaasTestReportsComponent);
   ctaasTestReportComponentTestInstance = fixture.componentInstance;
-  loader = TestbedHarnessEnvironment.loader(fixture);
   spyOn(SubaccountServiceMock, 'getSelectedSubAccount').and.callThrough();
 };
 
-describe('UI verification test', () => {
+describe('UI verification test for ctaas test reports component', () => {
   beforeEach(beforeEachFunction);
-  it('should display essential UI and components', () => {
+  it('should display report title and subtitle properly', () => {
     fixture.detectChanges();
     spyOn(ctaasTestReportComponentTestInstance, 'sizeChange').and.callThrough();
     const h2 = fixture.nativeElement.querySelector('#main-title');
@@ -117,7 +68,7 @@ describe('Data collection and parsing test', () => {
     expect(ctaasTestReportComponentTestInstance.dateListBK.length).toBe(15)
   });
 
-  it('should call to onChangeButtonToggle with fetaure option', () => {
+  it('should call to onChangeButtonToggle with feature option', () => {
     fixture.detectChanges();
     spyOn(ctaasTestReportComponentTestInstance, 'onChangeButtonToggle').and.callThrough();
     const toggleButton = fixture.nativeElement.querySelector('#feature-button');
