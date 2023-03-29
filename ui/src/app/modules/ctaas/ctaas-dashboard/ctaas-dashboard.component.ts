@@ -352,9 +352,11 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
                 return 'Feature Functionality';
             case ReportType.DAILY_CALLING_RELIABILITY:
-            // case ReportType.WEEKLY_CALLING_RELIABILITY:
+            case ReportType.WEEKLY_CALLING_RELIABILITY:
                 return 'Calling Reliability';
-            // case ReportType.DAILY_VQ: case ReportType.WEEKLY_VQ: return 'Voice Quality';  // as media injection is not ready yet, hence disabling VQ for now.
+            case ReportType.DAILY_VQ:
+            case ReportType.WEEKLY_VQ:
+                return 'Voice Quality User Experience';
         }
     }
 
