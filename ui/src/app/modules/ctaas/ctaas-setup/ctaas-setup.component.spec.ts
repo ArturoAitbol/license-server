@@ -1,96 +1,27 @@
-import { HttpBackend, HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
-import { LicenseService } from 'src/app/services/license.service';
-import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { LicenseServiceMock } from 'src/test/mock/services/license-service.mock';
 import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
-import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { SharedModule } from '../../shared/shared.module';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CtaasSetupComponent } from './ctaas-setup.component';
 import { LicenseConfirmationModalComponent } from './license-confirmation-modal/license-confirmation-modal.component';
 import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.service.mock';
-import { MsalService } from '@azure/msal-angular';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { DialogService } from 'src/app/services/dialog.service';
-import { HarnessLoader } from '@angular/cdk/testing';
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { Observable, of, throwError } from 'rxjs';
-import { Router } from '@angular/router';
-import { SubaccountAdminEmailServiceMock } from 'src/test/mock/services/subaccount-admin-email-service.mock';
-import { FeatureToggleService } from "../../../services/feature-toggle.service";
+import { Observable, of } from 'rxjs';
 import { FeatureToggleServiceMock } from "../../../../test/mock/services/feature-toggle-service.mock";
-
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let CtaasSetupComponentTestInstance: CtaasSetupComponent;
 let fixture: ComponentFixture<CtaasSetupComponent>;
 const dialogService = new DialogServiceMock();
-let loader: HarnessLoader;
-
-const RouterMock = {
-    navigate: (commands: string[]) => { }
-};
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [CtaasSetupComponent, LicenseConfirmationModalComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule, HttpClientTestingModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: CtaasSetupService,
-                useValue: CtaasSetupServiceMock
-            },
-            {
-                provide: FormBuilder,
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            },
-            {
-                provide: LicenseService,
-                useValue: LicenseServiceMock
-            },
-            {
-                provide: HttpClient
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogService
-            },
-            {
-                provide: HttpBackend,
-                useValue: HttpBackend
-            },
-            {
-                provide: FeatureToggleService,
-                useValue: FeatureToggleServiceMock
-            },
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasSetupComponent);
+    configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+    configBuilder.addDeclaration(LicenseConfirmationModalComponent);
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(CtaasSetupComponent);
     CtaasSetupComponentTestInstance = fixture.componentInstance;
     CtaasSetupComponentTestInstance.ngOnInit();
-    loader = TestbedHarnessEnvironment.loader(fixture);
-    spyOn(console, 'log').and.callThrough();
 }
 
 describe('UI verification test', () => {

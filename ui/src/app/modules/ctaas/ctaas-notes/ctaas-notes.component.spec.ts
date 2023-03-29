@@ -1,88 +1,31 @@
-import { CommonModule } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick } from "@angular/core/testing";
-import { MatDialog } from "@angular/material/dialog";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Router } from "@angular/router";
-import { MsalService } from "@azure/msal-angular";
 import { of, throwError } from "rxjs";
 import { DialogService } from "src/app/services/dialog.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
 import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
-import { SharedModule } from "../../shared/shared.module";
 import { CtaasNotesComponent } from './ctaas-notes.component';
 import { NoteServiceMock } from '../../../../test/mock/services/ctaas-note-service.mock';
-import { NoteService } from '../../../services/notes.service';
-import { SubAccountService } from '../../../services/sub-account.service';
 import { SubaccountServiceMock } from '../../../../test/mock/services/subaccount-service.mock';
 import { Note } from '../../../model/note.model';
 import { AddNotesComponent } from "./add-notes/add-notes.component";
 import { CtaasHistoricalDashboardComponent } from "../ctaas-historical-dashboard/ctaas-historical-dashboard.component";
-import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import { CtaasSetupServiceMock } from "../../../../test/mock/services/ctaas-setup.service.mock";
-import { BannerService } from "../../../services/alert-banner.service";
 import { BannerServiceMock } from "../../../../test/mock/services/alert-banner-service.mock";
 import { BannerComponent } from "../banner/banner.component";
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let ctaasNotesComponent: CtaasNotesComponent;
 let fixture : ComponentFixture<CtaasNotesComponent>;
 
-const RouterMock = {
-    navigate: (commands: string[]) => { return; }
-};
-
 const dialogServiceMock = new DialogServiceMock();
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations:[CtaasNotesComponent, BannerComponent],
-        imports: [CommonModule,SharedModule,BrowserAnimationsModule],
-        providers: [
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            },
-            {
-                provide: NoteService,
-                useValue: NoteServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            },
-            {
-                provide: CtaasSetupService,
-                useValue: CtaasSetupServiceMock
-            },
-            {
-                provide: BannerService,
-                useValue: BannerServiceMock
-            }
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasNotesComponent);
+    configBuilder.addProvider({ provide: DialogService, useValue: dialogServiceMock});
+    configBuilder.addDeclaration(BannerComponent);
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(CtaasNotesComponent);
     ctaasNotesComponent = fixture.componentInstance;
 }

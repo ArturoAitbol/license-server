@@ -1,36 +1,18 @@
-import { HarnessLoader } from "@angular/cdk/testing";
-import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { MatSnackBarModule, MatSnackBarRef } from "@angular/material/snack-bar";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Router } from "@angular/router";
-import { MsalService } from "@azure/msal-angular";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import moment from "moment";
 import { of, throwError } from "rxjs";
-import { SharedModule } from "src/app/modules/shared/shared.module";
-import { CtaasTestSuiteService } from "src/app/services/ctaas-test-suite.service";
 import { DialogService } from "src/app/services/dialog.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
-import { SubAccountService } from "src/app/services/sub-account.service";
-import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { TestSuitesMock } from "src/test/mock/services/ctaas-test-suites.service.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
-import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
 import { ModifyTestSuiteComponent } from "./modify-test-suite.component";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
 
 let modifyTestSuitesComponentTestInstance: ModifyTestSuiteComponent;
 let fixture: ComponentFixture<ModifyTestSuiteComponent>;
 const dialogService = new DialogServiceMock();
-let loader: HarnessLoader;
 
-const RouterMock = {
-    navigate: (commands: string[]) => { }
-};
 const currentTestSuite = {
     deviceType: "MS Teams",
     subaccountId: "fbb2d912-b202-432d-8c07-dce0dad51f7f",
@@ -42,67 +24,13 @@ const currentTestSuite = {
 }
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [ModifyTestSuiteComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: MatSnackBarRef,
-                useValue: {}
-            },
-            {
-                provide: CtaasTestSuiteService,
-                useValue: TestSuitesMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogService
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: FormBuilder
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            },
-            {
-                provide: MatDialogRef,
-                useValue: dialogService
-            },
-            {
-                provide:ModifyTestSuiteComponent,
-                useValue: {}
-            },
-            {
-                provide: MAT_DIALOG_DATA,
-                useValue: currentTestSuite
-            },
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ModifyTestSuiteComponent);
+    configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+    configBuilder.addProvider({ provide: MatDialogRef, useValue: dialogService });
+    configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: currentTestSuite });
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(ModifyTestSuiteComponent);
     modifyTestSuitesComponentTestInstance = fixture.componentInstance;
-    loader = TestbedHarnessEnvironment.loader(fixture);
-    spyOn(console, 'log').and.callThrough();
 };
 
 describe('UI verification test', () => {
