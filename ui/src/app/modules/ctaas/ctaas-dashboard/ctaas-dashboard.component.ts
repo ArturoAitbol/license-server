@@ -52,6 +52,9 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     readonly WEEKLY: string = 'weekly';
     readonly TEST1: string = 'test1';
     readonly TEST2: string = 'test2';
+    readonly FEATURE_FUNCTIONALITY_NAME: string = 'Feature Functionality';
+    readonly CALLING_RELIABILITY_NAME: string = 'Calling Reliability';
+    readonly VQ_NAME: string = 'Voice Quality User Experience';
     featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
@@ -350,13 +353,13 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         switch (reportType) {
             case ReportType.DAILY_FEATURE_FUNCTIONALITY:
             case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
-                return 'Feature Functionality';
+                return this.FEATURE_FUNCTIONALITY_NAME;
             case ReportType.DAILY_CALLING_RELIABILITY:
             case ReportType.WEEKLY_CALLING_RELIABILITY:
-                return 'Calling Reliability';
+                return this.CALLING_RELIABILITY_NAME;
             case ReportType.DAILY_VQ:
             case ReportType.WEEKLY_VQ:
-                return 'Voice Quality User Experience';
+                return this.VQ_NAME;
         }
     }
 

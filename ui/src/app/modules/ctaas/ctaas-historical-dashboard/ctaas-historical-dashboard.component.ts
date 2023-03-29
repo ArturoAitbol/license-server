@@ -32,6 +32,9 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
 
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
+    readonly FEATURE_FUNCTIONALITY_NAME: string = 'Feature Functionality';
+    readonly CALLING_RELIABILITY_NAME: string = 'Calling Reliability';
+    readonly VQ_NAME: string = 'Voice Quality User Experience';
 
 
     constructor(
@@ -123,13 +126,13 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
         switch (reportType) {
             case ReportType.DAILY_FEATURE_FUNCTIONALITY:
             case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
-                return 'Feature Functionality';
+                return this.FEATURE_FUNCTIONALITY_NAME;
             case ReportType.DAILY_CALLING_RELIABILITY:
             case ReportType.WEEKLY_CALLING_RELIABILITY:
-                return 'Calling Reliability';
+                return this.CALLING_RELIABILITY_NAME;
             case ReportType.DAILY_VQ:
             case ReportType.WEEKLY_VQ:
-                return 'Voice Quality User Experience';
+                return this.VQ_NAME;
         }
     }
     /**
