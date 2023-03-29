@@ -178,7 +178,30 @@ describe('dialog calls and interactions',() => {
 
         fixture.detectChanges()
     
-
         expect(console.error).toHaveBeenCalledWith('some error |', jasmine.any(TypeError))
+    });
+});
+
+describe('calls with customer subaccount admin role', () => {
+    beforeEach(beforeEachFunction);
+    beforeEach(() => {
+        spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsSubaccountRole);
+    });
+    
+    it('should make a call to onDeleteStakeholderAccount with customer subaccount role', () => {
+        spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        ctaasStakeholderComponentTestInstance.toggleStatus = true;
+        fixture.detectChanges();
+        ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount({
+            "subaccountId": "2c8e386b-d1bd-48b3-b73a-12bfa5d00805",
+            "role": "customer.SubaccountAdmin",
+            "phoneNumber": "",
+            "jobTitle": "",
+            "companyName": "",
+            "name": "Test customer subaccount stakeholder",
+            "email": "test-customer-subaccount-stakeholder@tekvizionlabs.com"
+        });
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith("Error deleting administrator email, at least one administrator must remain")
     });
 });

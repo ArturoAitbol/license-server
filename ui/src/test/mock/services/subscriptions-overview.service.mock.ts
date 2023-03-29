@@ -47,6 +47,7 @@ const SUBSCRIPTIONS_LIST = {
 };
 
 export const SubscriptionsOverviewServiceMock = {
+    subscriptionOverview: SUBSCRIPTIONS_LIST,
     getSubscriptionsList: () => {
         return new Observable((observer) => {
             observer.next(

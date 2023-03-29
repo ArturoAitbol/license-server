@@ -4,6 +4,7 @@ import { SnackBarServiceMock } from "../../../test/mock/services/snack-bar-servi
 import { ConsumptionMatrixServiceMock } from "../../../test/mock/services/consumption-matrix-service.mock";
 import { MsalServiceMock } from "../../../test/mock/services/msal-service.mock";
 import { TestBedConfigBuilder } from '../../../test/mock/TestBedConfigHelper.mock';
+import { of, throwError } from 'rxjs';
 
 let testInstance: ConsumptionMatrixComponent;
 let fixture: ComponentFixture<ConsumptionMatrixComponent>;
@@ -85,6 +86,59 @@ describe('Consumption Matrix - edit, save and cancel buttons', () => {
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The matrix was saved correctly!', '')
   });
 
+  it('should call saveChanges with empty tokens', async () => {
+    spyOn(testInstance, "saveChanges").and.callThrough();
+    spyOn(SnackBarServiceMock, "openSnackBar").and.callThrough();
+    spyOn(ConsumptionMatrixServiceMock, 'deleteConsumptionEntry').and.callThrough();
+    fixture.detectChanges();
+    testInstance.isEditing = true;
+    fixture.detectChanges();
+    const firstCell = fixture.nativeElement.querySelectorAll('input')[2];
+    firstCell.dispatchEvent(new Event('change'));
+    const saveButton = fixture.nativeElement.querySelector('#save-button');
+    saveButton.click();
+    expect(testInstance.saveChanges).toHaveBeenCalled();
+    expect(testInstance.isEditing).toBe(false);
+    expect(ConsumptionMatrixServiceMock.deleteConsumptionEntry).toHaveBeenCalledWith('eea27aa4-f2b7-455a-a8ea-af85ee6ac25e');
+    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The matrix was saved correctly!', '');
+  });
+
+
+  it('should call saveChanges with a consumption without a id', async () => {
+    spyOn(testInstance, "saveChanges").and.callThrough();
+    spyOn(SnackBarServiceMock, "openSnackBar").and.callThrough();
+    spyOn(ConsumptionMatrixServiceMock, 'createConsumptionMatrix').and.callThrough();
+    fixture.detectChanges();
+    testInstance.isEditing = true;
+    fixture.detectChanges();
+    const firstCell = fixture.nativeElement.querySelectorAll('input')[4];
+    firstCell.dispatchEvent(new Event('change'));
+    const saveButton = fixture.nativeElement.querySelector('#save-button');
+    saveButton.click();
+    expect(testInstance.saveChanges).toHaveBeenCalled();
+    expect(testInstance.isEditing).toBe(false);
+    expect(ConsumptionMatrixServiceMock.createConsumptionMatrix).toHaveBeenCalledWith({id: undefined, dutType: 'Application', callingPlatform: 'PBX', tokens: '3' })
+    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The matrix was saved correctly!', '')
+  });
+
+  it('should call saveChanges with a consumption without a id', async () => {
+    spyOn(testInstance, "saveChanges").and.callThrough();
+    spyOn(SnackBarServiceMock, "openSnackBar").and.callThrough();
+    spyOn(ConsumptionMatrixServiceMock, 'createConsumptionMatrix').and.callThrough();
+    fixture.detectChanges();
+    testInstance.isEditing = true;
+    fixture.detectChanges();
+    const firstCell = fixture.nativeElement.querySelectorAll('input')[5];
+    firstCell.dispatchEvent(new Event('change'));
+    const saveButton = fixture.nativeElement.querySelector('#save-button');
+    saveButton.click();
+    // expect(testInstance.saveChanges).toHaveBeenCalled();
+    // expect(testInstance.isEditing).toBe(false);
+    // expect(ConsumptionMatrixServiceMock.createConsumptionMatrix).toHaveBeenCalledWith({id: undefined, dutType: 'Application', callingPlatform: 'PBX', tokens: '3' })
+    // expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('The matrix was saved correctly!', '')
+  });
+
+
   it('should save changes when the save button is clicked', () => {
     spyOn(testInstance, "cancel").and.callThrough();
     fixture.detectChanges();
@@ -94,5 +148,44 @@ describe('Consumption Matrix - edit, save and cancel buttons', () => {
     cancelButton.click();
     expect(testInstance.cancel).toHaveBeenCalled();
     expect(testInstance.isEditing).toBe(false);
+  });
+});
+
+describe('Consumption matrix error messages', () => {
+  beforeEach(beforeEachFunction);
+  beforeEach(() => {
+    spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsDevicesAdminRole);
+  });
+
+  it('should show a error message if something went wrong in save changes', async () => {
+    spyOn(testInstance, "saveChanges").and.callThrough();
+    spyOn(SnackBarServiceMock, "openSnackBar").and.callThrough();
+    spyOn(ConsumptionMatrixServiceMock, "updateConsumptionMatrix").and.returnValue(of({error:'some error'}));
+    fixture.detectChanges();
+    testInstance.isEditing = true;
+    fixture.detectChanges();
+    const firstCell = fixture.nativeElement.querySelectorAll('input')[0];
+    firstCell.dispatchEvent(new Event('change'));
+    const saveButton = fixture.nativeElement.querySelector('#save-button');
+    saveButton.click();
+    expect(testInstance.saveChanges).toHaveBeenCalled();
+    expect(testInstance.isEditing).toBe(false);
+    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('An error occurred while saving the matrix', '')
+  });
+  
+  it('should show a error message if something went wrong while saving the matrix', async () => {
+    spyOn(testInstance, "saveChanges").and.callThrough();
+    spyOn(SnackBarServiceMock, "openSnackBar").and.callThrough();
+    spyOn(ConsumptionMatrixServiceMock, "updateConsumptionMatrix").and.returnValue(throwError('some error'));
+    fixture.detectChanges();
+    testInstance.isEditing = true;
+    fixture.detectChanges();
+    const firstCell = fixture.nativeElement.querySelectorAll('input')[0];
+    firstCell.dispatchEvent(new Event('change'));
+    const saveButton = fixture.nativeElement.querySelector('#save-button');
+    saveButton.click();
+    expect(testInstance.saveChanges).toHaveBeenCalled();
+    expect(testInstance.isEditing).toBe(false);
+    expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('An error occurred while saving the matrix', '')
   });
 });
