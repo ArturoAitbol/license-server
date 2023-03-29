@@ -9,6 +9,7 @@ import { AddStakeHolderComponent } from "./add-stake-holder/add-stake-holder.com
 import { CtaasStakeholderComponent } from "./ctaas-stakeholder.component";
 import { UpdateStakeHolderComponent } from "./update-stake-holder/update-stake-holder.component";
 import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
+import { MsalServiceMock } from '../../../../test/mock/services/msal-service.mock';
 
 let ctaasStakeholderComponentTestInstance: CtaasStakeholderComponent;
 let fixture: ComponentFixture<CtaasStakeholderComponent>;
@@ -184,13 +185,11 @@ describe('dialog calls and interactions',() => {
 
 describe('calls with customer subaccount admin role', () => {
     beforeEach(beforeEachFunction);
-    beforeEach(() => {
-        spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsSubaccountRole);
-    });
     
     it('should make a call to onDeleteStakeholderAccount with customer subaccount role', () => {
         spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsSubaccountRole);
         ctaasStakeholderComponentTestInstance.toggleStatus = true;
         fixture.detectChanges();
         ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount({
