@@ -170,13 +170,14 @@ describe('Calls and interactions', () => {
   });
 
   it('should call onStartDateChange', () => {
-    fixture.detectChanges();
-    spyOn(addDeviceComponentTestInstance, 'onStartDateChange').and.callThrough();
-
-    fixture.detectChanges();
-
-    addDeviceComponentTestInstance.onStartDateChange(moment());
     const actualDate = new Date()
+    fixture.detectChanges();
+    actualDate.setDate(actualDate.getDate() + 0)
+    spyOn(addDeviceComponentTestInstance, 'onStartDateChange').and.callThrough();
+    
+    fixture.detectChanges();
+    
+    addDeviceComponentTestInstance.onStartDateChange(actualDate);
     actualDate.setDate(actualDate.getDate() + 1)
     expect(addDeviceComponentTestInstance.deprecatedDateMin).toEqual(actualDate);
     

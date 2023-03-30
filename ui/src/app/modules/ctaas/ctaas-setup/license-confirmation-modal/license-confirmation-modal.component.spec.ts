@@ -1,83 +1,29 @@
-import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LicenseService } from 'src/app/services/license.service';
-import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { LicenseServiceMock } from 'src/test/mock/services/license-service.mock';
-import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
-import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { SharedModule } from '../../../shared/shared.module';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CtaasSetupComponent } from '../ctaas-setup.component';
 import { LicenseConfirmationModalComponent } from '../license-confirmation-modal/license-confirmation-modal.component';
-import { CtaasSetupServiceMock } from 'src/test/mock/services/ctaas-setup.service.mock';
-import { MsalService } from '@azure/msal-angular';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
 import { DialogService } from 'src/app/services/dialog.service';
-import { HarnessLoader } from '@angular/cdk/testing';
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { throwError } from 'rxjs';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
 
 let licenseComponentTestInstance: LicenseConfirmationModalComponent;
 let fixture: ComponentFixture<LicenseConfirmationModalComponent>;
 const dialogService = new DialogServiceMock();
-let loader: HarnessLoader;
 
 const licenseList = LicenseServiceMock.licensesList
 const activeLicenses = licenseList.licenses.filter(license => license.status === 'Active');
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [LicenseConfirmationModalComponent, CtaasSetupComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule, HttpClientTestingModule],
-        providers: [
-            {
-                provide: FormBuilder,
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            },
-            {
-                provide: LicenseService,
-                useValue: LicenseServiceMock
-            },
-            {
-                provide: HttpClient
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogService
-            },
-            {
-                provide: MatDialogRef,
-                useValue: dialogService
-            },
-            {
-                provide: MAT_DIALOG_DATA,
-                useValue: activeLicenses
-            },
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(LicenseConfirmationModalComponent);
+    configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+    configBuilder.addProvider({ provide: MatDialogRef, useValue: dialogService });
+    configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: activeLicenses });
+    configBuilder.addDeclaration(CtaasSetupComponent);
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(LicenseConfirmationModalComponent);
     licenseComponentTestInstance = fixture.componentInstance;
-    
-}
+};
 
 describe('UI verification test', () => {
     beforeEach(beforeEachFunction);

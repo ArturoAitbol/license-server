@@ -195,6 +195,247 @@ describe('Subscriptions Overview - UI verification tests', () => {
             customerName: 'Test Customer 4',
         } ]);
     });
+
+
+    it('should call sortData and sort the data', () => {
+        const sort: Sort = { active: 'customerName', direction: '' };
+        fixture.detectChanges();
+        spyOn(testInstance, 'sortData').and.callThrough();
+        testInstance.filteredSubscriptions = SubscriptionsOverviewServiceMock.subscriptionOverview.subscriptions;
+        testInstance.dataWithFiltersBK = testInstance.filteredSubscriptions;
+        fixture.detectChanges();
+        testInstance.sortData(sort);
+        expect(testInstance.sortData).toHaveBeenCalledWith(sort);
+        expect(testInstance.filteredSubscriptions).toEqual([ {
+            subaccountId: '6fe7d952-13cd-4b5d-90bd-6dce6c2ed475',
+            licenseRenewalDate: '2023-02-02',
+            licenseTokens: 150,
+            licenseDescription: 'test',
+            licenseStatus: 'Active',
+            licenseStartDate: '2022-10-10',
+            customerId: '0ec98484-2215-ea11-a811-000d3a31cd00',
+            licensePackageType: 'Small',
+            subaccountName: 'Test Sub',
+            licenseId: '71dd76db-615f-4173-83cf-a12603c560de',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer'
+        },{
+            subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
+            licenseRenewalDate: '2022-07-26',
+            licenseTokens: 500,
+            licenseDescription: 'License description',
+            licenseStatus: 'Expired',
+            licenseStartDate: '2022-07-10',
+            customerId: '467aee0e-0cc8-4822-9789-fc90acea0a04',
+            licensePackageType: 'Large',
+            subaccountName: 'Test Sub 2',
+            licenseId: '31b92e5c-b811-460b-ccbe-6860f8464233',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 2'
+        },{
+            subaccountId: '966b6161-e28d-497b-8244-e3880b142584',
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-920a-9f3693d47c8a',
+            subaccountName: 'Test Sub 3',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 3', 
+        },{
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-930a-9f3693d47c8a',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 4',
+        }]);
+
+        sort.direction = '';
+        testInstance.customerFilter = '';
+        testInstance.statusFilter = 'Active';
+        fixture.detectChanges();
+        testInstance.sortData(sort);
+        expect(testInstance.sortData).toHaveBeenCalledWith(sort);
+        expect(testInstance.filteredSubscriptions).toEqual([ {
+            subaccountId: '6fe7d952-13cd-4b5d-90bd-6dce6c2ed475',
+            licenseRenewalDate: '2023-02-02',
+            licenseTokens: 150,
+            licenseDescription: 'test',
+            licenseStatus: 'Active',
+            licenseStartDate: '2022-10-10',
+            customerId: '0ec98484-2215-ea11-a811-000d3a31cd00',
+            licensePackageType: 'Small',
+            subaccountName: 'Test Sub',
+            licenseId: '71dd76db-615f-4173-83cf-a12603c560de',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer'
+        }, {
+            subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
+            licenseRenewalDate: '2022-07-26',
+            licenseTokens: 500,
+            licenseDescription: 'License description',
+            licenseStatus: 'Expired',
+            licenseStartDate: '2022-07-10',
+            customerId: '467aee0e-0cc8-4822-9789-fc90acea0a04',
+            licensePackageType: 'Large',
+            subaccountName: 'Test Sub 2',
+            licenseId: '31b92e5c-b811-460b-ccbe-6860f8464233',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 2'
+        }, {
+            subaccountId: '966b6161-e28d-497b-8244-e3880b142584',
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-920a-9f3693d47c8a',
+            subaccountName: 'Test Sub 3',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 3',
+        }, {
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-930a-9f3693d47c8a',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 4',
+        } ]);
+
+        sort.direction = '';
+        testInstance.customerFilter = '';
+        testInstance.statusFilter = '';
+        testInstance.startDateFilter  = '2022-10-10';
+        fixture.detectChanges();
+        testInstance.sortData(sort);
+        expect(testInstance.sortData).toHaveBeenCalledWith(sort);
+        expect(testInstance.filteredSubscriptions).toEqual([ {
+            subaccountId: '6fe7d952-13cd-4b5d-90bd-6dce6c2ed475',
+            licenseRenewalDate: '2023-02-02',
+            licenseTokens: 150,
+            licenseDescription: 'test',
+            licenseStatus: 'Active',
+            licenseStartDate: '2022-10-10',
+            customerId: '0ec98484-2215-ea11-a811-000d3a31cd00',
+            licensePackageType: 'Small',
+            subaccountName: 'Test Sub',
+            licenseId: '71dd76db-615f-4173-83cf-a12603c560de',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer'
+        }, {
+            subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
+            licenseRenewalDate: '2022-07-26',
+            licenseTokens: 500,
+            licenseDescription: 'License description',
+            licenseStatus: 'Expired',
+            licenseStartDate: '2022-07-10',
+            customerId: '467aee0e-0cc8-4822-9789-fc90acea0a04',
+            licensePackageType: 'Large',
+            subaccountName: 'Test Sub 2',
+            licenseId: '31b92e5c-b811-460b-ccbe-6860f8464233',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 2'
+        }, {
+            subaccountId: '966b6161-e28d-497b-8244-e3880b142584',
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-920a-9f3693d47c8a',
+            subaccountName: 'Test Sub 3',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 3',
+        }, {
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-930a-9f3693d47c8a',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 4',
+        } ]);
+
+        sort.direction = '';
+        testInstance.customerFilter = '';
+        testInstance.statusFilter = '';
+        testInstance.startDateFilter  = '';
+        testInstance.endDateFilter   = '2023-02-02';
+        fixture.detectChanges();
+        testInstance.sortData(sort);
+        expect(testInstance.sortData).toHaveBeenCalledWith(sort);
+        expect(testInstance.filteredSubscriptions).toEqual([ {
+            subaccountId: '6fe7d952-13cd-4b5d-90bd-6dce6c2ed475',
+            licenseRenewalDate: '2023-02-02',
+            licenseTokens: 150,
+            licenseDescription: 'test',
+            licenseStatus: 'Active',
+            licenseStartDate: '2022-10-10',
+            customerId: '0ec98484-2215-ea11-a811-000d3a31cd00',
+            licensePackageType: 'Small',
+            subaccountName: 'Test Sub',
+            licenseId: '71dd76db-615f-4173-83cf-a12603c560de',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer'
+        }, {
+            subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
+            licenseRenewalDate: '2022-07-26',
+            licenseTokens: 500,
+            licenseDescription: 'License description',
+            licenseStatus: 'Expired',
+            licenseStartDate: '2022-07-10',
+            customerId: '467aee0e-0cc8-4822-9789-fc90acea0a04',
+            licensePackageType: 'Large',
+            subaccountName: 'Test Sub 2',
+            licenseId: '31b92e5c-b811-460b-ccbe-6860f8464233',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 2'
+        }, {
+            subaccountId: '966b6161-e28d-497b-8244-e3880b142584',
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-920a-9f3693d47c8a',
+            subaccountName: 'Test Sub 3',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 3',
+        }, {
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-930a-9f3693d47c8a',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 4',
+        } ]);
+
+        sort.direction = '';
+        testInstance.customerFilter = '';
+        testInstance.statusFilter = '';
+        testInstance.startDateFilter  = '';
+        testInstance.endDateFilter   = '';
+        fixture.detectChanges();
+        testInstance.sortData(sort);
+        expect(testInstance.sortData).toHaveBeenCalledWith(sort);
+        expect(testInstance.filteredSubscriptions).toEqual([ {
+            subaccountId: '6fe7d952-13cd-4b5d-90bd-6dce6c2ed475',
+            licenseRenewalDate: '2023-02-02',
+            licenseTokens: 150,
+            licenseDescription: 'test',
+            licenseStatus: 'Active',
+            licenseStartDate: '2022-10-10',
+            customerId: '0ec98484-2215-ea11-a811-000d3a31cd00',
+            licensePackageType: 'Small',
+            subaccountName: 'Test Sub',
+            licenseId: '71dd76db-615f-4173-83cf-a12603c560de',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer'
+        }, {
+            subaccountId: '31d81e5c-a916-470b-aabe-6860f8464211',
+            licenseRenewalDate: '2022-07-26',
+            licenseTokens: 500,
+            licenseDescription: 'License description',
+            licenseStatus: 'Expired',
+            licenseStartDate: '2022-07-10',
+            customerId: '467aee0e-0cc8-4822-9789-fc90acea0a04',
+            licensePackageType: 'Large',
+            subaccountName: 'Test Sub 2',
+            licenseId: '31b92e5c-b811-460b-ccbe-6860f8464233',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 2'
+        }, {
+            subaccountId: '966b6161-e28d-497b-8244-e3880b142584',
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-920a-9f3693d47c8a',
+            subaccountName: 'Test Sub 3',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 3',
+            licenseStatus: 'Inactive'
+        }, {
+            licenseTokens: 0,
+            customerId: 'b062d227-5b26-4343-930a-9f3693d47c8a',
+            licenseTokensConsumed: 0,
+            customerName: 'Test Customer 4',
+        } ]);
+    });
 });
 
 describe('Subscriptions Overview - Data collection and parsing tests', () => {
@@ -202,6 +443,18 @@ describe('Subscriptions Overview - Data collection and parsing tests', () => {
     it('should make a call to get subscriptions list', () => {
         spyOn(CustomerServiceMock, 'getCustomerList').and.callThrough();
         spyOn(SubscriptionsOverviewServiceMock, 'getSubscriptionsList').and.callThrough();
+        fixture.detectChanges();
+        expect(testInstance.isLoadingResults).toBeFalse();
+        expect(testInstance.isRequestCompleted).toBeTrue();
+        expect(SubscriptionsOverviewServiceMock.getSubscriptionsList).toHaveBeenCalled();
+    });
+
+    it('should make a call to get subscriptions list with empty dates', () => {
+        spyOn(CustomerServiceMock, 'getCustomerList').and.callThrough();
+        spyOn(SubscriptionsOverviewServiceMock, 'getSubscriptionsList').and.callThrough();
+        spyOn(testInstance, 'getDateFilters').and.callThrough();
+        testInstance.getDateFilters('','startDateFilterControl');
+        testInstance.getDateFilters('','endDateFilterControl');
         fixture.detectChanges();
         expect(testInstance.isLoadingResults).toBeFalse();
         expect(testInstance.isRequestCompleted).toBeTrue();

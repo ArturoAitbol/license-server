@@ -36,7 +36,6 @@ const MOCK_TEST_REPORT_F: ITestReports = {
 
 const TEST_REPORTS_LIST = {
     reports: [
-       
         MOCK_TEST_REPORT_B,
         MOCK_TEST_REPORT_D,
         MOCK_TEST_REPORT_A,

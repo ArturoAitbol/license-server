@@ -1,90 +1,26 @@
-import { HarnessLoader } from "@angular/cdk/testing";
-import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { MatSnackBarModule, MatSnackBarRef } from "@angular/material/snack-bar";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Router } from "@angular/router";
-import { MsalService } from "@azure/msal-angular";
+import { MatDialogRef } from '@angular/material/dialog';
 import { of, throwError } from "rxjs";
-import { SharedModule } from "src/app/modules/shared/shared.module";
 import { DialogService } from "src/app/services/dialog.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
-import { StakeHolderService } from "src/app/services/stake-holder.service";
 import { SubAccountService } from "src/app/services/sub-account.service";
-import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
 import { StakeHolderServiceMock } from "src/test/mock/services/ctaas-stakeholder-service.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
-import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
 import { AddStakeHolderComponent } from "./add-stake-holder.component";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
 
 let addStakeholderComponentTestInstance: AddStakeHolderComponent;
 let fixture: ComponentFixture<AddStakeHolderComponent>;
 const dialogService = new DialogServiceMock();
-let loader: HarnessLoader;
 
-const RouterMock = {
-    navigate: (commands: string[]) => { }
-};
-
-const defaultTestBedConfig = {
-    declarations: [AddStakeHolderComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, ReactiveFormsModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: MatSnackBarRef,
-                useValue: {}
-            },
-            {
-                provide: StakeHolderService,
-                useValue: StakeHolderServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogService
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: MatDialogRef,
-                useValue: dialogService
-            },
-            {
-                provide: FormBuilder
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            }
-        ]
-};
+const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddStakeHolderComponent)
+    .addProvider({ provide: DialogService, useValue: dialogService })
+    .addProvider({ provide: MatDialogRef, useValue: dialogService });
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule(defaultTestBedConfig)
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(AddStakeHolderComponent);
     addStakeholderComponentTestInstance = fixture.componentInstance;
-    spyOn(console, 'log').and.callThrough();
     fixture.detectChanges();
 };
 
@@ -206,7 +142,7 @@ describe('display of error messages', () => {
 
 describe('addStakeholder - without subaccount id', () => {
     beforeEach(() =>{
-        TestBed.configureTestingModule(defaultTestBedConfig);
+        TestBed.configureTestingModule(configBuilder.getConfig());
         TestBed.overrideProvider(SubAccountService, {
             useValue:{
             getSelectedSubAccount:() => {
