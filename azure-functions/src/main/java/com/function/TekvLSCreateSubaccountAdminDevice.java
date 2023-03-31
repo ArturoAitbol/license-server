@@ -80,15 +80,15 @@ public class TekvLSCreateSubaccountAdminDevice {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
-        // Sql query to get all user that need to be notified
-        final String getDeviceSql = "SELECT * FROM subaccount_admin_device sad WHERE device_token = ?;";
+        // Sql query to get user device info
+        final String getUserDeviceSql = "SELECT * FROM subaccount_admin_device sad WHERE device_token = ?;";
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
 
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-             PreparedStatement getStatement = connection.prepareStatement(getDeviceSql)) {
+             PreparedStatement getStatement = connection.prepareStatement(getUserDeviceSql)) {
             getStatement.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_TOKEN.value));
             ResultSet rs = getStatement.executeQuery();
             String sql;
