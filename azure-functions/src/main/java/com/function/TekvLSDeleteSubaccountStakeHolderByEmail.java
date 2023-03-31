@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import com.function.db.SelectQueryBuilder;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.function.auth.Resource;

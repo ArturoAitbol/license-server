@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -178,7 +177,6 @@ class TekvLSModifyConsumptionMatrixByIdTest extends TekvLSTest {
     @Test
     public void genericExceptionTest() {
         //Given - Arrange
-        String name = "unitTestModified" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "            \"tokens\": \"3\"\n" +
                 "        }";
