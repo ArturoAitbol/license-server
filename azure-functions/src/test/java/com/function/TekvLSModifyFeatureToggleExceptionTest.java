@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -127,7 +126,6 @@ class TekvLSModifyFeatureToggleExceptionTest extends TekvLSTest {
     @Test
     public void sqlExceptionTest() {
         //Given - Arrange
-        String name = "featureToggleTestModified" + LocalDateTime.now();
         String bodyRequest = "{\n" +
                 "    \"featureToggleId\": \"0\",\n" +
                 "    \"subaccountId\": \"" + this.subaccountId + "\",\n" +

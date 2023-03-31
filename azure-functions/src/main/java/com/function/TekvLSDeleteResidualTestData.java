@@ -4,8 +4,6 @@ import java.sql.*;
 import java.util.*;
 
 import com.function.auth.Resource;
-import com.function.db.QueryBuilder;
-import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 import io.jsonwebtoken.Claims;
