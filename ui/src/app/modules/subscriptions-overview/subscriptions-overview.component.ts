@@ -115,7 +115,7 @@ export class SubscriptionsOverviewComponent implements OnInit, OnDestroy {
     }
 
     getDateFilters(filter: any, control:any) {
-        if(filter !== '' || filter !== null){
+        if(filter !== ''){
             this.filterForm.controls[control].setValue(filter);
         } else {
             this.setCustomerOverviewFilters(filter,'')

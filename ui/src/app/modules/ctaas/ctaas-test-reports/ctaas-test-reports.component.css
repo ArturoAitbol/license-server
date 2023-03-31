@@ -55,7 +55,6 @@
 }
 
 .text-container{
-    /* text-align: center; */
     display: flex;
     position: relative;
     width:38%;
@@ -83,10 +82,10 @@
     
 }
 
-::ng-deep .mat-card-header {
+.mat-card-header {
     justify-content: center;
 }
 
-::ng-deep .mat-card {
+.mat-card {
     background-color: rgb(252, 252, 182);
 }

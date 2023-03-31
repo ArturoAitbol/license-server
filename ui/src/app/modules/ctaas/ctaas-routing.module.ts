@@ -6,7 +6,7 @@ import { CtaasTestSuitesComponent } from './ctaas-test-suites/ctaas-test-suites.
 import { CtaasStakeholderComponent } from './ctaas-stakeholder/ctaas-stakeholder.component';
 import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
 import { CtaasNotesComponent } from './ctaas-notes/ctaas-notes.component';
-import { MoreDetailsComponent } from './ctaas-more-details/ctaas-more-details.component';
+import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 
 const routes: Routes = [
@@ -38,7 +38,7 @@ const routes: Routes = [
   },
   {
     path: 'details',
-    component: MoreDetailsComponent,
+    component: DetailedReportsCompoment,
     canActivate: [RoleGuard]
   },
   {

@@ -582,7 +582,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"content\": \"note content Test\",\r\n    \"reports\": [{\"timestampId\":\"20220102000000\",\"reportType\":\"Daily-FeatureFunctionality\"},\r\n                {\"timestampId\":\"20220102000001\",\"reportType\":\"Daily-CallingReliability\"},\r\n                {\"timestampId\":\"20220102000002\",\"reportType\":\"Daily-PESQ\"}\r\n                ]\r\n}",
+					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"content\": \"note content Test\",\r\n    \"reports\": [{\"timestampId\":\"20220102000000\",\"reportType\":\"Daily-FeatureFunctionality\"},\r\n                {\"timestampId\":\"20220102000001\",\"reportType\":\"Daily-CallingReliability\"},\r\n                {\"timestampId\":\"20220102000002\",\"reportType\":\"Daily-VQ\"}\r\n                ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

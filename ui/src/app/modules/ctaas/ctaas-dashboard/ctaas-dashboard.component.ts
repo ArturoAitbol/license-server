@@ -52,6 +52,9 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     readonly WEEKLY: string = 'weekly';
     readonly TEST1: string = 'test1';
     readonly TEST2: string = 'test2';
+    readonly FEATURE_FUNCTIONALITY_NAME: string = 'Feature Functionality';
+    readonly CALLING_RELIABILITY_NAME: string = 'Calling Reliability';
+    readonly VQ_NAME: string = 'Voice Quality User Experience';
     featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
@@ -114,15 +117,12 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             'error',
             (event?: service.ICustomEvent<any>) => {
                 if (event) {
+                    console.debug('Error Event: ', event)
                     const { detail: { message, errorCode } } = event;
                     if (message && errorCode && message === 'TokenExpired' && (errorCode === '403' || errorCode === '401') && !this.pbiErrorCounter) {
                         this.pbiErrorCounter = true;
                         this.setPbiReportDetailsInSubaccountDetails(null);
-                        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount().then((res) => {
-                            if (res === 'API request is successful!') {
-                                this.viewDashboardByMode();
-                            }
-                        });
+                        this.getRefreshAccessToken();
                     }
                 }
             },
@@ -159,12 +159,14 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     private getAccountDetails(): any | null {
         return this.msalService.instance.getActiveAccount() || null;
     }
+
     ngAfterViewInit(): void {
         if (this.reportObj) {
             this.report = this.reportObj.getReport();
             this.reportObj.powerbi.bootstrap(this.reportContainerDivElement, this.reportConfig);
         }
     }
+
     ngOnInit(): void {
         this.fontStyleControl.setValue(this.DAILY);
         this.powerBiFontStyleControl.setValue(this.DAILY);
@@ -204,12 +206,13 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                         const within5Mins = timeDiff <= 300000;
                         if (within5Mins) {
                             this.setPbiReportDetailsInSubaccountDetails(null);
-                            this.fetchSpotlightPowerBiDashboardDetailsBySubaccount();
+                            this.getRefreshAccessToken();
                         }
                     }
                 }
             });
     }
+
     /**
     * on change button toggle
     */
@@ -217,6 +220,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const { value } = this.fontStyleControl;
         this.resultantImagesList = this.resultantImagesListBk.filter(e => e.reportType.toLowerCase().includes(value));
     }
+
     /**
      * on change power bi button toggle
      */
@@ -229,6 +233,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         }
         this.viewDashboardByMode();
     }
+
     /**
      * fetch SpotLight Setup details by subaccount id
      */
@@ -246,7 +251,10 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.powerBiFontStyleControl.setValue(this.WEEKLY);
                     this.powerBiFontStyleControl.disable();
                     this.featureToggleKey = this.WEEKLY;
-                    this.bannerService.open("WARNING", "Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", this.onDestroy);
+                    this.bannerService.open("WARNING",
+                        "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
+                        "However, users can still view historical reports on the dashboard. " +
+                        "Please note that during this maintenance period, access to notes and test reports is not available.", this.onDestroy);
                     this.viewDashboardByMode();
                 }
             });
@@ -330,6 +338,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
         });
     }
+
     /**
      * show/hide last updated element by condition
      * @param index: string 
@@ -345,12 +354,18 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
      */
     getReportNameByType(reportType: string): string {
         switch (reportType) {
-            case ReportType.DAILY_FEATURE_FUNCTIONALITY: return 'Feature Functionality';
-            case ReportType.DAILY_CALLING_RELIABILITY: return 'Calling Reliability';
-            // case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';  // as media injection is not ready yet, hence disabling PESQ for now.
-            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return 'Feature Functionality & Calling Reliability'
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
+            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
+                return this.FEATURE_FUNCTIONALITY_NAME;
+            case ReportType.DAILY_CALLING_RELIABILITY:
+            case ReportType.WEEKLY_CALLING_RELIABILITY:
+                return this.CALLING_RELIABILITY_NAME;
+            case ReportType.DAILY_VQ:
+            case ReportType.WEEKLY_VQ:
+                return this.VQ_NAME;
         }
     }
+
     /**
      * check whether dashboard has any data to display or not
      * @returns: boolean 
@@ -358,6 +373,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     checkForDashboardDetails(): boolean {
         return this.resultantImagesList.length > 0;
     }
+
     /**
      * on click more details
      * @param index: string 
@@ -371,6 +387,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         window.open(url);
         window.close();
     }
+
     /**
      * fetch SpotLight Power BI dashboard required details
      */
@@ -405,8 +422,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.subaccountDetails = { ... this.subaccountDetails, pbiReport: { daily, weekly, test1, test2, expiresAt } };
                     this.setPbiReportDetailsInSubaccountDetails({ daily, weekly, test1, test2, expiresAt });
                     this.hasDashboardDetails = true;
-                    //this seems to be the cause of the problem in the unit tests. it seems to be causing some kind of loop 
-                    // this.viewDashboardByMode();
                     resolve("API request is successful!");
                 }, (err) => {
                     this.hasDashboardDetails = false;
@@ -435,6 +450,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             this.hasDashboardDetails = true;
         }
     }
+
     /**
      * view dashboard based on the mode
      * PBRS dashboard - LEGACY mode
@@ -475,6 +491,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                 break;
         }
     }
+
     /**
      * set powerbi report details in subaccount object in session storage
      * @param data: { daily: any, weekly: any } | null
@@ -483,6 +500,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         this.subaccountDetails = { ... this.subaccountDetails, pbiReport: data };
         this.subaccountService.setSelectedSubAccount(this.subaccountDetails);
     }
+
     /**
      * get subaccount id
      * @returns: string
@@ -499,6 +517,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         this.onDestroy.next();
         this.onDestroy.complete();
     }
+
     delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -511,4 +530,13 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         await this.viewDashboardByMode();
         this.refresh = false;
     }
+
+    getRefreshAccessToken() {
+        this.fetchSpotlightPowerBiDashboardDetailsBySubaccount().then(async (res) => {
+            if (res === 'API request is successful!') {
+                await this.viewDashboardByMode();
+            }
+        });
+    }
+
 }
