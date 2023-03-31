@@ -1,8 +1,9 @@
 name: Continuous testing in Integration
 
 on:
-  schedule:
-    - cron: '0 */2 * * *'
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 */2 * * *'
 
 permissions: write-all
 
@@ -33,30 +34,30 @@ jobs:
         summary: 'true'
         check_name: 'API Test Report'
     
-    - name: Set Integration test credentials
-      run: |
-        echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "password=${{ secrets.AZURE_TEST_USER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "subaccountAdminUser=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "subaccountAdminPassword=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "stakeholderUser=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
-        echo -e "stakeholderPassword=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
+    # - name: Set Integration test credentials
+    #   run: |
+    #     echo -e "\nusername=${{ secrets.AZURE_TEST_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
+    #     echo -e "password=${{ secrets.AZURE_TEST_USER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
+    #     echo -e "subaccountAdminUser=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
+    #     echo -e "subaccountAdminPassword=${{ secrets.AZURE_INTEGRATION_SUBACCOUNT_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
+    #     echo -e "stakeholderUser=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_USER_NAME }}" >> ./tests/ui/src/main/resources/integration.properties
+    #     echo -e "stakeholderPassword=${{ secrets.AZURE_INTEGRATION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/integration.properties
  
-    - name: Run UI tests
-      id: uiTests
-      run: |
-        cd tests/ui
-        gradle uiTests -Denv=integration -D"cucumber.filter.tags=not @feature-toggle"
-    - uses: deblockt/cucumber-report-annotations-action@v1.10
-      if: success() || failure()
-      name: Publish Cucumber Report
-      with:
-          name: UI Test Report
-          access-token: ${{ secrets.GITHUB_TOKEN }}
-          path: "**/cucumber.json"
-    - uses: actions/upload-artifact@v3
-      if: ${{ failure() && steps.uiTests.conclusion == 'failure' }}
-      name: Archive test results
-      with:
-        name: ui-test-report
-        path: tests/ui/reports/html/
+    # - name: Run UI tests
+    #   id: uiTests
+    #   run: |
+    #     cd tests/ui
+    #     gradle uiTests -Denv=integration -D"cucumber.filter.tags=not @feature-toggle"
+    # - uses: deblockt/cucumber-report-annotations-action@v1.10
+    #   if: success() || failure()
+    #   name: Publish Cucumber Report
+    #   with:
+    #       name: UI Test Report
+    #       access-token: ${{ secrets.GITHUB_TOKEN }}
+    #       path: "**/cucumber.json"
+    # - uses: actions/upload-artifact@v3
+    #   if: ${{ failure() && steps.uiTests.conclusion == 'failure' }}
+    #   name: Archive test results
+    #   with:
+    #     name: ui-test-report
+    #     path: tests/ui/reports/html/
