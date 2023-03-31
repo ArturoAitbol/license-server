@@ -10,6 +10,7 @@ import com.function.util.Config;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import com.function.auth.RoleAuthHandler;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,7 +28,6 @@ class TekvLSGetCtaasDashboardReportTest extends TekvLSTest {
     @Test
     public void getDashboardReport() {
         String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
-        //String reportType = 'STS';
         String reportType = "LTS";
         String startDate = "230129233105";
         String endDate = "230129233105";
@@ -47,6 +47,115 @@ class TekvLSGetCtaasDashboardReportTest extends TekvLSTest {
 
     }
 
+    @Tag("acceptance")
+    @Test
+    public void getDashboardReportWithoutQueryParams() {
+        String subaccountId = "21";
+        String reportType = "LTS";
+        String startDate = "230129233105";
+        String endDate = "230129233105";
+        this.queryParams.put("reportType",reportType);
+        this.queryParams.put("startDate", startDate);
+        this.queryParams.put("endDate", endDate);
+        HttpResponseMessage response = getCtaasDashboardReport.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expectedStatus, actualStatus, "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+    }
+
+    @Test
+    public void getDashboardReportExceptionTest() {
+        Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+        String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
+        String reportType = "LTS";
+        String startDate = "230129233105";
+        String endDate = "230129233105";
+        this.queryParams.put("reportType",reportType);
+        this.queryParams.put("startDate", startDate);
+        this.queryParams.put("endDate", endDate);
+        HttpResponseMessage response = getCtaasDashboardReport.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expectedStatus, actualStatus, "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+    }
+    @Test
+    public void getDashboardReportWithCustomerFullAdmin() {
+        //customerAdmin
+        String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        //String reportType = 'STS';
+        String reportType = "LTS";
+        String startDate = "230129233105";
+        String endDate = "230129233105";
+        this.queryParams.put("reportType",reportType);
+        this.queryParams.put("startDate", startDate);
+        this.queryParams.put("endDate", endDate);
+
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        HttpResponseMessage response = getCtaasDashboardReport.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus, actualStatus, "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("response"));
+    }
+    @Test
+    public void getDashboardReportWithUnaxistantSubaccount() {
+        //customerAdmin
+        String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
+        //String reportType = 'STS';
+        String reportType = "LTS";
+        String startDate = "230129233105";
+        String endDate = "230129233105";
+        this.queryParams.put("reportType",reportType);
+        this.queryParams.put("startDate", startDate);
+        this.queryParams.put("endDate", endDate);
+
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        HttpResponseMessage response = getCtaasDashboardReport.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus, "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedResponse = RoleAuthHandler.MESSAGE_SUBACCOUNT_ID_NOT_FOUND;
+        String actualResponse = jsonBody.getString("error");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+    @Test
+    public void getDashboardReportWithStakeholderAccount() {
+        //customerAdmin
+        String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
+        //String reportType = 'STS';
+        String reportType = "LTS";
+        String startDate = "230129233105";
+        String endDate = "230129233105";
+        this.queryParams.put("reportType",reportType);
+        this.queryParams.put("startDate", startDate);
+        this.queryParams.put("endDate", endDate);
+
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+
+        HttpResponseMessage response = getCtaasDashboardReport.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus, actualStatus, "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("response"));
+    }
     @Test
     public void getDashboardReportWithNullReport() {
         String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
@@ -118,6 +227,29 @@ class TekvLSGetCtaasDashboardReportTest extends TekvLSTest {
         String expectedMessage = "End Date provided is invalid.";
         assertEquals(expectedMessage, jsonBody.getString("error"));
     }
+    @Test
+    public void getDashboardReportWithNullSubaccountId() {
+        String subaccountId = "EMPTY";
+        String reportType = "LTS";
+        String startDate = "230129233105";
+        String endDate = "230129233105";
+        this.queryParams.put("reportType",reportType);
+        this.queryParams.put("startDate", startDate);
+        this.queryParams.put("endDate", endDate);
+
+        HttpResponseMessage response = getCtaasDashboardReport.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus, "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_SUBACCOUNT_ID_NOT_FOUND;
+        assertEquals(expectedMessage, jsonBody.getString("error"));
+    }
 
     @Tag("security")
     @Test
@@ -168,5 +300,4 @@ class TekvLSGetCtaasDashboardReportTest extends TekvLSTest {
         String actualResponse = jsonBody.getString("error");
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
-
 }

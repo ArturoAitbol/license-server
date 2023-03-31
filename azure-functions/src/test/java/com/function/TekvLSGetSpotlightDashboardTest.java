@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.management.relation.Role;
 
@@ -26,17 +27,18 @@ class TekvLSGetSpotlightDashboardTest extends TekvLSTest {
         this.initTestParameters();
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
     }
+    @Test
+    public void getSpotlightDashboardWithStakeholderAccount() {
+        String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
 
-//    @Test
-//    public void getSpotlightDashboard() {
-//        String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
-//        HttpResponseMessage response = getSpotlightDashboardApi.run(this.request, subaccountId, this.context);
-//        this.context.getLogger().info(response.getBody().toString());
-//
-//        HttpStatusType actualStatus = response.getStatus();
-//        HttpStatus expected = HttpStatus.OK;
-//        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-//    }
+        HttpResponseMessage response = getSpotlightDashboardApi.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
 
     @Test
     public void getSpotlightDashboardInvalidTest() {
@@ -49,23 +51,40 @@ class TekvLSGetSpotlightDashboardTest extends TekvLSTest {
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
-//    @Test
-//    public void getSpotlightDashboardWithUnexistantId() {
-//        String subaccountId = "9f6ff46a-5f19-4bcf-9f66-c5f29b800205";
-//        HttpResponseMessage response = getSpotlightDashboardApi.run(this.request, subaccountId, this.context);
-//        this.context.getLogger().info(response.getBody().toString());
-//
-//        HttpStatusType actualStatus = response.getStatus();
-//        HttpStatus expected = HttpStatus.BAD_REQUEST;
-//        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-//
-//        String body = (String) response.getBody();
-//        JSONObject jsonBody = new JSONObject(body);
-//        assertTrue(jsonBody.has("error"));
-//
-//        String expectedMessage = RoleAuthHandler.MESSAGE_SUBACCOUNT_ID_NOT_FOUND;
-//        assertEquals(expectedMessage,jsonBody.getString("error"));
-//    }
+    @Test
+    public void getSpotlightDashboardExceptionTest() {
+        String subaccountId = "0e2038ec-2b9b-493b-b3f2-6702e60b5b90";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+        Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+
+        HttpResponseMessage response = getSpotlightDashboardApi.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String expectedMessage = RoleAuthHandler.MESSAGE_SUBACCOUNT_ID_NOT_FOUND;
+        assertEquals(expectedMessage,jsonBody.getString("error"));
+    }
+
+    @Test
+    public void getSpotlightDashboardWithUnknownId() {
+        String subaccountId = "f5";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+        Mockito.doThrow(new RuntimeException("Generic error")).when(request).createResponseBuilder(HttpStatus.OK);
+
+        HttpResponseMessage response = getSpotlightDashboardApi.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP request doesn't match with: ".concat(expected.toString()));
+    }
 
     @Test
     public void getSpotlightDashboardWithEmptyId() {
