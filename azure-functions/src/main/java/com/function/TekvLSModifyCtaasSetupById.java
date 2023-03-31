@@ -5,7 +5,6 @@ import static com.function.auth.Roles.*;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.function.clients.EmailClient;

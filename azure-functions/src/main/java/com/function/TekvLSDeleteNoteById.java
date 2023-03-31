@@ -3,12 +3,9 @@ package com.function;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import com.function.auth.Resource;
 import com.function.clients.FCMClient;
-import com.function.clients.HttpClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.microsoft.azure.functions.annotation.*;
