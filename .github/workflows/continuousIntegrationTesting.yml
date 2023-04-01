@@ -1,9 +1,9 @@
 name: Continuous testing in Integration
 
 on:
-  workflow_dispatch:
-  # schedule:
-  #   - cron: '0 */2 * * *'
+  # workflow_dispatch:
+  schedule:
+    - cron: '0 */2 * * *'
 
 permissions: write-all
 
@@ -19,17 +19,22 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Debug on failure
-      if: success() || failure()
-      uses: mxschmitt/action-tmate@v3
+    # - name: 'Restore Project Dependencies Using Mvn and Run Unit Tests'
+    #   shell: bash
+    #   run: |
+    #     pushd './${{ env.POM_XML_DIRECTORY }}'
+    #     sudo sed -i -e 's/local   all             postgres                                peer/local   all             postgres                                trust/g' /etc/postgresql/14/main/pg_hba.conf
+    #     sudo systemctl start postgresql.service
+    #     psql "dbname=postgres user=postgres password=postgres" -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+    #     chmod 777 src/test/resources/Script.sh
+    #     popd
+
+    # - name: Debug on failure
+    #   if: success() || failure()
+    #   uses: mxschmitt/action-tmate@v3
 
     - name: Install Azure Core Tools
-      run: |
-        curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-        sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
-        sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list'
-        sudo apt-get update
-        sudo apt-get install azure-functions-core-tools-4
+      run: sudo apt-get install azure-functions-core-tools-4
     
     - name: 'Restore Project Dependencies Using Mvn'
       shell: bash

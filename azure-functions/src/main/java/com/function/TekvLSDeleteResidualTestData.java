@@ -71,9 +71,10 @@ public class TekvLSDeleteResidualTestData {
             ResultSetMetaData rsmd = resultSet.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
             JSONObject json = new JSONObject();
-            JSONArray array = new JSONArray();
+//            JSONArray array = new JSONArray();
+            JSONObject item = new JSONObject();
             while (resultSet.next()) {
-                JSONObject item = new JSONObject();
+//                JSONObject item = new JSONObject();
                 for (int i = 1; i <= columnsNumber; i++) {
                     if (i > 1) System.out.print(",  ");
                     String columnValue = resultSet.getString(i);
@@ -81,15 +82,15 @@ public class TekvLSDeleteResidualTestData {
                     item.put(Integer.toString(i), resultSet.getString(rsmd.getColumnName(i)));
                 }
                 System.out.println("");
-                array.put(item);
+//                array.put(item);
+                json.put("timeStamp", item);
             }
-            json.put("bundles", array);
 
             customerStatement.setString(1, "xxxxxx");
             customerStatement.setString(2, "true");
             context.getLogger().info("Execute SQL statement: " + customerStatement);
             customerStatement.executeUpdate();
-            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
+            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(item.toString()).build();
         }
         catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
