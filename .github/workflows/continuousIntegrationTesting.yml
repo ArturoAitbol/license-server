@@ -21,7 +21,7 @@ jobs:
 
 
     - name: Debug on failure
-        if: success() || failure()
+        # if: success() || failure()
         uses: mxschmitt/action-tmate@v3
 
     - name: Install Azure Core Tools
