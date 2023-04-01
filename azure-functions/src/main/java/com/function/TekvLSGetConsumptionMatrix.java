@@ -1,6 +1,5 @@
 package com.function;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.function.auth.Resource;
 import com.function.db.SelectQueryBuilder;
 import com.microsoft.azure.functions.*;
@@ -11,7 +10,6 @@ import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.sql.*;
 import java.util.*;
 

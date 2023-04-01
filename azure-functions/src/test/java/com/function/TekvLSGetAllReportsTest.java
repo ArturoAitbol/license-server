@@ -60,6 +60,100 @@ public class TekvLSGetAllReportsTest extends TekvLSTest {
 
     @Tag("acceptance")
     @Test
+    public void getAllReportsForCustomerStakeholderTest() {
+        // Given
+        String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllReports.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus, actualStatus,
+                "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("reports"));
+
+        JSONArray reports = jsonBody.getJSONArray("reports");
+        assertTrue(reports.length() > 0);
+
+        JSONObject report = reports.getJSONObject(0);
+        assertTrue(report.has("reportType"));
+        assertTrue(report.has("startTime"));
+        assertTrue(report.has("endTime"));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getAllReportsForCustomerFullAdminTest() {
+        // Given
+        String subaccountId = "f5a609c0-8b70-4a10-9dc8-9536bdb5652c";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllReports.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.OK;
+        assertEquals(expectedStatus, actualStatus,
+                "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("reports"));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getAllReportsForCustomerAnySubaccountIdTest() {
+        // Given
+        String subaccountId = "f5";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllReports.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void getAllReportsForCustomerUnknownSubaccountIdTest() {
+        // Given
+        String subaccountId = "8acb6997-4d6a-4427-ba2c-7bf463fa08ec";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("customerAdmin"));
+
+        // When
+        HttpResponseMessage response = tekvLSGetAllReports.run(this.request, subaccountId, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        assertEquals(expectedStatus, actualStatus,"HTTP status doesn't match with: ".concat(expectedStatus.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = RoleAuthHandler.MESSAGE_SUBACCOUNT_ID_NOT_FOUND;
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Tag("acceptance")
+    @Test
     public void getFeatureFunctionalityReportsTest() {
         // Given
         String subaccountId = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";

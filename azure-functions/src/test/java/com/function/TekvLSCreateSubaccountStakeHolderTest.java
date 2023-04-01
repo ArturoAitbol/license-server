@@ -8,7 +8,6 @@ import static org.mockito.Mockito.doThrow;
 
 import java.util.Optional;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -251,7 +251,10 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.powerBiFontStyleControl.setValue(this.WEEKLY);
                     this.powerBiFontStyleControl.disable();
                     this.featureToggleKey = this.WEEKLY;
-                    this.bannerService.open("WARNING", "Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", this.onDestroy);
+                    this.bannerService.open("WARNING",
+                        "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
+                        "However, users can still view historical reports on the dashboard. " +
+                        "Please note that during this maintenance period, access to notes and test reports is not available.", this.onDestroy);
                     this.viewDashboardByMode();
                 }
             });
