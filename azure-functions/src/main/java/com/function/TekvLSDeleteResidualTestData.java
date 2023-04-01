@@ -65,21 +65,21 @@ public class TekvLSDeleteResidualTestData {
             noteStatement.setString(1, "aamoroso@tekvizionlabs.com");
             context.getLogger().info("Execute SQL statement: " + noteStatement);
             noteStatement.executeUpdate();
-            ResultSet resultSet =timeStatement.executeQuery();
+
+            context.getLogger().info("Execute SQL statement: " + timeStatement);
+            ResultSet resultSet = timeStatement.executeQuery();
             ResultSetMetaData rsmd = resultSet.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
-            System.out.println("Timestamp:" + resultSet.toString());
             while (resultSet.next()) {
                 for (int i = 1; i <= columnsNumber; i++) {
                     if (i > 1) System.out.print(",  ");
                     String columnValue = resultSet.getString(i);
-                    System.out.print(columnValue + " " + rsmd.getColumnName(i));
+                    System.out.print("Timestamp: " + columnValue + " " + rsmd.getColumnName(i));
                 }
                 System.out.println("");
             }
             customerStatement.setString(1, "xxxxxx");
             customerStatement.setString(2, "true");
-            context.getLogger().info("Execute SQL statement: " + customerStatement);
             context.getLogger().info("Execute SQL statement: " + customerStatement);
             customerStatement.executeUpdate();
             return request.createResponseBuilder(HttpStatus.OK).build();
