@@ -220,3 +220,16 @@ button:hover {
 .refreshButton:hover {
   background-color: whitesmoke;
 }
+
+.loadingMessage{
+  font-size: 20px;
+  line-height: 32px;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  color: #203c66;
+}
+.reportLoading{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
