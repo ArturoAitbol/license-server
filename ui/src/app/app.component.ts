@@ -266,7 +266,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         break;
                     case this.APPS_ROUTE_PATH:
                         this.tabName = '';
-                        this.hideToolbar = false;
+                        this.hideToolbar = true;
                         this.enableSidebar();
                         break;
                     case this.CTAAS_DASHBOARD_ROUTE_PATH:

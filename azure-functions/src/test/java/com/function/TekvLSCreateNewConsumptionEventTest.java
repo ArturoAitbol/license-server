@@ -109,6 +109,72 @@ public class TekvLSCreateNewConsumptionEventTest extends TekvLSTest {
         assertEquals(callingPlatformId,jsonBody.getString("callingPlatformId"));
     }
 
+    @Tag("acceptance")
+    @Test
+    public void createNewConsumptionEventWithBadDUTTypeTest() {
+        //Given
+        String bodyRequest = "{ " +
+                "    'subaccountId': '"+subaccountId+"'," +
+                "    'projectId': '"+projectId+"'," +
+                "    'deviceId': '"+ deviceId +"'," +
+                "    'dutId': '"+ dutId +"'," +
+                "    'callingPlatformId': '00000000'," +
+                "    'consumptionDate': '"+consumptionDate+"'," +
+                "    'type': '"+type+"'," +
+                "    'usageDays': "+usageDays+" }";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "Calling Platform provided doesn't exist";
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+    @Tag("acceptance")
+    @Test
+    public void createNewConsumptionEventWithBadCallingPlataformIdTest() {
+        //Given
+        String bodyRequest = "{ " +
+                "    'subaccountId': '"+subaccountId+"'," +
+                "    'projectId': '"+projectId+"'," +
+                "    'deviceId': '"+ deviceId +"'," +
+                "    'dutId': '000000000'," +
+                "    'callingPlatformId': '"+ callingPlatformId +"'," +
+                "    'consumptionDate': '"+consumptionDate+"'," +
+                "    'type': '"+type+"'," +
+                "    'usageDays': "+usageDays+" }";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "DUT provided doesn't exist";
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
 
     @Tag("acceptance")
     @Test
@@ -176,6 +242,58 @@ public class TekvLSCreateNewConsumptionEventTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));        
     }
 
+    @Tag("acceptance")
+    @Test
+    public void missingBodyTest() {
+        //Given
+
+        String bodyRequest = "";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "error: request body is empty.";
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
+
+    @Tag("acceptance")
+    @Test
+    public void missingJsonBodyTest() {
+        //Given
+
+        String bodyRequest = "{subaccountId:}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request,this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.BAD_REQUEST;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("error"));
+
+        String actualResponse = jsonBody.getString("error");
+        String expectedResponse = "Missing value at 14 [character 15 line 1]";
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
     @Tag("acceptance")
     @Test
     public void noUsageDaysParamTest() {

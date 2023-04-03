@@ -58,6 +58,64 @@ class TekvLSCreateSubaccountAdminDeviceTest extends TekvLSTest {
         this.deviceToken = this.sampleDeviceToken;
     }
 
+    @Tag("acceptance")
+    @Test
+    void updateSubaccountAdminDevice() {
+        //Preparation
+        String bodyRequest = "{'deviceToken': '" + sampleDeviceToken + "'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        HttpResponseMessage response = tekvLSCreateSubaccountAdminDevice.run(this.request,this.context);
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        this.deviceToken = this.sampleDeviceToken;
+        
+        // now, given
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountStakeholder"));
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        //When
+        response = tekvLSCreateSubaccountAdminDevice.run(this.request,this.context);
+
+        //Then
+        actualStatus = response.getStatus();
+        expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Tag("acceptance")
+    @Test
+    void registerSubaccountAdminDeviceTwiceForSameUser() {
+        //First request
+        String bodyRequest = "{'deviceToken': '" + sampleDeviceToken + "'}";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+
+        HttpResponseMessage response = tekvLSCreateSubaccountAdminDevice.run(this.request,this.context);
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+        this.deviceToken = this.sampleDeviceToken;
+        
+        // repeat request
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        response = tekvLSCreateSubaccountAdminDevice.run(this.request,this.context);
+        actualStatus = response.getStatus();
+        expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
+
+        // verify message
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("message"));
+
+        String expectedResponse = tekvLSCreateSubaccountAdminDevice.DEVICE_ALREADY_REGISTERED_FOR_USER_MESSAGE;
+        String actualResponse = jsonBody.getString("message");
+        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
+    }
+
     @Test
     void incompleteBodyTest() {
         //Given

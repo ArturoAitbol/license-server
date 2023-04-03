@@ -52,6 +52,9 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     readonly WEEKLY: string = 'weekly';
     readonly TEST1: string = 'test1';
     readonly TEST2: string = 'test2';
+    readonly FEATURE_FUNCTIONALITY_NAME: string = 'Feature Functionality';
+    readonly CALLING_RELIABILITY_NAME: string = 'Calling Reliability';
+    readonly VQ_NAME: string = 'Voice Quality User Experience';
     featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
@@ -249,7 +252,10 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.powerBiFontStyleControl.setValue(this.WEEKLY);
                     this.powerBiFontStyleControl.disable();
                     this.featureToggleKey = this.WEEKLY;
-                    this.bannerService.open("WARNING", "Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", this.onDestroy);
+                    this.bannerService.open("WARNING",
+                        "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
+                        "However, users can still view historical reports on the dashboard. " +
+                        "Please note that during this maintenance period, access to notes and test reports is not available.", this.onDestroy);
                     this.viewDashboardByMode();
                 }
             });
@@ -349,10 +355,15 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
      */
     getReportNameByType(reportType: string): string {
         switch (reportType) {
-            case ReportType.DAILY_FEATURE_FUNCTIONALITY: return 'Feature Functionality';
-            case ReportType.DAILY_CALLING_RELIABILITY: return 'Calling Reliability';
-            // case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';  // as media injection is not ready yet, hence disabling PESQ for now.
-            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return 'Feature Functionality & Calling Reliability'
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
+            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
+                return this.FEATURE_FUNCTIONALITY_NAME;
+            case ReportType.DAILY_CALLING_RELIABILITY:
+            case ReportType.WEEKLY_CALLING_RELIABILITY:
+                return this.CALLING_RELIABILITY_NAME;
+            case ReportType.DAILY_VQ:
+            case ReportType.WEEKLY_VQ:
+                return this.VQ_NAME;
         }
     }
 

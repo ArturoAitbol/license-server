@@ -38,6 +38,7 @@ export const permissions = {
             'redirect',
             'spotlight',
             'report-dashboards',
+            'notes',
             'test-suites',
             'stakeholders',
             'setup',
@@ -98,11 +99,13 @@ export const permissions = {
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
             ],
+            noteOptions: [
+                'VIEW_DASHBOARD'
+            ],
             subscriptionsOverviewOptions: [
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
             ],
-            noteOptions: [],
             deviceOptions: [
                 'MODIFY_DEVICE',
                 'DELETE_DEVICE',
@@ -166,6 +169,7 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
+            'notes',
             'test-suites',
             'stakeholders',
             'setup',
@@ -208,6 +212,9 @@ export const permissions = {
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
+            ],
+            noteOptions: [
+                'VIEW_DASHBOARD'
             ],
             subscriptionsOverviewOptions: [],
             deviceOptions: []
