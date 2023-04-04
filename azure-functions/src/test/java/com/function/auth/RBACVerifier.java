@@ -805,5 +805,16 @@ public class RBACVerifier {
                                 false,
                                 false,
                                 false));
+                verifiers.put(CREATE_CALLBACK, new ExpectedPermissions(
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        true,
+                        true));
         }
 }
