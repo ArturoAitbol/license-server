@@ -72,7 +72,6 @@ const beforeEachFunction = () => {
     ViewProfileComponentTestInstance = fixture.componentInstance;
     ViewProfileComponentTestInstance.ngOnInit();
     loader = TestbedHarnessEnvironment.loader(fixture);
-    spyOn(console, 'log').and.callThrough();
 }
 
 

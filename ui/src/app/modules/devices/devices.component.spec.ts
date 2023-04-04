@@ -72,7 +72,6 @@ const beforeEachFunction = () => {
     });
     fixture = TestBed.createComponent(DevicesComponent);
     devicesComponentTestInstance = fixture.componentInstance;
-    spyOn(console, 'log').and.callThrough();
 }
 
 describe('UI verification tests', () => {
