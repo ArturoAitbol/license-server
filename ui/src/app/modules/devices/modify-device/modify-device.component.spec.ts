@@ -101,7 +101,6 @@ const beforeEachFunction = () => {
     fixture = TestBed.createComponent(ModifyDeviceComponent);
     modifyDeviceComponentTestInstance = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
-    spyOn(console, 'log').and.callThrough();
 };
 
 describe('UI verification test', () => {
