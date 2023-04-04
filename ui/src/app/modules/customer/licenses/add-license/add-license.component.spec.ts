@@ -1,58 +1,52 @@
-import { CommonModule } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatDialogRef } from "@angular/material/dialog";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { of } from "rxjs";
-import { SharedModule } from "src/app/modules/shared/shared.module";
-import { BundleService } from "src/app/services/bundle.service";
-import { CustomerService } from "src/app/services/customer.service";
-import { LicenseService } from "src/app/services/license.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
 import { BundleServiceMock } from "src/test/mock/services/bundle-service.mock";
 import { CustomerServiceMock } from "src/test/mock/services/customer-service.mock";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { AddLicenseComponent } from "./add-license.component";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
+import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogMock } from '../../../../../test/mock/components/mat-dialog.mock';
+import { CustomerService } from '../../../../services/customer.service';
 
 let addLicenseComponentTestInstance: AddLicenseComponent;
 let fixture: ComponentFixture<AddLicenseComponent>;
 
-const MatDialogRefMock = {
-    close: () => { return null }
-};
-
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [AddLicenseComponent],
-        imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
-        providers: [{
-            provide: CustomerService,
-            useValue: CustomerServiceMock
-        },
-        {
-            provide: LicenseService,
-            useValue: LicenseServiceMock
-        },
-        {
-            provide: BundleService,
-            useValue: BundleServiceMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: MatDialogRef,
-            useValue: MatDialogRefMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        }
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddLicenseComponent);
+    configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
+    configBuilder.addProvider({ provide: CustomerService, useValue: CustomerServiceMock });
+    TestBed.configureTestingModule(configBuilder.getConfig());
+    // TestBed.configureTestingModule({
+    //     declarations: [AddLicenseComponent],
+    //     imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
+    //     providers: [{
+    //         provide: CustomerService,
+    //         useValue: CustomerServiceMock
+    //     },
+    //     {
+    //         provide: LicenseService,
+    //         useValue: LicenseServiceMock
+    //     },
+    //     {
+    //         provide: BundleService,
+    //         useValue: BundleServiceMock
+    //     },
+    //     {
+    //         provide: SnackBarService,
+    //         useValue: SnackBarServiceMock
+    //     },
+    //     {
+    //         provide: MatDialogRef,
+    //         useValue: MatDialogRefMock
+    //     },
+    //     {
+    //         provide: HttpClient,
+    //         useValue: HttpClient
+    //     }
+    //     ]
+    // });
     fixture = TestBed.createComponent(AddLicenseComponent);
     addLicenseComponentTestInstance = fixture.componentInstance;
 }
