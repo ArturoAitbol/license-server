@@ -44,12 +44,20 @@
             </div>
           </div>
           <!-- power bi report view -->
-          <powerbi-report #reportEmbed
-          [embedConfig]="reportConfig" 
-          [phasedEmbedding]="phasedEmbeddingFlag"
-          [cssClassName]="reportClass" 
-          [eventHandlers]="eventHandlersMap">
-          </powerbi-report>
+            <figure *ngIf="!reportRendered" class="reportLoading">
+              <img height="80" width="80" src="assets/images/spinner.gif"
+              alt="loading spinner gif">
+              <figcaption class= "loadingMessage">Please wait while we prepare your Spotlight Dashboard.</figcaption>
+            </figure>
+            <div [hidden]="!reportRendered">
+              <powerbi-report #reportEmbed
+                [embedConfig]="reportConfig" 
+                [phasedEmbedding]="phasedEmbeddingFlag"
+                [cssClassName]="reportClass"
+                [eventHandlers]="eventHandlersMap" 
+                (rendered)="reportFinishedRendering()">
+              </powerbi-report>
+            </div>
         </div>
         <!-- pbrs report images view -->
         <div *ngIf="!powerBiEmbeddingFlag" class="container-fluid controls" id="reportContainer">

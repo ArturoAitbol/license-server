@@ -60,7 +60,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     // CSS Class to be passed to the wrapper
     // Hide the report container initially
     reportClass = 'report-container-hidden';
-
+    reportRendered: boolean = false;
     // Flag which specify the type of embedding
     phasedEmbeddingFlag = false;
     powerBiEmbeddingFlag: boolean = false;
@@ -225,6 +225,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
      * on change power bi button toggle
      */
     onChangePowerBiButtonToggle() {
+        this.reportRendered = false;
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
         if (this.reportObj) {
@@ -523,6 +524,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     }
     async refreshDashboard() {
         this.refresh = true;
+        this.reportRendered = false;
         const { value } = this.powerBiFontStyleControl;
         this.powerBiEmbeddingFlag = false;
         await this.delay(1);
@@ -538,5 +540,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             }
         });
     }
-
+    
+    reportFinishedRendering(){
+        this.reportRendered = true;
+    }
 }
