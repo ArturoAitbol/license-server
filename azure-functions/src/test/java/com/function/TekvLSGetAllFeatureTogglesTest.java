@@ -1,6 +1,5 @@
 package com.function;
 
-import com.function.auth.RoleAuthHandler;
 import com.function.util.Config;
 import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;

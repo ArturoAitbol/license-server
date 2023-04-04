@@ -60,7 +60,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     // CSS Class to be passed to the wrapper
     // Hide the report container initially
     reportClass = 'report-container-hidden';
-
+    reportRendered: boolean = false;
     // Flag which specify the type of embedding
     phasedEmbeddingFlag = false;
     powerBiEmbeddingFlag: boolean = false;
@@ -225,6 +225,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
      * on change power bi button toggle
      */
     onChangePowerBiButtonToggle() {
+        this.reportRendered = false;
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
         if (this.reportObj) {
@@ -251,7 +252,10 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.powerBiFontStyleControl.setValue(this.WEEKLY);
                     this.powerBiFontStyleControl.disable();
                     this.featureToggleKey = this.WEEKLY;
-                    this.bannerService.open("WARNING", "Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", this.onDestroy);
+                    this.bannerService.open("WARNING",
+                        "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
+                        "However, users can still view historical reports on the dashboard. " +
+                        "Please note that during this maintenance period, access to notes and test reports is not available.", this.onDestroy);
                     this.viewDashboardByMode();
                 }
             });
@@ -520,6 +524,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     }
     async refreshDashboard() {
         this.refresh = true;
+        this.reportRendered = false;
         const { value } = this.powerBiFontStyleControl;
         this.powerBiEmbeddingFlag = false;
         await this.delay(1);
@@ -535,5 +540,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             }
         });
     }
-
+    
+    reportFinishedRendering(){
+        this.reportRendered = true;
+    }
 }

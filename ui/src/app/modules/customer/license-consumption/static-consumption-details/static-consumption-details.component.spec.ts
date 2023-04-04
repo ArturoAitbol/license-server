@@ -1,24 +1,14 @@
-import { CommonModule } from "@angular/common";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MsalService } from "@azure/msal-angular";
 import { of, throwError } from "rxjs";
-import { SharedModule } from "src/app/modules/shared/shared.module";
-import { SnackBarService } from "src/app/services/snack-bar.service";
-import { UsageDetailService } from "src/app/services/usage-detail.service";
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { UsageDetailServiceMock } from "src/test/mock/services/usage-detail-service.mock";
 import { StaticConsumptionDetailsComponent } from "./static-consumption-details.component";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
+import { MatDialogMock } from '../../../../../test/mock/components/mat-dialog.mock';
 
 let staticConsumptionDetailsComponent: StaticConsumptionDetailsComponent;
 let fixture : ComponentFixture<StaticConsumptionDetailsComponent>;
-
-
-const MatDialogRefMock = {
-    close:()=>{ return {}; }
-}
 
 const data = {
     consumption: "2024-02-01 - Week 5",
@@ -38,31 +28,10 @@ const data = {
 }
 
 const beforeEachFunction = () =>{
-    TestBed.configureTestingModule({
-        declarations:[StaticConsumptionDetailsComponent],
-        imports: [CommonModule,SharedModule,BrowserAnimationsModule],
-        providers: [ {
-            provide: UsageDetailService,
-            useValue: UsageDetailServiceMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: MatDialogRef,
-            useValue: MatDialogRefMock
-        },
-        {
-            provide: MAT_DIALOG_DATA,
-            useValue: data
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        }
-    ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(StaticConsumptionDetailsComponent);
+    configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: data });
+    configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock});
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(StaticConsumptionDetailsComponent);
     staticConsumptionDetailsComponent = fixture.componentInstance;
 }

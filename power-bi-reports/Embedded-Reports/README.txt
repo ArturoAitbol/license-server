@@ -1,6 +1,8 @@
-Embedded Dashboard Report Version - V34
-Release Date - 20-03-2023
-Fixes - Fixed query folding issue on clicking Customer Network Quality
+Embedded Dashboard Report Version - V37
+Release Date - 31-03-2023
+Fixes - 
+•	Packet Loss visual not loading.
+•	"POLQA" Filter is to be applied only on Selected Metric vs VQT.
 
 
 Changes need to do be done before publishing to Power BI Service Workspace:

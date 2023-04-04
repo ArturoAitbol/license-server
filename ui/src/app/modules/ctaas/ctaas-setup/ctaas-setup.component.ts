@@ -93,7 +93,7 @@ export class CtaasSetupComponent implements OnInit {
       if (action === 'enable') {
         this.dialogService.confirmDialog({
           title: 'Confirm Maintenance Mode',
-          message: 'If you enable this mode, some of the features in the implementation won\'t be available, are you sure you want to continue?',
+          message: 'Enabling this mode triggers an email notification to the customer, and a corresponding alert will be displayed on both the dashboard and mobile app.',
           confirmCaption: 'Confirm',
           cancelCaption: 'Cancel',
         }).subscribe((confirmed) => {
@@ -103,8 +103,8 @@ export class CtaasSetupComponent implements OnInit {
         });
       } else if (action === 'disable'){
         this.dialogService.confirmDialog({
-          title: 'Confirm Maintenance Mode',
-          message: 'Are you sure you want to disable the maintenance mode?',
+          title: 'Disable Maintenance Mode',
+          message: 'Before you disable the maintenance mode, please make sure that everything is operational and running smoothly.',
           confirmCaption: 'Confirm',
           cancelCaption: 'Cancel',
         }).subscribe((confirmed) => {

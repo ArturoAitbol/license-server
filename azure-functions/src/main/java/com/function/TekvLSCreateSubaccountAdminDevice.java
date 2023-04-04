@@ -12,12 +12,15 @@ import org.json.JSONObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSCreateSubaccountAdminDevice {
+    final String DEVICE_ALREADY_REGISTERED_FOR_USER_MESSAGE = "User already registered with this device";
+
     @FunctionName("TekvLSCreateSubaccountAdminDevice")
     public HttpResponseMessage run(
             @HttpTrigger(
@@ -77,17 +80,33 @@ public class TekvLSCreateSubaccountAdminDevice {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
         }
-        final String sql = "INSERT INTO subaccount_admin_device (subaccount_admin_email, device_token) VALUES (?, ?);";
+        // Sql query to get user device info
+        final String getUserDeviceSql = "SELECT * FROM subaccount_admin_device sad WHERE device_token = ?;";
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
 
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, userEmail);
-            statement.setString(2, jobj.getString(MANDATORY_PARAMS.DEVICE_TOKEN.value));
-            statement.execute();
+             PreparedStatement getStatement = connection.prepareStatement(getUserDeviceSql)) {
+            getStatement.setString(1, jobj.getString(MANDATORY_PARAMS.DEVICE_TOKEN.value));
+            ResultSet rs = getStatement.executeQuery();
+            String sql;
+            if (rs.next()) {
+                if (rs.getString("subaccount_admin_email").equals(userEmail)) {
+                    // if device already registered for this email, skip update action
+                    context.getLogger().info(DEVICE_ALREADY_REGISTERED_FOR_USER_MESSAGE);
+                    JSONObject json = new JSONObject();
+                    json.put("message", DEVICE_ALREADY_REGISTERED_FOR_USER_MESSAGE);
+                    return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
+                }
+                sql = "UPDATE subaccount_admin_device SET subaccount_admin_email = ? WHERE device_token = ?;";
+            } else
+                sql = "INSERT INTO subaccount_admin_device (subaccount_admin_email, device_token) VALUES (?, ?);";
+            PreparedStatement updateStatement = connection.prepareStatement(sql);
+            updateStatement.setString(1, userEmail);
+            updateStatement.setString(2, jobj.getString(MANDATORY_PARAMS.DEVICE_TOKEN.value));
+            updateStatement.execute();
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
