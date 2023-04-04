@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild, HostListener, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -20,6 +20,7 @@ import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 import { Subject } from "rxjs/internal/Subject";
+import { takeUntil } from 'rxjs/operators';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
@@ -139,6 +140,11 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     enableEmbedTokenCache: boolean = true;
     canRefreshDashboard: boolean = false;
     refresh: boolean = false;
+    startTime: number = 0;
+    milliseconds: number = 0;
+    seconds: number = 0;
+    timer: any;
+    stopTimer$: Subject<void> = new Subject();
     @ViewChild('reportEmbed') reportContainerDivElement: any;
     constructor(
         private dialog: MatDialog,
@@ -149,7 +155,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         private snackBarService: SnackBarService,
         private featureToggleService: FeatureToggleService,
         private router: Router,
-        private bannerService: BannerService
+        private bannerService: BannerService,
+        private elementRef: ElementRef
     ) { }
 
     /**
@@ -173,6 +180,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         this.isOnboardingComplete = false;
         this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.fetchCtaasSetupDetails();
+        this.startTimer();
         const accountDetails = this.getAccountDetails();
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
@@ -225,6 +233,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
      * on change power bi button toggle
      */
     onChangePowerBiButtonToggle() {
+        this.startTimer();
         this.reportRendered = false;
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
@@ -523,6 +532,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     async refreshDashboard() {
+        this.startTimer();
         this.refresh = true;
         this.reportRendered = false;
         const { value } = this.powerBiFontStyleControl;
@@ -540,8 +550,23 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             }
         });
     }
-    
+
     reportFinishedRendering(){
         this.reportRendered = true;
+        this.stopTimer();
+    }
+    startTimer() {
+        this.startTime = 0;
+        this.seconds=0;
+        this.milliseconds = 0;
+        this.startTime = performance.now();
+        this.timer = interval(1).subscribe(() => {
+            const elapsedTime = performance.now() - this.startTime;
+            this.seconds = Math.floor(elapsedTime / 1000);
+            this.milliseconds = Math.floor(elapsedTime % 1000);
+        });
+    }
+    stopTimer() {
+        this.timer.unsubscribe();
     }
 }

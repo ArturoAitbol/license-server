@@ -36,7 +36,8 @@
               </mat-button-toggle-group>
             </div>
             <div *lcFeatureToggle="'powerbiRefreshFeature';subaccountId:getSubaccountId()">
-              <div >
+              <div>
+                <p style="display: inline-block;">Elapsed Time: {{ seconds }}s {{ milliseconds | number: '3.0' }}ms&emsp;</p>
                 <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="refreshDashboard()">
                   <mat-icon>refresh</mat-icon>
                 </button>
