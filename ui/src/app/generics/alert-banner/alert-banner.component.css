@@ -6,7 +6,7 @@
     flex-direction: row;
     align-items: center;
     overflow: hidden;
-    background: #FCFCB6FF;
+    background: rgba(255, 0, 0, 0.5);
     margin: 0 0 10px;
     color: black;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
