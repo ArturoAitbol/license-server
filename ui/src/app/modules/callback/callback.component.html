@@ -1,0 +1,25 @@
+<div class="missing-setup-data">
+    <div class="row-12">
+        <p class='text-content2' *ngIf="missingUserProfileData === false">A support engineer will be requested to call this user if you continue performing this action, do you want to continue?</p>
+    </div>
+    <div class="row-12">
+        <p class='text-content2' *ngIf="missingUserProfileData === true">Please contact your Subaccount Administrator or tekVizion to fill this user’s info.</p>
+    </div>
+    <div class="row ">
+        <div class="col-auto d-flex justify-content-end">
+            <button mat-stroked-button type="button" *ngIf="missingUserProfileData === false" (click)="callbackFunction()" id="submit-button">Yes, I do</button>
+        </div>
+        <div class="col-auto ">
+            <button mat-stroked-button type="button" (click)="onClose();" id="cancel-button">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalContent>
+    <div class="row-12">
+        <p class='text-content2'>A support engineer will contact you as soon as possible, thank you for your patience.</p>
+    </div>
+    <div class="row justify-content-end">
+        <button class="col-2 d-flex justify-content-end" mat-raised-button (click)="dialogClose()">Close</button>
+    </div>
+</ng-template>

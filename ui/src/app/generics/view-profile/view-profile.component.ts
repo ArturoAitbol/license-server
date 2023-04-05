@@ -1,7 +1,7 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Constants } from 'src/app/helpers/constants';
 import { Report } from 'src/app/helpers/report';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -24,15 +24,21 @@ export class ViewProfileComponent implements OnInit {
   notifications: any = [];
   reports: any = [];
   isUpdatedClicked: boolean = false;
+  missingDataFlag:boolean;
   selectedNotifications = new SelectionModel<INotification[]>(true, []);
 
   constructor(private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<ViewProfileComponent>,
     private snackBarService: SnackBarService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
+    if(this.data.missing)
+      this.missingDataFlag = this.data.missing;
+    else
+      this.missingDataFlag = false;
     this.isDataLoading = true;
     this.initializeFormDetails();
     this.fetchUserProfileDetails();
@@ -53,17 +59,12 @@ export class ViewProfileComponent implements OnInit {
   /**
    * fetch user profile details and save it in local storage
    */
-  async fetchUserProfileDetails(): Promise<void> {
+  fetchUserProfileDetails() {
     try {
-      const res: any = await this.userProfileService.getUserProfileDetails().toPromise();
-      if (res) {
-        const { userProfile } = res;
-        this.userProfileService.setSubaccountUserProfileDetails(userProfile);
-        this.isDataLoading = false;
-        //let mappedNotifications: any[] = [];
-        if (userProfile) {
-          this.viewProfileForm.patchValue(userProfile);
-        }
+      this.userProfileService.setSubaccountUserProfileDetails(this.data);
+      this.isDataLoading = false;
+      if(this.data){
+        this.viewProfileForm.patchValue(this.data);
       }
     } catch (error) {
       console.error('Error while fetching user profile details | ', error);

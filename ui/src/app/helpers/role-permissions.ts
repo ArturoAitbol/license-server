@@ -325,7 +325,8 @@ export const permissions = {
             'stakeholders',
             'notes',
             'details',
-            'reports'
+            'reports',
+            'callback'
         ],
         elements: [
             'view-profile',
@@ -354,6 +355,7 @@ export const permissions = {
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
+                'CALLBACK',
                 'DELETE_STAKEHOLDER'
             ],
             ctaasTestSuiteOptions: [],
@@ -373,7 +375,8 @@ export const permissions = {
             'stakeholders',
             'notes',
             'details',
-            'reports'
+            'reports',
+            'callback'
         ],
         elements: [
             'showUserToggle',
@@ -386,7 +389,9 @@ export const permissions = {
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
-            stakeholderOptions: [],
+            stakeholderOptions: [
+                'CALLBACK'
+            ],
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'

@@ -13,6 +13,8 @@ import { Report } from 'src/app/helpers/report';
 import { Utility } from 'src/app/helpers/utils';
 import { Constants } from 'src/app/helpers/constants';
 import { SubAccountService } from 'src/app/services/sub-account.service';
+import { CallbackComponent } from '../../callback/callback.component';
+import { ViewProfileComponent } from 'src/app/generics/view-profile/view-profile.component';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -28,13 +30,16 @@ export class CtaasStakeholderComponent implements OnInit {
   isRequestCompleted = false;
   stakeholdersCount = 0;
   toggleStatus = false;
+  isDataLoading = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Details';
+  private readonly CALLBACK = 'Callback';
   private readonly DELETE_STAKEHOLDER = 'Delete Account';
 
   readonly options = {
     MODIFY_STAKEHOLDER: this.MODIFY_STAKEHOLDER,
-    DELETE_STAKEHOLDER: this.DELETE_STAKEHOLDER
+    CALLBACK: this.CALLBACK,
+    DELETE_STAKEHOLDER: this.DELETE_STAKEHOLDER,
   };
 
   constructor(
@@ -180,6 +185,30 @@ export class CtaasStakeholderComponent implements OnInit {
           disableClose: true
         });
         break;
+      case this.CALLBACK: 
+        const userRoles = this.getAccountRoles();
+        if(data.name && data.companyName && data.phoneNumber && data.jobTitle) {
+          dialogRef = this.dialog.open(CallbackComponent, {
+            width: '100vw',
+            disableClose: true,
+            data: data
+          });
+        } else {
+          if(userRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
+            dialogRef = this.dialog.open(ViewProfileComponent, {
+              width: '450px',
+              disableClose: true,
+              data: data
+            });
+          } else {
+            dialogRef = this.dialog.open(CallbackComponent, {
+              width: '600px',
+              disableClose: true,
+              data: data
+            });
+          }
+        }
+        break;
       // case this.DELETE_STAKEHOLDER:
       //   break;
     }
@@ -203,7 +232,14 @@ export class CtaasStakeholderComponent implements OnInit {
       case this.DELETE_STAKEHOLDER:
         this.onDeleteStakeholderAccount(selectedRow);
         break;
+      case this.CALLBACK:
+          this.openDialog(selectedOption,selectedRow);
+        break;
     }
+  }
+
+  private getAccountRoles(): any {
+    return this.msalService.instance.getActiveAccount().idTokenClaims.roles;
   }
   /**
    * on click delete stakeholder account

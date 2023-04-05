@@ -21,6 +21,7 @@ import { CustomerService } from './services/customer.service';
 import { BehaviorSubject, Subscription } from "rxjs";
 import { ISidebar } from './model/sidebar.model';
 import { FeatureToggleService } from './services/feature-toggle.service';
+import { CallbackComponent } from './modules/callback/callback.component';
 
 
 @Component({
@@ -34,6 +35,8 @@ export class AppComponent implements OnInit, OnDestroy {
     mobileQuery: MediaQueryList;
     title = 'license-server';
     currentUser = false;
+    userData: any;
+    userProfileData: any;
     // added as part of spotlight feature
     hideToolbar = false;
     tabName: string = Constants.TEK_TOKEN_TOOL_BAR;
@@ -433,16 +436,37 @@ export class AppComponent implements OnInit, OnDestroy {
     /**
      * Show User profile Modal
      */
-    viewProfile(): void {
+    async viewProfile() {
+        await this.fetchUserProfileDetails();
         const dialogRef = this.dialog.open(ViewProfileComponent, {
             width: '450px',
-            disableClose: false
+            disableClose: false,
+            data: this.userProfileData.userProfile
         });
-
         dialogRef.afterClosed().subscribe((closedType: string) => {
             if (closedType === 'closed')
                 this.fetchUserProfileDetails();
         });
+    }
+
+    async callBack(){
+        await this.fetchUserProfileDetails();
+        this.userProfileData.userProfile.name = undefined
+        if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
+            && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
+                this.dialog.open(CallbackComponent, {
+                    width: '600px',
+                    disableClose:false,
+                    data:this.userProfileData.userProfile
+                });
+        } else {
+            this.dialog.open(ViewProfileComponent, {
+                width: '450px',
+                disableClose:false,
+                data: {...this.userProfileData.userProfile, missing:true}
+            })
+        }
+
     }
     /**
      * mark the selected nav item here as active to apply styles
@@ -484,6 +508,7 @@ export class AppComponent implements OnInit, OnDestroy {
             const res: any = await this.userProfileService.getUserProfileDetails().toPromise()
             if (res) {
                 const { userProfile } = res;
+                this.userProfileData = res;
                 this.userProfileService.setSubaccountUserProfileDetails(userProfile);
             }
         } catch (error) {
