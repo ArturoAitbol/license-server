@@ -242,7 +242,10 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
             const ctaasSetupDetails = res['ctaasSetups'][0];
             if (ctaasSetupDetails.maintenance) {
                 this.addNoteDisabled = true;
-                this.bannerService.open("WARNING", "Spotlight service is under maintenance, the add note functionality is disabled until the service resumes. ", this.onDestroy);
+                this.bannerService.open("ALERT",
+                    "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
+                    "However, users can still view historical reports on the dashboard. " +
+                    "Please note that during this maintenance period, access to notes and test reports is not available.", this.onDestroy);
             }
         })
     }

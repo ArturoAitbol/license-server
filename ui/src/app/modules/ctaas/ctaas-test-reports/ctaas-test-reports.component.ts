@@ -150,7 +150,10 @@ export class CtaasTestReportsComponent implements OnInit {
         else 
           this.tapURLFlag = 'withoutTapURL';
         if (res.ctaasSetups[0].maintenance) {
-          this.bannerService.open("WARNING", "Spotlight service is under maintenance, this function is disabled until the service resumes. ", this.unsubscribe);
+          this.bannerService.open("ALERT",
+              "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
+              "However, users can still view historical reports on the dashboard. " +
+              "Please note that during this maintenance period, access to notes and test reports is not available.", this.unsubscribe);
           this.maintenanceModeEnabled = true;
         }
       } else {
