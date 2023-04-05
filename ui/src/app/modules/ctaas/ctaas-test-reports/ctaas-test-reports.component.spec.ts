@@ -96,7 +96,7 @@ describe('interaction with selected filters', () => {
 
   it('should setup and call bannerService ', () => {
     fixture.detectChanges();
-    const res = {ctaasSetups:[{maintenance:true}]}
+    const res = {ctaasSetups:[{maintenance:true}]};
     spyOn(ctaasTestReportComponentTestInstance, 'userSetupData').and.callThrough();
     spyOn(BannerServiceMock, 'open').and.callThrough();
     spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(of(res));
@@ -104,7 +104,7 @@ describe('interaction with selected filters', () => {
     fixture.detectChanges();
 
     ctaasTestReportComponentTestInstance.userSetupData();
-    expect(ctaasTestReportComponentTestInstance.submitDisabled).toBeTrue();
+    expect(ctaasTestReportComponentTestInstance.maintenanceModeEnabled).toBeTrue();
   });
 
   it('should setup the flags with withoutData', () => {
