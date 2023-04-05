@@ -40,7 +40,7 @@ import { FeatureToggleCardComponent } from './modules/feature-toggles/feature-to
 import { AddFeatureToggleModalComponent } from './modules/feature-toggles/add-feature-toggle-modal/add-feature-toggle-modal.component';
 import { AddFeatureToggleExceptionModalComponent } from './modules/feature-toggles/add-feature-toggle-exception-modal/add-feature-toggle-exception-modal.component';
 import { AlertBannerComponent } from './generics/alert-banner/alert-banner.component';
-import { CallbackComponent } from './modules/callback/callback.component';
+import { CallbackComponent } from './modules/ctaas/callback/callback.component';
 
 @NgModule({
     declarations: [

@@ -32,7 +32,10 @@ export class CallbackComponent implements OnInit {
     private callbackService: CallbackService,
     private msalService: MsalService,
     public dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+    @Inject(MAT_DIALOG_DATA) public data: any) { 
+      dialogRef.updateSize('100vw');
+      dialogRef.updatePosition({ top: '50px', left: '50px' });
+    }
 
   ngOnInit(): void {
     const accountDetails = this.getAccountRoles();

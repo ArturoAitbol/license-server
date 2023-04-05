@@ -13,7 +13,7 @@ import { Report } from 'src/app/helpers/report';
 import { Utility } from 'src/app/helpers/utils';
 import { Constants } from 'src/app/helpers/constants';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { CallbackComponent } from '../../callback/callback.component';
+import { CallbackComponent } from '../callback/callback.component';
 import { ViewProfileComponent } from 'src/app/generics/view-profile/view-profile.component';
 @Component({
   selector: 'app-ctaas-stakeholder',

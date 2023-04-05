@@ -21,7 +21,7 @@ import { CustomerService } from './services/customer.service';
 import { BehaviorSubject, Subscription } from "rxjs";
 import { ISidebar } from './model/sidebar.model';
 import { FeatureToggleService } from './services/feature-toggle.service';
-import { CallbackComponent } from './modules/callback/callback.component';
+import { CallbackComponent } from './modules/ctaas/callback/callback.component';
 
 
 @Component({
@@ -451,13 +451,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
     async callBack(){
         await this.fetchUserProfileDetails();
-        this.userProfileData.userProfile.name = undefined
         if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
             && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
                 this.dialog.open(CallbackComponent, {
                     width: '600px',
                     disableClose:false,
-                    data:this.userProfileData.userProfile
+                    data:this.userProfileData.userProfile,
+                    panelClass: 'modal'
                 });
         } else {
             this.dialog.open(ViewProfileComponent, {
