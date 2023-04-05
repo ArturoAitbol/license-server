@@ -183,7 +183,8 @@ public class TekvLSCreateSubaccount
 				}
 
 			} else {
-				this.ADUserCreation(jobj,context);
+				if (FeatureToggleService.isFeatureActiveByName("ad-license-service-user-creation"))
+					this.ADUserCreation(jobj,context);
 			}
 			
 

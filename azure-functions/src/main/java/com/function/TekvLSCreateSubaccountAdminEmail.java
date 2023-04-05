@@ -93,10 +93,9 @@ public class TekvLSCreateSubaccountAdminEmail {
                     ResultSet rs = ctaasSetupStmt.executeQuery();
                     boolean setupExists = rs.next();
 
-                    // Only create the user when the setup does not exist or when it exists and the
-                    // status is Ready
-                    if (setupExists
-                            && !Objects.equals(rs.getString("status"), Constants.CTaaSSetupStatus.READY.value()))
+                    // Only create the user when the setup does not exist and toggle is enabled, or when it exists and the status is Ready
+                    if ((!setupExists && FeatureToggleService.isFeatureActiveBySubaccountId("ad-license-service-user-creation", createSubaccountAdminRequest.subaccountId)) ||
+                        (setupExists && !Objects.equals(rs.getString("status"), Constants.CTaaSSetupStatus.READY.value())))
                         return request.createResponseBuilder(HttpStatus.OK).build();
                     subaccountNameStmt.setString(1, createSubaccountAdminRequest.getSubaccountId());
                     rs = subaccountNameStmt.executeQuery();
