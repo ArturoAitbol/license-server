@@ -10,9 +10,9 @@ import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { Sort } from '@angular/material/sort';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { BannerService } from "../../../services/alert-banner.service";
-import { DialogService } from 'src/app/services/dialog.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SearchConsolidatedReportComponent } from './search-consolidated-report/search-consolidated-report.component';
+import { ReportType } from 'src/app/helpers/report-type';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -39,6 +39,7 @@ export class CtaasTestReportsComponent implements OnInit {
   readonly FEATURE: string = 'feature';
   fontStyleControl = new FormControl('');
   maintenanceModeEnabled = false;
+  readonly VIEW_DETAILS = 'More details';
 
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
 
@@ -50,13 +51,18 @@ export class CtaasTestReportsComponent implements OnInit {
 
   private unsubscribe: Subject<void> = new Subject<void>();
 
+  readonly options = {
+    VIEW_DETAILS: this.VIEW_DETAILS
+  }
+
   constructor(
   private subaccountService: SubAccountService,
   private formBuilder: FormBuilder,
+  private msalService: MsalService,
   private ctaasSetupService: CtaasSetupService,
   private bannerService: BannerService,
   public dialog: MatDialog) { }
-
+  
   @HostListener('window:resize')
   sizeChange() {
     this.calculateTableHeight();
@@ -79,14 +85,15 @@ export class CtaasTestReportsComponent implements OnInit {
       { name: 'End Date', dataKey: 'endDate', position: 'left', isSortable: true }
     ];
   }
-
-  readonly options = {
-    DAILY_FEATURE_FUNCTIONALITY:'Daily-FeatureFunctionality',
-    DAILY_CALLING_RELIABILITY:'Daily-CallingReliability'
+  
+  private getActionMenuOption() {
+    const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
+        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "testReportsOptions")
   }
 
   ngOnInit(): void { 
     this.initColumns();
+    this.getActionMenuOption();
     this.sizeChange();
     this.dataTable();
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
@@ -183,6 +190,27 @@ export class CtaasTestReportsComponent implements OnInit {
       }
     });
   }
+
+  onClickMoreDetails(selectedReport: any): void {
+    const startDate = selectedReport.startDate.split('UTC')[0];
+    const endDate = selectedReport.endDate.split('UTC')[0];
+    const startTime = Utility.parseReportDate(new Date(startDate));
+    const endTime = Utility.parseReportDate(new Date(endDate));
+    const type = (selectedReport.report === 'feature') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (selectedReport.report === 'calling') ? ReportType.DAILY_CALLING_RELIABILITY : '';
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${startTime}&end=${endTime}`;
+    window.open(url);
+    window.close();
+}
+
+  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+    const { selectedRow, selectedOption, selectedIndex } = object;
+    console.log(selectedRow);
+    switch (selectedOption) {
+      case this.VIEW_DETAILS:
+          this.onClickMoreDetails(selectedRow);
+          break;
+    }
+  } 
 
   onChangeButtonToggle() {
     const { value } = this.fontStyleControl;
