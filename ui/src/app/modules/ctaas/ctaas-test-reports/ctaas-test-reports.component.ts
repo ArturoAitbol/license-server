@@ -38,6 +38,7 @@ export class CtaasTestReportsComponent implements OnInit {
   readonly CALLING: string = 'calling';
   readonly FEATURE: string = 'feature';
   fontStyleControl = new FormControl('');
+  maintenanceModeEnabled = false;
 
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
 
@@ -143,8 +144,7 @@ export class CtaasTestReportsComponent implements OnInit {
           this.tapURLFlag = 'withoutTapURL';
         if (res.ctaasSetups[0].maintenance) {
           this.bannerService.open("WARNING", "Spotlight service is under maintenance, this function is disabled until the service resumes. ", this.unsubscribe);
-          this.filterForm.disable();
-          this.submitDisabled = true;
+          this.maintenanceModeEnabled = true;
         }
       } else {
         this.tapURLFlag = 'withoutData';
