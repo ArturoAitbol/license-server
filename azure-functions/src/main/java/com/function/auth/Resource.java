@@ -22,6 +22,7 @@ public enum Resource {
         CREATE_NOTE,//TekvLSCreateNote
         CREATE_SUBACCOUNT_ADMIN_DEVICE, //TekvLSCreateSubaccountAdminDevice
         CREATE_CONSUMPTION_MATRIX, //TekvLSCreateConsumptionMatrix
+        CREATE_CALLBACK, //TekvLSCallback
 
         // DELETE
         DELETE_ADMIN_EMAIL,//TekvLSDeleteAdminEmail
