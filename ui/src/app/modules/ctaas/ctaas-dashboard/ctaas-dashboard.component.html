@@ -56,7 +56,8 @@
                 [phasedEmbedding]="phasedEmbeddingFlag"
                 [cssClassName]="reportClass"
                 [eventHandlers]="eventHandlersMap"
-                (rendered) = "reportFinishedRendering()">
+                (rendered) = "reportFinishedRendering()"
+                (pageChanged)="powerBiPageChanged()">
               </powerbi-report>
             </div>
         </div>
