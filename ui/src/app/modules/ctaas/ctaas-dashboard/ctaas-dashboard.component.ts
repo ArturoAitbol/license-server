@@ -109,12 +109,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     eventHandlersMap = new Map<string, (event?: service.ICustomEvent<any>) => void>([
         ['loaded', () => console.debug('Report has loaded')],
         [
-            'rendered',
-            () => {
-                console.debug('Report has rendered');
-            },
-        ],
-        [
             'error',
             (event?: service.ICustomEvent<any>) => {
                 if (event) {
@@ -552,8 +546,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     }
 
     reportFinishedRendering(){
-        this.reportRendered = true;
         this.stopTimer();
+        this.reportRendered = true;
     }
     startTimer() {
         this.startTime = 0;
