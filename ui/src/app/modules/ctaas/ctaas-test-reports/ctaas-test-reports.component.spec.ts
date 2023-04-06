@@ -185,9 +185,9 @@ describe('Ctaas Test Reports - maintenance mode', () => {
     spyOn(BannerServiceMock, "open").and.callThrough();
     fixture.detectChanges();
     tick();
-    expect(BannerServiceMock.open).toHaveBeenCalledWith('ALERT', "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
-        "However, users can still view historical reports on the dashboard. " +
-        "Please note that during this maintenance period, access to notes and test reports is not available.", jasmine.any(Object));
+    expect(BannerServiceMock.open).toHaveBeenCalledWith('ALERT', 'The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. ' +
+        'However, users can still view historical reports on the dashboard. ' +
+        'Please note that during this maintenance period, adding new notes and test reports is not available.', jasmine.any(Object));
     discardPeriodicTasks();
   }));
 });
