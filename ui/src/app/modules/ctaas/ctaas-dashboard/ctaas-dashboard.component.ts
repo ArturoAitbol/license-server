@@ -20,6 +20,7 @@ import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 import { Subject } from "rxjs/internal/Subject";
+import * as pbi from 'powerbi-client';
 import { takeUntil } from 'rxjs/operators';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
@@ -122,8 +123,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                 }
             },
         ],
-        ['visualClicked', () => console.debug('visual clicked')],
-        ['pageChanged', () => console.debug('Page changed')]
+        ['visualClicked', () => console.debug('visual clicked')]
     ]);
 
     readonly LEGACY_MODE: string = 'legacy_view';
@@ -139,6 +139,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     seconds: number = 0;
     timer: any;
     stopTimer$: Subject<void> = new Subject();
+    timerIsRunning = false;
+    tabChanged = false;
     @ViewChild('reportEmbed') reportContainerDivElement: any;
     constructor(
         private dialog: MatDialog,
@@ -169,6 +171,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.tabChanged = true;
         this.fontStyleControl.setValue(this.DAILY);
         this.powerBiFontStyleControl.setValue(this.DAILY);
         this.isOnboardingComplete = false;
@@ -228,6 +231,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
      */
     onChangePowerBiButtonToggle() {
         this.startTimer();
+        this.tabChanged = true;
         this.reportRendered = false;
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
@@ -546,21 +550,31 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     }
 
     reportFinishedRendering(){
+        this.tabChanged = false;
         this.stopTimer();
         this.reportRendered = true;
     }
     startTimer() {
-        this.startTime = 0;
-        this.seconds=0;
-        this.milliseconds = 0;
-        this.startTime = performance.now();
-        this.timer = interval(1).subscribe(() => {
-            const elapsedTime = performance.now() - this.startTime;
-            this.seconds = Math.floor(elapsedTime / 1000);
-            this.milliseconds = Math.floor(elapsedTime % 1000);
-        });
+        if(!this.timerIsRunning){
+            this.startTime = 0;
+            this.seconds=0;
+            this.milliseconds = 0;
+            this.startTime = performance.now();
+            this.timer = interval(1).subscribe(() => {
+                const elapsedTime = performance.now() - this.startTime;
+                this.seconds = Math.floor(elapsedTime / 1000);
+                this.milliseconds = Math.floor(elapsedTime % 1000);
+            });
+            this.timerIsRunning = true;
+        }
     }
     stopTimer() {
         this.timer.unsubscribe();
+        this.timerIsRunning = false;
+    }
+
+    powerBiPageChanged(){
+        this.reportRendered = false;
+        this.startTimer();
     }
 }
