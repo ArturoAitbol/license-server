@@ -550,6 +550,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     }
 
     reportFinishedRendering(){
+        this.tabChanged = false;
         this.stopTimer();
         this.reportRendered = true;
     }
@@ -573,7 +574,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     }
 
     powerBiPageChanged(){
-        this.tabChanged = false;
         this.reportRendered = false;
         this.startTimer();
     }
