@@ -81,7 +81,8 @@ public class EmailClient {
             context.getLogger().info("Loading maintenance enabled alert html");
             if (html != null) {
                 html = html.replace("%CUSTOMER_NAME%", customerName);
-                sendEmail(emailList,"Maintenance mode was enabled", html, context);
+                String subject = "Spotlight Service for " + customerName + " is under maintenance.";
+                sendEmail(emailList,subject, html, context);
             }
         } catch (Exception e) {
             context.getLogger().severe("Could not send admin welcome email: " + e);
@@ -96,7 +97,8 @@ public class EmailClient {
                 String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
                 html = html.replace("%REDIRECT_URL%", inviteRedirectUrl);
                 html = html.replace("%CUSTOMER_NAME%", customerName);
-                sendEmail(emailList,"Maintenance mode was disabled", html, context);
+                String subject = "Maintenance of Spotlight Service for " + customerName + " is complete and is now fully operational.";
+                sendEmail(emailList,subject, html, context);
             }
         } catch (Exception e) {
             context.getLogger().severe("Could not send admin welcome email: " + e);
