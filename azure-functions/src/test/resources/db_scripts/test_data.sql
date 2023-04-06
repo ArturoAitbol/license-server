@@ -208,6 +208,7 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	Test	Alcatel Lucent OXO	v032/021.001	CPaaS	
 --
 
 COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
+34859fba-9987-4a1c-b176-14569b331653	f	pfernandez@tekvizionlabs.com	Subaccount User Creation For License Service	ad-license-service-user-creation
 6826a94e-c4da-46e9-8001-668df24877ec	f	ogonzalez@tekvizionlabs.com	Subaccount User Creation	ad-subaccount-user-creation
 950f47c7-a477-455b-b65b-331ecacc88dd	f	ogonzalez@tekvizionlabs.com	Customer User Creation	ad-customer-user-creation
 3c9d0d97-7878-4f1f-8ca5-18bf93069691	t	\N	Power Bi feature	powerbiFeature

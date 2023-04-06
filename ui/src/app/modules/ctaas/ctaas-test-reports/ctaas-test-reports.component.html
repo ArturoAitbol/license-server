@@ -1,5 +1,5 @@
 <app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
-<div class="btn-container">
+<div class="btn-container" *ngIf="!maintenanceModeEnabled">
     <div *ngIf="tapURLFlag === 'withTapURL'">
         <form [formGroup]="filterForm" (ngSubmit)="todayReport()">
             <div class="row d-flex justify-content-start">
