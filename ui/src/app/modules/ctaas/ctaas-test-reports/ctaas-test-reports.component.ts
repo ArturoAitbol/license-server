@@ -35,8 +35,8 @@ export class CtaasTestReportsComponent implements OnInit {
   searchFlag: boolean = true;
   todaySearchFlag: boolean = true;
   submitDisabled = false;
-  readonly CALLING: string = 'calling';
-  readonly FEATURE: string = 'feature';
+  readonly CALLING: string = 'Daily-CallingReliability';
+  readonly FEATURE: string = 'Daily-FeatureFunctionality';
   fontStyleControl = new FormControl('');
   maintenanceModeEnabled = false;
   readonly VIEW_DETAILS = 'More details';
@@ -86,14 +86,8 @@ export class CtaasTestReportsComponent implements OnInit {
     ];
   }
   
-  private getActionMenuOption() {
-    const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-        this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "testReportsOptions")
-  }
-
   ngOnInit(): void { 
     this.initColumns();
-    this.getActionMenuOption();
     this.sizeChange();
     this.dataTable();
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
@@ -123,18 +117,18 @@ export class CtaasTestReportsComponent implements OnInit {
         title: 'CR'+ moment.utc().subtract(i + 1,'days').format("_MM_DD"),
         startDate: date + ' ' + '00:00:00 UTC',
         endDate: date + ' ' + '23:59:59 UTC',
-        report: 'calling',
+        report: ReportType.DAILY_CALLING_RELIABILITY,
       });
 
       dateList.push({
         title: 'FF' + moment.utc().subtract(i + 1,'days').format("_MM_DD"),
         startDate: date + ' ' + '00:00:00 UTC',
         endDate: date + ' ' + '23:59:59 UTC',
-        report: 'feature',
+        report: ReportType.DAILY_FEATURE_FUNCTIONALITY,
       });
     }
     this.dateList = dateList;
-    this.dateListBK = this.dateList.filter(res => res.report === 'calling')
+    this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_CALLING_RELIABILITY)
     this.isLoadingResults = false;
   }
 
@@ -196,28 +190,22 @@ export class CtaasTestReportsComponent implements OnInit {
     const endDate = selectedReport.endDate.split('UTC')[0];
     const startTime = Utility.parseReportDate(new Date(startDate));
     const endTime = Utility.parseReportDate(new Date(endDate));
-    const type = (selectedReport.report === 'feature') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (selectedReport.report === 'calling') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${startTime}&end=${endTime}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
     window.open(url);
     window.close();
 }
 
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
-    const { selectedRow, selectedOption, selectedIndex } = object;
-    console.log(selectedRow);
-    switch (selectedOption) {
-      case this.VIEW_DETAILS:
-          this.onClickMoreDetails(selectedRow);
-          break;
-    }
+    const { selectedRow } = object;
+    this.onClickMoreDetails(selectedRow);
   } 
 
   onChangeButtonToggle() {
     const { value } = this.fontStyleControl;
-    if(value === 'calling')
-      this.dateListBK = this.dateList.filter(res => res.report === 'calling');
-    else if (value === 'feature')
-      this.dateListBK = this.dateList.filter(res => res.report === 'feature');
+    if(value === ReportType.DAILY_CALLING_RELIABILITY)
+      this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_CALLING_RELIABILITY);
+    else if (value === ReportType.DAILY_FEATURE_FUNCTIONALITY)
+      this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_FEATURE_FUNCTIONALITY);
   }
 
   ngOnDestroy() {

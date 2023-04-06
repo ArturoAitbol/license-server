@@ -23,9 +23,9 @@
                     </div>
                 </div>
                 <div class="col-3">
-                    <button class="mt-2" color="primary" style="margin-bottom: 1%;" mat-raised-button id="submit-filters" 
-                    [disabled]="todaySearchFlag" type="submit">
-                        Search
+                    <button class=" mt-2 custom-btn" mat-raised-button id="submit-filters" [disabled]="todaySearchFlag"
+                        type="submit">
+                      Search 
                     </button>
                 </div>
                 <div class="col-auto ms-auto justify-content-end gy-3">
@@ -57,7 +57,7 @@
                 <app-data-table [tableData]="dateListBK" [tableColumns]="displayedColumns" [isFilterable]="false"
                     [isPageable]="false" [isLoadingResults]="isLoadingResults" (rowAction)="rowAction($event)" [isRequestCompleted]="isRequestCompleted"
                     [paginationSizes]="[5,10,20]" [defaultPageSize]="5" (sort)="sortData($event)"
-                    [rowActionIcon]="actionMenuOptions.length>0&&'more_vert'"[actionMenuList]="actionMenuOptions">
+                    [rowActionIcon]="actionMenuOptions.length == 0&&'search'">
                 </app-data-table>
             </div>
         </section>
