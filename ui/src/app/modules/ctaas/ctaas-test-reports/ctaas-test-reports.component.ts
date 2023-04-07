@@ -10,9 +10,9 @@ import { CtaasSetupService } from 'src/app/services/ctaas-setup.service';
 import { Sort } from '@angular/material/sort';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { BannerService } from "../../../services/alert-banner.service";
-import { DialogService } from 'src/app/services/dialog.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SearchConsolidatedReportComponent } from './search-consolidated-report/search-consolidated-report.component';
+import { ReportType } from 'src/app/helpers/report-type';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -35,9 +35,11 @@ export class CtaasTestReportsComponent implements OnInit {
   searchFlag: boolean = true;
   todaySearchFlag: boolean = true;
   submitDisabled = false;
-  readonly CALLING: string = 'calling';
-  readonly FEATURE: string = 'feature';
+  readonly CALLING: string = 'Daily-CallingReliability';
+  readonly FEATURE: string = 'Daily-FeatureFunctionality';
   fontStyleControl = new FormControl('');
+  maintenanceModeEnabled = false;
+  readonly VIEW_DETAILS = 'More details';
 
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
 
@@ -49,13 +51,18 @@ export class CtaasTestReportsComponent implements OnInit {
 
   private unsubscribe: Subject<void> = new Subject<void>();
 
+  readonly options = {
+    VIEW_DETAILS: this.VIEW_DETAILS
+  }
+
   constructor(
   private subaccountService: SubAccountService,
   private formBuilder: FormBuilder,
+  private msalService: MsalService,
   private ctaasSetupService: CtaasSetupService,
   private bannerService: BannerService,
   public dialog: MatDialog) { }
-
+  
   @HostListener('window:resize')
   sizeChange() {
     this.calculateTableHeight();
@@ -78,12 +85,7 @@ export class CtaasTestReportsComponent implements OnInit {
       { name: 'End Date', dataKey: 'endDate', position: 'left', isSortable: true }
     ];
   }
-
-  readonly options = {
-    DAILY_FEATURE_FUNCTIONALITY:'Daily-FeatureFunctionality',
-    DAILY_CALLING_RELIABILITY:'Daily-CallingReliability'
-  }
-
+  
   ngOnInit(): void { 
     this.initColumns();
     this.sizeChange();
@@ -115,18 +117,18 @@ export class CtaasTestReportsComponent implements OnInit {
         title: 'CR'+ moment.utc().subtract(i + 1,'days').format("_MM_DD"),
         startDate: date + ' ' + '00:00:00 UTC',
         endDate: date + ' ' + '23:59:59 UTC',
-        report: 'calling',
+        report: ReportType.DAILY_CALLING_RELIABILITY,
       });
 
       dateList.push({
         title: 'FF' + moment.utc().subtract(i + 1,'days').format("_MM_DD"),
         startDate: date + ' ' + '00:00:00 UTC',
         endDate: date + ' ' + '23:59:59 UTC',
-        report: 'feature',
+        report: ReportType.DAILY_FEATURE_FUNCTIONALITY,
       });
     }
     this.dateList = dateList;
-    this.dateListBK = this.dateList.filter(res => res.report === 'calling')
+    this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_CALLING_RELIABILITY)
     this.isLoadingResults = false;
   }
 
@@ -142,9 +144,11 @@ export class CtaasTestReportsComponent implements OnInit {
         else 
           this.tapURLFlag = 'withoutTapURL';
         if (res.ctaasSetups[0].maintenance) {
-          this.bannerService.open("WARNING", "Spotlight service is under maintenance, this function is disabled until the service resumes. ", this.unsubscribe);
-          this.filterForm.disable();
-          this.submitDisabled = true;
+          this.bannerService.open("ALERT",
+              'The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. ' +
+              'However, users can still view historical reports on the dashboard. ' +
+              'Please note that during this maintenance period, adding new notes and test reports is not available.', this.unsubscribe);
+          this.maintenanceModeEnabled = true;
         }
       } else {
         this.tapURLFlag = 'withoutData';
@@ -184,12 +188,27 @@ export class CtaasTestReportsComponent implements OnInit {
     });
   }
 
+  onClickMoreDetails(selectedReport: any): void {
+    const startDate = selectedReport.startDate.split('UTC')[0];
+    const endDate = selectedReport.endDate.split('UTC')[0];
+    const startTime = Utility.parseReportDate(new Date(startDate));
+    const endTime = Utility.parseReportDate(new Date(endDate));
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
+    window.open(url);
+    window.close();
+}
+
+  rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
+    const { selectedRow } = object;
+    this.onClickMoreDetails(selectedRow);
+  } 
+
   onChangeButtonToggle() {
     const { value } = this.fontStyleControl;
-    if(value === 'calling')
-      this.dateListBK = this.dateList.filter(res => res.report === 'calling');
-    else if (value === 'feature')
-      this.dateListBK = this.dateList.filter(res => res.report === 'feature');
+    if(value === ReportType.DAILY_CALLING_RELIABILITY)
+      this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_CALLING_RELIABILITY);
+    else if (value === ReportType.DAILY_FEATURE_FUNCTIONALITY)
+      this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_FEATURE_FUNCTIONALITY);
   }
 
   ngOnDestroy() {

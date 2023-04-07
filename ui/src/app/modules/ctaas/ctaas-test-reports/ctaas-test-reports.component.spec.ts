@@ -96,7 +96,7 @@ describe('interaction with selected filters', () => {
 
   it('should setup and call bannerService ', () => {
     fixture.detectChanges();
-    const res = {ctaasSetups:[{maintenance:true}]}
+    const res = {ctaasSetups:[{maintenance:true}]};
     spyOn(ctaasTestReportComponentTestInstance, 'userSetupData').and.callThrough();
     spyOn(BannerServiceMock, 'open').and.callThrough();
     spyOn(CtaasSetupServiceMock, 'getSubaccountCtaasSetupDetails').and.returnValue(of(res));
@@ -104,7 +104,7 @@ describe('interaction with selected filters', () => {
     fixture.detectChanges();
 
     ctaasTestReportComponentTestInstance.userSetupData();
-    expect(ctaasTestReportComponentTestInstance.submitDisabled).toBeTrue();
+    expect(ctaasTestReportComponentTestInstance.maintenanceModeEnabled).toBeTrue();
   });
 
   it('should setup the flags with withoutData', () => {
@@ -185,7 +185,9 @@ describe('Ctaas Test Reports - maintenance mode', () => {
     spyOn(BannerServiceMock, "open").and.callThrough();
     fixture.detectChanges();
     tick();
-    expect(BannerServiceMock.open).toHaveBeenCalledWith('WARNING', 'Spotlight service is under maintenance, this function is disabled until the service resumes. ', jasmine.any(Object));
+    expect(BannerServiceMock.open).toHaveBeenCalledWith('ALERT', 'The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. ' +
+        'However, users can still view historical reports on the dashboard. ' +
+        'Please note that during this maintenance period, adding new notes and test reports is not available.', jasmine.any(Object));
     discardPeriodicTasks();
   }));
 });
