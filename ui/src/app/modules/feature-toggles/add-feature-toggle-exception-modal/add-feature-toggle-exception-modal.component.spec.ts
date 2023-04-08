@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AddFeatureToggleExceptionModalComponent } from './add-feature-toggle-exception-modal.component';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -154,5 +154,34 @@ describe('AddFeatureToggleExceptionModalComponent - Basic functionality', () => 
     spyOn(FeatureToggleMgmtServiceMock, 'createException').and.returnValue(throwError("Test error"));
     testInstance.submit();
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error while creating feature toggle exception!');
+  });
+
+  it('should filter the given subaccont', fakeAsync(() => {
+    fixture.detectChanges();
+    testInstance.addFeatureToggleExceptionForm.controls['subaccount'].setValue('TestCustomer - testcust');
+    tick(100);
+    fixture.detectChanges();
+    tick(100);
+    expect(testInstance.subaccounts).not.toBeNull();
+  }));
+
+  it('should filter the given numerical subaccount', fakeAsync(() => {
+    fixture.detectChanges();
+    testInstance.addFeatureToggleExceptionForm.controls['subaccount'].setValue(1);
+    tick(100);
+    fixture.detectChanges();
+    tick(100);
+    expect(testInstance.subaccounts).not.toBeNull();
+  }));
+
+  it('should return the subaccout name calling displayFnProject', () => {
+    spyOn(testInstance, 'displayFnProject').and.callThrough();
+    let subaccountName = testInstance.displayFnProject({
+      "name": "Cloud9 Technologies - Cloud9 - 360 Small",
+      "customerId": "aed14150-7807-425e-b858-50e1b5f15e9e",
+      "id": "0d916dcc-515f-47b5-b8c3-4f7884d274f5"
+    });
+
+    expect(subaccountName).toEqual("Cloud9 Technologies - Cloud9 - 360 Small")
   });
 });

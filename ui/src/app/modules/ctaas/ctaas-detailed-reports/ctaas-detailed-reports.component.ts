@@ -284,6 +284,7 @@ export class DetailedReportsCompoment implements OnInit {
       { header: 'Start Date', value: 'startTime' },
       { header: 'End Date', value: 'endTime' },
       { header: 'Status', value: 'status' },
+      { header: 'Call Type', value: 'callType' },
       { header: 'Error Category', value: 'errorCategory' },
       { header: 'Reason', value: 'errorReason' }
     ];

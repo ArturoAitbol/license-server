@@ -1,26 +1,16 @@
-import { CommonModule } from "@angular/common";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { FormGroup, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormGroup } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { of, throwError } from "rxjs";
-import { SharedModule } from "src/app/modules/shared/shared.module";
-import { BundleService } from "src/app/services/bundle.service";
-import { CustomerService } from "src/app/services/customer.service";
-import { LicenseService } from "src/app/services/license.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
 import { BundleServiceMock } from "src/test/mock/services/bundle-service.mock";
-import { CustomerServiceMock } from "src/test/mock/services/customer-service.mock";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { ModifyLicenseComponent } from "./modify-license.component";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
+import { MatDialogMock } from '../../../../../test/mock/components/mat-dialog.mock';
 
 let modifyLicenseComponentTestInstance: ModifyLicenseComponent;
 let fixture : ComponentFixture<ModifyLicenseComponent>;
-
-const MatDialogRefMock = { 
-    close: ()=>{return null} 
-};
 
 const data = {
     deviceLimit: "5000",
@@ -32,47 +22,51 @@ const data = {
     status: "Active",
     subaccountId: "70e77c75-c972-4c0b-94cc-2fd04f726341",
     tokensPurchased: "55"
-}
+};
 
-const beforeEachFunction = () =>{
-    TestBed.configureTestingModule({
-        declarations:[ModifyLicenseComponent],
-        imports: [CommonModule,SharedModule,BrowserAnimationsModule,FormsModule,ReactiveFormsModule],
-        providers: [ {
-            provide: CustomerService,
-            useValue: CustomerServiceMock
-        },
-        {
-            provide: LicenseService,
-            useValue: LicenseServiceMock
-        },
-        {
-            provide: BundleService,
-            useValue: BundleServiceMock
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: MatDialogRef,
-            useValue: MatDialogRefMock
-        },
-        {
-            provide: MAT_DIALOG_DATA,
-            useValue: data
-        }
-    ]
-    });
+const beforeEachFunction = () => {
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ModifyLicenseComponent);
+    configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
+    configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: data });
+    TestBed.configureTestingModule(configBuilder.getConfig());
+    // TestBed.configureTestingModule({
+    //     declarations:[ModifyLicenseComponent],
+    //     imports: [CommonModule,SharedModule,BrowserAnimationsModule,FormsModule,ReactiveFormsModule],
+    //     providers: [ {
+    //         provide: CustomerService,
+    //         useValue: CustomerServiceMock
+    //     },
+    //     {
+    //         provide: LicenseService,
+    //         useValue: LicenseServiceMock
+    //     },
+    //     {
+    //         provide: BundleService,
+    //         useValue: BundleServiceMock
+    //     },
+    //     {
+    //         provide: SnackBarService,
+    //         useValue: SnackBarServiceMock
+    //     },
+    //     {
+    //         provide: MatDialogRef,
+    //         useValue: MatDialogRefMock
+    //     },
+    //     {
+    //         provide: MAT_DIALOG_DATA,
+    //         useValue: data
+    //     }
+    // ]
+    // });
     fixture = TestBed.createComponent(ModifyLicenseComponent);
     modifyLicenseComponentTestInstance = fixture.componentInstance;
-}
+};
 
-describe('UI and component verification tests',()=>{
+describe('modify-license.component - UI and component verification tests',()=> {
 
     beforeEach(beforeEachFunction);
 
-    it('should display essential UI and components',()=>{
+    it('modify-license.component - should display essential UI and components',()=> {
         fixture.detectChanges();
         const h1: HTMLElement = fixture.nativeElement.querySelector('#dialog-title');
         const cancelButton: HTMLElement = fixture.nativeElement.querySelector('#cancel-button');
@@ -88,15 +82,14 @@ describe('UI and component verification tests',()=>{
         expect(labels.find(label => label.textContent.includes("Subscription Type"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("Device Access tekTokens"))).not.toBeUndefined();
         expect(labels.find(label => label.textContent.includes("tekTokens"))).not.toBeUndefined();
-
     });
 });
 
-describe('FormGroup verification tests',()=>{
+describe('modify-license.component - FormGroup verification tests',()=> {
 
     beforeEach(beforeEachFunction);
     
-    it('should create a formGroup with the necesary controls',()=>{
+    it('should create a formGroup with the necesary controls',()=> {
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('startDate')).toBeTrue();
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('description')).toBeTrue();
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('subscriptionType')).toBeTrue();
@@ -105,7 +98,7 @@ describe('FormGroup verification tests',()=>{
         expect(modifyLicenseComponentTestInstance.updateCustomerForm.contains('renewalDate')).toBeTrue();
     });
     
-    it('should make all the controls required',()=>{
+    it('should make all the controls required',()=> {
         const updateCustomerForm = modifyLicenseComponentTestInstance.updateCustomerForm;
         updateCustomerForm.setValue({
             startDate:'',
@@ -124,7 +117,7 @@ describe('FormGroup verification tests',()=>{
         expect(updateCustomerForm.get('renewalDate').valid).toBeFalse();
     });
 
-    it('should validate that renewalDate is always after startDate',()=>{
+    it('should validate that renewalDate is always after startDate',()=> {
         const updateCustomerForm = modifyLicenseComponentTestInstance.updateCustomerForm;
 
         updateCustomerForm.get('startDate').setValue('2022-06-17');
@@ -139,11 +132,10 @@ describe('FormGroup verification tests',()=>{
 
 });
 
-describe('Data collection and parsing tests',()=>{
-
+describe('modify-license.component - Data collection and parsing tests',()=> {
     beforeEach(beforeEachFunction);
 
-    it('should make a call to bundles list (subscriptionTypes)',()=>{
+    it('should make a call to bundles list (subscriptionTypes)',()=> {
         spyOn(BundleServiceMock,'getBundleList').and.callThrough();
         fixture.detectChanges();
         expect(BundleServiceMock.getBundleList).toHaveBeenCalled();
@@ -152,11 +144,10 @@ describe('Data collection and parsing tests',()=>{
 
 });
 
-describe('Calls and interactions', ()=>{
-
+describe('modify-license.component - Calls and interactions', ()=> {
     beforeEach(beforeEachFunction);
 
-    it('should keep submit button disabled if data does not change',()=>{
+    it('should keep submit button disabled if data does not change',()=> {
         fixture.detectChanges();
         expect(modifyLicenseComponentTestInstance.disableSumbitBtn()).toBeTrue();
 
@@ -165,14 +156,14 @@ describe('Calls and interactions', ()=>{
         expect(modifyLicenseComponentTestInstance.disableSumbitBtn()).toBeFalse();
     });
 
-    it('should close the dialog when calling onCancel()',()=>{
+    it('should close the dialog when calling onCancel()',()=> {
         spyOn(modifyLicenseComponentTestInstance.dialogRef,'close');
         fixture.detectChanges();
         modifyLicenseComponentTestInstance.onCancel();
         expect(modifyLicenseComponentTestInstance.dialogRef.close).toHaveBeenCalled();
     });
 
-    it('should update a license after calling submit()',()=>{
+    it('should update a license after calling submit()',()=> {
         spyOn(LicenseServiceMock,'updateLicenseDetails').and.callThrough();
         spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
         spyOn(modifyLicenseComponentTestInstance.dialogRef,'close');
@@ -184,7 +175,7 @@ describe('Calls and interactions', ()=>{
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subscription edited successfully!', '');
     });
 
-    it('should update a license after calling submit() - New Status: Active',()=>{
+    it('should update a license after calling submit() - New Status: Active',()=> {
         spyOn(LicenseServiceMock,'updateLicenseDetails').and.callThrough();
         spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
         spyOn(modifyLicenseComponentTestInstance.dialogRef,'close');
@@ -199,7 +190,7 @@ describe('Calls and interactions', ()=>{
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subscription edited successfully!', '');
     });
 
-    it('should show an error when updating license failed after calling submit()',()=>{
+    it('should show an error when updating license failed after calling submit()',()=> {
         spyOn(LicenseServiceMock,'updateLicenseDetails').and.returnValue(of({error:'some error message'}));
         spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
         fixture.detectChanges();
@@ -211,11 +202,11 @@ describe('Calls and interactions', ()=>{
 
     });
 
-    it('should close the dialog when updating license throws an error after calling submit()',()=>{
+    it('should close the dialog when updating license throws an error after calling submit()',()=> {
         const error = "some error";
         spyOn(LicenseServiceMock,'updateLicenseDetails').and.returnValue(throwError(error));
         spyOn(modifyLicenseComponentTestInstance.dialogRef,'close');
-        spyOn(console, 'error').and.callThrough;
+        spyOn(console, 'error').and.callThrough();
         fixture.detectChanges();
         
         modifyLicenseComponentTestInstance.submit();
@@ -226,7 +217,7 @@ describe('Calls and interactions', ()=>{
         expect(console.error).toHaveBeenCalledWith('error while updating subscription information row', error);
     });
 
-    it('should set the minimun renewalData value and the maximun startDate value so startDate is always before renewalDate',()=>{
+    it('should set the minimun renewalData value and the maximun startDate value so startDate is always before renewalDate',()=> {
         modifyLicenseComponentTestInstance.onStartDateChange('2022-01-06 00:00:00');
         expect(modifyLicenseComponentTestInstance.renewalDateMin).toEqual(new Date('2022-01-07 00:00:00'));
 
@@ -234,7 +225,7 @@ describe('Calls and interactions', ()=>{
         expect(modifyLicenseComponentTestInstance.startDateMax).toEqual(new Date('2022-01-05 00:00:00'));
     });
 
-    it('should modify tokensPurchased and deviceLimit form controls according to the subscriptionType when calling onChangeType()',()=>{
+    it('should modify tokensPurchased and deviceLimit form controls according to the subscriptionType when calling onChangeType()',()=> {
         modifyLicenseComponentTestInstance.subscriptionTypes = BundleServiceMock.bundleList.bundles;
         const updateCustomerForm = modifyLicenseComponentTestInstance.updateCustomerForm;
         let subscriptionType : {id:string,bundleName:string,defaultTokens?:string,defaultDeviceAccessTokens?:string};

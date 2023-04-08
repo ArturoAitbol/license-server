@@ -1,28 +1,16 @@
-import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
-import { MsalService } from '@azure/msal-angular';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DataTableComponent } from 'src/app/generics/data-table/data-table.component';
-import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
-import { ProjectService } from 'src/app/services/project.service';
 import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { CurrentCustomerServiceMock } from 'src/test/mock/services/current-customer-service.mock';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { ProjectServiceMock } from 'src/test/mock/services/project-service.mock';
-import { SharedModule } from '../../shared/shared.module';
 import { LicenseConsumptionComponent } from './license-consumption.component';
 import { AddLicenseConsumptionComponent } from './add-license-consumption/add-license-consumption.component';
 import { ModifyLicenseConsumptionDetailsComponent } from './modify-license-consumption-details/modify-license-consumption-details.component';
 import { DialogServiceMock } from 'src/test/mock/services/dialog-service.mock';
-import { LicenseConsumptionService } from 'src/app/services/license-consumption.service';
 import { LicenseServiceMock } from 'src/test/mock/services/license-service.mock';
-import { LicenseService } from 'src/app/services/license.service';
 import { ConsumptionServiceMock } from 'src/test/mock/services/license-consumption-service.mock';
-import { ReactiveFormsModule } from '@angular/forms';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatHeaderCellHarness } from '@angular/material/table/testing';
@@ -36,17 +24,14 @@ import { Sort } from '@angular/material/sort';
 import { StaticConsumptionDetailsComponent } from './static-consumption-details/static-consumption-details.component';
 import { EventEmitter } from '@angular/core';
 import { delay } from 'rxjs/operators';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
+import { CustomerServiceMock } from '../../../../test/mock/services/customer-service.mock';
 
 let licenseConsumptionComponentTestInstance: LicenseConsumptionComponent;
 let fixture: ComponentFixture<LicenseConsumptionComponent>;
 let loader: HarnessLoader;
 const dialogService = new DialogServiceMock();
-
-const RouterMock = {
-    navigate: (commands: string[]) => { }
-};
 
 const CustomMatDialogMock = {
     open: <T, D = any, R = any>(arg1) => {
@@ -63,55 +48,15 @@ const CustomMatDialogMock = {
 
 const updateProjectsEvent = new EventEmitter<any>();
 
-const TestBedParams = {
-    declarations: [LicenseConsumptionComponent, DataTableComponent, ModifyLicenseConsumptionDetailsComponent, AddLicenseConsumptionComponent, StaticConsumptionDetailsComponent],
-    imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, ReactiveFormsModule],
-    providers: [
-        {
-            provide: Router,
-            useValue: RouterMock
-        },
-        {
-            provide: MatDialog,
-            useValue: MatDialogMock
-        },
-        {
-            provide: ProjectService,
-            useValue: ProjectServiceMock
-        },
-        {
-            provide: LicenseService,
-            useValue: LicenseServiceMock
-        },
-        {
-            provide: LicenseConsumptionService,
-            useValue: ConsumptionServiceMock
-        },
-        {
-            provide: DialogService,
-            useValue: dialogService
-        },
-        {
-            provide: CustomerService,
-            useValue: CurrentCustomerServiceMock
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        },
-        {
-            provide: SubAccountService,
-            useValue: SubaccountServiceMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        }
-    ]
-};
+const configBuilder = new TestBedConfigBuilder().useDefaultConfig(LicenseConsumptionComponent);
+configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
+configBuilder.addDeclaration(DataTableComponent);
+configBuilder.addDeclaration(ModifyLicenseConsumptionDetailsComponent);
+configBuilder.addDeclaration(AddLicenseConsumptionComponent);
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule(TestBedParams);
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(LicenseConsumptionComponent);
     licenseConsumptionComponentTestInstance = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
@@ -131,7 +76,6 @@ const beforeEachFunction = () => {
 
 describe('license-consumption - UI verification test', () => {
     beforeEach(beforeEachFunction);
-    beforeEach(() => spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of({ licenses: [] })));
     it('should display essential UI and components', async () => {
         fixture.detectChanges();
         //Titles
@@ -261,7 +205,6 @@ describe('Data collection and parsing tests', () => {
     });
 
     it('should change the status of all the loading-related variables if there is no licenses to show after initializing', () => {
-        spyOn(LicenseServiceMock, 'getLicenseList').and.returnValue(of({ licenses: [] }));
         fixture.detectChanges();
         expect(licenseConsumptionComponentTestInstance.isLicenseSummaryLoadingResults).toBeFalse();
         expect(licenseConsumptionComponentTestInstance.isLicenseSummaryRequestCompleted).toBeTrue();
@@ -786,7 +729,7 @@ describe('Weekly Table', () => {
 describe('openDialog', () => {
 
     beforeEach(() => {
-        TestBed.configureTestingModule(TestBedParams);
+        TestBed.configureTestingModule(configBuilder.getConfig());
         TestBed.overrideProvider(MatDialog, { useValue: CustomMatDialogMock });
         fixture = TestBed.createComponent(LicenseConsumptionComponent);
         licenseConsumptionComponentTestInstance = fixture.componentInstance;

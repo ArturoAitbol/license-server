@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild, HostListener, ElementRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OnboardWizardComponent } from '../ctaas-onboard-wizard/ctaas-onboard-wizard.component';
 import { MsalService } from '@azure/msal-angular';
@@ -20,6 +20,8 @@ import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 import { Subject } from "rxjs/internal/Subject";
+import * as pbi from 'powerbi-client';
+import { takeUntil } from 'rxjs/operators';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
@@ -52,12 +54,15 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     readonly WEEKLY: string = 'weekly';
     readonly TEST1: string = 'test1';
     readonly TEST2: string = 'test2';
+    readonly FEATURE_FUNCTIONALITY_NAME: string = 'Feature Functionality';
+    readonly CALLING_RELIABILITY_NAME: string = 'Calling Reliability';
+    readonly VQ_NAME: string = 'Voice Quality User Experience';
     featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
     // Hide the report container initially
     reportClass = 'report-container-hidden';
-
+    reportRendered: boolean = false;
     // Flag which specify the type of embedding
     phasedEmbeddingFlag = false;
     powerBiEmbeddingFlag: boolean = false;
@@ -105,12 +110,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     eventHandlersMap = new Map<string, (event?: service.ICustomEvent<any>) => void>([
         ['loaded', () => console.debug('Report has loaded')],
         [
-            'rendered',
-            () => {
-                console.debug('Report has rendered');
-            },
-        ],
-        [
             'error',
             (event?: service.ICustomEvent<any>) => {
                 if (event) {
@@ -124,8 +123,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                 }
             },
         ],
-        ['visualClicked', () => console.debug('visual clicked')],
-        ['pageChanged', () => console.debug('Page changed')]
+        ['visualClicked', () => console.debug('visual clicked')]
     ]);
 
     readonly LEGACY_MODE: string = 'legacy_view';
@@ -136,6 +134,13 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     enableEmbedTokenCache: boolean = true;
     canRefreshDashboard: boolean = false;
     refresh: boolean = false;
+    startTime: number = 0;
+    milliseconds: number = 0;
+    seconds: number = 0;
+    timer: any;
+    stopTimer$: Subject<void> = new Subject();
+    timerIsRunning = false;
+    tabChanged = false;
     @ViewChild('reportEmbed') reportContainerDivElement: any;
     constructor(
         private dialog: MatDialog,
@@ -146,7 +151,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         private snackBarService: SnackBarService,
         private featureToggleService: FeatureToggleService,
         private router: Router,
-        private bannerService: BannerService
+        private bannerService: BannerService,
+        private elementRef: ElementRef
     ) { }
 
     /**
@@ -165,11 +171,13 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.tabChanged = true;
         this.fontStyleControl.setValue(this.DAILY);
         this.powerBiFontStyleControl.setValue(this.DAILY);
         this.isOnboardingComplete = false;
         this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
         this.fetchCtaasSetupDetails();
+        this.startTimer();
         const accountDetails = this.getAccountDetails();
         const { idTokenClaims: { roles } } = accountDetails;
         this.loggedInUserRoles = roles;
@@ -222,6 +230,9 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
      * on change power bi button toggle
      */
     onChangePowerBiButtonToggle() {
+        this.startTimer();
+        this.tabChanged = true;
+        this.reportRendered = false;
         const { value } = this.powerBiFontStyleControl;
         this.featureToggleKey = value;
         if (this.reportObj) {
@@ -248,7 +259,10 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.powerBiFontStyleControl.setValue(this.WEEKLY);
                     this.powerBiFontStyleControl.disable();
                     this.featureToggleKey = this.WEEKLY;
-                    this.bannerService.open("WARNING", "Spotlight service is under maintenance, the most recent data is shown until the service resumes. ", this.onDestroy);
+                    this.bannerService.open("ALERT",
+                        'The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. ' +
+                        'However, users can still view historical reports on the dashboard. ' +
+                        'Please note that during this maintenance period, adding new notes and test reports is not available.', this.onDestroy);
                     this.viewDashboardByMode();
                 }
             });
@@ -348,10 +362,15 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
      */
     getReportNameByType(reportType: string): string {
         switch (reportType) {
-            case ReportType.DAILY_FEATURE_FUNCTIONALITY: return 'Feature Functionality';
-            case ReportType.DAILY_CALLING_RELIABILITY: return 'Calling Reliability';
-            // case ReportType.DAILY_PESQ: case ReportType.WEEKLY_PESQ: return 'PESQ';  // as media injection is not ready yet, hence disabling PESQ for now.
-            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY: return 'Feature Functionality & Calling Reliability'
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
+            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
+                return this.FEATURE_FUNCTIONALITY_NAME;
+            case ReportType.DAILY_CALLING_RELIABILITY:
+            case ReportType.WEEKLY_CALLING_RELIABILITY:
+                return this.CALLING_RELIABILITY_NAME;
+            case ReportType.DAILY_VQ:
+            case ReportType.WEEKLY_VQ:
+                return this.VQ_NAME;
         }
     }
 
@@ -511,7 +530,9 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     async refreshDashboard() {
+        this.startTimer();
         this.refresh = true;
+        this.reportRendered = false;
         const { value } = this.powerBiFontStyleControl;
         this.powerBiEmbeddingFlag = false;
         await this.delay(1);
@@ -528,4 +549,32 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         });
     }
 
+    reportFinishedRendering(){
+        this.tabChanged = false;
+        this.stopTimer();
+        this.reportRendered = true;
+    }
+    startTimer() {
+        if(!this.timerIsRunning){
+            this.startTime = 0;
+            this.seconds=0;
+            this.milliseconds = 0;
+            this.startTime = performance.now();
+            this.timer = interval(1).subscribe(() => {
+                const elapsedTime = performance.now() - this.startTime;
+                this.seconds = Math.floor(elapsedTime / 1000);
+                this.milliseconds = Math.floor(elapsedTime % 1000);
+            });
+            this.timerIsRunning = true;
+        }
+    }
+    stopTimer() {
+        this.timer.unsubscribe();
+        this.timerIsRunning = false;
+    }
+
+    powerBiPageChanged(){
+        this.reportRendered = false;
+        this.startTimer();
+    }
 }

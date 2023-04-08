@@ -92,9 +92,8 @@ public class TekvLSCreateDevice {
 				+ System.getenv("POSTGRESQL_SECURITY_MODE")
 				+ "&user=" + System.getenv("POSTGRESQL_USER")
 				+ "&password=" + System.getenv("POSTGRESQL_PWD");
-		try (
-				Connection connection = DriverManager.getConnection(dbConnectionUrl);
-				PreparedStatement statement = connection.prepareStatement(sql)) {
+		try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 

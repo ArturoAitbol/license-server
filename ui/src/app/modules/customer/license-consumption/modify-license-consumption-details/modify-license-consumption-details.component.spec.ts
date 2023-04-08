@@ -1,34 +1,19 @@
-import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ReactiveFormsModule } from "@angular/forms";
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { MatSnackBarModule, MatSnackBarRef } from "@angular/material/snack-bar";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MsalService } from "@azure/msal-angular";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { of } from "rxjs";
 import { DataTableComponent } from "src/app/generics/data-table/data-table.component";
-import { SharedModule } from "src/app/modules/shared/shared.module";
-import { CustomerService } from "src/app/services/customer.service";
-import { DevicesService } from "src/app/services/devices.service";
 import { DialogService } from "src/app/services/dialog.service";
-import { LicenseConsumptionService } from "src/app/services/license-consumption.service";
-import { ProjectService } from "src/app/services/project.service";
-import { UsageDetailService } from "src/app/services/usage-detail.service";
-import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
-import { CurrentCustomerServiceMock } from "src/test/mock/services/current-customer-service.mock";
 import { CustomerServiceMock } from "src/test/mock/services/customer-service.mock";
 import { DevicesServiceMock } from "src/test/mock/services/devices-service.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
-import { ConsumptionServiceMock } from "src/test/mock/services/license-consumption-service.mock";
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { UsageDetailServiceMock } from "src/test/mock/services/usage-detail-service.mock";
 import { ProjectsComponent } from "../../projects/projects.component";
 import { ModifyLicenseConsumptionDetailsComponent } from "./modify-license-consumption-details.component";
-import { SnackBarService } from "../../../../services/snack-bar.service";
 import moment from "moment";
 import { By } from "@angular/platform-browser";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
 
 let modifyLicenseConsumptionDetailTestInstance: ModifyLicenseConsumptionDetailsComponent;
 let fixture: ComponentFixture<ModifyLicenseConsumptionDetailsComponent>;
@@ -62,67 +47,15 @@ const currentLicense = {
 };
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [  ModifyLicenseConsumptionDetailsComponent, ProjectsComponent, DataTableComponent  ],
-        imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule, ReactiveFormsModule ],
-        providers: [
-            {
-                provide: MatDialog,
-                useValue: MatDialogMock
-            },
-            {
-                provide: MatSnackBarRef,
-                useValue: {}
-            },
-            {
-                provide: ProjectService,
-                useValue: ProjectServiceMock
-            },
-            {
-                provide: LicenseConsumptionService,
-                useValue: ConsumptionServiceMock
-            },
-            {
-                provide: UsageDetailService,
-                useValue: UsageDetailServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogService
-            },
-            {
-                provide: CustomerService,
-                useValue: CurrentCustomerServiceMock
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpClient,
-                useValue: HttpClient
-            },
-            {
-                provide: DevicesService,
-                useValue: DevicesServiceMock
-            },
-            {
-                provide: MatDialogRef,
-                useValue: dialogService
-            },
-            {
-                provide: MAT_DIALOG_DATA,
-                useValue: currentLicense
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            }
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ModifyLicenseConsumptionDetailsComponent);
+    configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
+    configBuilder.addProvider({ provide: MatDialogRef, useValue: dialogService });
+    configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: currentLicense });
+    configBuilder.addDeclaration(ProjectsComponent);
+    configBuilder.addDeclaration(DataTableComponent);
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(ModifyLicenseConsumptionDetailsComponent);
     modifyLicenseConsumptionDetailTestInstance = fixture.componentInstance;
-    spyOn(CurrentCustomerServiceMock, 'getSelectedCustomer').and.callThrough();
     spyOn(DevicesServiceMock, 'getDevicesList').and.callThrough();
     spyOn(DevicesServiceMock, 'getDeviceById').and.callThrough();
     spyOn(DevicesServiceMock, 'getAllDeviceVendors').and.callThrough();

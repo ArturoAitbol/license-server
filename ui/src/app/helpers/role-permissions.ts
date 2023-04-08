@@ -38,6 +38,7 @@ export const permissions = {
             'redirect',
             'spotlight',
             'report-dashboards',
+            'notes',
             'test-suites',
             'stakeholders',
             'setup',
@@ -98,14 +99,19 @@ export const permissions = {
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
             ],
+            noteOptions: [
+                'VIEW_DASHBOARD'
+            ],
             subscriptionsOverviewOptions: [
                 'VIEW_LICENSES',
                 'VIEW_CONSUMPTION',
             ],
-            noteOptions: [],
             deviceOptions: [
                 'MODIFY_DEVICE',
                 'DELETE_DEVICE',
+            ],
+            testReportsOptions: [
+                'VIEW_DETAILS'
             ]
         }
     },
@@ -166,6 +172,7 @@ export const permissions = {
             'apps',
             'spotlight',
             'report-dashboards',
+            'notes',
             'test-suites',
             'stakeholders',
             'setup',
@@ -209,8 +216,14 @@ export const permissions = {
                 'MODIFY_STAKEHOLDER',
                 'DELETE_STAKEHOLDER'
             ],
+            noteOptions: [
+                'VIEW_DASHBOARD'
+            ],
             subscriptionsOverviewOptions: [],
-            deviceOptions: []
+            deviceOptions: [],
+            testReportsOptions: [
+                'VIEW_DETAILS'
+            ]
         }
     },
     'distributor.FullAdmin': {
@@ -300,6 +313,9 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_DETAILS'
             ]
         }
     },
@@ -353,6 +369,9 @@ export const permissions = {
             noteOptions: [
                 'CLOSE_NOTE',
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_DETAILS'
             ]
         }
     },
@@ -383,6 +402,9 @@ export const permissions = {
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'
+            ],
+            testReportsOptions: [
+                'VIEW_DETAILS'
             ]
         }
     }

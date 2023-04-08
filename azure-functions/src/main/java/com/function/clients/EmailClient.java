@@ -75,26 +75,30 @@ public class EmailClient {
         }
     }
 
-    public static void sendMaintenanceModeEnabledAlert(String emailList, ExecutionContext context) {
+    public static void sendMaintenanceModeEnabledAlert(String emailList, String customerName, ExecutionContext context) {
         try {
             String html = getResourceFileAsString("/maintenance-mode-emails/maintenance-mode-enabled.html");
             context.getLogger().info("Loading maintenance enabled alert html");
             if (html != null) {
-                sendEmail(emailList,"Maintenance mode was enabled", html, context);
+                html = html.replace("%CUSTOMER_NAME%", customerName);
+                String subject = "Spotlight Service for " + customerName + " is under maintenance.";
+                sendEmail(emailList,subject, html, context);
             }
         } catch (Exception e) {
             context.getLogger().severe("Could not send admin welcome email: " + e);
         }
     }
 
-    public static void sendMaintenanceModeDisabledAlert(String emailList, ExecutionContext context) {
+    public static void sendMaintenanceModeDisabledAlert(String emailList, String customerName, ExecutionContext context) {
         try {
             String html = getResourceFileAsString("/maintenance-mode-emails/maintenance-mode-disabled.html");
             context.getLogger().info("Loading maintenance disabled alert html");
             if (html != null) {
                 String inviteRedirectUrl = ActiveDirectory.INSTANCE.getEmailInviteUrl();
                 html = html.replace("%REDIRECT_URL%", inviteRedirectUrl);
-                sendEmail(emailList,"Maintenance mode was disabled", html, context);
+                html = html.replace("%CUSTOMER_NAME%", customerName);
+                String subject = "Maintenance of Spotlight Service for " + customerName + " is complete and is now fully operational.";
+                sendEmail(emailList,subject, html, context);
             }
         } catch (Exception e) {
             context.getLogger().severe("Could not send admin welcome email: " + e);

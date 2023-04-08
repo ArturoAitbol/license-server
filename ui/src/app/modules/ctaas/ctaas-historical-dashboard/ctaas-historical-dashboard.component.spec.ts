@@ -1,19 +1,12 @@
-import { CommonModule, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MsalService } from '@azure/msal-angular';
 import { throwError } from 'rxjs';
 import { ReportType } from 'src/app/helpers/report-type';
-import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
-import { SnackBarService } from 'src/app/services/snack-bar.service';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { CtaasDashboardServiceMock } from 'src/test/mock/services/ctaas-dashboard-service.mock';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
 import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
-import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
-import { SharedModule } from '../../shared/shared.module';
-
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard.component';
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let ctaasHistoricalDashboardComponentTestInstance: CtaasHistoricalDashboardComponent;
 let fixture: ComponentFixture<CtaasHistoricalDashboardComponent>;
@@ -28,9 +21,10 @@ const note = {
   openedBy: "arasguido@tekvizionlabs.com",
   reports: [{reportType: "Daily-FeatureFunctionality",timestampId: "221207090048"},
             {reportType: "Daily-CallingReliability",timestampId:"221207194605"},
-            {reportType:"Daily-PESQ",timestampId:"221207090122"},
+            {reportType: "Daily-VQ",timestampId:"221207090122"},
             {reportType: "Weekly-FeatureFunctionality",timestampId:"221207090111"},
-            {reportType:"Weekly-PESQ",timestampId:"221207090130"}] ,
+            {reportType: "Weekly-CallingReliability",timestampId:"221207090111"},
+            {reportType: "Weekly-VQ",timestampId:"221207090130"}] ,
   status:"Open",
   subaccountId:"b5b91753-4c2b-43f5-afa0-feb00cefa981"
 }
@@ -43,34 +37,10 @@ const MatDialogRefMock = {
 
 
 const beforeEachFunction = async () => {
-  await TestBed.configureTestingModule({
-    declarations: [ CtaasHistoricalDashboardComponent],
-    imports:[CommonModule,SharedModule],
-    providers:[
-      {
-        provide:MsalService,
-        useValue:MsalServiceMock
-      },
-      {
-        provide:CtaasDashboardService,
-        useValue:CtaasDashboardServiceMock
-      },
-      {
-        provide:SnackBarService,
-        useValue:SnackBarServiceMock
-      },{
-        provide:SubAccountService,
-        useValue:SubaccountServiceMock 
-      },{
-          provide: MatDialogRef,
-          useValue: MatDialogRefMock
-      },
-      {
-        provide: MAT_DIALOG_DATA,
-        useValue:note
-      }
-    ]
-  }).compileComponents();
+  const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasHistoricalDashboardComponent);
+  configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: note });
+  configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogRefMock });
+  await TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents();
   fixture = TestBed.createComponent(CtaasHistoricalDashboardComponent);
   ctaasHistoricalDashboardComponentTestInstance = fixture.componentInstance;
 }
@@ -144,12 +114,12 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
     reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_CALLING_RELIABILITY);
     expect(reportName).toBe("Calling Reliability");
 
-    // as media injection is not ready yet, hence disabling PESQ for now.
-    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_PESQ);
-    // expect(reportName).toBe("PESQ");
+    // as media injection is not ready yet, hence disabling VQ for now.
+    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_VQ);
+    // expect(reportName).toBe("VQ");
 
-    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.WEEKLY_PESQ);
-    // expect(reportName).toBe("PESQ");
+    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.WEEKLY_VQ);
+    // expect(reportName).toBe("VQ");
   })
 
   it('should heck whether dashboard has any data to display or not when calling checkForDashboardDetails()',()=>{

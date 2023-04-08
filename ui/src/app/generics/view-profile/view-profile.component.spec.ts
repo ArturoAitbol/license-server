@@ -2,12 +2,13 @@ import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { HttpClient } from "@angular/common/http";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
 import { FormsModule, ReactiveFormsModule, FormBuilder } from "@angular/forms";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MsalService } from "@azure/msal-angular";
+import { of } from "rxjs";
 import { SharedModule } from "src/app/modules/shared/shared.module";
 import { DialogService } from "src/app/services/dialog.service";
 import { SnackBarService } from "src/app/services/snack-bar.service";
@@ -71,7 +72,6 @@ const beforeEachFunction = () => {
     ViewProfileComponentTestInstance = fixture.componentInstance;
     ViewProfileComponentTestInstance.ngOnInit();
     loader = TestbedHarnessEnvironment.loader(fixture);
-    spyOn(console, 'log').and.callThrough();
 }
 
 
@@ -108,4 +108,46 @@ describe('Fetch and display user profile in UI', () => {
         fixture.detectChanges();
         expect(UserProfileServiceMock.getUserProfileDetails).toHaveBeenCalledWith();
     });
+});
+
+describe('view profile - displays of messages and errors', () => {
+    beforeEach(beforeEachFunction);
+
+    it('view profile - should call update', fakeAsync(() => {
+        spyOn(ViewProfileComponentTestInstance, 'updateProfile').and.callThrough();
+        spyOn(UserProfileServiceMock, 'updateUserProfile').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(ViewProfileComponentTestInstance, 'onCancel').and.callThrough();
+        tick(500);
+        ViewProfileComponentTestInstance.updateProfile(); 
+        tick(500);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Updated Profile successfully', '');
+        expect(ViewProfileComponentTestInstance.onCancel).toHaveBeenCalledWith('closed');
+    }));
+
+    it('it should display a error message if something wrong happened updating profile', fakeAsync(() => {
+        spyOn(ViewProfileComponentTestInstance, 'updateProfile').and.callThrough();
+        spyOn(UserProfileServiceMock, 'updateUserProfile').and.returnValue(of({error:'some error'}));
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(ViewProfileComponentTestInstance, 'onCancel').and.callThrough();
+        tick(500);
+        ViewProfileComponentTestInstance.updateProfile(); 
+        tick(500);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('some error', 'Error updating profile details');
+        expect(ViewProfileComponentTestInstance.onCancel).toHaveBeenCalledWith('error');
+    }));
+
+    it('it should display a error message if something wrong happened while updating profile', fakeAsync(() => {
+        fixture.detectChanges();
+        spyOn(ViewProfileComponentTestInstance, 'updateProfile').and.callThrough();
+        spyOn(UserProfileServiceMock, 'updateUserProfile').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(ViewProfileComponentTestInstance, 'onCancel').and.callThrough();
+        ViewProfileComponentTestInstance.viewProfileForm = null
+        tick(500);
+        ViewProfileComponentTestInstance.updateProfile(); 
+        tick(500);
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith(undefined, 'Error updating profile details');
+        expect(ViewProfileComponentTestInstance.onCancel).toHaveBeenCalledWith('error');
+    }));
 });

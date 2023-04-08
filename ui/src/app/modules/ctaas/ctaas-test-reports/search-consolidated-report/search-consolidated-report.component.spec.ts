@@ -26,7 +26,7 @@ const beforeEachFunction = () => {
     fixture = TestBed.createComponent(SearchConsolidatedReportComponent);
     consolidatedDateInstance = fixture.componentInstance;
     fixture.detectChanges();
-}
+};
 
 describe('UI test if search consolidated date Component', () => {
     beforeEach(beforeEachFunction);
@@ -69,14 +69,14 @@ describe('modal actions', () => {
         expect(consolidatedDateInstance.startDate).toEqual(testDate);
     });
 
-    it('shoudl make a call to toggleEndDate and set endDate value', () => {
+    it('should make a call to toggleEndDate and set endDate value', () => {
         spyOn(consolidatedDateInstance, 'toggleEndDate').and.callThrough();
         const testDate = moment();
         consolidatedDateInstance.toggleEndDate(testDate);
         expect(consolidatedDateInstance.endDate).toEqual(testDate);
     });
 
-    it('shoudl set min time with  00:00', () => {
+    it('should set min time with 00:00', () => {
         spyOn(consolidatedDateInstance, 'toggleEndDate').and.callThrough();
         consolidatedDateInstance.endDate  = moment().add(1, 'days');
         consolidatedDateInstance.startDate = moment();
@@ -86,17 +86,7 @@ describe('modal actions', () => {
         expect(consolidatedDateInstance.minTime).toEqual("00:00")
     });
 
-    it('shoudl set min time with  00:00', () => {
-        spyOn(consolidatedDateInstance, 'toggleEndDate').and.callThrough();
-        consolidatedDateInstance.endDate  = moment().add(1, 'days');
-        consolidatedDateInstance.startDate = moment();
-        fixture.detectChanges(); 
-        
-        consolidatedDateInstance.validateTimers();
-        expect(consolidatedDateInstance.minTime).toEqual("00:00")
-    });
-
-    it('shoudl set min time', () => {
+    it('should set min time', () => {
         spyOn(consolidatedDateInstance, 'toggleEndDate').and.callThrough();
         consolidatedDateInstance.endDate  = moment();
         consolidatedDateInstance.startDate = moment();

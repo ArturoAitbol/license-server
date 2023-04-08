@@ -176,6 +176,32 @@ class TekvLSGetAllDevicesTest extends TekvLSTest {
     }
 
     @Test
+    public void getDevicesByType() {
+        String id = "EMPTY";
+        String expectedType = "FAX";
+        String vendor = "HylaFAX";
+        this.queryParams.put("deviceType", expectedType);
+        this.queryParams.put("vendor", vendor);
+
+        HttpResponseMessage response = getAllDevicesApi.run(this.request, id, this.context);
+        this.context.getLogger().info("HttpResponse: " + response.getBody().toString());
+
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+        assertTrue(jsonBody.has("devices"));
+        JSONArray devices = jsonBody.getJSONArray("devices");
+        assertTrue(devices.length() > 0);
+
+        JSONObject device = (JSONObject) devices.get(0);
+        String actualVendor = device.getString("type");
+        assertEquals(expectedType, actualVendor, "Actual vendor is not: ".concat(expectedType));
+    }
+
+    @Test
     public void getDevicesByProduct() {
         String id = "EMPTY";
         String expectedProduct = "HylaFAX Enterprise";

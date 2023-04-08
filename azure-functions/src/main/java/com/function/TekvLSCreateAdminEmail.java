@@ -84,7 +84,7 @@ public class TekvLSCreateAdminEmail {
             statement.executeUpdate();
             context.getLogger().info("Admin email inserted successfully.");
 
-			if(FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {
+			if (FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation") && FeatureToggleService.isFeatureActiveByName("ad-license-service-user-creation")) {
                 final String customerNameSql = "SELECT name FROM customer WHERE id = ?::uuid;";
                 try(PreparedStatement customerNameStmt = connection.prepareStatement(customerNameSql)){
                     customerNameStmt.setString(1,createAdminRequest.customerId);
