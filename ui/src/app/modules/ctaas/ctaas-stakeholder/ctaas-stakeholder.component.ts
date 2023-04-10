@@ -13,8 +13,8 @@ import { Report } from 'src/app/helpers/report';
 import { Utility } from 'src/app/helpers/utils';
 import { Constants } from 'src/app/helpers/constants';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { CallbackComponent } from '../callback/callback.component';
 import { ViewProfileComponent } from 'src/app/generics/view-profile/view-profile.component';
+import { CallbackService } from 'src/app/services/callback.service';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -47,6 +47,7 @@ export class CtaasStakeholderComponent implements OnInit {
     public dialog: MatDialog,
     private snackBarService: SnackBarService,
     private dialogService: DialogService,
+    private callbackService: CallbackService,
     private stakeholderService: StakeHolderService,
     private subaccountService: SubAccountService
   ) { }
@@ -186,38 +187,23 @@ export class CtaasStakeholderComponent implements OnInit {
         });
         break;
       case this.CALLBACK: 
-        const userRoles = this.getAccountRoles();
         if(data.name && data.companyName && data.phoneNumber && data.jobTitle) {
-          dialogRef = this.dialog.open(CallbackComponent, {
-            width: '100vw',
-            disableClose: true,
-            data: data
-          });
+          this.makeCallback(data);
         } else {
-          if(userRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
-            dialogRef = this.dialog.open(ViewProfileComponent, {
-              width: '450px',
-              disableClose: true,
-              data: data
-            });
-          } else {
-            dialogRef = this.dialog.open(CallbackComponent, {
-              width: '600px',
-              disableClose: true,
-              data: data
-            });
-          }
+          this.openDialogForSpecificRole(dialogRef, data);
         }
         break;
       // case this.DELETE_STAKEHOLDER:
       //   break;
     }
-    dialogRef.afterClosed().subscribe((res: any) => {
-      if (res) {
-        this.stakeholdersDataBk = this.stakeholdersData = [];
-        this.fetchStakeholderList();
-      }
-    });
+    if(dialogRef) {
+      dialogRef.afterClosed().subscribe((res: any) => {
+        if (res) {
+          this.stakeholdersDataBk = this.stakeholdersData = [];
+          this.fetchStakeholderList();
+        }
+      });
+    }
   }
   /**
    * action row click event
@@ -236,6 +222,47 @@ export class CtaasStakeholderComponent implements OnInit {
           this.openDialog(selectedOption,selectedRow);
         break;
     }
+  }
+
+  openDialogForSpecificRole(dialogRef: any, data: any) {
+    const userRoles = this.getAccountRoles();
+    if(userRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
+      dialogRef = this.dialog.open(ViewProfileComponent, {
+        width: '450px',
+        disableClose: true,
+        data: {...data, missing:true}
+      });
+    } else {
+      this.dialogService.acceptDialog({
+        title: 'Incomplete personal information',
+        message: 'Please contact your Subaccount Administrator or tekVizion to fill this user’s info.',
+        confirmCaption: 'Ok',
+      });
+    }
+  }
+
+  makeCallback(data:any) {
+    this.dialogService.confirmDialog({
+      title: 'Confirm Call',
+      message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
+      confirmCaption: 'Confirm',
+      cancelCaption: 'Cancel',
+    }).subscribe((confirmed) => {
+        if(confirmed){
+            this.callbackService.createCallback(data).subscribe((res:any) => {
+                if(!res.error){
+                    this.snackBarService.openSnackBar('Callback has been made!', '');
+                    this.dialogService.acceptDialog({
+                      title: 'Done!',
+                      message: 'A support engineer will contact you as soon as possible, thank you for your patience.',
+                      confirmCaption: 'Ok',
+                    });
+                } else {
+                  this.snackBarService.openSnackBar('Error making callback!', '');
+                }
+            });
+        }
+    });
   }
 
   private getAccountRoles(): any {

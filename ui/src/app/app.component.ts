@@ -21,7 +21,9 @@ import { CustomerService } from './services/customer.service';
 import { BehaviorSubject, Subscription } from "rxjs";
 import { ISidebar } from './model/sidebar.model';
 import { FeatureToggleService } from './services/feature-toggle.service';
-import { CallbackComponent } from './modules/ctaas/callback/callback.component';
+import { DialogService } from './services/dialog.service';
+import { CallbackService } from './services/callback.service';
+import { SnackBarService } from './services/snack-bar.service';
 
 
 @Component({
@@ -185,6 +187,9 @@ export class AppComponent implements OnInit, OnDestroy {
         private router: Router,
         private msalService: MsalService,
         public dialog: MatDialog,
+        private dialogService: DialogService,
+        private callbackService: CallbackService,
+        private snackBarService: SnackBarService,
         private broadcastService: MsalBroadcastService,
         private autoLogoutService: AutoLogoutService,
         changeDetectorRef: ChangeDetectorRef,
@@ -453,20 +458,51 @@ export class AppComponent implements OnInit, OnDestroy {
         await this.fetchUserProfileDetails();
         if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
             && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
-                this.dialog.open(CallbackComponent, {
-                    width: '600px',
-                    disableClose:false,
-                    data:this.userProfileData.userProfile,
-                    panelClass: 'modal'
+                this.makeCallback();
+        } else {
+            this.showDialogsForSpecificRole();
+        }
+    }
+
+    makeCallback(){
+        this.dialogService.confirmDialog({
+            title: 'Confirm Call',
+            message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
+            confirmCaption: 'Confirm',
+            cancelCaption: 'Cancel',
+        }).subscribe((confirmed) => {
+            if(confirmed){
+                this.callbackService.createCallback(this.userProfileData.userProfile).subscribe((res:any) => {
+                    if(!res.error){
+                        this.snackBarService.openSnackBar('Callback has been made!', '');
+                        this.dialogService.acceptDialog({
+                            title: 'Done!',
+                            message: 'A support engineer will contact you as soon as possible, thank you for your patience.',
+                            confirmCaption: 'Ok',
+                        });
+                    } else {
+                        this.snackBarService.openSnackBar('Error making callback!', '');
+                    }
                 });
+            }
+        });
+    }
+
+    showDialogsForSpecificRole() {
+        const accountDetails = this.getAccountDetails();
+        if(accountDetails.idTokenClaims.roles.includes(Constants.SUBACCOUNT_STAKEHOLDER)){
+            this.dialogService.acceptDialog({
+                title: 'Incomplete personal information',
+                message: 'Please contact your Subaccount Administrator or tekVizion to fill this user’s info.',
+                confirmCaption: 'Ok',
+            });
         } else {
             this.dialog.open(ViewProfileComponent, {
                 width: '450px',
                 disableClose:false,
                 data: {...this.userProfileData.userProfile, missing:true}
-            })
+            });
         }
-
     }
     /**
      * mark the selected nav item here as active to apply styles

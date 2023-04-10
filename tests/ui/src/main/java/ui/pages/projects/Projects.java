@@ -11,6 +11,11 @@ public class Projects extends AbstractPageObject {
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
 
     public ProjectForm openProjectForm(){
+        try {
+            Thread.sleep(5 * 1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         this.action.click(this.addProjectButton);
         this.action.waitSpinner(this.spinnerSelector);
         return new ProjectForm();

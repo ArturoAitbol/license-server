@@ -78,12 +78,11 @@ export class ViewProfileComponent implements OnInit {
     try {
       this.isUpdatedClicked = true;
       const requestPayload = { ...this.viewProfileForm.value };
-      let { type } = requestPayload;
       delete requestPayload.type;
       this.userProfileService.updateUserProfile(requestPayload)
-        .toPromise()
-        .then((response: any) => {
-          this.isDataLoading = false;
+      .toPromise()
+      .then((response: any) => {
+        this.isDataLoading = false;
           if (response?.error) {
             this.snackBarService.openSnackBar(response.error, 'Error updating profile details');
             this.onCancel('error');
