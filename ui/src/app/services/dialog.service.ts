@@ -5,6 +5,7 @@ import { ConfirmComponent } from '../dialogs/confirm/confirm.component';
 import { ConfirmDialogData } from '../model/confirm-dialog.model';
 import { DeleteCustomerDialogData } from "../model/delete-customer-dialog.model";
 import { DeleteCustomerModalComponent } from "../dialogs/delete-customer/delete-customer-modal.component";
+import { AcceptComponent } from '../dialogs/accept/accept.component';
 
 @Injectable({
   providedIn: 'root'
@@ -29,5 +30,13 @@ export class DialogService {
           width: '450px',
           disableClose: true,
       }).afterClosed();
+  }
+
+  acceptDialog(data: any): Observable<boolean>{
+    return this.dialog.open(AcceptComponent, {
+      data,
+      width: '450px',
+      disableClose: true,
+    }).afterClosed();
   }
 }

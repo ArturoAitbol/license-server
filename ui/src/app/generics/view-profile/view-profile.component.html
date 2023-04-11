@@ -1,5 +1,6 @@
 <div class="container" style="text-align: center;">
     <h1 mat-dialig-title id="modal-title">Profile</h1>
+    <p class='text-content1' *ngIf="missingDataFlag">Please, fill all the required information for this user and then try again.</p>
     <form [formGroup]="viewProfileForm" (ngSubmit)="updateProfile()">
         <div class="flex-container">
             <div class="loading-shade" *ngIf="isDataLoading">
