@@ -258,7 +258,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     this.fontStyleControl.disable();
                     this.powerBiFontStyleControl.setValue(this.WEEKLY);
                     this.powerBiFontStyleControl.disable();
-                    this.featureToggleKey = this.WEEKLY;
+                    this.onChangePowerBiButtonToggle();
                     this.bannerService.open("ALERT",
                         'The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. ' +
                         'However, users can still view historical reports on the dashboard. ' +
