@@ -2,7 +2,7 @@ name: Continuous testing in Production
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '0 */4 * * *'
 
 permissions: write-all
 
