@@ -334,8 +334,7 @@ export const permissions = {
             'stakeholders',
             'notes',
             'details',
-            'reports',
-            'callback'
+            'reports'
         ],
         elements: [
             'view-profile',
@@ -387,8 +386,7 @@ export const permissions = {
             'stakeholders',
             'notes',
             'details',
-            'reports',
-            'callback'
+            'reports'
         ],
         elements: [
             'showUserToggle',
