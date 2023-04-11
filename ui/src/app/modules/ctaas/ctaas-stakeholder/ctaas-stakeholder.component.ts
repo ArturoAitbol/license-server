@@ -33,7 +33,7 @@ export class CtaasStakeholderComponent implements OnInit {
   isDataLoading = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Details';
-  private readonly CALLBACK = 'Callback';
+  private readonly CALLBACK = 'Request Call to this Account';
   private readonly DELETE_STAKEHOLDER = 'Delete Account';
 
   readonly options = {
