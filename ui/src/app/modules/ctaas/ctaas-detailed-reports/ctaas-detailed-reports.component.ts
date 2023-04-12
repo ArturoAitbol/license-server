@@ -116,6 +116,7 @@ export class DetailedReportsCompoment implements OnInit {
             obj.tonoDataFoundFlag = false;
             obj.otherPartynoDataFoundFlag = false;
             obj.panelOpenState = true;
+            obj.callType = obj.otherParties.length > 0  ? null : obj.callType
             obj.from.mediaStats.sort((a, b) => {
               return a.timestamp - b.timestamp
             })
