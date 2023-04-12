@@ -171,7 +171,7 @@
         </div>
         <br>
         <ng-container *lcCheckAccessFor="'addLicenseConsumption'">
-            <div class="row">
+            <div *ngIf="!newLicenseConsumptionLogicFlag" class="row">
                 <div class="col-2 ms-auto">
                     <button *ngIf="!detailedConsumptionTableSelectable" id="clone-consumption"
                         (click)="toggleSelectableConsumptions()" [disabled]="!isLicenseListLoaded" mat-raised-button
