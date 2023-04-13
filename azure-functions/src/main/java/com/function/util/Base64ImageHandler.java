@@ -10,16 +10,18 @@ public class Base64ImageHandler {
 
     public static final String ENCODING_TYPE = "data:image/jpg;base64,";
 
-    public static byte[] convertToBytes(String base64Image) throws Exception {
+    public static byte[] decodeAndCompressImage(String base64Image) throws Exception {
         // Decode the Base64 String representation of the image into bytes and compress them.
         byte[] bytes = Base64.getDecoder().decode(base64Image.substring(base64Image.indexOf(",")+1));
         return compress(bytes);
     }
 
-    public static String convertToBase64String(byte[] bytesImage) throws IOException {
+    public static String decompressAndEncodeBytes(byte[] bytesImage) throws IOException {
         // Decompress the bytes representation of the image and encode them to a Base64 String
-        byte[] decompressedBytes = decompress(bytesImage);
-        return ENCODING_TYPE + Base64.getEncoder().encodeToString(decompressedBytes);
+        return encodeToBase64String(decompress(bytesImage));
+    }
+    public static String encodeToBase64String(byte[] bytes){
+        return ENCODING_TYPE + Base64.getEncoder().encodeToString(bytes);
     }
     public static byte[] compress(byte[] data) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -57,7 +57,6 @@ public class TekvLSGetCtaasDashboard {
 
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-        String timestampId = request.getQueryParameters().getOrDefault("timestampId", "");
 
         // Check if subaccount is empty
         if (subaccountId.equals("EMPTY") || subaccountId.isEmpty()) {
@@ -144,15 +143,12 @@ public class TekvLSGetCtaasDashboard {
                 return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
             }
 
-            Map<String,String> base64Response = timestampId.isEmpty() ? StorageBlobClient.getInstance().getBlobAsBase64(context, customerName, subaccountName, reportType):
-                                                    StorageBlobClient.getInstance().getBlobAsBase64(context, customerName, subaccountName, reportType, timestampId);
+            Map<String,String> base64Response = StorageBlobClient.getInstance().getBlobAsBase64(context, customerName, subaccountName, reportType);
             if (base64Response == null) {
                 json.put("error", "Cannot found the image with " + reportType + " in the storage blob");
             } else {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("reportType",reportType);
-                jsonObject.put("lastUpdatedTS", base64Response.get("lastModifiedDate"));
-                jsonObject.put("timestampId", base64Response.get("timestampId"));
                 jsonObject.put("imageBase64", base64Response.get("base64String"));
                 jsonObject.put("startDateStr", base64Response.get("startDate"));
                 jsonObject.put("endDateStr", base64Response.get("endDate"));

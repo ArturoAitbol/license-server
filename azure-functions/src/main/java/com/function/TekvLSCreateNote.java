@@ -125,7 +125,7 @@ public class TekvLSCreateNote {
                 for(Object obj:reports){
                     report = (JSONObject) obj;
                     String base64Image = report.getString("imageBase64");
-                    byte[] bytesImage = Base64ImageHandler.convertToBytes(base64Image);
+                    byte[] bytesImage = Base64ImageHandler.decodeAndCompressImage(base64Image);
                     statementStoreReports.setString(1,subaccountId);
                     statementStoreReports.setString(2,rs.getString("id"));
                     statementStoreReports.setString(3,report.getString("reportType"));

@@ -129,7 +129,7 @@ public class TekvLSGetCtaasHistoricalDashboard {
             while (rs.next()) {
                 JSONObject report = new JSONObject();
                 byte[] bytesImage = rs.getBytes("image");
-                String base64Image = Base64ImageHandler.convertToBase64String(bytesImage);
+                String base64Image = Base64ImageHandler.decompressAndEncodeBytes(bytesImage);
                 report.put("reportType",rs.getString("report_type"));
                 report.put("startDateStr",rs.getString("start_date"));
                 report.put("endDateStr",rs.getString("end_date"));
