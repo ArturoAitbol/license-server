@@ -115,21 +115,26 @@ export class OnboardWizardComponent implements OnInit {
     onConfigureUserprofile(): void {
         this.userInteraction = false;
         this.configuredReports = true;
+        this.isDataLoading = true;
         this.interaction = '3';
         const userProfileObj = this.userProfileForm.value;
         let detailedUserProfileObj = {...userProfileObj, type: this.type, notifications: this.notifications};
         if (detailedUserProfileObj.notifications.length > 0) {
             detailedUserProfileObj.notifications = detailedUserProfileObj.type + ',' + detailedUserProfileObj.notifications;
         }
-        this.userprofileService.updateUserProfile(detailedUserProfileObj)
-            .subscribe((response: any) => {
-                if (response?.error) {
-                    this.snackBarService.openSnackBar('Error updating User profile details !', '');
-                } else {
-                    this.updateOnboardingStatus();
-                }
-            });
-    }
+        this.userprofileService.updateUserProfile(detailedUserProfileObj).subscribe((response: any) => {
+            if (response?.error) {
+                this.snackBarService.openSnackBar('Error updating User profile details !', '');
+                this.isDataLoading = false;
+            } else {
+                this.updateOnboardingStatus();
+                this.isDataLoading = false;
+            }
+        }, (err) => {
+            this.snackBarService.openSnackBar(err.error, 'Error updating User profile details !');
+            this.isDataLoading = false;
+        });
+}
 
     /**
      * add stake holder confirmation
@@ -172,15 +177,21 @@ export class OnboardWizardComponent implements OnInit {
             detailedRequestPayload.notifications = detailedRequestPayload.type + ',' + detailedRequestPayload.notifications;
         }
         this.stakeholderService.createStakeholder(detailedRequestPayload).subscribe((response: any) => {
-            this.isDataLoading = false;
             if (response) {
                 const {error} = response;
                 if (error) {
+                    this.snackBarService.openSnackBar('Error Error adding stakeholder !', '');
+                    this.isDataLoading = false;
                     this.errorCreatingStakeholder = true;
                 } else {
+                    this.snackBarService.openSnackBar('Created Stakeholder successfully', '');
+                    this.isDataLoading = false;
                     this.interaction = '3';
                 }
             }
+        }, (err) => {
+            this.snackBarService.openSnackBar(err.error, 'Error adding stakeholder');
+            this.isDataLoading = false;
         });
     }
 
@@ -223,11 +234,10 @@ export class OnboardWizardComponent implements OnInit {
      */
     updateOnboardingStatus(): void {
         const requestPayload = {onBoardingComplete: true, ctaasSetupId: this.ctaasSetupId};
-        this.ctaasSetupService.updateSubaccountCtaasDetails(requestPayload)
-            .subscribe((response: any) => {
-                if (response?.error) {
-                    this.snackBarService.openSnackBar('Error updating the onboarding status !', '');
-                }
-            });
+        this.ctaasSetupService.updateSubaccountCtaasDetails(requestPayload).subscribe((response: any) => {
+            if (response?.error) {
+                this.snackBarService.openSnackBar('Error updating the onboarding status !', '');
+            }
+        });
     }
 }

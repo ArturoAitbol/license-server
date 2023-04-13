@@ -10,6 +10,7 @@ import {OnboardWizardComponent} from '../modules/ctaas/ctaas-onboard-wizard/ctaa
 import {AvailableServicesService} from '../services/available-services.service';
 import {CtaasSetupService} from '../services/ctaas-setup.service';
 import {SubAccountService} from '../services/sub-account.service';
+import { SnackBarService } from '../services/snack-bar.service';
 
 @Component({
     selector: 'app-my-apps',
@@ -23,6 +24,7 @@ export class MyAppsComponent implements OnInit {
     loggedInUserRoles: string[] = [];
     ctaasSetupDetails: any = {};
     currentSubaccountDetails: any = {};
+    isDataLoading = false;
     subaccountId: any;
 
     constructor(
@@ -32,7 +34,8 @@ export class MyAppsComponent implements OnInit {
         private subaccountService: SubAccountService,
         private dialog: MatDialog,
         private msalService: MsalService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private snackBarService: SnackBarService,
     ) {
         this.route.queryParams.subscribe((query:Params) => {
             this.subaccountId = query.subaccountId;
@@ -42,9 +45,8 @@ export class MyAppsComponent implements OnInit {
     ngOnInit(): void {
         this.currentSubaccountDetails = this.subaccountService.getSelectedSubAccount();
         const accountDetails = this.getAccountDetails();
-        const {idTokenClaims: {roles}} = accountDetails;
-        this.loggedInUserRoles = roles;
-        this.getAvailableServices(roles);
+        this.loggedInUserRoles = accountDetails.idTokenClaims.roles;
+        this.getAvailableServices(accountDetails.idTokenClaims.roles);
         this.fetchCtaasSetupDetails();
     }
 
@@ -93,6 +95,7 @@ export class MyAppsComponent implements OnInit {
      * fetch Ctaas Setup details by subaccount id
      */
     fetchCtaasSetupDetails(): void {
+        this.isDataLoading = true;
         const {id, subaccountId} = this.currentSubaccountDetails;
         const SUB_ACCOUNT_ID = (id) ? id : subaccountId;
         this.subaccountId = SUB_ACCOUNT_ID;
@@ -104,7 +107,14 @@ export class MyAppsComponent implements OnInit {
                     this.isOnboardingComplete = onBoardingComplete;
                     this.onboardSetupStatus = status;
                     this.setupCustomerOnboardDetails();
+                    this.isDataLoading = false;
+                } else {
+                    this.snackBarService.openSnackBar('Error fetching setup details!', '');
+                    this.isDataLoading = false;
                 }
+            }, (err) => {
+                this.snackBarService.openSnackBar(err.error, 'Error fetching setup details!');
+                this.isDataLoading = false;
             });
     }
 
