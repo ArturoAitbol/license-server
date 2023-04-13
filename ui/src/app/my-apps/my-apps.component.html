@@ -1,4 +1,7 @@
 <div class="content">
+    <div class="loading-shade" *ngIf="isDataLoading">
+        <mat-spinner *ngIf="isDataLoading"></mat-spinner>
+    </div>
     <div class="container-fluid" style="color: whitesmoke !important">
         <div class="row" style="padding:23% 30%;text-align: center;">
             <div class="col">
