@@ -10,6 +10,7 @@ import {OnboardWizardComponent} from '../modules/ctaas/ctaas-onboard-wizard/ctaa
 import {AvailableServicesService} from '../services/available-services.service';
 import {CtaasSetupService} from '../services/ctaas-setup.service';
 import {SubAccountService} from '../services/sub-account.service';
+import { SnackBarService } from '../services/snack-bar.service';
 
 @Component({
     selector: 'app-my-apps',
@@ -33,7 +34,8 @@ export class MyAppsComponent implements OnInit {
         private subaccountService: SubAccountService,
         private dialog: MatDialog,
         private msalService: MsalService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private snackBarService: SnackBarService,
     ) {
         this.route.queryParams.subscribe((query:Params) => {
             this.subaccountId = query.subaccountId;
@@ -106,7 +108,13 @@ export class MyAppsComponent implements OnInit {
                     this.onboardSetupStatus = status;
                     this.setupCustomerOnboardDetails();
                     this.isDataLoading = false;
+                } else {
+                    this.snackBarService.openSnackBar('Error fetching setup details!', '');
+                    this.isDataLoading = false;
                 }
+            }, (err) => {
+                this.snackBarService.openSnackBar(err.error, 'Error fetching setup details!');
+                this.isDataLoading = false;
             });
     }
 
