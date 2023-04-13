@@ -136,7 +136,7 @@ describe('display of error messages', () => {
         addStakeholderComponentTestInstance.userprofileDetails = null;
         addStakeholderComponentTestInstance.addStakeholder();
 
-        expect(console.error).toHaveBeenCalledWith('error while creating stake holder | ', jasmine.any(TypeError));
+        expect(console.error).toHaveBeenCalledWith('error while creating stakeholder | ', jasmine.any(TypeError));
     })
 });
 
