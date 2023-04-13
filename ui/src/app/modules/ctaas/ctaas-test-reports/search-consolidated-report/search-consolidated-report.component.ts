@@ -22,6 +22,7 @@ export class SearchConsolidatedReportComponent implements OnInit {
   minTime: any;
   startDate: any;
   endDate: any;
+  dateLimit: number = 9;
 
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
 
@@ -70,10 +71,10 @@ export class SearchConsolidatedReportComponent implements OnInit {
     selectedDate = [parseInt(moment.utc(date).format("DD")), parseInt(moment.utc(date).format("MM")), parseInt(moment.utc(date).format("YYYY"))];
     actualDate = [parseInt(moment.utc().format("DD")),  parseInt(moment.utc().format("MM")), parseInt(moment.utc().format("YYYY"))];
     dateControl = actualDate[0] - selectedDate[0];
-    if(dateControl < 7 && (selectedDate[1] == actualDate[1]) && (selectedDate[2] == actualDate[2])){
+    if(dateControl < this.dateLimit && (selectedDate[1] == actualDate[1]) && (selectedDate[2] == actualDate[2])){
       this.maxEndDate = moment.utc(date).add(dateControl, 'days').format("YYYY-MM-DD[T]HH:mm:ss");
     }else {
-      this.maxEndDate = moment.utc(date).add(6, 'days').format("YYYY-MM-DD[T]HH:mm:ss");
+      this.maxEndDate = moment.utc(date).add(this.dateLimit, 'days').format("YYYY-MM-DD[T]HH:mm:ss");
     }
   }
   
@@ -85,7 +86,7 @@ export class SearchConsolidatedReportComponent implements OnInit {
   validateTimers() {
     if(this.endDate > this.startDate)
       this.minTime = "00:00";
-    else
+    else if((this.startDate._i.date == this.endDate._i.date) && (this.startDate._i.month == this.endDate._i.month) && (this.startDate._i.year == this.endDate._i.year))
       this.minTime = this.minTimeBK;
   }
   
