@@ -46,7 +46,7 @@
                     <div class="col-8">
                         <mat-form-field appearance="outline">
                             <mat-label id="end-date-label">End Date</mat-label>
-                            <input required matInput [matDatepicker]="endPicker" formControlName="endDate" (dateChange)="toggleEndDate($event.value); validateTimers()" step="60" [min]="minEndDate" [max]="maxDate">
+                            <input required matInput [matDatepicker]="endPicker" formControlName="endDate" (dateChange)="toggleEndDate($event.value); validateTimers()" step="60" [min]="minEndDate" [max]="maxEndDate" >
                             <mat-datepicker-toggle matSuffix [for]="endPicker" id="start-date-calendar"></mat-datepicker-toggle>
                             <mat-datepicker #endPicker></mat-datepicker>
                         </mat-form-field>
