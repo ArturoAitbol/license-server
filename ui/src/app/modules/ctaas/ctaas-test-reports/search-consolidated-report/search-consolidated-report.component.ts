@@ -84,10 +84,13 @@ export class SearchConsolidatedReportComponent implements OnInit {
   }
 
   validateTimers() {
-    if(this.endDate > this.startDate)
+    let selectedStartDate = [ parseInt(moment(this.startDate).format("DD")), parseInt(moment(this.startDate).format("MM")), parseInt(moment(this.startDate).format("YYYY"))]
+    let selectedEndDate = [ parseInt(moment(this.endDate).format("DD")), parseInt(moment(this.endDate).format("MM")), parseInt(moment(this.endDate).format("YYYY"))]
+    if(this.endDate > this.startDate){
       this.minTime = "00:00";
-    else if((this.startDate._i.date == this.endDate._i.date) && (this.startDate._i.month == this.endDate._i.month) && (this.startDate._i.year == this.endDate._i.year))
+    }else if(selectedStartDate[0] == selectedEndDate[0] && selectedStartDate[1] == selectedEndDate[1] && selectedStartDate[2] == selectedEndDate[2]) {
       this.minTime = this.minTimeBK;
+    }
   }
   
   onChangeStartTime(event) {
