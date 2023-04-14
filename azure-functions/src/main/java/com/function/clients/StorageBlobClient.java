@@ -7,6 +7,7 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
+import com.function.util.Base64ImageHandler;
 import com.microsoft.azure.functions.ExecutionContext;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -70,21 +71,6 @@ public class StorageBlobClient {
      */
     public Map<String, String> getBlobAsBase64(ExecutionContext context, final String customerName,
             final String subaccountName, final String type) {
-        return getBlobAsBase64(context, customerName, subaccountName, type, "");
-    }
-
-    /**
-     * Get the blob from Azure Storage Blob if exist and return Base64 String
-     *
-     * @param context:        ExecutionContext
-     * @param customerName:   String
-     * @param subaccountName: String
-     * @param type:           String
-     * @param timestamp:      String
-     * @return Map<String, String>
-     */
-    public Map<String, String> getBlobAsBase64(ExecutionContext context, final String customerName,
-            final String subaccountName, final String type, final String timestamp) {
         try {
             // Check if container exist or not
             if (!blobContainerClient.exists()) {
@@ -93,9 +79,7 @@ public class StorageBlobClient {
             }
             // Form the filter string to fetch only that particular customer-subaccount
             // images from blob
-            String filterImageString = timestamp.isEmpty()
-                    ? String.format("%s/%s-%s-Image-", customerName, subaccountName, type)
-                    : String.format("%s/%s-%s-Image-%s", customerName, subaccountName, type, timestamp);
+            String filterImageString = String.format("%s/%s-%s-Image-", customerName, subaccountName, type);
             Iterator<BlobItem> iterator = blobContainerClient.listBlobs().iterator();
             List<BlobItem> blobItemList = StreamSupport
                     .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
@@ -123,25 +107,13 @@ public class StorageBlobClient {
             // set start date and end date from the blob file name
             this.getStartDateAndEndDateFromBlobItem(context, blobMap, blobItemName);
 
-            if (!timestamp.isEmpty())
-                blobMap.put("timestampId", timestamp);
-            else {
-                String timestampID = getTimestampFromBlobName(blobItemName);
-                if (timestampID != null) {
-                    blobMap.put("timestampId", timestampID);
-                }
-            }
-
             BlobClient blobClient = blobContainerClient.getBlobClient(blobItemName);
-            OffsetDateTime lastModifiedDate = blobItem.getProperties().getLastModified();
-            blobMap.put("lastModifiedDate", getLastModifiedBlobDateStr(lastModifiedDate));
             if (blobClient != null) {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 blobClient.download(outputStream);
                 byte[] bytes = outputStream.toByteArray();
                 // Encode byte array to Base64 String
-                String ENCODING_TYPE = "data:image/jpg;base64,";
-                blobMap.put("base64String", ENCODING_TYPE + Base64.getEncoder().encodeToString(bytes));
+                blobMap.put("base64String", Base64ImageHandler.encodeToBase64String(bytes));
                 return blobMap;
             }
         } catch (Exception e) {
