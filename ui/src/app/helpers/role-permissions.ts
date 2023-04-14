@@ -60,7 +60,6 @@ export const permissions = {
             'auditInfo',
             'addTestSuite',
             'showBanner',
-            'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'resetFilter',
@@ -131,8 +130,7 @@ export const permissions = {
             'consumption-matrix'
         ],
         elements: [
-            'showBanner',
-            'showUserToggle',
+            'showBanner'
         ],
         tables: {
             customerOptions: [
@@ -185,7 +183,6 @@ export const permissions = {
             'addLicenseConsumption',
             'addTestSuite',
             'showBanner',
-            'showUserToggle',
             'resetFilter'
         ],
         tables: {
@@ -240,8 +237,7 @@ export const permissions = {
             'report-dashboards'
         ],
         elements: [
-            'showBanner',
-            'showUserToggle'
+            'showBanner'
         ],
         tables: {
             customerOptions: [
@@ -282,7 +278,6 @@ export const permissions = {
         ],
         elements: [
             'view-profile',
-            'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
@@ -338,7 +333,6 @@ export const permissions = {
         ],
         elements: [
             'view-profile',
-            'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
@@ -389,7 +383,6 @@ export const permissions = {
             'reports'
         ],
         elements: [
-            'showUserToggle',
             'view-profile',
             'showLatestNote',
             'resetFilter'
