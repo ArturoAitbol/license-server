@@ -29,13 +29,11 @@ public class AdminstratorEmails extends AbstractPageObject {
         return text;
     }
 
-    public String deleteAdministrator(String adminEmail, String type){
+    public String deleteAdministrator(String adminEmail){
         By deleteButton = By.xpath(String.format("//div[@title='%s']/descendant::button[@id='clearButton']", DriverManager.getInstance().addTimeStampToEmail(adminEmail)));
         this.action.click(deleteButton);
-        if (type.equals("subaccount")){
-            Modal confirmModal = new Modal();
-            confirmModal.confirmAction();
-        }
+        Modal confirmModal = new Modal();
+        confirmModal.confirmAction();
         return this.action.getText(this.messageSelector);
     }
 }
