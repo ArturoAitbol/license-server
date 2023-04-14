@@ -9,7 +9,8 @@ const STAKE_HOLDERS_LIST = {
             phoneNumber: '1111111111',
             notifications: 'TYPE:Detailed,DAILY_REPORTS,WEEKLY_REPORTS,MONTHLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'Detailed'
+            type:'Detailed',
+            role: 'customer.SubaccountAdmin'
         },
         {
             name:'testName2', 
@@ -19,7 +20,8 @@ const STAKE_HOLDERS_LIST = {
             phoneNumber:'2222222222', 
             notifications:'TYPE:High level,DAILY_REPORTS,WEEKLY_REPORTS',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'High level'
+            type:'High level',
+            role: 'customer.Stakeholder'
         },
         {
             name:'testName3', 
@@ -29,7 +31,8 @@ const STAKE_HOLDERS_LIST = {
             phoneNumber:'2222222222', 
             notifications: 'TYPE:LOW TIER',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'High level'
+            type:'High level',
+            role: 'customer.Stakeholder'
         }
     ]
 };

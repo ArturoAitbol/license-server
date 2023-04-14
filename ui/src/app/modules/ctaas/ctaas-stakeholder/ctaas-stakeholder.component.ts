@@ -73,6 +73,7 @@ export class CtaasStakeholderComponent implements OnInit {
       { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
       { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
       { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
+      { name: 'Role', dataKey: 'role', position:'left', isSortable:true}
     ];
   }
   /**
@@ -97,6 +98,8 @@ export class CtaasStakeholderComponent implements OnInit {
             stakeHolders.forEach((x: IStakeholder) => {
               if (x.notifications) {
                 const reports = this.getReports();
+                const role = x.role.split('.')[1];
+                x.role = role;
                 if (x.notifications.includes(',')) {
                   const splittingData = x.notifications.split(',');
                   if (splittingData[0].includes('TYPE:')) {
@@ -126,7 +129,6 @@ export class CtaasStakeholderComponent implements OnInit {
         const { stakeHolders } = response;
         if (stakeHolders) {
           this.stakeholdersDataBk = this.stakeholdersData = stakeHolders;
-          this.onChangeToggle(this.toggleStatus);
         }
       }, (error) => {
         this.snackBarService.openSnackBar(error, 'Error while loading stake holders');
@@ -323,19 +325,6 @@ export class CtaasStakeholderComponent implements OnInit {
       { label: "Weekly Reports", value: Report.WEEKLY_REPORTS },
       { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
-  }
-  /**
-   * get when slide toggle state is changed
-   * @param e: boolean 
-   */
-  onChangeToggle(flag: boolean): void {
-    this.toggleStatus = flag;
-    if (flag) {
-      this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN);
-    } else {
-      this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER);
-
-    }
   }
 
   private countStakeholders(stakholdersList: IStakeholder[]): number {
