@@ -15,6 +15,7 @@ import { CtaasSetupServiceMock } from "../../../../test/mock/services/ctaas-setu
 import { BannerServiceMock } from "../../../../test/mock/services/alert-banner-service.mock";
 import { BannerComponent } from "../banner/banner.component";
 import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
+import { Constants } from "src/app/helpers/constants";
 
 let ctaasNotesComponent: CtaasNotesComponent;
 let fixture : ComponentFixture<CtaasNotesComponent>;
@@ -209,9 +210,7 @@ describe('Ctaas Notes - maintenance mode', () => {
         spyOn(BannerServiceMock, "open").and.callThrough();
         fixture.detectChanges();
         tick();
-        expect(BannerServiceMock.open).toHaveBeenCalledWith('ALERT', 'The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. ' +
-            'However, users can still view historical reports on the dashboard. ' +
-            'Please note that during this maintenance period, adding new notes and test reports is not available.', jasmine.any(Object));
+        expect(BannerServiceMock.open).toHaveBeenCalledWith('ALERT', Constants.MAINTENANCE_MODE_ALERT, jasmine.any(Object));
         discardPeriodicTasks();
     }));
 });
