@@ -363,6 +363,7 @@ export const permissions = {
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
+                'CALLBACK',
                 'DELETE_STAKEHOLDER'
             ],
             ctaasTestSuiteOptions: [],
@@ -398,7 +399,9 @@ export const permissions = {
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
-            stakeholderOptions: [],
+            stakeholderOptions: [
+                'CALLBACK'
+            ],
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'

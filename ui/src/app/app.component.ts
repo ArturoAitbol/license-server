@@ -21,6 +21,9 @@ import { CustomerService } from './services/customer.service';
 import { BehaviorSubject, Subscription } from "rxjs";
 import { ISidebar } from './model/sidebar.model';
 import { FeatureToggleService } from './services/feature-toggle.service';
+import { DialogService } from './services/dialog.service';
+import { CallbackService } from './services/callback.service';
+import { SnackBarService } from './services/snack-bar.service';
 
 
 @Component({
@@ -34,6 +37,8 @@ export class AppComponent implements OnInit, OnDestroy {
     mobileQuery: MediaQueryList;
     title = 'license-server';
     currentUser = false;
+    userData: any;
+    userProfileData: any;
     // added as part of spotlight feature
     hideToolbar = false;
     tabName: string = Constants.TEK_TOKEN_TOOL_BAR;
@@ -182,6 +187,9 @@ export class AppComponent implements OnInit, OnDestroy {
         private router: Router,
         private msalService: MsalService,
         public dialog: MatDialog,
+        private dialogService: DialogService,
+        private callbackService: CallbackService,
+        private snackBarService: SnackBarService,
         private broadcastService: MsalBroadcastService,
         private autoLogoutService: AutoLogoutService,
         changeDetectorRef: ChangeDetectorRef,
@@ -433,16 +441,68 @@ export class AppComponent implements OnInit, OnDestroy {
     /**
      * Show User profile Modal
      */
-    viewProfile(): void {
+    async viewProfile() {
+        await this.fetchUserProfileDetails();
         const dialogRef = this.dialog.open(ViewProfileComponent, {
             width: '450px',
-            disableClose: false
+            disableClose: false,
+            data: this.userProfileData.userProfile
         });
-
         dialogRef.afterClosed().subscribe((closedType: string) => {
             if (closedType === 'closed')
                 this.fetchUserProfileDetails();
         });
+    }
+
+    async callBack(){
+        await this.fetchUserProfileDetails();
+        if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
+            && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
+                this.makeCallback();
+        } else {
+            this.showDialogsForSpecificRole();
+        }
+    }
+
+    makeCallback(){
+        this.dialogService.confirmDialog({
+            title: 'Confirm Call',
+            message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
+            confirmCaption: 'Confirm',
+            cancelCaption: 'Cancel',
+        }).subscribe((confirmed) => {
+            if(confirmed){
+                this.callbackService.createCallback(this.userProfileData.userProfile).subscribe((res:any) => {
+                    if(!res.error){
+                        this.snackBarService.openSnackBar('Callback has been made!', '');
+                        this.dialogService.acceptDialog({
+                            title: 'Done!',
+                            message: 'A support engineer will contact you as soon as possible, thank you for your patience.',
+                            confirmCaption: 'Ok',
+                        });
+                    } else {
+                        this.snackBarService.openSnackBar('Error making callback!', '');
+                    }
+                });
+            }
+        });
+    }
+
+    showDialogsForSpecificRole() {
+        const accountDetails = this.getAccountDetails();
+        if(accountDetails.idTokenClaims.roles.includes(Constants.SUBACCOUNT_STAKEHOLDER)){
+            this.dialogService.acceptDialog({
+                title: 'Incomplete personal information',
+                message: 'Please contact your Subaccount Administrator or tekVizion to fill this user’s info.',
+                confirmCaption: 'Ok',
+            });
+        } else {
+            this.dialog.open(ViewProfileComponent, {
+                width: '450px',
+                disableClose:false,
+                data: {...this.userProfileData.userProfile, missing:true}
+            });
+        }
     }
     /**
      * mark the selected nav item here as active to apply styles
@@ -484,6 +544,7 @@ export class AppComponent implements OnInit, OnDestroy {
             const res: any = await this.userProfileService.getUserProfileDetails().toPromise()
             if (res) {
                 const { userProfile } = res;
+                this.userProfileData = res;
                 this.userProfileService.setSubaccountUserProfileDetails(userProfile);
             }
         } catch (error) {

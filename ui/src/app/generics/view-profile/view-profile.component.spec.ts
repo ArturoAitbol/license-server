@@ -4,7 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
 import { FormsModule, ReactiveFormsModule, FormBuilder } from "@angular/forms";
-import { MatDialogRef } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MsalService } from "@azure/msal-angular";
@@ -29,6 +29,17 @@ let loader: HarnessLoader;
 
 const MatDialogRefMock = {
     close: () => { }
+};
+
+const currentProfile = {
+    companyName: "testCompany",
+    email: "teststakeholder11@gmail.com",
+    jobTitle: "test",
+    name: "testName",
+    notifications: 'Weekly Reports,Monthly Summaries',
+    phoneNumber: "2222222222",
+    subaccountId: "f6c0e45e-cfdc-4c1a-820e-bef6a856aaea",
+    type: "High level"
 };
 
 const beforeEachFunction = () => {
@@ -65,6 +76,10 @@ const beforeEachFunction = () => {
             {
                 provide: UserProfileService,
                 useValue: UserProfileServiceMock
+            }, 
+            {
+                provide: MAT_DIALOG_DATA,
+                useValue:currentProfile
             }
         ]
     });
@@ -100,15 +115,6 @@ describe('UI verification test for Profile modal', () => {
     });
 });
 
-
-describe('Fetch and display user profile in UI', () => {
-    beforeEach(beforeEachFunction);
-    it('should display snackbar error if customer service fails', () => {
-        spyOn(UserProfileServiceMock, 'getUserProfileDetails').and.callThrough();
-        fixture.detectChanges();
-        expect(UserProfileServiceMock.getUserProfileDetails).toHaveBeenCalledWith();
-    });
-});
 
 describe('view profile - displays of messages and errors', () => {
     beforeEach(beforeEachFunction);

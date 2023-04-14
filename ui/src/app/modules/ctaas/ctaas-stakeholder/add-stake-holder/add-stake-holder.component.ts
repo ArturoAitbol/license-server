@@ -18,7 +18,7 @@ export class AddStakeHolderComponent implements OnInit {
 
   isDataLoading = false;
   userprofileDetails: IUserProfile;
-  private subaccountId: any;
+
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
@@ -93,17 +93,19 @@ export class AddStakeHolderComponent implements OnInit {
           this.snackBarService.openSnackBar(response.error, 'Error adding stakeholder');
           this.isDataLoading = false;
         } else {
-          this.isDataLoading = false;
           this.snackBarService.openSnackBar('Created Stakeholder successfully', '');
+          this.isDataLoading = false;
           this.onCancel('closed');
         }
       }, (err) => {
-        this.isDataLoading = false;
         this.snackBarService.openSnackBar(err.error, 'Error adding stakeholder');
+        this.isDataLoading = false;
         this.onCancel('closed');
       });
     } catch (e) {
-      console.error('error while creating stake holder | ', e);
+      console.error('error while creating stakeholder | ', e);
+      this.isDataLoading = false;
+      this.onCancel('closed');
     }
   }
 }
