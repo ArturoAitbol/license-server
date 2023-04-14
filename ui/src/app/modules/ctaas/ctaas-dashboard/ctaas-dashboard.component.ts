@@ -381,7 +381,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
         const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
-        window.close();
     }
 
     /**

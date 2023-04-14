@@ -173,7 +173,6 @@ export class CtaasTestReportsComponent implements OnInit {
     const featureParsedEndTime = Utility.parseReportDate(new Date(endDate));
     const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${todayDetails.todayReportType}&start=${featureParsedStartTime}&end=${featureParsedEndTime}`;
     window.open(featureUrl);
-    window.close();
   }
 
   searchConsolidatedReport() {
@@ -195,7 +194,6 @@ export class CtaasTestReportsComponent implements OnInit {
     const endTime = Utility.parseReportDate(new Date(endDate));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
     window.open(url);
-    window.close();
 }
 
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
