@@ -39,6 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
     currentUser = false;
     userData: any;
     userProfileData: any;
+    featureToggleActive = false;
     // added as part of spotlight feature
     hideToolbar = false;
     tabName: string = Constants.TEK_TOKEN_TOOL_BAR;
@@ -368,6 +369,9 @@ export class AppComponent implements OnInit, OnDestroy {
             this.currentUser = true;
             this.autoLogoutService.restartTimer();
         });
+        if (this.featureToggleService.isFeatureEnabled('callback')) {
+            this.featureToggleActive = true;
+        }
     }
 
     /**
@@ -455,18 +459,16 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     async callback(){
-        if (this.featureToggleService.isFeatureEnabled('callback')) {
-            await this.fetchUserProfileDetails();
-            if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
-                && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
-                    this.makeCallback();
-            } else {
-                this.showDialogsForSpecificRole();
-            }
+        await this.fetchUserProfileDetails();
+        if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
+            && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
+                this.makeCallback();
+        } else {
+            this.showDialogsForSpecificRole();
         }
     }
 
-    private makeCallback(){
+    makeCallback(){
         this.dialogService.confirmDialog({
             title: 'Confirm Call',
             message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
@@ -490,7 +492,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    private showDialogsForSpecificRole() {
+    showDialogsForSpecificRole() {
         const accountDetails = this.getAccountDetails();
         if(accountDetails.idTokenClaims.roles.includes(Constants.SUBACCOUNT_STAKEHOLDER)){
             this.dialogService.acceptDialog({

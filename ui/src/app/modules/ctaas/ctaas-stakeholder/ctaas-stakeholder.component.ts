@@ -82,7 +82,11 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   private getActionMenuOptions() {
     const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions")
+    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions");
+    if(!this.featureToggleService.isFeatureEnabled('callback')) {
+      const filteredControls = this.actionMenuOptions.filter(control => control !== 'Request Call to this Account');
+      this.actionMenuOptions = filteredControls;
+    }
   }
   /**
    * fetch stakeholder data
@@ -189,12 +193,10 @@ export class CtaasStakeholderComponent implements OnInit {
         });
         break;
       case this.CALLBACK: 
-        if(this.featureToggleService.isFeatureEnabled('callback')) {
-          if(data.name && data.companyName && data.phoneNumber && data.jobTitle) {
-            this.makeCallback(data);
-          } else {
-            this.openDialogForSpecificRole(dialogRef, data);
-          }
+        if(data.name && data.companyName && data.phoneNumber && data.jobTitle) {
+          this.makeCallback(data);
+        } else {
+          this.openDialogForSpecificRole(dialogRef, data);
         }
         break;
       // case this.DELETE_STAKEHOLDER:
@@ -228,7 +230,7 @@ export class CtaasStakeholderComponent implements OnInit {
     }
   }
 
-  private openDialogForSpecificRole(dialogRef: any, data: any) {
+  openDialogForSpecificRole(dialogRef: any, data: any) {
     const userRoles = this.getAccountRoles();
     if(userRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
       dialogRef = this.dialog.open(ViewProfileComponent, {
@@ -245,7 +247,7 @@ export class CtaasStakeholderComponent implements OnInit {
     }
   }
 
-  private makeCallback(data:any) {
+  makeCallback(data:any) {
     this.dialogService.confirmDialog({
       title: 'Confirm Call',
       message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
