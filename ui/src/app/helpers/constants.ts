@@ -30,6 +30,11 @@ export class Constants {
     //LIMITS
     public static readonly STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
 
+    // Alert messages
+    public static readonly MAINTENANCE_MODE_ALERT = "The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. " +
+        "Please note that during this maintenance period, the dashboard's daily report, adding new notes and detailed test reports are not available. " +
+        "However, users can still view the dashboard's weekly report and historical visuals related to notes.";
+
     // Types contants
     public static readonly SANDBOX_DEVICE_TYPE = 'Sandbox';
     public static readonly CERT_DEVICE_TYPE = 'CERT';
