@@ -58,7 +58,6 @@ export class SearchConsolidatedReportComponent implements OnInit {
     const parsedEndDate = Utility.parseReportDate(new Date(parsedEndTime));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${details.reportType}&start=${parsedStartDate}&end=${parsedEndDate}`;
     window.open(url);
-    window.close();
   }
 
   toggleDateValue(date: any) {

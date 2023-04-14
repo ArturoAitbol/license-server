@@ -15,14 +15,11 @@ import { environment } from 'src/environments/environment';
 import { IReportEmbedConfiguration, models, service } from 'powerbi-client';
 import { Router } from '@angular/router';
 import { IPowerBiReponse } from 'src/app/model/powerbi-response.model';
-import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
+import { IDashboardImageResponse, IImage } from 'src/app/model/dashboard-image-response.model';
 import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 import { Subject } from "rxjs/internal/Subject";
-import * as pbi from 'powerbi-client';
-import { takeUntil } from 'rxjs/operators';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -149,10 +146,8 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         private ctaasDashboardService: CtaasDashboardService,
         private subaccountService: SubAccountService,
         private snackBarService: SnackBarService,
-        private featureToggleService: FeatureToggleService,
         private router: Router,
-        private bannerService: BannerService,
-        private elementRef: ElementRef
+        private bannerService: BannerService
     ) { }
 
     /**
@@ -298,36 +293,29 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountDetails.id, reportType));
         }
         // get all the request response in an array
-        forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
+        forkJoin([...requests]).subscribe((res: [{ response?: IImage, error?: string }]) => {
             this.isLoadingResults = false;
             if (res) {
                 // get all response without any error messages
-                const result: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string, startDateStr: string, endDateStr: string }[] = [...res]
+                const result: IImage[] = [...res]
                     .filter((e: any) => !e.error)
-                    .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string, startDateStr: string, endDateStr: string } }) => e.response);
+                    .map((e: { response: IImage }) => e.response);
                 if ((result.length > 0)) {
                     this.hasDashboardDetails = true;
-                    const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
-                    const reportsIdentifiers: any[] = [];
+                    const resultant = { daily: [], weekly: [] };
                     result.forEach((e) => {
-                        let reportIdentifier = (({ timestampId, reportType }) => ({ timestampId, reportType }))(e);
-                        reportsIdentifiers.push(reportIdentifier);
-
                         if (e.reportType.toLowerCase().includes(this.DAILY)) {
                             resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType), startDate: e.startDateStr, endDate: e.endDateStr });
-                            resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                         } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
                             resultant.weekly.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
-                            resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
                         }
                     });
-                    this.ctaasDashboardService.setReports(reportsIdentifiers.length > 0 ? reportsIdentifiers : null);
-                    const { daily, weekly, lastUpdatedDateList } = resultant;
-                    this.lastModifiedDate = lastUpdatedDateList[0];
+                    this.ctaasDashboardService.setReports(result);
+                    const { daily, weekly } = resultant;
                     if (daily.length > 0)
-                        this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
+                        this.resultantImagesList.push({ reportType: this.DAILY, imagesList: daily });
                     if (weekly.length > 0)
-                        this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.WEEKLY, imagesList: weekly });
+                        this.resultantImagesList.push({ reportType: this.WEEKLY, imagesList: weekly });
                     this.resultantImagesListBk = [...this.resultantImagesList];
                     if (this.resultantImagesListBk.length > 0) {
                         this.onChangeButtonToggle();
@@ -390,7 +378,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
         const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
-        window.close();
     }
 
     /**

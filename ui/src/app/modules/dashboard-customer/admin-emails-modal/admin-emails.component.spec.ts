@@ -178,6 +178,8 @@ describe('add admin email flow', () => {
 
     spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.callThrough();
     spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+    spyOn( dialogService,'setExpectedConfirmDialogValue').and.callThrough();
+    dialogService.setExpectedConfirmDialogValue(true);
 
     fixture.detectChanges();
     AdminEmailTestInstance.deleteExistingEmail(0);
@@ -190,6 +192,8 @@ describe('add admin email flow', () => {
     spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(throwError({message: 'error message'}));
     spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
     spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+    spyOn( dialogService,'setExpectedConfirmDialogValue').and.callThrough();
+    dialogService.setExpectedConfirmDialogValue(true);
 
     fixture.detectChanges();
     AdminEmailTestInstance.deleteExistingEmail(0);
@@ -203,6 +207,8 @@ describe('add admin email flow', () => {
     spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
     spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
     spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+    spyOn( dialogService,'setExpectedConfirmDialogValue').and.callThrough();
+    dialogService.setExpectedConfirmDialogValue(true);
 
     fixture.detectChanges();
     AdminEmailTestInstance.deleteExistingEmail(0);
@@ -216,6 +222,8 @@ describe('add admin email flow', () => {
     spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
     spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
     spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+    spyOn( dialogService,'setExpectedConfirmDialogValue').and.callThrough();
+    dialogService.setExpectedConfirmDialogValue(true);
 
     fixture.detectChanges();
     AdminEmailTestInstance.deleteExistingEmail(0);
