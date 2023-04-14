@@ -67,6 +67,15 @@ describe('modal actions', () => {
         expect(consolidatedDateInstance.startDate).toEqual(testDate);
     });
 
+    it('should make a call to toggleDateValue and set with old dates', () => {
+        spyOn(consolidatedDateInstance, 'toggleDateValue').and.callThrough();
+        const testDate = moment("12/03/2023", "DD/MM/YYYY");
+        consolidatedDateInstance.toggleDateValue(testDate);
+        fixture.detectChanges();
+        expect(consolidatedDateInstance.minEndDate).toEqual(testDate);
+        expect(consolidatedDateInstance.startDate).toEqual(testDate);
+    });
+
     it('should make a call to toggleEndDate and set endDate value', () => {
         spyOn(consolidatedDateInstance, 'toggleEndDate').and.callThrough();
         const testDate = moment();

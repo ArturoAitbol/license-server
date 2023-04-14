@@ -12,8 +12,9 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./search-consolidated-report.component.css']
 })
 export class SearchConsolidatedReportComponent implements OnInit {
-  public maxDate: any;
-  public minEndDate: any;
+  maxDate: any;
+  maxEndDate: any;
+  minEndDate: any;
   subaccountDetails:any;
   isDataLoading = false;
   maxTime: any;
@@ -21,6 +22,7 @@ export class SearchConsolidatedReportComponent implements OnInit {
   minTime: any;
   startDate: any;
   endDate: any;
+  dateLimit: number = 9;
 
   readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
 
@@ -41,6 +43,7 @@ export class SearchConsolidatedReportComponent implements OnInit {
   ngOnInit(): void {
     this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
     this.maxDate = moment().format("YYYY-MM-DD[T]HH:mm:ss");
+    this.maxEndDate = this.maxDate;
   }
 
   onCancel(): void {
@@ -58,9 +61,20 @@ export class SearchConsolidatedReportComponent implements OnInit {
   }
 
   toggleDateValue(date: any) {
+    let selectedDate;
+    let actualDate;
+    let dateControl;
     this.minEndDate = date;
     this.startDate = date;
     this.searchForm.get('startTime').setValue("");
+    selectedDate = [parseInt(moment.utc(date).format("DD")), parseInt(moment.utc(date).format("MM")), parseInt(moment.utc(date).format("YYYY"))];
+    actualDate = [parseInt(moment.utc().format("DD")),  parseInt(moment.utc().format("MM")), parseInt(moment.utc().format("YYYY"))];
+    dateControl = actualDate[0] - selectedDate[0];
+    if(dateControl < this.dateLimit && (selectedDate[1] == actualDate[1]) && (selectedDate[2] == actualDate[2])){
+      this.maxEndDate = moment.utc(date).add(dateControl, 'days').format("YYYY-MM-DD[T]HH:mm:ss");
+    }else {
+      this.maxEndDate = moment.utc(date).add(this.dateLimit, 'days').format("YYYY-MM-DD[T]HH:mm:ss");
+    }
   }
   
   toggleEndDate(endDate: any) {
@@ -69,10 +83,13 @@ export class SearchConsolidatedReportComponent implements OnInit {
   }
 
   validateTimers() {
-    if(this.endDate > this.startDate)
+    let selectedStartDate = [ parseInt(moment(this.startDate).format("DD")), parseInt(moment(this.startDate).format("MM")), parseInt(moment(this.startDate).format("YYYY"))]
+    let selectedEndDate = [ parseInt(moment(this.endDate).format("DD")), parseInt(moment(this.endDate).format("MM")), parseInt(moment(this.endDate).format("YYYY"))]
+    if(this.endDate > this.startDate){
       this.minTime = "00:00";
-    else
+    }else if(selectedStartDate[0] == selectedEndDate[0] && selectedStartDate[1] == selectedEndDate[1] && selectedStartDate[2] == selectedEndDate[2]) {
       this.minTime = this.minTimeBK;
+    }
   }
   
   onChangeStartTime(event) {
