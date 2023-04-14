@@ -162,15 +162,23 @@ public class GenerateExcelReport {
 
         row = summarySheet.createRow(index++);
         int num = row.getRowNum() + 1;
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + num + ":" + "I" + num));
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("A" + num + ":" + "J" + num));
         whiteLabel.setAlignment(HorizontalAlignment.CENTER);
         addCell(row, cell, whiteLabel, count++, "EndPoint Resources");
 
         row = summarySheet.createRow(index++);
         int num1 = row.getRowNum() + 1;
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("C" + num1 + ":" + "E" + num1));
+        // Merging two cells for Firmware column
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("C" + num1 + ":" + "D" + num1));
         blackLabel.setAlignment(HorizontalAlignment.CENTER);
-        summarySheet.addMergedRegion(CellRangeAddress.valueOf("F" + num1 + ":" + "I" + num1));
+        // Merging two cells for Service Provider column
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("E" + num1 + ":" + "F" + num1));
+        blackLabel.setAlignment(HorizontalAlignment.CENTER);
+        // Merging two cells for Domain column
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("G" + num1 + ":" + "H" + num1));
+        blackLabel.setAlignment(HorizontalAlignment.CENTER);
+        // Merging two cells for Region column
+        summarySheet.addMergedRegion(CellRangeAddress.valueOf("I" + num1 + ":" + "J" + num1));
         blackLabel.setAlignment(HorizontalAlignment.CENTER);
 
         count = 0;
@@ -178,10 +186,11 @@ public class GenerateExcelReport {
         addCell(row, cell, blackLabel, count++, "DID");
         addCell(row, cell, blackLabel, count++, "Firmware Version");
         addCell(row, cell, blackLabel, count++, null);
+        addCell(row, cell, blackLabel, count++, "Service Provider");
+        addCell(row, cell, blackLabel, count++, null);
+        addCell(row, cell, blackLabel, count++, "Domain");
         addCell(row, cell, blackLabel, count++, null);
         addCell(row, cell, blackLabel, count++, "Region");
-        addCell(row, cell, blackLabel, count++, null);
-        addCell(row, cell, blackLabel, count++, null);
         addCell(row, cell, blackLabel, count++, null);
 
         JSONArray endpointsResponse = (JSONArray) jsonObject.get("endpoints");
@@ -245,9 +254,17 @@ public class GenerateExcelReport {
         int count = 0;
         Row row = workSheet.createRow(index);
         int num = row.getRowNum() + 1;
-        workSheet.addMergedRegion(CellRangeAddress.valueOf("C" + num + ":" + "E" + num));
+// Firmware Column
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("C" + num + ":" + "D" + num));
         whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
-        workSheet.addMergedRegion(CellRangeAddress.valueOf("F" + num + ":" + "I" + num));
+// Service Provider Column
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("E" + num + ":" + "F" + num));
+        whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
+// Domain Column
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("G" + num + ":" + "H" + num));
+        whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
+// Region Column
+        workSheet.addMergedRegion(CellRangeAddress.valueOf("I" + num + ":" + "J" + num));
         whiteUnboldStyle.setAlignment(HorizontalAlignment.CENTER);
         List<String> valuesList = new ArrayList<>();
         StringJoiner stringJoiner = new StringJoiner(" | ");
@@ -260,24 +277,30 @@ public class GenerateExcelReport {
             stringJoiner.add(String.format("%s:%s", endpointReportParams.key, val));
             valuesList.add(val);
         }
-        String city = valuesList.get(4);
-        String state = valuesList.get(5);
-        String country = valuesList.get(6);
-        String zipcode = valuesList.get(7);
+        String city = valuesList.get(6);
+        String state = valuesList.get(7);
+        String country = valuesList.get(8);
+        String zipcode = valuesList.get(9);
 
         context.getLogger().info("End point results: " + stringJoiner);
         final String region = (city.isEmpty() || state.isEmpty() || country.isEmpty() || zipcode.isEmpty()) ? ""
                 : String.format("%s, %s, %s, %s", city, state, country, zipcode);
+        // Vendor and Model cell
         addCell(row, null, blackLabel, count++, valuesList.get(0) + " / " + valuesList.get(1));
+        // DID
         addCell(row, null, whiteUnboldStyle, count++, valuesList.get(2));
+        // Firmware
         addCell(row, null, whiteUnboldStyle, count++, valuesList.get(3));
         addCell(row, null, whiteUnboldStyle, count++, null);
+        // Service Provider
+        addCell(row, null, whiteUnboldStyle, count++, valuesList.get(4));
         addCell(row, null, whiteUnboldStyle, count++, null);
+        // Domain
+        addCell(row, null, whiteUnboldStyle, count++, valuesList.get(5));
+        addCell(row, null, whiteUnboldStyle, count++, null);
+        // Region
         addCell(row, null, whiteUnboldStyle, count++, region);
         addCell(row, null, whiteUnboldStyle, count++, null);
-        addCell(row, null, whiteUnboldStyle, count++, null);
-        addCell(row, null, whiteUnboldStyle, count++, null);
-
     }
 
     private void getIterationWiseTestResultsDetails(ExecutionContext context, int i, Cell cell, Row row, int index,
@@ -469,6 +492,8 @@ public class GenerateExcelReport {
         MODEL("MODEL", "model"),
         DID("DID", "did"),
         FIRMWARE_VERSION("FIRMWARE_VERSION", "firmwareVersion"),
+        SERVICE_PROVIDER("SERVICE_PROVIDER", "serviceProvider"),
+        DOMAIN("DOMAIN", "domain"),
         CITY("CITY", "city"),
         STATE("STATE", "state"),
         COUNTRY("COUNTRY", "country"),
