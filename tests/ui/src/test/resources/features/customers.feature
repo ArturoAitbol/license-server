@@ -37,7 +37,7 @@ Feature: Customers
   Scenario: Delete a customer administrator
     Given I see the customer "functional-test-customer" in the table
     And I open the Customer Administrator Emails of "functional-test-customer"
-    When I delete the administrator with email "admintest@tekvizion.com"
+    When I delete administrator with email "admintest@tekvizion.com"
     Then I should see the message "Customer administrator email deleted"
 
   @editCustomer

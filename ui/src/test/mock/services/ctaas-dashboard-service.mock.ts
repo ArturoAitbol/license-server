@@ -521,8 +521,47 @@ const CONTENT_DOWNLOADED = {
     type: "LTS"
 }
 
+const TEST_CTAAS_HISTORICAL_DASHBOARD = {
+    response: [
+      {
+        reportType: "Daily-FeatureFunctionality",
+        imageBase64: "data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/",
+        startDateStr: "230410223122",
+        endDateStr: "230410223122"
+      },
+      {
+        reportType: "Daily-CallingReliability",
+        imageBase64: "data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/",
+        startDateStr: "230411154558",
+        endDateStr: "230411154558"
+      },
+      {
+        reportType: "Daily-VQ",
+        imageBase64: "data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/",
+        startDateStr: "",
+        endDateStr: "230410223148"
+      },
+      {
+        reportType: "Weekly-FeatureFunctionality",
+        imageBase64: "data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/",
+        startDateStr: "",
+        endDateStr: "230410223206"
+      },
+      {
+        reportType: "Weekly-CallingReliability",
+        imageBase64: "data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/",
+        startDateStr: "",
+        endDateStr: "230410223832"
+      },
+      {
+        reportType: "Weekly-VQ",
+        imageBase64: "data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/",
+        startDateStr: "",
+        endDateStr: "230410223813"
+      }
+    ]
+  }
 
-const ERROR_MSG = 'Expected setupDetails response error';
 
 export const CtaasDashboardServiceMock = {
     dashboardList: CTAAS_DASHBOARD_LIST,
@@ -606,5 +645,14 @@ export const CtaasDashboardServiceMock = {
                 unsubscribe() { return; }
             };
         })
+    },
+    getCtaasHistoricalDashboardDetails: (subaccountId: string, noteId: string) => {
+        return new Observable((observer)=>{
+            observer.next( JSON.parse(JSON.stringify(TEST_CTAAS_HISTORICAL_DASHBOARD)) );
+            observer.complete();
+            return {
+                unsubscribe(){ }
+            }
+        });
     }
 };

@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.function.auth.Resource;
 import com.function.clients.FCMClient;
+import com.function.util.Base64ImageHandler;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 import io.jsonwebtoken.Claims;
@@ -81,11 +82,14 @@ public class TekvLSCreateNote {
         }
 
         //Build the sql query
-        String sql = "INSERT INTO note (subaccount_id, content, status, open_date, opened_by, reports)" +
-                    " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP, ?, ?) RETURNING id;";
+        String sql = "INSERT INTO note (subaccount_id, content, status, open_date, opened_by)" +
+                    " VALUES (?::uuid, ?, 'Open', LOCALTIMESTAMP, ?) RETURNING id;";
 
         // Sql query to get all user that need to be notified
         String getAllUsersSql = "SELECT sad.* FROM subaccount_admin_device sad, subaccount_admin sae WHERE sad.subaccount_admin_email = sae.subaccount_admin_email and sae.subaccount_id = ?::uuid and sad.subaccount_admin_email != ?;";
+
+        //Sql query to save all the reports
+        String sqlStoreReports = "INSERT INTO historical_report(subaccount_id,note_id,report_type,start_date,end_date,image) VALUES(?::uuid,?::uuid,?,?,?,?)";
 
         //Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -94,7 +98,8 @@ public class TekvLSCreateNote {
 
         try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
             PreparedStatement statement = connection.prepareStatement(sql);
-            PreparedStatement deviceTokensStmt = connection.prepareStatement(getAllUsersSql)){
+            PreparedStatement deviceTokensStmt = connection.prepareStatement(getAllUsersSql);
+            PreparedStatement statementStoreReports = connection.prepareStatement(sqlStoreReports)){
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
@@ -103,10 +108,6 @@ public class TekvLSCreateNote {
             statement.setString(1,jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));
             statement.setString(2,jobj.getString(MANDATORY_PARAMS.CONTENT.value));
             statement.setString(3,userEmail);
-            if(jobj.has(OPTIONAL_PARAMS.REPORTS.value))
-                statement.setString(4,jobj.getJSONArray(OPTIONAL_PARAMS.REPORTS.value).toString());
-            else
-                statement.setString(4,null);
             //Insert
             String userId = getUserIdFromToken(tokenClaims,context);
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + statement);
@@ -115,6 +116,26 @@ public class TekvLSCreateNote {
             rs.next();
             JSONObject json = new JSONObject();
             json.put("id", rs.getString("id"));
+
+            if(jobj.has(OPTIONAL_PARAMS.REPORTS.value)){
+                //Store the reports in the DB
+                String subaccountId = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value);
+                JSONArray reports = jobj.getJSONArray(OPTIONAL_PARAMS.REPORTS.value);
+                JSONObject report;
+                for(Object obj:reports){
+                    report = (JSONObject) obj;
+                    String base64Image = report.getString("imageBase64");
+                    byte[] bytesImage = Base64ImageHandler.decodeAndCompressImage(base64Image);
+                    statementStoreReports.setString(1,subaccountId);
+                    statementStoreReports.setString(2,rs.getString("id"));
+                    statementStoreReports.setString(3,report.getString("reportType"));
+                    statementStoreReports.setString(4,report.getString("startDateStr"));
+                    statementStoreReports.setString(5,report.getString("endDateStr"));
+                    statementStoreReports.setBytes(6,bytesImage);
+                    statementStoreReports.addBatch();
+                }
+                statementStoreReports.executeBatch();
+            }
 
             // Send notifications to subaccount users
             deviceTokensStmt.setString(1, jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ID.value));

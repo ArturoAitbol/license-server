@@ -1,41 +1,40 @@
 package com.function;
 
+import java.sql.*;
+import java.util.*;
+
 import com.function.auth.Resource;
-import com.function.clients.StorageBlobClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
+import com.function.util.Base64ImageHandler;
+import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
-import com.microsoft.azure.functions.annotation.AuthorizationLevel;
-import com.microsoft.azure.functions.annotation.BindingName;
-import com.microsoft.azure.functions.annotation.FunctionName;
-import com.microsoft.azure.functions.annotation.HttpTrigger;
 import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.*;
-import java.util.Map;
-import java.util.Optional;
-
 import static com.function.auth.RoleAuthHandler.*;
 import static com.function.auth.Roles.*;
 
-public class TekvLSGetCtaasDashboard {
+/**
+ * Azure Functions with HTTP Trigger.
+ */
+public class TekvLSGetCtaasHistoricalDashboard {
     /**
-     * This function listens at endpoint "/v1.0/ctaasDashboard/subaccountId={subaccountId}/reportType={reportType}". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/v1.0/ctaasDashboard/subaccountId={subaccountId}/reportType={reportType}
-     * 2. curl "{your host}/v1.0/ctaasDashboard"
+     * This function listens at endpoint "/v1.0/ctassHistoricalDashboard/{subaccountId}/{noteId}". Two ways to invoke it using "curl" command in bash:
+     * 1. curl -d "HTTP Body" {your host}/v1.0/ctassHistoricalDashboard/{subaccountId}/{noteId}
+     * 2. curl {your host}/v1.0/TekvLSGetCtaasHistoricalDashboard/{subaccountId}/{noteId}
      */
-    @FunctionName("TekvLSGetCtaasDashboard")
+    @FunctionName("TekvLSGetCtaasHistoricalDashboard")
     public HttpResponseMessage run(
             @HttpTrigger(
                     name = "req",
-                    methods = {HttpMethod.GET},
-                    authLevel = AuthorizationLevel.ANONYMOUS,
-                    route = "ctaasDashboard/{subaccountId=EMPTY}/{reportType=EMPTY}")
+                    methods = {HttpMethod.GET, HttpMethod.POST},
+                    authLevel = AuthorizationLevel.FUNCTION,
+                    route = "ctassHistoricalDashboard/{subaccountId=EMPTY}/{noteId=EMPTY}")
             HttpRequestMessage<Optional<String>> request,
             @BindingName("subaccountId") String subaccountId,
-            @BindingName("reportType") String reportType,
+            @BindingName("noteId") String noteId,
             final ExecutionContext context) {
 
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
@@ -53,34 +52,35 @@ public class TekvLSGetCtaasDashboard {
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
 
-        context.getLogger().info("Entering TekvLSGetCtaasDashboard Azure function");
+        context.getLogger().info("Entering TekvLSGetCtaasHistoricalDashboard Azure function");
 
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 
-        // Check if subaccount is empty
+        // Check if subaccountId is empty
         if (subaccountId.equals("EMPTY") || subaccountId.isEmpty()) {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
-        // Check if reportType is empty
-        if (reportType.equals("EMPTY") || reportType.isEmpty()) {
-            context.getLogger().info("Report type cannot be empty");
+        // Check if noteId is empty
+        if (noteId.equals("EMPTY") || noteId.isEmpty()) {
+            context.getLogger().info("Note Id cannot be empty");
             JSONObject json = new JSONObject();
-            json.put("error", "Report type cannot be empty");
+            json.put("error", "Note Id cannot be empty");
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
 
+        // Build SQL statement: Get historical dashboard
+        SelectQueryBuilder queryBuilderDashboard = new SelectQueryBuilder("SELECT * FROM historical_report");
+        queryBuilderDashboard.appendEqualsCondition("subaccount_id",subaccountId, QueryBuilder.DATA_TYPE.UUID);
+        queryBuilderDashboard.appendEqualsCondition("note_id",noteId,QueryBuilder.DATA_TYPE.UUID);
 
-        // Build SQL statement
-        SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT c.name as customerName, s.name as subaccountName  FROM customer c LEFT JOIN subaccount s ON c.id = s.customer_id");
-        queryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+
+        // Build SQL statement: role verification
         SelectQueryBuilder verificationQueryBuilder = null;
         String email = getEmailFromToken(tokenClaims, context);
-
-        // adding conditions according to the role
         String currentRole = evaluateRoles(roles);
         switch (currentRole) {
             case CUSTOMER_FULL_ADMIN:
@@ -105,9 +105,8 @@ public class TekvLSGetCtaasDashboard {
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
-        try (
-                Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                PreparedStatement selectStmt = queryBuilder.build(connection)) {
+        try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+                PreparedStatement stmt = queryBuilderDashboard.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
             ResultSet rs;
@@ -125,36 +124,22 @@ public class TekvLSGetCtaasDashboard {
                 }
             }
 
-            // Retrieve SpotLight setup.
-            context.getLogger().info("Execute SQL statement: " + selectStmt);
-            rs = selectStmt.executeQuery();
-            String customerName = null;
-            String subaccountName = null;
-
-            if (rs.next()) {
-                customerName = rs.getString("customerName");
-                subaccountName = rs.getString("subaccountName");
-                context.getLogger().info("customer name - " + customerName + " - subaccount name - " + subaccountName);
+            rs = stmt.executeQuery();
+            JSONArray reports = new JSONArray();
+            while (rs.next()) {
+                JSONObject report = new JSONObject();
+                byte[] bytesImage = rs.getBytes("image");
+                String base64Image = Base64ImageHandler.decompressAndEncodeBytes(bytesImage);
+                report.put("reportType",rs.getString("report_type"));
+                report.put("startDateStr",rs.getString("start_date"));
+                report.put("endDateStr",rs.getString("end_date"));
+                report.put("imageBase64",base64Image);
+                reports.put(report);
             }
+            json.put("response",reports);
 
-            if ((customerName == null || customerName.isEmpty()) || (subaccountName == null || subaccountName.isEmpty())) {
-                context.getLogger().info(LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
-                json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
-                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-            }
-
-            Map<String,String> base64Response = StorageBlobClient.getInstance().getBlobAsBase64(context, customerName, subaccountName, reportType);
-            if (base64Response == null) {
-                json.put("error", "Cannot found the image with " + reportType + " in the storage blob");
-            } else {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("reportType",reportType);
-                jsonObject.put("imageBase64", base64Response.get("base64String"));
-                jsonObject.put("startDateStr", base64Response.get("startDate"));
-                jsonObject.put("endDateStr", base64Response.get("endDate"));
-                json.put("response", jsonObject);
-            }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
+
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());
             JSONObject json = new JSONObject();
