@@ -454,17 +454,19 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    async callBack(){
-        await this.fetchUserProfileDetails();
-        if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
-            && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
-                this.makeCallback();
-        } else {
-            this.showDialogsForSpecificRole();
+    async callback(){
+        if (this.featureToggleService.isFeatureEnabled('callback')) {
+            await this.fetchUserProfileDetails();
+            if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
+                && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
+                    this.makeCallback();
+            } else {
+                this.showDialogsForSpecificRole();
+            }
         }
     }
 
-    makeCallback(){
+    private makeCallback(){
         this.dialogService.confirmDialog({
             title: 'Confirm Call',
             message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
@@ -488,7 +490,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    showDialogsForSpecificRole() {
+    private showDialogsForSpecificRole() {
         const accountDetails = this.getAccountDetails();
         if(accountDetails.idTokenClaims.roles.includes(Constants.SUBACCOUNT_STAKEHOLDER)){
             this.dialogService.acceptDialog({

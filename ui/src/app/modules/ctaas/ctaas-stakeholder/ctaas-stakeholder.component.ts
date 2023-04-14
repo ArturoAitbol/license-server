@@ -15,6 +15,7 @@ import { Constants } from 'src/app/helpers/constants';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { ViewProfileComponent } from 'src/app/generics/view-profile/view-profile.component';
 import { CallbackService } from 'src/app/services/callback.service';
+import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -49,7 +50,8 @@ export class CtaasStakeholderComponent implements OnInit {
     private dialogService: DialogService,
     private callbackService: CallbackService,
     private stakeholderService: StakeHolderService,
-    private subaccountService: SubAccountService
+    private subaccountService: SubAccountService,
+    private featureToggleService: FeatureToggleService
   ) { }
   /**
    * calculate table height based on the window height
@@ -187,10 +189,12 @@ export class CtaasStakeholderComponent implements OnInit {
         });
         break;
       case this.CALLBACK: 
-        if(data.name && data.companyName && data.phoneNumber && data.jobTitle) {
-          this.makeCallback(data);
-        } else {
-          this.openDialogForSpecificRole(dialogRef, data);
+        if(this.featureToggleService.isFeatureEnabled('callback')) {
+          if(data.name && data.companyName && data.phoneNumber && data.jobTitle) {
+            this.makeCallback(data);
+          } else {
+            this.openDialogForSpecificRole(dialogRef, data);
+          }
         }
         break;
       // case this.DELETE_STAKEHOLDER:
@@ -224,7 +228,7 @@ export class CtaasStakeholderComponent implements OnInit {
     }
   }
 
-  openDialogForSpecificRole(dialogRef: any, data: any) {
+  private openDialogForSpecificRole(dialogRef: any, data: any) {
     const userRoles = this.getAccountRoles();
     if(userRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
       dialogRef = this.dialog.open(ViewProfileComponent, {
@@ -241,7 +245,7 @@ export class CtaasStakeholderComponent implements OnInit {
     }
   }
 
-  makeCallback(data:any) {
+  private makeCallback(data:any) {
     this.dialogService.confirmDialog({
       title: 'Confirm Call',
       message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
