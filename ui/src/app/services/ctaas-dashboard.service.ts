@@ -13,6 +13,7 @@ export class CtaasDashboardService {
   private readonly FETCH_DASHBOARD_REPORT_URL: string = environment.apiEndpoint + '/ctaasDashboardReport/{subaccountId}';
   private readonly DOWNLOAD_DASHBOARD_REPORT_URL: string = this.API_URL + '/downloadReport';
   private readonly FETCH_POWERBI_DASHBOARD_REPORT_URL: string = `${environment.apiEndpoint}/spotlightDashboard/{subaccountId}`;
+  private readonly FETCH_HISTORICAL_DASHBOARD_URL: string = `${environment.apiEndpoint}/ctassHistoricalDashboard/{subaccountId}/{noteId}`;
 
   private currentReports: any;
   private detailedReportObj: any = {};
@@ -80,5 +81,10 @@ export class CtaasDashboardService {
   public getCtaasPowerBiDashboardDetails(subaccountId: string): Observable<any> {
     const url = this.FETCH_POWERBI_DASHBOARD_REPORT_URL.replace(/{subaccountId}/g, subaccountId);
     return this.httpClient.get(url);
+  }
+
+  public getCtaasHistoricalDashboardDetails(subaccountId: string, noteId: string): Observable<any> {
+    const url = this.FETCH_HISTORICAL_DASHBOARD_URL.replace(/{subaccountId}/g,subaccountId).replace(/{noteId}/g,noteId);
+    return this.httpClient.get(url); 
   }
 }
