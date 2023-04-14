@@ -139,8 +139,8 @@ public class CustomerSteps {
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
-    @When("I delete the administrator with email {string}")
-    public void iDeleteTheAdministratorWithEmail(String adminEmail) {
+    @When("I delete administrator with email {string}")
+    public void iDeleteTheCustomerAdministratorWithEmail(String adminEmail) {
         this.actualMessage = this.adminEmails.deleteAdministrator(adminEmail);
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
