@@ -122,7 +122,7 @@ describe('dialog calls and interactions',() => {
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
 
-        selectedTestData.selectedOption = 'Callback'
+        selectedTestData.selectedOption = 'Request Call to this Account'
         const selectedInconpleteUser = {selectedRow:
             {
             jobTitle:'testJob3', 
@@ -132,7 +132,7 @@ describe('dialog calls and interactions',() => {
             notifications: 'TYPE:LOW TIER',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
             type:'High level'}, 
-        selectedOption: 'Callback', 
+        selectedOption: 'Request Call to this Account', 
         selectedIndex: '0' }
 
         dialogService.setExpectedConfirmDialogValue(true);
@@ -140,7 +140,7 @@ describe('dialog calls and interactions',() => {
         dialogService.afterClosed();
         expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedInconpleteUser.selectedOption, selectedInconpleteUser.selectedRow);
 
-        selectedTestData.selectedOption = 'Callback'
+        selectedTestData.selectedOption = 'Request Call to this Account'
         const selectedUser = {selectedRow:
             {
             name: 'test name',
@@ -151,7 +151,7 @@ describe('dialog calls and interactions',() => {
             notifications: 'TYPE:LOW TIER',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
             type:'High level'}, 
-        selectedOption: 'Callback', 
+        selectedOption: 'Request Call to this Account', 
         selectedIndex: '0' }
 
         dialogService.setExpectedConfirmDialogValue(true);
@@ -280,7 +280,7 @@ describe('ctaas-stakeholders, row action callback', () => {
         const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '0' }
         fixture.detectChanges();
     
-        selectedTestData.selectedOption = 'Callback'
+        selectedTestData.selectedOption = 'Request Call to this Account'
         const selectedUser = {selectedRow:
             {
             jobTitle:'testJob3', 
@@ -290,7 +290,7 @@ describe('ctaas-stakeholders, row action callback', () => {
             notifications: 'TYPE:LOW TIER',
             subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
             type:'High level'}, 
-        selectedOption: 'Callback', 
+        selectedOption: 'Request Call to this Account', 
         selectedIndex: '0' }
 
         dialogService.setExpectedConfirmDialogValue(true);
