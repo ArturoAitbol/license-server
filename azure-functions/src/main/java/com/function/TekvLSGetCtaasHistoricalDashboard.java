@@ -73,7 +73,7 @@ public class TekvLSGetCtaasHistoricalDashboard {
         }
 
         // Build SQL statement: Get historical dashboard
-        SelectQueryBuilder queryBuilderDashboard = new SelectQueryBuilder("SELECT * FROM historical_dashboard");
+        SelectQueryBuilder queryBuilderDashboard = new SelectQueryBuilder("SELECT * FROM historical_report");
         queryBuilderDashboard.appendEqualsCondition("subaccount_id",subaccountId, QueryBuilder.DATA_TYPE.UUID);
         queryBuilderDashboard.appendEqualsCondition("note_id",noteId,QueryBuilder.DATA_TYPE.UUID);
 

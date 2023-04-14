@@ -89,7 +89,7 @@ public class TekvLSCreateNote {
         String getAllUsersSql = "SELECT sad.* FROM subaccount_admin_device sad, subaccount_admin sae WHERE sad.subaccount_admin_email = sae.subaccount_admin_email and sae.subaccount_id = ?::uuid and sad.subaccount_admin_email != ?;";
 
         //Sql query to save all the reports
-        String sqlStoreReports = "INSERT INTO historical_dashboard(subaccount_id,note_id,report_type,start_date,end_date,image) VALUES(?::uuid,?::uuid,?,?,?,?)";
+        String sqlStoreReports = "INSERT INTO historical_report(subaccount_id,note_id,report_type,start_date,end_date,image) VALUES(?::uuid,?::uuid,?,?,?,?)";
 
         //Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
