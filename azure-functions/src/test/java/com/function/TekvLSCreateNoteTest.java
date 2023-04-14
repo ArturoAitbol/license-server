@@ -47,7 +47,7 @@ class TekvLSCreateNoteTest extends TekvLSTest {
     @Test
     public void createNoteTest() {
         //Given
-        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content', 'reports':[{},{}]}";
+        this.bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content', 'reports':[{ 'imageBase64': 'data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD', 'reportType': 'Daily-FeatureFunctionality', 'startDateStr': '230411154558', endDateStr: '230411154558' }]}";
         doReturn(Optional.of(this.bodyRequest)).when(request).getBody();
 
         //When
