@@ -127,11 +127,11 @@
                     <mat-icon aria-hidden="false" aria-label="person icon">person</mat-icon>
                     <span>Profile</span>
                 </button>
-                <button  mat-menu-item (click)="callback()" id="help-button">
+                <button *ngIf="featureToggleActive"  mat-menu-item (click)="callback()" id="help-button">
                     <mat-icon aria-hidden="false" aria-label="help">help</mat-icon>
                     <span>Help</span>
                 </button>
-                <button *ngIf="featureToggleActive" mat-menu-item (click)="logout()" id="logout-button">
+                <button mat-menu-item (click)="logout()" id="logout-button">
                     <mat-icon>logout</mat-icon>
                     <span>Logout</span>
                 </button>
