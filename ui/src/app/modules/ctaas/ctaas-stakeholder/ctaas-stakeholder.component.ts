@@ -98,10 +98,10 @@ export class CtaasStakeholderComponent implements OnInit {
             stakeHolders.forEach((x: IStakeholder) => {
               if (x.notifications) {
                 const reports = this.getReports();
+                const splittingData = x.notifications.split(',');
+                const role = x.role.split('.')[1];
+                x.role = role;
                 if (x.notifications.includes(',')) {
-                  const splittingData = x.notifications.split(',');
-                  const role = x.role.split('.')[1];
-                  x.role = role;
                   if (splittingData[0].includes('TYPE:')) {
                     x.type = splittingData[0].replace('TYPE:', '');
                     splittingData.splice(0, 1);
