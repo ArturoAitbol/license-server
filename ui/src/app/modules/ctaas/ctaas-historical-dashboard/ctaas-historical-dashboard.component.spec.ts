@@ -73,14 +73,14 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
     const cancelButton = fixture.nativeElement.querySelector('#cancel-button');
     spyOn(ctaasHistoricalDashboardComponentTestInstance,'fetchCtaasDashboardDetailsBySubaccount').and.callThrough();
     spyOn(ctaasHistoricalDashboardComponentTestInstance,'onChangeButtonToggle').and.callThrough();
-    spyOn(CtaasDashboardServiceMock,'getCtaasDashboardDetails').and.callThrough();
+    spyOn(CtaasDashboardServiceMock,'getCtaasHistoricalDashboardDetails').and.callThrough();
     spyOn(ctaasHistoricalDashboardComponentTestInstance, 'onClose').and.callThrough();
 
     fixture.detectChanges();
     cancelButton.click();
 
     expect(ctaasHistoricalDashboardComponentTestInstance.fetchCtaasDashboardDetailsBySubaccount).toHaveBeenCalled();
-    expect(CtaasDashboardServiceMock.getCtaasDashboardDetails).toHaveBeenCalledTimes(ctaasHistoricalDashboardComponentTestInstance.note.reports.length);
+    expect(CtaasDashboardServiceMock.getCtaasHistoricalDashboardDetails).toHaveBeenCalled();
     expect(ctaasHistoricalDashboardComponentTestInstance.onChangeButtonToggle).toHaveBeenCalled();
     expect(ctaasHistoricalDashboardComponentTestInstance.onClose).toHaveBeenCalled();
   });
@@ -98,11 +98,11 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
 
   it('should show an error if an error is thrown when calling fetchCtaasDashboardDetailsBySubaccount()', () => {
     spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
-    spyOn(CtaasDashboardServiceMock,'getCtaasDashboardDetails').and.returnValue(throwError("Some error"));
+    spyOn(CtaasDashboardServiceMock,'getCtaasHistoricalDashboardDetails').and.returnValue(throwError("Some error"));
     
     fixture.detectChanges();
 
-    expect(CtaasDashboardServiceMock.getCtaasDashboardDetails).toHaveBeenCalled();
+    expect(CtaasDashboardServiceMock.getCtaasHistoricalDashboardDetails).toHaveBeenCalled();
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please connect tekVizion admin', 'Ok');
   });
 

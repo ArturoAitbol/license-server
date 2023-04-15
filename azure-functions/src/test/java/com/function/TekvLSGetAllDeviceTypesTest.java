@@ -20,7 +20,6 @@ import static org.mockito.Mockito.doThrow;
 class TekvLSGetAllDeviceTypesTest extends TekvLSTest {
 
     TekvLSGetAllDeviceTypes getAllDeviceTypesApi;
-    private String id = "EMPTY";
 
     @BeforeEach
     public void setup() {

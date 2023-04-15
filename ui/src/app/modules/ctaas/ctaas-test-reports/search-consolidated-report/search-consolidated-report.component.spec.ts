@@ -46,9 +46,8 @@ describe('UI test if search consolidated date Component', () => {
 
 describe('modal actions', () => {
     beforeEach(beforeEachFunction);
-    it('should make a call to consolidatedReport also open and close the modal', () => {
+    it('should make a call to consolidatedReport in a new tab', () => {
         spyOn(window, 'open').and.returnValue(null);
-        spyOn(window, 'close').and.returnValue(null);
         spyOn(consolidatedDateInstance.dialogRef, 'close').and.callThrough();
         spyOn(consolidatedDateInstance, 'consolidatedReport').and.callThrough();
 
@@ -57,7 +56,6 @@ describe('modal actions', () => {
 
         expect(consolidatedDateInstance.dialogRef.close).toHaveBeenCalled();
         expect(window.open).toHaveBeenCalled();
-        expect(window.close).toHaveBeenCalled();
     });
 
     it('should make a call to toggleDateValue and set start date and min end date', () => {

@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import ui.core.AbstractPageObject;
 import ui.core.DriverManager;
+import ui.pages.Modal;
 import ui.utils.Environment;
 
 public class AdminstratorEmails extends AbstractPageObject {
@@ -31,6 +32,8 @@ public class AdminstratorEmails extends AbstractPageObject {
     public String deleteAdministrator(String adminEmail){
         By deleteButton = By.xpath(String.format("//div[@title='%s']/descendant::button[@id='clearButton']", DriverManager.getInstance().addTimeStampToEmail(adminEmail)));
         this.action.click(deleteButton);
+        Modal confirmModal = new Modal();
+        confirmModal.confirmAction();
         return this.action.getText(this.messageSelector);
     }
 }

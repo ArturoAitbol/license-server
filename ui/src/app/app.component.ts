@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { Subject } from 'rxjs/internal/Subject';
@@ -31,14 +31,16 @@ import { SnackBarService } from './services/snack-bar.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly _destroying$ = new Subject<void>();
     @ViewChild('snav') snav;
+    @ViewChild('snav_container') snavContainer;
     mobileQuery: MediaQueryList;
     title = 'license-server';
     currentUser = false;
     userData: any;
     userProfileData: any;
+    callbackEnabled = false;
     // added as part of spotlight feature
     hideToolbar = false;
     tabName: string = Constants.TEK_TOKEN_TOOL_BAR;
@@ -242,6 +244,13 @@ export class AppComponent implements OnInit, OnDestroy {
         appInsights.trackPageView();
     }
 
+    ngAfterViewInit() {
+        // Workaround to fix content being overlapped by sidenav, this is caused by the embedded power bi apparently
+        setTimeout(() => {
+            this.snavContainer.updateContentMargins();
+        }, 800);
+    }
+
     private retrieveSubaccountDetails() {
         this.subaccountService.getSubAccountDetails(this.subaccountId).subscribe((subaccountsResp: any) => {
             let selectedSubAccount = subaccountsResp.subaccounts[0];
@@ -368,6 +377,9 @@ export class AppComponent implements OnInit, OnDestroy {
             this.currentUser = true;
             this.autoLogoutService.restartTimer();
         });
+        if (this.featureToggleService.isFeatureEnabled('callback')) {
+            this.callbackEnabled = true;
+        }
     }
 
     /**
@@ -379,8 +391,7 @@ export class AppComponent implements OnInit, OnDestroy {
             const { roles } = accountDetails.idTokenClaims;
             // check for Power Bi feature toggle, if enabled then only we can see the Power Bi Visuals tab on the side bar
             const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = this.featureToggleService.isFeatureEnabled("powerbiFeature", this.subaccountId) ?
-                this.fullSideBarItems.spotlight :
-                this.fullSideBarItems.spotlight.filter((e: ISidebar) => e.path !== 'visualization');
+                this.fullSideBarItems.spotlight : this.fullSideBarItems.spotlight.filter((e: ISidebar) => e.path !== 'visualization');
             this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST));
             this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main));
         } catch (e) {
@@ -454,20 +465,20 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    async callBack(){
+    async requestCallback(){
         await this.fetchUserProfileDetails();
         if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
             && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
-                this.makeCallback();
+                this.confirmCallbackRequest();
         } else {
             this.showDialogsForSpecificRole();
         }
     }
 
-    makeCallback(){
+    private confirmCallbackRequest() {
         this.dialogService.confirmDialog({
-            title: 'Confirm Call',
-            message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
+          title: 'Confirm call request',
+            message: 'A support engineer will be requested to call you if you continue performing this action, do you want to continue?',
             confirmCaption: 'Confirm',
             cancelCaption: 'Cancel',
         }).subscribe((confirmed) => {

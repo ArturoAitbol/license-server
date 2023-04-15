@@ -561,47 +561,6 @@
 			"response": []
 		},
 		{
-			"name": "notes",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"id\");\r",
-							"    pm.expect(pm.response.json().id).to.be.a(\"string\")\r",
-							"});\r",
-							"pm.collectionVariables.set(\"noteId\", pm.response.json().id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"subaccountId\": \"{{subaccountId}}\",\r\n    \"content\": \"note content Test\",\r\n    \"reports\": [{\"timestampId\":\"20220102000000\",\"reportType\":\"Daily-FeatureFunctionality\"},\r\n                {\"timestampId\":\"20220102000001\",\"reportType\":\"Daily-CallingReliability\"},\r\n                {\"timestampId\":\"20220102000002\",\"reportType\":\"Daily-VQ\"}\r\n                ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{HOST}}/notes",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"notes"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "projects",
 			"event": [
 				{
@@ -1411,43 +1370,6 @@
 					],
 					"path": [
 						"licenseUsageDetails"
-					],
-					"query": [
-						{
-							"key": "subaccountId",
-							"value": "{{subaccountId}}"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "notes",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response body test\", function () {\r",
-							"    pm.response.to.have.jsonBody(\"notes\");\r",
-							"    pm.expect(pm.response.json().notes).to.be.an(\"array\")\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/notes?subaccountId={{subaccountId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"notes"
 					],
 					"query": [
 						{

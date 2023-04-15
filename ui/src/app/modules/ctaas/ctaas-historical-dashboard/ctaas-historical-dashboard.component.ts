@@ -1,9 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { forkJoin, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ReportType } from 'src/app/helpers/report-type';
-import { IDashboardImageResponse } from 'src/app/model/dashboard-image-response.model';
+import { IDashboardImageResponse, IImage } from 'src/app/model/dashboard-image-response.model';
 import { Note } from 'src/app/model/note.model';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -46,8 +46,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        if (this.note?.reports != null) {
-            this.reports = this.note.reports;
+        if (this.note!= null) {
             this.fontStyleControl.setValue(this.DAILY);
             this.subaccountDetails = this.subaccountService.getSelectedSubAccount();
             this.subaccountId = this.subaccountDetails.id;
@@ -72,44 +71,32 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
         this.isLoadingResults = true;
         this.resultantImagesList = this.resultantImagesListBk = [];
         const requests: Observable<any>[] = [];
-        // iterate through dashboard reports
-        for (const report of this.reports) {
-            requests.push(this.ctaasDashboardService.getCtaasDashboardDetails(this.subaccountId, report.reportType, report.timestampId));
-        }
-        // get all the request response in an array
-        forkJoin([...requests]).subscribe((res: [{ response?: { lastUpdatedTS: string, imageBase64: string }, error?: string }]) => {
-            if (res) {
-                // get all response without any error messages
-                const result: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string, startDateStr: string, endDateStr: string }[] = [...res]
-                    .filter((e: any) => !e.error)
-                    .map((e: { response: { lastUpdatedTS: string, imageBase64: string, reportType: string, timestampId: string, startDateStr: string, endDateStr: string } }) => e.response);
-                this.isLoadingResults = false;
-                if (result.length > 0) {
-                    this.hasDashboardDetails = true;
-                    const resultant = { daily: [], weekly: [], lastUpdatedDateList: [] };
-                    result.forEach((e) => {
-                        if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                            resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType), startDate: e.startDateStr, endDate: e.endDateStr });
-                            resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
-                        } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
-                            resultant.weekly.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
-                            resultant.lastUpdatedDateList.push(e.lastUpdatedTS);
-                        }
-                    });
-                    const { daily, weekly, lastUpdatedDateList } = resultant;
-                    this.lastModifiedDate = lastUpdatedDateList[0];
-                    if (daily.length > 0)
-                        this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.DAILY, imagesList: daily });
-                    if (weekly.length > 0)
-                        this.resultantImagesList.push({ lastUpdatedTS: lastUpdatedDateList[0], reportType: this.WEEKLY, imagesList: weekly });
-                    this.resultantImagesListBk = [...this.resultantImagesList];
-                    if (this.resultantImagesListBk.length > 0) {
-                        this.onChangeButtonToggle();
+
+        this.ctaasDashboardService.getCtaasHistoricalDashboardDetails(this.subaccountId,this.note.id).subscribe((res: { response: IImage[]} ) => {
+            this.isLoadingResults = false;
+            const result: IImage[] = res.response;
+            if (result.length > 0) {
+                this.hasDashboardDetails = true;
+                const resultant = { daily: [], weekly: [] };
+                result.forEach((e) => {
+                    if (e.reportType.toLowerCase().includes(this.DAILY)) {
+                        resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType), startDate: e.startDateStr, endDate: e.endDateStr });
+                    } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
+                        resultant.weekly.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
                     }
+                });
+                const { daily, weekly } = resultant;
+                if (daily.length > 0)
+                    this.resultantImagesList.push({ reportType: this.DAILY, imagesList: daily });
+                if (weekly.length > 0)
+                    this.resultantImagesList.push({ reportType: this.WEEKLY, imagesList: weekly });
+                this.resultantImagesListBk = [...this.resultantImagesList];
+                if (this.resultantImagesListBk.length > 0) {
+                    this.onChangeButtonToggle();
                 }
-                this.hasDashboardDetails = this.checkForDashboardDetails();
             }
-        }, (e) => {
+            this.hasDashboardDetails = this.checkForDashboardDetails();
+        },(e)=>{
             this.resultantImagesList = this.resultantImagesListBk = [];
             this.hasDashboardDetails = this.checkForDashboardDetails();
             this.isLoadingResults = false;
@@ -156,8 +143,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
         const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
-        const url = `${environment.BASE_URL}/#/spotlight/details?subaccount=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
+        const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
-        window.close();
     }
 }
