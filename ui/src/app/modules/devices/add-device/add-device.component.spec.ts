@@ -170,16 +170,13 @@ describe('Calls and interactions', () => {
   });
 
   it('should call onStartDateChange', () => {
-    const actualDate = new Date()
     fixture.detectChanges();
-    actualDate.setDate(actualDate.getDate());
     spyOn(addDeviceComponentTestInstance, 'onStartDateChange').and.callThrough();
     
     fixture.detectChanges();
     
-    addDeviceComponentTestInstance.onStartDateChange(actualDate);
-    actualDate.setDate(actualDate.getDate() + 1);
-    expect(addDeviceComponentTestInstance.deprecatedDateMin).toEqual(actualDate);
+    addDeviceComponentTestInstance.onStartDateChange('2023-01-06 00:00:00');
+    expect(addDeviceComponentTestInstance.deprecatedDateMin).toEqual(new Date('2023-01-07 00:00:00'));
     
   });
 
@@ -189,9 +186,7 @@ describe('Calls and interactions', () => {
 
     fixture.detectChanges();
 
-    addDeviceComponentTestInstance.onRenewalDateChange(moment());
-    const actualDate = new Date();
-    actualDate.setDate(actualDate.getDate() - 1);
-    expect(addDeviceComponentTestInstance.startDateMax).toEqual(actualDate);
+    addDeviceComponentTestInstance.onRenewalDateChange('2023-01-06 00:00:00');
+    expect(addDeviceComponentTestInstance.startDateMax).toEqual(new Date('2023-01-05 00:00:00'));
   });
 });
