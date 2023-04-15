@@ -196,7 +196,7 @@ export class CtaasStakeholderComponent implements OnInit {
         break;
       case this.CALLBACK: 
         if(data.name && data.companyName && data.phoneNumber && data.jobTitle) {
-          this.makeCallback(data);
+          this.confirmCallbackRequest(data);
         } else {
           this.openDialogForSpecificRole(dialogRef, data);
         }
@@ -249,9 +249,9 @@ export class CtaasStakeholderComponent implements OnInit {
     }
   }
 
-  makeCallback(data:any) {
+  private confirmCallbackRequest(data:any) {
     this.dialogService.confirmDialog({
-      title: 'Confirm Call',
+      title: 'Confirm call request',
       message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
       confirmCaption: 'Confirm',
       cancelCaption: 'Cancel',

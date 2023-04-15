@@ -127,7 +127,7 @@
                     <mat-icon aria-hidden="false" aria-label="person icon">person</mat-icon>
                     <span>Profile</span>
                 </button>
-                <button *ngIf="featureToggleActive"  mat-menu-item (click)="callback()" id="help-button">
+                <button *ngIf="callbackEnabled" mat-menu-item (click)="requestCallback()" id="help-button">
                     <mat-icon aria-hidden="false" aria-label="help">help</mat-icon>
                     <span>Help</span>
                 </button>
