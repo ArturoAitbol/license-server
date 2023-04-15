@@ -134,7 +134,8 @@ export const MsalServiceMock = {
                 }
             };
         }
-    }
+    },
+    logout: ()=>{}
 };
 
 
