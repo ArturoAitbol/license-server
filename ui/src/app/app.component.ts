@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { Subject } from 'rxjs/internal/Subject';
@@ -31,9 +31,10 @@ import { SnackBarService } from './services/snack-bar.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private readonly _destroying$ = new Subject<void>();
     @ViewChild('snav') snav;
+    @ViewChild('snav_container') snavContainer;
     mobileQuery: MediaQueryList;
     title = 'license-server';
     currentUser = false;
@@ -241,6 +242,13 @@ export class AppComponent implements OnInit, OnDestroy {
         });
         appInsights.loadAppInsights();
         appInsights.trackPageView();
+    }
+
+    ngAfterViewInit() {
+        // Workaround to fix content being overlapped by sidenav, this is caused by the embedded power bi apparently
+        setTimeout(() => {
+            this.snavContainer.updateContentMargins();
+        }, 800);
     }
 
     private retrieveSubaccountDetails() {

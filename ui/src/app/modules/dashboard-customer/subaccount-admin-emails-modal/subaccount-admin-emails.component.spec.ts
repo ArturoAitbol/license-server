@@ -165,6 +165,7 @@ describe('UnitTest', () => {
         it('should throw a null response while delating a email', () => {
             const res = null;
             spyOn(SubaccountAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
+            dialogServiceMock.setExpectedConfirmDialogValue(true);
             fixture.detectChanges();
             subaccountModalComponentInstance.deleteExistingEmail(3);
             expect(SubaccountAdminEmailServiceMock.deleteAdminEmail).toHaveBeenCalled();
