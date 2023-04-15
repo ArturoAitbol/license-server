@@ -1382,6 +1382,43 @@
 			"response": []
 		},
 		{
+			"name": "notes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body test\", function () {\r",
+							"    pm.response.to.have.jsonBody(\"notes\");\r",
+							"    pm.expect(pm.response.json().notes).to.be.an(\"array\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/notes?subaccountId={{subaccountId}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"notes"
+					],
+					"query": [
+						{
+							"key": "subaccountId",
+							"value": "{{subaccountId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "projects",
 			"event": [
 				{
@@ -1843,24 +1880,6 @@
 					"path": [
 						"consumptionMatrix",
 						"{{consumptionMatrixId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "notes",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{HOST}}/notes/{{noteId}}",
-					"host": [
-						"{{HOST}}"
-					],
-					"path": [
-						"notes",
-						"{{noteId}}"
 					]
 				}
 			},
