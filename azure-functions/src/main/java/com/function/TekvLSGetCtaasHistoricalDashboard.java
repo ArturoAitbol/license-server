@@ -30,7 +30,7 @@ public class TekvLSGetCtaasHistoricalDashboard {
             @HttpTrigger(
                     name = "req",
                     methods = {HttpMethod.GET, HttpMethod.POST},
-                    authLevel = AuthorizationLevel.FUNCTION,
+                    authLevel = AuthorizationLevel.ANONYMOUS,
                     route = "ctassHistoricalDashboard/{subaccountId=EMPTY}/{noteId=EMPTY}")
             HttpRequestMessage<Optional<String>> request,
             @BindingName("subaccountId") String subaccountId,
