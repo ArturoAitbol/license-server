@@ -15,6 +15,7 @@ import { Constants } from 'src/app/helpers/constants';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { ViewProfileComponent } from 'src/app/generics/view-profile/view-profile.component';
 import { CallbackService } from 'src/app/services/callback.service';
+import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 @Component({
   selector: 'app-ctaas-stakeholder',
   templateUrl: './ctaas-stakeholder.component.html',
@@ -49,7 +50,8 @@ export class CtaasStakeholderComponent implements OnInit {
     private dialogService: DialogService,
     private callbackService: CallbackService,
     private stakeholderService: StakeHolderService,
-    private subaccountService: SubAccountService
+    private subaccountService: SubAccountService,
+    private featureToggleService: FeatureToggleService
   ) { }
   /**
    * calculate table height based on the window height
@@ -73,6 +75,7 @@ export class CtaasStakeholderComponent implements OnInit {
       { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
       { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
       { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
+      { name: 'Role', dataKey: 'role', position:'left', isSortable:true}
     ];
   }
   /**
@@ -80,7 +83,11 @@ export class CtaasStakeholderComponent implements OnInit {
    */
   private getActionMenuOptions() {
     const roles: string[] = this.msalService.instance.getActiveAccount().idTokenClaims["roles"];
-    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions")
+    this.actionMenuOptions = Utility.getTableOptions(roles, this.options, "stakeholderOptions");
+    if(!this.featureToggleService.isFeatureEnabled('callback')) {
+      const filteredControls = this.actionMenuOptions.filter(control => control !== 'Request Call to this Account');
+      this.actionMenuOptions = filteredControls;
+    }
   }
   /**
    * fetch stakeholder data
@@ -97,6 +104,8 @@ export class CtaasStakeholderComponent implements OnInit {
             stakeHolders.forEach((x: IStakeholder) => {
               if (x.notifications) {
                 const reports = this.getReports();
+                const role = x.role.split('.')[1];
+                x.role = role;
                 if (x.notifications.includes(',')) {
                   const splittingData = x.notifications.split(',');
                   if (splittingData[0].includes('TYPE:')) {
@@ -126,7 +135,6 @@ export class CtaasStakeholderComponent implements OnInit {
         const { stakeHolders } = response;
         if (stakeHolders) {
           this.stakeholdersDataBk = this.stakeholdersData = stakeHolders;
-          this.onChangeToggle(this.toggleStatus);
         }
       }, (error) => {
         this.snackBarService.openSnackBar(error, 'Error while loading stake holders');
@@ -188,7 +196,7 @@ export class CtaasStakeholderComponent implements OnInit {
         break;
       case this.CALLBACK: 
         if(data.name && data.companyName && data.phoneNumber && data.jobTitle) {
-          this.makeCallback(data);
+          this.confirmCallbackRequest(data);
         } else {
           this.openDialogForSpecificRole(dialogRef, data);
         }
@@ -241,9 +249,9 @@ export class CtaasStakeholderComponent implements OnInit {
     }
   }
 
-  makeCallback(data:any) {
+  private confirmCallbackRequest(data:any) {
     this.dialogService.confirmDialog({
-      title: 'Confirm Call',
+      title: 'Confirm call request',
       message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
       confirmCaption: 'Confirm',
       cancelCaption: 'Cancel',
@@ -323,19 +331,6 @@ export class CtaasStakeholderComponent implements OnInit {
       { label: "Weekly Reports", value: Report.WEEKLY_REPORTS },
       { label: "Monthly Summaries", value: Report.MONTHLY_REPORTS }
     ];
-  }
-  /**
-   * get when slide toggle state is changed
-   * @param e: boolean 
-   */
-  onChangeToggle(flag: boolean): void {
-    this.toggleStatus = flag;
-    if (flag) {
-      this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_ADMIN);
-    } else {
-      this.stakeholdersData = this.stakeholdersDataBk.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER);
-
-    }
   }
 
   private countStakeholders(stakholdersList: IStakeholder[]): number {

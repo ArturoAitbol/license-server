@@ -188,7 +188,18 @@ f2b57afb-c389-48ec-a54b-7d8a05a51f32	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	app de
 be612704-c26e-48ea-ab9b-19312f03d644	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	note 1	Open	2022-10-03 04:00:00	opener@email.com	\N	\N
 \.
 
+--
+-- Data for Name: historical_report; Type: TABLE DATA; Schema: public; Owner: -
+--
 
+COPY public.historical_report (id, subaccount_id, note_id, report_type, start_date, end_date, image) FROM stdin;
+4c027686-5951-43fb-a96b-9d9ccdcbfa52	2c8e386b-d1bd-48b3-b73a-12bfa5d00805	be612704-c26e-48ea-ab9b-19312f03d644	Daily-FeatureFunctionality	230410223122	230410223122	\\x00
+4c017683-5951-43ae-c45b-9f4ccfcbfa64	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	2bdaf2af-838f-4053-b3fa-ef22aaa10b0d	Daily-FeatureFunctionality	230410223122	230410223122	\\x00
+\.
+
+--
+-- Data for Name: device; Type: TABLE DATA; Schema: public; Owner: -
+--
 COPY public.device (id, vendor, product, version, type, granularity, tokens_to_consume, start_date, deprecated_date, subaccount_id, support_type) FROM stdin;
 7564aab0-5331-4ab5-85f7-e37acbdfd90d	Test	Poly VVX 500	1.0	Device/Phone/ATA	static	5	2022-06-17 15:42:48.550405	infinity	\N	f
 be612704-c26e-48ea-ab9b-19312f03d644	Test	Cisco Webex  Windows Client	1.0	Soft Client/UC Client	static	15	2022-06-17 15:42:48.550405	infinity	\N	f
@@ -211,6 +222,7 @@ COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 34859fba-9987-4a1c-b176-14569b331653	f	pfernandez@tekvizionlabs.com	Subaccount User Creation For License Service	ad-license-service-user-creation
 6826a94e-c4da-46e9-8001-668df24877ec	f	ogonzalez@tekvizionlabs.com	Subaccount User Creation	ad-subaccount-user-creation
 950f47c7-a477-455b-b65b-331ecacc88dd	f	ogonzalez@tekvizionlabs.com	Customer User Creation	ad-customer-user-creation
+74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb	t	vtorrico@tekvizionlabs.com	Portal Callback	callback
 3c9d0d97-7878-4f1f-8ca5-18bf93069691	t	\N	Power Bi feature	powerbiFeature
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
 63f1d301-2d99-448a-9334-5dd10fe98c24	t	\N	Ctaas features	ctaasFeature

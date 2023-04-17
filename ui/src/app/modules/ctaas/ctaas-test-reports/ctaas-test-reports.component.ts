@@ -13,6 +13,7 @@ import { BannerService } from "../../../services/alert-banner.service";
 import { MatDialog } from '@angular/material/dialog';
 import { SearchConsolidatedReportComponent } from './search-consolidated-report/search-consolidated-report.component';
 import { ReportType } from 'src/app/helpers/report-type';
+import { Constants } from 'src/app/helpers/constants';
 
 @Component({
   selector: 'app-ctaas-test-reports',
@@ -144,10 +145,7 @@ export class CtaasTestReportsComponent implements OnInit {
         else 
           this.tapURLFlag = 'withoutTapURL';
         if (res.ctaasSetups[0].maintenance) {
-          this.bannerService.open("ALERT",
-              'The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. ' +
-              'However, users can still view historical reports on the dashboard. ' +
-              'Please note that during this maintenance period, adding new notes and test reports is not available.', this.unsubscribe);
+          this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.unsubscribe);
           this.maintenanceModeEnabled = true;
         }
       } else {
@@ -173,7 +171,6 @@ export class CtaasTestReportsComponent implements OnInit {
     const featureParsedEndTime = Utility.parseReportDate(new Date(endDate));
     const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${todayDetails.todayReportType}&start=${featureParsedStartTime}&end=${featureParsedEndTime}`;
     window.open(featureUrl);
-    window.close();
   }
 
   searchConsolidatedReport() {
@@ -195,7 +192,6 @@ export class CtaasTestReportsComponent implements OnInit {
     const endTime = Utility.parseReportDate(new Date(endDate));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
     window.open(url);
-    window.close();
 }
 
   rowAction(object: { selectedRow: any, selectedOption: string, selectedIndex: string }) {
