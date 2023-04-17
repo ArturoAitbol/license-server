@@ -167,7 +167,7 @@ button {
 }
 
 ::ng-deep .mat-sidenav {
-  max-width: 100px !important;
+  width: 100px !important;
 }
 
 app-alert-banner-outlet {

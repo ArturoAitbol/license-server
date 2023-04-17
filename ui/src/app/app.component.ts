@@ -31,7 +31,7 @@ import { SnackBarService } from './services/snack-bar.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AppComponent implements OnInit, OnDestroy {
     private readonly _destroying$ = new Subject<void>();
     @ViewChild('snav') snav;
     @ViewChild('snav_container') snavContainer;
@@ -244,12 +244,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         appInsights.trackPageView();
     }
 
-    ngAfterViewInit() {
-        // Workaround to fix content being overlapped by sidenav, this is caused by the embedded power bi apparently
-        setTimeout(() => {
-            this.snavContainer.updateContentMargins();
-        }, 800);
-    }
 
     private retrieveSubaccountDetails() {
         this.subaccountService.getSubAccountDetails(this.subaccountId).subscribe((subaccountsResp: any) => {
