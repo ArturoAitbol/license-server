@@ -485,14 +485,14 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
             if(confirmed){
                 this.callbackService.createCallback(this.userProfileData.userProfile).subscribe((res:any) => {
                     if(!res.error){
-                        this.snackBarService.openSnackBar('Callback has been made!', '');
+                        this.snackBarService.openSnackBar('Call request has been made!', '');
                         this.dialogService.acceptDialog({
                             title: 'Done!',
                             message: 'A support engineer will contact you as soon as possible, thank you for your patience.',
                             confirmCaption: 'Ok',
                         });
                     } else {
-                        this.snackBarService.openSnackBar('Error making callback!', '');
+                        this.snackBarService.openSnackBar('Error requesting call!', '');
                     }
                 });
             }
