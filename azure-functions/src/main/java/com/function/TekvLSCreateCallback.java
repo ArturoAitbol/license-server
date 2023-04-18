@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -71,13 +72,13 @@ public class TekvLSCreateCallback {
 			}
         }
         try {
-            String pagerDutyMessage = "User callback data: ";
-            pagerDutyMessage += "Name = " + jobj.getString("name");
-            pagerDutyMessage += ", Phone Number = " + jobj.getString("phoneNumber");
-            pagerDutyMessage += ", Email Address = " + jobj.getString("email");
-            pagerDutyMessage += ", Company Name = " + jobj.getString("companyName");
+            String pagerDutyMessage = "User callback data:  >>> " + new Date().toString();
+            pagerDutyMessage += " | Name = " + jobj.getString("name");
+            pagerDutyMessage += " | Phone Number = " + jobj.getString("phoneNumber");
+            pagerDutyMessage += " | Email Address = " + jobj.getString("email");
+            pagerDutyMessage += " | Company Name = " + jobj.getString("companyName");
             if (jobj.has("jobTitle"))
-                pagerDutyMessage += ", Job Title = " + jobj.getString("jobTitle");
+                pagerDutyMessage += " | Job Title = " + jobj.getString("jobTitle");
             context.getLogger().info(pagerDutyMessage);
             return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
         } catch (Exception e) {
