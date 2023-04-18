@@ -39,6 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
     title = 'license-server';
     currentUser = false;
     userData: any;
+    isLoading:boolean = false;
     userProfileData: any;
     callbackEnabled = false;
     // added as part of spotlight feature
@@ -102,6 +103,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 baseUrl: '/spotlight/',
                 isPreview: false
             },
+            {
+                name: 'Request Call',
+                iconName: "assets\\images\\request-call.png",
+                element: 'request-call',
+                active: false,
+                materialIcon: 'phone_callback',
+                isPreview: false
+            }
 
         ],
         main: [
@@ -371,9 +380,6 @@ export class AppComponent implements OnInit, OnDestroy {
             this.currentUser = true;
             this.autoLogoutService.restartTimer();
         });
-        if (this.featureToggleService.isFeatureEnabled('callback')) {
-            this.callbackEnabled = true;
-        }
     }
 
     /**
@@ -382,10 +388,31 @@ export class AppComponent implements OnInit, OnDestroy {
     initializeSideBarItems(): void {
         try {
             const accountDetails = this.getAccountDetails();
-            const { roles } = accountDetails.idTokenClaims;
-            // check for Power Bi feature toggle, if enabled then only we can see the Power Bi Visuals tab on the side bar
-            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = this.featureToggleService.isFeatureEnabled("powerbiFeature", this.subaccountId) ?
-                this.fullSideBarItems.spotlight : this.fullSideBarItems.spotlight.filter((e: ISidebar) => e.path !== 'visualization');
+            const { roles } = accountDetails.idTokenClaims; 
+            // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
+            let featureToggleProtectedItems = [
+                {
+                    toggleName:"powerbiFeature",
+                    subaccountId:this.subaccountId,
+                    item:"visualization"
+                },
+                {
+                    toggleName:"callback",
+                    subaccountId:null,
+                    item:"request-call"
+                }
+            ]
+
+            let disabledItems:any[]=[];
+            featureToggleProtectedItems.forEach(featureToggle => {
+                if(!this.featureToggleService.isFeatureEnabled(featureToggle.toggleName, featureToggle.subaccountId)){
+                    disabledItems.push(featureToggle.item);
+                }
+            });
+
+            const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = disabledItems.length===0 ? this.fullSideBarItems.spotlight 
+                                             : this.fullSideBarItems.spotlight.filter((e: ISidebar) => !disabledItems.includes(e.path || e.element));
+
             this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST));
             this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main));
         } catch (e) {
@@ -460,7 +487,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     async requestCallback(){
+        this.isLoading = true;
         await this.fetchUserProfileDetails();
+        this.isLoading = false;
         if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
             && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
                 this.confirmCallbackRequest();
@@ -513,11 +542,29 @@ export class AppComponent implements OnInit, OnDestroy {
      * mark the selected nav item here as active to apply styles
      * @param item: any 
      */
-    onSelectedNavItem(item: any): void {
-        const { baseUrl, path } = item;
-        const componentRoute = baseUrl + path;
-        this.router.navigate([componentRoute], { queryParams: { subaccountId: this.subaccountId } });
+    onSelectedNavItem(item: ISidebar): void {
+        if(item.element){
+            this.performAction(item.element); 
+        }else{
+            const { baseUrl, path } = item;
+            const componentRoute = baseUrl + path;
+            this.router.navigate([componentRoute], { queryParams: { subaccountId: this.subaccountId } });
+        }
         if (this.mobileQuery.matches) this.snav.toggle();
+    }
+
+    /**
+     * perform a given action base on the input
+     * @param action: string 
+     */
+    performAction(action: string){
+        switch (action) {
+            case 'request-call':
+                this.requestCallback();
+                break;
+            default:
+                break;
+        }
     }
 
     /**
