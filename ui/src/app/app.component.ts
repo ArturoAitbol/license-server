@@ -51,7 +51,6 @@ export class AppComponent implements OnInit, OnDestroy {
         spotlight: [
             {
                 name: 'Dashboard',
-                iconName: "assets\\images\\analytics.png",
                 path: 'visualization',
                 active: false,
                 materialIcon: 'analytics',
@@ -60,7 +59,6 @@ export class AppComponent implements OnInit, OnDestroy {
             },
             {
                 name: 'Notes',
-                iconName: "assets\\images\\note.png",
                 path: 'notes',
                 active: false,
                 materialIcon: 'description',
@@ -69,7 +67,6 @@ export class AppComponent implements OnInit, OnDestroy {
             },
             {
                 name: 'Test Suites',
-                iconName: "assets\\images\\project_3.png",
                 path: 'test-suites',
                 active: false,
                 materialIcon: 'folder_open',
@@ -78,7 +75,6 @@ export class AppComponent implements OnInit, OnDestroy {
             },
             {
                 name: 'Stakeholders',
-                iconName: "assets\\images\\multiple-users.png",
                 path: 'stakeholders',
                 active: false,
                 materialIcon: 'groups',
@@ -87,7 +83,6 @@ export class AppComponent implements OnInit, OnDestroy {
             },
             {
                 name: 'Test Reports',
-                iconName: "assets\\images\\project_3.png",
                 path: 'reports',
                 active: false,
                 materialIcon: 'folder_copy',
@@ -96,7 +91,6 @@ export class AppComponent implements OnInit, OnDestroy {
             },
             {
                 name: 'Configuration',
-                iconName: "assets\\images\\tune.png",
                 path: 'setup',
                 active: false,
                 materialIcon: 'tune',
@@ -105,7 +99,6 @@ export class AppComponent implements OnInit, OnDestroy {
             },
             {
                 name: 'Request Call',
-                iconName: "assets\\images\\request-call.png",
                 element: 'request-call',
                 active: false,
                 materialIcon: 'phone_callback',
@@ -116,7 +109,6 @@ export class AppComponent implements OnInit, OnDestroy {
         main: [
             {
                 name: 'Home',
-                iconName: "assets\\images\\dashboard_3.png",
                 path: 'dashboard',
                 active: true,
                 materialIcon: 'home',
@@ -125,7 +117,6 @@ export class AppComponent implements OnInit, OnDestroy {
             },
             {
                 name: 'Subscriptions',
-                iconName: "assets\\images\\dashboard_3.png",
                 path: 'subscriptions-overview',
                 active: false,
                 materialIcon: 'event_repeat',
@@ -135,7 +126,6 @@ export class AppComponent implements OnInit, OnDestroy {
             {
 
                 name: 'Devices',
-                iconName: "assets\\images\\dashboard_3.png",
                 path: 'devices',
                 active: false,
                 materialIcon: 'devices',
@@ -167,7 +157,6 @@ export class AppComponent implements OnInit, OnDestroy {
     displayedSideBarItems: any[] = [
         {
             name: 'Dashboard',
-            iconName: "assets\\images\\dashboard_3.png",
             path: 'report-dashboards',
             active: true,
             materialIcon: 'dashboard'
