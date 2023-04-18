@@ -31,7 +31,7 @@ import { SnackBarService } from './services/snack-bar.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AppComponent implements OnInit, OnDestroy {
     private readonly _destroying$ = new Subject<void>();
     @ViewChild('snav') snav;
     @ViewChild('snav_container') snavContainer;
@@ -244,12 +244,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         appInsights.trackPageView();
     }
 
-    ngAfterViewInit() {
-        // Workaround to fix content being overlapped by sidenav, this is caused by the embedded power bi apparently
-        setTimeout(() => {
-            this.snavContainer.updateContentMargins();
-        }, 800);
-    }
 
     private retrieveSubaccountDetails() {
         this.subaccountService.getSubAccountDetails(this.subaccountId).subscribe((subaccountsResp: any) => {
@@ -485,14 +479,14 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
             if(confirmed){
                 this.callbackService.createCallback(this.userProfileData.userProfile).subscribe((res:any) => {
                     if(!res.error){
-                        this.snackBarService.openSnackBar('Callback has been made!', '');
+                        this.snackBarService.openSnackBar('Call request has been made!', '');
                         this.dialogService.acceptDialog({
                             title: 'Done!',
                             message: 'A support engineer will contact you as soon as possible, thank you for your patience.',
                             confirmCaption: 'Ok',
                         });
                     } else {
-                        this.snackBarService.openSnackBar('Error making callback!', '');
+                        this.snackBarService.openSnackBar('Error requesting call!', '');
                     }
                 });
             }
