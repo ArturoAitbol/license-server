@@ -58,6 +58,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 isPreview: false
             },
             {
+                name: 'New Dashboard POC',
+                path: 'dashboard-poc',
+                active: false,
+                materialIcon: 'analytics',
+                baseUrl: '/spotlight/',
+                isPreview: false
+            },
+            {
                 name: 'Notes',
                 path: 'notes',
                 active: false,
@@ -173,9 +181,10 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
     readonly SPOTLIGHT_NOTES_PATH: string = '/spotlight/notes';
-    readonly SPOTLIGHT_TEST_REPORTS: string = '/spotlight/reports'
+    readonly SPOTLIGHT_TEST_REPORTS: string = '/spotlight/reports';
     readonly MAIN_DASHBOARD = '/dashboard';
     readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
+    readonly DASHBOARD_POC_ROUTE_PATH = '/spotlight/dashboard-poc';
     private subaccountId: any;
     readonly DEVICES = '/devices';
     readonly CONSUMPTION_MATRIX = '/consumption-matrix';
@@ -285,6 +294,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.CTAAS_SETUP_PATH:
                     case this.SPOTLIGHT_NOTES_PATH:
                     case this.SPOTLIGHT_TEST_REPORTS:
+                    case this.DASHBOARD_POC_ROUTE_PATH:
                         this.tabName = Constants.CTAAS_TOOL_BAR;
                         this.hideToolbar = false;
                         if (this.previousDisplayedItemsSubscription) {
@@ -401,7 +411,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
             const SPOTLIGHT_SIDEBAR_ITEMS_LIST: any[] = disabledItems.length===0 ? this.fullSideBarItems.spotlight 
                                              : this.fullSideBarItems.spotlight.filter((e: ISidebar) => !disabledItems.includes(e.path || e.element));
-
+            console.log(SPOTLIGHT_SIDEBAR_ITEMS_LIST);
             this.allowedSideBarItems.spotlight.next(Utility.getNavbarOptions(roles, SPOTLIGHT_SIDEBAR_ITEMS_LIST));
             this.allowedSideBarItems.main.next(Utility.getNavbarOptions(roles, this.fullSideBarItems.main));
         } catch (e) {

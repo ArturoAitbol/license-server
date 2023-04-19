@@ -1,0 +1,14 @@
+<app-banner *lcCheckAccessFor="'showBanner'"></app-banner>
+<div class="container-fluid">
+    <div class="flex-container">
+        <div class="col-6">
+        <apx-chart
+                [series]="chartOptions.series"
+                [chart]="chartOptions.chart"
+                [plotOptions]="chartOptions.plotOptions"
+                [labels]="chartOptions.labels"
+                [fill]="chartOptions.fill">
+        </apx-chart>
+        </div>
+    </div>
+</div>
