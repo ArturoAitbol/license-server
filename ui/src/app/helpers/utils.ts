@@ -1,4 +1,4 @@
-import { FocusKeyManager } from "@angular/cdk/a11y";
+import { ISidebar } from "../model/sidebar.model";
 import { permissions } from "./role-permissions";
 
 export class Utility {
@@ -115,12 +115,13 @@ export class Utility {
      * @param options: any[]
      * @return: any[]
      */
-    public static getNavbarOptions(roles: string[], options: any[]): any[] {
+    public static getNavbarOptions(roles: string[], options: ISidebar[]): any[] {
         //new Set([]) is used to avoid repeated options when a user has multiple roles
         const set = new Set([]);
         options.forEach((item) => {
             roles.forEach(accountRole => {
-                const found = permissions[accountRole]?.paths.find(path => path === item.path);
+                const found:boolean = item.element ? permissions[accountRole]?.elements.includes(item.element) 
+                                        : permissions[accountRole]?.paths.includes(item.path);
                 if (found)
                     set.add(item)
             });

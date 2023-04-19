@@ -1,3 +1,13 @@
-- Current data source for the reports is the Project_Report.xlsx excel file.
-  After checkout, the path to the excel file needs to be changed to reflect
-  the local path.
+PBRS reports:
+
+Version : V5
+Release Date: 17-04-2023
+
+Below naming reports are for Mobile dashboard and Email reports though PBRS
+
+Daily-CallingReliability
+Daily-FeatureFunctionality
+Daily-VQ
+Weekly-CallingReliability
+Weekly-FeatureFunctionality
+Weekly-VQ

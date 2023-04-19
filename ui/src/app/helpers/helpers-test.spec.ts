@@ -108,7 +108,6 @@ describe('table options', () => {
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions(['tekvizion.FullAdmin'], [{
             "name": "Dashboard",
-            "iconName": "assets\\images\\dashboard_3.png",
             "path": "report-dashboards",
             "active": true,
             "materialIcon": "dashboard"
@@ -120,7 +119,6 @@ describe('table options', () => {
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions([null], [{
             "name": "Dashboard",
-            "iconName": "assets\\images\\dashboard_3.png",
             "path": "report-dashboards",
             "active": true,
             "materialIcon": "dashboard"

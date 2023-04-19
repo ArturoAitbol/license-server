@@ -1,14 +1,15 @@
-Embedded Dashboard Report Version - V39
-Release Date - 12-04-2023
+Embedded Dashboard Report Version - V41
+Release Date - 17-04-2023
 Fixes - 
 
-Dashboard			Changes				Status	Remarks
-Daily				No Changes to POLQA Detail	Done	 
-Weekly			Change to no of calls		Done	 
-Weekly			Add # calls to tt			Done	 
-Weekly			Provide max for y axis		Done	 
-Sharepoint list	22 - Execution TP: MAX(ED,Today())	Done	Implement in textbox
-Sharepoint list	25 - Daily and weekly, CNQ		Done	Move graph header to top and filter and graph below
+Changes done:
+Daily and Weekly
+•	 All card blank should be "--"
+•	 View Detail and Overall Summary - Date consistent to mm-hh-yyyy hh:nn:ss
+•	 POLQA detail table to be filtered for only non-blank POLQA Values - Done.
+•	 Header icons to Slicer being shown - removed everywhere
+•	 Start date ascending for Overall Summary
+•	 Title fix for Daily and Weekly
 
 Changes need to do be done before publishing to Power BI Service Workspace:
 
