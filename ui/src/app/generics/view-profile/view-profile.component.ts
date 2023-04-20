@@ -1,9 +1,8 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Constants } from 'src/app/helpers/constants';
-import { Report } from 'src/app/helpers/report';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
 
@@ -26,6 +25,11 @@ export class ViewProfileComponent implements OnInit {
   isUpdatedClicked: boolean = false;
   missingDataFlag:boolean;
   selectedNotifications = new SelectionModel<INotification[]>(true, []);
+
+  CountryISO = CountryISO;
+  SearchCountryField = SearchCountryField;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries : CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
 
   constructor(private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<ViewProfileComponent>,
@@ -52,7 +56,7 @@ export class ViewProfileComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: ['', Validators.required],
       email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]]
+      phoneNumber: ['', Validators.required]
     });
   }
  
@@ -79,6 +83,7 @@ export class ViewProfileComponent implements OnInit {
       this.isUpdatedClicked = true;
       const requestPayload = { ...this.viewProfileForm.value };
       delete requestPayload.type;
+      requestPayload.phoneNumber = this.viewProfileForm.get('phoneNumber').value.e164Number;
       this.userProfileService.updateUserProfile(requestPayload)
       .toPromise()
       .then((response: any) => {

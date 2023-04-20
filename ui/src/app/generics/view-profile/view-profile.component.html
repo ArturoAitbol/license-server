@@ -14,12 +14,26 @@
                         <input matInput required formControlName="name">
                     </mat-form-field>
                 </div>
-                <!-- job title -->
+                <!-- phone number -->
                 <div>
-                    <mat-form-field appearance="outline">
-                        <mat-label id="job-title-label">Job Title</mat-label>
-                        <input matInput required formControlName="jobTitle">
-                    </mat-form-field>
+                    <ngx-intl-tel-input
+                    [cssClass]="'custom'"
+                    [preferredCountries]="preferredCountries"
+                    [enableAutoCountrySelect]="true"
+                    [enablePlaceholder]="true"
+                    [searchCountryFlag]="true"
+                    [searchCountryField]="[SearchCountryField.Iso2,SearchCountryField.Name]"
+                    [selectFirstCountry]="false"
+                    [selectedCountryISO]="CountryISO.UnitedStates"
+                    [maxLength]="15"
+                    [phoneValidation]="true"
+                    [separateDialCode]="false"
+                    [numberFormat]="PhoneNumberFormat.International"
+                    [inputId]="'phoneNumber'"
+                    required
+                    formControlName="phoneNumber"
+                    >
+                    </ngx-intl-tel-input>
                 </div>
                 <!-- email -->
                 <div>
@@ -28,18 +42,18 @@
                         <input disabled matInput required formControlName="email">
                     </mat-form-field>
                 </div>
-                <!-- company name -->
+                 <!-- company name -->
                 <div>
                     <mat-form-field appearance="outline">
                         <mat-label id="company-name-label">Company Name</mat-label>
                         <input matInput required formControlName="companyName">
                     </mat-form-field>
                 </div>
-                <!-- phone number -->
+                <!-- job title -->
                 <div>
                     <mat-form-field appearance="outline">
-                        <mat-label id="phone-number-label">Phone Number</mat-label>
-                        <input matInput required formControlName="phoneNumber">
+                        <mat-label id="job-title-label">Job Title</mat-label>
+                        <input matInput required formControlName="jobTitle">
                     </mat-form-field>
                 </div>
             </mat-dialog-content>

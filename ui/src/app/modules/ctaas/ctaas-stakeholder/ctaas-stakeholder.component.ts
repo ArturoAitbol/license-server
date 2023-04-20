@@ -71,10 +71,10 @@ export class CtaasStakeholderComponent implements OnInit {
   initColumns(): void {
     this.displayedColumns = [
       { name: 'User', dataKey: 'name', position: 'left', isSortable: true },
+      { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
+      { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
       { name: 'Company Name', dataKey: 'companyName', position: 'left', isSortable: true },
       { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
-      { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
-      { name: 'Phone Number', dataKey: 'phoneNumber', position: 'left', isSortable: true },
       { name: 'Role', dataKey: 'role', position:'left', isSortable:true}
     ];
   }

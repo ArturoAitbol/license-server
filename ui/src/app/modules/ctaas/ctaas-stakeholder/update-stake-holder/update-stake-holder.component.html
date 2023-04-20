@@ -13,9 +13,28 @@
                     </mat-form-field>
                 </div>
                 <div>
+                    <ngx-intl-tel-input
+                        [cssClass]="'custom'"
+                        [preferredCountries]="preferredCountries"
+                        [enableAutoCountrySelect]="true"
+                        [enablePlaceholder]="true"
+                        [searchCountryFlag]="true"
+                        [searchCountryField]="[SearchCountryField.Iso2,SearchCountryField.Name]"
+                        [selectFirstCountry]="false"
+                        [selectedCountryISO]="CountryISO.UnitedStates"
+                        [maxLength]="15"
+                        [phoneValidation]="true"
+                        [separateDialCode]="false"
+                        [numberFormat]="PhoneNumberFormat.International"
+                        [inputId]="'phoneNumber'"
+                        required
+                        formControlName="phoneNumber">
+                    </ngx-intl-tel-input>
+                </div>
+                <div>
                     <mat-form-field class="example-full-width" appearance="outline">
-                        <mat-label id="job-title-label">Job Title</mat-label>
-                        <input required matInput value="" formControlName="jobTitle" id="jobTitle">
+                        <mat-label id="email-label">Email</mat-label>
+                        <input required matInput value="" formControlName="subaccountAdminEmail" id="email">
                     </mat-form-field>
                 </div>
                 <div>
@@ -26,14 +45,8 @@
                 </div>
                 <div>
                     <mat-form-field class="example-full-width" appearance="outline">
-                        <mat-label id="email-label">Email</mat-label>
-                        <input required matInput value="" formControlName="subaccountAdminEmail" id="email">
-                    </mat-form-field>
-                </div>
-                <div>
-                    <mat-form-field class="example-full-width" appearance="outline">
-                        <mat-label id="mobile-number-label">Phone Number</mat-label>
-                        <input required matInput value="" formControlName="phoneNumber" id="phoneNumber" placeholder="ex: +919898989809">
+                        <mat-label id="job-title-label">Job Title</mat-label>
+                        <input required matInput value="" formControlName="jobTitle" id="jobTitle">
                     </mat-form-field>
                 </div>
                 <div *lcCheckAccessFor="'changeSpotlightRole'">
