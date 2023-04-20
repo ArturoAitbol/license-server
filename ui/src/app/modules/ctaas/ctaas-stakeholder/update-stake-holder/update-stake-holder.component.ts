@@ -5,6 +5,7 @@ import { Report } from 'src/app/helpers/report';
 import { Constants } from 'src/app/helpers/constants';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 
 @Component({
   selector: 'app-update-stake-holder',
@@ -19,6 +20,10 @@ export class UpdateStakeHolderComponent implements OnInit {
   previousFormValue: any;
   notificationsList: any;
   mappedNotificationsList: string[] = [];
+  CountryISO = CountryISO;
+  SearchCountryField = SearchCountryField;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries : CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
   readonly type = 'TYPE:Detailed';
   readonly notifications = 'TYPE:Detailed,DAILY_REPORTS';
   readonly SUBACCOUNT_STAKEHOLDER_ROLE = Constants.SUBACCOUNT_STAKEHOLDER;
@@ -39,7 +44,7 @@ export class UpdateStakeHolderComponent implements OnInit {
       jobTitle: ['', Validators.required],
       companyName: [{ value: '' }, Validators.required],
       subaccountAdminEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
+      phoneNumber: ['', Validators.required],
       role: [''],
     });
     try {
@@ -111,6 +116,7 @@ export class UpdateStakeHolderComponent implements OnInit {
    */
   preparePayload(): any {
     const extraData = {...this.updateStakeholderForm.value, notifications:this.notifications, type:this.type, subaccountAdminEmail: this.data.email};
+    extraData.phoneNumber = this.updateStakeholderForm.get('phoneNumber').value.e164Number;
     if (this.previousFormValue.role === extraData.role) {
       extraData.role = null;
     }

@@ -15,7 +15,7 @@ jobs:
       - name: Install Angular dependencies
         run: |
           cd ./ui
-          npm install
+          npm install --legacy-peer-deps
       
       - name: Run Linters
         uses: wearerequired/lint-action@v2
