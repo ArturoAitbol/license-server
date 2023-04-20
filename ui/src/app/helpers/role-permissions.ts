@@ -60,7 +60,6 @@ export const permissions = {
             'auditInfo',
             'addTestSuite',
             'showBanner',
-            'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'resetFilter',
@@ -131,8 +130,7 @@ export const permissions = {
             'consumption-matrix'
         ],
         elements: [
-            'showBanner',
-            'showUserToggle',
+            'showBanner'
         ],
         tables: {
             customerOptions: [
@@ -185,7 +183,6 @@ export const permissions = {
             'addLicenseConsumption',
             'addTestSuite',
             'showBanner',
-            'showUserToggle',
             'resetFilter'
         ],
         tables: {
@@ -240,8 +237,7 @@ export const permissions = {
             'report-dashboards'
         ],
         elements: [
-            'showBanner',
-            'showUserToggle'
+            'showBanner'
         ],
         tables: {
             customerOptions: [
@@ -282,12 +278,12 @@ export const permissions = {
         ],
         elements: [
             'view-profile',
-            'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
-            'resetFilter'
+            'resetFilter',
+            'request-call'
         ],
         tables: {
             customerOptions: [
@@ -307,7 +303,8 @@ export const permissions = {
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
-                'DELETE_STAKEHOLDER'
+                'DELETE_STAKEHOLDER',
+                'CALLBACK'
             ],
             ctaasTestSuiteOptions: [],
             noteOptions: [
@@ -338,12 +335,12 @@ export const permissions = {
         ],
         elements: [
             'view-profile',
-            'showUserToggle',
             'addStakeholderBtn',
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
-            'resetFilter'
+            'resetFilter',
+            'request-call'
         ],
         tables: {
             customerOptions: [
@@ -389,10 +386,10 @@ export const permissions = {
             'reports'
         ],
         elements: [
-            'showUserToggle',
             'view-profile',
             'showLatestNote',
-            'resetFilter'
+            'resetFilter',
+            'request-call'
         ],
         tables: {
             customerOptions: [],

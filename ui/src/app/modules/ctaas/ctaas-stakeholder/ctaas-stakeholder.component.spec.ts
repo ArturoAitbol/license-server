@@ -160,14 +160,6 @@ describe('dialog calls and interactions',() => {
         expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedUser.selectedOption, selectedUser.selectedRow);
     });
 
-    it('should call onChangeToggle with false flag', () => {
-        spyOn(ctaasStakeholderComponentTestInstance, 'onChangeToggle').and.callThrough();
-
-        ctaasStakeholderComponentTestInstance.toggleStatus = true;
-        fixture.detectChanges();
-
-        expect(ctaasStakeholderComponentTestInstance.onChangeToggle).toHaveBeenCalledWith(true);
-    });
 
     it('should show a messge if an error ocurred while deleteing stakeholder', () => {
         const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '1' }

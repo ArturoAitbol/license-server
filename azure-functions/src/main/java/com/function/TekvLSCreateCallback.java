@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -70,10 +71,17 @@ public class TekvLSCreateCallback {
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
         }
-       try{
-            context.getLogger().info(" User callback data:" + jobj);
-           return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
-       }catch (Exception e) {
+        try {
+            String pagerDutyMessage = "User callback data:  >>> " + new Date().toString();
+            pagerDutyMessage += " | Name = " + jobj.getString("name");
+            pagerDutyMessage += " | Phone Number = " + jobj.getString("phoneNumber");
+            pagerDutyMessage += " | Email Address = " + jobj.getString("email");
+            pagerDutyMessage += " | Company Name = " + jobj.getString("companyName");
+            if (jobj.has("jobTitle"))
+                pagerDutyMessage += " | Job Title = " + jobj.getString("jobTitle");
+            context.getLogger().info(pagerDutyMessage);
+            return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
+        } catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
 			JSONObject json = new JSONObject();
 			json.put("error", e.getMessage());
@@ -85,7 +93,8 @@ public class TekvLSCreateCallback {
     private enum MANDATORY_PARAMS {
         CUSTOMER_NAME("name"),
         CUSTOMER_COMPANY_NAME("companyName"),
-        CUSTOMER_PHONE_NUMBER("phoneNumber");
+        CUSTOMER_PHONE_NUMBER("phoneNumber"),
+        CUSTOMER_EMAIL("email");
 
         private final String value;
 

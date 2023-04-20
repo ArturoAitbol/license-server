@@ -270,6 +270,8 @@ export class DetailedReportsCompoment implements OnInit {
       { name: 'Model', dataKey: 'model', position: 'center', isSortable: true },
       { name: 'DID', dataKey: 'did', position: 'center', isSortable: true },
       { name: 'Firmware', dataKey: 'firmwareVersion', position: 'center', isSortable: true },
+      { name: 'Service Provider', dataKey: 'serviceProvider', position: 'center', isSortable: true },
+      { name: 'Domain', dataKey: 'domain', position: 'center', isSortable: true },
       { name: 'Region', dataKey: 'region', position: 'center', isSortable: false }
     ];
 

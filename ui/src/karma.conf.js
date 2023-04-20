@@ -5,9 +5,10 @@
 module.exports = function (config) {
     config.set({
         basePath: '',
-        frameworks: ['parallel', 'jasmine', '@angular-devkit/build-angular'],
+        frameworks: [ 'jasmine', '@angular-devkit/build-angular'],
+        // frameworks: ['parallel', 'jasmine', '@angular-devkit/build-angular'],
         plugins: [
-            require('karma-parallel'),
+            // require('karma-parallel'),
             require('karma-jasmine'),
             require('karma-chrome-launcher'),
             require('karma-jasmine-html-reporter'),
@@ -18,7 +19,7 @@ module.exports = function (config) {
             require('@angular-devkit/build-angular/plugins/karma')
         ],
         parallelOptions: {
-            executors: 2, // Defaults to cpu-count - 1
+            executors: 4, // Defaults to cpu-count - 1
             shardStrategy: 'round-robin'
         },
         client: {

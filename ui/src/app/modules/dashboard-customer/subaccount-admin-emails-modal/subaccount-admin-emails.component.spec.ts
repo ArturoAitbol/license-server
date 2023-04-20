@@ -13,6 +13,8 @@ import { DialogServiceMock } from '../../../../test/mock/services/dialog-service
 
 let subaccountModalComponentInstance: SubaccountAdminEmailsComponent;
 let fixture: ComponentFixture<SubaccountAdminEmailsComponent>;
+const dialogServiceMock = new DialogServiceMock();
+
 
 const dialogService = new DialogServiceMock();
 const defaultTestBedConfig = new TestBedConfigBuilder()
@@ -80,6 +82,8 @@ describe('UnitTest subaccount admin email component', () => {
         beforeEach(beforeEachFunction);
         it('should call subaccountAdminEmailService to delete admin email', () => {
             spyOn(SubaccountAdminEmailServiceMock, 'deleteAdminEmail').and.callThrough();
+            spyOn( dialogServiceMock,'setExpectedConfirmDialogValue').and.callThrough();
+            dialogServiceMock.setExpectedConfirmDialogValue(true);
             const adminEmails = ['testSubaccountAdminEmail1@email.one', 'testSubaccountAdminEmail2@email.two'];
             fixture.detectChanges();
             expect(subaccountModalComponentInstance.adminEmails).toEqual(adminEmails);
@@ -89,6 +93,8 @@ describe('UnitTest subaccount admin email component', () => {
         });
         it('should show error on snackbar for a service call failure', () => {
             spyOn(SubaccountAdminEmailServiceMock, 'deleteAdminEmail').and.callFake(SubaccountAdminEmailServiceMock.errorResponse);
+            spyOn( dialogServiceMock,'setExpectedConfirmDialogValue').and.callThrough();
+            dialogServiceMock.setExpectedConfirmDialogValue(true);
             fixture.detectChanges();
             spyOn(SnackBarServiceMock, 'openSnackBar');
             spyOn(console, 'error');
@@ -101,6 +107,8 @@ describe('UnitTest subaccount admin email component', () => {
 
         it('should show error on snackbar for a successful API call returning with error message', () => {
             spyOn(SubaccountAdminEmailServiceMock, 'deleteAdminEmail').and.callFake(SubaccountAdminEmailServiceMock.apiErrorResponse);
+            spyOn( dialogServiceMock,'setExpectedConfirmDialogValue').and.callThrough();
+            dialogServiceMock.setExpectedConfirmDialogValue(true);
             fixture.detectChanges();
             spyOn(SnackBarServiceMock, 'openSnackBar');
             subaccountModalComponentInstance.deleteExistingEmail(3);
@@ -110,6 +118,7 @@ describe('UnitTest subaccount admin email component', () => {
         it('should throw a null response while delating a email', () => {
             const res = null;
             spyOn(SubaccountAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
+            dialogServiceMock.setExpectedConfirmDialogValue(true);
             fixture.detectChanges();
             subaccountModalComponentInstance.deleteExistingEmail(3);
             expect(SubaccountAdminEmailServiceMock.deleteAdminEmail).toHaveBeenCalled();

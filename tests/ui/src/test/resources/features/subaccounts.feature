@@ -38,7 +38,7 @@ Feature: Subaccounts
   Scenario: Delete a subaccount administrator
     Given I see in the table the customer "functional-test-subaccount" and its subaccount "subaccountTest"
     And I open the Subaccount Administrator Emails of "functional-test-subaccount"
-    When I delete the administrator with email "subadmintest@tekvizion.com"
+    When I delete administrator with email "subadmintest@tekvizion.com"
     Then I should see the message "Subaccount administrator email deleted"
 
   @editSubaccount
