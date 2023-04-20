@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ConsumptionMatrixComponent } from './consumption-matrix.component';
 import { SnackBarServiceMock } from "../../../test/mock/services/snack-bar-service.mock";
 import { ConsumptionMatrixServiceMock } from "../../../test/mock/services/consumption-matrix-service.mock";
@@ -9,14 +9,16 @@ import { of, throwError } from 'rxjs';
 let testInstance: ConsumptionMatrixComponent;
 let fixture: ComponentFixture<ConsumptionMatrixComponent>;
 
-const beforeEachFunction = async () => {
-  const config = new TestBedConfigBuilder().useDefaultConfig(ConsumptionMatrixComponent).getConfig();
-  TestBed.configureTestingModule(config).compileComponents().then(() => {
-    fixture = TestBed.createComponent(ConsumptionMatrixComponent);
-    testInstance = fixture.componentInstance;
-    testInstance.ngOnInit();
-  });
-};
+const beforeEachFunction = waitForAsync(
+    () => {
+      const config = new TestBedConfigBuilder().useDefaultConfig(ConsumptionMatrixComponent).getConfig();
+      TestBed.configureTestingModule(config).compileComponents().then(() => {
+        fixture = TestBed.createComponent(ConsumptionMatrixComponent);
+        testInstance = fixture.componentInstance;
+        testInstance.ngOnInit();
+      });
+    }
+);
 
 describe('Consumption Matrix - UI verification tests', () => {
   beforeEach(beforeEachFunction);

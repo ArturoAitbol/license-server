@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { throwError } from 'rxjs';
 import { ReportType } from 'src/app/helpers/report-type';
@@ -35,15 +35,16 @@ const MatDialogRefMock = {
     }
 };
 
-
-const beforeEachFunction = async () => {
-  const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasHistoricalDashboardComponent);
-  configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: note });
-  configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogRefMock });
-  await TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents();
-  fixture = TestBed.createComponent(CtaasHistoricalDashboardComponent);
-  ctaasHistoricalDashboardComponentTestInstance = fixture.componentInstance;
-}
+const beforeEachFunction = waitForAsync(
+    () => {
+      const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasHistoricalDashboardComponent);
+      configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: note });
+      configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogRefMock });
+      TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents();
+      fixture = TestBed.createComponent(CtaasHistoricalDashboardComponent);
+      ctaasHistoricalDashboardComponentTestInstance = fixture.componentInstance;
+    }
+);
 
 describe('Historical-Dashboard UI verification tests', () => {
 

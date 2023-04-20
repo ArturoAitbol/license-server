@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ConsumptionDetailsComponent } from './consumption-details.component';
 import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
-import { MatDialogMock } from '../../../../../test/mock/components/mat-dialog.mock';
 
 let consumptionDetailsComponent: ConsumptionDetailsComponent;
 let fixture: ComponentFixture<ConsumptionDetailsComponent>;
@@ -34,7 +33,6 @@ const data: any = {
 
 const beforeEachFunction = () => {
   const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ConsumptionDetailsComponent);
-  configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
   configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: data });
   TestBed.configureTestingModule(configBuilder.getConfig());
   fixture = TestBed.createComponent(ConsumptionDetailsComponent);
