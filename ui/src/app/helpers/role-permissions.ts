@@ -282,7 +282,8 @@ export const permissions = {
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
-            'resetFilter'
+            'resetFilter',
+            'request-call'
         ],
         tables: {
             customerOptions: [
@@ -302,7 +303,8 @@ export const permissions = {
             ],
             stakeholderOptions: [
                 'MODIFY_STAKEHOLDER',
-                'DELETE_STAKEHOLDER'
+                'DELETE_STAKEHOLDER',
+                'CALLBACK'
             ],
             ctaasTestSuiteOptions: [],
             noteOptions: [
@@ -337,7 +339,8 @@ export const permissions = {
             'changeSpotlightRole',
             'addSpotlightNote',
             'showLatestNote',
-            'resetFilter'
+            'resetFilter',
+            'request-call'
         ],
         tables: {
             customerOptions: [
@@ -385,7 +388,8 @@ export const permissions = {
         elements: [
             'view-profile',
             'showLatestNote',
-            'resetFilter'
+            'resetFilter',
+            'request-call'
         ],
         tables: {
             customerOptions: [],

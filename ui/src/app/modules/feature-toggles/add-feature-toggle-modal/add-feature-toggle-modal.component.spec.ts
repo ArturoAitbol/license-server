@@ -1,71 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { SharedModule } from "../../shared/shared.module";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
-import { SnackBarService } from "../../../services/snack-bar.service";
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SnackBarServiceMock } from "../../../../test/mock/services/snack-bar-service.mock";
-import { HttpClient } from "@angular/common/http";
-import { FeatureToggleMgmtService } from "../../../services/feature-toggle-mgmt.service";
 import { FeatureToggleMgmtServiceMock } from "../../../../test/mock/services/feature-toggle-mgmt-service.mock";
-import { CustomerService } from "../../../services/customer.service";
-import { CustomerServiceMock } from "../../../../test/mock/services/customer-service.mock";
-import { SubAccountService } from "../../../services/sub-account.service";
-import { SubaccountServiceMock } from "../../../../test/mock/services/subaccount-service.mock";
-import { DialogService } from "../../../services/dialog.service";
 import { DialogServiceMock } from "../../../../test/mock/services/dialog-service.mock";
 import { of, throwError } from "rxjs";
 import { AddFeatureToggleModalComponent } from "./add-feature-toggle-modal.component";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatDialogMock } from "../../../../test/mock/components/mat-dialog.mock";
-
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 let testInstance: AddFeatureToggleModalComponent;
 let fixture: ComponentFixture<AddFeatureToggleModalComponent>;
 
-const RouterMock = {
-  navigate: (commands: string[]) => { return }
-};
-
-const MatDialogRefMock = {
-  close: ()=> {}
-};
 const dialogMock = new DialogServiceMock();
-const beforeEachFunction = async () => {
-  TestBed.configureTestingModule({
-    declarations: [ AddFeatureToggleModalComponent ],
-    imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule ],
-    providers: [
-      {
-        provide: Router,
-        useValue: RouterMock
-      },
-      {
-        provide: SnackBarService,
-        useValue: SnackBarServiceMock
-      },
-      {
-        provide: HttpClient,
-        useValue: HttpClient
-      },
-      {
-        provide: FeatureToggleMgmtService,
-        useValue: FeatureToggleMgmtServiceMock
-      },
-      {
-        provide: MatDialogRef,
-        useValue: MatDialogRefMock
-      },
-      {
-        provide: MatDialog,
-        useValue: MatDialogMock
-      },
-    ]
-  }).compileComponents().then(() => {
-    fixture = TestBed.createComponent(AddFeatureToggleModalComponent);
-    testInstance = fixture.componentInstance;
-  });
-};
+const beforeEachFunction = waitForAsync(() => {
+  const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddFeatureToggleModalComponent);
+  TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents().then(() => {
+      fixture = TestBed.createComponent(AddFeatureToggleModalComponent);
+      testInstance = fixture.componentInstance;
+    });
+  }
+);
 describe('AddFeatureToggleModalComponent - UI verification tests', () => {
   beforeEach(beforeEachFunction);
   it('should display essential UI and components', () => {
@@ -92,9 +44,9 @@ describe('AddFeatureToggleModalComponent - UI verification tests', () => {
 describe('AddFeatureToggleModalComponent - Basic functionality', () => {
   beforeEach(beforeEachFunction);
   it('should call dialogRef.close at onCancel()',  () => {
-    spyOn(MatDialogRefMock, 'close');
+    spyOn(MatDialogMock, 'close');
     testInstance.onCancel();
-    expect(MatDialogRefMock.close).toHaveBeenCalled();
+    expect(MatDialogMock.close).toHaveBeenCalled();
   });
 
   it('should execute submit action', () => {

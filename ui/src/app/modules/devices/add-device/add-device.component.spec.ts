@@ -1,50 +1,17 @@
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import moment from 'moment';
 import { of } from 'rxjs';
-import { DevicesService } from 'src/app/services/devices.service';
-import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { DevicesServiceMock } from 'src/test/mock/services/devices-service.mock';
 import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
-import { SharedModule } from '../../shared/shared.module';
-
 import { AddDeviceComponent } from './add-device.component';
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let addDeviceComponentTestInstance: AddDeviceComponent;
 let fixture: ComponentFixture<AddDeviceComponent>;
 
-const MatDialogRefMock = {
-  close: () => { return null }
-}
-
 const beforeEachFunction = () => {
-  TestBed.configureTestingModule({
-    declarations: [AddDeviceComponent],
-    imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
-    providers: [
-      {
-        provide: DevicesService,
-        useValue: DevicesServiceMock
-      },
-      {
-        provide: SnackBarService,
-        useValue: SnackBarServiceMock
-      },
-      {
-        provide: MatDialogRef,
-        useValue: MatDialogRefMock
-      },
-      {
-        provide: HttpClient,
-        useValue: HttpClient
-      }
-    ]
-  });
-
+  const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddDeviceComponent);
+  TestBed.configureTestingModule(configBuilder.getConfig());
   fixture = TestBed.createComponent(AddDeviceComponent);
   addDeviceComponentTestInstance = fixture.componentInstance;
 }
@@ -53,7 +20,7 @@ describe('UI and component verification tests', () => {
 
   beforeEach(beforeEachFunction);
 
-  it('should display essential UI and components', () => {
+  it('AddDeviceComponent - should display essential UI and components', () => {
     fixture.detectChanges();
     const h1: HTMLElement = fixture.nativeElement.querySelector('#dialog-title');
     const cancelButton: HTMLElement = fixture.nativeElement.querySelector('#cancel-button');
