@@ -1,8 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { By } from '@angular/platform-browser';
 import { DialogService } from 'src/app/services/dialog.service';
-import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { DevicesServiceMock } from 'src/test/mock/services/devices-service.mock';
 import { ConsumptionServiceMock } from 'src/test/mock/services/license-consumption-service.mock';
 import { ProjectServiceMock } from 'src/test/mock/services/project-service.mock';
@@ -20,7 +19,6 @@ const dialogService = new DialogServiceMock();
 const beforeEachFunction = () => {
     const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddNewLicenseConsumptionComponent);
     configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
-    configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
     configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: {} });
     TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(AddNewLicenseConsumptionComponent);

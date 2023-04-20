@@ -1,88 +1,25 @@
-import { HttpClient } from "@angular/common/http";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ReactiveFormsModule } from "@angular/forms";
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { MatSnackBarModule, MatSnackBarRef } from "@angular/material/snack-bar";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Router } from "@angular/router";
-import { MsalService } from "@azure/msal-angular";
-import { SharedModule } from "src/app/modules/shared/shared.module";
-import { ProjectService } from "src/app/services/project.service";
-import { MatDialogMock } from "src/test/mock/components/mat-dialog.mock";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { currentProject } from "src/test/mock/services/current-project-service.mock";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { ProjectServiceMock } from "src/test/mock/services/project-service.mock";
-import { ProjectsComponent } from "../projects.component";
 import { ModifyProjectComponent } from "./modify-project.component";
 import { Observable, of, throwError } from 'rxjs';
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
-import { SnackBarService } from "src/app/services/snack-bar.service";
 import { LicenseService } from "src/app/services/license.service";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import moment from "moment";
-import { SubAccountService } from "src/app/services/sub-account.service";
 import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
+import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
 
 let modifyPorjectComponentTestInstance: ModifyProjectComponent;
 let fixture: ComponentFixture<ModifyProjectComponent>;
 const dialogMock = new DialogServiceMock();
 
-const RouterMock = {
-    navigate: (commands: string[]) => {}
-};
+const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ModifyProjectComponent);
+configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: currentProject });
 
-const defaultTestBedConfig = {
-    declarations: [ModifyProjectComponent, ProjectsComponent],
-    imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule,  ReactiveFormsModule ],
-    providers: [
-        {
-            provide: Router,
-        useValue: RouterMock
-        },
-        {
-            provide: MatDialog,
-            useValue: MatDialogMock
-        },
-        {
-            provide: MatSnackBarRef,
-            useValue: {}
-        },
-        {
-            provide: ProjectService,
-             useValue: ProjectServiceMock
-        },
-        {
-            provide: LicenseService,
-            useValue: LicenseServiceMock
-        },
-        {
-            provide: MsalService,
-            useValue: MsalServiceMock
-        },
-        {
-            provide: HttpClient,
-            useValue: HttpClient
-        },
-        {
-            provide: MatDialogRef,
-            useValue: dialogMock
-        },
-        {
-            provide: MAT_DIALOG_DATA,
-            useValue: currentProject
-        },
-        {
-            provide: SnackBarService,
-            useValue: SnackBarServiceMock
-        },
-        {
-            provide: SubAccountService,
-            useValue: SubaccountServiceMock
-        }
-    ]
-}
-
+const defaultTestBedConfig = configBuilder.getConfig();
 const beforeEachFunction = () => {
     TestBed.configureTestingModule(defaultTestBedConfig)
     fixture = TestBed.createComponent(ModifyProjectComponent);
@@ -97,7 +34,7 @@ const beforeEachFunction = () => {
         companyName:"testComp",
         customerName:"testName"
     })
-}
+};
 
 describe('UI verification test for modify component', () => {
     beforeEach(beforeEachFunction);

@@ -1,71 +1,24 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {AddSubaccountModalComponent} from './add-subaccount-modal.component';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {SharedModule} from '../../shared/shared.module';
-import {Router} from '@angular/router';
-import {MatDialogRef} from '@angular/material/dialog';
-import {SnackBarService} from '../../../services/snack-bar.service';
-import {SnackBarServiceMock} from '../../../../test/mock/services/snack-bar-service.mock';
-import {SubAccountService} from '../../../services/sub-account.service';
-import {SubaccountServiceMock} from '../../../../test/mock/services/subaccount-service.mock';
-import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
-import {CustomerService} from '../../../services/customer.service';
-import {CustomerServiceMock} from '../../../../test/mock/services/customer-service.mock';
-import { MsalService } from '@azure/msal-angular';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { AddSubaccountModalComponent } from './add-subaccount-modal.component';
+import { SnackBarServiceMock } from '../../../../test/mock/services/snack-bar-service.mock';
+import { SubaccountServiceMock } from '../../../../test/mock/services/subaccount-service.mock';
+import { CustomerServiceMock } from '../../../../test/mock/services/customer-service.mock';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
 import { HttpBackend } from "@angular/common/http";
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
+import { MatDialogMock } from '../../../../test/mock/components/mat-dialog.mock';
 
 let addSubaccountModalComponentInstance: AddSubaccountModalComponent;
 let fixture: ComponentFixture<AddSubaccountModalComponent>;
 
-const RouterMock = {
-    navigate: (commands: string[]) => {}
-};
-const MatDialogRefMock = {
-    close: ()=> {}
-};
-const beforeEachFunction = async () => {
-    TestBed.configureTestingModule({
-        declarations: [AddSubaccountModalComponent],
-        imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            FormBuilder,
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            },
-            {
-                provide: CustomerService,
-                useValue: CustomerServiceMock
-            },
-            {
-                provide: MatDialogRef,
-                useValue: MatDialogRefMock
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: HttpBackend,
-                useValue: HttpBackend
-            }
-        ]
-    }).compileComponents().then(() => {
+const beforeEachFunction = waitForAsync( () => {
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddSubaccountModalComponent);
+    configBuilder.addProvider({ provide: HttpBackend, useValue: HttpBackend });
+    TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents().then(() => {
         fixture = TestBed.createComponent(AddSubaccountModalComponent);
         addSubaccountModalComponentInstance = fixture.componentInstance;
     });
-};
+});
 
 describe('UI verification test for add subaccount modal', () => {
     beforeEach(beforeEachFunction);
@@ -103,9 +56,9 @@ describe('onInit', () => {
 describe('onCancel()', () => {
     beforeEach(beforeEachFunction);
     it('should call dialogRef at onCancel()',  () => {
-        spyOn(MatDialogRefMock, 'close');
+        spyOn(MatDialogMock, 'close');
         addSubaccountModalComponentInstance.onCancel();
-        expect(MatDialogRefMock.close).toHaveBeenCalled();
+        expect(MatDialogMock.close).toHaveBeenCalled();
     });
 });
 
@@ -119,7 +72,7 @@ describe('createSubAccount', () => {
         };
         spyOn(SubaccountServiceMock, 'createSubAccount').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar');
-        spyOn(MatDialogRefMock, 'close');
+        spyOn(MatDialogMock, 'close');
         addSubaccountModalComponentInstance.addSubaccountForm.patchValue({
             customer: subaccountDetails.customerId,
             subaccountName: subaccountDetails.subaccountName,
@@ -130,18 +83,18 @@ describe('createSubAccount', () => {
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalledWith(subaccountDetails);
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Subaccount added successfully!', '');
-        expect(MatDialogRefMock.close).toHaveBeenCalled();
+        expect(MatDialogMock.close).toHaveBeenCalled();
     });
 
     it('should make a call to subaccountService.createSubAccount customer and display an error message on snackbar if the service returns an error', () => {
 
         spyOn(SubaccountServiceMock, 'createSubAccount').and.returnValue(SubaccountServiceMock.createSubAccountWithError());
         spyOn(SnackBarServiceMock, 'openSnackBar');
-        spyOn(MatDialogRefMock, 'close');
+        spyOn(MatDialogMock, 'close');
         addSubaccountModalComponentInstance.addSubaccount();
         expect(SubaccountServiceMock.createSubAccount).toHaveBeenCalled();
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Expected create subaccount error', 'Error adding subaccount!');
-        expect(MatDialogRefMock.close).toHaveBeenCalled();
+        expect(MatDialogMock.close).toHaveBeenCalled();
     });
 
     it('should call setChecked creating a subaccount with services', () => {
@@ -160,7 +113,7 @@ describe('createSubAccount', () => {
         };  
         spyOn(SubaccountServiceMock, 'createSubAccount').and.returnValue(SubaccountServiceMock.errorResponse());
         spyOn(SnackBarServiceMock, 'openSnackBar');
-        spyOn(MatDialogRefMock, 'close');
+        spyOn(MatDialogMock, 'close');
         addSubaccountModalComponentInstance.addSubaccountForm.patchValue({
             customer: subaccountDetails.customerId,
             subaccountName: subaccountDetails.subaccountName,
