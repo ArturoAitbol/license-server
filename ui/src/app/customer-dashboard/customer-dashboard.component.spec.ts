@@ -228,7 +228,7 @@ describe('Dialog calls and interactions', () => {
 
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
-            message: 'Do you want to confirm this action?',
+            message: 'Are you sure you want to delete ' + expectedCustomerObject.name + '?',
             confirmCaption: 'Delete Subaccount',
             deleteAllDataCaption: 'Delete Customer',
             cancelCaption: 'Cancel',
@@ -257,7 +257,7 @@ describe('Dialog calls and interactions', () => {
         await fixture.whenStable();
         expect(dialogServiceMock.deleteCustomerDialog).toHaveBeenCalledWith({
             title: 'Confirm Action',
-            message: 'Do you want to confirm this action?',
+            message: 'Are you sure you want to delete ' + expectedCustomerObject.name + '?',
             confirmCaption: 'Delete Subaccount',
             deleteAllDataCaption: 'Delete Customer',
             cancelCaption: 'Cancel',

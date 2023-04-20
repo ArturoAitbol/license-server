@@ -77,7 +77,7 @@ export class AdminEmailsComponent implements OnInit {
     this.isDataLoading = true;
     this.dialogService.confirmDialog({
       title: 'Confirm action',
-      message: 'Do you want to confirm this action?',
+      message: 'Are your sure you want to delete '+this.adminEmails[index] + '?',
       confirmCaption: 'Delete account',
       cancelCaption: 'Cancel',
     }).subscribe((confirmed) => {

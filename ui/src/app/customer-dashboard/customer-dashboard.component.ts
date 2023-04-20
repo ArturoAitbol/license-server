@@ -316,7 +316,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.dialogService
             .deleteCustomerDialog({
                 title: 'Confirm Action',
-                message: 'Do you want to confirm this action?',
+                message: 'Are you sure you want to delete ' + customer.name + '?',
                 confirmCaption: 'Delete Subaccount',
                 deleteAllDataCaption: 'Delete Customer',
                 cancelCaption: 'Cancel',

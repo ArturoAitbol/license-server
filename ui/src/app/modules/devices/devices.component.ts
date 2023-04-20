@@ -183,7 +183,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
-        message: 'Do you want to confirm this action?',
+        message: 'Are you sure you want to delete '+ device.product +'?',
         confirmCaption: 'Confirm',
         cancelCaption: 'Cancel',
       })
