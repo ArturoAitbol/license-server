@@ -19,7 +19,7 @@ const currentStakeHolder = {
     jobTitle: "test",
     name: "testName",
     notifications: 'Weekly Reports,Monthly Summaries',
-    phoneNumber: "2222222222",
+    phoneNumber: "+2222222222",
     subaccountId: "f6c0e45e-cfdc-4c1a-820e-bef6a856aaea",
     type: "High level"
 };
@@ -43,14 +43,12 @@ describe('UI verification test', () => {
         const jobTitleLabel = fixture.nativeElement.querySelector('#job-title-label');
         const companyNameLabel = fixture.nativeElement.querySelector('#company-name-label');
         const emailLabel = fixture.nativeElement.querySelector('#email-label');
-        const mobileNumberLabel = fixture.nativeElement.querySelector('#mobile-number-label');
 
         expect(h1.textContent).toBe('Update Stakeholder')
         expect(name.textContent).toBe(' Name');
         expect(jobTitleLabel.textContent).toBe('Job Title');
         expect(companyNameLabel.textContent).toBe('Company Name');
         expect(emailLabel.textContent).toBe('Email');
-        expect(mobileNumberLabel.textContent).toBe('Phone Number')
     });
 });
 
@@ -145,7 +143,7 @@ describe('modify stakeholder - FromGroup verification test', () => {
             jobTitle:'testJf',
             companyName:'testCf',
             subaccountAdminEmail:'teststakeholder11@gmail.com',
-            phoneNumber:'+919898989809',
+            phoneNumber:{e164Number: '+919898989809'},
             role: '',
         });
         modifyStakeholderComponentTestInstance.updateStakeholderForm.get('subaccountAdminEmail').enable();

@@ -100,7 +100,6 @@ describe('UI verification test for Profile modal', () => {
         const jobTitleLabel = fixture.nativeElement.querySelector('#job-title-label');
         const emailLabel = fixture.nativeElement.querySelector('#email-label');
         const companyNameLabel = fixture.nativeElement.querySelector('#company-name-label');
-        const phoneNumberLabel = fixture.nativeElement.querySelector('#phone-number-label');
         const cancelBtn = fixture.nativeElement.querySelector('#cancelBtn');
         const submitBtn = fixture.nativeElement.querySelector('#submitBtn');
 
@@ -109,7 +108,6 @@ describe('UI verification test for Profile modal', () => {
         expect(jobTitleLabel.textContent).toBe('Job Title');
         expect(emailLabel.textContent).toBe('Email');
         expect(companyNameLabel.textContent).toBe('Company Name');
-        expect(phoneNumberLabel.textContent).toBe('Phone Number');
         expect(cancelBtn.textContent).toBe('Cancel');
         expect(submitBtn.textContent).toBe('Update');
     });
