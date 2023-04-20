@@ -250,9 +250,10 @@ export class CtaasStakeholderComponent implements OnInit {
   }
 
   private confirmCallbackRequest(data:any) {
+    const message = 'You are about to a request a call for '+ data.name +', do you want to continue?'
     this.dialogService.confirmDialog({
       title: 'Confirm call request',
-      message: 'A support engineer will be requested to call this user if you continue performing this action, do you want to continue?',
+      message: message,
       confirmCaption: 'Confirm',
       cancelCaption: 'Cancel',
     }).subscribe((confirmed) => {
@@ -262,7 +263,7 @@ export class CtaasStakeholderComponent implements OnInit {
                     this.snackBarService.openSnackBar('Call request has been made!', '');
                     this.dialogService.acceptDialog({
                       title: 'Done!',
-                      message: 'A support engineer will contact you as soon as possible, thank you for your patience.',
+                      message: 'Thanks for your request, one of our Spotlight experts will reach out to the user ' + data.name +'  shortly.',
                       confirmCaption: 'Ok',
                     });
                 } else {

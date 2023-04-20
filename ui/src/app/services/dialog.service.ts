@@ -14,11 +14,11 @@ export class DialogService {
 
   constructor(private dialog: MatDialog) { }
 
-  confirmDialog(data: ConfirmDialogData): Observable<boolean> {
+  confirmDialog(data: ConfirmDialogData,width?:string): Observable<boolean> {
     return this.dialog
       .open(ConfirmComponent, {
         data,
-        width: '400px',
+        width: width || '400px',
         disableClose: true,
       })
       .afterClosed();
