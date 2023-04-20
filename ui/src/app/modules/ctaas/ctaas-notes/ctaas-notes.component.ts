@@ -14,6 +14,7 @@ import { DatePipe } from '@angular/common';
 import { BannerService } from "../../../services/alert-banner.service";
 import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import { Subject } from "rxjs";
+import { Constants } from 'src/app/helpers/constants';
 
 @Component({
     selector: 'app-ctaas-notes',
@@ -242,10 +243,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
             const ctaasSetupDetails = res['ctaasSetups'][0];
             if (ctaasSetupDetails.maintenance) {
                 this.addNoteDisabled = true;
-                this.bannerService.open("ALERT",
-                    'The Spotlight service is currently experiencing limited functionality due to ongoing maintenance. ' +
-                    'However, users can still view historical reports on the dashboard. ' +
-                    'Please note that during this maintenance period, adding new notes and test reports is not available.', this.onDestroy);
+                this.bannerService.open("ALERT", Constants.MAINTENANCE_MODE_ALERT, this.onDestroy);
             }
         })
     }

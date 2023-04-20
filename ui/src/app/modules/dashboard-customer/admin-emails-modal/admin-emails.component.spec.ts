@@ -1,89 +1,32 @@
-// import { instance, mock, verify, when } from "ts-mockito";
-import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { ComponentFixture, TestBed} from '@angular/core/testing';
-import { MatDialog} from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
-import { MsalService } from '@azure/msal-angular';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DialogService } from 'src/app/services/dialog.service';
-import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
-import { SharedModule } from '../../shared/shared.module';
 import { AdminEmailsComponent } from './admin-emails.component';
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
-import { ReactiveFormsModule } from '@angular/forms';
 import { CustomerService } from "src/app/services/customer.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { CustomerServiceMock } from "src/test/mock/services/customer-service.mock";
 import { CustomerAdminEmailService } from "src/app/services/customer-admin-email.service";
 import { CustomerAdminEmailServiceMock } from "src/test/mock/services/customer-admin-email.service.mock";
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let AdminEmailTestInstance: AdminEmailsComponent;
 let fixture: ComponentFixture<AdminEmailsComponent>;
-const dialogMock = new DialogServiceMock();
 const dialogService = new DialogServiceMock();
-const RouterMock = {
-  navigate: (commands: string[]) => {}
-};
-const defaultTestBedConfig = {
-      declarations: [ AdminEmailsComponent],
-      imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule, ReactiveFormsModule],
-      providers: [
-        {
-          provide: Router,
-          useValue: RouterMock
-      },
-      {
-          provide: MatDialog,
-          useValue: MatDialogMock
-      },
-      {
-          provide: SnackBarService,
-          useValue: SnackBarServiceMock
-      },
-      {
-          provide: MatSnackBarRef,
-          useValue: {}
-      },
-      {
-          provide: DialogService,
-          useValue: dialogService
-      },
-      {
-          provide: MsalService,
-          useValue: MsalServiceMock
-      },
-      {   provide: MAT_DIALOG_DATA, 
-          useValue: {
-            id: CustomerServiceMock.emailCustomer.id
-          } 
-      },
-      {
-          provide: HttpClient,
-          useValue: HttpClient
-      },
-      {   provide: MatDialogRef, 
-          useValue: dialogMock
-      },
-      {
-        provide: CustomerService,
-        useValue: CustomerServiceMock
-      },
-      {
-        provide: CustomerAdminEmailService,
-        useValue: CustomerAdminEmailServiceMock
-      }
-      ]
-  };
-  const beforeEachFunction = () => {
-    TestBed.configureTestingModule(defaultTestBedConfig);
-    fixture = TestBed.createComponent(AdminEmailsComponent);
-    AdminEmailTestInstance = fixture.componentInstance;
-    fixture.detectChanges();
+
+const defaultTestBedConfig = new TestBedConfigBuilder()
+    .useDefaultConfig(AdminEmailsComponent)
+    .addProvider({ provide: DialogService, useValue: dialogService })
+    .addProvider({ provide: MatDialogRef, useValue: dialogService })
+    .addProvider({ provide: CustomerAdminEmailService, useValue: CustomerAdminEmailServiceMock })
+    .addProvider({ provide: MAT_DIALOG_DATA, useValue: {id: CustomerServiceMock.emailCustomer.id}})
+    .getConfig();
+const beforeEachFunction = () => {
+  TestBed.configureTestingModule(defaultTestBedConfig);
+  fixture = TestBed.createComponent(AdminEmailsComponent);
+  AdminEmailTestInstance = fixture.componentInstance;
+  fixture.detectChanges();
 };
 
 describe('UI verification test', () => {
@@ -107,7 +50,6 @@ describe('add admin email flow', () => {
   it('should execute submit action', () => {
     spyOn(AdminEmailTestInstance, 'submit').and.callThrough();
     spyOn(AdminEmailTestInstance, 'onCancel').and.callThrough();
-    spyOn(dialogMock, 'close').and.callThrough();
     AdminEmailTestInstance.submit();
     expect(AdminEmailTestInstance.submit).toHaveBeenCalled();
 
@@ -117,7 +59,6 @@ describe('add admin email flow', () => {
 
   it('should click on add button',()=>{
     spyOn(AdminEmailTestInstance, 'addEmailForm').and.callThrough();
-    spyOn(dialogMock, 'close').and.callThrough();
     AdminEmailTestInstance.addEmailForm();
     expect(AdminEmailTestInstance.addEmailForm).toHaveBeenCalled();
   });
@@ -178,6 +119,8 @@ describe('add admin email flow', () => {
 
     spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.callThrough();
     spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+    spyOn( dialogService,'setExpectedConfirmDialogValue').and.callThrough();
+    dialogService.setExpectedConfirmDialogValue(true);
 
     fixture.detectChanges();
     AdminEmailTestInstance.deleteExistingEmail(0);
@@ -190,6 +133,8 @@ describe('add admin email flow', () => {
     spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(throwError({message: 'error message'}));
     spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
     spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+    spyOn( dialogService,'setExpectedConfirmDialogValue').and.callThrough();
+    dialogService.setExpectedConfirmDialogValue(true);
 
     fixture.detectChanges();
     AdminEmailTestInstance.deleteExistingEmail(0);
@@ -203,6 +148,8 @@ describe('add admin email flow', () => {
     spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
     spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
     spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+    spyOn( dialogService,'setExpectedConfirmDialogValue').and.callThrough();
+    dialogService.setExpectedConfirmDialogValue(true);
 
     fixture.detectChanges();
     AdminEmailTestInstance.deleteExistingEmail(0);
@@ -216,6 +163,8 @@ describe('add admin email flow', () => {
     spyOn(CustomerAdminEmailServiceMock, 'deleteAdminEmail').and.returnValue(of(res));
     spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
     spyOn(AdminEmailTestInstance, 'deleteExistingEmail').and.callThrough();
+    spyOn( dialogService,'setExpectedConfirmDialogValue').and.callThrough();
+    dialogService.setExpectedConfirmDialogValue(true);
 
     fixture.detectChanges();
     AdminEmailTestInstance.deleteExistingEmail(0);

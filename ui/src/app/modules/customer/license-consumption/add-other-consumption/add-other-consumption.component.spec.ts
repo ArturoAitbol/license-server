@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { MatDialogMock } from "../../../../../test/mock/components/mat-dialog.mock";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { SnackBarServiceMock } from "../../../../../test/mock/services/snack-bar-service.mock";
 import { DialogService } from "../../../../services/dialog.service";
 import { AddOtherConsumptionComponent } from "./add-other-consumption.component";
@@ -18,7 +17,6 @@ let fixture: ComponentFixture<AddOtherConsumptionComponent>;
 const beforeEachFunction = () => {
     const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddOtherConsumptionComponent);
     configBuilder.addProvider({ provide: DialogService, useValue: new DialogServiceMock() });
-    configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
     configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: {} });
     TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(AddOtherConsumptionComponent);

@@ -31,7 +31,7 @@ class TekvLSDeleteNoteByIdTest extends TekvLSTest {
     @Test
     public void deleteNoteByIdTest() {
         //Given
-        String bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content','reports':[{},{}]}";
+        String bodyRequest = "{'subaccountId':'f5a609c0-8b70-4a10-9dc8-9536bdb5652c', 'content':'note content','reports':[{ 'imageBase64': 'data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD', 'reportType': 'Daily-FeatureFunctionality', 'startDateStr': '230411154558', endDateStr: '230411154558' }]}";
         Mockito.doReturn(Optional.of(bodyRequest)).when(request).getBody();
         TekvLSCreateNote createNote = new TekvLSCreateNote();
         HttpResponseMessage response = createNote.run(this.request, this.context);

@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { throwError } from 'rxjs';
 import { ReportType } from 'src/app/helpers/report-type';
@@ -35,15 +35,16 @@ const MatDialogRefMock = {
     }
 };
 
-
-const beforeEachFunction = async () => {
-  const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasHistoricalDashboardComponent);
-  configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: note });
-  configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogRefMock });
-  await TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents();
-  fixture = TestBed.createComponent(CtaasHistoricalDashboardComponent);
-  ctaasHistoricalDashboardComponentTestInstance = fixture.componentInstance;
-}
+const beforeEachFunction = waitForAsync(
+    () => {
+      const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasHistoricalDashboardComponent);
+      configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: note });
+      configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogRefMock });
+      TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents();
+      fixture = TestBed.createComponent(CtaasHistoricalDashboardComponent);
+      ctaasHistoricalDashboardComponentTestInstance = fixture.componentInstance;
+    }
+);
 
 describe('Historical-Dashboard UI verification tests', () => {
 
@@ -73,14 +74,14 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
     const cancelButton = fixture.nativeElement.querySelector('#cancel-button');
     spyOn(ctaasHistoricalDashboardComponentTestInstance,'fetchCtaasDashboardDetailsBySubaccount').and.callThrough();
     spyOn(ctaasHistoricalDashboardComponentTestInstance,'onChangeButtonToggle').and.callThrough();
-    spyOn(CtaasDashboardServiceMock,'getCtaasDashboardDetails').and.callThrough();
+    spyOn(CtaasDashboardServiceMock,'getCtaasHistoricalDashboardDetails').and.callThrough();
     spyOn(ctaasHistoricalDashboardComponentTestInstance, 'onClose').and.callThrough();
 
     fixture.detectChanges();
     cancelButton.click();
 
     expect(ctaasHistoricalDashboardComponentTestInstance.fetchCtaasDashboardDetailsBySubaccount).toHaveBeenCalled();
-    expect(CtaasDashboardServiceMock.getCtaasDashboardDetails).toHaveBeenCalledTimes(ctaasHistoricalDashboardComponentTestInstance.note.reports.length);
+    expect(CtaasDashboardServiceMock.getCtaasHistoricalDashboardDetails).toHaveBeenCalled();
     expect(ctaasHistoricalDashboardComponentTestInstance.onChangeButtonToggle).toHaveBeenCalled();
     expect(ctaasHistoricalDashboardComponentTestInstance.onClose).toHaveBeenCalled();
   });
@@ -98,11 +99,11 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
 
   it('should show an error if an error is thrown when calling fetchCtaasDashboardDetailsBySubaccount()', () => {
     spyOn(SnackBarServiceMock,'openSnackBar').and.callThrough();
-    spyOn(CtaasDashboardServiceMock,'getCtaasDashboardDetails').and.returnValue(throwError("Some error"));
+    spyOn(CtaasDashboardServiceMock,'getCtaasHistoricalDashboardDetails').and.returnValue(throwError("Some error"));
     
     fixture.detectChanges();
 
-    expect(CtaasDashboardServiceMock.getCtaasDashboardDetails).toHaveBeenCalled();
+    expect(CtaasDashboardServiceMock.getCtaasHistoricalDashboardDetails).toHaveBeenCalled();
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please connect tekVizion admin', 'Ok');
   });
 

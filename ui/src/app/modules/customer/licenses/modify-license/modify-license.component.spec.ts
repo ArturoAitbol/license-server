@@ -1,13 +1,12 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { FormGroup } from "@angular/forms";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { of, throwError } from "rxjs";
 import { BundleServiceMock } from "src/test/mock/services/bundle-service.mock";
 import { LicenseServiceMock } from "src/test/mock/services/license-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { ModifyLicenseComponent } from "./modify-license.component";
 import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
-import { MatDialogMock } from '../../../../../test/mock/components/mat-dialog.mock';
 
 let modifyLicenseComponentTestInstance: ModifyLicenseComponent;
 let fixture : ComponentFixture<ModifyLicenseComponent>;
@@ -26,38 +25,8 @@ const data = {
 
 const beforeEachFunction = () => {
     const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ModifyLicenseComponent);
-    configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
     configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: data });
     TestBed.configureTestingModule(configBuilder.getConfig());
-    // TestBed.configureTestingModule({
-    //     declarations:[ModifyLicenseComponent],
-    //     imports: [CommonModule,SharedModule,BrowserAnimationsModule,FormsModule,ReactiveFormsModule],
-    //     providers: [ {
-    //         provide: CustomerService,
-    //         useValue: CustomerServiceMock
-    //     },
-    //     {
-    //         provide: LicenseService,
-    //         useValue: LicenseServiceMock
-    //     },
-    //     {
-    //         provide: BundleService,
-    //         useValue: BundleServiceMock
-    //     },
-    //     {
-    //         provide: SnackBarService,
-    //         useValue: SnackBarServiceMock
-    //     },
-    //     {
-    //         provide: MatDialogRef,
-    //         useValue: MatDialogRefMock
-    //     },
-    //     {
-    //         provide: MAT_DIALOG_DATA,
-    //         useValue: data
-    //     }
-    // ]
-    // });
     fixture = TestBed.createComponent(ModifyLicenseComponent);
     modifyLicenseComponentTestInstance = fixture.componentInstance;
 };

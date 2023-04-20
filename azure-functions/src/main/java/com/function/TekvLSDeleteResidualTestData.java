@@ -49,7 +49,8 @@ public class TekvLSDeleteResidualTestData {
         }
         context.getLogger().info("Entering TekvLSDeleteResidualTestData Azure function");
 
-        String deleteNoteSql = "DELETE FROM note WHERE opened_by = ? AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
+        String deleteNoteSql = "DELETE FROM note WHERE (opened_by = ? OR opened_by = ?) " +
+                "AND open_date::timestamp < (CURRENT_TIMESTAMP - INTERVAL '1 hour' )";
         String deleteCustomerSql = "DELETE FROM customer WHERE name LIKE ? AND test_customer = ?::boolean";
 
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -60,7 +61,8 @@ public class TekvLSDeleteResidualTestData {
             PreparedStatement customerStatement = connection.prepareStatement(deleteCustomerSql)) {
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-            noteStatement.setString(1, System.getenv("SUB_ACCOUNT_ADMIN"));
+            noteStatement.setString(1, System.getenv("SUB_ACCOUNT_ADMIN_ANDROID"));
+            noteStatement.setString(2, System.getenv("SUB_ACCOUNT_ADMIN_IOS"));
             context.getLogger().info("Execute SQL statement: " + noteStatement);
             noteStatement.executeUpdate();
 

@@ -1,80 +1,22 @@
-// import { instance, mock, verify, when } from "ts-mockito";
-import { HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpBackend } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { ComponentFixture, TestBed} from '@angular/core/testing';
-import { MatDialog} from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBarRef } from '@angular/material/snack-bar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
-import { MsalService } from '@azure/msal-angular';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import { CustomerService } from 'src/app/services/customer.service';
-import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
-import { MsalServiceMock } from 'src/test/mock/services/msal-service.mock';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CustomerServiceMock } from 'src/test/mock/services/customer-service.mock';
-import { SharedModule } from '../../shared/shared.module';
 import { ModifyCustomerAccountComponent } from './modify-customer-account.component';
-import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
-import { ReactiveFormsModule } from '@angular/forms';
 import { CurrentCustomerServiceMock } from "src/test/mock/services/current-customer-service.mock";
-import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 import { tekVizionServices } from 'src/app/helpers/tekvizion-services';
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let CustomerComponentTestInstance: ModifyCustomerAccountComponent;
-const dialogMock = new DialogServiceMock();
 let fixture: ComponentFixture<ModifyCustomerAccountComponent>;
 const data = CurrentCustomerServiceMock.getSelectedCustomer()
-const RouterMock = {
-  navigate: (commands: string[]) => {}
-};
+
 const beforeEachFunction = () => {
-  TestBed.configureTestingModule({
-      declarations: [ ModifyCustomerAccountComponent],
-      imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule, ReactiveFormsModule],
-      providers: [
-        {
-          provide: Router,
-          useValue: RouterMock
-      },
-      {
-          provide: MatDialog,
-          useValue: MatDialogMock
-      },
-      {
-          provide: MatSnackBarRef,
-          useValue: {}
-      },
-      {
-          provide: CustomerService,
-          useValue: CustomerServiceMock
-      },
-      {
-          provide: MsalService,
-          useValue: MsalServiceMock
-      },
-      {
-          provide: HttpClient,
-          useValue: HttpClient
-      },
-      {
-          provide: MatDialogRef,
-          useValue: dialogMock
-      },
-      {
-          provide: MAT_DIALOG_DATA,
-          useValue: data
-      },
-      {
-        provide: SubAccountService,
-        useValue: SubaccountServiceMock
-      },
-      {
-          provide: HttpBackend,
-          useValue: HttpBackend
-      }
-    ]
-  });
+  const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ModifyCustomerAccountComponent);
+  configBuilder.addProvider({ provide: HttpBackend, useValue: HttpBackend });
+  configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: data });
+  TestBed.configureTestingModule(configBuilder.getConfig());
   fixture = TestBed.createComponent(ModifyCustomerAccountComponent);
   CustomerComponentTestInstance = fixture.componentInstance;
   CustomerComponentTestInstance.ngOnInit();
@@ -126,7 +68,6 @@ describe('modify customers flow', () => {
   it('should execute submit action', () => {
     spyOn(CustomerComponentTestInstance, 'submit').and.callThrough();
     spyOn(CustomerComponentTestInstance, 'onCancel').and.callThrough();
-    spyOn(dialogMock, 'close').and.callThrough();
     CustomerComponentTestInstance.submit();
     expect(CustomerComponentTestInstance.submit).toHaveBeenCalled();
 

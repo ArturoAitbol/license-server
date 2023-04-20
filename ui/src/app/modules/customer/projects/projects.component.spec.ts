@@ -1,10 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DialogService } from 'src/app/services/dialog.service';
-import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { ProjectServiceMock } from 'src/test/mock/services/project-service.mock';
 import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
 import { AddProjectComponent } from './add-project/add-project.component';
@@ -28,7 +26,6 @@ let loader: HarnessLoader;
 
 const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ProjectsComponent);
 configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
-configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
 
 const beforeEachFunction = () => {
     TestBed.configureTestingModule(configBuilder.getConfig());
