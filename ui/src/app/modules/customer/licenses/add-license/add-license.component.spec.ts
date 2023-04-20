@@ -6,8 +6,6 @@ import { LicenseServiceMock } from "src/test/mock/services/license-service.mock"
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { AddLicenseComponent } from "./add-license.component";
 import { TestBedConfigBuilder } from '../../../../../test/mock/TestBedConfigHelper.mock';
-import { MatDialogRef } from '@angular/material/dialog';
-import { MatDialogMock } from '../../../../../test/mock/components/mat-dialog.mock';
 import { CustomerService } from '../../../../services/customer.service';
 
 let addLicenseComponentTestInstance: AddLicenseComponent;
@@ -15,38 +13,8 @@ let fixture: ComponentFixture<AddLicenseComponent>;
 
 const beforeEachFunction = () => {
     const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddLicenseComponent);
-    configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
     configBuilder.addProvider({ provide: CustomerService, useValue: CustomerServiceMock });
     TestBed.configureTestingModule(configBuilder.getConfig());
-    // TestBed.configureTestingModule({
-    //     declarations: [AddLicenseComponent],
-    //     imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
-    //     providers: [{
-    //         provide: CustomerService,
-    //         useValue: CustomerServiceMock
-    //     },
-    //     {
-    //         provide: LicenseService,
-    //         useValue: LicenseServiceMock
-    //     },
-    //     {
-    //         provide: BundleService,
-    //         useValue: BundleServiceMock
-    //     },
-    //     {
-    //         provide: SnackBarService,
-    //         useValue: SnackBarServiceMock
-    //     },
-    //     {
-    //         provide: MatDialogRef,
-    //         useValue: MatDialogRefMock
-    //     },
-    //     {
-    //         provide: HttpClient,
-    //         useValue: HttpClient
-    //     }
-    //     ]
-    // });
     fixture = TestBed.createComponent(AddLicenseComponent);
     addLicenseComponentTestInstance = fixture.componentInstance;
 }

@@ -14,7 +14,6 @@ let fixture: ComponentFixture<AddProjectComponent>;
 
 const beforeEachFunction = () => {
     const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddProjectComponent);
-    configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
     configBuilder.addDeclaration(AddProjectComponent);
     TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(AddProjectComponent);

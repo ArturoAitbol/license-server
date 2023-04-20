@@ -1,83 +1,41 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {SubaccountAdminEmailsComponent} from './subaccount-admin-emails.component';
-import {SharedModule} from '../../shared/shared.module';
-import {Router} from '@angular/router';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {SnackBarService} from '../../../services/snack-bar.service';
-import {SnackBarServiceMock} from '../../../../test/mock/services/snack-bar-service.mock';
-import {SubAccountService} from '../../../services/sub-account.service';
-import {SubaccountServiceMock} from '../../../../test/mock/services/subaccount-service.mock';
-import {FormArray, FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {CommonModule} from '@angular/common';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {MsalService} from '@azure/msal-angular';
-import {MsalServiceMock} from '../../../../test/mock/services/msal-service.mock';
-import {SubaccountAdminEmailServiceMock} from '../../../../test/mock/services/subaccount-admin-email-service.mock';
-import {SubaccountAdminEmailService} from '../../../services/subaccount-admin-email.service';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { SubaccountAdminEmailsComponent } from './subaccount-admin-emails.component';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { SnackBarServiceMock } from '../../../../test/mock/services/snack-bar-service.mock';
+import { SubAccountService } from '../../../services/sub-account.service';
+import { SubaccountServiceMock } from '../../../../test/mock/services/subaccount-service.mock';
+import { FormArray, FormBuilder, Validators } from '@angular/forms';
+import { SubaccountAdminEmailServiceMock } from '../../../../test/mock/services/subaccount-admin-email-service.mock';
+import { SubaccountAdminEmailService } from '../../../services/subaccount-admin-email.service';
 import { Observable, of } from 'rxjs';
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
+import { DialogServiceMock } from '../../../../test/mock/services/dialog-service.mock';
 
 let subaccountModalComponentInstance: SubaccountAdminEmailsComponent;
 let fixture: ComponentFixture<SubaccountAdminEmailsComponent>;
 
-const RouterMock = {
-    navigate: (commands: string[]) => {}
-};
-const MatDialogRefMock = {
-    close: ()=> {}
-};
-const defaultTestBedConfig = {
-        declarations: [SubaccountAdminEmailsComponent],
-        imports: [CommonModule, SharedModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule, HttpClientModule],
-        providers: [
-            {
-                provide: Router,
-                useValue: RouterMock
-            },
-            {
-                provide: FormBuilder,
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            },
-            {
-                provide: MatDialogRef,
-                useValue: MatDialogRefMock
-            },
-            {
-                provide: MAT_DIALOG_DATA,
-                useValue: { subaccountId: SubaccountServiceMock.testSubaccount1.id }
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: SubaccountAdminEmailService,
-                useValue: SubaccountAdminEmailServiceMock
-            }
-        ]  
-};
+const dialogService = new DialogServiceMock();
+const defaultTestBedConfig = new TestBedConfigBuilder()
+    .useDefaultConfig(SubaccountAdminEmailsComponent)
+    .addProvider({ provide: MatDialogRef, useValue: dialogService })
+    .addProvider({ provide: SubaccountAdminEmailService, useValue: SubaccountAdminEmailServiceMock })
+    .addProvider({ provide: MAT_DIALOG_DATA, useValue: { subaccountId: SubaccountServiceMock.testSubaccount1.id }})
+    .getConfig();
 
-const beforeEachFunction = async () =>{
+const beforeEachFunction = waitForAsync(() =>{
     TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
         fixture = TestBed.createComponent(SubaccountAdminEmailsComponent);
         subaccountModalComponentInstance = fixture.componentInstance;
     })
-}
+});
 
-describe('UnitTest', () => {
+describe('UnitTest subaccount admin email component', () => {
     describe('simple functions', () => {
         beforeEach(beforeEachFunction);
         it('onCancel()',  () => {
-            spyOn(MatDialogRefMock, 'close');
+            spyOn(dialogService, 'close');
             subaccountModalComponentInstance.onCancel();
-            expect(MatDialogRefMock.close).toHaveBeenCalled();
+            expect(dialogService.close).toHaveBeenCalled();
         });
         it('emailForms()',  () => {
             fixture.detectChanges();
@@ -197,10 +155,10 @@ describe('UnitTest', () => {
 
         it('should close dialog if email form is empty', () => {
             spyOn(SubaccountAdminEmailServiceMock, 'createAdminEmail').and.callFake(SubaccountAdminEmailServiceMock.apiErrorResponse);
-            spyOn(MatDialogRefMock, 'close');
+            spyOn(dialogService, 'close');
             fixture.detectChanges();
             subaccountModalComponentInstance.submit();
-            expect(MatDialogRefMock.close).toHaveBeenCalled();
+            expect(dialogService.close).toHaveBeenCalled();
         });
     });
 

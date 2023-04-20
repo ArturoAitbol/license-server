@@ -1,79 +1,40 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { SharedModule } from "../../shared/shared.module";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { Router } from "@angular/router";
-import { SnackBarService } from "../../../services/snack-bar.service";
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SnackBarServiceMock } from "../../../../test/mock/services/snack-bar-service.mock";
-import { HttpClient } from "@angular/common/http";
-import { FeatureToggleMgmtService } from "../../../services/feature-toggle-mgmt.service";
 import { FeatureToggleMgmtServiceMock } from "../../../../test/mock/services/feature-toggle-mgmt-service.mock";
-import { DialogServiceMock } from "../../../../test/mock/services/dialog-service.mock";
 import { of, throwError } from "rxjs";
 import { FeatureToggleCardComponent } from "./feature-toggle-card.component";
-import { MatDialog } from "@angular/material/dialog";
 import { MatDialogMock } from "../../../../test/mock/components/mat-dialog.mock";
 import { AddFeatureToggleExceptionModalComponent } from "../add-feature-toggle-exception-modal/add-feature-toggle-exception-modal.component";
+import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 
 let testInstance: FeatureToggleCardComponent;
 let fixture: ComponentFixture<FeatureToggleCardComponent>;
 
-const RouterMock = {
-  navigate: (commands: string[]) => { return }
-};
-
-const MatDialogRefMock = {
-  close: ()=> {}
-};
-const dialogMock = new DialogServiceMock();
-const beforeEachFunction = async () => {
-  TestBed.configureTestingModule({
-    declarations: [ FeatureToggleCardComponent ],
-    imports: [ BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule ],
-    providers: [
-      {
-        provide: Router,
-        useValue: RouterMock
-      },
-      {
-        provide: SnackBarService,
-        useValue: SnackBarServiceMock
-      },
-      {
-        provide: HttpClient,
-        useValue: HttpClient
-      },
-      {
-        provide: FeatureToggleMgmtService,
-        useValue: FeatureToggleMgmtServiceMock
-      },
-      {
-        provide: MatDialog,
-        useValue: MatDialogMock
-      },
-    ]
-  }).compileComponents().then(() => {
-    fixture = TestBed.createComponent(FeatureToggleCardComponent);
-    testInstance = fixture.componentInstance;
-    testInstance.featureToggle = {
-      name: "testFT",
-      description: "Test FT",
-      id: "df6f5bc2-2687-49df-8dc0-beff88012235",
-      author: "Test",
-      exceptions: [
-        {
-          subaccountId: "96234b32-32d3-45a4-af26-4c912c0d6a06",
-          customerId: "f1b695b5-b7d9-4245-86ca-9a2a9ccbe460",
-          subaccountName: "Test Subaccount",
-          customerName: "Test customer",
-          status: false
-        }
-      ],
-      status: true
-    };
-  });
-};
+const beforeEachFunction = waitForAsync(
+    () => {
+      const configBuilder = new TestBedConfigBuilder().useDefaultConfig(FeatureToggleCardComponent);
+      TestBed.configureTestingModule(configBuilder.getConfig()).compileComponents().then(() => {
+        fixture = TestBed.createComponent(FeatureToggleCardComponent);
+        testInstance = fixture.componentInstance;
+        testInstance.featureToggle = {
+          name: "testFT",
+          description: "Test FT",
+          id: "df6f5bc2-2687-49df-8dc0-beff88012235",
+          author: "Test",
+          exceptions: [
+            {
+              subaccountId: "96234b32-32d3-45a4-af26-4c912c0d6a06",
+              customerId: "f1b695b5-b7d9-4245-86ca-9a2a9ccbe460",
+              subaccountName: "Test Subaccount",
+              customerName: "Test customer",
+              status: false
+            }
+          ],
+          status: true
+        };
+      });
+    }
+);
 
 describe('Feature Toggle Card - UI verification tests', () => {
   beforeEach(beforeEachFunction);

@@ -1,8 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { DataTableComponent } from 'src/app/generics/data-table/data-table.component';
 import { DialogService } from 'src/app/services/dialog.service';
-import { MatDialogMock } from 'src/test/mock/components/mat-dialog.mock';
 import { CurrentCustomerServiceMock } from 'src/test/mock/services/current-customer-service.mock';
 import { ProjectServiceMock } from 'src/test/mock/services/project-service.mock';
 import { LicenseConsumptionComponent } from './license-consumption.component';
@@ -26,7 +25,6 @@ import { EventEmitter } from '@angular/core';
 import { delay } from 'rxjs/operators';
 import { SubaccountServiceMock } from 'src/test/mock/services/subaccount-service.mock';
 import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
-import { CustomerServiceMock } from '../../../../test/mock/services/customer-service.mock';
 
 let licenseConsumptionComponentTestInstance: LicenseConsumptionComponent;
 let fixture: ComponentFixture<LicenseConsumptionComponent>;
@@ -50,7 +48,6 @@ const updateProjectsEvent = new EventEmitter<any>();
 
 const configBuilder = new TestBedConfigBuilder().useDefaultConfig(LicenseConsumptionComponent);
 configBuilder.addProvider({ provide: DialogService, useValue: dialogService });
-configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
 configBuilder.addDeclaration(DataTableComponent);
 configBuilder.addDeclaration(ModifyLicenseConsumptionDetailsComponent);
 configBuilder.addDeclaration(AddLicenseConsumptionComponent);
