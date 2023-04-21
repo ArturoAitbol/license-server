@@ -1,4 +1,4 @@
-import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick } from "@angular/core/testing";
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Router } from "@angular/router";
 import { of, throwError } from "rxjs";
 import { Constants } from "src/app/helpers/constants";
@@ -23,13 +23,15 @@ const RouterMock = {
 
 const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasDashboardComponent).addDeclaration(BannerComponent);
 const defaultTestBedConfig = configBuilder.getConfig();
-const beforeEachFunction = async () => {
-    TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
-        TestBed.overrideProvider(Router, {useValue: RouterMock});
-        fixture = TestBed.createComponent(CtaasDashboardComponent);
-        ctaasDashboardTestInstance = fixture.componentInstance;
-    });
-};
+const beforeEachFunction = waitForAsync(
+    () => {
+        TestBed.configureTestingModule(defaultTestBedConfig).compileComponents().then(() => {
+            TestBed.overrideProvider(Router, {useValue: RouterMock});
+            fixture = TestBed.createComponent(CtaasDashboardComponent);
+            ctaasDashboardTestInstance = fixture.componentInstance;
+        });
+    }
+) ;
 
 describe('ctaas-dashboard - fetch the details', () => {
     beforeEach(beforeEachFunction);
@@ -51,7 +53,7 @@ describe('ctaas-dashboard - fetch the details', () => {
         expect(MatDialogMock.open).toHaveBeenCalledWith(OnboardWizardComponent, { width: '700px', maxHeight: '80vh', disableClose: true,
         data: { ctaasSetupId: '1e22eb0d-e499-4dbc-8f68-3dff5a42086b', ctaasSetupSubaccountId: 'fbb2d912-b202-432d-8c07-dce0dad51f7f' }});
     });
-    
+
     it('should call to clickMoreDetails with Feature Functionality', () => {
         spyOn(ctaasDashboardTestInstance, 'onClickMoreDetails').and.callThrough();
         spyOn(window, 'open').and.returnValue(null);
@@ -99,7 +101,7 @@ describe('ctaas-dashboard - fetch the details', () => {
 
     it('should call onChangePowerBiButtonToggle ', () => {
         spyOn(ctaasDashboardTestInstance, 'onChangePowerBiButtonToggle').and.callThrough();
-        
+
         fixture.detectChanges();
         ctaasDashboardTestInstance.onChangePowerBiButtonToggle();
 
@@ -156,7 +158,7 @@ describe('test without report-dashboard route', () => {
         expect(ctaasDashboardTestInstance.onChangeButtonToggle).toHaveBeenCalled();
         expect(ctaasDashboardTestInstance.viewDashboardByMode).toHaveBeenCalled();
     });
-    
+
 });
 
 describe('Ctaas Dashboard - maintenance mode', () => {

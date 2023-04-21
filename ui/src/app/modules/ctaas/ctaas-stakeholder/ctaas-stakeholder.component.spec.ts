@@ -56,10 +56,10 @@ describe('UI verification test', () => {
         
         const headers: HTMLElement[] = fixture.nativeElement.querySelectorAll('.mat-sort-header-content');
         expect(headers[0].innerText).toBe('User');
-        expect(headers[1].innerText).toBe('Company Name');
-        expect(headers[2].innerText).toBe('Job Title');
-        expect(headers[3].innerText).toBe('Email');
-        expect(headers[4].innerText).toBe('Phone Number');
+        expect(headers[1].innerText).toBe('Phone Number');
+        expect(headers[2].innerText).toBe('Email');
+        expect(headers[3].innerText).toBe('Company Name');
+        expect(headers[4].innerText).toBe('Job Title');
     });
 
     it('should execute sortData()', () => {

@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { MatDialogMock } from "../../../../../test/mock/components/mat-dialog.mock";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { SnackBarServiceMock } from "../../../../../test/mock/services/snack-bar-service.mock";
 import { DialogService } from "../../../../services/dialog.service";
 import { AddLicenseConsumptionComponent } from "./add-license-consumption.component";
@@ -18,7 +17,6 @@ let fixture: ComponentFixture<AddLicenseConsumptionComponent>;
 
 const configBuilder = new TestBedConfigBuilder().useDefaultConfig(AddLicenseConsumptionComponent);
 configBuilder.addProvider({ provide: DialogService, useValue: new DialogServiceMock() });
-configBuilder.addProvider({ provide: MatDialogRef, useValue: MatDialogMock });
 configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: {} });
 
 const beforeEachFunction = () => {

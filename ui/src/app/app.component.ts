@@ -498,19 +498,22 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private confirmCallbackRequest() {
+        const message = 'You are about to a request a call for '+ this.userProfileData.userProfile.name + 
+                        '.\n If you wish to request a call for another user, please go to the specific stakeholder and select the request call option.'+
+                        '\n\n Do you want to continue?'; 
         this.dialogService.confirmDialog({
           title: 'Confirm call request',
-            message: 'A support engineer will be requested to call you if you continue performing this action, do you want to continue?',
+            message: message,
             confirmCaption: 'Confirm',
             cancelCaption: 'Cancel',
-        }).subscribe((confirmed) => {
+        },'500px').subscribe((confirmed) => {
             if(confirmed){
                 this.callbackService.createCallback(this.userProfileData.userProfile).subscribe((res:any) => {
                     if(!res.error){
                         this.snackBarService.openSnackBar('Call request has been made!', '');
                         this.dialogService.acceptDialog({
                             title: 'Done!',
-                            message: 'A support engineer will contact you as soon as possible, thank you for your patience.',
+                            message: 'Thanks for your request, one of our Spotlight experts will reach out to you shortly.',
                             confirmCaption: 'Ok',
                         });
                     } else {

@@ -42,33 +42,48 @@
         <h2>Let's set your personal information.</h2>
         <div class="row gy-3">
             <div class="col-12 col-sm-6">
-                <input id="name" type="text" formControlName="name" class="form-control" placeholder="Name"
-                    aria-label="Name">
-                <span *ngIf="userProfileForm.get('name').touched && userProfileForm.get('name').invalid"></span>
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-label id="name-label"> Name</mat-label>
+                    <input id="name" type="text" formControlName="name" matInput aria-label="Name">
+                </mat-form-field>
             </div>
             <div class="col-12 col-sm-6">
-                <input id="job-title" type="text" formControlName="jobTitle" class="form-control"
-                    placeholder="Job Title" aria-label="Job Title">
-                <span *ngIf="userProfileForm.get('jobTitle').touched && userProfileForm.get('jobTitle').invalid"></span>
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-label id="company-name-label">Company Name</mat-label>
+                    <input id="company-name" type="text" formControlName="companyName" matInput value="" aria-label="Your Company">
+                </mat-form-field>
+            </div>
+            <div class="col-12 col-sm-6 onboard-wizard-phone">
+                <ngx-intl-tel-input
+                [cssClass]="'custom'"
+                [preferredCountries]="preferredCountries"
+                [enableAutoCountrySelect]="true"
+                [enablePlaceholder]="true"
+                [searchCountryFlag]="true"
+                [searchCountryField]="[SearchCountryField.Iso2,SearchCountryField.Name]"
+                [selectFirstCountry]="false"
+                [selectedCountryISO]="CountryISO.Bolivia"
+                [maxLength]="15"
+                [phoneValidation]="true"
+                [separateDialCode]="false"
+                [numberFormat]="PhoneNumberFormat.International"
+                [inputId]="'phone-number'"
+                required
+                formControlName="phoneNumber"
+            >
+            </ngx-intl-tel-input>
             </div>
             <div class="col-12 col-sm-6">
-                <input id="email" type="email" formControlName="email" class="form-control" placeholder="E-mail"
-                    aria-label="Email">
-                <span *ngIf="userProfileForm.get('email').touched && userProfileForm.get('email').invalid"></span>
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-label id="job-title-label">Job Title</mat-label>
+                    <input  id="jobTitle" type="text" formControlName="jobTitle" matInput aria-label="Job Title">
+                </mat-form-field>
             </div>
             <div class="col-12 col-sm-6">
-                <input id="company-name" type="text" formControlName="companyName" class="form-control"
-                    placeholder="Your Company" aria-label="Your Company">
-                <span
-                    *ngIf="userProfileForm.get('companyName').touched && userProfileForm.get('companyName').invalid"></span>
-            </div>
-            <div class="col-12 col-sm-6">
-                <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
-                    class="form-control"/>
-                <span
-                    *ngIf="userProfileForm.get('phoneNumber').dirty && userProfileForm.get('phoneNumber').hasError('required')"></span>
-                <span
-                    *ngIf="userProfileForm.get('phoneNumber').touched && userProfileForm.get('phoneNumber').hasError('pattern')"></span>
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-label id="email-label">Email</mat-label>
+                    <input id="email" type="email" formControlName="email" matInput aria-label="Email">
+                </mat-form-field>
             </div>
         </div>
         <br>
@@ -111,35 +126,48 @@
         <form [formGroup]="stakeholderForm" (ngSubmit)="addStakeholder()">
             <div class="row gy-3">
                 <div class="col-12 col-sm-6">
-                    <input id="name" type="text" formControlName="name" class="form-control" placeholder="Name"
-                        aria-label="Name">
-                    <span *ngIf="stakeholderForm.get('name').touched && stakeholderForm.get('name').invalid"></span>
+                    <mat-form-field class="w-100" appearance="outline">
+                        <mat-label id="name-label"> Name</mat-label>
+                        <input id="name" type="text" formControlName="name" matInput value="" aria-label="Name">
+                    </mat-form-field>
                 </div>
                 <div class="col-12 col-sm-6">
-                    <input id="job-title" type="text" formControlName="jobTitle" class="form-control"
-                        placeholder="Job Title" aria-label="Job Title">
-                    <span
-                        *ngIf="stakeholderForm.get('jobTitle').touched && stakeholderForm.get('jobTitle').invalid"></span>
+                    <mat-form-field class="w-100" appearance="outline">
+                        <mat-label id="company-name-label">Company Name</mat-label>
+                        <input id="company-name" type="text" formControlName="companyName" matInput value="" aria-label="Your Company">
+                    </mat-form-field>
                 </div>
                 <div class="col-12 col-sm-6">
-                    <input id="email" type="email" formControlName="subaccountAdminEmail" class="form-control"
-                        placeholder="E-mail" aria-label="Email">
-                    <span
-                        *ngIf="stakeholderForm.get('subaccountAdminEmail').touched && stakeholderForm.get('subaccountAdminEmail').invalid"></span>
+                    <ngx-intl-tel-input
+                        [cssClass]="'custom'"
+                        [preferredCountries]="preferredCountries"
+                        [enableAutoCountrySelect]="true"
+                        [enablePlaceholder]="true"
+                        [searchCountryFlag]="true"
+                        [searchCountryField]="[SearchCountryField.Iso2,SearchCountryField.Name]"
+                        [selectFirstCountry]="false"
+                        [selectedCountryISO]="CountryISO.Bolivia"
+                        [maxLength]="15"
+                        [phoneValidation]="true"
+                        [separateDialCode]="false"
+                        [numberFormat]="PhoneNumberFormat.International"
+                        [inputId]="'phoneNumber'"
+                        required
+                        formControlName="phoneNumber"
+                    >
+                    </ngx-intl-tel-input>
                 </div>
                 <div class="col-12 col-sm-6">
-                    <input id="company-name" type="text" formControlName="companyName" class="form-control"
-                        placeholder="Your Company" aria-label="Your Company">
-                    <span
-                        *ngIf="stakeholderForm.get('companyName').touched && stakeholderForm.get('companyName').invalid"></span>
+                    <mat-form-field class="w-100" appearance="outline">
+                        <mat-label id="job-title-label">Job Title</mat-label>
+                        <input  id="jobTitle" type="text" formControlName="jobTitle" matInput aria-label="Job Title">
+                    </mat-form-field>
                 </div>
                 <div class="col-12 col-sm-6">
-                    <input id="phone-number" type="text" formControlName="phoneNumber" placeholder="Phone number"
-                        class="form-control"/>
-                    <span
-                        *ngIf="stakeholderForm.get('phoneNumber').dirty && stakeholderForm.get('phoneNumber').hasError('required')"></span>
-                    <span
-                        *ngIf="stakeholderForm.get('phoneNumber').touched && stakeholderForm.get('phoneNumber').hasError('pattern')"></span>
+                    <mat-form-field class="w-100" appearance="outline">
+                        <mat-label id="email-label">Email</mat-label>
+                        <input id="email" type="email" formControlName="subaccountAdminEmail" matInput aria-label="Email">
+                    </mat-form-field>
                 </div>
             </div>
             <br>

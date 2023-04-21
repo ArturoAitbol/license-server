@@ -1,35 +1,17 @@
-import { HarnessLoader } from "@angular/cdk/testing";
-import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { HttpClient } from "@angular/common/http";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
-import { FormsModule, ReactiveFormsModule, FormBuilder } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MsalService } from "@azure/msal-angular";
 import { of } from "rxjs";
-import { SharedModule } from "src/app/modules/shared/shared.module";
 import { DialogService } from "src/app/services/dialog.service";
-import { SnackBarService } from "src/app/services/snack-bar.service";
-import { SubAccountService } from "src/app/services/sub-account.service";
-import { UserProfileService } from "src/app/services/user-profile.service";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
-import { MsalServiceMock } from "src/test/mock/services/msal-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
-import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
 import { UserProfileServiceMock } from "src/test/mock/services/user-profile.mock";
 import { ViewProfileComponent } from "./view-profile.component";
+import { TestBedConfigBuilder } from '../../../test/mock/TestBedConfigHelper.mock';
 
 
 let ViewProfileComponentTestInstance: ViewProfileComponent;
 let fixture: ComponentFixture<ViewProfileComponent>;
 const dialogService = new DialogServiceMock();
-let loader: HarnessLoader;
-
-const MatDialogRefMock = {
-    close: () => { }
-};
 
 const currentProfile = {
     companyName: "testCompany",
@@ -43,50 +25,13 @@ const currentProfile = {
 };
 
 const beforeEachFunction = () => {
-    TestBed.configureTestingModule({
-        declarations: [ViewProfileComponent],
-        imports: [BrowserAnimationsModule, MatSnackBarModule, SharedModule, FormsModule, ReactiveFormsModule, HttpClientTestingModule],
-        providers: [
-            {
-                provide: FormBuilder,
-            },
-            {
-                provide: SnackBarService,
-                useValue: SnackBarServiceMock
-            },
-            {
-                provide: SubAccountService,
-                useValue: SubaccountServiceMock
-            },
-            {
-                provide: HttpClient
-            },
-            {
-                provide: MsalService,
-                useValue: MsalServiceMock
-            },
-            {
-                provide: DialogService,
-                useValue: dialogService
-            },
-            {
-                provide: MatDialogRef,
-                useValue: MatDialogRefMock
-            },
-            {
-                provide: UserProfileService,
-                useValue: UserProfileServiceMock
-            }, 
-            {
-                provide: MAT_DIALOG_DATA,
-                useValue:currentProfile
-            }
-        ]
-    });
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(ViewProfileComponent);
+    configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue:currentProfile });
+    configBuilder.addProvider({ provide: DialogService, useValue:dialogService });
+    TestBed.configureTestingModule(configBuilder.getConfig());
     fixture = TestBed.createComponent(ViewProfileComponent);
     ViewProfileComponentTestInstance = fixture.componentInstance;
     ViewProfileComponentTestInstance.ngOnInit();
-    loader = TestbedHarnessEnvironment.loader(fixture);
 }
 
 
@@ -100,7 +45,6 @@ describe('UI verification test for Profile modal', () => {
         const jobTitleLabel = fixture.nativeElement.querySelector('#job-title-label');
         const emailLabel = fixture.nativeElement.querySelector('#email-label');
         const companyNameLabel = fixture.nativeElement.querySelector('#company-name-label');
-        const phoneNumberLabel = fixture.nativeElement.querySelector('#phone-number-label');
         const cancelBtn = fixture.nativeElement.querySelector('#cancelBtn');
         const submitBtn = fixture.nativeElement.querySelector('#submitBtn');
 
@@ -109,7 +53,6 @@ describe('UI verification test for Profile modal', () => {
         expect(jobTitleLabel.textContent).toBe('Job Title');
         expect(emailLabel.textContent).toBe('Email');
         expect(companyNameLabel.textContent).toBe('Company Name');
-        expect(phoneNumberLabel.textContent).toBe('Phone Number');
         expect(cancelBtn.textContent).toBe('Cancel');
         expect(submitBtn.textContent).toBe('Update');
     });

@@ -4,7 +4,7 @@ import { SharedModule } from "../../app/modules/shared/shared.module";
 import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { RouterMock } from "./Router.mock";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatDialogMock } from "./components/mat-dialog.mock";
 import { MsalService } from "@azure/msal-angular";
 import { MsalServiceMock } from "./services/msal-service.mock";
@@ -28,9 +28,7 @@ import { LicenseServiceMock } from "./services/license-service.mock";
 import { LicenseConsumptionService } from "../../app/services/license-consumption.service";
 import { ProjectServiceMock } from "./services/project-service.mock";
 import { ProjectService } from "../../app/services/project.service";
-import { DialogService } from "../../app/services/dialog.service";
 import { CustomerService } from "../../app/services/customer.service";
-import { CurrentCustomerServiceMock } from "./services/current-customer-service.mock";
 import { NoteServiceMock } from './services/ctaas-note-service.mock';
 import { ConsumptionServiceMock } from './services/license-consumption-service.mock';
 import { BannerService } from '../../app/services/alert-banner.service';
@@ -46,6 +44,12 @@ import { UsageDetailServiceMock } from './services/usage-detail-service.mock';
 import { BundleService } from '../../app/services/bundle.service';
 import { BundleServiceMock } from './services/bundle-service.mock';
 import { CustomerServiceMock } from './services/customer-service.mock';
+import { FeatureToggleMgmtService } from '../../app/services/feature-toggle-mgmt.service';
+import { FeatureToggleMgmtServiceMock } from './services/feature-toggle-mgmt-service.mock';
+import { SubscriptionsOverviewService } from '../../app/services/subscriptions-overview.service';
+import { SubscriptionsOverviewServiceMock } from './services/subscriptions-overview.service.mock';
+import { UserProfileService } from '../../app/services/user-profile.service';
+import { UserProfileServiceMock } from './services/user-profile.mock';
 
 export class TestBedConfigBuilder {
     testBedConfig:{declarations:Array<any>, schema?:Array<any>, imports:Array<any>, providers:Array<any>};
@@ -85,6 +89,10 @@ export class TestBedConfigBuilder {
                 { provide: DevicesService, useValue: DevicesServiceMock },
                 { provide: UsageDetailService, useValue: UsageDetailServiceMock },
                 { provide: BundleService, useValue: BundleServiceMock },
+                { provide: MatDialogRef, useValue: MatDialogMock },
+                { provide: FeatureToggleMgmtService, useValue: FeatureToggleMgmtServiceMock },
+                { provide: SubscriptionsOverviewService, useValue: SubscriptionsOverviewServiceMock },
+                { provide: UserProfileService, useValue: UserProfileServiceMock }
             ]};
         return this;
     }

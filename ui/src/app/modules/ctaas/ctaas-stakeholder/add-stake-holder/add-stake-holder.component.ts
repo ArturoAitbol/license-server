@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
+import { Validators, FormBuilder } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ActivatedRoute, Params } from '@angular/router';
-import { Constants } from 'src/app/helpers/constants';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 import { Report } from 'src/app/helpers/report';
 import { IUserProfile } from 'src/app/model/user-profile.model';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -18,7 +17,10 @@ export class AddStakeHolderComponent implements OnInit {
 
   isDataLoading = false;
   userprofileDetails: IUserProfile;
-
+  CountryISO = CountryISO;
+  SearchCountryField = SearchCountryField;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries : CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
   constructor(
     private formBuilder: FormBuilder,
     private snackBarService: SnackBarService,
@@ -35,7 +37,7 @@ export class AddStakeHolderComponent implements OnInit {
     jobTitle: ['', Validators.required],
     subaccountAdminEmail: ['', [Validators.required, Validators.email]],
     companyName: ['', Validators.required],
-    phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]]
+    phoneNumber: ['', Validators.required]
   });
 
   reports: any =  [
@@ -82,6 +84,7 @@ export class AddStakeHolderComponent implements OnInit {
       this.isDataLoading = true;
       const { subaccountId } = this.userprofileDetails;
       const stakeholderDetails = { ... this.addStakeholderForm.value };
+      stakeholderDetails.phoneNumber = this.addStakeholderForm.get('phoneNumber').value.e164Number;
       let stakeholderNotificationsAndtype = {...stakeholderDetails, type: this.type, notifications: this.notifications};
       stakeholderNotificationsAndtype.subaccountId = subaccountId;
       if (stakeholderNotificationsAndtype.notifications.length > 0) {
