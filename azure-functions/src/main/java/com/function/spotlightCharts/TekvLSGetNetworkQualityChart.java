@@ -81,7 +81,7 @@ public class TekvLSGetNetworkQualityChart {
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
 		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
-		queryBuilder.appendOrderBy("sr.last_modified_date", ORDER_DIRECTION.ASC);
+		queryBuilder.appendOrderBy("ms.last_modified_date", ORDER_DIRECTION.ASC);
 		
 		// Connect to the database
 		try (

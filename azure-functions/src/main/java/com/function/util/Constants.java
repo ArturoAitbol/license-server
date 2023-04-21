@@ -13,7 +13,7 @@ public abstract class Constants {
     public static String TEMP_ONPOINT_ADDRESS = "tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com";
     public static String TEMP_ONPOINT_USER = "postgres";
     public static String TEMP_ONPOINT_PWD = "1DBpassword!";
-    public static String TEMP_ONPOINT_DB = "onPoint";
+    public static String TEMP_ONPOINT_DB = "onpoint";
 
     
     // ENUMS
