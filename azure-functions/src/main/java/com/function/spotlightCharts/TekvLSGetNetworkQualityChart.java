@@ -2,6 +2,7 @@ package com.function.spotlightCharts;
 
 import com.function.auth.Resource;
 import com.function.db.SelectQueryBuilder;
+import com.function.db.SelectQueryBuilder.ORDER_DIRECTION;
 import com.function.util.Constants;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
@@ -24,11 +25,11 @@ import static com.function.auth.RoleAuthHandler.*;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSGetSimpleChart {
+public class TekvLSGetNetworkQualityChart {
 	/**
-	 * This function listens at endpoint "/v1.0/spotlightCharts/simpleChart". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/v1.0/spotlightCharts/simpleChart
-	 * 2. curl "{your host}/v1.0/spotlightCharts/simpleChart"
+	 * This function listens at endpoint "/v1.0/spotlightCharts/networkQualityChart". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/spotlightCharts/networkQualityChart
+	 * 2. curl "{your host}/v1.0/spotlightCharts/networkQualityChart"
 	 */
 
 	private final String dbConnectionUrl = "jdbc:postgresql://" + Constants.TEMP_ONPOINT_ADDRESS + "/" + Constants.TEMP_ONPOINT_DB 
@@ -36,13 +37,13 @@ public class TekvLSGetSimpleChart {
 			+ "&user=" + Constants.TEMP_ONPOINT_USER
 			+ "&password=" + Constants.TEMP_ONPOINT_PWD;
 
-	@FunctionName("TekvLSGetSimpleChart")
+	@FunctionName("TekvLSGetNetworkQualityChart")
 	public HttpResponseMessage run(
 				@HttpTrigger(
 				name = "req",
 				methods = {HttpMethod.GET},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "spotlightCharts/simpleChart")
+				route = "spotlightCharts/networkQualityChart")
 				HttpRequestMessage<Optional<String>> request,
 				final ExecutionContext context) 
 	{
@@ -65,32 +66,22 @@ public class TekvLSGetSimpleChart {
 		context.getLogger().info("Entering TekvLSGetAllCustomers Azure function");   
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-		String reportType = request.getQueryParameters().getOrDefault("reportType", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		// String metric = request.getQueryParameters().getOrDefault("metric", "");
-		String query = "SELECT sr.status, COUNT(sr.status) as status_counter FROM sub_result sr LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
+		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
+		String metricsClause = metrics.replace(",", "', '");
+		String query = "SELECT ms.* FROM media_stats ms LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
+			"LEFT JOIN sub_result sr ON trs.subresultid = sr.id LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
 			"run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 			"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " + 
 			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
-			"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
-		switch (reportType) {
-			case "CallingReliability":
-				query += " AND tp.name='STS';";				
-				break;
-			case "FeatureFunctionality":
-				query += " AND tp.name='LTS';";
-				break;
-			case "VQ":
-				query += " AND tp.name='POLQA';";
-				break;
-		}
+			"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing') AND tp.name='POLQA' AND ms.parameter_name IN ('" + metricsClause + "')";
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
 		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
-		queryBuilder.appendGroupBy("status");
+		queryBuilder.appendOrderBy("sr.last_modified_date", ORDER_DIRECTION.ASC);
 		
 		// Connect to the database
 		try (
@@ -99,20 +90,44 @@ public class TekvLSGetSimpleChart {
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 			
-			// Retrieve executions status list.
+			// Retrieve all customers.
 			context.getLogger().info("Execute SQL statement: " + statement);
 			ResultSet rs = statement.executeQuery();
-			// Return a JSON array of status and counts (id and value)
+			// Return a JSON array of customers (id and names)
 			JSONObject json = new JSONObject();
-			JSONArray array = new JSONArray();
+			JSONObject datesObject = new JSONObject();
+			JSONObject series = new JSONObject();
+			String[] metricsArray = metrics.split(",");
+			for (String metric : metricsArray) {
+				series.put(metric, new JSONArray());
+			}
 			while (rs.next()) {
-				JSONObject item = new JSONObject();
-				item.put("id", rs.getString("status"));
-				item.put("value", rs.getString("status_count"));
-				array.put(item);
+				// adding to dates map if not added
+				String lastModifiedDate = rs.getString("last_modified_date");
+				if (datesObject.has(lastModifiedDate))
+					datesObject.put(lastModifiedDate, true);
+				// get metric from db row
+				String parameter = rs.getString("parameter_name");
+				// get the numeric value of the field based on matric
+				String parameterValue = "";
+				if (parameter.equals(Constants.PACKET_LOSS_PARAM_NAME))
+					parameterValue = rs.getString("parameter_value").split("%")[0];
+				else
+					parameterValue = rs.getString("parameter_value").split(" ")[0];
+				// get metric's array
+				JSONArray increasedSerie = series.getJSONArray(parameter); 
+				// override metric's array with new value
+				increasedSerie.put(parameterValue); 
+				series.put(parameter, increasedSerie);
+			}
+			
+			JSONArray datesArray = new JSONArray();
+			for (String date : datesObject.keySet()) {
+				datesArray.put(date);
 			}
 
-			json.put("series", array);
+			json.put("series", series);
+			json.put("categories", datesArray);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
