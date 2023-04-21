@@ -104,7 +104,7 @@ public class TekvLSGetNetworkQualityChart {
 			while (rs.next()) {
 				// adding to dates map if not added
 				String lastModifiedDate = rs.getString("last_modified_date");
-				if (datesObject.has(lastModifiedDate))
+				if (!datesObject.has(lastModifiedDate))
 					datesObject.put(lastModifiedDate, true);
 				// get metric from db row
 				String parameter = rs.getString("parameter_name");
