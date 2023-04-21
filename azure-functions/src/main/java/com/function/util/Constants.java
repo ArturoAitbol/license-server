@@ -9,6 +9,10 @@ public abstract class Constants {
     public static String DEFAULT_CTAAS_DEVICE = "Base SpotLight platform ready";
     public static String DEFAULT_CONSUMPTION_TYPE = "Configuration";
     public static int STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
+    public static String TEMP_ONPOINT_ADDRESS = "tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com";
+    public static String TEMP_ONPOINT_USER = "postgres";
+    public static String TEMP_ONPOINT_PWD = "1DBpassword!";
+    public static String TEMP_ONPOINT_DB = "onPoint";
 
     
     // ENUMS
