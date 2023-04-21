@@ -1,6 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChartOptions } from "../../../helpers/chart-options-type";
 import { ChartComponent } from "ng-apexcharts";
+import { CtaasSetupService } from "../../../services/ctaas-setup.service";
+import {
+  defaultDailyCallingReliabilityChartOptions,
+  defaultPolqaChartOptions,
+  defaultWeeklyFeatureFunctionalityChartOptions
+} from "./initial-chart-config";
+import { SubAccountService } from "../../../services/sub-account.service";
 
 @Component({
   selector: 'app-dashboard-poc',
@@ -8,57 +15,76 @@ import { ChartComponent } from "ng-apexcharts";
   styleUrls: ['./dashboard-poc.component.css']
 })
 export class DashboardPocComponent implements OnInit{
-  chartOptions: Partial<ChartOptions>;
-  @ViewChild("chart") chart: ChartComponent;
+  dailyCallingReliabilityChartOptions: Partial<ChartOptions>;
+  polqaChartOptions: Partial<ChartOptions>;
+  weeklyFeatureFunctionalityChartOptions: Partial<ChartOptions>;
+  @ViewChild('polqaChart') polqaChart: ChartComponent;
 
-  constructor() {
-    this.chartOptions = {
-      series: [76],
-      chart: {
-        type: "radialBar",
-        offsetY: -20
-      },
-      plotOptions: {
-        radialBar: {
-          startAngle: -90,
-          endAngle: 90,
-          track: {
-            background: "#e7e7e7",
-            strokeWidth: "97%",
-            margin: 5, // margin is in pixels
-            dropShadow: {
-              enabled: true,
-              top: 2,
-              left: 0,
-              opacity: 0.31,
-              blur: 2
-            }
-          },
-          dataLabels: {
-            name: {
-              show: false
-            },
-            value: {
-              offsetY: -2,
-              fontSize: "22px"
-            }
-          }
-        }
-      },
-      fill: {
-        type: "gradient",
-        gradient: {
-          shade: "light",
-          shadeIntensity: 0.4,
-          inverseColors: false,
-          opacityFrom: 1,
-          opacityTo: 1,
-          stops: [0, 50, 53, 91]
-        }
-      },
-      labels: ["Average Results"]
-    };
+  selectedGraph = 'jitter';
+  selectedPeriod = 'daily';
+
+  constructor(private ctaasSetupService: CtaasSetupService,
+              private subaccountService: SubAccountService) {
+    this.dailyCallingReliabilityChartOptions = defaultDailyCallingReliabilityChartOptions;
+    this.polqaChartOptions = defaultPolqaChartOptions;
+    this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
   }
+
   ngOnInit() {
+    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountService.getSelectedSubAccount().id).subscribe();
+  }
+
+  changeGraph() {
+    console.log(this.selectedGraph);
+    if (this.selectedGraph === 'jitter') {
+      this.polqaChartOptions.series = [
+        {
+          name: "Jitter",
+          data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+        },
+        {
+          name: "POLQA",
+          data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
+        },
+      ];
+      this.polqaChartOptions.title = {
+        text: "Average Jitter vs POLQA",
+        align: "left"
+      };
+      this.polqaChartOptions.yAxis[0].title.text = 'Jitter';
+    } else if (this.selectedGraph === 'packetLoss') {
+      this.polqaChartOptions.series = [
+        {
+          name: 'Packet Loss',
+          data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+        },
+        {
+          name: 'POLQA',
+          data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
+        },
+      ];
+      this.polqaChartOptions.title = {
+        text: 'Packet Loss vs POLQA',
+        align: 'left'
+      };
+      this.polqaChartOptions.yAxis[0].title.text = 'Packet Loss';
+
+    } else if (this.selectedGraph === 'roundTripTime') {
+      this.polqaChartOptions.series = [
+        {
+          name: 'Round Trip Time',
+          data: [ 19.25, 19.42, 20.42, 18.50, 19.17, 19.33, 18.83, 17.42, 18.60, 19.45, 18.83 ]
+        },
+        {
+          name: 'POLQA',
+          data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
+        },
+      ];
+      this.polqaChartOptions.title = {
+        text: 'Round Trip Time vs POLQA',
+        align: 'left'
+      };
+      this.polqaChartOptions.yAxis[0].title.text = 'Round Trip Time';
+    }
   }
 }

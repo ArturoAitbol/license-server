@@ -1,0 +1,14 @@
+.chart-label {
+    color: #42a948;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.card-header {
+    background: #7694B7;
+    color: white;
+}
+
+.card-footer {
+    background: #F2F3F4;
+}
