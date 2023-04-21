@@ -69,17 +69,17 @@ public class TekvLSGetSimpleChart {
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 		// String metric = request.getQueryParameters().getOrDefault("metric", "");
-		String query = "SELECT status, COUNT(status) as status_counter FROM sub_result sr LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
+		String query = "SELECT sr.status, COUNT(sr.status) as status_counter FROM sub_result sr LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
 			"run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
-			"WHERE sr.startdate >= current_date AND sr.finalResult = true AND sr.status != 'ABORTED'AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " + 
+			"WHERE sr.finalResult = true AND sr.status != 'ABORTED'AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " + 
 			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
-			"or sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
+			"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
 		switch (reportType) {
 			case "CallingReliability":
-				query += " AND tp.name='LTS';";				
+				query += " AND tp.name='STS';";				
 				break;
 			case "FeatureFunctionality":
-				query += " AND tp.name='STS';";
+				query += " AND tp.name='LTS';";
 				break;
 			case "VQ":
 				query += " AND tp.name='POLQA';";
@@ -90,6 +90,7 @@ public class TekvLSGetSimpleChart {
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
 		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
+		queryBuilder.appendGroupBy("status");
 		
 		// Connect to the database
 		try (
@@ -111,7 +112,7 @@ public class TekvLSGetSimpleChart {
 				array.put(item);
 			}
 
-			json.put("collection", array);
+			json.put("series", array);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
