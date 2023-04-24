@@ -180,10 +180,13 @@ export class DevicesComponent implements OnInit, OnDestroy {
   }
 
   onDelete(device: Device): void {
+    let deviceDetail = device.vendor + " - " + device.product;
+    if (device.version != "")
+      deviceDetail = deviceDetail + " - " + device.version;
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
-        message: 'Do you want to confirm this action?',
+        message: 'Are you sure you want to delete '+ deviceDetail +'?',
         confirmCaption: 'Confirm',
         cancelCaption: 'Cancel',
       })

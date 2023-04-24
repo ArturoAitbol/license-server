@@ -56,7 +56,7 @@ public class TekvLSGetAllCtaasTestSuitesTest extends TekvLSTest {
         assertTrue(ctaasTestSuite.has("nextExecution"));
         assertTrue(ctaasTestSuite.has("frequency"));
         assertTrue(ctaasTestSuite.has("deviceType"));
-        assertTrue(ctaasTestSuite.has("name"));
+        assertTrue(ctaasTestSuite.has("suiteName"));
     }
 
     @Tag("acceptance")
