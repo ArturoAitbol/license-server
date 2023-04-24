@@ -80,7 +80,7 @@ Feature: Stakeholders
     Then I should see the message "Updated stake holder details successfully"
 
   @deleteStakeholder @spotLightDashboard
-  Scenario: Delete Stakeholder Test
+  Scenario: Delete a Stakeholder
     Given I see the customer "functional-test-stakeholder" in the table
     And I go to the spotlight dashboard for "functional-test-stakeholder"
     And I go to the spotlight "Stakeholders" tab
