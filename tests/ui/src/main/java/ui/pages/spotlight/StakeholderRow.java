@@ -14,7 +14,7 @@ public class StakeholderRow extends AbstractPageObject {
 
     public String getColumnValue(String column) {
         By columnSelector = null;
-        if (column.equals("Name"))
+        if (column.equals("email"))
             columnSelector = By.xpath(this.STAKEHOLDER_NAME_XPATH);
         return this.action.getText(columnSelector);
     }
