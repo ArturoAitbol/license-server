@@ -175,7 +175,6 @@ public class TekvLSGetCollectionChart {
 		TreeMap<String,JSONObject> map = new TreeMap<>();
 
 		long numOfDaysBetween = ChronoUnit.DAYS.between(startDate, endDate)+1;
-		System.out.println("numOfDaysBetween: " + numOfDaysBetween);
 
 		IntStream.iterate(0, i -> i + 1)
 				.limit(numOfDaysBetween)

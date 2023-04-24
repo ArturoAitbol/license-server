@@ -171,8 +171,7 @@ public class TekvLSGetNetworkQualityChart {
 
 		TreeMap<String,JSONObject> map = new TreeMap<>();
 
-		long numOfDaysBetween = ChronoUnit.HOURS.between(startDate, endDate);
-		System.out.println("numOfDaysBetween: " + numOfDaysBetween);
+		long numOfDaysBetween = ChronoUnit.HOURS.between(startDate, endDate)+1;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
 		IntStream.iterate(0, i -> i + 1)
 				.limit(numOfDaysBetween)
