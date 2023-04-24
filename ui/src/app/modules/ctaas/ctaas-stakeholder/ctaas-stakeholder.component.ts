@@ -250,7 +250,7 @@ export class CtaasStakeholderComponent implements OnInit {
   }
 
   private confirmCallbackRequest(data:any) {
-    const message = 'You are about to a request a call for '+ data.name +', do you want to continue?'
+    const message = 'You are about to request a call for '+ data.name +', do you want to continue?'
     this.dialogService.confirmDialog({
       title: 'Confirm call request',
       message: message,
