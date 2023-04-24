@@ -94,7 +94,7 @@ public class TekvLSGetAllCtaasTestSuites {
                 item.put("nextExecution", rs.getString("next_execution_ts"));
                 item.put("frequency", rs.getString("frequency"));
                 item.put("deviceType", rs.getString("device_type"));
-                item.put("name", rs.getString("name"));
+                item.put("suiteName", rs.getString("name"));
                 array.put(item);
             }
 

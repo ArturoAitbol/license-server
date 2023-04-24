@@ -151,10 +151,11 @@ export class LicensesComponent implements OnInit {
    * @param license: License
    */
   onDelete(license: License): void {
+    console.log(license);
     this.dialogService
       .confirmDialog({
         title: 'Confirm Action',
-        message: 'Do you want to confirm this action?',
+        message: 'Are you sure you want to delete '+ license.description +'?',
         confirmCaption: 'Confirm',
         cancelCaption: 'Cancel',
       })
