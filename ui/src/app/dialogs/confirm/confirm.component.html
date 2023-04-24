@@ -2,7 +2,7 @@
     <h1 mat-dialig-title>{{data?.title}}</h1>
     <div class="flex-container">
         <mat-dialog-content>
-            <h3> {{data?.message}}</h3>
+            <h3 [innerText]="data?.message"></h3>
         </mat-dialog-content>
     </div>
     <mat-dialog-actions>

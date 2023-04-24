@@ -11,6 +11,7 @@ import { FeatureToggleDirective } from "../../directives/feature-toggle.directiv
 import { DateRangeDirective } from 'src/app/directives/date-range-directive';
 import { PowerBIEmbedModule } from 'powerbi-client-angular';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
     CommonModule,
     MaterialModule,
     PowerBIEmbedModule,
-    NgxMatTimepickerModule
+    NgxMatTimepickerModule,
+    NgxIntlTelInputModule
   ],
   exports: [
     NaPipe,
@@ -38,7 +40,8 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
     CheckAccessForDirective,
     FeatureToggleDirective,
     DateRangeDirective,
-    PowerBIEmbedModule
+    PowerBIEmbedModule,
+    NgxIntlTelInputModule
   ]
 })
 export class SharedModule { }

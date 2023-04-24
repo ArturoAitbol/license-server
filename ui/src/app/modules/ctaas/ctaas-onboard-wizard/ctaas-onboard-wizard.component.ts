@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 import {Constants} from 'src/app/helpers/constants';
-import {Report} from 'src/app/helpers/report';
 import {AutoLogoutService} from 'src/app/services/auto-logout.service';
 import {CtaasSetupService} from 'src/app/services/ctaas-setup.service';
 import {SnackBarService} from 'src/app/services/snack-bar.service';
@@ -34,6 +34,11 @@ export class OnboardWizardComponent implements OnInit {
 
     ctaasSetupId: string;
     subaccountId: string;
+
+    CountryISO = CountryISO;
+    SearchCountryField = SearchCountryField;
+    PhoneNumberFormat = PhoneNumberFormat;
+    preferredCountries : CountryISO[] = [CountryISO.UnitedStates, CountryISO.UnitedKingdom];
 
     constructor(
         private userprofileService: UserProfileService,
@@ -78,7 +83,7 @@ export class OnboardWizardComponent implements OnInit {
             jobTitle: ['', Validators.required],
             companyName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
+            phoneNumber: ['', Validators.required],
         });
         // add stake holder form
         this.stakeholderForm = this.formbuilder.group({
@@ -86,7 +91,7 @@ export class OnboardWizardComponent implements OnInit {
             jobTitle: ['', Validators.required],
             companyName: ['', Validators.required],
             subaccountAdminEmail: ['', [Validators.required, Validators.email]],
-            phoneNumber: ['', [Validators.required, Validators.pattern(Constants.PHONE_NUMBER_PATTERN), Validators.minLength(10), Validators.maxLength(15)]],
+            phoneNumber: ['', Validators.required],
         });
     }
 
@@ -118,6 +123,7 @@ export class OnboardWizardComponent implements OnInit {
         this.isDataLoading = true;
         this.interaction = '3';
         const userProfileObj = this.userProfileForm.value;
+        userProfileObj.phoneNumber = this.userProfileForm.get('phoneNumber').value.e164Number;
         let detailedUserProfileObj = {...userProfileObj, type: this.type, notifications: this.notifications};
         if (detailedUserProfileObj.notifications.length > 0) {
             detailedUserProfileObj.notifications = detailedUserProfileObj.type + ',' + detailedUserProfileObj.notifications;
@@ -134,7 +140,7 @@ export class OnboardWizardComponent implements OnInit {
             this.snackBarService.openSnackBar(err.error, 'Error updating User profile details !');
             this.isDataLoading = false;
         });
-}
+    }
 
     /**
      * add stake holder confirmation
@@ -144,7 +150,9 @@ export class OnboardWizardComponent implements OnInit {
         let subaccountDetails = this.subaccountService.getSelectedSubAccount();
         switch (value) { 
             case 'yes':
+                this.isDataLoading = true;
                 this.stakeholderService.getStakeholderList(subaccountDetails.id).subscribe(res => {
+                    this.isDataLoading = false;
                     if(res.stakeHolders.length < Constants.STAKEHOLDERS_LIMIT_PER_SUBACCOUNT){
                         this.addAnotherStakeHolder = true;
                         this.interaction = '4';
@@ -171,6 +179,7 @@ export class OnboardWizardComponent implements OnInit {
         this.configuredReports = true;
         this.isDataLoading = true;
         const requestPayload = this.stakeholderForm.value;
+        requestPayload.phoneNumber = this.stakeholderForm.get('phoneNumber').value.e164Number;
         let detailedRequestPayload = {...requestPayload,  type: this.type, notifications: this.notifications}
         detailedRequestPayload.subaccountId = this.subaccountId;
         if (detailedRequestPayload.notifications.length > 0) {
