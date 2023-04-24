@@ -9,42 +9,7 @@
         </div>
     </div>
     <ng-container *ngIf="selectedPeriod === 'daily'">
-    <div class="row">
-        <div class="col-6">
-            <div class="card text-center mt-2">
-                <div class="card-header">
-                    <h1>Calling Reliability</h1>
-                </div>
-                <div class="card-body container-fluid">
-                    <div class="row">
-                        <div class="col">
-                            <label class="chart-label">Great! You had no failures</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <apx-chart #dailyCallingReliabilty
-                                       [series]="dailyCallingReliabilityChartOptions.series"
-                                       [chart]="dailyCallingReliabilityChartOptions.chart"
-                                       [plotOptions]="dailyCallingReliabilityChartOptions.plotOptions"
-                                       [labels]="dailyCallingReliabilityChartOptions.labels"
-                                       [fill]="dailyCallingReliabilityChartOptions.fill"
-                                       [grid]="dailyCallingReliabilityChartOptions.grid"
-                                       [states]="dailyCallingReliabilityChartOptions.states">
-                            </apx-chart>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <mat-icon>timer</mat-icon>
-                    <label class="ps-1">Execution time period: 4/20/2023 4:03:15 AM UTC to 4/20/2023 11:58:33 PM UTC</label>
-                    <br>
-                    <mat-icon>call</mat-icon>
-                    <label class="ps-1">Number of calls: 382</label>
-                </div>
-            </div>
-        </div>
-    </div>
+    <app-gauge-chart [title]="'Calling Reliability'" [value]="97" [timePeriod]="'4/20/2023 4:03:15 AM UTC to 4/20/2023 11:58:33 PM UTC'" [numberCalls]="382"></app-gauge-chart>
     <div class="row mt-4">
         <div class="col-4">
             <mat-button-toggle-group [(ngModel)]="selectedGraph" name="graphSelector" (ngModelChange)="changeGraph()">

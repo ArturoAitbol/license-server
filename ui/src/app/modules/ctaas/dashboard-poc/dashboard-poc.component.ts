@@ -3,7 +3,6 @@ import { ChartOptions } from "../../../helpers/chart-options-type";
 import { ChartComponent } from "ng-apexcharts";
 import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import {
-  defaultDailyCallingReliabilityChartOptions,
   defaultPolqaChartOptions,
   defaultWeeklyFeatureFunctionalityChartOptions
 } from "./initial-chart-config";
@@ -15,7 +14,6 @@ import { SubAccountService } from "../../../services/sub-account.service";
   styleUrls: ['./dashboard-poc.component.css']
 })
 export class DashboardPocComponent implements OnInit{
-  dailyCallingReliabilityChartOptions: Partial<ChartOptions>;
   polqaChartOptions: Partial<ChartOptions>;
   weeklyFeatureFunctionalityChartOptions: Partial<ChartOptions>;
   @ViewChild('polqaChart') polqaChart: ChartComponent;
@@ -25,7 +23,6 @@ export class DashboardPocComponent implements OnInit{
 
   constructor(private ctaasSetupService: CtaasSetupService,
               private subaccountService: SubAccountService) {
-    this.dailyCallingReliabilityChartOptions = defaultDailyCallingReliabilityChartOptions;
     this.polqaChartOptions = defaultPolqaChartOptions;
     this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
   }
