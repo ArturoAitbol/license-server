@@ -290,7 +290,7 @@ export class CtaasStakeholderComponent implements OnInit {
     }
     this.dialogService.confirmDialog({
       title: 'Confirm Action',
-      message: 'Do you want to confirm this action?',
+      message: 'Are you sure you want to delete the stakeholder linked to '+ selectedRow.email +'?',
       confirmCaption: 'Confirm',
       cancelCaption: 'Cancel',
     }).subscribe((confirmed) => {
