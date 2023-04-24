@@ -108,7 +108,7 @@ public class TekvLSGetSimpleChart {
 			while (rs.next()) {
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("status"));
-				item.put("value", rs.getString("status_counter"));
+				item.put("value", rs.getInt("status_counter"));
 				array.put(item);
 			}
 
