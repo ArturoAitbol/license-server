@@ -76,13 +76,13 @@ public class TekvLSGetSimpleChart {
 			"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
 		switch (reportType) {
 			case "CallingReliability":
-				query += " AND tp.name='STS';";				
+				query += " AND tp.name='STS'";
 				break;
 			case "FeatureFunctionality":
-				query += " AND tp.name='LTS';";
+				query += " AND tp.name='LTS'";
 				break;
 			case "VQ":
-				query += " AND tp.name='POLQA';";
+				query += " AND tp.name='POLQA'";
 				break;
 		}
 		
@@ -90,7 +90,7 @@ public class TekvLSGetSimpleChart {
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
 		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
-		queryBuilder.appendGroupBy("status");
+		queryBuilder.appendGroupBy("sr.status");
 		
 		// Connect to the database
 		try (
@@ -108,7 +108,7 @@ public class TekvLSGetSimpleChart {
 			while (rs.next()) {
 				JSONObject item = new JSONObject();
 				item.put("id", rs.getString("status"));
-				item.put("value", rs.getString("status_count"));
+				item.put("value", rs.getString("status_counter"));
 				array.put(item);
 			}
 
