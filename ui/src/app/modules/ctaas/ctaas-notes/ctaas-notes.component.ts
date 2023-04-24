@@ -163,7 +163,7 @@ export class CtaasNotesComponent implements OnInit, OnDestroy {
     onCloseNote(selectedRow: any): void {
         this.dialogService.confirmDialog({
             title: 'Confirm Action',
-            message: 'Are you sure you want to close '+ selectedRow.content +'?',
+            message: 'Are you sure you want to close the note created on '+ selectedRow.openDate +'?',
             confirmCaption: 'Close Note',
             cancelCaption: 'Cancel',
         }).subscribe((confirmed) => {

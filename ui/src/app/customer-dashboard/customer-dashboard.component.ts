@@ -313,10 +313,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
      * open confirm cancel dialog
      */
     openConfirmCancelDialog(customer?: any) {
+        let messageDetail = 'customer "' + customer.name + '"';
+        if (customer.testCustomer)
+            messageDetail = ' subaccount "' + customer.subaccountName + '" / ' + messageDetail;
         this.dialogService
             .deleteCustomerDialog({
                 title: 'Confirm Action',
-                message: 'Are you sure you want to delete ' + customer.name + '?',
+                message: 'Are you sure you want to delete the ' + messageDetail + '?',
                 confirmCaption: 'Delete Subaccount',
                 deleteAllDataCaption: 'Delete Customer',
                 cancelCaption: 'Cancel',
