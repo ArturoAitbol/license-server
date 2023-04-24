@@ -74,13 +74,13 @@ public class TekvLSGetCollectionChart {
 			"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
 		switch (reportType) {
 			case "CallingReliability":
-				query += " AND tp.name='STS';";				
+				query += " AND tp.name='STS'";
 				break;
 			case "FeatureFunctionality":
-				query += " AND tp.name='LTS';";
+				query += " AND tp.name='LTS'";
 				break;
 			case "VQ":
-				query += " AND tp.name='POLQA';";
+				query += " AND tp.name='POLQA'";
 				break;
 		}
 		
