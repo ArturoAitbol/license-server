@@ -3,10 +3,8 @@
     <div class="flex-container">
             <h3>you are about to request a call from one of our Spotlight experts to:</h3>
             <mat-radio-group class="example-radio-group" vertical>
-            <h3>Myself</h3>
-            <mat-radio-button color="primary" (change)="radioChange('myself')" value="1">Call {{this.data.name}}</mat-radio-button>
-            <h3>Another user</h3>
-            <mat-radio-button color="primary" (change)="radioChange('stakeholders')" value="2">Call a stakeholder</mat-radio-button>
+            <mat-radio-button color="primary" (change)="radioChange('myself')" value="1">Myself</mat-radio-button>
+            <mat-radio-button color="primary" (change)="radioChange('stakeholders')" value="2">Another user</mat-radio-button>
         </mat-radio-group>
         <div [formGroup]="stakeholderForm" *ngIf="stakeholdersListFlag">
             <mat-form-field class="example-full-width" appearance="outline">
@@ -23,6 +21,7 @@
                 </button>
             </mat-form-field>
         </div>
+        <br *ngIf="checked">
     </div>
     <h3>Do you want to continue?</h3>
     <mat-dialog-actions>
