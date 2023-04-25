@@ -14,7 +14,12 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.IntStream;
 
 import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
@@ -70,18 +75,24 @@ public class TekvLSGetNetworkQualityChart {
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
 		String metricsClause = metrics.replace(",", "', '");
-		String query = "SELECT ms.* FROM media_stats ms LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
-			"LEFT JOIN sub_result sr ON trs.subresultid = sr.id LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
-			"run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
-			"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " + 
-			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
-			"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing') AND tp.name='POLQA' AND ms.parameter_name IN ('" + metricsClause + "')";
+		String query = "SELECT TO_CHAR(ms.last_modified_date,'YYYY-MM-DD HH24:00') as date_hour, ms.parameter_name, " +
+				"AVG( CASE WHEN ms.parameter_value LIKE '% ms' THEN CAST(SPLIT_PART(ms.parameter_value, ' ms', 1) AS FLOAT) " +
+						  "WHEN ms.parameter_value LIKE '--' THEN NULL " +
+						  "WHEN ms.parameter_value LIKE '%\\%' THEN CAST(SPLIT_PART(ms.parameter_value, '%', 1) AS FLOAT) " +
+						  "ELSE CAST(ms.parameter_value AS FLOAT) END) avg_per_hour " +
+				"FROM media_stats ms LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
+				"LEFT JOIN sub_result sr ON trs.subresultid = sr.id LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id " +
+				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
+				"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " +
+				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
+				"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing') AND tp.name='POLQA' AND ms.parameter_name IN ('" + metricsClause + "')";
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
 		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
-		queryBuilder.appendOrderBy("ms.last_modified_date", ORDER_DIRECTION.ASC);
+		queryBuilder.appendGroupByMany("date_hour, ms.parameter_name");
+		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 		
 		// Connect to the database
 		try (
@@ -95,36 +106,51 @@ public class TekvLSGetNetworkQualityChart {
 			ResultSet rs = statement.executeQuery();
 			// Return a JSON array of customers (id and names)
 			JSONObject json = new JSONObject();
-			JSONObject datesObject = new JSONObject();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime startLocalDate = LocalDateTime.parse(startDate,formatter);
+			LocalDateTime endLocalDate = LocalDateTime.parse(endDate,formatter);
+			TreeMap<String,JSONObject> datesObject = getHoursBetween(startLocalDate,endLocalDate);
+
+			while (rs.next()) {
+				// adding to dates map if not added
+				String dateHour = rs.getString("date_hour");
+				JSONObject dateHourObject = datesObject.get(dateHour);
+				if(dateHourObject==null){
+					dateHourObject = new JSONObject();
+					datesObject.put(dateHour,dateHourObject);
+				}
+
+				// get metric and avg value from db row
+				String parameter = rs.getString("parameter_name");
+				float avgPerHour = rs.getFloat("avg_per_hour");
+				dateHourObject.put(parameter,avgPerHour);
+			}
+
+			Set<Map.Entry<String, JSONObject> > entries = datesObject.entrySet();
+			JSONArray datesArray = new JSONArray();
 			JSONObject series = new JSONObject();
 			String[] metricsArray = metrics.split(",");
 			for (String metric : metricsArray) {
 				series.put(metric, new JSONArray());
 			}
-			while (rs.next()) {
-				// adding to dates map if not added
-				String lastModifiedDate = rs.getString("last_modified_date");
-				if (!datesObject.has(lastModifiedDate))
-					datesObject.put(lastModifiedDate, true);
-				// get metric from db row
-				String parameter = rs.getString("parameter_name");
-				// get the numeric value of the field based on matric
-				String parameterValue = "";
-				if (parameter.equals(Constants.PACKET_LOSS_PARAM_NAME))
-					parameterValue = rs.getString("parameter_value").split("%")[0];
-				else
-					parameterValue = rs.getString("parameter_value").split(" ")[0];
-				// get metric's array
-				JSONArray increasedSerie = series.getJSONArray(parameter); 
-				// override metric's array with new value
-				increasedSerie.put(parameterValue); 
-				series.put(parameter, increasedSerie);
-			}
-			
-			JSONArray datesArray = new JSONArray();
-			for (String date : datesObject.keySet()) {
-				datesArray.put(date);
-			}
+
+			DecimalFormat df = new DecimalFormat("#.00");
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+			entries.forEach(entry -> {
+				String date = entry.getKey();
+				int nextHour = LocalDateTime.parse(date,format).plusHours(1).getHour();
+				datesArray.put(date+ "-" + String.format("%02d", nextHour) +":00");
+
+				JSONObject entryValue = entry.getValue();
+				for (String metric : series.keySet()) {
+					// get metric's array
+					JSONArray increasedSerie = series.getJSONArray(metric);
+					// override metric's array with new value
+					increasedSerie.put(entryValue!=null ? Float.parseFloat(df.format(entryValue.getFloat(metric))) : 0);
+					series.put(metric, increasedSerie);
+				}
+			});
 
 			json.put("series", series);
 			json.put("categories", datesArray);
@@ -142,5 +168,19 @@ public class TekvLSGetNetworkQualityChart {
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
+	}
+
+	public TreeMap<String,JSONObject> getHoursBetween(LocalDateTime startDate, LocalDateTime endDate) {
+
+		TreeMap<String,JSONObject> map = new TreeMap<>();
+
+		long numOfDaysBetween = ChronoUnit.HOURS.between(startDate, endDate)+1;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
+		IntStream.iterate(0, i -> i + 1)
+				.limit(numOfDaysBetween)
+				.mapToObj(i->startDate.plusHours(i).format(formatter))
+				.forEach(i -> map.put(i,null));
+
+		return map;
 	}
 }

@@ -3,11 +3,13 @@ import { ChartOptions } from "../../../helpers/chart-options-type";
 import { ChartComponent } from "ng-apexcharts";
 import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import {
-  defaultDailyCallingReliabilityChartOptions,
   defaultPolqaChartOptions,
   defaultWeeklyFeatureFunctionalityChartOptions
 } from "./initial-chart-config";
 import { SubAccountService } from "../../../services/sub-account.service";
+import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
+import moment from "moment";
+import { forkJoin } from "rxjs";
 
 @Component({
   selector: 'app-dashboard-poc',
@@ -15,36 +17,118 @@ import { SubAccountService } from "../../../services/sub-account.service";
   styleUrls: ['./dashboard-poc.component.css']
 })
 export class DashboardPocComponent implements OnInit{
-  dailyCallingReliabilityChartOptions: Partial<ChartOptions>;
   polqaChartOptions: Partial<ChartOptions>;
-  weeklyFeatureFunctionalityChartOptions: Partial<ChartOptions>;
+  weeklyCallingReliabilityChartOptions: Partial<ChartOptions>;
   @ViewChild('polqaChart') polqaChart: ChartComponent;
+
+  // Calling Reliabilty gaguge variables
+  callingReliability = { value: 0, total: 0, period: '' };
+
+  // Feature Functionality gaguge variables
+  featureFunctionality = { value: 0, total: 0, period: '' };
+
+  // Feature Functionality gaguge variables
+  vq = { value: 0, total: 0, period: '' };
+
+  // POLQA chart variables
+  customerNetworkQualityData = null;
 
   selectedGraph = 'jitter';
   selectedPeriod = 'daily';
 
+  isloading = true;
+
   constructor(private ctaasSetupService: CtaasSetupService,
-              private subaccountService: SubAccountService) {
-    this.dailyCallingReliabilityChartOptions = defaultDailyCallingReliabilityChartOptions;
+              private subaccountService: SubAccountService,
+              private spotlightChartsService: SpotlightChartsService) {
     this.polqaChartOptions = defaultPolqaChartOptions;
-    this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
+    this.weeklyCallingReliabilityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
   }
 
   ngOnInit() {
-    this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountService.getSelectedSubAccount().id).subscribe();
+    // this.ctaasSetupService.getSubaccountCtaasSetupDetails(this.subaccountService.getSelectedSubAccount().id).subscribe();
+    const subs = [];
+    subs.push(this.spotlightChartsService.getDailyCallingReliability(moment(), moment()));
+    subs.push(this.spotlightChartsService.getDailyFeatureFunctionality(moment(), moment()));
+    subs.push(this.spotlightChartsService.getDailyVoiceQuality(moment(), moment()));
+    subs.push(this.spotlightChartsService.getNetworkQualityData(moment(), moment()));
+    subs.push(this.spotlightChartsService.getWeeklyCallingReliability(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day')));
+    forkJoin(subs).subscribe((res: any) => {
+      console.log(res)
+      const dailyCallingReliabiltyRes: any = res[0].series;
+      this.callingReliability.total = dailyCallingReliabiltyRes.reduce((accumulator, entry) => accumulator + entry.value, 0);
+      if (this.callingReliability.total !== 0) {
+        this.callingReliability.value = ((dailyCallingReliabiltyRes.find(entry => entry.id === 'PASSED')?.value  || 0) / this.callingReliability.total) * 100;
+      } else {
+        this.callingReliability.value = 0;
+      }
+      this.callingReliability.period = moment().format("MM-DD-YYYY 00:00:00") + " AM UTC to " + moment().format("MM-DD-YYYY 12:59:59") + " PM UTC";
+
+      const featureFunctionalityRes: any = res[1].series;
+      this.featureFunctionality.total = featureFunctionalityRes.reduce((accumulator, entry) => accumulator + entry.value, 0);
+      if (this.featureFunctionality.total !== 0) {
+        this.featureFunctionality.value = ((featureFunctionalityRes.find(entry => entry.id === 'PASSED')?.value || 0) / this.featureFunctionality.total) * 100;
+      } else {
+        this.featureFunctionality.value = 0;
+      }
+      this.featureFunctionality.period = moment().format("MM-DD-YYYY 00:00:00") + " AM UTC to " + moment().format("MM-DD-YYYY 12:59:59") + " PM UTC";
+
+      const voiceQualityRes: any = res[2].series;
+      this.vq.total = voiceQualityRes.reduce((accumulator, entry) => accumulator + entry.value, 0);
+      if (this.vq.total !== 0) {
+        this.vq.value = ((voiceQualityRes.find(entry => entry.id === 'PASSED')?.value || 0) / this.vq.total) * 100;
+      } else {
+        this.vq.value = 0
+      }
+      this.vq.period = moment().format("MM-DD-YYYY 00:00:00") + " AM UTC to " + moment().format("MM-DD-YYYY 12:59:59") + " PM UTC";
+
+
+      this.customerNetworkQualityData = res[3];
+      this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
+      this.polqaChartOptions.series = [
+        {
+          name: 'Received Jitter',
+          data: this.customerNetworkQualityData.series['Received Jitter']
+        },
+        {
+          name: 'POLQA',
+          data: this.customerNetworkQualityData.series['POLQA']
+        }
+      ];
+
+      const weeklyFeatureFunctionalityData = res[4];
+      this.weeklyCallingReliabilityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
+      this.weeklyCallingReliabilityChartOptions.series = [
+        {
+          name: "Percentage",
+          data: weeklyFeatureFunctionalityData.series['percentage'],
+          type: "line"
+        },
+        {
+          name: "Passed",
+          data: weeklyFeatureFunctionalityData.series['passed'],
+          type: "column",
+        },
+        {
+          name: "Failed",
+          data: weeklyFeatureFunctionalityData.series['failed'],
+          type: "column",
+        }
+      ];
+      this.isloading = false;
+    })
   }
 
   changeGraph() {
-    console.log(this.selectedGraph);
     if (this.selectedGraph === 'jitter') {
       this.polqaChartOptions.series = [
         {
-          name: "Jitter",
-          data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
+          name: 'Received Jitter',
+          data: this.customerNetworkQualityData.series['Received Jitter']
         },
         {
-          name: "POLQA",
-          data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
+          name: 'POLQA',
+          data: this.customerNetworkQualityData.series['POLQA']
         },
       ];
       this.polqaChartOptions.title = {
@@ -55,12 +139,12 @@ export class DashboardPocComponent implements OnInit{
     } else if (this.selectedGraph === 'packetLoss') {
       this.polqaChartOptions.series = [
         {
-          name: 'Packet Loss',
-          data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+          name: 'Received Packet Loss',
+          data: this.customerNetworkQualityData.series['Received packet loss']
         },
         {
           name: 'POLQA',
-          data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
+          data: this.customerNetworkQualityData.series['POLQA']
         },
       ];
       this.polqaChartOptions.title = {
@@ -73,11 +157,11 @@ export class DashboardPocComponent implements OnInit{
       this.polqaChartOptions.series = [
         {
           name: 'Round Trip Time',
-          data: [ 19.25, 19.42, 20.42, 18.50, 19.17, 19.33, 18.83, 17.42, 18.60, 19.45, 18.83 ]
+          data: this.customerNetworkQualityData.series['Round trip time']
         },
         {
           name: 'POLQA',
-          data: [ 4.66, 4.65, 4.63, 4.65, 4.64, 4.64, 4.65, 4.64, 4.65, 4.67, 4.65, ]
+          data: this.customerNetworkQualityData.series['POLQA']
         },
       ];
       this.polqaChartOptions.title = {
