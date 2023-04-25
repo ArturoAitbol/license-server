@@ -17,6 +17,7 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
+import org.mockito.Mockito;
 
 public class TekvLSCreateNewConsumptionEventTest extends TekvLSTest {
 
@@ -452,4 +453,29 @@ public class TekvLSCreateNewConsumptionEventTest extends TekvLSTest {
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
+
+    // @Test
+    // public void invalidTypeSQLTest() {
+    //     // Given
+    //     String dutId = "67e342e7-fc87-4440-bbd7-315b2938c858";
+    //     String bodyRequest = "{ " +
+    //             "    'subaccountId': '"+subaccountId+"'," +
+    //             "    'projectId': '"+projectId+"'," +
+    //             "    'deviceId': '"+ deviceId +"'," +
+    //             "    'dutId': '"+ dutId+ "'," +
+    //             "    'callingPlatformId': '"+ callingPlatformId+"'," +
+    //             "    'consumptionDate': '"+consumptionDate+"'," +
+    //             "    'type': '"+type+"'," +
+    //             "    'usageDays': "+usageDays+" }";
+    //     doReturn(Optional.of(bodyRequest)).when(request).getBody();
+    //     this.queryParams.remove("dutId");
+    //     // When
+    //     HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request, this.context);
+    //     this.context.getLogger().info(response.getBody().toString());
+
+    //     // Then
+    //     HttpStatusType actualStatus = response.getStatus();
+    //     HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+    //     assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    // }
 }
