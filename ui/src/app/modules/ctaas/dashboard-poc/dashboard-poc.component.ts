@@ -57,20 +57,29 @@ export class DashboardPocComponent implements OnInit{
       console.log(res)
       const dailyCallingReliabiltyRes: any = res[0].series;
       this.callingReliability.total = dailyCallingReliabiltyRes.reduce((accumulator, entry) => accumulator + entry.value, 0);
-      this.callingReliability.value = (dailyCallingReliabiltyRes.find(entry => entry.id === 'PASSED')?.value / this.callingReliability.total) * 100;
-      console.log(this.callingReliability.total, this.callingReliability.value);
+      if (this.callingReliability.total !== 0) {
+        this.callingReliability.value = ((dailyCallingReliabiltyRes.find(entry => entry.id === 'PASSED')?.value  || 0) / this.callingReliability.total) * 100;
+      } else {
+        this.callingReliability.value = 0;
+      }
       this.callingReliability.period = moment().format("MM-DD-YYYY 00:00:00") + " AM UTC to " + moment().format("MM-DD-YYYY 12:59:59") + " PM UTC";
 
       const featureFunctionalityRes: any = res[1].series;
       this.featureFunctionality.total = featureFunctionalityRes.reduce((accumulator, entry) => accumulator + entry.value, 0);
-      this.featureFunctionality.value = (featureFunctionalityRes.find(entry => entry.id === 'PASSED')?.value / this.featureFunctionality.total) * 100;
-      console.log(this.featureFunctionality.total, this.featureFunctionality.value);
+      if (this.featureFunctionality.total !== 0) {
+        this.featureFunctionality.value = ((featureFunctionalityRes.find(entry => entry.id === 'PASSED')?.value || 0) / this.featureFunctionality.total) * 100;
+      } else {
+        this.featureFunctionality.value = 0;
+      }
       this.featureFunctionality.period = moment().format("MM-DD-YYYY 00:00:00") + " AM UTC to " + moment().format("MM-DD-YYYY 12:59:59") + " PM UTC";
 
       const voiceQualityRes: any = res[2].series;
       this.vq.total = voiceQualityRes.reduce((accumulator, entry) => accumulator + entry.value, 0);
-      this.vq.value = (voiceQualityRes.find(entry => entry.id === 'PASSED')?.value / this.vq.total) * 100;
-      console.log(this.vq.total, this.vq.value);
+      if (this.vq.total !== 0) {
+        this.vq.value = ((voiceQualityRes.find(entry => entry.id === 'PASSED')?.value || 0) / this.vq.total) * 100;
+      } else {
+        this.vq.value = 0
+      }
       this.vq.period = moment().format("MM-DD-YYYY 00:00:00") + " AM UTC to " + moment().format("MM-DD-YYYY 12:59:59") + " PM UTC";
 
 
