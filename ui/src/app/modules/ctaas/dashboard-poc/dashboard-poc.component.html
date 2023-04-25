@@ -8,69 +8,94 @@
             </mat-button-toggle-group>
         </div>
     </div>
-    <ng-container *ngIf="selectedPeriod === 'daily'">
-    <app-gauge-chart [title]="'Calling Reliability'" [value]="97" [timePeriod]="'4/20/2023 4:03:15 AM UTC to 4/20/2023 11:58:33 PM UTC'" [numberCalls]="382"></app-gauge-chart>
-    <div class="row mt-4">
-        <div class="col-4">
-            <mat-button-toggle-group [(ngModel)]="selectedGraph" name="graphSelector" (ngModelChange)="changeGraph()">
-                <mat-button-toggle value="jitter">Jitter</mat-button-toggle>
-                <mat-button-toggle value="packetLoss">Packet Loss</mat-button-toggle>
-                <mat-button-toggle value="roundTripTime">Round Trip Time</mat-button-toggle>
-            </mat-button-toggle-group>
-        </div>
-        <div class="col-12 mt-2" style="height: 450px">
-            <apx-chart #polqaChart
-                       [series]="polqaChartOptions.series"
-                       [chart]="polqaChartOptions.chart"
-                       [xaxis]="polqaChartOptions.xAxis"
-                       [yaxis]="polqaChartOptions.yAxis"
-                       [dataLabels]="polqaChartOptions.dataLabels"
-                       [grid]="polqaChartOptions.grid"
-                       [stroke]="polqaChartOptions.stroke"
-                       [title]="polqaChartOptions.title"
-                       [markers]="polqaChartOptions.markers"
-                       [legend]="polqaChartOptions.legend"
-                       [colors]="polqaChartOptions.colors">
-            </apx-chart>
-        </div>
+    <div class="loading-shade" *ngIf="isloading">
+        <mat-spinner *ngIf="isloading"></mat-spinner>
     </div>
-    </ng-container>
-    <ng-container *ngIf="selectedPeriod === 'weekly'">
-        <div class="row">
-            <div class="col-12">
-                <div class="card text-center mt-2">
-                    <div class="card-header">
-                        <h1>Calling Reliability</h1>
-                    </div>
-                    <div class="card-body container-fluid">
-                        <div class="row">
-                            <div class="col">
-                <apx-chart #weeklyFeatureFunctionality
-                           [series]="weeklyFeatureFunctionalityChartOptions.series"
-                           [chart]="weeklyFeatureFunctionalityChartOptions.chart"
-                           [xaxis]="weeklyFeatureFunctionalityChartOptions.xAxis"
-                           [yaxis]="weeklyFeatureFunctionalityChartOptions.yAxis"
-                           [dataLabels]="weeklyFeatureFunctionalityChartOptions.dataLabels"
-                           [grid]="weeklyFeatureFunctionalityChartOptions.grid"
-                           [stroke]="weeklyFeatureFunctionalityChartOptions.stroke"
-                           [title]="weeklyFeatureFunctionalityChartOptions.title"
-                           [markers]="weeklyFeatureFunctionalityChartOptions.markers"
-                           [legend]="weeklyFeatureFunctionalityChartOptions.legend"
-                           [colors]="weeklyFeatureFunctionalityChartOptions.colors">
-                </apx-chart>
+    <ng-container *ngIf="!isloading">
+        <ng-container *ngIf="selectedPeriod === 'daily'">
+            <div class="row">
+                <div class="col-6">
+                    <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
+                                     [timePeriod]="callingReliability.period"
+                                     [numberCalls]="callingReliability.total"></app-gauge-chart>
+                </div>
+                <div class="col-6">
+                    <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
+                                     [timePeriod]="featureFunctionality.period"
+                                     [numberCalls]="featureFunctionality.total"></app-gauge-chart>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <app-gauge-chart [title]="'Voice Quality'" [value]="vq.value"
+                                     [timePeriod]="vq.period"
+                                     [numberCalls]="vq.total"></app-gauge-chart>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-4">
+                    <mat-button-toggle-group [(ngModel)]="selectedGraph" name="graphSelector"
+                                             (ngModelChange)="changeGraph()">
+                        <mat-button-toggle value="jitter">Jitter</mat-button-toggle>
+                        <mat-button-toggle value="packetLoss">Packet Loss</mat-button-toggle>
+                        <mat-button-toggle value="roundTripTime">Round Trip Time</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+                <div class="col-12 mt-2" style="height: 450px">
+                    <apx-chart #polqaChart
+                               [series]="polqaChartOptions.series"
+                               [chart]="polqaChartOptions.chart"
+                               [xaxis]="polqaChartOptions.xAxis"
+                               [yaxis]="polqaChartOptions.yAxis"
+                               [dataLabels]="polqaChartOptions.dataLabels"
+                               [grid]="polqaChartOptions.grid"
+                               [stroke]="polqaChartOptions.stroke"
+                               [title]="polqaChartOptions.title"
+                               [markers]="polqaChartOptions.markers"
+                               [legend]="polqaChartOptions.legend"
+                               [colors]="polqaChartOptions.colors">
+                    </apx-chart>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="selectedPeriod === 'weekly'">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card text-center mt-2">
+                        <div class="card-header">
+                            <h1>Calling Reliability</h1>
+                        </div>
+                        <div class="card-body container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <apx-chart #weeklyFeatureFunctionality
+                                               [series]="weeklyCallingReliabilityChartOptions.series"
+                                               [chart]="weeklyCallingReliabilityChartOptions.chart"
+                                               [xaxis]="weeklyCallingReliabilityChartOptions.xAxis"
+                                               [yaxis]="weeklyCallingReliabilityChartOptions.yAxis"
+                                               [dataLabels]="weeklyCallingReliabilityChartOptions.dataLabels"
+                                               [grid]="weeklyCallingReliabilityChartOptions.grid"
+                                               [stroke]="weeklyCallingReliabilityChartOptions.stroke"
+                                               [title]="weeklyCallingReliabilityChartOptions.title"
+                                               [markers]="weeklyCallingReliabilityChartOptions.markers"
+                                               [legend]="weeklyCallingReliabilityChartOptions.legend"
+                                               [colors]="weeklyCallingReliabilityChartOptions.colors">
+                                    </apx-chart>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer">
-                        <mat-icon>timer</mat-icon>
-                        <label class="ps-1">Execution time period: 4/15/2023 00:02:07 AM UTC to 4/21/2023 16:54:31 PM UTC</label>
-                        <br>
-                        <mat-icon>call</mat-icon>
-                        <label class="ps-1">Number of calls: 828</label>
+                        <div class="card-footer">
+                            <mat-icon>timer</mat-icon>
+                            <label class="ps-1">Execution time period: 4/15/2023 00:02:07 AM UTC to 4/21/2023 16:54:31
+                                PM UTC</label>
+                            <br>
+                            <mat-icon>call</mat-icon>
+                            <label class="ps-1">Number of calls: 828</label>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </ng-container>
     </ng-container>
 </div>
 

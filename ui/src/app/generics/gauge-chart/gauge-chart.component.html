@@ -1,45 +1,39 @@
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-6">
-            <div class="card text-center mt-2">
-                <div class="card-header">
-                    <h1>{{title}}</h1>
+<div class="card text-center mt-2">
+    <div class="card-header">
+        <h1>{{title}}</h1>
+    </div>
+    <div class="card-body container-fluid">
+        <div class="row">
+            <ng-container *ngIf="this.chartOptions.series[0] === 100">
+                <div class="col">
+                    <label class="chart-label">Great! You had no failures</label>
                 </div>
-                <div class="card-body container-fluid">
-                    <div class="row">
-                        <ng-container *ngIf="this.chartOptions.series[0] === 100">
-                            <div class="col">
-                                <label class="chart-label">Great! You had no failures</label>
-                            </div>
-                        </ng-container>
-                        <ng-container *ngIf="this.chartOptions.series[0] !== 100">
-                            <div class="col">
-                                <label class="chart-label fail">Oops! There were some failures</label>
-                            </div>
-                        </ng-container>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <apx-chart #chart
-                                       [series]="chartOptions.series"
-                                       [chart]="chartOptions.chart"
-                                       [plotOptions]="chartOptions.plotOptions"
-                                       [labels]="chartOptions.labels"
-                                       [fill]="chartOptions.fill"
-                                       [grid]="chartOptions.grid"
-                                       [states]="chartOptions.states">
-                            </apx-chart>
-                        </div>
-                    </div>
+            </ng-container>
+            <ng-container *ngIf="this.chartOptions.series[0] !== 100">
+                <div class="col">
+                    <label class="chart-label fail">Oops! There were some failures</label>
                 </div>
-                <div class="card-footer">
-                    <mat-icon>timer</mat-icon>
-                    <label class="ps-1">Execution time period: {{timePeriod}}</label>
-                    <br>
-                    <mat-icon>call</mat-icon>
-                    <label class="ps-1">Number of calls: {{numberCalls}}</label>
-                </div>
+            </ng-container>
+        </div>
+        <div class="row">
+            <div class="col">
+                <apx-chart #chart
+                           [series]="chartOptions.series"
+                           [chart]="chartOptions.chart"
+                           [plotOptions]="chartOptions.plotOptions"
+                           [labels]="chartOptions.labels"
+                           [fill]="chartOptions.fill"
+                           [grid]="chartOptions.grid"
+                           [states]="chartOptions.states">
+                </apx-chart>
             </div>
         </div>
+    </div>
+    <div class="card-footer">
+        <mat-icon>timer</mat-icon>
+        <label class="ps-1">Execution time period: {{timePeriod}}</label>
+        <br>
+        <mat-icon>call</mat-icon>
+        <label class="ps-1">Number of calls: {{numberCalls}}</label>
     </div>
 </div>

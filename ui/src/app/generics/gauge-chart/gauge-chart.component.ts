@@ -1,6 +1,7 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { defaultGaugeChartOptions } from "./defaultGaugeChartOptions";
 import { ChartComponent } from "ng-apexcharts";
+import { ChartOptions } from "../../helpers/chart-options-type";
 
 @Component({
   selector: 'app-gauge-chart',
@@ -9,12 +10,12 @@ import { ChartComponent } from "ng-apexcharts";
 })
 export class GaugeChartComponent {
 
-  chartOptions = defaultGaugeChartOptions;
+  chartOptions: ChartOptions = JSON.parse(JSON.stringify(defaultGaugeChartOptions));
   @Input() title: string;
   @Input() numberCalls: number;
   @Input() timePeriod: string;
   @Input() set value(value: number) {
-    this.chartOptions.series = [value];
+    this.chartOptions.series = [Number(value.toFixed(2))];
   }
 
   @ViewChild("chart") chart: ChartComponent;
