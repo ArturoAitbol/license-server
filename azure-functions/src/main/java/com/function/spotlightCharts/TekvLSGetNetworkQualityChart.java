@@ -75,7 +75,7 @@ public class TekvLSGetNetworkQualityChart {
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
 		String metricsClause = metrics.replace(",", "', '");
-		String query = "SELECT TO_CHAR(ms.last_modified_date,'YYYY-MM-DD HH24') as date_hour, ms.parameter_name, " +
+		String query = "SELECT TO_CHAR(ms.last_modified_date,'YYYY-MM-DD HH24:00') as date_hour, ms.parameter_name, " +
 				"AVG( CASE WHEN ms.parameter_value LIKE '% ms' THEN CAST(SPLIT_PART(ms.parameter_value, ' ms', 1) AS FLOAT) " +
 						  "WHEN ms.parameter_value LIKE '--' THEN NULL " +
 						  "WHEN ms.parameter_value LIKE '%\\%' THEN CAST(SPLIT_PART(ms.parameter_value, '%', 1) AS FLOAT) " +
@@ -135,11 +135,14 @@ public class TekvLSGetNetworkQualityChart {
 			}
 
 			DecimalFormat df = new DecimalFormat("#.00");
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 			entries.forEach(entry -> {
-				datesArray.put(entry.getKey());
-				JSONObject entryValue = entry.getValue();
+				String date = entry.getKey();
+				int nextHour = LocalDateTime.parse(date,format).plusHours(1).getHour();
+				datesArray.put(date+ "-" + String.format("%02d", nextHour) +":00");
 
+				JSONObject entryValue = entry.getValue();
 				for (String metric : series.keySet()) {
 					// get metric's array
 					JSONArray increasedSerie = series.getJSONArray(metric);
@@ -172,7 +175,7 @@ public class TekvLSGetNetworkQualityChart {
 		TreeMap<String,JSONObject> map = new TreeMap<>();
 
 		long numOfDaysBetween = ChronoUnit.HOURS.between(startDate, endDate)+1;
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
 		IntStream.iterate(0, i -> i + 1)
 				.limit(numOfDaysBetween)
 				.mapToObj(i->startDate.plusHours(i).format(formatter))

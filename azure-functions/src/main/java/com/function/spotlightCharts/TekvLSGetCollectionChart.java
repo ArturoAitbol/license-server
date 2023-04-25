@@ -112,10 +112,10 @@ public class TekvLSGetCollectionChart {
 				JSONObject date = dates.get(rs.getString("endDate"));
 				date.put(rs.getString("status"),rs.getInt("status_counter"));
 			}
-			JSONArray passedEntries = new JSONArray();
-			JSONArray failedEntries = new JSONArray();
-			JSONArray percentages = new JSONArray();
 			JSONArray categories = new JSONArray();
+
+			JSONObject seriesObject = new JSONObject();
+			seriesObject.put("PERCENTAGE",new JSONArray());
 
 			Set<Map.Entry<String, JSONObject> > entries = dates.entrySet();
 			DecimalFormat df = new DecimalFormat("#.00");
@@ -124,36 +124,41 @@ public class TekvLSGetCollectionChart {
 				categories.put(entry.getKey());
 
 				JSONObject object = entry.getValue();
-				int passed = object.getInt("PASSED");
-				int failed = object.getInt("FAILED");
-				passedEntries.put(passed);
-				failedEntries.put(failed);
 
-				float total = passed+failed;
-				float percentage = total>0 ? (passed*100)/total:0;
-				percentages.put(Float.valueOf(df.format(percentage)));
+				float total = 0;
+				float pass = 0;
+
+				for (String key:object.keySet()) {
+					if(!seriesObject.has(key)){
+						seriesObject.put(key,new JSONArray());
+					}
+
+					JSONArray array = seriesObject.getJSONArray(key);
+					int value = object.getInt(key);
+					array.put(value);
+
+					total += value;
+					if(key.equals("PASSED"))
+						pass+=value;
+				}
+				JSONArray percentageArray = seriesObject.getJSONArray("PERCENTAGE");
+				percentageArray.put(Float.valueOf(df.format(total>0 ? (pass*100)/total:0)));
 			});
 
-			JSONObject series_1 = new JSONObject();
-			series_1.put("name","Pass");
-			series_1.put("data", passedEntries);
-
-			JSONObject series_2 = new JSONObject();
-			series_2.put("name","Fail");
-			series_2.put("data", failedEntries);
-
-			JSONObject series_3 = new JSONObject();
-			series_3.put("name","Success %");
-			series_3.put("data", percentages);
-
-			JSONArray series = new JSONArray();
-			series.put(series_1);
-			series.put(series_2);
-			series.put(series_3);
+			JSONArray failedArray = seriesObject.getJSONArray("FAILED");
+			JSONArray interruptedArray = seriesObject.getJSONArray("INTERRUPTED");
+			for (int i = 0; i < failedArray.length(); i++) {
+				int number = failedArray.getInt(i)+ interruptedArray.getInt(i);
+				failedArray.put(i,number);
+			}
 
 
+			JSONObject seriesObject_1 = new JSONObject();
+			seriesObject_1.put("failed",failedArray);
+			seriesObject_1.put("passed",seriesObject.getJSONArray("PASSED"));
+			seriesObject_1.put("percentage",seriesObject.getJSONArray("PERCENTAGE"));
 			json.put("categories",categories);
-			json.put("series", series);
+			json.put("series", seriesObject_1);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
@@ -179,7 +184,7 @@ public class TekvLSGetCollectionChart {
 		IntStream.iterate(0, i -> i + 1)
 				.limit(numOfDaysBetween)
 				.mapToObj(i->startDate.plusDays(i).toString())
-				.forEach(i -> map.put(i, new JSONObject("{PASSED:0,FAILED:0}")));
+				.forEach(i -> map.put(i, new JSONObject("{PASSED:0,FAILED:0,INTERRUPTED:0}")));
 
 		return map;
 	}
