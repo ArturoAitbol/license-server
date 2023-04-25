@@ -15,6 +15,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -74,9 +75,15 @@ public class TekvLSGetNetworkQualityChart {
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
+		String groupByIndicator = request.getQueryParameters().getOrDefault("groupBy", "hour");
+
 		String metricsClause = metrics.replace(",", "', '");
-		String query = "SELECT TO_CHAR(ms.last_modified_date,'YYYY-MM-DD HH24:00') as date_hour, ms.parameter_name, " +
-				"AVG( CASE WHEN ms.parameter_value LIKE '% ms' THEN CAST(SPLIT_PART(ms.parameter_value, ' ms', 1) AS FLOAT) " +
+		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
+
+
+
+		String query = "SELECT TO_CHAR(ms.last_modified_date,'"+groupByClause+"') as date_hour, ms.parameter_name, " +
+				"AVG( CASE WHEN ms.parameter_value LIKE '% %' THEN CAST(SPLIT_PART(ms.parameter_value, ' ', 1) AS FLOAT) " +
 						  "WHEN ms.parameter_value LIKE '--' THEN NULL " +
 						  "WHEN ms.parameter_value LIKE '%\\%' THEN CAST(SPLIT_PART(ms.parameter_value, '%', 1) AS FLOAT) " +
 						  "ELSE CAST(ms.parameter_value AS FLOAT) END) avg_per_hour " +
@@ -106,10 +113,18 @@ public class TekvLSGetNetworkQualityChart {
 			ResultSet rs = statement.executeQuery();
 			// Return a JSON array of customers (id and names)
 			JSONObject json = new JSONObject();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			LocalDateTime startLocalDate = LocalDateTime.parse(startDate,formatter);
-			LocalDateTime endLocalDate = LocalDateTime.parse(endDate,formatter);
-			TreeMap<String,JSONObject> datesObject = getHoursBetween(startLocalDate,endLocalDate);
+			TreeMap<String,JSONObject> datesObject;
+			if(groupByIndicator.equals("day")){
+				LocalDate startLocalDate = LocalDate.parse(startDate.split(" ")[0]);
+				LocalDate endLocalDate = LocalDate.parse(endDate.split(" ")[0]);
+				datesObject = getDatesBetween(startLocalDate,endLocalDate);
+			}else{
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime startLocalDate = LocalDateTime.parse(startDate,formatter);
+				LocalDateTime endLocalDate = LocalDateTime.parse(endDate,formatter);
+				datesObject = getHoursBetween(startLocalDate,endLocalDate);
+			}
+
 
 			while (rs.next()) {
 				// adding to dates map if not added
@@ -139,15 +154,21 @@ public class TekvLSGetNetworkQualityChart {
 
 			entries.forEach(entry -> {
 				String date = entry.getKey();
-				int nextHour = LocalDateTime.parse(date,format).plusHours(1).getHour();
-				datesArray.put(date+ "-" + String.format("%02d", nextHour) +":00");
+				if(groupByIndicator.equals("day")){
+					datesArray.put(date);
+				}else{
+					int nextHour = LocalDateTime.parse(date,format).plusHours(1).getHour();
+					datesArray.put(date+ "-" + String.format("%02d", nextHour) +":00");
+				}
+
 
 				JSONObject entryValue = entry.getValue();
 				for (String metric : series.keySet()) {
 					// get metric's array
 					JSONArray increasedSerie = series.getJSONArray(metric);
 					// override metric's array with new value
-					increasedSerie.put(entryValue!=null ? Float.parseFloat(df.format(entryValue.getFloat(metric))) : 0);
+					increasedSerie.put(entryValue!=null && entryValue.has(metric) ?
+							Float.parseFloat(df.format(entryValue.getFloat(metric))) : 0);
 					series.put(metric, increasedSerie);
 				}
 			});
@@ -168,6 +189,20 @@ public class TekvLSGetNetworkQualityChart {
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
+	}
+
+	public TreeMap<String,JSONObject> getDatesBetween(LocalDate startDate, LocalDate endDate) {
+
+		TreeMap<String,JSONObject> map = new TreeMap<>();
+
+		long numOfDaysBetween = ChronoUnit.DAYS.between(startDate, endDate)+1;
+
+		IntStream.iterate(0, i -> i + 1)
+				.limit(numOfDaysBetween)
+				.mapToObj(i->startDate.plusDays(i).toString())
+				.forEach(i -> map.put(i,null));
+
+		return map;
 	}
 
 	public TreeMap<String,JSONObject> getHoursBetween(LocalDateTime startDate, LocalDateTime endDate) {
