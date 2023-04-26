@@ -24,6 +24,7 @@ import { FeatureToggleService } from './services/feature-toggle.service';
 import { DialogService } from './services/dialog.service';
 import { CallbackService } from './services/callback.service';
 import { SnackBarService } from './services/snack-bar.service';
+import { CallbackComponent } from './modules/ctaas/callback/callback.component';
 
 
 @Component({
@@ -488,29 +489,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private confirmCallbackRequest() {
-        const message = 'You are about to a request a call for '+ this.userProfileData.userProfile.name + 
-                        '.\n If you wish to request a call for another user, please go to the specific stakeholder and select the request call option.'+
-                        '\n\n Do you want to continue?'; 
-        this.dialogService.confirmDialog({
-          title: 'Confirm call request',
-            message: message,
-            confirmCaption: 'Confirm',
-            cancelCaption: 'Cancel',
-        },'500px').subscribe((confirmed) => {
-            if(confirmed){
-                this.callbackService.createCallback(this.userProfileData.userProfile).subscribe((res:any) => {
-                    if(!res.error){
-                        this.snackBarService.openSnackBar('Call request has been made!', '');
-                        this.dialogService.acceptDialog({
-                            title: 'Done!',
-                            message: 'Thanks for your request, one of our Spotlight experts will reach out to you shortly.',
-                            confirmCaption: 'Ok',
-                        });
-                    } else {
-                        this.snackBarService.openSnackBar('Error requesting call!', '');
-                    }
-                });
-            }
+
+        this.dialog.open(CallbackComponent, {
+            width: '450px',
+            disableClose: false,
+            data: this.userProfileData.userProfile
         });
     }
 

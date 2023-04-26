@@ -23,6 +23,7 @@ import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detaile
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-consolidated-report/search-consolidated-report.component';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { CallbackComponent } from './callback/callback.component';
 
 
 
@@ -44,7 +45,8 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
     CtaasHistoricalDashboardComponent,
     DetailedReportsCompoment,
     CtaasTestReportsComponent,
-    SearchConsolidatedReportComponent
+    SearchConsolidatedReportComponent,
+    CallbackComponent
   ],
   imports: [
     CommonModule,
