@@ -525,29 +525,29 @@ public class TekvLSCreateNewConsumptionEventTest extends TekvLSTest {
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
 
-//    @Test
-//    public void invalidDutAndPlatformCombination() {
-//        //Given
-//        String dutId = "00a0a523-fdbd-42a8-8adb-a4174792ef56";
-//        String callingPlatformId = "7564aab0-5331-4ab5-85f7-e37acbdfd90d";
-//        String bodyRequest = "{ " +
-//                "    'subaccountId': '"+subaccountId+"'," +
-//                "    'projectId': '"+projectId+"'," +
-//                "    'deviceId': '"+ deviceId +"'," +
-//                "    'dutId': '"+ dutId +"'," +
-//                "    'callingPlatformId': '"+ callingPlatformId +"'," +
-//                "    'consumptionDate': '"+consumptionDate+"'," +
-//                "    'type': '"+type+"'," +
-//                "    'any': 'any'," +
-//                "    'usageDays': [null] }";
-//        doReturn(Optional.of(bodyRequest)).when(request).getBody();
-//        // When
-//        HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request, this.context);
-//        this.context.getLogger().info(response.getBody().toString());
-//        // Then
-//        HttpStatusType actualStatus = response.getStatus();
-//        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
-//        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
-//    }
+    @Test
+    public void invalidDutAndPlatformCombination() {
+        //Given
+        String dutId = "d28cf7d0-d5a8-4f8f-9002-ea40e8d2964a";
+        String callingPlatformId = "1ba09c6f-9a2a-4181-ac1e-b7217763df96";
+        String bodyRequest = "{ " +
+                "    'subaccountId': '"+subaccountId+"'," +
+                "    'projectId': '"+projectId+"'," +
+                "    'deviceId': '"+ deviceId +"'," +
+                "    'dutId': '"+ dutId +"'," +
+                "    'callingPlatformId': '"+ callingPlatformId +"'," +
+                "    'consumptionDate': '"+consumptionDate+"'," +
+                "    'type': '"+type+"'," +
+                "    'any': 'any'," +
+                "    'usageDays': [0] }";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        // When
+        HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
 
 }
