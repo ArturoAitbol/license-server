@@ -50,6 +50,8 @@ import { SubscriptionsOverviewService } from '../../app/services/subscriptions-o
 import { SubscriptionsOverviewServiceMock } from './services/subscriptions-overview.service.mock';
 import { UserProfileService } from '../../app/services/user-profile.service';
 import { UserProfileServiceMock } from './services/user-profile.mock';
+import { CallbackService } from "src/app/services/callback.service";
+import { CallbackServiceMock } from "./services/callback-service.mock";
 
 export class TestBedConfigBuilder {
     testBedConfig:{declarations:Array<any>, schema?:Array<any>, imports:Array<any>, providers:Array<any>};
@@ -92,7 +94,8 @@ export class TestBedConfigBuilder {
                 { provide: MatDialogRef, useValue: MatDialogMock },
                 { provide: FeatureToggleMgmtService, useValue: FeatureToggleMgmtServiceMock },
                 { provide: SubscriptionsOverviewService, useValue: SubscriptionsOverviewServiceMock },
-                { provide: UserProfileService, useValue: UserProfileServiceMock }
+                { provide: UserProfileService, useValue: UserProfileServiceMock },
+                { provide: CallbackService, useValue: CallbackServiceMock }
             ]};
         return this;
     }

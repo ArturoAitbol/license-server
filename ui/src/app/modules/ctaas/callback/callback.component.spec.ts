@@ -1,31 +1,31 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ComponentFixture, TestBed, fakeAsync, tick } from "@angular/core/testing";
 import { CallbackComponent } from "./callback.component";
 import { TestBedConfigBuilder } from "src/test/mock/TestBedConfigHelper.mock";
 import { DialogService } from "src/app/services/dialog.service";
-import { BannerComponent } from "../banner/banner.component";
 import { DialogServiceMock } from "src/test/mock/services/dialog-service.mock";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { StakeHolderService } from "src/app/services/stake-holder.service";
 import { StakeHolderServiceMock } from "src/test/mock/services/ctaas-stakeholder-service.mock";
 import { SubaccountServiceMock } from "src/test/mock/services/subaccount-service.mock";
 import { SnackBarServiceMock } from "src/test/mock/services/snack-bar-service.mock";
 import { CallbackServiceMock } from "src/test/mock/services/callback-service.mock";
+import { of, throwError } from "rxjs";
 
 let ctaasCallbackComponent: CallbackComponent;
 let fixture: ComponentFixture<CallbackComponent>;
 const dialogMock = new DialogServiceMock();
-
+const user ={
+    "subaccountId": "2c8e386b-d1bd-48b3-b73a-12bfa5d00805",
+    "role": "customer.SubaccountAdmin",
+    "phoneNumber": "+1111111111",
+    "jobTitle": "Subaccount Admin",
+    "companyName": "tekVizion",
+    "name": "TestSub",
+    "email": "test-customer-subaccount-admin@tekvizionlabs.com",
+    "notifications": "TYPE:Detailed,DAILY_REPORTS"
+} 
 const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CallbackComponent);
 configBuilder.addProvider({ provide: DialogService, useValue: dialogMock });
-configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: {
-    name: 'testDemoR',
-    email: 'testdemo.r@tekvizion.com',
-    companyName: 'tekVizion',
-    jobTitle: 'Engineer',
-    phoneNumber: '9012345680',
-    subaccountId: '6b06ef8d-5eb6-44c3-bf61-e78f8644767e',
-    notifications: ['TYPE:High level', 'DAILY_REPORTS', 'MONTHLY_REPORTS']} 
-});
+configBuilder.addProvider({ provide: MAT_DIALOG_DATA, useValue: user});
 
 const defaultTestBedConfig = configBuilder.getConfig();
 const beforeEachFunction = () => {
@@ -44,22 +44,62 @@ const beforeEachFunction = () => {
         });
 }
 
-fdescribe('Callback function', () => {
+describe('Callback calls to respective users', () => {
     beforeEach(beforeEachFunction);
-    it('should make a callback to "myself"', () => {
+    it('should make a callback to myself', () => {
         spyOn(StakeHolderServiceMock, 'getStakeholderList').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'radioChange').and.callThrough();
         spyOn(CallbackServiceMock, 'createCallback').and.callThrough();
-        spyOn(dialogMock, 'close').and.callThrough();
-        spyOn(dialogMock, 'confirmDialog').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'callbackFunction').and.callThrough();
         const confirm = fixture.nativeElement.querySelector('#confirm');
 
-
         ctaasCallbackComponent.option = 'myself';
+        ctaasCallbackComponent.radioChange('myself');
         confirm.click();
-        dialogMock.setExpectedConfirmDialogValue(true);
 
         expect(CallbackServiceMock.createCallback).toHaveBeenCalled();
-        //expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Call request has been made!', '');
+        expect(ctaasCallbackComponent.callbackFunction).toHaveBeenCalledWith(user)
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Call request has been made!', '');
+    });
+
+    it('should make a callback to another user', () => {
+        spyOn(StakeHolderServiceMock, 'getStakeholderList').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'radioChange').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'onSelectedStakeholder').and.callThrough();
+        spyOn(CallbackServiceMock, 'createCallback').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'callbackFunction').and.callThrough();
+        const confirm = fixture.nativeElement.querySelector('#confirm');
+
+        ctaasCallbackComponent.option = 'stakeholders';
+        ctaasCallbackComponent.radioChange('stakeholders');
+        ctaasCallbackComponent.onSelectedStakeholder(user);
+        ctaasCallbackComponent.callbackFunction(user);
+        confirm.click();
+
+        expect(CallbackServiceMock.createCallback).toHaveBeenCalled();
+        expect(ctaasCallbackComponent.callbackFunction).toHaveBeenCalledWith(user)
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Call request has been made!', '');
+    });
+});
+
+describe("Callback error tests", () => {
+    beforeEach(beforeEachFunction);
+    it('should make call to callback function and thorw an error', async () => {
+        const res = {error:"some error"}
+        spyOn(StakeHolderServiceMock, 'getStakeholderList').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(CallbackServiceMock, 'createCallback').and.returnValue(of(res));
+        spyOn(ctaasCallbackComponent, 'callbackFunction').and.callThrough();
+
+        fixture.detectChanges()
+        ctaasCallbackComponent.option = 'myself';
+        ctaasCallbackComponent.radioChange('myself');
+        ctaasCallbackComponent.callbackFunction(user);
+        
+        await fixture.whenStable();
+
+        expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error requesting call!', '');
     });
 });
