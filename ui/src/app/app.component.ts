@@ -489,7 +489,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private confirmCallbackRequest() {
-
         this.dialog.open(CallbackComponent, {
             width: '450px',
             disableClose: false,

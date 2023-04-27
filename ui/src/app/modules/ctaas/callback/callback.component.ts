@@ -1,15 +1,13 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { map } from 'rxjs/operators';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MsalService } from '@azure/msal-angular';
+import { ViewProfileComponent } from 'src/app/generics/view-profile/view-profile.component';
 import { Constants } from 'src/app/helpers/constants';
-import { Report } from 'src/app/helpers/report';
-import { IStakeholder } from 'src/app/model/stakeholder.model';
 import { CallbackService } from 'src/app/services/callback.service';
 import { DialogService } from 'src/app/services/dialog.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { StakeHolderService } from 'src/app/services/stake-holder.service';
-import { SubAccountService } from 'src/app/services/sub-account.service';
 
 @Component({
   selector: 'app-callback',
@@ -36,7 +34,8 @@ export class CallbackComponent implements OnInit {
     private callbackService: CallbackService,
     private snackBarService: SnackBarService,
     private dialogService: DialogService,
-    private subaccountService: SubAccountService,
+    public dialog: MatDialog,
+    private msalService: MsalService,
     private stakeholderService: StakeHolderService,
     private fb: FormBuilder,) { }
 
@@ -53,18 +52,43 @@ export class CallbackComponent implements OnInit {
 
 
   callbackFunction(userData:any){
-    this.callbackService.createCallback(userData).subscribe((res:any) => {
-      if(!res.error){
-          this.snackBarService.openSnackBar('Call request has been made!', '');
-          this.dialogService.acceptDialog({
-              title: 'Done!',
-              message: 'Thanks for your request, one of our Spotlight experts will reach out to you shortly.',
-              confirmCaption: 'Ok',
-          });
-      } else {
-          this.snackBarService.openSnackBar('Error requesting call!', '');
-      }
-    });
+    if(userData.name && userData.jobTitle && userData.companyName && userData.phoneNumber){
+      this.callbackService.createCallback(userData).subscribe((res:any) => {
+        if(!res.error){
+            this.snackBarService.openSnackBar('Call request has been made!', '');
+            this.dialogService.acceptDialog({
+                title: 'Done!',
+                message: 'Thanks for your request, one of our Spotlight experts will reach out to you shortly.',
+                confirmCaption: 'Ok',
+            });
+        } else {
+            this.snackBarService.openSnackBar('Error requesting call!', '');
+        }
+      });
+    } else {
+      this.openDialogForSpecificRole(userData)
+    }
+  }
+
+  openDialogForSpecificRole(data: any) {
+    const userRoles = this.getAccountRoles();
+    if(userRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
+        this.dialog.open(ViewProfileComponent, {
+        width: '450px',
+        disableClose: true,
+        data: {...data, missing:true}
+      });
+    } else {
+      this.dialogService.acceptDialog({
+        title: 'Incomplete personal information',
+        message: 'Please contact your Subaccount Administrator or tekVizion to fill this user’s info.',
+        confirmCaption: 'Ok',
+      });
+    }
+  }
+
+  private getAccountRoles(): any {
+    return this.msalService.instance.getActiveAccount().idTokenClaims.roles;
   }
 
   radioChange(option: string) {
@@ -86,10 +110,8 @@ export class CallbackComponent implements OnInit {
   }
   
   fecthStakeholders() {
-    let subaccountDetails = this.subaccountService.getSelectedSubAccount();
-    this.stakeholderService.getStakeholderList(subaccountDetails.id).subscribe( res => {
-      this.stakeholdersData = res.stakeHolders;
-      this.stakeholdersData.shift();
+    this.stakeholderService.getStakeholderList(this.data.subaccountId).subscribe( res => {
+      this.stakeholdersData = res.stakeHolders.filter(stakeholder => stakeholder.email !== this.data.email);
     });
   }
 }
