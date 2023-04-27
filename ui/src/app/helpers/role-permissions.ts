@@ -394,7 +394,6 @@ export const permissions = {
             licenseOptions: [],
             licConsumptionOptions: [],
             projectOptions: [],
-            stakeholderOptions: [],
             ctaasTestSuiteOptions: [],
             noteOptions: [
                 'VIEW_DASHBOARD'
