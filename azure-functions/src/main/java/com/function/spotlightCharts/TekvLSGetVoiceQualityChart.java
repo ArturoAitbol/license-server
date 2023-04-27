@@ -83,9 +83,7 @@ public class TekvLSGetVoiceQualityChart {
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
 		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
 		queryBuilder.appendGroupByMany("sr.id, trs.did");
-		queryBuilder.appendOrderBy("sr.startDate::DATE", SelectQueryBuilder.ORDER_DIRECTION.ASC);
 
-		System.out.println("queryBuilder:" + queryBuilder.getQuery());
 		// Connect to the database
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
