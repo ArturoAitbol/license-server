@@ -102,8 +102,6 @@ export class CtaasStakeholderComponent implements OnInit {
           try {
             this.stakeholdersCount = this.countStakeholders(e.stakeHolders);
             stakeHolders.forEach((x: IStakeholder) => {
-              const role = x.role.split('.')[1];
-              x.role = role;
               if (x.notifications) {
                 const reports = this.getReports();
                 if (x.notifications.includes(',')) {
@@ -335,6 +333,6 @@ export class CtaasStakeholderComponent implements OnInit {
   }
 
   private countStakeholders(stakholdersList: IStakeholder[]): number {
-    return stakholdersList.filter(x => x.role === 'SubaccountStakeholder').length;
+    return stakholdersList.filter(x => x.role === Constants.SUBACCOUNT_STAKEHOLDER).length;
   }
 }
