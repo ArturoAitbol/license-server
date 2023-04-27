@@ -46,7 +46,6 @@ export class CtaasStakeholderComponent implements OnInit {
     public dialog: MatDialog,
     private snackBarService: SnackBarService,
     private dialogService: DialogService,
-    private callbackService: CallbackService,
     private stakeholderService: StakeHolderService,
     private subaccountService: SubAccountService,
     private featureToggleService: FeatureToggleService
