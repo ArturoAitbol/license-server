@@ -34,6 +34,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
     readonly WEEKLY: string = 'weekly';
     readonly FEATURE_FUNCTIONALITY_NAME: string = 'Feature Functionality';
     readonly CALLING_RELIABILITY_NAME: string = 'Calling Reliability';
+    readonly VOICE_QUALITY: string = 'Voice Quality (POLQA)';
     readonly VQ_NAME: string = 'Voice Quality User Experience';
 
 
@@ -142,7 +143,18 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
         const obj = this.resultantImagesList[0];
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
-        const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
+        let type
+        switch(reportType){
+            case 'Feature Functionality':
+                type = ReportType.DAILY_FEATURE_FUNCTIONALITY;
+                break;
+            case 'Calling Reliability':
+                type = ReportType.DAILY_CALLING_RELIABILITY;
+                break;
+            case 'Voice Quality (POLQA)':
+                type = ReportType.DAILY_VQ;
+                break;
+        }
         const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
     }
