@@ -97,7 +97,7 @@ public class TekvLSGetNetworkQualityChart {
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
-		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
 		queryBuilder.appendGroupByMany("date_hour, ms.parameter_name");
 		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 		
