@@ -10,6 +10,9 @@ import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
 import moment from "moment";
 import { forkJoin } from "rxjs";
+import { Utility } from "../../../helpers/utils";
+import { environment } from "../../../../environments/environment";
+import { ReportType } from "../../../helpers/report-type";
 
 @Component({
   selector: 'app-dashboard-poc',
@@ -36,15 +39,11 @@ export class DashboardPocComponent implements OnInit{
   // Customer Network Quality variables
   polqaChartOptions: Partial<ChartOptions>;
   customerNetworkQualityData = null;
-  customerNetworkQuality = {
+  customerNetworkQualitySummary = {
     totalCalls: 0,
-    timePeriod: "",
     aboveThreshold: { jitter: 0, packetLoss: 0, roundTripTime: 0 },
-    overall: { jitter: 0, packetLoss: 0, roundTripTime: 0 }
+    overall: { jitter: 0, packetLoss: 0, roundTripTime: 0, polqa:0 }
   };
-
-  // Customer Network Trends variables
-
 
   selectedGraph = 'jitter';
   selectedPeriod = 'daily';
@@ -64,13 +63,15 @@ export class DashboardPocComponent implements OnInit{
 
   ngOnInit() {
     const startTime = performance.now();
-    const subs = [];
-    subs.push(this.spotlightChartsService.getDailyCallingReliability(moment(), moment()));
-    subs.push(this.spotlightChartsService.getDailyFeatureFunctionality(moment(), moment()));
-    subs.push(this.spotlightChartsService.getVoiceQualityChart(moment(), moment()));
-    subs.push(this.spotlightChartsService.getNetworkQualityData(moment(), moment()));
-    subs.push(this.spotlightChartsService.getWeeklyCallingReliability(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day')));
-    forkJoin(subs).subscribe((res: any) => {
+    const obs = [];
+    // TODO: refactor moments
+    obs.push(this.spotlightChartsService.getDailyCallingReliability(moment(), moment()));
+    obs.push(this.spotlightChartsService.getDailyFeatureFunctionality(moment(), moment()));
+    obs.push(this.spotlightChartsService.getVoiceQualityChart(moment(), moment()));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(moment(), moment()));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(moment(), moment()));
+    obs.push(this.spotlightChartsService.getWeeklyCallingReliability(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day')));
+    forkJoin(obs).subscribe((res: any) => {
       console.log(res)
 
       // Daily Calling reliability
@@ -123,8 +124,18 @@ export class DashboardPocComponent implements OnInit{
         }
       ];
 
+      const customerNetworkQualitySummary = res[4];
+      this.customerNetworkQualitySummary.totalCalls = customerNetworkQualitySummary.totalCalls;
+      this.customerNetworkQualitySummary.aboveThreshold.jitter = customerNetworkQualitySummary.jitterAboveThld;
+      this.customerNetworkQualitySummary.aboveThreshold.packetLoss = customerNetworkQualitySummary.packetLossAboveThld;
+      this.customerNetworkQualitySummary.aboveThreshold.roundTripTime = customerNetworkQualitySummary.roundTripTimeAboveThld;
+      this.customerNetworkQualitySummary.overall.jitter = customerNetworkQualitySummary.maxJitter;
+      this.customerNetworkQualitySummary.overall.packetLoss = customerNetworkQualitySummary.maxPacketLoss;
+      this.customerNetworkQualitySummary.overall.roundTripTime = customerNetworkQualitySummary.maxRoundTripTime;
+      this.customerNetworkQualitySummary.overall.polqa = customerNetworkQualitySummary.minPolqa;
+
       // Weekly Feature Functionality
-      const weeklyFeatureFunctionalityData = res[4];
+      const weeklyFeatureFunctionalityData = res[5];
       this.weeklyCallingReliabilityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
       this.weeklyCallingReliabilityChartOptions.series = [
         {
@@ -203,4 +214,17 @@ export class DashboardPocComponent implements OnInit{
       this.polqaChartOptions.yAxis[0].title.text = 'Round Trip Time';
     }
   }
+
+  navigateToDetailedTable(metric: string) {
+    const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999);
+    const startTime = Utility.parseReportDate(startDate);
+    const endTime = Utility.parseReportDate(new Date(endDate));
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&type=${metric}&start=${startTime}&end=${endTime}`;
+    window.open(url);
+  }
+
+  readonly ReportType = ReportType;
 }

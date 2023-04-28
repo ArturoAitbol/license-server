@@ -25,8 +25,8 @@ import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-c
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { DashboardPocComponent } from './dashboard-poc/dashboard-poc.component';
 import { NgApexchartsModule } from "ng-apexcharts";
+import { NetworkQualityTrendsComponent } from './dashboard-poc/network-quality-trends/network-quality-trends.component';
 import { CallbackComponent } from './callback/callback.component';
-
 
 
 @NgModule({
@@ -49,6 +49,7 @@ import { CallbackComponent } from './callback/callback.component';
     CtaasTestReportsComponent,
     SearchConsolidatedReportComponent,
     DashboardPocComponent,
+    NetworkQualityTrendsComponent,
     CallbackComponent
   ],
   imports: [
