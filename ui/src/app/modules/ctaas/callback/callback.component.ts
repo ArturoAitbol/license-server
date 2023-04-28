@@ -72,7 +72,7 @@ export class CallbackComponent implements OnInit {
 
   openDialogForSpecificRole(data: any) {
     const userRoles = this.getAccountRoles();
-    if(userRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
+    if(this.option === 'myself' || userRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
         this.dialog.open(ViewProfileComponent, {
         width: '450px',
         disableClose: true,
