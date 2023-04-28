@@ -25,6 +25,7 @@ import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-c
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { DashboardPocComponent } from './dashboard-poc/dashboard-poc.component';
 import { NgApexchartsModule } from "ng-apexcharts";
+import { CallbackComponent } from './callback/callback.component';
 
 
 
@@ -47,7 +48,8 @@ import { NgApexchartsModule } from "ng-apexcharts";
     DetailedReportsCompoment,
     CtaasTestReportsComponent,
     SearchConsolidatedReportComponent,
-    DashboardPocComponent
+    DashboardPocComponent,
+    CallbackComponent
   ],
   imports: [
     CommonModule,
