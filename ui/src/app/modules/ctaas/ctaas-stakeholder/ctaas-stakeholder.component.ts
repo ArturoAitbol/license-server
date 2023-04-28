@@ -34,13 +34,11 @@ export class CtaasStakeholderComponent implements OnInit {
   isDataLoading = false;
   private readonly ADD_STAKEHOLDER = 'Add Stakeholder';
   private readonly MODIFY_STAKEHOLDER = 'Update Details';
-  private readonly CALLBACK = 'Request Call to this Account';
   private readonly DELETE_STAKEHOLDER = 'Delete Account';
 
   readonly options = {
     MODIFY_STAKEHOLDER: this.MODIFY_STAKEHOLDER,
-    CALLBACK: this.CALLBACK,
-    DELETE_STAKEHOLDER: this.DELETE_STAKEHOLDER,
+    DELETE_STAKEHOLDER: this.DELETE_STAKEHOLDER
   };
 
   constructor(
@@ -48,7 +46,6 @@ export class CtaasStakeholderComponent implements OnInit {
     public dialog: MatDialog,
     private snackBarService: SnackBarService,
     private dialogService: DialogService,
-    private callbackService: CallbackService,
     private stakeholderService: StakeHolderService,
     private subaccountService: SubAccountService,
     private featureToggleService: FeatureToggleService
@@ -198,13 +195,6 @@ export class CtaasStakeholderComponent implements OnInit {
           disableClose: true
         });
         break;
-      case this.CALLBACK: 
-        if(data.name && data.companyName && data.phoneNumber && data.jobTitle) {
-          this.confirmCallbackRequest(data);
-        } else {
-          this.openDialogForSpecificRole(dialogRef, data);
-        }
-        break;
       // case this.DELETE_STAKEHOLDER:
       //   break;
     }
@@ -230,56 +220,7 @@ export class CtaasStakeholderComponent implements OnInit {
       case this.DELETE_STAKEHOLDER:
         this.onDeleteStakeholderAccount(selectedRow);
         break;
-      case this.CALLBACK:
-          this.openDialog(selectedOption,selectedRow);
-        break;
     }
-  }
-
-  openDialogForSpecificRole(dialogRef: any, data: any) {
-    const userRoles = this.getAccountRoles();
-    if(userRoles.includes(Constants.SUBACCOUNT_ADMIN)) {
-      dialogRef = this.dialog.open(ViewProfileComponent, {
-        width: '450px',
-        disableClose: true,
-        data: {...data, missing:true}
-      });
-    } else {
-      this.dialogService.acceptDialog({
-        title: 'Incomplete personal information',
-        message: 'Please contact your Subaccount Administrator or tekVizion to fill this user’s info.',
-        confirmCaption: 'Ok',
-      });
-    }
-  }
-
-  private confirmCallbackRequest(data:any) {
-    const message = 'You are about to request a call for '+ data.name +', do you want to continue?'
-    this.dialogService.confirmDialog({
-      title: 'Confirm call request',
-      message: message,
-      confirmCaption: 'Confirm',
-      cancelCaption: 'Cancel',
-    }).subscribe((confirmed) => {
-        if(confirmed){
-            this.callbackService.createCallback(data).subscribe((res:any) => {
-                if(!res.error){
-                    this.snackBarService.openSnackBar('Call request has been made!', '');
-                    this.dialogService.acceptDialog({
-                      title: 'Done!',
-                      message: 'Thanks for your request, one of our Spotlight experts will reach out to the user ' + data.name +'  shortly.',
-                      confirmCaption: 'Ok',
-                    });
-                } else {
-                  this.snackBarService.openSnackBar('Error requesting call!', '');
-                }
-            });
-        }
-    });
-  }
-
-  private getAccountRoles(): any {
-    return this.msalService.instance.getActiveAccount().idTokenClaims.roles;
   }
   /**
    * on click delete stakeholder account
