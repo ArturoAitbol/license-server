@@ -75,7 +75,7 @@ export class CtaasStakeholderComponent implements OnInit {
       { name: 'Email', dataKey: 'email', position: 'left', isSortable: true },
       { name: 'Company Name', dataKey: 'companyName', position: 'left', isSortable: true },
       { name: 'Job Title', dataKey: 'jobTitle', position: 'left', isSortable: true },
-      { name: 'Role', dataKey: 'role', position:'left', isSortable:true}
+      { name: 'Role', dataKey: 'parsedRole', position:'left', isSortable:true}
     ];
   }
   /**
@@ -102,6 +102,12 @@ export class CtaasStakeholderComponent implements OnInit {
           try {
             this.stakeholdersCount = this.countStakeholders(e.stakeHolders);
             stakeHolders.forEach((x: IStakeholder) => {
+              let parsedRole
+              if(x.role === Constants.SUBACCOUNT_STAKEHOLDER)
+                parsedRole = 'Stakeholder';
+              else if (x.role === Constants.SUBACCOUNT_ADMIN)
+                parsedRole = 'Admin';
+              x.parsedRole = parsedRole;
               if (x.notifications) {
                 const reports = this.getReports();
                 if (x.notifications.includes(',')) {

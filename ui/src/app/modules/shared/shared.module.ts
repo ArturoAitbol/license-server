@@ -12,13 +12,11 @@ import { DateRangeDirective } from 'src/app/directives/date-range-directive';
 import { PowerBIEmbedModule } from 'powerbi-client-angular';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
-import { RolePipe } from 'src/app/pipes/stakeholdersPipe';
 
 
 @NgModule({
   declarations: [
     NaPipe,
-    RolePipe,
     DataTableComponent,
     DataPropertyGetterPipe,
     CheckAccessForDirective,
@@ -36,7 +34,6 @@ import { RolePipe } from 'src/app/pipes/stakeholdersPipe';
   ],
   exports: [
     NaPipe,
-    RolePipe,
     DataTableComponent,
     DataPropertyGetterPipe,
     MaterialModule,
