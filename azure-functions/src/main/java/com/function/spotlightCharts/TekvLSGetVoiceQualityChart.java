@@ -12,11 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.IntStream;
 
 import static com.function.auth.RoleAuthHandler.*;
 
@@ -81,7 +77,7 @@ public class TekvLSGetVoiceQualityChart {
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
-		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
 		queryBuilder.appendGroupByMany("sr.id, trs.did");
 
 		// Connect to the database
@@ -110,11 +106,17 @@ public class TekvLSGetVoiceQualityChart {
 				if(polqa>=2 && polqa<3) { fair += 1; continue; }
 				if(polqa>=0 && polqa<2) { bad += 1; }
 			}
-			JSONArray percentages = new JSONArray();
-			percentages.put((excellent/totalCalls)*100);
-			percentages.put((good/totalCalls)*100);
-			percentages.put((fair/totalCalls)*100);
-			percentages.put((bad/totalCalls)*100);
+			JSONArray percentages;
+			if(totalCalls>0){
+				percentages = new JSONArray();
+				percentages.put((excellent/totalCalls)*100);
+				percentages.put((good/totalCalls)*100);
+				percentages.put((fair/totalCalls)*100);
+				percentages.put((bad/totalCalls)*100);
+			}else{
+				percentages = new JSONArray("[0,0,0,0]");
+			}
+
 
 			JSONArray categories = new JSONArray("['Excellent [4-5]','Good [3-4)','Fair [2-3)','Poor [0-2)']");
 			JSONObject summary = new JSONObject();
