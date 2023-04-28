@@ -89,7 +89,7 @@ public class TekvLSGetSimpleChart {
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
-		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
 		queryBuilder.appendGroupBy("sr.status");
 		
 		// Connect to the database
