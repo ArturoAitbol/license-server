@@ -34,7 +34,6 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
     readonly WEEKLY: string = 'weekly';
     readonly FEATURE_FUNCTIONALITY_NAME: string = 'Feature Functionality';
     readonly CALLING_RELIABILITY_NAME: string = 'Calling Reliability';
-    readonly VOICE_QUALITY: string = 'Voice Quality (POLQA)';
     readonly VQ_NAME: string = 'Voice Quality User Experience';
 
 
@@ -151,7 +150,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
             case 'Calling Reliability':
                 type = ReportType.DAILY_CALLING_RELIABILITY;
                 break;
-            case 'Voice Quality (POLQA)':
+            case 'Voice Quality User Experience':
                 type = ReportType.DAILY_VQ;
                 break;
         }
