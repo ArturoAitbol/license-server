@@ -36,13 +36,14 @@ export class CtaasTestReportsComponent implements OnInit {
   searchFlag: boolean = true;
   todaySearchFlag: boolean = true;
   submitDisabled = false;
-  readonly CALLING: string = 'Daily-CallingReliability';
-  readonly FEATURE: string = 'Daily-FeatureFunctionality';
+  readonly CALLING: string = 'Calling Reliability';
+  readonly FEATURE: string = 'Feature Functionality';
+  readonly VOICE: string = 'Voice quality (POLQA)';
   fontStyleControl = new FormControl('');
   maintenanceModeEnabled = false;
   readonly VIEW_DETAILS = 'More details';
 
-  readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
+  readonly reportsTypes = ['Feature Functionality', 'Calling Reliability', 'Voice quality (POLQA)'];
 
   filterForm = this.formBuilder.group({
     reportType: [''],
@@ -127,6 +128,13 @@ export class CtaasTestReportsComponent implements OnInit {
         endDate: date + ' ' + '23:59:59 UTC',
         report: ReportType.DAILY_FEATURE_FUNCTIONALITY,
       });
+
+      dateList.push({
+        title: 'VQ' + moment.utc().subtract(i + 1,'days').format("_MM_DD"),
+        startDate: date + ' ' + '00:00:00 UTC',
+        endDate: date + ' ' + '23:59:59 UTC',
+        report: ReportType.DAILY_VQ,
+      });
     }
     this.dateList = dateList;
     this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_CALLING_RELIABILITY)
@@ -165,11 +173,24 @@ export class CtaasTestReportsComponent implements OnInit {
 
   todayReport() {
     const todayDetails = this.filterForm.value
+    console.log(todayDetails)
+    let reportType;
+    switch (todayDetails.todayReportType) {
+      case this.FEATURE:
+        reportType = 'Daily-FeatureFunctionality';
+        break;
+      case this.CALLING:
+        reportType = 'Daily-CallingReliability';
+        break;
+      case this.VOICE:
+        reportType = 'Daily-VQ'
+        break;
+    }
     const startDate = moment.utc().format('YYYY-MM-DD 00:00:00');
     const endDate = moment.utc().format('YYYY-MM-DD HH:mm:ss');
     const featureParsedStartTime = Utility.parseReportDate(new Date(startDate));
     const featureParsedEndTime = Utility.parseReportDate(new Date(endDate));
-    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${todayDetails.todayReportType}&start=${featureParsedStartTime}&end=${featureParsedEndTime}`;
+    const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${featureParsedStartTime}&end=${featureParsedEndTime}`;
     window.open(featureUrl);
   }
 
@@ -201,10 +222,16 @@ export class CtaasTestReportsComponent implements OnInit {
 
   onChangeButtonToggle() {
     const { value } = this.fontStyleControl;
-    if(value === ReportType.DAILY_CALLING_RELIABILITY)
-      this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_CALLING_RELIABILITY);
-    else if (value === ReportType.DAILY_FEATURE_FUNCTIONALITY)
-      this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_FEATURE_FUNCTIONALITY);
+    switch(value){
+      case 'Calling Reliability':
+        this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_CALLING_RELIABILITY);
+        break;
+      case 'Feature Functionality':
+        this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_FEATURE_FUNCTIONALITY);
+        break;
+      case 'Voice quality (POLQA)':
+        this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_VQ);
+    }      
   }
 
   ngOnDestroy() {
