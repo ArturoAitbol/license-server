@@ -14,50 +14,71 @@ export class SpotlightChartsService {
     }
 
     /**
-     * get stakeholder list details
-     * @returns: Observable<any>
+     *
+     * @param startDate Start date in local time
+     * @param endDate End date in local time
      */
     public getNetworkQualityData(startDate: Moment, endDate: Moment): Observable<any> {
         let params = new HttpParams();
-        params = params.set('startDate', startDate.format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.format("YYYY-MM-DD 23:59:59"));
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('metric', 'POLQA,Received Jitter,Received packet loss,Round trip time');
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'networkQualityChart', { headers, params });
     }
 
     /**
-     * get stakeholder list details
-     * @returns: Observable<any>
+     *
+     * @param startDate Start date in local time
+     * @param endDate End date in local time
      */
     public getWeeklyCallingReliability(startDate: Moment, endDate: Moment): Observable<any> {
         let params = new HttpParams();
-        params = params.set('startDate', startDate.format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.format("YYYY-MM-DD 23:59:59"));
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('reportType', 'CallingReliability');
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'collectionChart', { headers, params });
     }
 
+    /**
+     *
+     * @param startDate Start date in local time
+     * @param endDate End date in local time
+     */
     public getDailyCallingReliability(startDate: Moment, endDate: Moment): Observable<any> {
        return this.getSimpleChart(startDate, endDate, 'CallingReliability');
     }
 
+    /**
+     *
+     * @param startDate Start date in local time
+     * @param endDate End date in local time
+     */
     public getDailyFeatureFunctionality(startDate: Moment, endDate: Moment): Observable<any> {
         return this.getSimpleChart(startDate, endDate, 'FeatureFunctionality');
     }
 
-    public getDailyVoiceQuality(startDate: Moment, endDate: Moment): Observable<any> {
-        return this.getSimpleChart(startDate, endDate, 'VQ');
-    }
-
     private getSimpleChart(startDate: Moment, endDate: Moment, reportType: string) {
         let params = new HttpParams();
-        params = params.set('startDate', startDate.format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.format("YYYY-MM-DD 23:59:59"));
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('reportType', reportType);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'simpleChart', { headers, params });
+    }
+
+    /**
+     *
+     * @param startDate Start date in local time
+     * @param endDate End date in local time
+     */
+    public getVoiceQualityChart(startDate: Moment, endDate: Moment) {
+        let params = new HttpParams();
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        const headers = this.getHeaders();
+        return this.httpClient.get(this.API_URL + 'voiceQualityChart', { headers, params });
     }
 
     /**
