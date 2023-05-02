@@ -198,6 +198,15 @@ COPY public.historical_report (id, subaccount_id, note_id, report_type, start_da
 \.
 
 --
+-- Data for Name: subaccount_admin_device; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.subaccount_admin_device (subaccount_admin_email, device_token) FROM stdin;
+test-customer-subaccount-admin@tekvizionlabs.com	" "
+test-customer-subaccount-stakeholder@tekvizionlabs.com	c-5jQmqry0Kmt-sMmgaFrz:APA91bGbwP1cY_zPD1HyMquL5ttxUZLTy7KHSxwUyahm_tWJmq4P6JkAD_HXXAe-s_D9Fp2TxyPPf13jnFLfdLY-vvKDWglLpFZeXLfiLgdI8gMtIV97-5ZKnwxuQLQY6ek2Qu3jRlxV
+\.
+
+--
 -- Data for Name: device; Type: TABLE DATA; Schema: public; Owner: -
 --
 COPY public.device (id, vendor, product, version, type, granularity, tokens_to_consume, start_date, deprecated_date, subaccount_id, support_type) FROM stdin;
