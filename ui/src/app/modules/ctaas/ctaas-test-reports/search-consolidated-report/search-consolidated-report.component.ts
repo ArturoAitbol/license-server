@@ -23,8 +23,11 @@ export class SearchConsolidatedReportComponent implements OnInit {
   startDate: any;
   endDate: any;
   dateLimit: number = 9;
+  readonly CALLING: string = 'Calling Reliability';
+  readonly FEATURE: string = 'Feature Functionality';
+  readonly VOICE: string = 'Voice Quality (POLQA)';
 
-  readonly reportsTypes = ['Daily-FeatureFunctionality', 'Daily-CallingReliability'];
+  readonly reportsTypes = ['Feature Functionality', 'Calling Reliability', 'Voice Quality (POLQA)'];
 
   searchForm = this.formBuilder.group({
     reportType: ['',Validators.required],
@@ -52,11 +55,23 @@ export class SearchConsolidatedReportComponent implements OnInit {
 
   consolidatedReport(): void {
     const details = this.searchForm.value;
+    let reportType;
+    switch (details.reportType) {
+      case this.FEATURE:
+        reportType = 'Daily-FeatureFunctionality';
+        break;
+      case this.CALLING:
+        reportType = 'Daily-CallingReliability';
+        break;
+      case this.VOICE:
+        reportType = 'Daily-VQ'
+        break;
+    }
     const parsedStartTime = moment.utc(details.startDate).format("MM-DD-YYYY") + ' ' + details.startTime + ':00';
     const parsedEndTime = moment.utc(details.endDate).format("MM-DD-YYYY") + ' ' + details.endTime + ':59'; 
     const parsedStartDate = Utility.parseReportDate(new Date(parsedStartTime));
     const parsedEndDate = Utility.parseReportDate(new Date(parsedEndTime));
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${details.reportType}&start=${parsedStartDate}&end=${parsedEndDate}`;
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${parsedStartDate}&end=${parsedEndDate}`;
     window.open(url);
   }
 
