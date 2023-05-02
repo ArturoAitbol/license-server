@@ -68,7 +68,7 @@ public class TekvLSGetNetworkQualitySummary {
 
 		String[] metricsArray = metrics.split(",");
 		StringBuilder statistics = new StringBuilder();
-		List<String> statisticsLabels = new ArrayList<>();;
+		List<String> statisticsLabels = new ArrayList<>();
 		for (String metric: metricsArray) {
 			switch (metric){
 				case "Received Jitter":

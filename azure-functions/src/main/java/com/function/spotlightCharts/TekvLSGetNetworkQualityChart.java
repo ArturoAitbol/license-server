@@ -80,14 +80,40 @@ public class TekvLSGetNetworkQualityChart {
 		String metricsClause = metrics.replace(",", "', '");
 		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
 
+		Iterator<String> metricsArray = Arrays.stream(metrics.split(",")).iterator();
+		StringBuilder statistics = new StringBuilder();
+		List<String> statisticsLabels = new ArrayList<>();
+		while (metricsArray.hasNext()) {
+			String metric = metricsArray.next();
+			switch (metric) {
+				case "Received Jitter":
+					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Received Jitter\" " );
+					statisticsLabels.add("Received Jitter");
+					break;
+				case "Received packet loss":
+					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Received packet loss\"  ");
+					statisticsLabels.add("Received packet loss");
+					break;
+				case "Round trip time":
+					statistics.append("max(case when ms.parameter_name = 'Round trip time' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Round trip time\" ");
+					statisticsLabels.add("Round trip time");
+					break;
+				case "Sent bitrate":
+					statistics.append("avg(case when ms.parameter_name = 'Sent bitrate' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Sent bitrate\" ");
+					statisticsLabels.add("Sent bitrate");
+					break;
+				case "POLQA":
+					statistics.append("min(case when ms.parameter_name = 'POLQA' then ms.parameter_value::numeric end) as \"POLQA\" ");
+					statisticsLabels.add("POLQA");
+					break;
+			}
+			if (metricsArray.hasNext()) {
+				 statistics.append(",");
+			}
+		}
 
-
-		String query = "SELECT TO_CHAR(ms.last_modified_date,'"+groupByClause+"') as date_hour, ms.parameter_name, " +
-				"AVG( CASE WHEN ms.parameter_value LIKE '% %' THEN CAST(SPLIT_PART(ms.parameter_value, ' ', 1) AS FLOAT) " +
-						  "WHEN ms.parameter_value LIKE '--' THEN NULL " +
-						  "WHEN ms.parameter_value LIKE '%\\%' THEN CAST(SPLIT_PART(ms.parameter_value, '%', 1) AS FLOAT) " +
-						  "ELSE CAST(ms.parameter_value AS FLOAT) END) avg_per_hour " +
-				"FROM media_stats ms LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
+		String query = "SELECT TO_CHAR(ms.last_modified_date,'"+groupByClause+"') as date_hour, " + statistics +
+				" FROM media_stats ms LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
 				"LEFT JOIN sub_result sr ON trs.subresultid = sr.id LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id " +
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " +
@@ -98,7 +124,7 @@ public class TekvLSGetNetworkQualityChart {
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
 		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
-		queryBuilder.appendGroupByMany("date_hour, ms.parameter_name");
+		queryBuilder.appendGroupByMany("date_hour");
 		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 		
 		// Connect to the database
@@ -135,18 +161,17 @@ public class TekvLSGetNetworkQualityChart {
 					datesObject.put(dateHour,dateHourObject);
 				}
 
-				// get metric and avg value from db row
-				String parameter = rs.getString("parameter_name");
-				float avgPerHour = rs.getFloat("avg_per_hour");
-				dateHourObject.put(parameter,avgPerHour);
+				// get metrics values from DB
+				for(String statistic:statisticsLabels){
+					dateHourObject.put(statistic,rs.getFloat(statistic));
+				}
 			}
 
 			Set<Map.Entry<String, JSONObject> > entries = datesObject.entrySet();
 			JSONArray datesArray = new JSONArray();
 			JSONObject series = new JSONObject();
-			String[] metricsArray = metrics.split(",");
-			for (String metric : metricsArray) {
-				series.put(metric, new JSONArray());
+			for (String statistic : statisticsLabels) {
+				series.put(statistic, new JSONArray());
 			}
 
 			DecimalFormat df = new DecimalFormat("#.00");
