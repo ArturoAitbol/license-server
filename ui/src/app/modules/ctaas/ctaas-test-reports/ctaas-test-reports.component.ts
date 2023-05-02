@@ -38,12 +38,12 @@ export class CtaasTestReportsComponent implements OnInit {
   submitDisabled = false;
   readonly CALLING: string = 'Calling Reliability';
   readonly FEATURE: string = 'Feature Functionality';
-  readonly VOICE: string = 'Voice quality (POLQA)';
+  readonly VOICE: string = 'Voice Quality (POLQA)';
   fontStyleControl = new FormControl('');
   maintenanceModeEnabled = false;
   readonly VIEW_DETAILS = 'More details';
 
-  readonly reportsTypes = ['Feature Functionality', 'Calling Reliability', 'Voice quality (POLQA)'];
+  readonly reportsTypes = ['Feature Functionality', 'Calling Reliability', 'Voice Quality (POLQA)'];
 
   filterForm = this.formBuilder.group({
     reportType: [''],
@@ -229,7 +229,7 @@ export class CtaasTestReportsComponent implements OnInit {
       case 'Feature Functionality':
         this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_FEATURE_FUNCTIONALITY);
         break;
-      case 'Voice quality (POLQA)':
+      case 'Voice Quality (POLQA)':
         this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_VQ);
     }      
   }
