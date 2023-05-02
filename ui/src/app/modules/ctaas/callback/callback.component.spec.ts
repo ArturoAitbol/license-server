@@ -103,3 +103,55 @@ describe("Callback error tests", () => {
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error requesting call!', '');
     });
 });
+
+describe("Callback with users missing data", () => {
+    const userEmptyData = {
+        id: "eea5f3b8-37eb-41fe-adad-5f94da124a5a",
+        name: null,
+        customerId: "157fdef0-c28e-4764-9023-75c06daad09d",
+        services: "tokenConsumption,spotlight",
+        testCustomer: false,
+        companyName:"testComp",
+        customerName:"testName"
+    }
+
+    beforeEach(() =>{
+        TestBed.configureTestingModule(configBuilder.getConfig());
+        fixture = TestBed.createComponent(CallbackComponent);
+        ctaasCallbackComponent = fixture.componentInstance;
+    });
+
+    it('should make call to openDialogForSpecificRole with stakeholder', () => {
+        spyOn(StakeHolderServiceMock, 'getStakeholderList').and.callThrough();
+        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'radioChange').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'onSelectedStakeholder').and.callThrough();
+        spyOn(CallbackServiceMock, 'createCallback').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'callbackFunction').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'openDialogForSpecificRole').and.callThrough();
+        const confirm = fixture.nativeElement.querySelector('#confirm');
+
+        ctaasCallbackComponent.option = 'stakeholders';
+        ctaasCallbackComponent.radioChange('stakeholders');
+        ctaasCallbackComponent.callbackFunction(userEmptyData);
+        confirm.click();
+
+        expect(ctaasCallbackComponent.openDialogForSpecificRole).toHaveBeenCalled();
+    });
+
+    it('should make call to openDialogForSpecificRole with myself', () => {
+        spyOn(StakeHolderServiceMock, 'getStakeholderList').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'radioChange').and.callThrough();
+        spyOn(CallbackServiceMock, 'createCallback').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'callbackFunction').and.callThrough();
+        spyOn(ctaasCallbackComponent, 'openDialogForSpecificRole').and.callThrough();
+        const confirm = fixture.nativeElement.querySelector('#confirm');
+
+        ctaasCallbackComponent.option = 'myself';
+        ctaasCallbackComponent.radioChange('myself');
+        ctaasCallbackComponent.callbackFunction(userEmptyData);
+        confirm.click();
+
+        expect(ctaasCallbackComponent.openDialogForSpecificRole).toHaveBeenCalled();
+    });
+});
