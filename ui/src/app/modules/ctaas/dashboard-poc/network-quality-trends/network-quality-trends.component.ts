@@ -34,15 +34,15 @@ export class NetworkQualityTrendsComponent implements OnInit {
 
   ngOnInit(): void {
     const obs = [];
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(moment(), moment()));
-    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(moment(), moment()));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(moment('2023-04-26'), moment('2023-04-26')));
+    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(moment('2023-04-26'), moment('2023-04-26')));
     forkJoin(obs).subscribe((res: any) => {
       console.log(res)
       const trendsData = res[0];
       this.commonChartOptions.xAxis.categories = trendsData.categories.map(category => category.split(" ")[1]);
       this.initChartOptions();
       this.receivedPacketLossChartOptions.series = [{
-        name: 'Jitter',
+        name: 'Received packet loss',
         data: trendsData.series['Received packet loss']
       }];
       this.jitterChartOptions.series = [{
@@ -50,11 +50,11 @@ export class NetworkQualityTrendsComponent implements OnInit {
         data: trendsData.series['Received Jitter']
       }];
       this.sentBitrateChartOptions.series = [{
-        name: 'Jitter',
+        name: 'Sent bitrate',
         data: trendsData.series['Sent bitrate']
       }];
       this.roundTripChartOptions.series = [{
-        name: 'Jitter',
+        name: 'Round trip time',
         data: trendsData.series['Round trip time']
       }];
 

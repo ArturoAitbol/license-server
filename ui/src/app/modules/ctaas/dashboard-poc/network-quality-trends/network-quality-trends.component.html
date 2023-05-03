@@ -12,7 +12,7 @@
                             <div class="col-3 p-2 border">
                                 <mat-icon>call_quality</mat-icon>
                                 <p>{{ summary.packetLoss }}</p>
-                                <label class="blue-label">Max. Packet Loss Rate</label>
+                                <label class="blue-label">Max. Packet Loss Rate (%)</label>
                             </div>
                             <div class="col-3 p-2 border">
                                 <mat-icon>waves</mat-icon>
@@ -60,6 +60,7 @@
                                     [stroke]="jitterChartOptions.stroke"
                                     [markers]="jitterChartOptions.markers"
                                     [legend]="jitterChartOptions.legend"
+                                    [annotations]="jitterChartOptions.annotations"
                                     [colors]="jitterChartOptions.colors">
                             </apx-chart>
                         </div>
@@ -77,6 +78,7 @@
                                     [stroke]="sentBitrateChartOptions.stroke"
                                     [markers]="sentBitrateChartOptions.markers"
                                     [legend]="sentBitrateChartOptions.legend"
+                                    [annotations]="sentBitrateChartOptions.annotations"
                                     [colors]="sentBitrateChartOptions.colors">
                             </apx-chart>
                         </div>
@@ -92,6 +94,7 @@
                                     [stroke]="roundTripChartOptions.stroke"
                                     [markers]="roundTripChartOptions.markers"
                                     [legend]="roundTripChartOptions.legend"
+                                    [annotations]="roundTripChartOptions.annotations"
                                     [colors]="roundTripChartOptions.colors">
                             </apx-chart>
                         </div>
