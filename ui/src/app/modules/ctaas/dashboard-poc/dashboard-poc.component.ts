@@ -62,7 +62,9 @@ export class DashboardPocComponent implements OnInit{
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
   filteredUsers: Observable<string[]>;
+  maxDate = moment();
 
+  selectedDate = '';
   loadingTime = 0;
 
   isloading = true;
@@ -100,6 +102,7 @@ export class DashboardPocComponent implements OnInit{
     const selectedDate = this.filters.get('date').value;
     const selectedRegion = this.filters.get('region').value;
     const selectedUser = this.filters.get('user').value;
+    this.selectedDate = this.filters.get('date').value.format('MMMM-DD-YYYY');
 
     obs.push(this.spotlightChartsService.getDailyCallingReliability(selectedDate, selectedRegion));
     obs.push(this.spotlightChartsService.getDailyFeatureFunctionality(selectedDate, selectedRegion));
@@ -262,6 +265,10 @@ export class DashboardPocComponent implements OnInit{
     window.open(url);
   }
 
+  regionDisplayFn(region) {
+    return region.displayName;
+  }
+
   private _filterRegion(value: string): { country: string; state: string; city: string; displayName: string }[] {
     const filterValue = value.toLowerCase();
 
@@ -292,8 +299,8 @@ export class DashboardPocComponent implements OnInit{
       res.regions.map(region => {
         if (region.country !== null){
           regions.push({country: region.country, state: null, city: null, displayName: region.country});
-          regions.push({country: region.country, state: region.state, city: null, displayName: `${region.country} ${region.state}`});
-          regions.push({country: region.country, state: region.state, city: region.city, displayName: `${region.country} ${region.state} ${region.city}`});
+          if (region.state && region.country) regions.push({country: region.country, state: region.state, city: null, displayName: `${region.state}, ${region.country}`});
+          if (region.state && region.country && region.city) regions.push({country: region.country, state: region.state, city: region.city, displayName: `${region.city}, ${region.state}, ${region.country}`});
         }
       });
       const flags = new Set();

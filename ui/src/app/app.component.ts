@@ -59,7 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 isPreview: false
             },
             {
-                name: 'New Dashboard POC',
+                name: 'Native Dashboard',
                 path: 'dashboard-poc',
                 active: false,
                 materialIcon: 'analytics',
