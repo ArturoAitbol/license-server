@@ -1,6 +1,7 @@
 package com.function.spotlightCharts;
 
 import com.function.auth.Resource;
+import com.function.clients.TAPClient;
 import com.function.db.SelectQueryBuilder;
 import com.function.util.Constants;
 import com.microsoft.azure.functions.*;
@@ -62,7 +63,7 @@ public class TekvLSGetVoiceQualityChart {
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		String query = " SELECT sr.id as call_id, trs.did as user, AVG(ms.parameter_value::numeric) as \"POLQA\" " +
+		String query = " SELECT sr.id as call_id, trs.did as user, AVG(CAST(ms.parameter_value AS numeric)) as \"POLQA\" " +
 				"FROM media_stats ms " +
 				"LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
 				"LEFT JOIN sub_result sr ON trs.subresultid = sr.id " +
@@ -76,20 +77,18 @@ public class TekvLSGetVoiceQualityChart {
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
-		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
-		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
+		queryBuilder.appendCustomCondition("sr.startdate >= CAST( ? AS timestamp)", startDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= CAST( ? AS timestamp)", endDate);
 		queryBuilder.appendGroupByMany("sr.id, trs.did");
 
 		// Connect to the database
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = queryBuilder.build(connection)) {
-			
-			context.getLogger().info("Successfully connected to: " + Constants.TEMP_ONPOINT_ADDRESS);
-			
+		try {
+
+			String statement = queryBuilder.getQuery();
+
 			// Retrieve all the calls.
 			context.getLogger().info("Execute SQL statement: " + statement);
-			ResultSet rs = statement.executeQuery();
+			JSONArray rs = TAPClient.executeQuery(Constants.TEMP_ONPOINT_URL,statement,context);
 
 			float excellent = 0;
 			float good = 0;
@@ -97,10 +96,11 @@ public class TekvLSGetVoiceQualityChart {
 			float bad = 0;
 			float totalCalls = 0;
 			HashSet<String> callIds = new HashSet<>();
-			while (rs.next()) {
-				float polqa = rs.getFloat("POLQA");
+			for (Object resultElement : rs) {
+				JSONArray values = (JSONArray) resultElement;
+				float polqa = values.getFloat(2);
 				totalCalls+=1;
-				callIds.add(rs.getString("call_id"));
+				callIds.add(values.getString(0));
 				if(polqa>=4){ excellent+=1; continue; }
 				if(polqa>=3 && polqa<4) { good += 1; continue; }
 				if(polqa>=2 && polqa<3) { fair += 1; continue; }

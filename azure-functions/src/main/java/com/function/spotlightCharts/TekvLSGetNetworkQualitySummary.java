@@ -1,6 +1,7 @@
 package com.function.spotlightCharts;
 
 import com.function.auth.Resource;
+import com.function.clients.TAPClient;
 import com.function.db.SelectQueryBuilder;
 import com.function.util.Constants;
 import com.microsoft.azure.functions.*;
@@ -72,29 +73,29 @@ public class TekvLSGetNetworkQualitySummary {
 		for (String metric: metricsArray) {
 			switch (metric){
 				case "Received Jitter":
-					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as maxJitter, ");
-					statistics.append("count(*) FILTER (WHERE ms.parameter_name = 'Received Jitter' AND NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric > 30) AS jitterAboveThld, ");
+					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxJitter, ");
+					statistics.append("count(*) FILTER (WHERE ms.parameter_name = 'Received Jitter' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > 30) AS jitterAboveThld, ");
 					statisticsLabels.add("maxJitter");
 					statisticsLabels.add("jitterAboveThld");
 					break;
 				case "Received packet loss":
-					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as maxPacketLoss, ");
-					statistics.append("count(*) FILTER (WHERE ms.parameter_name = 'Received packet loss' AND NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric > 2) AS packetLossAboveThld, ");
+					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxPacketLoss, ");
+					statistics.append("count(*) FILTER (WHERE ms.parameter_name = 'Received packet loss' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > 2) AS packetLossAboveThld, ");
 					statisticsLabels.add("maxPacketLoss");
 					statisticsLabels.add("packetLossAboveThld");
 					break;
 				case "Round trip time":
-					statistics.append("max(case when ms.parameter_name = 'Round trip time' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as maxRoundTripTime, ");
-					statistics.append("count(*) FILTER (WHERE ms.parameter_name = 'Round trip time' AND NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric > 200) AS roundTripTimeAboveThld, ");
+					statistics.append("max(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxRoundTripTime, ");
+					statistics.append("count(*) FILTER (WHERE ms.parameter_name = 'Round trip time' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > 200) AS roundTripTimeAboveThld, ");
 					statisticsLabels.add("maxRoundTripTime");
 					statisticsLabels.add("roundTripTimeAboveThld");
 					break;
 				case "Sent bitrate":
-					statistics.append("avg(case when ms.parameter_name = 'Sent bitrate' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as avgSentBitrate, ");
+					statistics.append("avg(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as avgSentBitrate, ");
 					statisticsLabels.add("avgSentBitrate");
 					break;
 				case "POLQA":
-					statistics.append("min(case when ms.parameter_name = 'POLQA' then ms.parameter_value::numeric end) as minPolqa, ");
+					statistics.append("min(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as minPolqa, ");
 					statisticsLabels.add("minPolqa");
 					break;
 			}
@@ -116,23 +117,22 @@ public class TekvLSGetNetworkQualitySummary {
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
-		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
-		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
+		queryBuilder.appendCustomCondition("sr.startdate >= CAST( ? AS timestamp)", startDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= CAST( ? AS timestamp)", endDate);
 		
 		// Connect to the database
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = queryBuilder.build(connection)) {
-			
-			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+		try {
+
+			String statement = queryBuilder.getQuery();
+
 			// Retrieve the specified statistics
 			context.getLogger().info("Execute SQL statement: " + statement);
-			ResultSet rs = statement.executeQuery();
+			JSONArray rs = TAPClient.executeQuery(Constants.TEMP_ONPOINT_URL,statement,context);
 			JSONObject json = new JSONObject();
-			while (rs.next()) {
-				for(String statistic:statisticsLabels){
-					json.put(statistic,rs.getFloat(statistic));
+			for ( Object resultElement:rs) {
+				JSONArray values = (JSONArray) resultElement;
+				for(int i=0; i<statisticsLabels.size(); i++){
+					json.put(statisticsLabels.get(i),values.isNull(i) ? "null" : values.getFloat(i));
 				}
 			}
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();

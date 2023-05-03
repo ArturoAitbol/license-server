@@ -1,6 +1,7 @@
 package com.function.spotlightCharts;
 
 import com.function.auth.Resource;
+import com.function.clients.TAPClient;
 import com.function.db.SelectQueryBuilder;
 import com.function.util.Constants;
 import com.microsoft.azure.functions.ExecutionContext;
@@ -44,7 +45,7 @@ public class TekvLSGetSimpleChart {
 				authLevel = AuthorizationLevel.ANONYMOUS,
 				route = "spotlightCharts/simpleChart")
 				HttpRequestMessage<Optional<String>> request,
-				final ExecutionContext context) 
+				final ExecutionContext context)
 	{
 
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
@@ -69,11 +70,14 @@ public class TekvLSGetSimpleChart {
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 		// String metric = request.getQueryParameters().getOrDefault("metric", "");
-		String query = "SELECT sr.status, COUNT(sr.status) as status_counter FROM sub_result sr LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
-			"run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
-			"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " + 
-			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
-			"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
+		String query = "SELECT sr.status, COUNT(sr.status) as status_counter FROM sub_result sr " +
+				"LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id " +
+				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
+				"LEFT JOIN project p ON r.projectid = p.id " +
+				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
+				"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " +
+				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
+				"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
 		switch (reportType) {
 			case "CallingReliability":
 				query += " AND tp.name='STS'";
@@ -88,27 +92,26 @@ public class TekvLSGetSimpleChart {
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
-		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
-		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
+		queryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
 		queryBuilder.appendGroupBy("sr.status");
-		
-		// Connect to the database
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = queryBuilder.build(connection)) {
-			
-			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
+
+		// Connect to the API
+		try {
+			String statement = queryBuilder.getQuery();
+
 			// Retrieve executions status list.
 			context.getLogger().info("Execute SQL statement: " + statement);
-			ResultSet rs = statement.executeQuery();
+			JSONArray rs = TAPClient.executeQuery(Constants.TEMP_ONPOINT_URL,statement,context);
+
 			// Return a JSON array of status and counts (id and value)
 			JSONObject json = new JSONObject();
 			JSONArray array = new JSONArray();
-			while (rs.next()) {
+			for(Object resultElement : rs) {
+				JSONArray values = (JSONArray) resultElement;
 				JSONObject item = new JSONObject();
-				item.put("id", rs.getString("status"));
-				item.put("value", rs.getInt("status_counter"));
+				item.put("id", values.getString(0));
+				item.put("value", values.getInt(1));
 				array.put(item);
 			}
 

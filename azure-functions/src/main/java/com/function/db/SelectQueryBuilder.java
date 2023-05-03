@@ -132,6 +132,19 @@ public class SelectQueryBuilder implements QueryBuilder{
         return ps;
     }
 
+    /**
+     * Returns the current query
+     * @return String
+     */
+    public String getQuery(){
+        StringBuilder queryString = new StringBuilder(query.toString());
+        for (String value: queue){
+            int index = queryString.indexOf("?");
+            queryString.replace(index,index+1,"'"+value+"'");
+        }
+        return queryString.toString();
+    }
+
     private void appendSeparator() {
         if (queue.size() == 0 && !containsWhereStmt) {
             query.append(" WHERE ");
