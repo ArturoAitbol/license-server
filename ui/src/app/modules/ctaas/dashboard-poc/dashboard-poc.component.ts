@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChartOptions } from "../../../helpers/chart-options-type";
 import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import {
@@ -9,10 +9,13 @@ import {
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
 import moment from "moment";
-import { forkJoin } from "rxjs";
+import { forkJoin, Observable } from "rxjs";
 import { Utility } from "../../../helpers/utils";
 import { environment } from "../../../../environments/environment";
 import { ReportType } from "../../../helpers/report-type";
+import { FormBuilder } from "@angular/forms";
+import { map, startWith } from "rxjs/operators";
+import { NetworkQualityTrendsComponent } from "./network-quality-trends/network-quality-trends.component";
 
 @Component({
   selector: 'app-dashboard-poc',
@@ -45,16 +48,31 @@ export class DashboardPocComponent implements OnInit{
     overall: { jitter: 0, packetLoss: 0, roundTripTime: 0, polqa:0 }
   };
 
+  //Selected graphs variables
   selectedGraph = 'jitter';
   selectedPeriod = 'daily';
+
+  // Filters variables
+  filters = this.fb.group({
+    date: [moment()],
+    region: [""],
+    user: [""]
+  });
+  regions: { country: string, state: string, city: string, displayName: string }[] = [];
+  users: string[] = [];
+  filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
+  filteredUsers: Observable<string[]>;
 
   loadingTime = 0;
 
   isloading = true;
 
+  @ViewChild('dailyNetworkTrends') dailyNetworkTrends: NetworkQualityTrendsComponent;
+
   constructor(private ctaasSetupService: CtaasSetupService,
               private subaccountService: SubAccountService,
-              private spotlightChartsService: SpotlightChartsService) {
+              private spotlightChartsService: SpotlightChartsService,
+              private fb: FormBuilder) {
     this.polqaChartOptions = defaultPolqaChartOptions;
     this.vqChartOptions = defaultVqChartOptions;
     this.weeklyCallingReliabilityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
@@ -62,18 +80,35 @@ export class DashboardPocComponent implements OnInit{
   }
 
   ngOnInit() {
+    this.initAutocompletes();
+    this.loadCharts();
+  }
+
+  reloadCharts() {
+    const selectedDate = this.filters.get('date').value;
+    const selectedUser = this.filters.get('user').value;
+    this.dailyNetworkTrends.date = selectedDate;
+    this.dailyNetworkTrends.user = selectedUser;
+    this.dailyNetworkTrends.loadCharts();
+    this.loadCharts();
+  }
+
+  loadCharts() {
+    this.isloading = true;
     const startTime = performance.now();
     const obs = [];
-    // TODO: refactor moments
-    obs.push(this.spotlightChartsService.getDailyCallingReliability(moment('2023-04-26'), moment('2023-04-26')));
-    obs.push(this.spotlightChartsService.getDailyFeatureFunctionality(moment('2023-04-26'), moment('2023-04-26')));
-    obs.push(this.spotlightChartsService.getVoiceQualityChart(moment('2023-04-26'), moment('2023-04-26')));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(moment('2023-04-26'), moment('2023-04-26')));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(moment('2023-04-26'), moment('2023-04-26')));
+    const selectedDate = this.filters.get('date').value;
+    const selectedRegion = this.filters.get('region').value;
+    const selectedUser = this.filters.get('user').value;
+
+    obs.push(this.spotlightChartsService.getDailyCallingReliability(selectedDate, selectedRegion));
+    obs.push(this.spotlightChartsService.getDailyFeatureFunctionality(selectedDate, selectedRegion));
+    obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(selectedDate, selectedDate, selectedUser));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedDate, selectedDate, selectedUser));
     obs.push(this.spotlightChartsService.getWeeklyCallingReliability(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day')));
     forkJoin(obs).subscribe((res: any) => {
-      console.log(res)
-
+      console.log(res);
       // Daily Calling reliability
       const dailyCallingReliabiltyRes: any = res[0].series;
       this.callingReliability.total = dailyCallingReliabiltyRes.reduce((accumulator, entry) => accumulator + entry.value, 0);
@@ -82,7 +117,7 @@ export class DashboardPocComponent implements OnInit{
       } else {
         this.callingReliability.value = 0;
       }
-      this.callingReliability.period = moment().format("MM-DD-YYYY 00:00:00") + " AM UTC to " + moment().format("MM-DD-YYYY 11:59:59") + " PM UTC";
+      this.callingReliability.period = selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
       this.calls.total = this.calls.total + this.callingReliability.total;
       this.calls.failed = this.calls.failed + (dailyCallingReliabiltyRes.find(entry => entry.id === 'FAILED')?.value || 0);
 
@@ -94,7 +129,7 @@ export class DashboardPocComponent implements OnInit{
       } else {
         this.featureFunctionality.value = 0;
       }
-      this.featureFunctionality.period = moment().format("MM-DD-YYYY 00:00:00") + " AM UTC to " + moment().format("MM-DD-YYYY 11:59:59") + " PM UTC";
+      this.featureFunctionality.period = selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
       this.calls.total = this.calls.total + this.featureFunctionality.total;
       this.calls.failed = this.calls.failed + (dailyFeatureFunctionalityRes.find(entry => entry.id === 'FAILED')?.value || 0);
 
@@ -104,7 +139,7 @@ export class DashboardPocComponent implements OnInit{
       this.vq.streams = voiceQualityRes.summary.calls_stream;
       this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
       this.vqChartOptions.xAxis = { categories: voiceQualityRes.categories };
-      this.vq.period = moment().format("MM-DD-YYYY 00:00:00") + " AM UTC to " + moment().format("MM-DD-YYYY 11:59:59") + " PM UTC";
+      this.vq.period =selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
       console.log(this.vqChartOptions);
 
       // Daily Failed Calls Chart
@@ -157,6 +192,7 @@ export class DashboardPocComponent implements OnInit{
       const endTime = performance.now();
       this.loadingTime = (endTime - startTime) / 1000;
       this.isloading = false;
+      this.reloadFilterOptions();
     }, error => {
       console.error(error);
     });
@@ -224,6 +260,53 @@ export class DashboardPocComponent implements OnInit{
     const endTime = Utility.parseReportDate(new Date(endDate));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&type=${metric}&start=${startTime}&end=${endTime}`;
     window.open(url);
+  }
+
+  private _filterRegion(value: string): { country: string; state: string; city: string; displayName: string }[] {
+    const filterValue = value.toLowerCase();
+
+    return this.regions.filter(option => option.displayName.toLowerCase().includes(filterValue));
+  }
+
+  private _filterUser(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.users.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
+  private initAutocompletes() {
+    this.filteredRegions = this.filters.get('region').valueChanges.pipe(
+        startWith(''),
+        map(value => this._filterRegion(value || '')),
+    );
+    this.filteredUsers = this.filters.get('user').valueChanges.pipe(
+        startWith(''),
+        map(value => this._filterUser(value || '')),
+    );
+  }
+
+  private reloadFilterOptions() {
+    this.filters.disable();
+    this.spotlightChartsService.getFilterOptions().subscribe((res: any) => {
+      const regions = [];
+      res.regions.map(region => {
+        if (region.country !== null){
+          regions.push({country: region.country, state: null, city: null, displayName: region.country});
+          regions.push({country: region.country, state: region.state, city: null, displayName: `${region.country} ${region.state}`});
+          regions.push({country: region.country, state: region.state, city: region.city, displayName: `${region.country} ${region.state} ${region.city}`});
+        }
+      });
+      const flags = new Set();
+      this.regions = regions.filter(entry => {
+        if (flags.has(entry.displayName) || !entry.displayName.trim().length) {
+          return false;
+        }
+        flags.add(entry.displayName);
+        return true;
+      }).sort();
+      this.users = res.users.filter(user => user !== null);
+      this.filters.enable();
+    })
   }
 
   readonly ReportType = ReportType;
