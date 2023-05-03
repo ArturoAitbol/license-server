@@ -14,6 +14,10 @@ public abstract class Constants {
     public static String TEMP_ONPOINT_USER = "postgres";
     public static String TEMP_ONPOINT_PWD = "1DBpassword!";
     public static String TEMP_ONPOINT_DB = "onpoint";
+    public static String TEMP_ONPOINT_URL = "https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT";
+    public static String TEMP_ONPOINT_USERNAME = "administrator@tekvizion.com";
+    public static String TEMP_ONPOINT_PASSWORD = "admin123";
+    public static String SPOTLIGHT_API_PATH = "v1/spotlight";
 
     
     // ENUMS

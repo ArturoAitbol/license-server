@@ -1,6 +1,7 @@
 package com.function.spotlightCharts;
 
 import com.function.auth.Resource;
+import com.function.clients.TAPClient;
 import com.function.db.SelectQueryBuilder;
 import com.function.util.Constants;
 import com.microsoft.azure.functions.*;
@@ -67,7 +68,7 @@ public class TekvLSGetCollectionChart {
 		String reportType = request.getQueryParameters().getOrDefault("reportType", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		String query = "SELECT sr.endDate::DATE, sr.status, COUNT(sr.status) as status_counter FROM sub_result sr LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
+		String query = "SELECT CAST(sr.endDate AS DATE), sr.status, COUNT(sr.status) as status_counter FROM sub_result sr LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
 			"run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 			"WHERE sr.finalResult = true AND sr.status != 'ABORTED'AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " + 
 			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
@@ -86,31 +87,30 @@ public class TekvLSGetCollectionChart {
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
-		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
-		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
-		queryBuilder.appendGroupByMany("sr.endDate::DATE,sr.status");
-		queryBuilder.appendOrderBy("sr.endDate::DATE", SelectQueryBuilder.ORDER_DIRECTION.ASC);
+		queryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
+		queryBuilder.appendGroupByMany("CAST(sr.endDate AS DATE),sr.status");
+		queryBuilder.appendOrderBy("CAST(sr.endDate AS DATE)", SelectQueryBuilder.ORDER_DIRECTION.ASC);
 		
 		// Connect to the database
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = queryBuilder.build(connection)) {
-			
-			context.getLogger().info("Successfully connected to: " + Constants.TEMP_ONPOINT_ADDRESS);
-			
-			// Retrieve all customers.
+		try {
+
+			String statement = queryBuilder.getQuery();
+
+			// Retrieve all data.
 			context.getLogger().info("Execute SQL statement: " + statement);
-			ResultSet rs = statement.executeQuery();
-			// Return a JSON array of customers (id and names)
+			JSONArray rs = TAPClient.executeQuery(Constants.TEMP_ONPOINT_URL,statement,context);
+			// Return a JSON object with the data
 			JSONObject json = new JSONObject();
 
 			LocalDate startLocalDate = LocalDate.parse(startDate.split(" ")[0]);
 			LocalDate endLocalDate = LocalDate.parse(endDate.split(" ")[0]);
 			TreeMap<String,JSONObject> dates = getDatesBetween(startLocalDate,endLocalDate);
 
-			while (rs.next()) {
-				JSONObject date = dates.get(rs.getString("endDate"));
-				date.put(rs.getString("status"),rs.getInt("status_counter"));
+			for (Object resultElement : rs) {
+				JSONArray values = (JSONArray) resultElement;
+				JSONObject date = dates.get(values.getString(0));
+				date.put(values.getString(1),values.getInt(2));
 			}
 			JSONArray categories = new JSONArray();
 

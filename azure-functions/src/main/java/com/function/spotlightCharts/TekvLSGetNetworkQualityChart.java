@@ -1,6 +1,7 @@
 package com.function.spotlightCharts;
 
 import com.function.auth.Resource;
+import com.function.clients.TAPClient;
 import com.function.db.SelectQueryBuilder;
 import com.function.db.SelectQueryBuilder.ORDER_DIRECTION;
 import com.function.util.Constants;
@@ -87,23 +88,23 @@ public class TekvLSGetNetworkQualityChart {
 			String metric = metricsArray.next();
 			switch (metric) {
 				case "Received Jitter":
-					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Received Jitter\" " );
+					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received Jitter\" " );
 					statisticsLabels.add("Received Jitter");
 					break;
 				case "Received packet loss":
-					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Received packet loss\"  ");
+					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received packet loss\"  ");
 					statisticsLabels.add("Received packet loss");
 					break;
 				case "Round trip time":
-					statistics.append("max(case when ms.parameter_name = 'Round trip time' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Round trip time\" ");
+					statistics.append("max(case when ms.parameter_name = 'Round trip time' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Round trip time\" ");
 					statisticsLabels.add("Round trip time");
 					break;
 				case "Sent bitrate":
-					statistics.append("avg(case when ms.parameter_name = 'Sent bitrate' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Sent bitrate\" ");
+					statistics.append("avg(case when ms.parameter_name = 'Sent bitrate' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Sent bitrate\" ");
 					statisticsLabels.add("Sent bitrate");
 					break;
 				case "POLQA":
-					statistics.append("min(case when ms.parameter_name = 'POLQA' then ms.parameter_value::numeric end) as \"POLQA\" ");
+					statistics.append("min(case when ms.parameter_name = 'POLQA' then CAST(ms.parameter_value AS numeric) end) as \"POLQA\" ");
 					statisticsLabels.add("POLQA");
 					break;
 			}
@@ -126,21 +127,19 @@ public class TekvLSGetNetworkQualityChart {
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
-		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
-		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
+		queryBuilder.appendCustomCondition("sr.startdate >= CAST( ? AS timestamp)", startDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= CAST( ? AS timestamp)", endDate);
 		queryBuilder.appendGroupByMany("date_hour");
 		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 		
 		// Connect to the database
-		try (
-			Connection connection = DriverManager.getConnection(dbConnectionUrl);
-			PreparedStatement statement = queryBuilder.build(connection)) {
-			
-			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
-			
-			// Retrieve all customers.
+		try {
+
+			String statement = queryBuilder.getQuery();
+
+			// Retrieve the data.
 			context.getLogger().info("Execute SQL statement: " + statement);
-			ResultSet rs = statement.executeQuery();
+			JSONArray rs = TAPClient.executeQuery(Constants.TEMP_ONPOINT_URL,statement,context);
 			// Return a JSON array of customers (id and names)
 			JSONObject json = new JSONObject();
 			TreeMap<String,JSONObject> datesObject;
@@ -155,10 +154,10 @@ public class TekvLSGetNetworkQualityChart {
 				datesObject = getHoursBetween(startLocalDate,endLocalDate);
 			}
 
-
-			while (rs.next()) {
+			for (Object resultElement : rs) {
+				JSONArray values = (JSONArray) resultElement;
 				// adding to dates map if not added
-				String dateHour = rs.getString("date_hour");
+				String dateHour = values.getString(0);
 				JSONObject dateHourObject = datesObject.get(dateHour);
 				if(dateHourObject==null){
 					dateHourObject = new JSONObject();
@@ -166,8 +165,10 @@ public class TekvLSGetNetworkQualityChart {
 				}
 
 				// get metrics values from DB
-				for(String statistic:statisticsLabels){
-					dateHourObject.put(statistic,rs.getFloat(statistic));
+				for(int i=0; i<statisticsLabels.size(); i++){
+					if(!values.isNull(i+1)){
+						dateHourObject.put(statisticsLabels.get(i),values.getFloat(i+1));
+					}
 				}
 			}
 
