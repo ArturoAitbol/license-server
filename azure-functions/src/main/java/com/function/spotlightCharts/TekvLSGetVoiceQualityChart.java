@@ -61,11 +61,18 @@ public class TekvLSGetVoiceQualityChart {
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		String query = " SELECT sr.id as call_id, trs.did as user, AVG(CAST(ms.parameter_value AS numeric)) as \"POLQA\" " +
+
+		String country = request.getQueryParameters().getOrDefault("country", "");
+		String state = request.getQueryParameters().getOrDefault("state", "");
+		String city = request.getQueryParameters().getOrDefault("city", "");
+
+		String user = request.getQueryParameters().getOrDefault("user", "");
+
+		String query = " SELECT sr.id as call_id, trr.did as user, AVG(CAST(ms.parameter_value AS numeric)) as \"POLQA\" " +
 				"FROM media_stats ms " +
-				"LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
-				"LEFT JOIN sub_result sr ON trs.subresultid = sr.id " +
-				"LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id " +
+				"LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id " +
+				"LEFT JOIN sub_result sr ON trr.subresultid = sr.id " +
+				"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
@@ -75,9 +82,17 @@ public class TekvLSGetVoiceQualityChart {
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
-		queryBuilder.appendCustomCondition("sr.startdate >= CAST( ? AS timestamp)", startDate);
-		queryBuilder.appendCustomCondition("sr.startdate <= CAST( ? AS timestamp)", endDate);
-		queryBuilder.appendGroupByMany("sr.id, trs.did");
+		queryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
+		if (!country.isEmpty())
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
+		if (!state.isEmpty())
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
+		if (!city.isEmpty())
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
+		if (!user.isEmpty())
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
+		queryBuilder.appendGroupByMany("sr.id, trr.did");
 
 		// Build SQL statement to get the TAP URL
 		SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT c.name as customerName, s.name as subaccountName, cs.tap_url as tapURL  FROM customer c LEFT JOIN subaccount s ON c.id = s.customer_id LEFT JOIN ctaas_setup cs ON s.id = cs.subaccount_id");

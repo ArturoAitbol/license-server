@@ -11,11 +11,64 @@
             <p style="display: inline-block;">Elapsed Time: {{ loadingTime | number: '3.0' }}s&emsp;</p>
         </div>
     </div>
-    <div class="loading-shade" *ngIf="isloading">
-        <mat-spinner *ngIf="isloading"></mat-spinner>
+    <div class="lights-container" *ngIf="isloading">
+        <div>
+            <div class="spotlight"></div>
+        </div>
+        <div>
+            <div class="mirror-spotlight"></div>
+        </div>
     </div>
-        <ng-container *ngIf="selectedPeriod === 'daily'">
-    <ng-container *ngIf="!isloading">
+    <ng-container *ngIf="selectedPeriod === 'daily'">
+        <ng-container *ngIf="!isloading">
+            <div class="row">
+                <h1 class="text-center">Daily Report | {{ selectedDate }}</h1>
+            </div>
+            <form [formGroup]="filters" class="row justify-content-center mt-2 mb-2">
+                <div class="col-2">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Date</mat-label>
+                        <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date">
+                        <mat-hint>MM/DD/YYYY</mat-hint>
+                        <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                        <mat-datepicker #dp></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Region</mat-label>
+                        <input type="text"
+                               placeholder="Region"
+                               matInput
+                               formControlName="region"
+                               [matAutocomplete]="regionAuto">
+                        <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn">
+                            <mat-option *ngFor="let region of filteredRegions | async" [value]="region">
+                                {{region.displayName}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-2">
+                    <mat-form-field appearance="outline">
+                        <mat-label>User</mat-label>
+                        <input type="text"
+                               placeholder="User"
+                               matInput
+                               formControlName="user"
+                               [matAutocomplete]="userAuto">
+                        <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete">
+                            <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                                {{user}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-auto align-items-start">
+                    <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
+                            id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
+                </div>
+            </form>
             <div class="row">
                 <div class="col-6">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
@@ -50,14 +103,17 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">View Detailed Table</button>
+                            <button mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">View
+                                Detailed Table
+                            </button>
                         </div>
                         <div class="card-footer">
                             <mat-icon>timer</mat-icon>
                             <label class="ps-1">Execution time period: {{ vq.period }}</label>
                             <br>
                             <mat-icon>call</mat-icon>
-                            <label class="ps-1">Number of calls: {{ vq.calls }} | Number of streams: {{ vq.streams }}</label>
+                            <label class="ps-1">Number of calls: {{ vq.calls }} | Number of
+                                streams: {{ vq.streams }}</label>
                         </div>
                     </div>
                 </div>
@@ -69,13 +125,15 @@
                         <div class="card-body container-fluid">
                             <div class="row justify-content-center failed-calls-body">
                                 <div class="col-5 blue-label">
-                                    <mat-icon>call</mat-icon><label class="ps-2">Total Calls</label>
+                                    <mat-icon>call</mat-icon>
+                                    <label class="ps-2">Total Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ calls.total }}</p>
                                 </div>
                                 <div class="vr p-0" style="color: black"></div>
                                 <div class="col-5 red-label">
-                                    <mat-icon>phone_disabled</mat-icon><label class="ps-2">Failed Calls</label>
+                                    <mat-icon>phone_disabled</mat-icon>
+                                    <label class="ps-2">Failed Calls</label>
                                     <br>
                                     <p class="mt-2 failed-calls-value">{{ calls.failed }}</p>
                                 </div>
@@ -83,13 +141,13 @@
                             <div class="row">
                                 <div class="col">
                                     <apx-chart
-                                               [series]="failedCallsChartOptions.series"
-                                               [chart]="failedCallsChartOptions.chart"
-                                               [plotOptions]="failedCallsChartOptions.plotOptions"
-                                               [labels]="failedCallsChartOptions.labels"
-                                               [fill]="failedCallsChartOptions.fill"
-                                               [grid]="failedCallsChartOptions.grid"
-                                               [states]="failedCallsChartOptions.states">
+                                            [series]="failedCallsChartOptions.series"
+                                            [chart]="failedCallsChartOptions.chart"
+                                            [plotOptions]="failedCallsChartOptions.plotOptions"
+                                            [labels]="failedCallsChartOptions.labels"
+                                            [fill]="failedCallsChartOptions.fill"
+                                            [grid]="failedCallsChartOptions.grid"
+                                            [states]="failedCallsChartOptions.states">
                                     </apx-chart>
                                 </div>
                             </div>
@@ -97,7 +155,7 @@
                     </div>
                 </div>
             </div>
-<!--        TODO: Refactor into new component-->
+            <!--        TODO: Refactor into new component-->
             <div class="col-12 p-0">
                 <div class="card text-center mt-2">
                     <div class="card-header">
@@ -178,47 +236,47 @@
                     </div>
                 </div>
             </div>
-    </ng-container>
-            <app-network-quality-trends></app-network-quality-trends>
         </ng-container>
-        <ng-container *ngIf="selectedPeriod === 'weekly'">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card text-center mt-2">
-                        <div class="card-header">
-                            <h1>Calling Reliability</h1>
-                        </div>
-                        <div class="card-body container-fluid">
-                            <div class="row">
-                                <div class="col">
-                                    <apx-chart #weeklyFeatureFunctionality
-                                               [series]="weeklyCallingReliabilityChartOptions.series"
-                                               [chart]="weeklyCallingReliabilityChartOptions.chart"
-                                               [xaxis]="weeklyCallingReliabilityChartOptions.xAxis"
-                                               [yaxis]="weeklyCallingReliabilityChartOptions.yAxis"
-                                               [dataLabels]="weeklyCallingReliabilityChartOptions.dataLabels"
-                                               [grid]="weeklyCallingReliabilityChartOptions.grid"
-                                               [stroke]="weeklyCallingReliabilityChartOptions.stroke"
-                                               [title]="weeklyCallingReliabilityChartOptions.title"
-                                               [markers]="weeklyCallingReliabilityChartOptions.markers"
-                                               [legend]="weeklyCallingReliabilityChartOptions.legend"
-                                               [colors]="weeklyCallingReliabilityChartOptions.colors">
-                                    </apx-chart>
-                                </div>
+        <app-network-quality-trends #dailyNetworkTrends [date]="this.filters.get('date').value" [user]="this.filters.get('user').value"></app-network-quality-trends>
+    </ng-container>
+    <ng-container *ngIf="selectedPeriod === 'weekly'">
+        <div class="row">
+            <div class="col-12">
+                <div class="card text-center mt-2">
+                    <div class="card-header">
+                        <h1>Calling Reliability</h1>
+                    </div>
+                    <div class="card-body container-fluid">
+                        <div class="row">
+                            <div class="col">
+                                <apx-chart #weeklyFeatureFunctionality
+                                           [series]="weeklyCallingReliabilityChartOptions.series"
+                                           [chart]="weeklyCallingReliabilityChartOptions.chart"
+                                           [xaxis]="weeklyCallingReliabilityChartOptions.xAxis"
+                                           [yaxis]="weeklyCallingReliabilityChartOptions.yAxis"
+                                           [dataLabels]="weeklyCallingReliabilityChartOptions.dataLabels"
+                                           [grid]="weeklyCallingReliabilityChartOptions.grid"
+                                           [stroke]="weeklyCallingReliabilityChartOptions.stroke"
+                                           [title]="weeklyCallingReliabilityChartOptions.title"
+                                           [markers]="weeklyCallingReliabilityChartOptions.markers"
+                                           [legend]="weeklyCallingReliabilityChartOptions.legend"
+                                           [colors]="weeklyCallingReliabilityChartOptions.colors">
+                                </apx-chart>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <mat-icon>timer</mat-icon>
-                            <label class="ps-1">Execution time period: 4/15/2023 00:02:07 AM UTC to 4/21/2023 16:54:31
-                                PM UTC</label>
-                            <br>
-                            <mat-icon>call</mat-icon>
-                            <label class="ps-1">Number of calls: 828</label>
-                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <mat-icon>timer</mat-icon>
+                        <label class="ps-1">Execution time period: 4/15/2023 00:02:07 AM UTC to 4/21/2023 16:54:31
+                            PM UTC</label>
+                        <br>
+                        <mat-icon>call</mat-icon>
+                        <label class="ps-1">Number of calls: 828</label>
                     </div>
                 </div>
             </div>
-        </ng-container>
+        </div>
+    </ng-container>
 </div>
 
 

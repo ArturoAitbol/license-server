@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 import {
   defaultJitterChartOptions,
@@ -7,7 +7,7 @@ import {
   trendsChartCommonOptions
 } from "./initial-chart-config";
 import { SpotlightChartsService } from "../../../../services/spotlight-charts.service";
-import moment from "moment";
+import { Moment } from "moment";
 import { forkJoin } from "rxjs";
 
 @Component({
@@ -16,6 +16,9 @@ import { forkJoin } from "rxjs";
   styleUrls: ['./network-quality-trends.component.css']
 })
 export class NetworkQualityTrendsComponent implements OnInit {
+
+  @Input() date: Moment;
+  @Input() user: string;
 
   // Customer Network Trends variables
   receivedPacketLossChartOptions: Partial<ChartOptions>;
@@ -33,9 +36,14 @@ export class NetworkQualityTrendsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadCharts();
+  }
+
+  loadCharts() {
+    this.isLoading = true;
     const obs = [];
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(moment('2023-04-26'), moment('2023-04-26')));
-    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(moment('2023-04-26'), moment('2023-04-26')));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.date, this.date, this.user));
+    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.date, this.date, this.user));
     forkJoin(obs).subscribe((res: any) => {
       console.log(res)
       const trendsData = res[0];
