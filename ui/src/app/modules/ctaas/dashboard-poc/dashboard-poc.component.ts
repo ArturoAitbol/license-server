@@ -65,11 +65,11 @@ export class DashboardPocComponent implements OnInit{
     const startTime = performance.now();
     const obs = [];
     // TODO: refactor moments
-    obs.push(this.spotlightChartsService.getDailyCallingReliability(moment(), moment()));
-    obs.push(this.spotlightChartsService.getDailyFeatureFunctionality(moment(), moment()));
-    obs.push(this.spotlightChartsService.getVoiceQualityChart(moment(), moment()));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(moment(), moment()));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(moment(), moment()));
+    obs.push(this.spotlightChartsService.getDailyCallingReliability(moment('2023-04-26'), moment('2023-04-26')));
+    obs.push(this.spotlightChartsService.getDailyFeatureFunctionality(moment('2023-04-26'), moment('2023-04-26')));
+    obs.push(this.spotlightChartsService.getVoiceQualityChart(moment('2023-04-26'), moment('2023-04-26')));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(moment('2023-04-26'), moment('2023-04-26')));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(moment('2023-04-26'), moment('2023-04-26')));
     obs.push(this.spotlightChartsService.getWeeklyCallingReliability(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day')));
     forkJoin(obs).subscribe((res: any) => {
       console.log(res)

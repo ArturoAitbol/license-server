@@ -230,8 +230,8 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
         yaxis: [{
             y:25,
             y2: 125,
-            borderColor: '#B80000',
-            fillColor: '#B80000',
+            borderColor: '#22b800',
+            fillColor: '#22b800',
             strokeDashArray: 8,
         }]
     }

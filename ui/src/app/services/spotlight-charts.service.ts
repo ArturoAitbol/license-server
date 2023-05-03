@@ -18,13 +18,43 @@ export class SpotlightChartsService {
      * @param startDate Start date in local time
      * @param endDate End date in local time
      */
-    public getNetworkQualityData(startDate: Moment, endDate: Moment): Observable<any> {
+    public getCustomerNetworkQualityData(startDate: Moment, endDate: Moment) {
+        return this.getNetworkQualityData(startDate, endDate, 'POLQA,Received Jitter,Received packet loss,Round trip time');
+    }
+
+    /**
+     *
+     * @param startDate Start date in local time
+     * @param endDate End date in local time
+     */
+    public getCustomerNetworkTrendsData(startDate: Moment, endDate: Moment) {
+        return this.getNetworkQualityData(startDate, endDate, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate');
+    }
+
+    private getNetworkQualityData(startDate: Moment, endDate: Moment, metric: string): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
-        params = params.set('metric', 'POLQA,Received Jitter,Received packet loss,Round trip time');
+        params = params.set('metric', metric);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'networkQualityChart', { headers, params });
+    }
+
+    public getCustomerNetworkQualitySummary(startDate: Moment, endDate: Moment) {
+        return this.getNetworkQualitySummary(startDate, endDate, 'POLQA,Received Jitter,Received packet loss,Round trip time')
+    }
+
+    public getNetworkQualityTrendsSummary(startDate: Moment, endDate: Moment) {
+        return this.getNetworkQualitySummary(startDate, endDate, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate')
+    }
+
+    private getNetworkQualitySummary(startDate: Moment, endDate: Moment, metric: string) {
+        let params = new HttpParams();
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('metric', metric);
+        const headers = this.getHeaders();
+        return this.httpClient.get(this.API_URL + 'networkQualitySummary', { headers, params });
     }
 
     /**
