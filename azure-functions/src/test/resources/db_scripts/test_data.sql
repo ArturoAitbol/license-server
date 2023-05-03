@@ -203,7 +203,7 @@ COPY public.historical_report (id, subaccount_id, note_id, report_type, start_da
 
 COPY public.subaccount_admin_device (subaccount_admin_email, device_token) FROM stdin;
 test-customer-subaccount-admin@tekvizionlabs.com	" "
-test-customer-subaccount-stakeholder@tekvizionlabs.com	c-5jQmqry0Kmt-sMmgaFrz:APA91bGbwP1cY_zPD1HyMquL5ttxUZLTy7KHSxwUyahm_tWJmq4P6JkAD_HXXAe-s_D9Fp2TxyPPf13jnFLfdLY-vvKDWglLpFZeXLfiLgdI8gMtIV97-5ZKnwxuQLQY6ek2Qu3jRlxV
+test-customer-subaccount-admin@tekvizionlabs.com	cKUMnpi7QDeoMplcjK_Xj_:APA91bFdl5ST1y6dwel2ZsLk-tK7OoEx1PbbN7C6kDxUKzY9ZpHtjWszGWUEDOEn4H7zZfd_xw3MM9VFzN6d1ygpi94YxUecRnKRJL4Mu9aopBjUHYb3RpH4Q-jLasqOKe03C-BN8Te_
 \.
 
 --
