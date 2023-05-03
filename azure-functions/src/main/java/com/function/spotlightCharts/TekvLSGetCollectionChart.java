@@ -2,6 +2,7 @@ package com.function.spotlightCharts;
 
 import com.function.auth.Resource;
 import com.function.clients.TAPClient;
+import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.util.Constants;
 import com.microsoft.azure.functions.*;
@@ -20,6 +21,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.
@@ -30,11 +32,6 @@ public class TekvLSGetCollectionChart {
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/spotlightCharts/simpleChart
 	 * 2. curl "{your host}/v1.0/spotlightCharts/simpleChart"
 	 */
-
-	private final String dbConnectionUrl = "jdbc:postgresql://" + Constants.TEMP_ONPOINT_ADDRESS + "/" + Constants.TEMP_ONPOINT_DB 
-			+ System.getenv("POSTGRESQL_SECURITY_MODE")
-			+ "&user=" + Constants.TEMP_ONPOINT_USER
-			+ "&password=" + Constants.TEMP_ONPOINT_PWD;
 
 	@FunctionName("TekvLSGetCollectionChart")
 	public HttpResponseMessage run(
@@ -65,6 +62,7 @@ public class TekvLSGetCollectionChart {
 		context.getLogger().info("Entering TekvLSGetCollectionChart Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
+		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		String reportType = request.getQueryParameters().getOrDefault("reportType", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
@@ -91,23 +89,75 @@ public class TekvLSGetCollectionChart {
 		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
 		queryBuilder.appendGroupByMany("CAST(sr.endDate AS DATE),sr.status");
 		queryBuilder.appendOrderBy("CAST(sr.endDate AS DATE)", SelectQueryBuilder.ORDER_DIRECTION.ASC);
+
+		// Build SQL statement to get the TAP URL
+		SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT c.name as customerName, s.name as subaccountName, cs.tap_url as tapURL  FROM customer c LEFT JOIN subaccount s ON c.id = s.customer_id LEFT JOIN ctaas_setup cs ON s.id = cs.subaccount_id");
+		tapUrlQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+
+		// Build SQL statement to verify the role
+		String email = getEmailFromToken(tokenClaims, context);
+		SelectQueryBuilder verificationQueryBuilder = getVerificationQueryBuilder(subaccountId,roles,email);
 		
 		// Connect to the database
-		try {
+		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
+				+ "&user=" + System.getenv("POSTGRESQL_USER")
+				+ "&password=" + System.getenv("POSTGRESQL_PWD");
+		try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
+			PreparedStatement selectStmtTapUrl = tapUrlQueryBuilder.build(connection)) {
+
+			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+			ResultSet rs;
+			JSONObject json = new JSONObject();
+
+			if (verificationQueryBuilder != null) {
+				try (PreparedStatement verificationStmt = verificationQueryBuilder.build(connection)) {
+					context.getLogger().info("Execute SQL role verification statement: " + verificationStmt);
+					rs = verificationStmt.executeQuery();
+					if (!rs.next()) {
+						context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
+						json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+						return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+					}
+				}
+			}
+
+			// Retrieve tap URL
+			context.getLogger().info("Execute SQL statement: " + selectStmtTapUrl);
+			rs = selectStmtTapUrl.executeQuery();
+			String customerName = null;
+			String subaccountName = null;
+			String tapURL = null;
+			if (rs.next()) {
+				customerName = rs.getString("customerName");
+				subaccountName = rs.getString("subaccountName");
+				tapURL = rs.getString("tapURL");
+				context.getLogger().info("customer name : " + customerName + " | subaccount name : " + subaccountName + " | TAP URL : " + tapURL);
+			}
+
+			if ((customerName == null || customerName.isEmpty()) || (subaccountName == null || subaccountName.isEmpty())) {
+				context.getLogger().info(LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
+				json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+
+			if (tapURL == null || tapURL.isEmpty()) {
+				context.getLogger().info(Constants.LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
+				json.put("error", Constants.MESSAGE_FOR_INVALID_TAP_URL);
+				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+			}
+			context.getLogger().info("Requesting TAP for data query. URL: " + tapURL);
 
 			String statement = queryBuilder.getQuery();
 
 			// Retrieve all data.
 			context.getLogger().info("Execute SQL statement: " + statement);
-			JSONArray rs = TAPClient.executeQuery(Constants.TEMP_ONPOINT_URL,statement,context);
-			// Return a JSON object with the data
-			JSONObject json = new JSONObject();
+			JSONArray resultSet = TAPClient.executeQuery(tapURL,statement,context);
 
 			LocalDate startLocalDate = LocalDate.parse(startDate.split(" ")[0]);
 			LocalDate endLocalDate = LocalDate.parse(endDate.split(" ")[0]);
 			TreeMap<String,JSONObject> dates = getDatesBetween(startLocalDate,endLocalDate);
 
-			for (Object resultElement : rs) {
+			for (Object resultElement : resultSet) {
 				JSONArray values = (JSONArray) resultElement;
 				JSONObject date = dates.get(values.getString(0));
 				date.put(values.getString(1),values.getInt(2));
@@ -187,5 +237,29 @@ public class TekvLSGetCollectionChart {
 				.forEach(i -> map.put(i, new JSONObject("{PASSED:0,FAILED:0,INTERRUPTED:0}")));
 
 		return map;
+	}
+
+	private SelectQueryBuilder getVerificationQueryBuilder(String subaccountId,JSONArray roles,String email){
+		SelectQueryBuilder verificationQueryBuilder = null;
+		String currentRole = evaluateRoles(roles);
+		switch (currentRole) {
+			case CUSTOMER_FULL_ADMIN:
+				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer_admin ca");
+				verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?", email);
+				break;
+			case SUBACCOUNT_ADMIN:
+			case SUBACCOUNT_STAKEHOLDER:
+				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
+				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
+				break;
+		}
+		if (verificationQueryBuilder != null) {
+			if (currentRole.equals(SUBACCOUNT_ADMIN) || currentRole.equals(SUBACCOUNT_STAKEHOLDER))
+				verificationQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+			else
+				verificationQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+		}
+
+		return verificationQueryBuilder;
 	}
 }
