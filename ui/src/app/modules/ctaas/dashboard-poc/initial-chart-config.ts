@@ -241,4 +241,122 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
     }
 };
 
-export { defaultPolqaChartOptions, defaultWeeklyFeatureFunctionalityChartOptions }
+const defaultVqChartOptions: Partial<ChartOptions> = {
+    chart: {
+        type: 'bar',
+        toolbar: {
+            show: false
+        },
+        width: '100%',
+        // height: '100%'
+    },
+    plotOptions: {
+        bar: {
+            borderRadius: 4,
+            horizontal: true,
+            barHeight: '70%',
+            columnWidth: '70%',
+        }
+    },
+    series: [ {
+        data: [ 85, 5, 5, 5 ]
+    },
+    ],
+    dataLabels: {
+        enabled: true,
+        formatter(val: string | number | number[], opts?: any): string | number {
+            return val + '%'
+        },
+    },
+    xAxis: {
+        categories: ['Excellent [4-5]', 'Good [3-4]', 'Fair [2-3]', 'Poor [1-2]'],
+    },
+    yAxis: {
+        min: 0,
+        max: 100,
+        labels: {
+            style: {
+                fontSize: '18px',
+                fontFamily: 'Helvetica, Arial, sans-serif',
+                fontWeight: 400,
+            },
+        }
+    }
+};
+
+const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
+    series: [100],
+    chart: {
+        type: "radialBar",
+        offsetY: -20,
+        width: '100%',
+        sparkline: { enabled: true }
+    },
+    plotOptions: {
+        radialBar: {
+            startAngle: -90,
+            endAngle: 90,
+            track: {
+                background: "#e7e7e7",
+                strokeWidth: "97%",
+                margin: 5, // margin is in pixels
+                dropShadow: {
+                    enabled: true,
+                    top: 2,
+                    left: 0,
+                    opacity: 0.31,
+                    blur: 2
+                }
+            },
+            dataLabels: {
+                name: {
+                    show: false
+                },
+                value: {
+                    offsetY: -2,
+                    fontSize: "22px"
+                }
+            }
+        }
+    },
+    fill: {
+        colors: ['#83C96B'],
+        type: "gradient",
+        gradient: {
+            shade: "light",
+            shadeIntensity: 0.4,
+            inverseColors: false,
+            opacityFrom: 1,
+            opacityTo: 1,
+            stops: [0, 50, 53, 91]
+        }
+    },
+    grid: {
+        padding: {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0
+        },
+    },
+    states: {
+        normal: {
+            filter: {
+                type: 'none',
+                value: 0,
+            }
+        },
+        hover: {
+            filter: {
+                type: 'none',
+            }
+        },
+        active: {
+            filter: {
+                type: 'none',
+            }
+        },
+    }
+};
+
+export { defaultPolqaChartOptions, defaultWeeklyFeatureFunctionalityChartOptions, defaultVqChartOptions, defaultFailedCallsChartOptions }

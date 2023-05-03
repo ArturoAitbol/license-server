@@ -1,4 +1,4 @@
-@CTaaSFeature @spotLightStakeholdersTest @feature-toggle
+@CTaaSFeature @spotLightStakeholdersTest
 Feature: Stakeholders
   Background: Login successfully with valid credentials
     Given I am on the landing page
@@ -8,7 +8,7 @@ Feature: Stakeholders
     Given I try to login using a "FullAdministrator"
     And I open the Add Customer form
     When I create a customer with the following data
-      | name          | functional-test-stakeholder           |
+      | name          | functional-test-stakeholder       |
       | type          | MSP                               |
       | adminEmail    | test-stakeholder@tekvizion.com    |
       | subaccount    | Default                           |
@@ -48,10 +48,11 @@ Feature: Stakeholders
     And I go to the spotlight "Stakeholders" tab
     And I open the Add Stakeholder form
     When I create a stakeholder with the following data
-      | name          | stakeholderTest         |
-      | jobTitle      | Manager                 |
-      | companyName   | stakeholderCompany      |
-      | phoneNumber   | 6524352354              |
+      | name                | stakeholderTest       |
+      | countryPhoneNumber  | Canada                |
+      | phoneNumber         | 4168501924            |
+      | companyName         | stakeholderCompany    |
+      | jobTitle            | Manager               |
     Then I should see the message "Created Stakeholder successfully"
 #    And I logout
 
@@ -69,20 +70,21 @@ Feature: Stakeholders
     And I see the customer "functional-test-stakeholder" in the table
     And I go to the spotlight dashboard for "functional-test-stakeholder"
     And I go to the spotlight "Stakeholders" tab
-    When I edit the stakeholder "stakeholderTest" with the following data
-      | name                  | stakeholderTestModified         |
-      | jobTitle              | Senior                          |
-      | companyName           | testCompany                     |
-      | phoneNumber           | 6524352354                      |
+    When I edit the stakeholder with the email "test-functional-subaccount-stakeholder@tekvizion360.com" using the following data
+      | name                | stakeholderTest         |
+      | countryPhoneNumber  | Andorra                 |
+      | phoneNumber         | 712345                  |
+      | companyName         | testCompany             |
+      | jobTitle            | Senior                  |
     Then I should see the message "Updated stake holder details successfully"
 
-  @deleteStakeholder @feature-toggle @spotLightDashboard
-  Scenario: Delete Stakeholder Test
+  @deleteStakeholder @spotLightDashboard
+  Scenario: Delete a Stakeholder
     Given I see the customer "functional-test-stakeholder" in the table
     And I go to the spotlight dashboard for "functional-test-stakeholder"
     And I go to the spotlight "Stakeholders" tab
-    And I see the "stakeholderTestModified" stakeholder in the table
-    When I delete the "stakeholderTestModified" stakeholder
+    And I see a stakeholder with the email "test-functional-subaccount-stakeholder@tekvizion360.com" in the table
+    When I delete the stakeholder with the email "test-functional-subaccount-stakeholder@tekvizion360.com"
     Then I should see the message "Deleted Stakeholder successfully"
 
   @deleteStakeholdersTestCustomer @delete

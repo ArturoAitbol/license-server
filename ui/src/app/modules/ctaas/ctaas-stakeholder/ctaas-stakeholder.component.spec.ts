@@ -121,43 +121,6 @@ describe('dialog calls and interactions',() => {
         ctaasStakeholderComponentTestInstance.rowAction(selectedTestData);
         expect(ctaasStakeholderComponentTestInstance.onDeleteStakeholderAccount).toHaveBeenCalledWith(selectedTestData.selectedRow);
         expect(StakeHolderServiceMock.deleteStakeholder).toHaveBeenCalled();
-
-        selectedTestData.selectedOption = 'Request Call to this Account'
-        const selectedInconpleteUser = {selectedRow:
-            {
-            jobTitle:'testJob3', 
-            companyName:'testCom3', 
-            subaccountAdminEmail:'test3@gmail.com', 
-            phoneNumber:'2222222222', 
-            notifications: 'TYPE:LOW TIER',
-            subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'High level'}, 
-        selectedOption: 'Request Call to this Account', 
-        selectedIndex: '0' }
-
-        dialogService.setExpectedConfirmDialogValue(true);
-        ctaasStakeholderComponentTestInstance.rowAction(selectedInconpleteUser);
-        dialogService.afterClosed();
-        expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedInconpleteUser.selectedOption, selectedInconpleteUser.selectedRow);
-
-        selectedTestData.selectedOption = 'Request Call to this Account'
-        const selectedUser = {selectedRow:
-            {
-            name: 'test name',
-            jobTitle:'testJob3', 
-            companyName:'testCom3', 
-            subaccountAdminEmail:'test3@gmail.com', 
-            phoneNumber:'2222222222', 
-            notifications: 'TYPE:LOW TIER',
-            subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'High level'}, 
-        selectedOption: 'Request Call to this Account', 
-        selectedIndex: '0' }
-
-        dialogService.setExpectedConfirmDialogValue(true);
-        ctaasStakeholderComponentTestInstance.rowAction(selectedUser);
-        dialogService.afterClosed();
-        expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedUser.selectedOption, selectedUser.selectedRow);
     });
 
 
@@ -246,48 +209,5 @@ describe('calls with customer subaccount admin role', () => {
             "email": "test-customer-subaccount-stakeholder@tekvizionlabs.com"
         });
         expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith("Error deleting administrator email, at least one administrator must remain")
-    });
-});
-
-describe('ctaas-stakeholders, row action callback', () => {
-    beforeEach(() => {
-        const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasStakeholderComponent);
-        TestBed.configureTestingModule(configBuilder.getConfig());
-        TestBed.overrideProvider(MatDialog, { useValue: CustomMatDialogMock });
-        fixture = TestBed.createComponent(CtaasStakeholderComponent);
-        ctaasStakeholderComponentTestInstance = fixture.componentInstance;
-    });
-    beforeEach(() => {
-        spyOn(MsalServiceMock.instance,'getActiveAccount').and.returnValue(MsalServiceMock.mockIdTokenClaimsSubaccountRole);
-    });
-
-    it('should execute openDialogs() with callback and subaacount admin role', () => {
-    
-        spyOn(ctaasStakeholderComponentTestInstance, 'openDialog').and.callThrough();
-        spyOn(ctaasStakeholderComponentTestInstance, 'onDeleteStakeholderAccount').and.callThrough();
-        spyOn(dialogService, 'confirmDialog').and.callThrough();
-        spyOn(dialogService, 'afterClosed').and.callThrough();
-        spyOn(StakeHolderServiceMock, 'deleteStakeholder').and.callThrough();
-        spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
-        const selectedTestData = {selectedRow:{testProperty: 'testData'}, selectedOption: 'selectedOption', selectedIndex: '0' }
-        fixture.detectChanges();
-    
-        selectedTestData.selectedOption = 'Request Call to this Account'
-        const selectedUser = {selectedRow:
-            {
-            jobTitle:'testJob3', 
-            companyName:'testCom3', 
-            subaccountAdminEmail:'test3@gmail.com', 
-            phoneNumber:'2222222222', 
-            notifications: 'TYPE:LOW TIER',
-            subaccountId: 'f6c0e45e-cfdc-4c1a-820e-bef6a856aaea',
-            type:'High level'}, 
-        selectedOption: 'Request Call to this Account', 
-        selectedIndex: '0' }
-
-        dialogService.setExpectedConfirmDialogValue(true);
-        ctaasStakeholderComponentTestInstance.rowAction(selectedUser);
-        dialogService.afterClosed();
-        expect(ctaasStakeholderComponentTestInstance.openDialog).toHaveBeenCalledWith(selectedUser.selectedOption, selectedUser.selectedRow);
     });
 });

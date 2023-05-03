@@ -3,28 +3,23 @@ package com.function.spotlightCharts;
 import com.function.auth.Resource;
 import com.function.db.SelectQueryBuilder;
 import com.function.util.Constants;
-import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.HttpMethod;
-import com.microsoft.azure.functions.HttpRequestMessage;
-import com.microsoft.azure.functions.HttpResponseMessage;
-import com.microsoft.azure.functions.HttpStatus;
+import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
-
-import java.sql.*;
-import java.util.*;
-
 import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.sql.*;
+import java.util.*;
 
 import static com.function.auth.RoleAuthHandler.*;
 
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSGetSimpleChart {
+public class TekvLSGetVoiceQualityChart {
 	/**
 	 * This function listens at endpoint "/v1.0/spotlightCharts/simpleChart". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/spotlightCharts/simpleChart
@@ -36,13 +31,13 @@ public class TekvLSGetSimpleChart {
 			+ "&user=" + Constants.TEMP_ONPOINT_USER
 			+ "&password=" + Constants.TEMP_ONPOINT_PWD;
 
-	@FunctionName("TekvLSGetSimpleChart")
+	@FunctionName("TekvLSGetVoiceQualityChart")
 	public HttpResponseMessage run(
 				@HttpTrigger(
 				name = "req",
 				methods = {HttpMethod.GET},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "spotlightCharts/simpleChart")
+				route = "spotlightCharts/voiceQualityChart")
 				HttpRequestMessage<Optional<String>> request,
 				final ExecutionContext context) 
 	{
@@ -62,57 +57,76 @@ public class TekvLSGetSimpleChart {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetAllCustomers Azure function");   
+		context.getLogger().info("Entering TekvLSGetVoiceQualityChart Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-		String reportType = request.getQueryParameters().getOrDefault("reportType", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		// String metric = request.getQueryParameters().getOrDefault("metric", "");
-		String query = "SELECT sr.status, COUNT(sr.status) as status_counter FROM sub_result sr LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
-			"run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
-			"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " + 
-			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
-			"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
-		switch (reportType) {
-			case "CallingReliability":
-				query += " AND tp.name='STS'";
-				break;
-			case "FeatureFunctionality":
-				query += " AND tp.name='LTS'";
-				break;
-			case "VQ":
-				query += " AND tp.name='POLQA'";
-				break;
-		}
+		String query = " SELECT sr.id as call_id, trs.did as user, AVG(ms.parameter_value::numeric) as \"POLQA\" " +
+				"FROM media_stats ms " +
+				"LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
+				"LEFT JOIN sub_result sr ON trs.subresultid = sr.id " +
+				"LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id " +
+				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
+				"LEFT JOIN project p ON r.projectid = p.id " +
+				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
+				"WHERE sr.finalresult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " +
+				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype) = '' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing') " +
+				"AND tp.name='POLQA' AND ms.parameter_name = 'POLQA'";
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
 		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
-		queryBuilder.appendGroupBy("sr.status");
-		
+		queryBuilder.appendGroupByMany("sr.id, trs.did");
+
 		// Connect to the database
 		try (
 			Connection connection = DriverManager.getConnection(dbConnectionUrl);
 			PreparedStatement statement = queryBuilder.build(connection)) {
 			
-			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+			context.getLogger().info("Successfully connected to: " + Constants.TEMP_ONPOINT_ADDRESS);
 			
-			// Retrieve executions status list.
+			// Retrieve all the calls.
 			context.getLogger().info("Execute SQL statement: " + statement);
 			ResultSet rs = statement.executeQuery();
-			// Return a JSON array of status and counts (id and value)
-			JSONObject json = new JSONObject();
-			JSONArray array = new JSONArray();
+
+			float excellent = 0;
+			float good = 0;
+			float fair = 0;
+			float bad = 0;
+			float totalCalls = 0;
+			HashSet<String> callIds = new HashSet<>();
 			while (rs.next()) {
-				JSONObject item = new JSONObject();
-				item.put("id", rs.getString("status"));
-				item.put("value", rs.getInt("status_counter"));
-				array.put(item);
+				float polqa = rs.getFloat("POLQA");
+				totalCalls+=1;
+				callIds.add(rs.getString("call_id"));
+				if(polqa>=4){ excellent+=1; continue; }
+				if(polqa>=3 && polqa<4) { good += 1; continue; }
+				if(polqa>=2 && polqa<3) { fair += 1; continue; }
+				if(polqa>=0 && polqa<2) { bad += 1; }
+			}
+			JSONArray percentages;
+			if(totalCalls>0){
+				percentages = new JSONArray();
+				percentages.put((excellent/totalCalls)*100);
+				percentages.put((good/totalCalls)*100);
+				percentages.put((fair/totalCalls)*100);
+				percentages.put((bad/totalCalls)*100);
+			}else{
+				percentages = new JSONArray("[0,0,0,0]");
 			}
 
-			json.put("series", array);
+
+			JSONArray categories = new JSONArray("['Excellent [4-5]','Good [3-4)','Fair [2-3)','Poor [0-2)']");
+			JSONObject summary = new JSONObject();
+			summary.put("calls_stream",totalCalls);
+			summary.put("calls",callIds.size());
+
+			JSONObject json = new JSONObject();
+			json.put("summary",summary);
+			json.put("percentages",percentages);
+			json.put("categories",categories);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {

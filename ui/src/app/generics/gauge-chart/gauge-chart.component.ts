@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { defaultGaugeChartOptions } from "./defaultGaugeChartOptions";
 import { ChartComponent } from "ng-apexcharts";
 import { ChartOptions } from "../../helpers/chart-options-type";
@@ -17,8 +17,11 @@ export class GaugeChartComponent {
   @Input() set value(value: number) {
     this.chartOptions.series = [Number(value.toFixed(2))];
   }
+  @Output() viewDetailedTableEvent = new EventEmitter<null>();
 
   @ViewChild("chart") chart: ChartComponent;
 
-
+  viewDetailedTableClicked() {
+    this.viewDetailedTableEvent.emit();
+  }
 }

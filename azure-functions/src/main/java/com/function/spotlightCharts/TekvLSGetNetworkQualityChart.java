@@ -15,6 +15,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -74,13 +75,45 @@ public class TekvLSGetNetworkQualityChart {
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
+		String groupByIndicator = request.getQueryParameters().getOrDefault("groupBy", "hour");
+
 		String metricsClause = metrics.replace(",", "', '");
-		String query = "SELECT TO_CHAR(ms.last_modified_date,'YYYY-MM-DD HH24:00') as date_hour, ms.parameter_name, " +
-				"AVG( CASE WHEN ms.parameter_value LIKE '% ms' THEN CAST(SPLIT_PART(ms.parameter_value, ' ms', 1) AS FLOAT) " +
-						  "WHEN ms.parameter_value LIKE '--' THEN NULL " +
-						  "WHEN ms.parameter_value LIKE '%\\%' THEN CAST(SPLIT_PART(ms.parameter_value, '%', 1) AS FLOAT) " +
-						  "ELSE CAST(ms.parameter_value AS FLOAT) END) avg_per_hour " +
-				"FROM media_stats ms LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
+		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
+
+		Iterator<String> metricsArray = Arrays.stream(metrics.split(",")).iterator();
+		StringBuilder statistics = new StringBuilder();
+		List<String> statisticsLabels = new ArrayList<>();
+		while (metricsArray.hasNext()) {
+			String metric = metricsArray.next();
+			switch (metric) {
+				case "Received Jitter":
+					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Received Jitter\" " );
+					statisticsLabels.add("Received Jitter");
+					break;
+				case "Received packet loss":
+					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Received packet loss\"  ");
+					statisticsLabels.add("Received packet loss");
+					break;
+				case "Round trip time":
+					statistics.append("max(case when ms.parameter_name = 'Round trip time' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Round trip time\" ");
+					statisticsLabels.add("Round trip time");
+					break;
+				case "Sent bitrate":
+					statistics.append("avg(case when ms.parameter_name = 'Sent bitrate' then NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '')::numeric end) as \"Sent bitrate\" ");
+					statisticsLabels.add("Sent bitrate");
+					break;
+				case "POLQA":
+					statistics.append("min(case when ms.parameter_name = 'POLQA' then ms.parameter_value::numeric end) as \"POLQA\" ");
+					statisticsLabels.add("POLQA");
+					break;
+			}
+			if (metricsArray.hasNext()) {
+				 statistics.append(",");
+			}
+		}
+
+		String query = "SELECT TO_CHAR(ms.last_modified_date,'"+groupByClause+"') as date_hour, " + statistics +
+				" FROM media_stats ms LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
 				"LEFT JOIN sub_result sr ON trs.subresultid = sr.id LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id " +
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " +
@@ -90,8 +123,8 @@ public class TekvLSGetNetworkQualityChart {
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= ?::timestamp", startDate);
-		queryBuilder.appendCustomCondition("sr.enddate <= ?::timestamp", endDate);
-		queryBuilder.appendGroupByMany("date_hour, ms.parameter_name");
+		queryBuilder.appendCustomCondition("sr.startdate <= ?::timestamp", endDate);
+		queryBuilder.appendGroupByMany("date_hour");
 		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 		
 		// Connect to the database
@@ -106,10 +139,18 @@ public class TekvLSGetNetworkQualityChart {
 			ResultSet rs = statement.executeQuery();
 			// Return a JSON array of customers (id and names)
 			JSONObject json = new JSONObject();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			LocalDateTime startLocalDate = LocalDateTime.parse(startDate,formatter);
-			LocalDateTime endLocalDate = LocalDateTime.parse(endDate,formatter);
-			TreeMap<String,JSONObject> datesObject = getHoursBetween(startLocalDate,endLocalDate);
+			TreeMap<String,JSONObject> datesObject;
+			if(groupByIndicator.equals("day")){
+				LocalDate startLocalDate = LocalDate.parse(startDate.split(" ")[0]);
+				LocalDate endLocalDate = LocalDate.parse(endDate.split(" ")[0]);
+				datesObject = getDatesBetween(startLocalDate,endLocalDate);
+			}else{
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime startLocalDate = LocalDateTime.parse(startDate,formatter);
+				LocalDateTime endLocalDate = LocalDateTime.parse(endDate,formatter);
+				datesObject = getHoursBetween(startLocalDate,endLocalDate);
+			}
+
 
 			while (rs.next()) {
 				// adding to dates map if not added
@@ -120,18 +161,17 @@ public class TekvLSGetNetworkQualityChart {
 					datesObject.put(dateHour,dateHourObject);
 				}
 
-				// get metric and avg value from db row
-				String parameter = rs.getString("parameter_name");
-				float avgPerHour = rs.getFloat("avg_per_hour");
-				dateHourObject.put(parameter,avgPerHour);
+				// get metrics values from DB
+				for(String statistic:statisticsLabels){
+					dateHourObject.put(statistic,rs.getFloat(statistic));
+				}
 			}
 
 			Set<Map.Entry<String, JSONObject> > entries = datesObject.entrySet();
 			JSONArray datesArray = new JSONArray();
 			JSONObject series = new JSONObject();
-			String[] metricsArray = metrics.split(",");
-			for (String metric : metricsArray) {
-				series.put(metric, new JSONArray());
+			for (String statistic : statisticsLabels) {
+				series.put(statistic, new JSONArray());
 			}
 
 			DecimalFormat df = new DecimalFormat("#.00");
@@ -139,15 +179,21 @@ public class TekvLSGetNetworkQualityChart {
 
 			entries.forEach(entry -> {
 				String date = entry.getKey();
-				int nextHour = LocalDateTime.parse(date,format).plusHours(1).getHour();
-				datesArray.put(date+ "-" + String.format("%02d", nextHour) +":00");
+				if(groupByIndicator.equals("day")){
+					datesArray.put(date);
+				}else{
+					int nextHour = LocalDateTime.parse(date,format).plusHours(1).getHour();
+					datesArray.put(date+ "-" + String.format("%02d", nextHour) +":00");
+				}
+
 
 				JSONObject entryValue = entry.getValue();
 				for (String metric : series.keySet()) {
 					// get metric's array
 					JSONArray increasedSerie = series.getJSONArray(metric);
 					// override metric's array with new value
-					increasedSerie.put(entryValue!=null ? Float.parseFloat(df.format(entryValue.getFloat(metric))) : 0);
+					increasedSerie.put(entryValue!=null && entryValue.has(metric) ?
+							Float.parseFloat(df.format(entryValue.getFloat(metric))) : 0);
 					series.put(metric, increasedSerie);
 				}
 			});
@@ -168,6 +214,20 @@ public class TekvLSGetNetworkQualityChart {
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
+	}
+
+	public TreeMap<String,JSONObject> getDatesBetween(LocalDate startDate, LocalDate endDate) {
+
+		TreeMap<String,JSONObject> map = new TreeMap<>();
+
+		long numOfDaysBetween = ChronoUnit.DAYS.between(startDate, endDate)+1;
+
+		IntStream.iterate(0, i -> i + 1)
+				.limit(numOfDaysBetween)
+				.mapToObj(i->startDate.plusDays(i).toString())
+				.forEach(i -> map.put(i,null));
+
+		return map;
 	}
 
 	public TreeMap<String,JSONObject> getHoursBetween(LocalDateTime startDate, LocalDateTime endDate) {
