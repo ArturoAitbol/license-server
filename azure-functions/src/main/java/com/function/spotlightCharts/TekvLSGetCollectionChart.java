@@ -75,7 +75,7 @@ public class TekvLSGetCollectionChart {
 
 		String user = request.getQueryParameters().getOrDefault("user", "");
 
-		String query = "SELECT CAST(sr.endDate AS DATE), sr.status, COUNT(sr.status) as status_counter" +
+		String query = "SELECT CAST(sr.endDate AS DATE), sr.status, COUNT(sr.status) as status_counter " +
 			"FROM sub_result sr " +
 			"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
 			"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
@@ -98,15 +98,18 @@ public class TekvLSGetCollectionChart {
 		
 		// Build region filter if present
 		if (!country.isEmpty() || !user.isEmpty()) {
-			query += " AND sr.id IN (SELECT sr.id FROM test_result_resource trr LEFT JOIN sub_result sr ON trr.subresultid = sr.id WHERE";
-			if (!country.isEmpty())
-				query += " AND trr.country = '" + country + "'";
+			query += " AND sr.id IN (SELECT sr2.id FROM test_result_resource trr LEFT JOIN sub_result sr2 ON trr.subresultid = sr2.id WHERE";
+			if (user.isEmpty())
+				query += " trr.country = CAST('" + country + "' AS varchar)";
+			else {
+				query += " trr.did = CAST('" + user + "' AS varchar)";
+				if (!country.isEmpty())
+					query += " AND trr.country = CAST('" + country + "' AS varchar)";
+			}
 			if (!state.isEmpty())
-				query += " AND trr.state = '" + state + "'";
+				query += " AND trr.state = CAST('" + state + "' AS varchar)";
 			if (!city.isEmpty())
-				query += " AND trr.city = '" + city + "'";
-			if (!user.isEmpty())
-				query += " AND trr.did = '" + user + "'";
+				query += " AND trr.city = CAST('" + city + "' AS varchar)";
 			query += ")";
 		}
 		

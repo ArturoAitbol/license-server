@@ -94,19 +94,19 @@ public class TekvLSGetNetworkQualityChart {
 			String metric = metricsArray.next();
 			switch (metric) {
 				case "Received Jitter":
-					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received Jitter\" ");
+					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received Jitter\" ");
 					statisticsLabels.add("Received Jitter");
 					break;
 				case "Received packet loss":
-					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received packet loss\" ");
+					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received packet loss\" ");
 					statisticsLabels.add("Received packet loss");
 					break;
 				case "Round trip time":
-					statistics.append("max(case when ms.parameter_name = 'Round trip time' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Round trip time\" ");
+					statistics.append("max(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Round trip time\" ");
 					statisticsLabels.add("Round trip time");
 					break;
 				case "Sent bitrate":
-					statistics.append("avg(case when ms.parameter_name = 'Sent bitrate' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Sent bitrate\" ");
+					statistics.append("avg(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Sent bitrate\" ");
 					statisticsLabels.add("Sent bitrate");
 					break;
 				case "POLQA":
@@ -133,16 +133,16 @@ public class TekvLSGetNetworkQualityChart {
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
-		queryBuilder.appendCustomCondition("sr.startdate >= CAST( ? AS timestamp)", startDate);
-		queryBuilder.appendCustomCondition("sr.startdate <= CAST( ? AS timestamp)", endDate);
+		queryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
 		if (!country.isEmpty())
-			queryBuilder.appendEqualsCondition("trr.country", country);
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
 		if (!state.isEmpty())
-			queryBuilder.appendEqualsCondition("trr.state", state);
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
 		if (!city.isEmpty())
-			queryBuilder.appendEqualsCondition("trr.city", city);
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
 		if (!user.isEmpty())
-			queryBuilder.appendEqualsCondition("trr.did", user);
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
 		queryBuilder.appendGroupByMany("date_hour");
 		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 		

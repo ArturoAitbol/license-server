@@ -122,16 +122,16 @@ public class TekvLSGetNetworkQualitySummary {
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
-		queryBuilder.appendCustomCondition("sr.startdate >= CAST( ? AS timestamp)", startDate);
-		queryBuilder.appendCustomCondition("sr.startdate <= CAST( ? AS timestamp)", endDate);
+		queryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
 		if (!country.isEmpty())
-			queryBuilder.appendEqualsCondition("trr.country", country);
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
 		if (!state.isEmpty())
-			queryBuilder.appendEqualsCondition("trr.state", state);
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
 		if (!city.isEmpty())
-			queryBuilder.appendEqualsCondition("trr.city", city);
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
 		if (!user.isEmpty())
-			queryBuilder.appendEqualsCondition("trr.did", user);
+			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
 		
 		// Connect to the database
 		try {
