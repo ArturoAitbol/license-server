@@ -63,10 +63,15 @@ public class TekvLSGetNetworkQualitySummary {
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
+
+		String country = request.getQueryParameters().getOrDefault("country", "");
+		String state = request.getQueryParameters().getOrDefault("state", "");
+		String city = request.getQueryParameters().getOrDefault("city", "");
+
+		String user = request.getQueryParameters().getOrDefault("user", "");
+
 		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
-
 		String metricsClause = metrics.replace(",", "', '");
-
 		String[] metricsArray = metrics.split(",");
 		StringBuilder statistics = new StringBuilder();
 		List<String> statisticsLabels = new ArrayList<>();
@@ -107,7 +112,7 @@ public class TekvLSGetNetworkQualitySummary {
 				"FROM media_stats ms " +
 				"LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id " +
 				"LEFT JOIN sub_result sr ON trr.subresultid = sr.id " +
-				"LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id " +
+				"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
@@ -119,6 +124,14 @@ public class TekvLSGetNetworkQualitySummary {
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= CAST( ? AS timestamp)", startDate);
 		queryBuilder.appendCustomCondition("sr.startdate <= CAST( ? AS timestamp)", endDate);
+		if (!country.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.country", country);
+		if (!state.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.state", state);
+		if (!city.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.city", city);
+		if (!user.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.did", user);
 		
 		// Connect to the database
 		try {

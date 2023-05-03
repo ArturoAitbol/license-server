@@ -63,11 +63,18 @@ public class TekvLSGetVoiceQualityChart {
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		String query = " SELECT sr.id as call_id, trs.did as user, AVG(CAST(ms.parameter_value AS numeric)) as \"POLQA\" " +
+
+		String country = request.getQueryParameters().getOrDefault("country", "");
+		String state = request.getQueryParameters().getOrDefault("state", "");
+		String city = request.getQueryParameters().getOrDefault("city", "");
+
+		String user = request.getQueryParameters().getOrDefault("user", "");
+
+		String query = " SELECT sr.id as call_id, trr.did as user, AVG(CAST(ms.parameter_value AS numeric)) as \"POLQA\" " +
 				"FROM media_stats ms " +
-				"LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
-				"LEFT JOIN sub_result sr ON trs.subresultid = sr.id " +
-				"LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id " +
+				"LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id " +
+				"LEFT JOIN sub_result sr ON trr.subresultid = sr.id " +
+				"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
@@ -79,7 +86,15 @@ public class TekvLSGetVoiceQualityChart {
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= CAST( ? AS timestamp)", startDate);
 		queryBuilder.appendCustomCondition("sr.startdate <= CAST( ? AS timestamp)", endDate);
-		queryBuilder.appendGroupByMany("sr.id, trs.did");
+		if (!country.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.country", country);
+		if (!state.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.state", state);
+		if (!city.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.city", city);
+		if (!user.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.did", user);
+		queryBuilder.appendGroupByMany("sr.id, trr.did");
 
 		// Connect to the database
 		try {

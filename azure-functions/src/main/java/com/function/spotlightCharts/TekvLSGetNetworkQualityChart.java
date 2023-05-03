@@ -75,12 +75,18 @@ public class TekvLSGetNetworkQualityChart {
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
-		String groupByIndicator = request.getQueryParameters().getOrDefault("groupBy", "hour");
 
-		String metricsClause = metrics.replace(",", "', '");
+		String country = request.getQueryParameters().getOrDefault("country", "");
+		String state = request.getQueryParameters().getOrDefault("state", "");
+		String city = request.getQueryParameters().getOrDefault("city", "");
+
+		String user = request.getQueryParameters().getOrDefault("user", "");
+		
+		String groupByIndicator = request.getQueryParameters().getOrDefault("groupBy", "hour");
 		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
 
+		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
+		String metricsClause = metrics.replace(",", "', '");
 		Iterator<String> metricsArray = Arrays.stream(metrics.split(",")).iterator();
 		StringBuilder statistics = new StringBuilder();
 		List<String> statisticsLabels = new ArrayList<>();
@@ -88,11 +94,11 @@ public class TekvLSGetNetworkQualityChart {
 			String metric = metricsArray.next();
 			switch (metric) {
 				case "Received Jitter":
-					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received Jitter\" " );
+					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received Jitter\" ");
 					statisticsLabels.add("Received Jitter");
 					break;
 				case "Received packet loss":
-					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received packet loss\"  ");
+					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then CAST( NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Received packet loss\" ");
 					statisticsLabels.add("Received packet loss");
 					break;
 				case "Round trip time":
@@ -114,21 +120,29 @@ public class TekvLSGetNetworkQualityChart {
 		}
 
 		String query = "SELECT TO_CHAR(ms.last_modified_date,'"+groupByClause+"') as date_hour, " + statistics +
-				" FROM media_stats ms " +
-				"LEFT JOIN test_result_resource trs ON ms.testresultresourceid = trs.id " +
-				"LEFT JOIN sub_result sr ON trs.subresultid = sr.id " +
-				"LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id " +
+				"FROM media_stats ms " +
+				"LEFT JOIN test_result_resource trr ON ms.testresultresourceid = trr.id " +
+				"LEFT JOIN sub_result sr ON trr.subresultid = sr.id " +
+				"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " +
 				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
-				"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing') AND tp.name in ('LTS','STS','POLQA')  AND ms.parameter_name IN ('" + metricsClause + "')";
+				"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing') AND tp.name in ('LTS','STS','POLQA') AND ms.parameter_name IN ('" + metricsClause + "')";
 		
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= CAST( ? AS timestamp)", startDate);
 		queryBuilder.appendCustomCondition("sr.startdate <= CAST( ? AS timestamp)", endDate);
+		if (!country.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.country", country);
+		if (!state.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.state", state);
+		if (!city.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.city", city);
+		if (!user.isEmpty())
+			queryBuilder.appendEqualsCondition("trr.did", user);
 		queryBuilder.appendGroupByMany("date_hour");
 		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 		

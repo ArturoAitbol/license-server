@@ -68,8 +68,19 @@ public class TekvLSGetCollectionChart {
 		String reportType = request.getQueryParameters().getOrDefault("reportType", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
-		String query = "SELECT CAST(sr.endDate AS DATE), sr.status, COUNT(sr.status) as status_counter FROM sub_result sr LEFT JOIN TEST_RESULT tr ON sr.testresultid = tr.id LEFT JOIN " +
-			"run_instance r ON tr.runinstanceid = r.id LEFT JOIN project p ON r.projectid = p.id LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
+
+		String country = request.getQueryParameters().getOrDefault("country", "");
+		String state = request.getQueryParameters().getOrDefault("state", "");
+		String city = request.getQueryParameters().getOrDefault("city", "");
+
+		String user = request.getQueryParameters().getOrDefault("user", "");
+
+		String query = "SELECT CAST(sr.endDate AS DATE), sr.status, COUNT(sr.status) as status_counter" +
+			"FROM sub_result sr " +
+			"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
+			"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
+			"LEFT JOIN project p ON r.projectid = p.id " +
+			"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 			"WHERE sr.finalResult = true AND sr.status != 'ABORTED'AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " + 
 			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
 			"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
@@ -83,6 +94,20 @@ public class TekvLSGetCollectionChart {
 			case "VQ":
 				query += " AND tp.name='POLQA'";
 				break;
+		}
+		
+		// Build region filter if present
+		if (!country.isEmpty() || !user.isEmpty()) {
+			query += " AND sr.id IN (SELECT sr.id FROM test_result_resource trr LEFT JOIN sub_result sr ON trr.subresultid = sr.id WHERE";
+			if (!country.isEmpty())
+				query += " AND trr.country = '" + country + "'";
+			if (!state.isEmpty())
+				query += " AND trr.state = '" + state + "'";
+			if (!city.isEmpty())
+				query += " AND trr.city = '" + city + "'";
+			if (!user.isEmpty())
+				query += " AND trr.did = '" + user + "'";
+			query += ")";
 		}
 		
 		// Build SQL statement
