@@ -22,7 +22,7 @@
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Daily Report | {{ selectedDate }}</h1>
+                <h1 class="text-center">Daily Report | {{ selectedDate.format('MMMM-DD-YYYY') }}</h1>
             </div>
             <form [formGroup]="filters" class="row justify-content-center mt-2 mb-2">
                 <div class="col-2">

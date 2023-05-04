@@ -10,6 +10,8 @@ import { SpotlightChartsService } from "../../../../services/spotlight-charts.se
 import { Moment } from "moment";
 import { forkJoin } from "rxjs";
 import { SubAccountService } from "../../../../services/sub-account.service";
+import { environment } from "../../../../../environments/environment";
+import { ReportType } from "../../../../helpers/report-type";
 
 @Component({
   selector: 'app-network-quality-trends',
@@ -48,7 +50,6 @@ export class NetworkQualityTrendsComponent implements OnInit {
     obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.date, this.date, this.user, subaccountId));
     obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.date, this.date, this.user, subaccountId));
     forkJoin(obs).subscribe((res: any) => {
-      console.log(res)
       const trendsData = res[0];
       this.commonChartOptions.xAxis.categories = trendsData.categories.map(category => category.split(" ")[1]);
       this.initChartOptions();
@@ -84,6 +85,20 @@ export class NetworkQualityTrendsComponent implements OnInit {
     this.jitterChartOptions = { ...this.commonChartOptions, ...defaultJitterChartOptions };
     this.sentBitrateChartOptions = {...this.commonChartOptions, ...defaultSentBitrateChartOptions };
     this.roundTripChartOptions = {...this.commonChartOptions, ...defaultRoundtripTimeChartOptions };
+    this.receivedPacketLossChartOptions.chart.events = {
+      markerClick: this.navigateToCallingReliabilityDetailedTableFromPoint.bind(this)
+    };
+  }
+
+  navigateToCallingReliabilityDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
+    const category = chartContext.opts.xaxis.categories[dataPointIndex];
+    const [ startTime, endTime ] = category.split('-');
+    const startDate = this.date.clone().utc().startOf('day').hour(startTime.split(':')[0]);
+    const endDate = this.date.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
+    const parsedStartTime = startDate.format('YYMMDDHHmmss');
+    const parsedEndTime = endDate.format('YYMMDDHHmmss');
+    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_CALLING_RELIABILITY }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    window.open(url);
   }
 
 }
