@@ -10,7 +10,7 @@ import { Moment } from "moment";
 })
 export class SpotlightChartsService {
     private readonly API_URL: string = environment.apiEndpoint + '/spotlightCharts/';
-    constructor(private httpClient: HttpClient, private subacountService: SubAccountService) {
+    constructor(private httpClient: HttpClient) {
     }
 
     /**
@@ -38,6 +38,7 @@ export class SpotlightChartsService {
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('metric', metric);
+        params = params.set('subaccountId', '2c8e386b-d1bd-48b3-b73a-12bfa5d00805');
         if (user) params = params.set('user', user);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'networkQualityChart', { headers, params });
@@ -56,6 +57,7 @@ export class SpotlightChartsService {
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('metric', metric);
+        params = params.set('subaccountId', '2c8e386b-d1bd-48b3-b73a-12bfa5d00805');
         if (user) params = params.set('user', user);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'networkQualitySummary', { headers, params });
@@ -71,6 +73,7 @@ export class SpotlightChartsService {
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('reportType', 'CallingReliability');
+        params = params.set('subaccountId', '2c8e386b-d1bd-48b3-b73a-12bfa5d00805');
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'collectionChart', { headers, params });
     }
@@ -98,6 +101,7 @@ export class SpotlightChartsService {
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('reportType', reportType);
+        params = params.set('subaccountId', '2c8e386b-d1bd-48b3-b73a-12bfa5d00805');
         if (region.country) params = params.set('country', region.country);
         if (region.state) params = params.set('state)', region.state);
         if (region.city) params = params.set('city', region.city);
@@ -115,6 +119,7 @@ export class SpotlightChartsService {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('subaccountId', '2c8e386b-d1bd-48b3-b73a-12bfa5d00805');
         if (region.country) params = params.set('country', region.country);
         if (region.state) params = params.set('state)', region.state);
         if (region.city) params = params.set('city', region.city);
