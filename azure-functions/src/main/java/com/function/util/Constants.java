@@ -9,11 +9,6 @@ public abstract class Constants {
     public static String DEFAULT_CTAAS_DEVICE = "Base SpotLight platform ready";
     public static String DEFAULT_CONSUMPTION_TYPE = "Configuration";
     public static int STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
-    public static String PACKET_LOSS_PARAM_NAME = "Received packet loss";
-    public static String TEMP_ONPOINT_ADDRESS = "tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com";
-    public static String TEMP_ONPOINT_USER = "postgres";
-    public static String TEMP_ONPOINT_PWD = "1DBpassword!";
-    public static String TEMP_ONPOINT_DB = "onpoint";
     public static String TEMP_ONPOINT_USERNAME = "administrator@tekvizion.com";
     public static String TEMP_ONPOINT_PASSWORD = "admin123";
     public static String SPOTLIGHT_API_PATH = "v1/spotlight";
