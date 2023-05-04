@@ -98,18 +98,19 @@ export class DashboardPocComponent implements OnInit{
   loadCharts() {
     this.isloading = true;
     const startTime = performance.now();
+    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
     const selectedDate = this.filters.get('date').value;
     const selectedRegion = this.filters.get('region').value;
     const selectedUser = this.filters.get('user').value;
     this.selectedDate = this.filters.get('date').value.format('MMMM-DD-YYYY');
 
-    obs.push(this.spotlightChartsService.getDailyCallingReliability(selectedDate, selectedRegion));
-    obs.push(this.spotlightChartsService.getDailyFeatureFunctionality(selectedDate, selectedRegion));
-    obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(selectedDate, selectedDate, selectedUser));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedDate, selectedDate, selectedUser));
-    obs.push(this.spotlightChartsService.getWeeklyCallingReliability(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day')));
+    obs.push(this.spotlightChartsService.getDailyCallingReliability(selectedDate, selectedRegion, subaccountId));
+    obs.push(this.spotlightChartsService.getDailyFeatureFunctionality(selectedDate, selectedRegion, subaccountId));
+    obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(selectedDate, selectedDate, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedDate, selectedDate, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getWeeklyCallingReliability(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId));
     forkJoin(obs).subscribe((res: any) => {
       console.log(res);
       // Daily Calling reliability
@@ -294,7 +295,8 @@ export class DashboardPocComponent implements OnInit{
 
   private reloadFilterOptions() {
     this.filters.disable();
-    this.spotlightChartsService.getFilterOptions().subscribe((res: any) => {
+    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    this.spotlightChartsService.getFilterOptions(subaccountId).subscribe((res: any) => {
       const regions = [];
       res.regions.map(region => {
         if (region.country !== null){

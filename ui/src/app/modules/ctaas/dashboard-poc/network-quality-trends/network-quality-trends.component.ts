@@ -9,6 +9,7 @@ import {
 import { SpotlightChartsService } from "../../../../services/spotlight-charts.service";
 import { Moment } from "moment";
 import { forkJoin } from "rxjs";
+import { SubAccountService } from "../../../../services/sub-account.service";
 
 @Component({
   selector: 'app-network-quality-trends',
@@ -31,7 +32,8 @@ export class NetworkQualityTrendsComponent implements OnInit {
 
   isLoading = true;
 
-  constructor(private spotlightChartsService: SpotlightChartsService) {
+  constructor(private spotlightChartsService: SpotlightChartsService,
+              private subaccountService: SubAccountService) {
     this.commonChartOptions = trendsChartCommonOptions;
   }
 
@@ -42,8 +44,9 @@ export class NetworkQualityTrendsComponent implements OnInit {
   loadCharts() {
     this.isLoading = true;
     const obs = [];
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.date, this.date, this.user));
-    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.date, this.date, this.user));
+    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.date, this.date, this.user, subaccountId));
+    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.date, this.date, this.user, subaccountId));
     forkJoin(obs).subscribe((res: any) => {
       console.log(res)
       const trendsData = res[0];
