@@ -73,14 +73,13 @@ Feature: Stakeholders
     When I edit the stakeholder with the email "test-functional-subaccount-stakeholder@tekvizion360.com" using the following data
       | name                | stakeholderTest         |
       | countryPhoneNumber  | Andorra                 |
-      | phoneNumber         | 376712345               |
-#      | phoneNumber         | 712345                  |
+      | phoneNumber         | 712345                  |
       | companyName         | testCompany             |
       | jobTitle            | Senior                  |
     Then I should see the message "Updated stake holder details successfully"
 
   @deleteStakeholder @spotLightDashboard
-  Scenario: Delete Stakeholder Test
+  Scenario: Delete a Stakeholder
     Given I see the customer "functional-test-stakeholder" in the table
     And I go to the spotlight dashboard for "functional-test-stakeholder"
     And I go to the spotlight "Stakeholders" tab

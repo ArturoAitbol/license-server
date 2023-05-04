@@ -24,6 +24,7 @@ import { FeatureToggleService } from './services/feature-toggle.service';
 import { DialogService } from './services/dialog.service';
 import { CallbackService } from './services/callback.service';
 import { SnackBarService } from './services/snack-bar.service';
+import { CallbackComponent } from './modules/ctaas/callback/callback.component';
 
 
 @Component({
@@ -478,57 +479,16 @@ export class AppComponent implements OnInit, OnDestroy {
     async requestCallback(){
         this.isLoading = true;
         await this.fetchUserProfileDetails();
-        this.isLoading = false;
-        if(this.userProfileData.userProfile.name && this.userProfileData.userProfile.phoneNumber 
-            && this.userProfileData.userProfile.companyName && this.userProfileData.userProfile.jobTitle) {
-                this.confirmCallbackRequest();
-        } else {
-            this.showDialogsForSpecificRole();
-        }
+        this.isLoading = false
+        this.confirmCallbackRequest();
     }
 
     private confirmCallbackRequest() {
-        const message = 'You are about to a request a call for '+ this.userProfileData.userProfile.name + 
-                        '.\n If you wish to request a call for another user, please go to the specific stakeholder and select the request call option.'+
-                        '\n\n Do you want to continue?'; 
-        this.dialogService.confirmDialog({
-          title: 'Confirm call request',
-            message: message,
-            confirmCaption: 'Confirm',
-            cancelCaption: 'Cancel',
-        },'500px').subscribe((confirmed) => {
-            if(confirmed){
-                this.callbackService.createCallback(this.userProfileData.userProfile).subscribe((res:any) => {
-                    if(!res.error){
-                        this.snackBarService.openSnackBar('Call request has been made!', '');
-                        this.dialogService.acceptDialog({
-                            title: 'Done!',
-                            message: 'Thanks for your request, one of our Spotlight experts will reach out to you shortly.',
-                            confirmCaption: 'Ok',
-                        });
-                    } else {
-                        this.snackBarService.openSnackBar('Error requesting call!', '');
-                    }
-                });
-            }
+        this.dialog.open(CallbackComponent, {
+            width: '450px',
+            disableClose: false,
+            data: this.userProfileData.userProfile
         });
-    }
-
-    showDialogsForSpecificRole() {
-        const accountDetails = this.getAccountDetails();
-        if(accountDetails.idTokenClaims.roles.includes(Constants.SUBACCOUNT_STAKEHOLDER)){
-            this.dialogService.acceptDialog({
-                title: 'Incomplete personal information',
-                message: 'Please contact your Subaccount Administrator or tekVizion to fill this user’s info.',
-                confirmCaption: 'Ok',
-            });
-        } else {
-            this.dialog.open(ViewProfileComponent, {
-                width: '450px',
-                disableClose:false,
-                data: {...this.userProfileData.userProfile, missing:true}
-            });
-        }
     }
     /**
      * mark the selected nav item here as active to apply styles

@@ -47,6 +47,7 @@ export class DetailedReportsCompoment implements OnInit {
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
   public readonly FEATURE_FUNCTIONALITY: string = ReportType.DAILY_FEATURE_FUNCTIONALITY;
   public readonly CALL_RELIABILITY: string = ReportType.DAILY_CALLING_RELIABILITY;
+  public readonly DAILY_VQ: string = ReportType.DAILY_VQ;
 
   constructor(
     private msalService: MsalService,
@@ -85,7 +86,7 @@ export class DetailedReportsCompoment implements OnInit {
     this.hasDashboardDetails = false;
     this.isLoadingResults = true;
     const PARSED_REPORT_TYPE = this.type === this.FEATURE_FUNCTIONALITY ? 'LTS' :
-      (this.type === this.CALL_RELIABILITY) ? 'STS' : this.type;
+      (this.type === this.CALL_RELIABILITY) ? 'STS' : (this.type === this.DAILY_VQ) ? 'POLQA' : this.type;
     this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr)
       .subscribe((res: any) => {
         this.isRequestCompleted = true;

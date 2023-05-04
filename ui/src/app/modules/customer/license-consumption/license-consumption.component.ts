@@ -488,7 +488,7 @@ export class LicenseConsumptionComponent implements OnInit, OnDestroy {
   onDelete(consumption: any) {
     this.dialogService.confirmDialog({
       title: 'Confirm Action',
-      message: 'Do you want to confirm this action?',
+      message: 'Are you sure you want to delete ' + consumption.projectName + '?',
       confirmCaption: 'Confirm',
       cancelCaption: 'Cancel',
     }).subscribe((confirmed) => {
