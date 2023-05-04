@@ -2,6 +2,8 @@ package com.function.spotlightCharts;
 
 import com.function.auth.Resource;
 import com.function.clients.TAPClient;
+import com.function.db.QueryBuilder;
+import com.function.db.SelectQueryBuilder;
 import com.function.util.Constants;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
@@ -11,9 +13,14 @@ import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
+import static com.function.auth.RoleAuthHandler.getCustomerRoleVerificationQuery;
 
 public class TekvLSGetFilterOptions {
 
@@ -41,12 +48,63 @@ public class TekvLSGetFilterOptions {
             json.put("error", MESSAGE_FOR_FORBIDDEN);
             return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
         }
+
+        context.getLogger().info("Entering TekvLSGetFilterOptions Azure function");
+        // Get query parameters
+        context.getLogger().info("URL parameters are: " + request.getQueryParameters());
+        String subaccountId = request.getQueryParameters().getOrDefault("subaccountId","");
+
         String regionsQuery = "SELECT country, state, city FROM test_result_resource GROUP BY country, state, city;";
         String usersQuery = "SELECT did FROM test_result_resource GROUP BY did;";
-        try {
+
+        // Build SQL statement to get the TAP URL
+        SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
+        tapUrlQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+
+        // Build SQL statement to verify the role
+        String email = getEmailFromToken(tokenClaims,context);
+        SelectQueryBuilder verificationQueryBuilder = getCustomerRoleVerificationQuery(subaccountId,roles,email);
+
+        // Connect to the database
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
+                + "&user=" + System.getenv("POSTGRESQL_USER")
+                + "&password=" + System.getenv("POSTGRESQL_PWD");
+        try(Connection connection = DriverManager.getConnection(dbConnectionUrl);
+            PreparedStatement selectStmtTapUrl = tapUrlQueryBuilder.build(connection)) {
+
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+            ResultSet rs;
+            JSONObject json = new JSONObject();
+
+            if (verificationQueryBuilder != null) {
+                try (PreparedStatement verificationStmt = verificationQueryBuilder.build(connection)) {
+                    context.getLogger().info("Execute SQL role verification statement: " + verificationStmt);
+                    rs = verificationStmt.executeQuery();
+                    if (!rs.next()) {
+                        context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + email);
+                        json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
+                        return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+                    }
+                }
+            }
+
+            // Retrieve tap URL
+            context.getLogger().info("Execute SQL statement: " + selectStmtTapUrl);
+            rs = selectStmtTapUrl.executeQuery();
+            String tapURL = null;
+            if (rs.next()) {
+                tapURL = rs.getString("tap_url");
+            }
+            if (tapURL == null || tapURL.isEmpty()) {
+                context.getLogger().info(Constants.LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
+                json.put("error", Constants.MESSAGE_FOR_INVALID_TAP_URL);
+                return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
+            }
+            context.getLogger().info("TAP URL for data query: " + tapURL);
+
             // Retrieve all data.
             context.getLogger().info("Execute SQL statement: " + regionsQuery);
-            JSONArray regionsRs = TAPClient.executeQuery(Constants.TEMP_ONPOINT_URL, regionsQuery, context);
+            JSONArray regionsRs = TAPClient.executeQuery(tapURL, regionsQuery, context);
             JSONArray regionsJson = new JSONArray();
 
             for (Object o : regionsRs) {
@@ -57,11 +115,10 @@ public class TekvLSGetFilterOptions {
                 jobj.put("city", values.get(2));
                 regionsJson.put(jobj);
             }
-            JSONObject res = new JSONObject();
-            res.put("regions", regionsJson);
-            JSONArray usersRs = TAPClient.executeQuery(Constants.TEMP_ONPOINT_URL, usersQuery, context);
-            res.put("users", usersRs);
-            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(res.toString()).build();
+            json.put("regions", regionsJson);
+            JSONArray usersRs = TAPClient.executeQuery(tapURL, usersQuery, context);
+            json.put("users", usersRs);
+            return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();

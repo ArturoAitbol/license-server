@@ -119,12 +119,12 @@ public class TekvLSGetSimpleChart {
 		queryBuilder.appendGroupBy("sr.status");
 
 		// Build SQL statement to get the TAP URL
-		SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT c.name as customerName, s.name as subaccountName, cs.tap_url as tapURL  FROM customer c LEFT JOIN subaccount s ON c.id = s.customer_id LEFT JOIN ctaas_setup cs ON s.id = cs.subaccount_id");
-		tapUrlQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
+		SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
+		tapUrlQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
 
 		// Build SQL statement to verify the role
 		String email = getEmailFromToken(tokenClaims, context);
-		SelectQueryBuilder verificationQueryBuilder = getVerificationQueryBuilder(subaccountId,roles,email);
+		SelectQueryBuilder verificationQueryBuilder = getCustomerRoleVerificationQuery(subaccountId,roles,email);
 
 
 		// Connect to the database
@@ -153,28 +153,16 @@ public class TekvLSGetSimpleChart {
 			// Retrieve tap URL
 			context.getLogger().info("Execute SQL statement: " + selectStmtTapUrl);
 			rs = selectStmtTapUrl.executeQuery();
-			String customerName = null;
-			String subaccountName = null;
 			String tapURL = null;
 			if (rs.next()) {
-				customerName = rs.getString("customerName");
-				subaccountName = rs.getString("subaccountName");
-				tapURL = rs.getString("tapURL");
-				context.getLogger().info("customer name : " + customerName + " | subaccount name : " + subaccountName + " | TAP URL : " + tapURL);
+				tapURL = rs.getString("tap_url");
 			}
-
-			if ((customerName == null || customerName.isEmpty()) || (subaccountName == null || subaccountName.isEmpty())) {
-				context.getLogger().info(LOG_MESSAGE_FOR_INVALID_SUBACCOUNT_ID + email);
-				json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
-				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-			}
-
 			if (tapURL == null || tapURL.isEmpty()) {
 				context.getLogger().info(Constants.LOG_MESSAGE_FOR_INVALID_TAP_URL + " | " + tapURL);
 				json.put("error", Constants.MESSAGE_FOR_INVALID_TAP_URL);
 				return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 			}
-			context.getLogger().info("Requesting TAP for data query. URL: " + tapURL);
+			context.getLogger().info("TAP URL for data query: " + tapURL);
 
 
 			String statement = queryBuilder.getQuery();
@@ -209,30 +197,5 @@ public class TekvLSGetSimpleChart {
 			json.put("error", e.getMessage());
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
 		}
-	}
-
-
-	private SelectQueryBuilder getVerificationQueryBuilder(String subaccountId,JSONArray roles,String email){
-		SelectQueryBuilder verificationQueryBuilder = null;
-		String currentRole = evaluateRoles(roles);
-		switch (currentRole) {
-			case CUSTOMER_FULL_ADMIN:
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT s.id FROM subaccount s, customer_admin ca");
-				verificationQueryBuilder.appendCustomCondition("s.customer_id = ca.customer_id AND admin_email = ?", email);
-				break;
-			case SUBACCOUNT_ADMIN:
-			case SUBACCOUNT_STAKEHOLDER:
-				verificationQueryBuilder = new SelectQueryBuilder("SELECT subaccount_id FROM subaccount_admin");
-				verificationQueryBuilder.appendEqualsCondition("subaccount_admin_email", email);
-				break;
-		}
-		if (verificationQueryBuilder != null) {
-			if (currentRole.equals(SUBACCOUNT_ADMIN) || currentRole.equals(SUBACCOUNT_STAKEHOLDER))
-				verificationQueryBuilder.appendEqualsCondition("subaccount_id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
-			else
-				verificationQueryBuilder.appendEqualsCondition("s.id", subaccountId, QueryBuilder.DATA_TYPE.UUID);
-		}
-
-		return verificationQueryBuilder;
 	}
 }
