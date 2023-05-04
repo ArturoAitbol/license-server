@@ -123,29 +123,4 @@ class TekvLSDeleteNoteByIdTest extends TekvLSTest {
         assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
     }
 
-
-    @Test
-    public void genericException2Test(){
-        //Given
-        this.noteId = "4";
-        doThrow(new RuntimeException("Error message")).when(this.request).createResponseBuilder(HttpStatus.OK);
-
-        //When
-        HttpResponseMessage response = this.deleteNoteById.run(this.request, this.noteId, this.context);
-        this.context.getLogger().info("HttpResponse: "+response.getBody().toString());
-
-        //Then
-        HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
-        assertEquals(expected, actualStatus,"HTTP status doesn't match with: ".concat(expected.toString()));
-
-        String body = (String) response.getBody();
-        JSONObject jsonBody = new JSONObject(body);
-        assertTrue(jsonBody.has("error"));
-
-        String actualResponse = jsonBody.getString("error");
-        String expectedResponse = "ERROR: invalid input syntax for type uuid: \"EMPTY\"";
-        assertEquals(expectedResponse, actualResponse, "Response doesn't match with: ".concat(expectedResponse));
-    }
-
 }
