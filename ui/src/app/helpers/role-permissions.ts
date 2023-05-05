@@ -45,7 +45,8 @@ export const permissions = {
             'subscriptions-overview',
             'details',
             'reports',
-            'consumption-matrix'
+            'consumption-matrix',
+            'dashboard-poc'
         ],
         elements: [
             'addCustomer',
