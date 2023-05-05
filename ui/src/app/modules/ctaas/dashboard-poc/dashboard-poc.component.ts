@@ -8,7 +8,7 @@ import {
 } from "./initial-chart-config";
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { forkJoin, Observable } from "rxjs";
 import { Utility } from "../../../helpers/utils";
 import { environment } from "../../../../environments/environment";
@@ -65,7 +65,7 @@ export class DashboardPocComponent implements OnInit{
   filteredUsers: Observable<string[]>;
   maxDate = moment();
 
-  selectedDate = '';
+  selectedDate: Moment = null;
   loadingTime = 0;
 
   isloading = true;
@@ -77,6 +77,9 @@ export class DashboardPocComponent implements OnInit{
               private spotlightChartsService: SpotlightChartsService,
               private fb: FormBuilder) {
     this.polqaChartOptions = defaultPolqaChartOptions;
+    this.polqaChartOptions.chart.events = {
+      markerClick: this.navigateToPolqaDetailedTableFromPoint.bind(this)
+    };
     this.vqChartOptions = defaultVqChartOptions;
     this.weeklyCallingReliabilityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
     this.failedCallsChartOptions = defaultFailedCallsChartOptions;
@@ -144,7 +147,7 @@ export class DashboardPocComponent implements OnInit{
     const selectedDate = this.filters.get('date').value;
     const selectedRegion = this.filters.get('region').value;
     const selectedUser = this.filters.get('user').value;
-    this.selectedDate = this.filters.get('date').value.format('MMMM-DD-YYYY');
+    this.selectedDate = this.filters.get('date').value.clone().utc();
 
     obs.push(this.spotlightChartsService.getDailyCallingReliability(selectedDate, selectedRegion, subaccountId));
     obs.push(this.spotlightChartsService.getDailyFeatureFunctionality(selectedDate, selectedRegion, subaccountId));
@@ -153,7 +156,6 @@ export class DashboardPocComponent implements OnInit{
     obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedDate, selectedDate, selectedUser, subaccountId));
     obs.push(this.spotlightChartsService.getWeeklyCallingReliability(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId));
     forkJoin(obs).subscribe((res: any) => {
-      console.log(res);
       // Daily Calling reliability
       const dailyCallingReliabiltyRes: any = res[0].series;
       this.callingReliability.total = dailyCallingReliabiltyRes.reduce((accumulator, entry) => accumulator + entry.value, 0);
@@ -186,7 +188,6 @@ export class DashboardPocComponent implements OnInit{
       this.vqChartOptions.xAxis = { categories: voiceQualityRes.categories };
       this.vq.period =selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
       this.calls.total = this.calls.total + this.vq.calls;
-      console.log(this.vqChartOptions);
 
       // Daily Failed Calls Chart
       this.failedCallsChartOptions.series = [(this.calls.failed / this.calls.total * 100 || 0)];
@@ -298,12 +299,12 @@ export class DashboardPocComponent implements OnInit{
   }
 
   navigateToDetailedTable(metric: string) {
-    const startDate = new Date();
+    const startDate = this.selectedDate.toDate();
     startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date();
+    const endDate = this.selectedDate.toDate();
     endDate.setHours(23, 59, 59, 999);
     const startTime = Utility.parseReportDate(startDate);
-    const endTime = Utility.parseReportDate(new Date(endDate));
+    const endTime = Utility.parseReportDate(endDate);
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&type=${metric}&start=${startTime}&end=${endTime}`;
     window.open(url);
   }
@@ -363,4 +364,15 @@ export class DashboardPocComponent implements OnInit{
   }
 
   readonly ReportType = ReportType;
+
+  navigateToPolqaDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
+    const category = chartContext.opts.xaxis.categories[dataPointIndex];
+    const [ startTime, endTime ] = category.split('-');
+    const startDate = this.selectedDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
+    const endDate = this.selectedDate.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
+    const parsedStartTime = startDate.format('YYMMDDHHmmss');
+    const parsedEndTime = endDate.format('YYMMDDHHmmss');
+    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    window.open(url);
+  }
 }
