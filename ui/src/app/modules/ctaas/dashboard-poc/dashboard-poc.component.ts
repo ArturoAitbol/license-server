@@ -258,7 +258,7 @@ export class DashboardPocComponent implements OnInit{
         },
       ];
       this.polqaChartOptions.title = {
-        text: "Average Jitter vs POLQA",
+        text: "Max. Jitter vs Min. POLQA",
         align: "left"
       };
       this.polqaChartOptions.yAxis[0].title.text = 'Jitter';
