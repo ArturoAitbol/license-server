@@ -5,7 +5,38 @@
                 <h1>Network Quality Trends</h1>
             </div>
             <div class="card-body container-fluid">
-
+                <form [formGroup]="filters" class="row justify-content-center mt-2 mb-2">
+                    <div class="col-2">
+                        <mat-form-field appearance="outline">
+                            <mat-label>User</mat-label>
+                            <input type="text"
+                                   placeholder="User"
+                                   matInput
+                                   formControlName="user"
+                                   [matAutocomplete]="userAuto">
+                            <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete">
+                                <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                                    {{user}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-auto align-items-start">
+                        <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
+                                id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
+                    </div>
+                </form> 
+                <div *ngIf="isChartLoading else charts" style="height: 600px; position: relative;">
+                    <div class="lights-container" >
+                        <div>
+                            <div class="spotlight"></div>
+                        </div>
+                        <div>
+                            <div class="mirror-spotlight"></div>
+                        </div>
+                    </div>
+                </div>   
+                <ng-template #charts>
                 <div class="mt-2">
                     <div class="network-quality">
                         <div class="summary row mt-3">
@@ -100,7 +131,7 @@
                         </div>
                     </div>
                 </div>
-
+                </ng-template>
             </div>
         </div>
     </div>

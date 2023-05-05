@@ -9,3 +9,13 @@
 .blue-label {
     color: #7694B7;
 }
+
+mat-form-field {
+    width: 100%;
+}
+
+.lights-container {
+    z-index: 0 !important;
+    overflow: hidden;
+}
+  

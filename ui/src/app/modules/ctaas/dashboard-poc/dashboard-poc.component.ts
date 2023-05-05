@@ -47,6 +47,7 @@ export class DashboardPocComponent implements OnInit{
     aboveThreshold: { jitter: 0, packetLoss: 0, roundTripTime: 0 },
     overall: { jitter: 0, packetLoss: 0, roundTripTime: 0, polqa:0 }
   };
+  customerNetworkQualityLoading: boolean = false;
 
   //Selected graphs variables
   selectedGraph = 'jitter';
@@ -88,14 +89,54 @@ export class DashboardPocComponent implements OnInit{
 
   reloadCharts() {
     const selectedDate = this.filters.get('date').value;
-    const selectedUser = this.filters.get('user').value;
     this.dailyNetworkTrends.date = selectedDate;
-    this.dailyNetworkTrends.user = selectedUser;
     this.dailyNetworkTrends.loadCharts();
     this.loadCharts();
   }
 
+  reloadCNQCharts(){
+    this.customerNetworkQualityLoading = true;
+    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    const obs = [];
+    const selectedDate = this.filters.get('date').value;
+    const selectedUser = this.filters.get('user').value;
+    this.selectedDate = this.filters.get('date').value.format('MMMM-DD-YYYY');
+
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(selectedDate, selectedDate, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedDate, selectedDate, selectedUser, subaccountId));
+    forkJoin(obs).subscribe((res: any) => {
+      // Customer Network Quality
+      this.customerNetworkQualityData = res[0];
+      this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
+      this.polqaChartOptions.series = [
+        {
+          name: 'Received Jitter',
+          data: this.customerNetworkQualityData.series['Received Jitter']
+        },
+        {
+          name: 'POLQA',
+          data: this.customerNetworkQualityData.series['POLQA']
+        }
+      ];
+
+      const customerNetworkQualitySummary = res[1];
+      this.customerNetworkQualitySummary.totalCalls = customerNetworkQualitySummary.totalCalls;
+      this.customerNetworkQualitySummary.aboveThreshold.jitter = customerNetworkQualitySummary.jitterAboveThld;
+      this.customerNetworkQualitySummary.aboveThreshold.packetLoss = customerNetworkQualitySummary.packetLossAboveThld;
+      this.customerNetworkQualitySummary.aboveThreshold.roundTripTime = customerNetworkQualitySummary.roundTripTimeAboveThld;
+      this.customerNetworkQualitySummary.overall.jitter = customerNetworkQualitySummary.maxJitter;
+      this.customerNetworkQualitySummary.overall.packetLoss = customerNetworkQualitySummary.maxPacketLoss;
+      this.customerNetworkQualitySummary.overall.roundTripTime = customerNetworkQualitySummary.maxRoundTripTime;
+      this.customerNetworkQualitySummary.overall.polqa = customerNetworkQualitySummary.minPolqa;
+
+      this.customerNetworkQualityLoading = false;
+    }, error => {
+      console.error(error);
+    });
+  }
+
   loadCharts() {
+    this.calls.total = 0;
     this.isloading = true;
     const startTime = performance.now();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
@@ -144,6 +185,7 @@ export class DashboardPocComponent implements OnInit{
       this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
       this.vqChartOptions.xAxis = { categories: voiceQualityRes.categories };
       this.vq.period =selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+      this.calls.total = this.calls.total + this.vq.calls;
       console.log(this.vqChartOptions);
 
       // Daily Failed Calls Chart
@@ -278,7 +320,6 @@ export class DashboardPocComponent implements OnInit{
 
   private _filterUser(value: string): string[] {
     const filterValue = value.toLowerCase();
-
     return this.users.filter(option => option.toLowerCase().includes(filterValue));
   }
 
@@ -295,6 +336,7 @@ export class DashboardPocComponent implements OnInit{
 
   private reloadFilterOptions() {
     this.filters.disable();
+    this.dailyNetworkTrends.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     this.spotlightChartsService.getFilterOptions(subaccountId).subscribe((res: any) => {
       const regions = [];
@@ -315,6 +357,8 @@ export class DashboardPocComponent implements OnInit{
       }).sort();
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();
+      this.dailyNetworkTrends.initAutocompletes();
+      this.dailyNetworkTrends.filters.enable();
     })
   }
 
