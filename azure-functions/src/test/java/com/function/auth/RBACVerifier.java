@@ -633,6 +633,17 @@ public class RBACVerifier {
                                 false,
                                 false,
                                 false));
+                verifiers.put(GET_CHARTS, new ExpectedPermissions(
+                                true,
+                                true,
+                                true,
+                                false,
+                                false,
+                                false,
+                                false,
+                                true,
+                                true,
+                                true));
                 verifiers.put(MODIFY_CUSTOMER, new ExpectedPermissions(
                                 true,
                                 false,

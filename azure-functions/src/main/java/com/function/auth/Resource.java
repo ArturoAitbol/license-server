@@ -66,6 +66,7 @@ public enum Resource {
         GET_SUBSCRIPTIONS_OVERVIEW, //TeTekvLSGetSubscriptionsOverview
         GET_ALL_NOTES, //TeTekvLSGetAllNotes
         GET_CONSUMPTION_MATRIX, //TekvLSGetConsumptionMatrix
+        GET_CHARTS,//PermissionForAllChartAPIs
 
         //UPDATE
         MODIFY_CUSTOMER,//TekvLSModifyCustomerById
