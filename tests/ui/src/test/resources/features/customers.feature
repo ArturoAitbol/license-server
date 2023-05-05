@@ -16,6 +16,7 @@ Feature: Customers
       | subAdminEmail | test-customer@tekvizion.com       |
       | testCustomer  | yes                               |
     Then I see the customer "functional-test-customer" in the table
+    And I verify "customer" admin emails
 
   @addCustomerAdmin
   Scenario: Add a customer administrator
@@ -23,6 +24,7 @@ Feature: Customers
     And I open the Customer Administrator Emails of "functional-test-customer"
     When I add an administrator with email "admintest@tekvizion.com"
     Then I should see the message "Customer admin emails edited successfully!"
+    And I verify "customer" admin emails
 
   @subscriptionsView @CTaaSFeature
   Scenario: Go to the subscriptions tab

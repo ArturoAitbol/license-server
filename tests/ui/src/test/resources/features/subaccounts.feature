@@ -15,17 +15,19 @@ Feature: Subaccounts
       | subAdminEmail | test-subaccount@tekvizion.com       |
       | testCustomer  | yes                                 |
     Then I see the customer "functional-test-subaccount" in the table
+    And I verify "subaccount" admin emails
 
   @createSubaccount @create
   Scenario: Create a subaccount
     Given I see the customer "functional-test-subaccount" in the table
     And I open the Add Subaccount form
     When I create a subaccount with the following data
-      | customer      | functional-test-subaccount              |
+      | customer      | functional-test-subaccount          |
       | name          | subaccountTest                      |
       | subAdminEmail | test-sub-custom@tekvizion.com       |
     Then I should see the message "Subaccount added successfully!"
     Then I see in the table the customer "functional-test-subaccount" and its subaccount "subaccountTest"
+    And I verify "subaccount" admin emails
 
   @addSubaccountAdmin
   Scenario: Add a subaccount administrator
@@ -33,6 +35,7 @@ Feature: Subaccounts
     And I open the Subaccount Administrator Emails of "functional-test-subaccount"
     When I add an administrator with email "subadmintest@tekvizion.com"
     Then I should see the message "Subaccount admin emails edited successfully!"
+    And I verify "subaccount" admin emails
 
   @deleteSubaccountAdmin @delete
   Scenario: Delete a subaccount administrator
@@ -45,9 +48,9 @@ Feature: Subaccounts
   Scenario: Edit a subaccount
     Given I see in the table the customer "functional-test-subaccount" and its subaccount "subaccountTest"
     When I edit the customer "functional-test-subaccount" with the following data
-      | name          | functional-test-subaccount-modified           |
-      | type          | MSP                     |
-      | subaccount    | subaccountModified      |
+      | name          | functional-test-subaccount-modified |
+      | type          | MSP                                 |
+      | subaccount    | subaccountModified                  |
     Then I should see the message "Customer and subaccount edited successfully!"
     And I should see the modified data in Subaccounts table
 
