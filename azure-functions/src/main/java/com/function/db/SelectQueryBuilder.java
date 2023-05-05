@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.List;
 
 public class SelectQueryBuilder implements QueryBuilder{
     private final StringBuilder query = new StringBuilder();
@@ -92,6 +94,16 @@ public class SelectQueryBuilder implements QueryBuilder{
         query.append(" GROUP BY ").append(groupBy);
     }
 
+    public void appendGroupByMany(String values) {
+        List<String> listOfValues = Arrays.asList(values.split(","));
+        query.append(" GROUP BY ");
+        for (int i = 0; i < listOfValues.size(); i++){
+            query.append(listOfValues.get(i));
+            if(i!=listOfValues.size()-1)
+                query.append(",");
+        }
+    }
+
     public void appendLimit(String limit) {
         query.append(" LIMIT ?::integer");
         queue.add(limit);
@@ -118,6 +130,19 @@ public class SelectQueryBuilder implements QueryBuilder{
             index++;
         }
         return ps;
+    }
+
+    /**
+     * Returns the current query
+     * @return String
+     */
+    public String getQuery(){
+        StringBuilder queryString = new StringBuilder(query.toString());
+        for (String value: queue){
+            int index = queryString.indexOf("?");
+            queryString.replace(index,index+1,"'"+value+"'");
+        }
+        return queryString.toString();
     }
 
     private void appendSeparator() {
