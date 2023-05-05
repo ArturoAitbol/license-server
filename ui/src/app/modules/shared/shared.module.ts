@@ -12,6 +12,8 @@ import { DateRangeDirective } from 'src/app/directives/date-range-directive';
 import { PowerBIEmbedModule } from 'powerbi-client-angular';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { GaugeChartComponent } from "../../generics/gauge-chart/gauge-chart.component";
+import { NgApexchartsModule } from "ng-apexcharts";
 
 
 @NgModule({
@@ -23,14 +25,16 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
     DeleteCustomerModalComponent,
     FeatureToggleDirective,
     DateRangeDirective,
-    TitleGetterPipe
+    TitleGetterPipe,
+    GaugeChartComponent,
   ],
   imports: [
     CommonModule,
     MaterialModule,
     PowerBIEmbedModule,
     NgxMatTimepickerModule,
-    NgxIntlTelInputModule
+    NgxIntlTelInputModule,
+    NgApexchartsModule
   ],
   exports: [
     NaPipe,
@@ -41,7 +45,8 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
     FeatureToggleDirective,
     DateRangeDirective,
     PowerBIEmbedModule,
-    NgxIntlTelInputModule
+    NgxIntlTelInputModule,
+    GaugeChartComponent
   ]
 })
 export class SharedModule { }
