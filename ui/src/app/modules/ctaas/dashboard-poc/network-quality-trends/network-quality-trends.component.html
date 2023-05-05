@@ -1,0 +1,138 @@
+<ng-container *ngIf="!isLoading">
+    <div class="col-12 p-0">
+        <div class="card text-center mt-2">
+            <div class="card-header">
+                <h1>Network Quality Trends</h1>
+            </div>
+            <div class="card-body container-fluid">
+                <form [formGroup]="filters" class="row justify-content-center mt-2 mb-2">
+                    <div class="col-2">
+                        <mat-form-field appearance="outline">
+                            <mat-label>User</mat-label>
+                            <input type="text"
+                                   placeholder="User"
+                                   matInput
+                                   formControlName="user"
+                                   [matAutocomplete]="userAuto">
+                            <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete">
+                                <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                                    {{user}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-auto align-items-start">
+                        <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
+                                id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
+                    </div>
+                </form> 
+                <div *ngIf="isChartLoading else charts" style="height: 600px; position: relative;">
+                    <div class="lights-container" >
+                        <div>
+                            <div class="spotlight"></div>
+                        </div>
+                        <div>
+                            <div class="mirror-spotlight"></div>
+                        </div>
+                    </div>
+                </div>   
+                <ng-template #charts>
+                <div class="mt-2">
+                    <div class="network-quality">
+                        <div class="summary row mt-3">
+                            <div class="col-3 p-2 border">
+                                <mat-icon>call_quality</mat-icon>
+                                <p>{{ summary.packetLoss }}</p>
+                                <label class="blue-label">Max. Packet Loss Rate (%)</label>
+                            </div>
+                            <div class="col-3 p-2 border">
+                                <mat-icon>waves</mat-icon>
+                                <p>{{ summary.jitter }}</p>
+                                <label class="blue-label">Max. Jitter (ms)</label>
+                            </div>
+                            <div class="col-3 p-2 border">
+                                <mat-icon>multiple_stop</mat-icon>
+                                <p>{{ summary.sendBitrate | number }}</p>
+                                <label class="blue-label">Avg. Send Bitrate (kbps)</label>
+                            </div>
+                            <div class="col-3 p-2 border">
+                                <mat-icon>update</mat-icon>
+                                <p>{{ summary.roundTripTime }}</p>
+                                <label class="blue-label">Max. Round Trip Time (ms)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mt-3" style="height: 300px">
+                            <apx-chart
+                                    [series]="receivedPacketLossChartOptions.series"
+                                    [title]="receivedPacketLossChartOptions.title"
+                                    [chart]="receivedPacketLossChartOptions.chart"
+                                    [xaxis]="receivedPacketLossChartOptions.xAxis"
+                                    [yaxis]="receivedPacketLossChartOptions.yAxis"
+                                    [dataLabels]="receivedPacketLossChartOptions.dataLabels"
+                                    [grid]="receivedPacketLossChartOptions.grid"
+                                    [stroke]="receivedPacketLossChartOptions.stroke"
+                                    [markers]="receivedPacketLossChartOptions.markers"
+                                    [legend]="receivedPacketLossChartOptions.legend"
+                                    [annotations]="receivedPacketLossChartOptions.annotations"
+                                    [colors]="receivedPacketLossChartOptions.colors">
+                            </apx-chart>
+                        </div>
+                        <div class="col-6 mt-3" style="height: 300px">
+                            <apx-chart
+                                    [series]="jitterChartOptions.series"
+                                    [title]="jitterChartOptions.title"
+                                    [chart]="jitterChartOptions.chart"
+                                    [xaxis]="jitterChartOptions.xAxis"
+                                    [yaxis]="jitterChartOptions.yAxis"
+                                    [dataLabels]="jitterChartOptions.dataLabels"
+                                    [grid]="jitterChartOptions.grid"
+                                    [stroke]="jitterChartOptions.stroke"
+                                    [markers]="jitterChartOptions.markers"
+                                    [legend]="jitterChartOptions.legend"
+                                    [annotations]="jitterChartOptions.annotations"
+                                    [colors]="jitterChartOptions.colors">
+                            </apx-chart>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mt-3" style="height: 300px">
+                            <apx-chart
+                                    [series]="sentBitrateChartOptions.series"
+                                    [title]="sentBitrateChartOptions.title"
+                                    [chart]="sentBitrateChartOptions.chart"
+                                    [xaxis]="sentBitrateChartOptions.xAxis"
+                                    [yaxis]="sentBitrateChartOptions.yAxis"
+                                    [dataLabels]="sentBitrateChartOptions.dataLabels"
+                                    [grid]="sentBitrateChartOptions.grid"
+                                    [stroke]="sentBitrateChartOptions.stroke"
+                                    [markers]="sentBitrateChartOptions.markers"
+                                    [legend]="sentBitrateChartOptions.legend"
+                                    [annotations]="sentBitrateChartOptions.annotations"
+                                    [colors]="sentBitrateChartOptions.colors">
+                            </apx-chart>
+                        </div>
+                        <div class="col-6 mt-3" style="height: 300px">
+                            <apx-chart
+                                    [series]="roundTripChartOptions.series"
+                                    [title]="roundTripChartOptions.title"
+                                    [chart]="roundTripChartOptions.chart"
+                                    [xaxis]="roundTripChartOptions.xAxis"
+                                    [yaxis]="roundTripChartOptions.yAxis"
+                                    [dataLabels]="roundTripChartOptions.dataLabels"
+                                    [grid]="roundTripChartOptions.grid"
+                                    [stroke]="roundTripChartOptions.stroke"
+                                    [markers]="roundTripChartOptions.markers"
+                                    [legend]="roundTripChartOptions.legend"
+                                    [annotations]="roundTripChartOptions.annotations"
+                                    [colors]="roundTripChartOptions.colors">
+                            </apx-chart>
+                        </div>
+                    </div>
+                </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</ng-container>

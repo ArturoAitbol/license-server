@@ -8,12 +8,18 @@ import { CtaasSetupComponent } from "./ctaas-setup/ctaas-setup.component";
 import { CtaasNotesComponent } from './ctaas-notes/ctaas-notes.component';
 import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
+import { DashboardPocComponent } from "./dashboard-poc/dashboard-poc.component";
 
 const routes: Routes = [
   { path: '', redirectTo: 'report-dashboards', pathMatch: 'full' },
   {
     path: 'visualization',
     component: CtaasDashboardComponent,
+    canActivate: [RoleGuard]
+  },
+  {
+    path: 'dashboard-poc',
+    component: DashboardPocComponent,
     canActivate: [RoleGuard]
   },
   {
