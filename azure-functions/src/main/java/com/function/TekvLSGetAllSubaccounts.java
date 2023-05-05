@@ -178,7 +178,7 @@ public class TekvLSGetAllSubaccounts
 			JSONObject userProfile = null;
 			userProfile = GraphAPIClient.getUserProfileWithRoleByEmail(subaccountEmail, context);
 			String userRole = userProfile.getString("role");
-			if(userRole.equals(SUBACCOUNT_ADMIN)) {
+			if(userRole != SUBACCOUNT_STAKEHOLDER) {
 				return true;
 			}else {
 				return false;

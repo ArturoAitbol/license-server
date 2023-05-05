@@ -142,7 +142,18 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
         const obj = this.resultantImagesList[0];
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
-        const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
+        let type
+        switch(reportType){
+            case 'Feature Functionality':
+                type = ReportType.DAILY_FEATURE_FUNCTIONALITY;
+                break;
+            case 'Calling Reliability':
+                type = ReportType.DAILY_CALLING_RELIABILITY;
+                break;
+            case 'Voice Quality User Experience':
+                type = ReportType.DAILY_VQ;
+                break;
+        }
         const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
     }

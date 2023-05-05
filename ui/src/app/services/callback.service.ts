@@ -15,10 +15,4 @@ export  class CallbackService {
     public createCallback(userData: any) {
         return this.httpClient.post(`${this.API_URL}`, userData);
     }
-
-    public getHeaders() {
-        const headers = new HttpHeaders();
-        headers.append('Content-Type', 'application/json');
-        return headers;
-    }
 }
