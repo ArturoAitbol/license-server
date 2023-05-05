@@ -129,7 +129,7 @@ public class TekvLSGetNetworkQualitySummary {
 		if (!city.isEmpty())
 			queryBuilder.appendCustomCondition("trr.city = CAST(? AS varchar)", city);
 		if (!user.isEmpty())
-			queryBuilder.appendCustomCondition("trr.user = CAST(? AS varchar)", user);
+			queryBuilder.appendCustomCondition("trr.did = CAST(? AS varchar)", user);
 
 		// Build SQL statement to get the TAP URL
 		SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");

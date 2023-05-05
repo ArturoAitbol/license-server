@@ -140,7 +140,7 @@ public class TekvLSGetNetworkQualityChart {
 		if (!city.isEmpty())
 			queryBuilder.appendCustomCondition("trr.city = CAST(? AS varchar)", city);
 		if (!user.isEmpty())
-			queryBuilder.appendCustomCondition("trr.user = CAST(? AS varchar)", user);
+			queryBuilder.appendCustomCondition("trr.did = CAST(? AS varchar)", user);
 		queryBuilder.appendGroupByMany("date_hour");
 		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 

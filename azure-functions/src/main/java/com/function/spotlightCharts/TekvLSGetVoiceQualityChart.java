@@ -91,7 +91,7 @@ public class TekvLSGetVoiceQualityChart {
 		if (!city.isEmpty())
 			queryBuilder.appendCustomCondition("trr.city = CAST(? AS varchar)", city);
 		if (!user.isEmpty())
-			queryBuilder.appendCustomCondition("trr.user = CAST(? AS varchar)", user);
+			queryBuilder.appendCustomCondition("trr.did = CAST(? AS varchar)", user);
 		queryBuilder.appendGroupByMany("sr.id, trr.did");
 
 		// Build SQL statement to get the TAP URL
