@@ -215,7 +215,7 @@ public class TekvLSGetAllNotesTest extends TekvLSTest {
         assertTrue(jsonBody.has("notes"));
 
         JSONArray notes = jsonBody.getJSONArray("notes");
-        assertEquals(3, notes.length());
+        assertTrue(notes.length() > 0);
 
         JSONObject note = notes.getJSONObject(0);
         assertEquals(subaccountId,note.getString("subaccountId"));

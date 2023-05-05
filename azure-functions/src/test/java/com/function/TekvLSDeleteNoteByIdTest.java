@@ -15,8 +15,6 @@ import org.mockito.Mockito;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 
 class TekvLSDeleteNoteByIdTest extends TekvLSTest {
 
