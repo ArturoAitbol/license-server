@@ -84,25 +84,23 @@ public class TekvLSCreateSubaccountAdminEmail {
             statement.executeUpdate();
             context.getLogger().info("Subaccount Admin email inserted successfully.");
 
-            if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", createSubaccountAdminRequest.subaccountId)) {
-                final String subaccountNameSql = "SELECT name, customer_id FROM subaccount WHERE id = ?::uuid;";
-                final String ctaasSetupSql = "SELECT * FROM ctaas_setup WHERE subaccount_id = ?::uuid";
-                try (PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql);
-                        PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql)) {
-                    ctaasSetupStmt.setString(1, createSubaccountAdminRequest.subaccountId);
-                    ResultSet rs = ctaasSetupStmt.executeQuery();
-                    boolean setupExists = rs.next();
+            final String subaccountNameSql = "SELECT name, customer_id FROM subaccount WHERE id = ?::uuid;";
+            final String ctaasSetupSql = "SELECT * FROM ctaas_setup WHERE subaccount_id = ?::uuid";
+            try (PreparedStatement subaccountNameStmt = connection.prepareStatement(subaccountNameSql);
+                    PreparedStatement ctaasSetupStmt = connection.prepareStatement(ctaasSetupSql)) {
+                ctaasSetupStmt.setString(1, createSubaccountAdminRequest.subaccountId);
+                ResultSet rs = ctaasSetupStmt.executeQuery();
+                boolean setupExists = rs.next();
 
-                    // Only create the user when the setup does not exist and toggle is enabled, or when it exists and the status is Ready
-                    if ((!setupExists && FeatureToggleService.isFeatureActiveBySubaccountId("ad-license-service-user-creation", createSubaccountAdminRequest.subaccountId)) ||
-                        (setupExists && !Objects.equals(rs.getString("status"), Constants.CTaaSSetupStatus.READY.value())))
-                        return request.createResponseBuilder(HttpStatus.OK).build();
-                    subaccountNameStmt.setString(1, createSubaccountAdminRequest.getSubaccountId());
-                    rs = subaccountNameStmt.executeQuery();
-                    if (rs.next()) {
-                        GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
-                                createSubaccountAdminRequest.getAdminEmail(), SUBACCOUNT_ADMIN, context);
-                    }
+                // Only create the user when the setup does not exist and toggle is enabled, or when it exists and the status is Ready
+                if ((!setupExists && FeatureToggleService.isFeatureActiveBySubaccountId("ad-license-service-user-creation", createSubaccountAdminRequest.subaccountId)) ||
+                    (setupExists && !Objects.equals(rs.getString("status"), Constants.CTaaSSetupStatus.READY.value())))
+                    return request.createResponseBuilder(HttpStatus.OK).build();
+                subaccountNameStmt.setString(1, createSubaccountAdminRequest.getSubaccountId());
+                rs = subaccountNameStmt.executeQuery();
+                if (rs.next()) {
+                    GraphAPIClient.createGuestUserWithProperRole(rs.getString("name"),
+                            createSubaccountAdminRequest.getAdminEmail(), SUBACCOUNT_ADMIN, context);
                 }
             }
 
