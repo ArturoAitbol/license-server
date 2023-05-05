@@ -1,0 +1,49 @@
+.chart-label {
+    color: #42a948;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.card-header {
+    background: #7694B7;
+    color: white;
+}
+
+.card-footer {
+    background: #F2F3F4;
+}
+
+.timer {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.failed-calls-body {
+    font-size: 22px;
+}
+
+.blue-label {
+    color: #7694B7;
+}
+
+.red-label {
+    color: #B80000;
+}
+
+.failed-calls-value {
+    font-weight: bold;
+    color: black;
+}
+
+.network-quality {
+    font-size: 22px;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+.card-animation .lights-container {
+    z-index: 0 !important;
+    overflow: hidden;
+  }
