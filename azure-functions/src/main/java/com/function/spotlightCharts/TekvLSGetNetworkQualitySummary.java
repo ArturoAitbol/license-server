@@ -184,7 +184,7 @@ public class TekvLSGetNetworkQualitySummary {
 			for ( Object resultElement:resultSet) {
 				JSONArray values = (JSONArray) resultElement;
 				for(int i=0; i<statisticsLabels.size(); i++){
-					json.put(statisticsLabels.get(i),values.isNull(i) ? "null" : values.getFloat(i));
+					json.put(statisticsLabels.get(i),values.isNull(i) ? "--" : values.getFloat(i));
 				}
 			}
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
