@@ -425,5 +425,32 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
         assertEquals(expectedMessage,jsonBody.getString("error"));
     }
 
-    
+    @Tag("acceptance")
+    @Test
+    public void getAllSubaccountsAdminTest() {
+        //Given - Arrange
+        String id = "2c8e386b-d1bd-48b3-b73a-12bfa5d00805";
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("subaccountAdmin"));
+        //When - Action
+        HttpResponseMessage response = getAllSubaccountsApi.run(this.request, id, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+
+        //Then - Assert
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.OK;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+
+        String body = (String) response.getBody();
+        JSONObject jsonBody = new JSONObject(body);
+
+        assertTrue(jsonBody.has("subaccounts"));
+
+        Object subaccounts = jsonBody.get("subaccounts");
+        assertTrue(subaccounts instanceof JSONArray);
+
+        JSONArray subaccountsArray = (JSONArray) subaccounts;
+        assertTrue(subaccountsArray.length() > 0);
+
+        JSONObject device = subaccountsArray.getJSONObject(0);
+    }
 }
