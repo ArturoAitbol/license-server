@@ -71,12 +71,12 @@ export class NetworkQualityTrendsComponent implements OnInit {
 
   reloadCharts(){
     this.isChartLoading = true;
-    this.loadCharts();
+    this.loadCharts(true);
   }
 
 
-  loadCharts() {
-    this.privateIsLoading = true;
+  loadCharts(isReload?) {
+    if (!isReload) this.privateIsLoading = true;
     const selectedUser = this.filters.get("user").value;
     const obs = [];
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
