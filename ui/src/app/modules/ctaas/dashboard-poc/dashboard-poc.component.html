@@ -7,8 +7,11 @@
                 <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
             </mat-button-toggle-group>
         </div>
-        <div class="col-auto ms-auto timer">
-            <p style="display: inline-block;">Elapsed Time: {{ loadingTime | number: '3.0' }}s&emsp;</p>
+        <div *lcFeatureToggle="'powerbiRefreshFeature';subaccountId:getSubaccountId()" class="col-auto ms-auto timer">
+            <p style="display: inline-block;">Elapsed Time: {{ seconds }}s {{ milliseconds | number: '3.0' }}ms&emsp;</p>
+            <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="refreshDashboard()">
+                <mat-icon>refresh</mat-icon>
+            </button>
         </div>
     </div>
     <div class="lights-container" *ngIf="isloading">
@@ -19,6 +22,18 @@
             <div class="mirror-spotlight"></div>
         </div>
     </div>
+    <figure *ngIf="isloading && !isRefreshing else updateMessage" class="reportLoading">
+        <img class="spinner" height="80" width="80" src="assets/images/spinner.gif"
+        alt="loading spinner gif">
+        <figcaption class= "loadingMessage">Please wait while we prepare your Spotlight Dashboard.</figcaption>
+    </figure>
+    <ng-template #updateMessage>
+        <figure *ngIf="isloading && isRefreshing" class="reportLoading">
+          <img height="80" width="80" src="assets/images/spinner.gif"
+          alt="loading spinner gif">
+          <figcaption class= "loadingMessage">Please wait while we update your Dashboard visuals.</figcaption>
+        </figure>
+      </ng-template>
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">

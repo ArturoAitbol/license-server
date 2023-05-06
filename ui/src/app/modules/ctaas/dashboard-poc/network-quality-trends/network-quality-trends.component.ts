@@ -76,6 +76,8 @@ export class NetworkQualityTrendsComponent implements OnInit {
 
 
   loadCharts() {
+    this.isLoading = true;
+    this.isChartLoading = true;
     const selectedUser = this.filters.get("user").value;
     const obs = [];
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
