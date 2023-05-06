@@ -9,8 +9,14 @@
     color: white;
 }
 
+.card-header h1{
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
 .card-footer {
     background: #F2F3F4;
+    color: #243C66;
 }
 
 .timer {
@@ -47,3 +53,21 @@ mat-form-field {
     z-index: 0 !important;
     overflow: hidden;
   }
+
+.footer-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+  
+.footer-text label{
+    margin-bottom: 0%;
+}
+
+.viewDetail-button {
+    color: #243C66;
+}
+.viewDetail-button:hover{
+    color: white;
+    background-color: rgb(176, 194, 210);
+}

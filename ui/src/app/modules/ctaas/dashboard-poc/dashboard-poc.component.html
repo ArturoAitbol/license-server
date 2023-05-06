@@ -88,17 +88,21 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">View
+                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">View
                                 Detailed Table
                             </button>
                         </div>
                         <div class="card-footer">
-                            <mat-icon>timer</mat-icon>
-                            <label class="ps-1">Execution time period: {{ vq.period }}</label>
+                            <div class="footer-text">
+                                <mat-icon>timer</mat-icon>
+                                <label class="ps-1">Execution time period: {{ vq.period }}</label>
+                            </div>
                             <br>
-                            <mat-icon>call</mat-icon>
-                            <label class="ps-1">Number of calls: {{ vq.calls }} | Number of
-                                streams: {{ vq.streams }}</label>
+                            <div class="footer-text">
+                                <mat-icon>call</mat-icon>
+                                <label class="ps-1">Number of calls: {{ vq.calls }} | Number of
+                                    streams: {{ vq.streams }}</label>
+                            </div>
                         </div>
                     </div>
                 </div>
