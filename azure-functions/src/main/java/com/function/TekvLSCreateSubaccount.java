@@ -178,9 +178,7 @@ public class TekvLSCreateSubaccount
 				rs.next();
 				String customerName = rs.getString("name");
 
-				if (FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
-					EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName, context);
-				}
+				EmailClient.sendSpotlightWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), customerName, context);
 
 			} else {
 				if (FeatureToggleService.isFeatureActiveByName("ad-license-service-user-creation"))
@@ -220,12 +218,10 @@ public class TekvLSCreateSubaccount
 	}
 
 	private void ADUserCreation(JSONObject jobj, ExecutionContext context) throws Exception {
-		if (FeatureToggleService.isFeatureActiveByName("ad-subaccount-user-creation")) {
-			String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
-			String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
-			GraphAPIClient.createGuestUserWithProperRole(subaccountName, subaccountEmail, SUBACCOUNT_ADMIN, context);
-			context.getLogger().info("Guest user created successfully (AD).");
-		}
+		String subaccountName = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_NAME.value);
+		String subaccountEmail = jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value);
+		GraphAPIClient.createGuestUserWithProperRole(subaccountName, subaccountEmail, SUBACCOUNT_ADMIN, context);
+		context.getLogger().info("Guest user created successfully (AD).");
 	}
 
 	private enum MANDATORY_PARAMS {
