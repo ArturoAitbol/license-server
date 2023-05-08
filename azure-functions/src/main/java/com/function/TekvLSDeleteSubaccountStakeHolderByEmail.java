@@ -79,22 +79,19 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
                 context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
                 statement.executeUpdate();
                 context.getLogger().info("Subaccount Admin email (stakeholder) deleted successfully.");
-
-                if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
-                    try {
-                        GraphAPIClient.removeRole(email, SUBACCOUNT_STAKEHOLDER, context);
-                        context.getLogger()
-                               .info("Guest User Role removed successfully from Active Directory. Email : " + email);
-                        GraphAPIClient.deleteGuestUser(email, context);
-                        context.getLogger()
-                               .info("Guest User removed successfully from Active Directory. Email : " + email);
-                    } catch (Exception e) {
-                        context.getLogger().info("AD exception: " + e.getMessage());
-                        JSONObject json = new JSONObject();
-                        json.put("error", "AD Exception: " + e.getMessage());
-                        return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString())
-                                      .build();
-                    }
+                try {
+                    GraphAPIClient.removeRole(email, SUBACCOUNT_STAKEHOLDER, context);
+                    context.getLogger()
+                            .info("Guest User Role removed successfully from Active Directory. Email : " + email);
+                    GraphAPIClient.deleteGuestUser(email, context);
+                    context.getLogger()
+                            .info("Guest User removed successfully from Active Directory. Email : " + email);
+                } catch (Exception e) {
+                    context.getLogger().info("AD exception: " + e.getMessage());
+                    JSONObject json = new JSONObject();
+                    json.put("error", "AD Exception: " + e.getMessage());
+                    return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString())
+                                    .build();
                 }
             }
 
