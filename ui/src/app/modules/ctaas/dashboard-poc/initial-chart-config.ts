@@ -30,7 +30,7 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
         width: 2
     },
     title: {
-        text: "Average Jitter vs POLQA",
+        text: "Max. Jitter vs Min. POLQA",
         align: "left"
     },
     grid: {

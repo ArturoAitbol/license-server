@@ -9,19 +9,20 @@ import {
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
 import moment, { Moment } from "moment";
-import { forkJoin, Observable } from "rxjs";
+import { forkJoin, Observable, interval } from "rxjs";
 import { Utility } from "../../../helpers/utils";
 import { environment } from "../../../../environments/environment";
 import { ReportType } from "../../../helpers/report-type";
 import { FormBuilder } from "@angular/forms";
 import { map, startWith } from "rxjs/operators";
 import { NetworkQualityTrendsComponent } from "./network-quality-trends/network-quality-trends.component";
-
+import { Subject } from "rxjs/internal/Subject";
 @Component({
   selector: 'app-dashboard-poc',
   templateUrl: './dashboard-poc.component.html',
   styleUrls: ['./dashboard-poc.component.css']
 })
+
 export class DashboardPocComponent implements OnInit{
   vqChartOptions: Partial<ChartOptions>;
   weeklyCallingReliabilityChartOptions: Partial<ChartOptions>;
@@ -70,8 +71,14 @@ export class DashboardPocComponent implements OnInit{
 
   isloading = true;
 
+  startTime: number = 0;
+  milliseconds: number = 0;
+  seconds: number = 0;
+  timer: any;
+  stopTimer$: Subject<void> = new Subject();
+  timerIsRunning = false;
+  isRefreshing = false;
   @ViewChild('dailyNetworkTrends') dailyNetworkTrends: NetworkQualityTrendsComponent;
-
   constructor(private ctaasSetupService: CtaasSetupService,
               private subaccountService: SubAccountService,
               private spotlightChartsService: SpotlightChartsService,
@@ -88,17 +95,20 @@ export class DashboardPocComponent implements OnInit{
   ngOnInit() {
     this.initAutocompletes();
     this.loadCharts();
+    this.startTimer();
   }
 
   reloadCharts() {
     const selectedDate = this.filters.get('date').value;
     this.dailyNetworkTrends.date = selectedDate;
     this.dailyNetworkTrends.isLoading = true;
-    this.dailyNetworkTrends.loadCharts();
     this.loadCharts();
+    this.dailyNetworkTrends.loadCharts();
+    this.startTimer();
   }
 
   reloadCNQCharts(){
+    this.startTimer();
     this.customerNetworkQualityLoading = true;
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
@@ -134,8 +144,10 @@ export class DashboardPocComponent implements OnInit{
       this.customerNetworkQualitySummary.overall.polqa = customerNetworkQualitySummary.minPolqa;
 
       this.customerNetworkQualityLoading = false;
+      this.stopTimer();
     }, error => {
       console.error(error);
+      this.stopTimer();
     });
   }
 
@@ -246,9 +258,11 @@ export class DashboardPocComponent implements OnInit{
       this.loadingTime = (endTime - startTime) / 1000;
       this.isloading = false;
       this.dailyNetworkTrends.isLoading = false;
+      this.stopTimer();
       this.reloadFilterOptions();
     }, error => {
       console.error(error);
+      this.stopTimer();
     });
   }
 
@@ -265,7 +279,7 @@ export class DashboardPocComponent implements OnInit{
         },
       ];
       this.polqaChartOptions.title = {
-        text: "Average Jitter vs POLQA",
+        text: "Max. Jitter vs Min. POLQA",
         align: "left"
       };
       this.polqaChartOptions.yAxis[0].title.text = 'Jitter';
@@ -381,5 +395,35 @@ export class DashboardPocComponent implements OnInit{
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
     const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
     window.open(url);
+  }
+
+  startTimer() {
+    if(!this.timerIsRunning){
+        this.startTime = 0;
+        this.seconds=0;
+        this.milliseconds = 0;
+        this.startTime = performance.now();
+        this.timer = interval(1).subscribe(() => {
+            const elapsedTime = performance.now() - this.startTime;
+            this.seconds = Math.floor(elapsedTime / 1000);
+            this.milliseconds = Math.floor(elapsedTime % 1000);
+        });
+        this.timerIsRunning = true;
+    }
+  }
+  stopTimer() {
+      this.timer.unsubscribe();
+      this.timerIsRunning = false;
+  }
+  async refreshDashboard() {
+    if(this.selectedPeriod == "daily"){
+      this.isRefreshing = true;
+      this.reloadCharts();
+      this.startTimer();
+      this.isRefreshing = false;
+    }
+  }
+  getSubaccountId(): string {
+    return this.subaccountService.getSelectedSubAccount().id;;
   }
 }

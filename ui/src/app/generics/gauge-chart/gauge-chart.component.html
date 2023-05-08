@@ -28,13 +28,17 @@
                 </apx-chart>
             </div>
         </div>
-        <button mat-raised-button (click)="viewDetailedTableClicked()">View Detailed Table</button>
+        <button class="viewDetail-button" mat-raised-button (click)="viewDetailedTableClicked()">View Detailed Table</button>
     </div>
     <div class="card-footer">
-        <mat-icon>timer</mat-icon>
-        <label class="ps-1">Execution time period: {{timePeriod}}</label>
+        <div class="footer-text">
+            <mat-icon>timer</mat-icon>
+            <label class="ps-1">Execution time period: {{timePeriod}}</label>
+        </div>
         <br>
-        <mat-icon style="font-size: 20px;">call</mat-icon>
-        <label class="ps-1">Number of calls: {{numberCalls}} | P2P: {{p2pCalls}} | On-net: {{onNetCalls}} | Off-net: {{offNetCalls}}</label>
+        <div class="footer-text">        
+            <mat-icon>call</mat-icon>
+            <label class="ps-1">Number of calls: {{numberCalls}} | P2P: {{p2pCalls}} | On-net: {{onNetCalls}} | Off-net: {{offNetCalls}}</label>
+        </div>
     </div>
 </div>
