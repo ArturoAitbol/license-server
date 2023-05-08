@@ -41,7 +41,8 @@ export class NetworkQualityTrendsComponent implements OnInit {
 
   summary = { packetLoss: 0, jitter: 0, sendBitrate: 0, roundTripTime: 0 };
 
-  isLoading = false;
+  isLoading = true;
+  privateIsLoading = true;
   isChartLoading = false;
 
   constructor(private spotlightChartsService: SpotlightChartsService,
@@ -51,7 +52,6 @@ export class NetworkQualityTrendsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isLoading = true;
     this.loadCharts();
   }
 
@@ -71,13 +71,12 @@ export class NetworkQualityTrendsComponent implements OnInit {
 
   reloadCharts(){
     this.isChartLoading = true;
-    this.loadCharts();
+    this.loadCharts(true);
   }
 
 
-  loadCharts() {
-    this.isLoading = true;
-    this.isChartLoading = true;
+  loadCharts(isReload?) {
+    if (!isReload) this.privateIsLoading = true;
     const selectedUser = this.filters.get("user").value;
     const obs = [];
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
@@ -110,8 +109,8 @@ export class NetworkQualityTrendsComponent implements OnInit {
       this.summary.roundTripTime = summary.maxRoundTripTime;
       this.summary.packetLoss = summary.maxPacketLoss;
 
-      this.isLoading = false;
       this.isChartLoading = false;
+      this.privateIsLoading = false;
     });
   }
 

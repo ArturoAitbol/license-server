@@ -87,31 +87,20 @@ export class SpotlightChartsService {
      * @param region Region
      * @param subaccountId Subaccount ID
      */
-    public getDailyCallingReliability(date: Moment, region: { country: string, state: string, city: string }, subaccountId: string): Observable<any> {
-       return this.getSimpleChart(date, date, 'CallingReliability', region, subaccountId);
+    public getDailyCallsStatusSummary(date: Moment, region: { country: string, state: string, city: string }, subaccountId: string): Observable<any> {
+       return this.getCallsStatusSummary(date, date, region, subaccountId);
     }
 
-    /**
-     *
-     * @param date Date in local time
-     * @param region Region
-     * @param subaccountId Subaccount ID
-     */
-    public getDailyFeatureFunctionality(date: Moment, region: { country: string, state: string, city: string }, subaccountId: string): Observable<any> {
-        return this.getSimpleChart(date, date, 'FeatureFunctionality', region, subaccountId);
-    }
-
-    private getSimpleChart(startDate: Moment, endDate: Moment, reportType: string, region: { country: string, state: string, city: string }, subaccountId: string) {
+    private getCallsStatusSummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
-        params = params.set('reportType', reportType);
         params = params.set('subaccountId', subaccountId);
         if (region.country) params = params.set('country', region.country);
         if (region.state) params = params.set('state)', region.state);
         if (region.city) params = params.set('city', region.city);
         const headers = this.getHeaders();
-        return this.httpClient.get(this.API_URL + 'simpleChart', { headers, params });
+        return this.httpClient.get(this.API_URL + 'callsStatusSummary', { headers, params });
     }
 
     /**
