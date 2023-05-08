@@ -2,6 +2,12 @@
     background: #7694B7;
     color: white;
 }
+
+.card-header h1{
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
 .summary {
     font-size: 22px;
 }

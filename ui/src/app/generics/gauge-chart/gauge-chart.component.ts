@@ -13,6 +13,9 @@ export class GaugeChartComponent {
   chartOptions: ChartOptions = JSON.parse(JSON.stringify(defaultGaugeChartOptions));
   @Input() title: string;
   @Input() numberCalls: number;
+  @Input() p2pCalls: number;
+  @Input() onNetCalls: number;
+  @Input() offNetCalls: number;
   @Input() timePeriod: string;
   @Input() set value(value: number) {
     this.chartOptions.series = [Number(value.toFixed(2))];
