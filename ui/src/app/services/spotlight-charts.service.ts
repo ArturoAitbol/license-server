@@ -40,7 +40,7 @@ export class SpotlightChartsService {
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('metric', metric);
-        params = params.set('subaccountId', '2c8e386b-d1bd-48b3-b73a-12bfa5d00805');
+        params = params.set('subaccountId', subaccountId);
         if (user) params = params.set('user', user);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'networkQualityChart', { headers, params });
