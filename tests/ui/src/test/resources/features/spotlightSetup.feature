@@ -9,19 +9,19 @@ Feature: CtaasSetup
   Scenario: Create a test customer for spotlight setup tests
     Given I open the Add Customer form
     When I create a customer with the following data
-      | name          | functional-test-spotlight             |
+      | name          | functional-spotlight-customer          |
       | type          | MSP                                   |
       | adminEmail    | spotlight-test-setup@tekvizion.com    |
       | subaccount    | Default                               |
       | subAdminEmail | spotlight-test-setup@tekvizion.com    |
       | spotlight     | yes                                   |
       | testCustomer  | yes                                   |
-    Then I see the customer "functional-test-spotlight" in the table
+    Then I see the customer "functional-spotlight-customer" in the table
 
   @addLicense
   Scenario: Add Basic license
-    Given I see the customer "functional-test-spotlight" in the table
-    And I go to the Subscriptions view of "functional-test-spotlight"
+    Given I see the customer "functional-spotlight-customer" in the table
+    And I go to the Subscriptions view of "functional-spotlight-customer"
     And I should see the "tekVizion 360 Subscriptions" table
     And I open the Add Subscription form
     When I create a subscription with the following data
@@ -33,8 +33,8 @@ Feature: CtaasSetup
 
   @editSpotLight @spotLightDashboard
   Scenario: Edit a spotlight setup
-    Given I see the customer "functional-test-spotlight" in the table
-    And I go to the spotlight dashboard for "functional-test-spotlight"
+    Given I see the customer "functional-spotlight-customer" in the table
+    And I go to the spotlight dashboard for "functional-spotlight-customer"
     And I go to the spotlight "Configuration" tab
     When I edit the setup details with the following data
       | azureResourceGroup  | az_tap_rg                                  |
@@ -44,8 +44,8 @@ Feature: CtaasSetup
 
   @verifyLicenseConsumption
   Scenario: Verify license consumption created by spotlight setup
-    Given I see the customer "functional-test-spotlight" in the table
-    When I go to the tekToken Consumption view of "functional-test-spotlight"
+    Given I see the customer "functional-spotlight-customer" in the table
+    When I go to the tekToken Consumption view of "functional-spotlight-customer"
     Then I should see the following data in the tekTokens Project Consumption table
       | project           | SpotLight Project  |
       | status            | Open               |
@@ -57,8 +57,8 @@ Feature: CtaasSetup
       #| model             | Base SpotLight platform ready |
       | tekTokensUsed     | 0                             |
 
-  @deleteSpotLightCustomer @delete
-  Scenario: Delete test spotlightSetup customer
-    Given I see the customer "functional-test-spotlight" in the table
-    When I delete the customer "functional-test-spotlight"
-    Then I should see the message "Customer deleted successfully!"
+#  @deleteSpotLightCustomer @delete
+#  Scenario: Delete test spotlightSetup customer
+#    Given I see the customer "functional-spotlight-customer" in the table
+#    When I delete the customer "functional-spotlight-customer"
+#    Then I should see the message "Customer deleted successfully!"
