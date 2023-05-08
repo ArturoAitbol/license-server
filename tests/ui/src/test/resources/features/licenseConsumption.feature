@@ -52,6 +52,7 @@ Feature: LicensesConsumption
   Scenario: Edit a tekToken Consumption
     Given I see the customer "functional-license-customer" in the table
     And I go to the tekToken Consumption view of "functional-license-customer"
+    And I select subscription "License2"
     When I edit the consumption of the project "tekTokenTest" with the following data
       | usageDays         | Fri, Sat                          |
       | deviceVendor      | Cisco                             |
@@ -74,6 +75,7 @@ Feature: LicensesConsumption
   Scenario: Add a tekToken Consumption for a support device
     Given I see the customer "functional-license-customer" in the table
     And I go to the tekToken Consumption view of "functional-license-customer"
+    And I select subscription "License2"
     And I open the Add tekToken Consumption form
     And I open the Add Project form from Consumption form
     And I create a project with the following data
@@ -99,6 +101,7 @@ Feature: LicensesConsumption
   Scenario: Edit the tekToken Consumption for a support device
     Given I see the customer "functional-license-customer" in the table
     And I go to the tekToken Consumption view of "functional-license-customer"
+    And I select subscription "License2"
     When I edit the consumption of the project "supportTest" with the following data
       | usageDays         | Sun           |
     Then I should see the following data in the tekTokens Project Consumption table
@@ -111,10 +114,12 @@ Feature: LicensesConsumption
   Scenario: Delete the tekToken Consumption of a device
     Given I see the customer "functional-license-customer" in the table
     And I go to the tekToken Consumption view of "functional-license-customer"
+    And I select subscription "License2"
     When I delete the consumption of the project "tekTokenTest"
 
-  @deleteLicenseConsumptionForSupport @delete @deleteLicenseConsumption
+  @deleteLicenseConsumptionForSupport @delete
   Scenario: Delete the tekToken Consumption of a support device
     Given I see the customer "functional-license-customer" in the table
     And I go to the tekToken Consumption view of "functional-license-customer"
+    And I select subscription "License2"
     When I delete the consumption of the project "supportTest"

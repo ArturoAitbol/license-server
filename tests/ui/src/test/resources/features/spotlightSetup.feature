@@ -5,7 +5,7 @@ Feature: CtaasSetup
     When I try to login using a "FullAdministrator"
     Then I should see the "Customers" page
 
-  @createSpotLightCustomer
+  @createSpotLightCustomer @spotLightStakeholdersTest
   Scenario: Create a test customer for spotlight setup tests
     Given I open the Add Customer form
     When I create a customer with the following data
@@ -51,14 +51,6 @@ Feature: CtaasSetup
       | status            | Open               |
       | tekTokens         | 0                  |
     And I should see the following data in the tekToken Consumption Events table
-      | project           | SpotLight Project             |
-      # need to improve this tests
-      #| device            | tekVizion - Base SpotLight platform ready               |
-      #| model             | Base SpotLight platform ready |
-      | tekTokensUsed     | 0                             |
-
-#  @deleteSpotLightCustomer @delete
-#  Scenario: Delete test spotlightSetup customer
-#    Given I see the customer "functional-spotlight-customer" in the table
-#    When I delete the customer "functional-spotlight-customer"
-#    Then I should see the message "Customer deleted successfully!"
+      | project           | SpotLight Project                          |
+      | device            | tekVizion - Base SpotLight platform ready  |
+      | tekTokensUsed     | 0                                          |

@@ -47,8 +47,8 @@ Feature: Subaccounts
     When I delete the subaccount "subaccountModified" of the customer "functional-license-customer-modified"
     Then I should see the message "Subaccount deleted successfully!"
 
-#  @deleteSubaccountCustomer @delete
-#  Scenario: Delete the test subaccount customer
-#    Given I see the customer "functional-license-customer-modified" in the table
-#    When I delete the customer "functional-license-customer-modified"
-#    Then I should see the message "Customer deleted successfully!"
+  @deleteSubaccountCustomer @delete
+  Scenario: Delete the test subaccount customer
+    Given I see the customer "functional-license-customer-modified" in the table
+    When I delete the customer "functional-license-customer-modified"
+    Then I should see the message "Customer deleted successfully!"

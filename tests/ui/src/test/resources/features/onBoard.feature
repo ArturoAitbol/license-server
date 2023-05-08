@@ -9,14 +9,14 @@ Feature: OnBoard
     And I open the Add Customer form
 #    When I create a spotlight customer with the following data
     When I create a customer with the following data
-      | name          | functional-test-on-board                          |
+      | name          | functional-spotlight-customer                          |
       | type          | Reseller                                          |
       | adminEmail    | test-functional-subaccount-admin@tekvizion360.com |
       | subaccount    | subAdminTest                                      |
       | subAdminEmail | test-functional-subaccount-admin@tekvizion360.com |
       | spotlight     | yes                                               |
       | testCustomer  | yes                                               |
-    Then I see the customer "functional-test-on-board" in the table
+    Then I see the customer "functional-spotlight-customer" in the table
     And I logout
 
   @rejectOnBoard @login
@@ -61,6 +61,6 @@ Feature: OnBoard
   @deleteCustomer @delete
   Scenario: Delete a test customer
     Given I try to login using a "FullAdministrator"
-    And I see the customer "functional-test-on-board" in the table
-    When I delete the customer "functional-test-on-board"
+    And I see the customer "functional-spotlight-customer" in the table
+    When I delete the customer "functional-spotlight-customer"
     Then I should see the message "Customer deleted successfully!"
