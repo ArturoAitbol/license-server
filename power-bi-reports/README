@@ -1,15 +1,11 @@
 PBRS reports:
 
-Version : V6
-Release Date: 26-04-2023
+Version : V7
+Release Date: 04-05-2023 (DD-MM-YYYY)
 
-What’s new:
-Addition of Call types to the report
-SQL Query has changed due to the above point
-Tp_name for Calling Reliability changed to include STS and POLQA
-
-Bug Fixes:
-POLQA headers have been rectified.
+v7 PBRS Templates
+Changes:
+	Removed Interrupted from the status column.
 
 
 Below naming reports are for Mobile dashboard and Email reports though PBRS
