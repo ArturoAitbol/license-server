@@ -103,9 +103,11 @@ export class DashboardPocComponent implements OnInit{
     this.dailyNetworkTrends.date = selectedDate;
     this.loadCharts();
     this.dailyNetworkTrends.loadCharts();
+    this.startTimer();
   }
 
   reloadCNQCharts(){
+    this.startTimer();
     this.customerNetworkQualityLoading = true;
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
@@ -141,8 +143,10 @@ export class DashboardPocComponent implements OnInit{
       this.customerNetworkQualitySummary.overall.polqa = customerNetworkQualitySummary.minPolqa;
 
       this.customerNetworkQualityLoading = false;
+      this.stopTimer();
     }, error => {
       console.error(error);
+      this.stopTimer();
     });
   }
 
@@ -251,6 +255,7 @@ export class DashboardPocComponent implements OnInit{
       this.reloadFilterOptions();
     }, error => {
       console.error(error);
+      this.stopTimer();
     });
   }
 
@@ -406,8 +411,8 @@ export class DashboardPocComponent implements OnInit{
   async refreshDashboard() {
     if(this.selectedPeriod == "daily"){
       this.isRefreshing = true;
-      this.startTimer();
       this.reloadCharts();
+      this.startTimer();
       this.isRefreshing = false;
     }
   }
