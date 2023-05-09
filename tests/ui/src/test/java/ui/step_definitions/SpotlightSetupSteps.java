@@ -24,7 +24,7 @@ public class SpotlightSetupSteps {
         this.tapUrl = setupDetails.get("tapUrl");
         this.status = setupDetails.get("status");
         this.setup.enableFieldsToEdit();
-        this.setup.editSetupDetails(azureResourceGroup,tapUrl,status);
+        this.setup.editSetupDetails(azureResourceGroup, tapUrl, status);
     }
 
     @Then("I should see the modified data in spotlight configuration view")
