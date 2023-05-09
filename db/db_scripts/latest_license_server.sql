@@ -344,14 +344,14 @@ CREATE TABLE public.subaccount (
     customer_id uuid
 );
 
-
 --
 -- Name: subaccount_admin; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.subaccount_admin (
     subaccount_admin_email character varying NOT NULL,
-    subaccount_id uuid NOT NULL
+    subaccount_id uuid NOT NULL,
+    latest_callback_request_date timestamp without time zone
 );
 
 CREATE TABLE public.ctaas_test_suite

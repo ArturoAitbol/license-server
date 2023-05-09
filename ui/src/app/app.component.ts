@@ -25,6 +25,7 @@ import { DialogService } from './services/dialog.service';
 import { CallbackService } from './services/callback.service';
 import { SnackBarService } from './services/snack-bar.service';
 import { CallbackComponent } from './modules/ctaas/callback/callback.component';
+import { CallbackTimerComponent } from './modules/ctaas/callback/callback-timer/callback-timer.component';
 
 
 @Component({
@@ -396,11 +397,11 @@ export class AppComponent implements OnInit, OnDestroy {
                     subaccountId:this.subaccountId,
                     item:"visualization"
                 },
-                {
-                    toggleName:"callback",
-                    subaccountId:null,
-                    item:"request-call"
-                }
+                // {
+                //     toggleName:"callback",
+                //     subaccountId:null,
+                //     item:"request-call"
+                // }
             ]
 
             let disabledItems:any[]=[];
@@ -489,7 +490,30 @@ export class AppComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         await this.fetchUserProfileDetails();
         this.isLoading = false
-        this.confirmCallbackRequest();
+        if(this.canRequestCallBack())
+            this.confirmCallbackRequest();
+        else
+            this.preventCallbackRequest();
+    }
+
+
+    private canRequestCallBack():boolean {
+        if (this.userProfileData.userProfile.name && this.userProfileData.userProfile.latestCallbackRequestDate === undefined)
+            return true;
+        const timeBetweenRequests = this.getTimeBetweenRequests(this.userProfileData);
+        return timeBetweenRequests > Constants.REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS;
+    }
+
+    private getTimeBetweenRequests(userProfileData){
+        return new Date().getTime() - new Date(userProfileData.userProfile.latestCallbackRequestDate).getTime();
+    }
+
+    private preventCallbackRequest() {
+        this.dialog.open(CallbackTimerComponent, {
+            width: '500px',
+            disableClose: false,
+            data: this.getTimeBetweenRequests(this.userProfileData) / 1000
+        });
     }
 
     private confirmCallbackRequest() {
