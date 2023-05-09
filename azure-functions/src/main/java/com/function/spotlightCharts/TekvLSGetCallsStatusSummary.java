@@ -22,25 +22,24 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSGetSimpleChart {
+public class TekvLSGetCallsStatusSummary {
 	/**
 	 * This function listens at endpoint "/v1.0/spotlightCharts/simpleChart". Two ways to invoke it using "curl" command in bash:
 	 * 1. curl -d "HTTP Body" {your host}/v1.0/spotlightCharts/simpleChart
 	 * 2. curl "{your host}/v1.0/spotlightCharts/simpleChart"
 	 */
 
-	@FunctionName("TekvLSGetSimpleChart")
+	@FunctionName("TekvLSGetCallsStatusSummary")
 	public HttpResponseMessage run(
 				@HttpTrigger(
 				name = "req",
 				methods = {HttpMethod.GET},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "spotlightCharts/simpleChart")
+				route = "spotlightCharts/callsStatusSummary")
 				HttpRequestMessage<Optional<String>> request,
 				final ExecutionContext context)
 	{
@@ -60,11 +59,10 @@ public class TekvLSGetSimpleChart {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetAllCustomers Azure function");   
+		context.getLogger().info("Entering TekvLSGetCallsStatusSummary Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
-		String reportType = request.getQueryParameters().getOrDefault("reportType", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 
@@ -74,26 +72,21 @@ public class TekvLSGetSimpleChart {
 
 		String user = request.getQueryParameters().getOrDefault("user", "");
 
-		String query = "SELECT sr.status, COUNT(sr.status) as status_counter " + 
+		String query = "SELECT tp.name, " +
+				"CASE WHEN er.fromdomain = er.todomain THEN 'p2p' " +
+				"	  WHEN er.fromserviceprovider = er.toserviceprovider THEN 'onNet' " +
+				"	  ELSE 'offNet' END AS call_type, " +
+				" sr.status, COUNT(sr.status) as status_counter " +
 				"FROM sub_result sr " +
+				"LEFT JOIN execution_report er ON sr.execution_report_id = er.id " +
 				"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
-				"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' " +
+				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
 				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
-				"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
-		switch (reportType) {
-			case "CallingReliability":
-				query += " AND tp.name='STS'";
-				break;
-			case "FeatureFunctionality":
-				query += " AND tp.name='LTS'";
-				break;
-			case "VQ":
-				query += " AND tp.name='POLQA'";
-				break;
-		}
+				"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')" +
+				"AND tp.name IN ('STS','LTS')";
 		
 		// Build region filter if present
 		if (!country.isEmpty() || !user.isEmpty()) {
@@ -116,7 +109,7 @@ public class TekvLSGetSimpleChart {
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
 		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
-		queryBuilder.appendGroupBy("sr.status");
+		queryBuilder.appendGroupByMany("tp.name,call_type,sr.status");
 
 		// Build SQL statement to get the TAP URL
 		SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
@@ -173,16 +166,35 @@ public class TekvLSGetSimpleChart {
 			JSONArray resultSet = TAPClient.executeQuery(tapURL,statement,context);
 
 			// Return a JSON array of status and counts (id and value)
-			JSONArray array = new JSONArray();
+			HashMap<String,String> reportTypes = new HashMap<>();
+			reportTypes.put("STS","callingReliability");
+			reportTypes.put("LTS","featureFunctionality");
+
+			reportTypes.forEach((tpName,reportType) ->{
+				json.put(reportType, new JSONObject("{ callsByType: {p2p:0,onNet:0,offNet:0}, callsByStatus: {PASSED:0,FAILED:0}}"));
+			});
+
 			for(Object resultElement : resultSet) {
 				JSONArray values = (JSONArray) resultElement;
-				JSONObject item = new JSONObject();
-				item.put("id", values.getString(0));
-				item.put("value", values.getInt(1));
-				array.put(item);
-			}
 
-			json.put("series", array);
+				String reportType = values.getString(0);
+				String type = reportTypes.get(reportType);
+				JSONObject reportTypeObject = json.getJSONObject(type);
+
+				String call_type = values.getString(1);
+				String status = values.getString(2);
+				int counter = values.getInt(3);
+
+				JSONObject callsByType = reportTypeObject.getJSONObject("callsByType");
+				int callTypeCounter = callsByType.getInt(call_type);
+				callTypeCounter += counter;
+				callsByType.put(call_type, callTypeCounter);
+
+				JSONObject callsByStatus = reportTypeObject.getJSONObject("callsByStatus");
+				int statusCounter = callsByStatus.getInt(status);
+				statusCounter += counter;
+				callsByStatus.put(status, statusCounter);
+			}
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {

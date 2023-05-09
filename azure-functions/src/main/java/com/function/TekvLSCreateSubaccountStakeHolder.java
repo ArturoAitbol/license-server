@@ -137,18 +137,15 @@ public class TekvLSCreateSubaccountStakeHolder {
 					rs.next();
 					JSONObject json = new JSONObject();
 					json.put("subaccountAdminEmail", rs.getString("subaccount_admin_email"));
-
-					if(FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
-						try {
-							context.getLogger().info("Adding user to Azure AD : " + jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
-							if (GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context))
-								EmailClient.sendStakeholderWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value),
-																		jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value),
-																		jobj.getString(MANDATORY_PARAMS.NAME.value),
-																		context);
-						} catch (Exception e) {
-							context.getLogger().info("Failed to add user at azure AD.  Exception: " + e.getMessage());
-						}
+					try {
+						context.getLogger().info("Adding user to Azure AD : " + jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value));
+						if (GraphAPIClient.createGuestUserWithProperRole(jobj.getString(MANDATORY_PARAMS.NAME.value), jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value), SUBACCOUNT_STAKEHOLDER, context))
+							EmailClient.sendStakeholderWelcomeEmail(jobj.getString(MANDATORY_PARAMS.SUBACCOUNT_ADMIN_EMAIL.value),
+																	jobj.getString(MANDATORY_PARAMS.COMPANY_NAME.value),
+																	jobj.getString(MANDATORY_PARAMS.NAME.value),
+																	context);
+					} catch (Exception e) {
+						context.getLogger().info("Failed to add user at azure AD.  Exception: " + e.getMessage());
 					}
 					try {
 						context.getLogger().info("Updating user profile at Azure AD : " + jobj);

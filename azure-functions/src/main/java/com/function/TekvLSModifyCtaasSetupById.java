@@ -219,9 +219,7 @@ public class TekvLSModifyCtaasSetupById {
                 TekvLSCreateLicenseUsageDetail licenseUsageDetailCreator = new TekvLSCreateLicenseUsageDetail();
                 licenseUsageDetailCreator.createLicenseConsumptionEvent(tokenClaims, ctaasDevice, request, context);
 
-                if (FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", jobj.getString("subaccountId"))) {
-                    this.ADUserCreation(jobj, context, connection);
-                }
+                this.ADUserCreation(jobj, context, connection);
 
                 return request.createResponseBuilder(HttpStatus.OK).body(json.toString()).build();
             }

@@ -136,11 +136,11 @@ public class TekvLSGetNetworkQualityChart {
 		if (!country.isEmpty())
 			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
 		if (!state.isEmpty())
-			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
+			queryBuilder.appendCustomCondition("trr.state = CAST(? AS varchar)", state);
 		if (!city.isEmpty())
-			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
+			queryBuilder.appendCustomCondition("trr.city = CAST(? AS varchar)", city);
 		if (!user.isEmpty())
-			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
+			queryBuilder.appendCustomCondition("trr.did = CAST(? AS varchar)", user);
 		queryBuilder.appendGroupByMany("date_hour");
 		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 

@@ -164,10 +164,6 @@ public class TekvLSModifySubaccountStakeholderByEmail {
 	}
 	
 	private void updateADUser(String email, String subaccountId, JSONObject jobj, ExecutionContext context) {
-		if(!FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
-			 context.getLogger().info("ad-subaccount-user-creation toggle is not active. Nothing to do at Azure AD");
-			 return;
-		 }
 		try {
 			context.getLogger().info("Updating user profile at Azure AD : "+email);
 			User user = GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"), getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);
