@@ -13,7 +13,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Optional;
 
@@ -21,6 +25,15 @@ import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSCreateCallback {
 
+    private final Clock clock;
+
+    public TekvLSCreateCallback(Clock clock) {
+        this.clock = clock;
+    }
+
+    public TekvLSCreateCallback() {
+        this.clock = Clock.systemUTC();
+    }
 
     @FunctionName("TekvLSCallback")
     public HttpResponseMessage run(
@@ -58,8 +71,8 @@ public class TekvLSCreateCallback {
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 
-        long millisSinceLastRequest = millisSinceLastCallback(authEmail, context, tokenClaims);
-        if (millisSinceLastRequest < Constants.REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS * 60 * 1000){
+        long millisSinceLastRequest = millisSinceLastCallback(authEmail, context);
+        if (millisSinceLastRequest >= Constants.REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS * 60 * 1000){
             JSONObject response = new JSONObject();
             long minutes = millisSinceLastRequest / 1000 / 60;
             long seconds = (millisSinceLastRequest / 1000) % 60;
@@ -107,7 +120,7 @@ public class TekvLSCreateCallback {
 
     }
 
-    private long millisSinceLastCallback(String authEmail, ExecutionContext context, Claims tokenClaims){
+    private long millisSinceLastCallback(String authEmail, ExecutionContext context){
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
                 + "&user=" + System.getenv("POSTGRESQL_USER")
@@ -116,13 +129,17 @@ public class TekvLSCreateCallback {
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setString(1, "maintenance_test@test.com");
+            statement.setString(1, authEmail);
 
             context.getLogger().info("Execute SQL statement: " + statement);
             ResultSet rs = statement.executeQuery();
             if (rs.next()){
-                Date latestCallback = java.text.DateFormat.getDateInstance().parse(rs.getString("latest_callback_request_date"));
-                return Math.abs(latestCallback.getTime() - new Date().getTime());
+                if(rs.getString("latest_callback_request_date") == null) {
+                    return Constants.REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS * 60 * 1000;
+                }
+                Date latestCallback = getDateFromString(rs.getString("latest_callback_request_date"));
+                return latestCallback.getTime()
+                        - getDateFromString(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).getTime();
             }
             return 0;
         } catch (Exception e) {
@@ -131,11 +148,16 @@ public class TekvLSCreateCallback {
         }
     }
 
+    private Date getDateFromString(String timeString) throws Exception{
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timeString);
+    }
+
     private void updateLatestCallbackRequestDate(String authEmail, ExecutionContext context, Claims tokenClaims){
+        System.out.println(LocalDateTime.now(clock));
         UpdateQueryBuilder updateSubaccountBuilder = new UpdateQueryBuilder("subaccount_admin");
         updateSubaccountBuilder.appendValueModification(
                 "latest_callback_request_date",
-                LocalDateTime.now().toString(),
+                LocalDateTime.now(clock).toString(),
                 QueryBuilder.DATA_TYPE.TIMESTAMP
         );
         updateSubaccountBuilder.appendWhereStatement("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
