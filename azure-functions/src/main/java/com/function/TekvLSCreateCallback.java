@@ -1,5 +1,6 @@
 package com.function;
 
+import com.function.auth.Resource;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.Constants;
@@ -13,7 +14,6 @@ import org.json.JSONObject;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -35,18 +35,18 @@ public class TekvLSCreateCallback {
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
         String authEmail = getEmailFromToken(tokenClaims,context);
         JSONArray roles = getRolesFromToken(tokenClaims,context);
-//        if(roles.isEmpty()){
-//            JSONObject json = new JSONObject();
-//            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
-//            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
-//            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
-//        }
-//        if(!hasPermission(roles, Resource.CREATE_CALLBACK)){
-//            JSONObject json = new JSONObject();
-//            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
-//            json.put("error", MESSAGE_FOR_FORBIDDEN);
-//            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
-//        }
+        if(roles.isEmpty()){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_UNAUTHORIZED);
+            json.put("error", MESSAGE_FOR_UNAUTHORIZED);
+            return request.createResponseBuilder(HttpStatus.UNAUTHORIZED).body(json.toString()).build();
+        }
+        if(!hasPermission(roles, Resource.CREATE_CALLBACK)){
+            JSONObject json = new JSONObject();
+            context.getLogger().info(LOG_MESSAGE_FOR_FORBIDDEN + roles);
+            json.put("error", MESSAGE_FOR_FORBIDDEN);
+            return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
+        }
 
         // Parse request body and extract parameters needed
 		String requestBody = request.getBody().orElse("");
