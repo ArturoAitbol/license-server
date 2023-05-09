@@ -22,7 +22,7 @@ import static org.mockito.Mockito.doReturn;
 class TekvLSCreateCallbackTest extends TekvLSTest {
 
     private String name = "EMPTY";
-    TekvLSCreateCallback createCallback = new TekvLSCreateCallback(Clock.fixed(Instant.ofEpochSecond(1000L), ZoneOffset.UTC));
+    TekvLSCreateCallback createCallback = new TekvLSCreateCallback(Clock.fixed(Instant.ofEpochSecond(1683672081), ZoneOffset.UTC));
 
     @BeforeEach
     void setUp() {
