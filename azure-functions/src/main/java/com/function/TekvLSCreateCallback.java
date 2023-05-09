@@ -72,7 +72,7 @@ public class TekvLSCreateCallback {
 		}
 
         long millisSinceLastRequest = millisSinceLastCallback(authEmail, context);
-        if (millisSinceLastRequest >= Constants.REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS * 60 * 1000){
+        if (millisSinceLastRequest > Constants.REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS * 60 * 1000){
             JSONObject response = new JSONObject();
             long minutes = millisSinceLastRequest / 1000 / 60;
             long seconds = (millisSinceLastRequest / 1000) % 60;
