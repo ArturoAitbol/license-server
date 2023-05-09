@@ -73,27 +73,25 @@ public class TekvLSDeleteSubaccountById
 			
 			context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
-			if(FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", id)) {
-				String emailSql = "SELECT sa.subaccount_admin_email, ca.admin_email FROM subaccount_admin sa " +
-						"LEFT JOIN customer_admin ca ON sa.subaccount_admin_email = ca.admin_email " +
-						"WHERE subaccount_id = ?::uuid;";
+			String emailSql = "SELECT sa.subaccount_admin_email, ca.admin_email FROM subaccount_admin sa " +
+					"LEFT JOIN customer_admin ca ON sa.subaccount_admin_email = ca.admin_email " +
+					"WHERE subaccount_id = ?::uuid;";
 
-				try(PreparedStatement emailStatement = connection.prepareStatement(emailSql)){
-					emailStatement.setString(1, id);
-					context.getLogger().info("Execute SQL statement: " + emailStatement);
-					ResultSet rs = emailStatement.executeQuery();
-					String adminEmail,subaccountAdminEmail;
-					while(rs.next()) {
-						adminEmail = rs.getString("admin_email");
-						if(adminEmail!=null){
-							GraphAPIClient.removeRole(adminEmail, SUBACCOUNT_ADMIN, context);
-							context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+adminEmail+").");
-							continue;
-						}
-						subaccountAdminEmail = rs.getString("subaccount_admin_email");
-						GraphAPIClient.deleteGuestUser(subaccountAdminEmail,context);
-						context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+subaccountAdminEmail+").");
+			try(PreparedStatement emailStatement = connection.prepareStatement(emailSql)){
+				emailStatement.setString(1, id);
+				context.getLogger().info("Execute SQL statement: " + emailStatement);
+				ResultSet rs = emailStatement.executeQuery();
+				String adminEmail,subaccountAdminEmail;
+				while(rs.next()) {
+					adminEmail = rs.getString("admin_email");
+					if(adminEmail!=null){
+						GraphAPIClient.removeRole(adminEmail, SUBACCOUNT_ADMIN, context);
+						context.getLogger().info("Guest User Role removed successfully from Active Directory (email: "+adminEmail+").");
+						continue;
 					}
+					subaccountAdminEmail = rs.getString("subaccount_admin_email");
+					GraphAPIClient.deleteGuestUser(subaccountAdminEmail,context);
+					context.getLogger().info("Guest User deleted successfully from Active Directory (email: "+subaccountAdminEmail+").");
 				}
 			}
 
