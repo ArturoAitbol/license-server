@@ -138,8 +138,7 @@ public class TekvLSCreateCallback {
                     return Constants.REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS * 60 * 1000;
                 }
                 Date latestCallback = getDateFromString(rs.getString("latest_callback_request_date"));
-                return latestCallback.getTime()
-                        - getDateFromString(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).getTime();
+                return getDateFromString(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).getTime() - latestCallback.getTime();
             }
             return 0;
         } catch (Exception e) {
