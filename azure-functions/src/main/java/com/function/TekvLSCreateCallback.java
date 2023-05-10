@@ -1,6 +1,9 @@
 package com.function;
 
 import com.function.auth.Resource;
+import com.function.db.QueryBuilder;
+import com.function.db.UpdateQueryBuilder;
+import com.function.util.Constants;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
@@ -9,6 +12,12 @@ import io.jsonwebtoken.Claims;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Optional;
 
@@ -16,6 +25,15 @@ import static com.function.auth.RoleAuthHandler.*;
 
 public class TekvLSCreateCallback {
 
+    private final Clock clock;
+
+    public TekvLSCreateCallback(Clock clock) {
+        this.clock = clock;
+    }
+
+    public TekvLSCreateCallback() {
+        this.clock = Clock.systemUTC();
+    }
 
     @FunctionName("TekvLSCallback")
     public HttpResponseMessage run(
@@ -25,8 +43,10 @@ public class TekvLSCreateCallback {
                     authLevel = AuthorizationLevel.ANONYMOUS,
                     route = "callback"
             ) HttpRequestMessage<Optional<String>> request,
-            final ExecutionContext context) {
+            final ExecutionContext context
+    ) {
         Claims tokenClaims = getTokenClaimsFromHeader(request, context);
+        String authEmail = getEmailFromToken(tokenClaims,context);
         JSONArray roles = getRolesFromToken(tokenClaims,context);
         if(roles.isEmpty()){
             JSONObject json = new JSONObject();
@@ -50,6 +70,15 @@ public class TekvLSCreateCallback {
 			json.put("error", "error: request body is empty.");
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
+
+        long millisSinceLastRequest = millisSinceLastCallback(authEmail, context);
+        if (millisSinceLastRequest < Constants.REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS * 60 * 1000){
+            JSONObject response = new JSONObject();
+            long minutes = millisSinceLastRequest / 1000 / 60;
+            long seconds = (millisSinceLastRequest / 1000) % 60;
+            response.put("error", "Please wait for " + minutes + " and " + seconds + " seconds more to request a new call if you still need it.");
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(response.toString()).build();
+        }
 
         JSONObject jobj; 
         try {
@@ -80,6 +109,7 @@ public class TekvLSCreateCallback {
             if (jobj.has("jobTitle"))
                 pagerDutyMessage += " | Job Title = " + jobj.getString("jobTitle");
             context.getLogger().info(pagerDutyMessage);
+            this.updateLatestCallbackRequestDate(authEmail, context, tokenClaims);
             return request.createResponseBuilder(HttpStatus.OK).body(jobj.toString()).build();
         } catch (Exception e) {
 			context.getLogger().info("Caught exception: " + e.getMessage());
@@ -88,6 +118,73 @@ public class TekvLSCreateCallback {
 			return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
        }
 
+    }
+
+    private long millisSinceLastCallback(String authEmail, ExecutionContext context){
+        // Connect to the database
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
+                + "&user=" + System.getenv("POSTGRESQL_USER")
+                + "&password=" + System.getenv("POSTGRESQL_PWD");
+        String sql = "SELECT * FROM subaccount_admin WHERE subaccount_admin_email = ?;";
+        try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, authEmail);
+
+            context.getLogger().info("Execute SQL statement: " + statement);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()){
+                if(rs.getString("latest_callback_request_date") == null) {
+                    return Constants.REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS * 60 * 1000;
+                }
+                Date latestCallback = getDateFromString(rs.getString("latest_callback_request_date"));
+                return getDateFromString(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).getTime() - latestCallback.getTime();
+            }
+            return 0;
+        } catch (Exception e) {
+            context.getLogger().info("Caught exception: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    private Date getDateFromString(String timeString) throws Exception{
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timeString);
+    }
+
+    private void updateLatestCallbackRequestDate(String authEmail, ExecutionContext context, Claims tokenClaims){
+        System.out.println(LocalDateTime.now(clock));
+        UpdateQueryBuilder updateSubaccountBuilder = new UpdateQueryBuilder("subaccount_admin");
+        updateSubaccountBuilder.appendValueModification(
+                "latest_callback_request_date",
+                LocalDateTime.now(clock).toString(),
+                QueryBuilder.DATA_TYPE.TIMESTAMP
+        );
+        updateSubaccountBuilder.appendWhereStatement("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
+
+        // Connect to the database
+        String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") +"/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
+                + "&user=" + System.getenv("POSTGRESQL_USER")
+                + "&password=" + System.getenv("POSTGRESQL_PWD");
+
+        try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
+             PreparedStatement updateSubaccountStatement = updateSubaccountBuilder.build(connection)) {
+
+            context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
+            String userId = getUserIdFromToken(tokenClaims, context);
+            context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + updateSubaccountStatement);
+            updateSubaccountStatement.executeUpdate();
+            context.getLogger().info("Subaccount updated successfully.");
+        }
+        catch (SQLException e) {
+            context.getLogger().info("SQL exception: " + e.getMessage());
+            JSONObject json = new JSONObject();
+            json.put("error", e.getMessage());
+        }
+        catch (Exception e) {
+            context.getLogger().info("Caught exception: " + e.getMessage());
+            JSONObject json = new JSONObject();
+            json.put("error", e.getMessage());
+        }
     }
 
     private enum MANDATORY_PARAMS {
@@ -101,6 +198,6 @@ public class TekvLSCreateCallback {
         MANDATORY_PARAMS(String value) {
             this.value = value;
         }
-        
+
     }
 }
