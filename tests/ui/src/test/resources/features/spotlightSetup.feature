@@ -18,7 +18,7 @@ Feature: CtaasSetup
       | testCustomer  | yes                                   |
     Then I see the customer "functional-spotlight-customer" in the table
 
-  @addLicense
+  @addLicense @spotLightStakeholdersTest
   Scenario: Add Basic license
     Given I see the customer "functional-spotlight-customer" in the table
     And I go to the Subscriptions view of "functional-spotlight-customer"
@@ -31,7 +31,7 @@ Feature: CtaasSetup
       | description           | Description1      |
     Then I see the "Description1" subscription in the table
 
-  @editSpotLight @spotLightDashboard
+  @editSpotLight @spotLightDashboard @spotLightStakeholdersTest
   Scenario: Edit a spotlight setup
     Given I see the customer "functional-spotlight-customer" in the table
     And I go to the spotlight dashboard for "functional-spotlight-customer"
@@ -39,7 +39,7 @@ Feature: CtaasSetup
     When I edit the setup details with the following data
       | azureResourceGroup  | az_tap_rg                                  |
       | tapUrl              | http://tekvizionTap.com                    |
-      | status              | READY                                |
+      | status              | READY                                      |
     Then I should see the modified data in spotlight configuration view
 
   @verifyLicenseConsumption
