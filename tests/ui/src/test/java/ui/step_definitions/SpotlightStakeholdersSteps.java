@@ -42,18 +42,16 @@ public class SpotlightStakeholdersSteps {
         String companyName = stakeholder.get("companyName");
         String countryPhoneNumber = stakeholder.get("countryPhoneNumber");
         String phoneNumber = stakeholder.get("phoneNumber");
-        this.stakeholderEmail = environment.stakeholderUser();
-        if (!DriverManager.getInstance().getActiveDirectoryStatus())
-            this.stakeholderEmail = DriverManager.getInstance().addTimeStampToEmail(this.stakeholderEmail);
-        this.stakeholders = stakeholderForm.addStakeholder(name, jobTitle, companyName, stakeholderEmail, countryPhoneNumber, phoneNumber);
+        this.stakeholderEmail = getStakeholder();
+        this.stakeholders = stakeholderForm.addStakeholder(name, jobTitle, companyName, this.stakeholderEmail, countryPhoneNumber, phoneNumber);
         this.actualMessage = this.stakeholders.getMessage();
         System.out.println("Message: " + this.actualMessage);
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
     @When("I edit the stakeholder using the following data")
-    public void iEditTheStakeholderWithTheFollowingData(String currentStakeholderEmail, DataTable dataTable) {
-        String expectedEmail = this.stakeholderEmail;
+    public void iEditTheStakeholderWithTheFollowingData(DataTable dataTable) {
+        String expectedEmail = getStakeholder();
         this.stakeholderRow = new StakeholderRow(expectedEmail);
         ActionMenu actionMenu = this.stakeholderRow.openActionMenu();
         actionMenu.editForm("stakeholder");
@@ -72,7 +70,7 @@ public class SpotlightStakeholdersSteps {
 
     @Then("I see the stakeholder in the table")
     public void iSeeTheStakeholderInTheTable() {
-        String expectedEmail = this.stakeholderEmail;
+        String expectedEmail = getStakeholder();
         this.stakeholderRow = new StakeholderRow(expectedEmail);
         String actualStakeHolder = this.stakeholderRow.getColumnValue("email");
         assertEquals("Stakeholders table doesn't have the stakeholder: ".concat(expectedEmail), expectedEmail, actualStakeHolder);
@@ -80,9 +78,17 @@ public class SpotlightStakeholdersSteps {
 
     @When("I delete the stakeholder")
     public void iDeleteAStakeholder() {
-        this.stakeholderRow = new StakeholderRow(this.stakeholderEmail);
+        this.stakeholderRow = new StakeholderRow(getStakeholder());
         ActionMenu actionMenu = this.stakeholderRow.openActionMenu();
         this.actualMessage = actionMenu.delete("stakeholder");
         DriverManager.getInstance().setMessage(this.actualMessage);
+    }
+
+    public String getStakeholder(){
+        String stakeholder;
+        stakeholder = this.environment.stakeholderUser();
+        if (!DriverManager.getInstance().getActiveDirectoryStatus())
+            stakeholder = DriverManager.getInstance().addTimeStampToEmail(stakeholder);
+        return stakeholder;
     }
 }
