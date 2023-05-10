@@ -1,25 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardPocComponent } from './dashboard-poc.component';
+import { TestBedConfigBuilder } from 'src/test/mock/TestBedConfigHelper.mock';
 
-// describe('DashboardPocComponent', () => {
-//   let component: DashboardPocComponent;
-//   let fixture: ComponentFixture<DashboardPocComponent>;
+let dashboardPocComponentTestInstance: DashboardPocComponent;
+let fixture: ComponentFixture<DashboardPocComponent>;
 
-//   beforeEach(async () => {
-//     await TestBed.configureTestingModule({
-//       declarations: [ DashboardPocComponent ]
-//     })
-//     .compileComponents();
-//   });
+const beforeEachFunction = () => {
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(DashboardPocComponent);
+    TestBed.configureTestingModule(configBuilder.getConfig());
+    fixture = TestBed.createComponent(DashboardPocComponent);
+    dashboardPocComponentTestInstance = fixture.componentInstance;
+};
 
-//   beforeEach(() => {
-//     fixture = TestBed.createComponent(DashboardPocComponent);
-//     component = fixture.componentInstance;
-//     fixture.detectChanges();
-//   });
+describe('DashboardPocComponent', () => {
+  beforeEach(beforeEachFunction);
 
-//   it('should create', () => {
-//     expect(component).toBeTruthy();
-//   });
-// });
+  it('should create', () => {
+    expect(dashboardPocComponentTestInstance).toBeTruthy();
+  });
+});
