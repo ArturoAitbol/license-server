@@ -1,25 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NetworkQualityTrendsComponent } from './network-quality-trends.component';
+import { TestBedConfigBuilder } from 'src/test/mock/TestBedConfigHelper.mock';
 
-// describe('NetworkQualityTrendsComponent', () => {
-//   let component: NetworkQualityTrendsComponent;
-//   let fixture: ComponentFixture<NetworkQualityTrendsComponent>;
+let networkQualityTrendsComponentTestInstance: NetworkQualityTrendsComponent;
+let fixture: ComponentFixture<NetworkQualityTrendsComponent>;
 
-//   beforeEach(async () => {
-//     await TestBed.configureTestingModule({
-//       declarations: [ NetworkQualityTrendsComponent ]
-//     })
-//     .compileComponents();
-//   });
+const beforeEachFunction = () => {
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(NetworkQualityTrendsComponent);
+    TestBed.configureTestingModule(configBuilder.getConfig());
+    fixture = TestBed.createComponent(NetworkQualityTrendsComponent);
+    networkQualityTrendsComponentTestInstance = fixture.componentInstance;
+};
 
-//   beforeEach(() => {
-//     fixture = TestBed.createComponent(NetworkQualityTrendsComponent);
-//     component = fixture.componentInstance;
-//     fixture.detectChanges();
-//   });
+describe('NetworkQualityTrendsComponent', () => {
+  beforeEach(beforeEachFunction);
 
-//   it('should create', () => {
-//     expect(component).toBeTruthy();
-//   });
-// });
+  it('should create', () => {
+    expect(networkQualityTrendsComponentTestInstance).toBeTruthy();
+  });
+});

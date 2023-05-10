@@ -10,7 +10,10 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +22,7 @@ import static org.mockito.Mockito.doReturn;
 class TekvLSCreateCallbackTest extends TekvLSTest {
 
     private String name = "EMPTY";
-    TekvLSCreateCallback createCallback = new TekvLSCreateCallback();
+    TekvLSCreateCallback createCallback = new TekvLSCreateCallback(Clock.fixed(Instant.ofEpochSecond(1000L), ZoneOffset.UTC));
 
     @BeforeEach
     void setUp() {

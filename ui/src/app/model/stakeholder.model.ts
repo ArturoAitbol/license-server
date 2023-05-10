@@ -9,4 +9,5 @@ export interface IStakeholder {
     type:string;
     role:string;
     parsedRole:string;
+    latestCallbackRequestDate?:string;
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChartOptions } from "../../../helpers/chart-options-type";
 import {
   defaultFailedCallsChartOptions,
-  defaultPolqaChartOptions, defaultVqChartOptions,
+  defaultVqChartOptions,
   defaultWeeklyFeatureFunctionalityChartOptions,
   defaultWeeklyCallingReliabilityChartOptions
 } from "./initial-chart-config";
@@ -17,6 +17,7 @@ import { FormBuilder } from "@angular/forms";
 import { map, startWith } from "rxjs/operators";
 import { NetworkQualityTrendsComponent } from "./network-quality-trends/network-quality-trends.component";
 import { Subject } from "rxjs/internal/Subject";
+import { CustomerNetworkQualityComponent } from './customer-network-quality/customer-network-quality/customer-network-quality.component';
 @Component({
   selector: 'app-dashboard-poc',
   templateUrl: './dashboard-poc.component.html',
@@ -41,25 +42,13 @@ export class DashboardPocComponent implements OnInit{
   // Feature Functionality gaguge variables
   vq = { period: '', calls: 0, streams: 0 };
 
-  // Customer Network Quality variables
-  polqaChartOptions: Partial<ChartOptions>;
-  customerNetworkQualityData = null;
-  customerNetworkQualitySummary = {
-    totalCalls: 0,
-    aboveThreshold: { jitter: 0, packetLoss: 0, roundTripTime: 0 },
-    overall: { jitter: 0, packetLoss: 0, roundTripTime: 0, polqa:0 }
-  };
-  customerNetworkQualityLoading: boolean = false;
-
   //Selected graphs variables
-  selectedGraph = 'jitter';
   selectedPeriod = 'daily';
 
   // Filters variables
   filters = this.fb.group({
     date: [moment()],
-    region: [""],
-    user: [""]
+    region: [""]
   });
   regions: { country: string, state: string, city: string, displayName: string }[] = [];
   users: string[] = [];
@@ -78,14 +67,15 @@ export class DashboardPocComponent implements OnInit{
   timer: any;
   stopTimer$: Subject<void> = new Subject();
   timerIsRunning = false;
+  isRefreshing = false;
+  chartsLoaded = 0;
+
   @ViewChild('dailyNetworkTrends') dailyNetworkTrends: NetworkQualityTrendsComponent;
+  @ViewChild('customerNetworkQuality') customerNetworkQuality: CustomerNetworkQualityComponent;
+  
   constructor(private subaccountService: SubAccountService,
               private spotlightChartsService: SpotlightChartsService,
               private fb: FormBuilder) {
-    this.polqaChartOptions = defaultPolqaChartOptions;
-    this.polqaChartOptions.chart.events = {
-      markerClick: this.navigateToPolqaDetailedTableFromPoint.bind(this)
-    };
     this.vqChartOptions = defaultVqChartOptions;
     this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
     this.weeklyCallingReliabilityChartOptions = defaultWeeklyCallingReliabilityChartOptions;
@@ -95,74 +85,42 @@ export class DashboardPocComponent implements OnInit{
   ngOnInit() {
     this.initAutocompletes();
     this.loadCharts();
+    this.startTimer();
   }
 
-  reloadCNQCharts(){
-    this.startTimer();
-    this.customerNetworkQualityLoading = true;
-    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    const obs = [];
-    const selectedDate = this.filters.get('date').value;
-    const selectedUser = this.filters.get('user').value;
-    this.selectedDate = this.filters.get('date').value.clone().utc();
-
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(selectedDate, selectedDate, selectedUser, subaccountId));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedDate, selectedDate, selectedUser, subaccountId));
-    forkJoin(obs).subscribe((res: any) => {
-      // Customer Network Quality
-      this.customerNetworkQualityData = res[0];
-      this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
-      this.polqaChartOptions.series = [
-        {
-          name: 'Received Jitter',
-          data: this.customerNetworkQualityData.series['Received Jitter']
-        },
-        {
-          name: 'POLQA',
-          data: this.customerNetworkQualityData.series['POLQA']
-        }
-      ];
-
-      const customerNetworkQualitySummary = res[1];
-      this.customerNetworkQualitySummary.totalCalls = customerNetworkQualitySummary.totalCalls;
-      this.customerNetworkQualitySummary.aboveThreshold.jitter = customerNetworkQualitySummary.jitterAboveThld;
-      this.customerNetworkQualitySummary.aboveThreshold.packetLoss = customerNetworkQualitySummary.packetLossAboveThld;
-      this.customerNetworkQualitySummary.aboveThreshold.roundTripTime = customerNetworkQualitySummary.roundTripTimeAboveThld;
-      this.customerNetworkQualitySummary.overall.jitter = customerNetworkQualitySummary.maxJitter;
-      this.customerNetworkQualitySummary.overall.packetLoss = customerNetworkQualitySummary.maxPacketLoss;
-      this.customerNetworkQualitySummary.overall.roundTripTime = customerNetworkQualitySummary.maxRoundTripTime;
-      this.customerNetworkQualitySummary.overall.polqa = customerNetworkQualitySummary.minPolqa;
-
-      this.customerNetworkQualityLoading = false;
+  chartsStatus(chartCompleted:boolean){
+    if(chartCompleted)
+      this.chartsLoaded++;
+    if(this.chartsLoaded==3){
       this.stopTimer();
-    }, error => {
-      console.error(error);
-      this.stopTimer();
-    });
+      this.chartsLoaded = 0;
+    }
   }
 
   loadCharts() {
+    this.chartsLoaded = 0;
     this.startTimer();
     this.calls.total = 0;
+    this.calls.failed = 0;
     this.isloading = true;
     const startTime = performance.now();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
     const selectedDate = this.filters.get('date').value;
     const selectedRegion = this.filters.get('region').value;
-    const selectedUser = this.filters.get('user').value;
     this.selectedDate = this.filters.get('date').value.clone().utc();
 
     if (this.selectedPeriod == "daily") {
       if (this.dailyNetworkTrends) {
-        this.dailyNetworkTrends.date = selectedDate;
         this.dailyNetworkTrends.isLoading = true;
         this.dailyNetworkTrends.loadCharts();
       }
+      if (this.customerNetworkQuality) {
+        this.customerNetworkQuality.isLoading = true;
+        this.customerNetworkQuality.loadCharts();
+      }
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
-      obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(selectedDate, selectedDate, selectedUser, subaccountId));
-      obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedDate, selectedDate, selectedUser, subaccountId));
     } else {
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId, 'FeatureFunctionality'));
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId, 'CallingReliability'));
@@ -170,22 +128,34 @@ export class DashboardPocComponent implements OnInit{
     forkJoin(obs).subscribe((res: any) => {
       if (this.selectedPeriod == "daily")
         this.processDailyData(res, selectedDate);
-      else
+      else {
         this.processWeeklyData(res, selectedDate);
+        // this two this.chartsStatus(true) lines are to force timer to stop while we don't have weekly completed
+        this.chartsStatus(true);
+        this.chartsStatus(true);
+      }
       // common values
       const endTime = performance.now();
       this.loadingTime = (endTime - startTime) / 1000;
       this.isloading = false;
       if (this.dailyNetworkTrends)
         this.dailyNetworkTrends.isLoading = false;
-      this.stopTimer();
-      this.reloadFilterOptions();
+      if (this.customerNetworkQuality)
+        this.customerNetworkQuality.isLoading = false;
+      this.chartsStatus(true);
+      const region = this.filters.get('region').value;
+      if(region !== "")
+        this.reloadUserOptions(region);
+      else
+        this.reloadFilterOptions();
     }, error => {
       console.error(error);
       this.isloading = false;
       if (this.dailyNetworkTrends)
         this.dailyNetworkTrends.isLoading = false;
-      this.stopTimer();
+      if (this.customerNetworkQuality)
+        this.customerNetworkQuality.isLoading = false;
+      this.chartsStatus(true);
     });
   }
 
@@ -231,30 +201,6 @@ export class DashboardPocComponent implements OnInit{
 
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [(this.calls.failed / this.calls.total * 100 || 0)];
-
-    // Customer Network Quality
-    this.customerNetworkQualityData = res[2];
-    this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
-    this.polqaChartOptions.series = [
-      {
-        name: 'Received Jitter',
-        data: this.customerNetworkQualityData.series['Received Jitter']
-      },
-      {
-        name: 'POLQA',
-        data: this.customerNetworkQualityData.series['POLQA']
-      }
-    ];
-
-    const customerNetworkQualitySummary = res[3];
-    this.customerNetworkQualitySummary.totalCalls = customerNetworkQualitySummary.totalCalls;
-    this.customerNetworkQualitySummary.aboveThreshold.jitter = customerNetworkQualitySummary.jitterAboveThld;
-    this.customerNetworkQualitySummary.aboveThreshold.packetLoss = customerNetworkQualitySummary.packetLossAboveThld;
-    this.customerNetworkQualitySummary.aboveThreshold.roundTripTime = customerNetworkQualitySummary.roundTripTimeAboveThld;
-    this.customerNetworkQualitySummary.overall.jitter = customerNetworkQualitySummary.maxJitter;
-    this.customerNetworkQualitySummary.overall.packetLoss = customerNetworkQualitySummary.maxPacketLoss;
-    this.customerNetworkQualitySummary.overall.roundTripTime = customerNetworkQualitySummary.maxRoundTripTime;
-    this.customerNetworkQualitySummary.overall.polqa = customerNetworkQualitySummary.minPolqa;
   }
 
   private processWeeklyData (res: any, selectedDate: any) {
@@ -301,59 +247,6 @@ export class DashboardPocComponent implements OnInit{
     ];
   }
 
-  changeGraph() {
-    if (this.selectedGraph === 'jitter') {
-      this.polqaChartOptions.series = [
-        {
-          name: 'Received Jitter',
-          data: this.customerNetworkQualityData.series['Received Jitter']
-        },
-        {
-          name: 'POLQA',
-          data: this.customerNetworkQualityData.series['POLQA']
-        },
-      ];
-      this.polqaChartOptions.title = {
-        text: "Max. Jitter vs Min. POLQA",
-        align: "left"
-      };
-      this.polqaChartOptions.yAxis[0].title.text = 'Jitter';
-    } else if (this.selectedGraph === 'packetLoss') {
-      this.polqaChartOptions.series = [
-        {
-          name: 'Received Packet Loss',
-          data: this.customerNetworkQualityData.series['Received packet loss']
-        },
-        {
-          name: 'POLQA',
-          data: this.customerNetworkQualityData.series['POLQA']
-        },
-      ];
-      this.polqaChartOptions.title = {
-        text: 'Packet Loss vs POLQA',
-        align: 'left'
-      };
-      this.polqaChartOptions.yAxis[0].title.text = 'Packet Loss';
-
-    } else if (this.selectedGraph === 'roundTripTime') {
-      this.polqaChartOptions.series = [
-        {
-          name: 'Round Trip Time',
-          data: this.customerNetworkQualityData.series['Round trip time']
-        },
-        {
-          name: 'POLQA',
-          data: this.customerNetworkQualityData.series['POLQA']
-        },
-      ];
-      this.polqaChartOptions.title = {
-        text: 'Round Trip Time vs POLQA',
-        align: 'left'
-      };
-      this.polqaChartOptions.yAxis[0].title.text = 'Round Trip Time';
-    }
-  }
-
   navigateToDetailedTable(metric: string) {
     const startDate = this.selectedDate.toDate();
     startDate.setHours(0, 0, 0, 0);
@@ -375,25 +268,17 @@ export class DashboardPocComponent implements OnInit{
     return this.regions.filter(option => option.displayName.toLowerCase().includes(filterValue));
   }
 
-  private _filterUser(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.users.filter(option => option.toLowerCase().includes(filterValue));
-  }
-
   private initAutocompletes() {
     this.filteredRegions = this.filters.get('region').valueChanges.pipe(
         startWith(''),
         map(value => this._filterRegion(value || '')),
-    );
-    this.filteredUsers = this.filters.get('user').valueChanges.pipe(
-        startWith(''),
-        map(value => this._filterUser(value || '')),
     );
   }
 
   private reloadFilterOptions() {
     this.filters.disable();
     this.dailyNetworkTrends.filters.disable();
+    this.customerNetworkQuality.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     this.spotlightChartsService.getFilterOptions(subaccountId).subscribe((res: any) => {
       const regions = [];
@@ -415,22 +300,29 @@ export class DashboardPocComponent implements OnInit{
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();
       this.dailyNetworkTrends.initAutocompletes();
+      this.customerNetworkQuality.initAutocompletes();
       this.dailyNetworkTrends.filters.enable();
+      this.customerNetworkQuality.filters.enable();
+    })
+  }
+
+  private reloadUserOptions(region?: any) {
+    this.filters.disable();
+    this.dailyNetworkTrends.filters.disable();
+    this.customerNetworkQuality.filters.disable();
+    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+    this.spotlightChartsService.getFilterOptions(subaccountId,"users",region ? region : null).subscribe((res: any) => {
+      this.users = res.users.filter(user => user !== null);
+      this.filters.enable();
+      this.dailyNetworkTrends.initAutocompletes();
+      this.customerNetworkQuality.initAutocompletes();
+      this.dailyNetworkTrends.filters.enable();
+      this.customerNetworkQuality.filters.enable();
     })
   }
 
   readonly ReportType = ReportType;
 
-  navigateToPolqaDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
-    const category = chartContext.opts.xaxis.categories[dataPointIndex];
-    const [ startTime, endTime ] = category.split('-');
-    const startDate = this.selectedDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
-    const endDate = this.selectedDate.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
-    const parsedStartTime = startDate.format('YYMMDDHHmmss');
-    const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
-    window.open(url);
-  }
 
   startTimer() {
     if(!this.timerIsRunning){
@@ -453,6 +345,6 @@ export class DashboardPocComponent implements OnInit{
   }
 
   getSubaccountId(): string {
-    return this.subaccountService.getSelectedSubAccount().id;;
+    return this.subaccountService.getSelectedSubAccount().id;
   }
 }
