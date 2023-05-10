@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChartOptions } from "../../../helpers/chart-options-type";
-import { CtaasSetupService } from "../../../services/ctaas-setup.service";
 import {
   defaultFailedCallsChartOptions,
   defaultPolqaChartOptions, defaultVqChartOptions,
-  defaultWeeklyFeatureFunctionalityChartOptions
+  defaultWeeklyFeatureFunctionalityChartOptions,
+  defaultWeeklyCallingReliabilityChartOptions
 } from "./initial-chart-config";
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
@@ -25,6 +25,7 @@ import { Subject } from "rxjs/internal/Subject";
 
 export class DashboardPocComponent implements OnInit{
   vqChartOptions: Partial<ChartOptions>;
+  weeklyFeatureFunctionalityChartOptions: Partial<ChartOptions>;
   weeklyCallingReliabilityChartOptions: Partial<ChartOptions>;
 
   // Failed Calls chart variables
@@ -77,10 +78,8 @@ export class DashboardPocComponent implements OnInit{
   timer: any;
   stopTimer$: Subject<void> = new Subject();
   timerIsRunning = false;
-  isRefreshing = false;
   @ViewChild('dailyNetworkTrends') dailyNetworkTrends: NetworkQualityTrendsComponent;
-  constructor(private ctaasSetupService: CtaasSetupService,
-              private subaccountService: SubAccountService,
+  constructor(private subaccountService: SubAccountService,
               private spotlightChartsService: SpotlightChartsService,
               private fb: FormBuilder) {
     this.polqaChartOptions = defaultPolqaChartOptions;
@@ -88,23 +87,14 @@ export class DashboardPocComponent implements OnInit{
       markerClick: this.navigateToPolqaDetailedTableFromPoint.bind(this)
     };
     this.vqChartOptions = defaultVqChartOptions;
-    this.weeklyCallingReliabilityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
+    this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
+    this.weeklyCallingReliabilityChartOptions = defaultWeeklyCallingReliabilityChartOptions;
     this.failedCallsChartOptions = defaultFailedCallsChartOptions;
   }
 
   ngOnInit() {
     this.initAutocompletes();
     this.loadCharts();
-    this.startTimer();
-  }
-
-  reloadCharts() {
-    const selectedDate = this.filters.get('date').value;
-    this.dailyNetworkTrends.date = selectedDate;
-    this.dailyNetworkTrends.isLoading = true;
-    this.loadCharts();
-    this.dailyNetworkTrends.loadCharts();
-    this.startTimer();
   }
 
   reloadCNQCharts(){
@@ -152,6 +142,7 @@ export class DashboardPocComponent implements OnInit{
   }
 
   loadCharts() {
+    this.startTimer();
     this.calls.total = 0;
     this.isloading = true;
     const startTime = performance.now();
@@ -162,108 +153,152 @@ export class DashboardPocComponent implements OnInit{
     const selectedUser = this.filters.get('user').value;
     this.selectedDate = this.filters.get('date').value.clone().utc();
 
-    obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
-    obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(selectedDate, selectedDate, selectedUser, subaccountId));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedDate, selectedDate, selectedUser, subaccountId));
-    obs.push(this.spotlightChartsService.getWeeklyCallingReliability(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId));
+    if (this.selectedPeriod == "daily") {
+      if (this.dailyNetworkTrends) {
+        this.dailyNetworkTrends.date = selectedDate;
+        this.dailyNetworkTrends.isLoading = true;
+        this.dailyNetworkTrends.loadCharts();
+      }
+      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
+      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
+      obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(selectedDate, selectedDate, selectedUser, subaccountId));
+      obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedDate, selectedDate, selectedUser, subaccountId));
+    } else {
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId, 'FeatureFunctionality'));
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId, 'CallingReliability'));
+    }
     forkJoin(obs).subscribe((res: any) => {
-      // Daily Calling reliability
-      const dailyCallingReliabiltyRes: any = res[0].callingReliability;
-      let passedCalls = dailyCallingReliabiltyRes.callsByStatus.PASSED;
-      let failedCalls = dailyCallingReliabiltyRes.callsByStatus.FAILED;
-      this.callingReliability.total = passedCalls + failedCalls;
-      this.callingReliability.p2p = dailyCallingReliabiltyRes.callsByType.p2p;
-      this.callingReliability.onNet = dailyCallingReliabiltyRes.callsByType.onNet;
-      this.callingReliability.offNet = dailyCallingReliabiltyRes.callsByType.offNet;
-      this.callingReliability.value = (passedCalls/this.callingReliability.total)*100;
-
-      this.callingReliability.period = selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
-      
-      this.calls.total = this.calls.total + this.callingReliability.total;
-      this.calls.failed = this.calls.failed + dailyCallingReliabiltyRes.callsByStatus.FAILED;
-
-      // Daily Feature Functionality
-      const dailyFeatureFunctionalityRes: any = res[0].featureFunctionality;
-      passedCalls = dailyFeatureFunctionalityRes.callsByStatus.PASSED;
-      failedCalls = dailyFeatureFunctionalityRes.callsByStatus.FAILED;
-      this.featureFunctionality.total = passedCalls + failedCalls;
-      this.featureFunctionality.p2p = dailyFeatureFunctionalityRes.callsByType.p2p;
-      this.featureFunctionality.onNet = dailyFeatureFunctionalityRes.callsByType.onNet;
-      this.featureFunctionality.offNet = dailyFeatureFunctionalityRes.callsByType.offNet;
-      this.featureFunctionality.value = (passedCalls/this.featureFunctionality.total)*100;
-
-      this.featureFunctionality.period = selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
-      
-      this.calls.total = this.calls.total + this.featureFunctionality.total;
-      this.calls.failed = this.calls.failed + dailyFeatureFunctionalityRes.callsByStatus.FAILED;
-
-      // Daily Voice Quality
-      const voiceQualityRes: any = res[1];
-      this.vq.calls = voiceQualityRes.summary.calls;
-      this.vq.streams = voiceQualityRes.summary.calls_stream;
-      this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
-      this.vqChartOptions.xAxis = { categories: voiceQualityRes.categories };
-      this.vq.period =selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
-      this.calls.total = this.calls.total + this.vq.calls;
-
-      // Daily Failed Calls Chart
-      this.failedCallsChartOptions.series = [(this.calls.failed / this.calls.total * 100 || 0)];
-
-      // Customer Network Quality
-      this.customerNetworkQualityData = res[2];
-      this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
-      this.polqaChartOptions.series = [
-        {
-          name: 'Received Jitter',
-          data: this.customerNetworkQualityData.series['Received Jitter']
-        },
-        {
-          name: 'POLQA',
-          data: this.customerNetworkQualityData.series['POLQA']
-        }
-      ];
-
-      const customerNetworkQualitySummary = res[3];
-      this.customerNetworkQualitySummary.totalCalls = customerNetworkQualitySummary.totalCalls;
-      this.customerNetworkQualitySummary.aboveThreshold.jitter = customerNetworkQualitySummary.jitterAboveThld;
-      this.customerNetworkQualitySummary.aboveThreshold.packetLoss = customerNetworkQualitySummary.packetLossAboveThld;
-      this.customerNetworkQualitySummary.aboveThreshold.roundTripTime = customerNetworkQualitySummary.roundTripTimeAboveThld;
-      this.customerNetworkQualitySummary.overall.jitter = customerNetworkQualitySummary.maxJitter;
-      this.customerNetworkQualitySummary.overall.packetLoss = customerNetworkQualitySummary.maxPacketLoss;
-      this.customerNetworkQualitySummary.overall.roundTripTime = customerNetworkQualitySummary.maxRoundTripTime;
-      this.customerNetworkQualitySummary.overall.polqa = customerNetworkQualitySummary.minPolqa;
-
-      // Weekly Feature Functionality
-      const weeklyFeatureFunctionalityData = res[4];
-      this.weeklyCallingReliabilityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
-      this.weeklyCallingReliabilityChartOptions.series = [
-        {
-          name: "Percentage",
-          data: weeklyFeatureFunctionalityData.series['percentage'],
-          type: "line"
-        },
-        {
-          name: "Passed",
-          data: weeklyFeatureFunctionalityData.series['passed'],
-          type: "column",
-        },
-        {
-          name: "Failed",
-          data: weeklyFeatureFunctionalityData.series['failed'],
-          type: "column",
-        }
-      ];
+      if (this.selectedPeriod == "daily")
+        this.processDailyData(res, selectedDate);
+      else
+        this.processWeeklyData(res, selectedDate);
+      // common values
       const endTime = performance.now();
       this.loadingTime = (endTime - startTime) / 1000;
       this.isloading = false;
-      this.dailyNetworkTrends.isLoading = false;
+      if (this.dailyNetworkTrends)
+        this.dailyNetworkTrends.isLoading = false;
       this.stopTimer();
       this.reloadFilterOptions();
     }, error => {
       console.error(error);
+      this.isloading = false;
+      if (this.dailyNetworkTrends)
+        this.dailyNetworkTrends.isLoading = false;
       this.stopTimer();
     });
+  }
+
+  private processDailyData (res: any, selectedDate: any) {
+    // Daily Calling reliability
+    const dailyCallingReliabiltyRes: any = res[0].callingReliability;
+    let passedCalls = dailyCallingReliabiltyRes.callsByStatus.PASSED;
+    let failedCalls = dailyCallingReliabiltyRes.callsByStatus.FAILED;
+    this.callingReliability.total = passedCalls + failedCalls;
+    this.callingReliability.p2p = dailyCallingReliabiltyRes.callsByType.p2p;
+    this.callingReliability.onNet = dailyCallingReliabiltyRes.callsByType.onNet;
+    this.callingReliability.offNet = dailyCallingReliabiltyRes.callsByType.offNet;
+    this.callingReliability.value = (passedCalls/this.callingReliability.total)*100;
+
+    this.callingReliability.period = selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    
+    this.calls.total = this.calls.total + this.callingReliability.total;
+    this.calls.failed = this.calls.failed + dailyCallingReliabiltyRes.callsByStatus.FAILED;
+
+    // Daily Feature Functionality
+    const dailyFeatureFunctionalityRes: any = res[0].featureFunctionality;
+    passedCalls = dailyFeatureFunctionalityRes.callsByStatus.PASSED;
+    failedCalls = dailyFeatureFunctionalityRes.callsByStatus.FAILED;
+    this.featureFunctionality.total = passedCalls + failedCalls;
+    this.featureFunctionality.p2p = dailyFeatureFunctionalityRes.callsByType.p2p;
+    this.featureFunctionality.onNet = dailyFeatureFunctionalityRes.callsByType.onNet;
+    this.featureFunctionality.offNet = dailyFeatureFunctionalityRes.callsByType.offNet;
+    this.featureFunctionality.value = (passedCalls/this.featureFunctionality.total)*100;
+
+    this.featureFunctionality.period = selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    
+    this.calls.total = this.calls.total + this.featureFunctionality.total;
+    this.calls.failed = this.calls.failed + dailyFeatureFunctionalityRes.callsByStatus.FAILED;
+
+    // Daily Voice Quality
+    const voiceQualityRes: any = res[1];
+    this.vq.calls = voiceQualityRes.summary.calls;
+    this.vq.streams = voiceQualityRes.summary.calls_stream;
+    this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
+    this.vqChartOptions.xAxis = { categories: voiceQualityRes.categories };
+    this.vq.period =selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    this.calls.total = this.calls.total + this.vq.calls;
+
+    // Daily Failed Calls Chart
+    this.failedCallsChartOptions.series = [(this.calls.failed / this.calls.total * 100 || 0)];
+
+    // Customer Network Quality
+    this.customerNetworkQualityData = res[2];
+    this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
+    this.polqaChartOptions.series = [
+      {
+        name: 'Received Jitter',
+        data: this.customerNetworkQualityData.series['Received Jitter']
+      },
+      {
+        name: 'POLQA',
+        data: this.customerNetworkQualityData.series['POLQA']
+      }
+    ];
+
+    const customerNetworkQualitySummary = res[3];
+    this.customerNetworkQualitySummary.totalCalls = customerNetworkQualitySummary.totalCalls;
+    this.customerNetworkQualitySummary.aboveThreshold.jitter = customerNetworkQualitySummary.jitterAboveThld;
+    this.customerNetworkQualitySummary.aboveThreshold.packetLoss = customerNetworkQualitySummary.packetLossAboveThld;
+    this.customerNetworkQualitySummary.aboveThreshold.roundTripTime = customerNetworkQualitySummary.roundTripTimeAboveThld;
+    this.customerNetworkQualitySummary.overall.jitter = customerNetworkQualitySummary.maxJitter;
+    this.customerNetworkQualitySummary.overall.packetLoss = customerNetworkQualitySummary.maxPacketLoss;
+    this.customerNetworkQualitySummary.overall.roundTripTime = customerNetworkQualitySummary.maxRoundTripTime;
+    this.customerNetworkQualitySummary.overall.polqa = customerNetworkQualitySummary.minPolqa;
+  }
+
+  private processWeeklyData (res: any, selectedDate: any) {
+    // Weekly Feature Functionality
+    const weeklyFeatureFunctionalityData = res[0];
+    this.weeklyFeatureFunctionalityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
+    this.weeklyFeatureFunctionalityChartOptions.series = [
+      {
+        name: "Percentage",
+        data: weeklyFeatureFunctionalityData.series['percentage'],
+        type: "line"
+      },
+      {
+        name: "Passed",
+        data: weeklyFeatureFunctionalityData.series['passed'],
+        type: "column",
+      },
+      {
+        name: "Failed",
+        data: weeklyFeatureFunctionalityData.series['failed'],
+        type: "column",
+      }
+    ];
+
+    // Weekly Calling Reliability
+    const weeklyCallingReliabilityData = res[1];
+    this.weeklyCallingReliabilityChartOptions.xAxis.categories = weeklyCallingReliabilityData.categories;
+    this.weeklyCallingReliabilityChartOptions.series = [
+      {
+        name: "Percentage",
+        data: weeklyCallingReliabilityData.series['percentage'],
+        type: "line"
+      },
+      {
+        name: "Passed",
+        data: weeklyCallingReliabilityData.series['passed'],
+        type: "column",
+      },
+      {
+        name: "Failed",
+        data: weeklyCallingReliabilityData.series['failed'],
+        type: "column",
+      }
+    ];
   }
 
   changeGraph() {
@@ -411,18 +446,12 @@ export class DashboardPocComponent implements OnInit{
         this.timerIsRunning = true;
     }
   }
+
   stopTimer() {
       this.timer.unsubscribe();
       this.timerIsRunning = false;
   }
-  async refreshDashboard() {
-    if(this.selectedPeriod == "daily"){
-      this.isRefreshing = true;
-      this.reloadCharts();
-      this.startTimer();
-      this.isRefreshing = false;
-    }
-  }
+
   getSubaccountId(): string {
     return this.subaccountService.getSelectedSubAccount().id;;
   }
