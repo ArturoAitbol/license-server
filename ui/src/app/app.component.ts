@@ -396,12 +396,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     toggleName:"powerbiFeature",
                     subaccountId:this.subaccountId,
                     item:"visualization"
-                },
-                // {
-                //     toggleName:"callback",
-                //     subaccountId:null,
-                //     item:"request-call"
-                // }
+                }
             ]
 
             let disabledItems:any[]=[];
