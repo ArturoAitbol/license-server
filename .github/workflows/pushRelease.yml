@@ -138,15 +138,24 @@ jobs:
             echo -e "stakeholderPassword=${{ secrets.AZURE_PRODUCTION_STAKEHOLDER_PWD }}" >> ./tests/ui/src/main/resources/production.properties
 
         - name: Run UI tests
+          id: uiTests
           run: |
             cd tests/ui
             gradle uiTests -Denv=production -D"cucumber.filter.tags=not @feature-toggle"
         
         - name: Publish Cucumber Report
           uses: deblockt/cucumber-report-annotations-action@v1.7
+          if: success() || failure()
           with:
               access-token: ${{ secrets.GITHUB_TOKEN }}
               path: "**/cucumber.json"
+
+        - name: Archive test results
+          uses: actions/upload-artifact@v3
+          if: ${{ failure() && steps.uiTests.conclusion == 'failure' }}
+          with:
+            name: ui-test-report
+            path: tests/ui/reports/html/
 
         - name: logout
           run: az logout
