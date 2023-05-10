@@ -1,4 +1,4 @@
-@customersTest
+@customersTest @license
 Feature: Customers
   Background: Login successfully with valid credentials
     Given I am on the landing page
@@ -46,14 +46,8 @@ Feature: Customers
   Scenario: Edit a test customer
     Given I see the customer "functional-test-customer" in the table
     When I edit the customer "functional-test-customer" with the following data
-      | name          | functional-test-customer-modified        |
-      | type          | MSP                     |
-      | subaccount    | subCustomModified       |
+      | name          | functional-license-customer    |
+      | type          | MSP                            |
+      | subaccount    | subCustomModified              |
     Then I should see the message "Customer and subaccount edited successfully!"
     And I should see the modified data in Customers table
-
-  @deleteCustomer @delete
-  Scenario: Delete a test customer
-    Given I see the customer "functional-test-customer-modified" in the table
-    When I delete the customer "functional-test-customer-modified"
-    Then I should see the message "Customer deleted successfully!"
