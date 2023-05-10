@@ -15,6 +15,7 @@ public abstract class Constants {
     public static String TEMP_ONPOINT_URL = "https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT";
     public static String MESSAGE_FOR_INVALID_TAP_URL = "Unable to execute the query, invalid tap url";
     public static String LOG_MESSAGE_FOR_INVALID_TAP_URL = "Invalid TAP URL";
+    public static long REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS = 30;
 
     
     // ENUMS

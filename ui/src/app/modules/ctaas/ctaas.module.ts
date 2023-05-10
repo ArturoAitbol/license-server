@@ -28,6 +28,7 @@ import { NgApexchartsModule } from "ng-apexcharts";
 import { NetworkQualityTrendsComponent } from './dashboard-poc/network-quality-trends/network-quality-trends.component';
 import { CallbackComponent } from './callback/callback.component';
 import { MapPocComponent } from './map-poc/map-poc.component';
+import { CallbackTimerComponent } from './callback/callback-timer/callback-timer.component';
 
 
 @NgModule({
@@ -52,7 +53,8 @@ import { MapPocComponent } from './map-poc/map-poc.component';
     DashboardPocComponent,
     NetworkQualityTrendsComponent,
     CallbackComponent,
-    MapPocComponent
+    MapPocComponent,
+    CallbackTimerComponent,
   ],
   imports: [
     CommonModule,
