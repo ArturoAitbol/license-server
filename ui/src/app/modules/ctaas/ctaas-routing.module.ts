@@ -11,7 +11,7 @@ import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-repor
 import { DashboardPocComponent } from "./dashboard-poc/dashboard-poc.component";
 
 const routes: Routes = [
-  { path: '', redirectTo: 'report-dashboards', pathMatch: 'full' },
+  { path: '', redirectTo: 'visualization', pathMatch: 'full' },
   {
     path: 'visualization',
     component: CtaasDashboardComponent,

@@ -166,7 +166,7 @@ export class AppComponent implements OnInit, OnDestroy {
     displayedSideBarItems: any[] = [
         {
             name: 'Dashboard',
-            path: 'report-dashboards',
+            path: 'visualization',
             active: true,
             materialIcon: 'dashboard'
         }
@@ -176,7 +176,6 @@ export class AppComponent implements OnInit, OnDestroy {
     // routes
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
-    readonly CTAAS_DASHBOARD_ROUTE_PATH: string = '/spotlight/report-dashboards';
     readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = '/spotlight/visualization';
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
@@ -288,7 +287,6 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.hideToolbar = true;
                         this.enableSidebar();
                         break;
-                    case this.CTAAS_DASHBOARD_ROUTE_PATH:
                     case this.CTAAS_POWERBI_REPORT_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
@@ -391,11 +389,6 @@ export class AppComponent implements OnInit, OnDestroy {
             const { roles } = accountDetails.idTokenClaims; 
             // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
             let featureToggleProtectedItems = [
-                {
-                    toggleName:"powerbiFeature",
-                    subaccountId:this.subaccountId,
-                    item:"visualization"
-                },
                 {
                     toggleName:"callback",
                     subaccountId:null,

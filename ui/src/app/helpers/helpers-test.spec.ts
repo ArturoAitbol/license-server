@@ -109,7 +109,7 @@ describe('table options', () => {
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions(['tekvizion.FullAdmin'], [{
             "name": "Dashboard",
-            "path": "report-dashboards",
+            "path": "visualization",
             "active": true,
             "materialIcon": "dashboard"
         }],spy);
@@ -121,7 +121,7 @@ describe('table options', () => {
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions([null], [{
             "name": "Dashboard",
-            "path": "report-dashboards",
+            "path": "visualization",
             "active": true,
             "materialIcon": "dashboard"
         }],spy);

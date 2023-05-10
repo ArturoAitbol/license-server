@@ -18,7 +18,7 @@ let fixture: ComponentFixture<CtaasDashboardComponent>;
 
 const RouterMock = {
     navigate: (commands: string[]) => {},
-    url:('/report-dashboards')
+    url:('/visualization')
 };
 
 const configBuilder = new TestBedConfigBuilder().useDefaultConfig(CtaasDashboardComponent).addDeclaration(BannerComponent);

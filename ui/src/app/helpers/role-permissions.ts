@@ -37,7 +37,6 @@ export const permissions = {
             'devices',
             'redirect',
             'spotlight',
-            'report-dashboards',
             'notes',
             'test-suites',
             'stakeholders',
@@ -126,7 +125,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'subscriptions-overview',
             'consumption-matrix'
         ],
@@ -170,7 +168,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'notes',
             'test-suites',
             'stakeholders',
@@ -235,7 +232,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards'
         ],
         elements: [
             'showBanner'
@@ -271,7 +267,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'stakeholders',
             'notes',
             'details',
@@ -327,7 +322,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'stakeholders',
             'notes',
             'details',
@@ -377,7 +371,6 @@ export const permissions = {
             'redirect',
             'apps',
             'spotlight',
-            'report-dashboards',
             'visualization',
             'stakeholders',
             'notes',
