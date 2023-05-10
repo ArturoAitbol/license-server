@@ -26,13 +26,13 @@ Feature: Stakeholders
       | Dashboard     |
     And I logout
 
-  @editStakeholder @feature-toggle @spotLightDashboard
+  @editStakeholder @spotLightDashboard
   Scenario: Edit a StakeHolder
     Given I try to login using a "FullAdministrator"
     And I see the customer "functional-spotlight-customer" in the table
     And I go to the spotlight dashboard for "functional-spotlight-customer"
     And I go to the spotlight "Stakeholders" tab
-    When I edit the stakeholder with the email "test-functional-subaccount-stakeholder@tekvizion360.com" using the following data
+    When I edit the stakeholder using the following data
       | name                | stakeholderTest         |
       | countryPhoneNumber  | Andorra                 |
       | phoneNumber         | 712345                  |
@@ -45,6 +45,6 @@ Feature: Stakeholders
     Given I see the customer "functional-spotlight-customer" in the table
     And I go to the spotlight dashboard for "functional-spotlight-customer"
     And I go to the spotlight "Stakeholders" tab
-    And I see a stakeholder with the email "test-functional-subaccount-stakeholder@tekvizion360.com" in the table
-    When I delete the stakeholder with the email "test-functional-subaccount-stakeholder@tekvizion360.com"
+    And I see the stakeholder in the table
+    When I delete the stakeholder
     Then I should see the message "Deleted Stakeholder successfully"
