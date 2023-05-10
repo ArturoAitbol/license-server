@@ -56,6 +56,7 @@ public class Permissions {
                         GET_ALL_NOTES,
                         GET_CONSUMPTION_MATRIX,
                         GET_CHARTS,
+                        GET_MAP,
                         // UPDATE
                         MODIFY_CUSTOMER,
                         MODIFY_SUBACCOUNT,
@@ -223,6 +224,7 @@ public class Permissions {
                         GET_ALL_NOTES,
                         GET_ALL_FEATURE_TOGGLES,
                         GET_CHARTS,
+                        GET_MAP,
                         // MODIFY
                         MODIFY_CTAAS_ONBOARDING,
                         MODIFY_SUBACCOUNT_STAKEHOLDER);
@@ -255,6 +257,7 @@ public class Permissions {
                         GET_ALL_NOTES,
                         GET_ALL_FEATURE_TOGGLES,
                         GET_CHARTS,
+                        GET_MAP,
                         // MODIFY
                         MODIFY_CTAAS_ONBOARDING,
                         MODIFY_SUBACCOUNT_STAKEHOLDER,
@@ -277,6 +280,7 @@ public class Permissions {
                         GET_ALL_SUBACCOUNT_STAKEHOLDER,
                         GET_ALL_FEATURE_TOGGLES,
                         GET_CHARTS,
+                        GET_MAP,
                         // MODIFY
                         MODIFY_AUTH_USER_PROFILE);
 }

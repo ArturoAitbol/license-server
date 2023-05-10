@@ -9,6 +9,7 @@ import { CtaasNotesComponent } from './ctaas-notes/ctaas-notes.component';
 import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detailed-reports.component';
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 import { DashboardPocComponent } from "./dashboard-poc/dashboard-poc.component";
+import { MapPocComponent } from './map-poc/map-poc.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'visualization', pathMatch: 'full' },
@@ -20,6 +21,11 @@ const routes: Routes = [
   {
     path: 'dashboard-poc',
     component: DashboardPocComponent,
+    canActivate: [RoleGuard]
+  },
+  {
+    path: 'map-poc',
+    component: MapPocComponent,
     canActivate: [RoleGuard]
   },
   {

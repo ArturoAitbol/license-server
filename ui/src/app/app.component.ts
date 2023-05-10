@@ -67,6 +67,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 isPreview: false
             },
             {
+                name: 'Map POC',
+                path: 'map-poc',
+                active: false,
+                materialIcon: 'public',
+                baseUrl: '/spotlight/',
+                isPreview: false
+            },
+            {
                 name: 'Notes',
                 path: 'notes',
                 active: false,
@@ -177,6 +185,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly REDIRECT_ROUTE_PATH: string = '/redirect';
     readonly APPS_ROUTE_PATH: string = '/apps';
     readonly CTAAS_POWERBI_REPORT_ROUTE_PATH: string = '/spotlight/visualization';
+    readonly CTAAS_MAP_ROUTE_PATH: string = '/spotlight/map-poc';
     readonly CTAAS_TEST_SUITES_ROUTE_PATH: string = '/spotlight/test-suites';
     readonly CTAAS_STAKEHOLDERS_ROUTE_PATH: string = '/spotlight/stakeholders';
     readonly CTAAS_SETUP_PATH: string = '/spotlight/setup';
@@ -290,6 +299,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.CTAAS_POWERBI_REPORT_ROUTE_PATH:
                     case this.CTAAS_TEST_SUITES_ROUTE_PATH:
                     case this.CTAAS_STAKEHOLDERS_ROUTE_PATH:
+                    case this.CTAAS_MAP_ROUTE_PATH:
                     case this.CTAAS_SETUP_PATH:
                     case this.SPOTLIGHT_NOTES_PATH:
                     case this.SPOTLIGHT_TEST_REPORTS:
