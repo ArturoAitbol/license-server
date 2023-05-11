@@ -1,29 +1,34 @@
 package com.function.clients;
 
 import com.function.exceptions.ADException;
-import com.function.util.Constants;
 import com.microsoft.azure.functions.ExecutionContext;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 
 public class MapClient {
-    private static final String geoCoderURL = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?";
-    private static final String apikey = "AAPK9a825082c90049619a88880a1ef411c8VPBfmElvpxTEHaVZljmH4iSxttFkqZKNa361AOU5WwoVIxf0d2oZQ6e9-_GwiISt";
+    private static final String findAddressCandidatesURL = "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates";
+    private static final String apikey = System.getenv("GEO_CODE_API_KEY");
 
-    static public JSONObject getMapCoordinates( String city, String region, ExecutionContext context) throws Exception {
-        final String url = String.format("%scity=%s&region=%s&maxLocations=1&f=json&token=%s",geoCoderURL , city, region, apikey);
-        context.getLogger().info("TAP detailed report endpoint: " + url);
-        HashMap<String, String> headers = new HashMap<>();
-        // disable SSL host verification
-        // TAPClient.disableSslVerification(context);
-        JSONObject response = HttpClient.get(url, headers);
-        if (response != null && (response.has("error"))) {
-            context.getLogger()
-                    .severe("Error while retrieving detailed test report from Automation Platform: " + response);
-            throw new ADException("Error retrieving " + region + " detailed report from Automation Platform");
+    static public JSONObject getMapCoordinates( String city, String region,String country, ExecutionContext context) throws Exception {
+        try {
+            String url = findAddressCandidatesURL + String.format("?city=%s&region=%s&countryCode=%s&maxLocations=1&f=json&token=%s", city, region, country, apikey);
+            url = url.replace(" ", "%20");
+            context.getLogger().info("geocode endpoint: " + url);
+            HashMap<String, String> headers = new HashMap<>();
+            JSONObject response = HttpClient.get(url, headers);
+            if (response.has("error")) {
+                throw new Exception(response.getString("error"));
+            }
+            context.getLogger().fine("Received info from the geoCode API");
+            if (!response.getJSONArray("candidates").isEmpty()) {
+                return response.getJSONArray("candidates").getJSONObject(0).getJSONObject("location");
+            }
+            else return null;
+        } catch (Exception e) {
+            throw new Exception("An error ocurred while consuming the geocode API - " + e.getMessage());
         }
-        context.getLogger().info("Received detailed test report response from Automation Platform");
-        return response;
     }
+
 }
