@@ -9,6 +9,7 @@
 
 .network-quality {
     font-size: 22px;
+    margin-top: -15px;
 }
 
 mat-form-field {
@@ -21,4 +22,42 @@ mat-form-field {
 }
 .blue-label {
     color: #7694B7;
+}
+
+.apply-bttn{
+    position: relative;
+    bottom: 5px;
+    right: -10px;
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.metric-header label {
+    margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+    .metrics-values mat-icon{
+        align-items: center;
+        margin-right: 3px;
+    }
+    .metrics-values p{
+        align-items: center;
+        margin-bottom: 0; 
+        margin-left: 2px;
+    }
+    .metrics label{
+        clear: left;
+    }
+    .metrics-values{
+        display: flex;
+        justify-content: center !important;
+        align-items: center !important; 
+        margin-bottom: 8px;
+    }
 }

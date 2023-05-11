@@ -39,38 +39,44 @@
             <div class="row">
                 <h1 class="text-center">Daily Report | {{ selectedDate.format('MMMM-DD-YYYY') }}</h1>
             </div>
-            <form [formGroup]="filters" class="row justify-content-center mt-2 mb-2">
-                <div class="col-2">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Date</mat-label>
-                        <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date">
-                        <mat-hint>MM/DD/YYYY</mat-hint>
-                        <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
-                        <mat-datepicker #dp></mat-datepicker>
-                    </mat-form-field>
-                </div>
-                <div class="col-3">
-                    <mat-form-field appearance="outline">
-                        <mat-label>Region</mat-label>
-                        <input type="text"
-                               placeholder="Region"
-                               matInput
-                               formControlName="region"
-                               [matAutocomplete]="regionAuto">
-                        <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn">
-                            <mat-option *ngFor="let region of filteredRegions | async" [value]="region">
-                                {{region.displayName}}
-                            </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
-                </div>
-                <div class="col-auto align-items-start">
-                    <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
-                            id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
-                </div>
-            </form>
+            <div class="date-picker-form">
+                <form [formGroup]="filters">
+                    <div class="date-picker-form justify-content-center mt-2 mb-2">
+                        <div class="container-reverse">
+                            <div class="date-field">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Date</mat-label>
+                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date">
+                                    <mat-hint>MM/DD/YYYY</mat-hint>
+                                    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+                                    <mat-datepicker #dp></mat-datepicker>
+                                </mat-form-field>
+                            </div>
+                            <div class="region-field">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Region</mat-label>
+                                    <input type="text"
+                                    placeholder="Region"
+                                    matInput
+                                    formControlName="region"
+                                    [matAutocomplete]="regionAuto">
+                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn">
+                                        <mat-option *ngFor="let region of filteredRegions | async" [value]="region">
+                                            {{region.displayName}}
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="align-items-start apply-button">
+                            <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
+                                    id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
             <div class="row">
-                <div class="col-6">
+                <div class="col-md-6">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
                                      [timePeriod]="callingReliability.period"
                                      [numberCalls]="callingReliability.total"
@@ -79,7 +85,7 @@
                                      [offNetCalls]="callingReliability.offNet"
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)"></app-gauge-chart>
                 </div>
-                <div class="col-6">
+                <div class="col-md-6">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
                                      [timePeriod]="featureFunctionality.period"
                                      [numberCalls]="featureFunctionality.total"
@@ -90,7 +96,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
+                <div class="col-md-6">
                     <div class="card text-center mt-2">
                         <div class="card-header">
                             <h1>Voice Quality</h1>
@@ -127,7 +133,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-md-6">
                     <div class="card text-center mt-2">
                         <div class="card-header">
                             <h1>Failed Calls</h1>
@@ -197,12 +203,16 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <mat-icon>timer</mat-icon>
-                        <label class="ps-1">Execution time period: 4/15/2023 00:02:07 AM UTC to 4/21/2023 16:54:31
-                            PM UTC</label>
+                        <div class="footer-text">
+                            <mat-icon>timer</mat-icon>
+                            <label class="ps-1">Execution time period: 4/15/2023 00:02:07 AM UTC to 4/21/2023 16:54:31
+                                PM UTC</label>
+                        </div>
                         <br>
-                        <mat-icon>call</mat-icon>
-                        <label class="ps-1">Number of calls: 828</label>
+                        <div class="footer-text">
+                            <mat-icon>call</mat-icon>
+                            <label class="ps-1">Number of calls: 828</label>
+                        </div>
                     </div>
                 </div>
             </div>
