@@ -24,4 +24,30 @@ mat-form-field {
     z-index: 0 !important;
     overflow: hidden;
 }
-  
+
+.apply-bttn{
+    position: relative;
+    bottom: 5px;
+    right: -10px;
+}
+
+@media (max-width: 600px) {
+    .metrics-values mat-icon{
+        align-items: center;
+        margin-right: 3px;
+    }
+    .metrics-values p{
+        align-items: center;
+        margin-bottom: 0; 
+        margin-left: 2px;
+    }
+    .metrics label{
+        clear: left;
+    }
+    .metrics-values{
+        display: flex;
+        justify-content: center !important;
+        align-items: center !important; 
+        margin-bottom: 8px;
+    }
+}
