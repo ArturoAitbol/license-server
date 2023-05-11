@@ -30,8 +30,6 @@ public class StakeholderForm extends AbstractPageObject {
         By countrySelector = By.xpath(String.format("//span[contains(text(), '%s')]/parent::li", countryPhoneNumber));
         this.action.selectOption(countryDropDown, countrySelector);
         this.action.sendText(this.phoneNumberInput, phoneNumber);
-        if (!DriverManager.getInstance().getActiveDirectoryStatus())
-            subaccountAdminEmail = DriverManager.getInstance().addTimeStampToEmail(subaccountAdminEmail);
         this.action.sendText(this.subaccountAdminEmailInput, subaccountAdminEmail);
         this.action.sendText(this.companyNameInput, companyName);
         this.action.sendText(this.jobTitleInput, jobTitle);

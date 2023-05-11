@@ -53,9 +53,18 @@ public class TekvLSGetFilterOptions {
         // Get query parameters
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId","");
+        String filter = request.getQueryParameters().getOrDefault("filter","");
 
+        // Build SQL statements to get filter options
         String regionsQuery = "SELECT country, state, city FROM test_result_resource GROUP BY country, state, city;";
-        String usersQuery = "SELECT did FROM test_result_resource GROUP BY did;";
+        SelectQueryBuilder usersQueryBuilder = new SelectQueryBuilder("SELECT did FROM test_result_resource");
+
+        for(REGION_PARAMS regionParam : REGION_PARAMS.values()){
+            String value = request.getQueryParameters().getOrDefault(regionParam.value,"");
+            if(!value.isEmpty())
+                usersQueryBuilder.appendEqualsCondition(regionParam.value,value);
+        }
+        usersQueryBuilder.appendGroupBy("did");
 
         // Build SQL statement to get the TAP URL
         SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
@@ -103,27 +112,46 @@ public class TekvLSGetFilterOptions {
             context.getLogger().info("TAP URL for data query: " + tapURL);
 
             // Retrieve all data.
-            context.getLogger().info("Execute SQL statement: " + regionsQuery);
-            JSONArray regionsRs = TAPClient.executeQuery(tapURL, regionsQuery, context);
-            JSONArray regionsJson = new JSONArray();
+            if(filter.isEmpty() || filter.equals("regions")){
+                context.getLogger().info("Execute SQL statement: " + regionsQuery);
+                JSONArray regionsRs = TAPClient.executeQuery(tapURL, regionsQuery, context);
+                JSONArray regionsJson = new JSONArray();
 
-            for (Object o : regionsRs) {
-                JSONObject jobj = new JSONObject();
-                JSONArray values = (JSONArray) o;
-                jobj.put("country", values.get(0));
-                jobj.put("state", values.get(1));
-                jobj.put("city", values.get(2));
-                regionsJson.put(jobj);
+                for (Object o : regionsRs) {
+                    JSONObject jobj = new JSONObject();
+                    JSONArray values = (JSONArray) o;
+                    jobj.put("country", values.get(0));
+                    jobj.put("state", values.get(1));
+                    jobj.put("city", values.get(2));
+                    regionsJson.put(jobj);
+                }
+                json.put("regions", regionsJson);
             }
-            json.put("regions", regionsJson);
-            JSONArray usersRs = TAPClient.executeQuery(tapURL, usersQuery, context);
-            json.put("users", usersRs);
+
+            if(filter.isEmpty() || filter.equals("users")){
+                String usersQuery = usersQueryBuilder.getQuery();
+                context.getLogger().info("Execute SQL statement: " + usersQuery);
+                JSONArray usersRs = TAPClient.executeQuery(tapURL, usersQuery, context);
+                json.put("users", usersRs);
+            }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
         } catch (Exception e) {
             context.getLogger().info("Caught exception: " + e.getMessage());
             JSONObject json = new JSONObject();
             json.put("error", e.getMessage());
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
+        }
+    }
+
+    private enum REGION_PARAMS {
+        COUNTRY("country"),
+        STATE("state"),
+        CITY("city");
+
+        private final String value;
+
+        REGION_PARAMS(String value){
+            this.value = value;
         }
     }
 

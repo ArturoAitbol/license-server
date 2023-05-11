@@ -9,19 +9,19 @@ Feature: TestSuites
   Scenario: Create a test customer for test suite tests
     Given I open the Add Customer form
     When I create a customer with the following data
-      | name          | functional-test-suite                    |
+      | name          | functional-spotlight-customer          |
       | type          | MSP                                   |
       | adminEmail    | spotlight-test-suite@tekvizion.com    |
       | subaccount    | Default                               |
       | subAdminEmail | spotlight-test-suite@tekvizion.com    |
       | spotlight     | yes                                   |
       | testCustomer  | yes                                   |
-    Then I see the customer "functional-test-suite" in the table
+    Then I see the customer "functional-spotlight-customer" in the table
   
   @addTestSuite @spotLightDashboard
   Scenario: Add a Test Suite for customer
-    Given I see the customer "functional-test-suite" in the table
-    And I go to the spotlight dashboard for "functional-test-suite"
+    Given I see the customer "functional-spotlight-customer" in the table
+    And I go to the spotlight dashboard for "functional-spotlight-customer"
     And I go to the spotlight "Test Suites" tab
     And I open the Add Test Suite form
     When I create a test suite with the following data
@@ -32,8 +32,8 @@ Feature: TestSuites
   
   @editTestSuite @spotLightDashboard
   Scenario: Edit a Test Suite
-    Given I see the customer "functional-test-suite" in the table
-    And I go to the spotlight dashboard for "functional-test-suite"
+    Given I see the customer "functional-spotlight-customer" in the table
+    And I go to the spotlight dashboard for "functional-spotlight-customer"
     And I go to the spotlight "Test Suites" tab
     When I edit the test suite "Test Suite A" with the following data
       | suiteName     | Test Suite A Updated |
@@ -45,8 +45,8 @@ Feature: TestSuites
 
   @deleteTestSuite @delete @spotLightDashboard
   Scenario: Delete Test Suite A Updated
-      Given I see the customer "functional-test-suite" in the table
-      And I go to the spotlight dashboard for "functional-test-suite"
+      Given I see the customer "functional-spotlight-customer" in the table
+      And I go to the spotlight dashboard for "functional-spotlight-customer"
       And I go to the spotlight "Test Suites" tab
       And I see the "Test Suite A Updated" test suite in the table
       When I delete the "Test Suite A Updated" test suite
@@ -54,6 +54,6 @@ Feature: TestSuites
 
   @deleteTestSuitesCustomer @delete
   Scenario: Delete the test suites customer
-    Given I see the customer "functional-test-suite" in the table
-    When I delete the customer "functional-test-suite"
+    Given I see the customer "functional-spotlight-customer" in the table
+    When I delete the customer "functional-spotlight-customer"
     Then I should see the message "Customer deleted successfully!"
