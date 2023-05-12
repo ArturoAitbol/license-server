@@ -382,7 +382,8 @@ export const permissions = {
             'stakeholders',
             'notes',
             'details',
-            'reports'
+            'reports',
+            'dashboard-poc',
         ],
         elements: [
             'view-profile',

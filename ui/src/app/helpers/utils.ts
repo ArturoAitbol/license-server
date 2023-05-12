@@ -116,11 +116,11 @@ export class Utility {
      * @param options: any[]
      * @return: any[]
      */
-    public static getNavbarOptions(roles: string[], options: ISidebar[], featureToggleService: FeatureToggleService): any[] {
+    public static getNavbarOptions(roles: string[], options: ISidebar[], featureToggleService: FeatureToggleService, subaccountId: string): any[] {
         //new Set([]) is used to avoid repeated options when a user has multiple roles
         const set = new Set([]);
         options.forEach((item) => {
-            if (featureToggleService.isFeatureEnabled(item.path)) {
+            if (featureToggleService.isFeatureEnabled(item.path, subaccountId)) {
                 roles.forEach(accountRole => {
                     const found: boolean = item.element ? permissions[accountRole]?.elements.includes(item.element)
                         : permissions[accountRole]?.paths.includes(item.path);
