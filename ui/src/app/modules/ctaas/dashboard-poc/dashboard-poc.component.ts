@@ -35,9 +35,11 @@ export class DashboardPocComponent implements OnInit{
 
   // Calling Reliabilty gaguge variables
   callingReliability = { value: 0, total: 0, p2p:0, onNet:0, offNet:0, period: '' };
+  weeklyCallingReliability = { value: 0, total: 0, p2p:0, onNet:0, offNet:0, period: '' };
 
   // Feature Functionality gaguge variables
   featureFunctionality = { value: 0, total: 0, p2p:0, onNet:0, offNet:0,  period: '' };
+  weeklyFeatureFunctionality = { value: 0, total: 0, p2p:0, onNet:0, offNet:0,  period: '' };
 
   // Feature Functionality gaguge variables
   vq = { period: '', calls: 0, streams: 0 };
@@ -224,6 +226,10 @@ export class DashboardPocComponent implements OnInit{
         type: "column",
       }
     ];
+    this.weeklyFeatureFunctionality.total = weeklyFeatureFunctionalityData.callsByStatus.PASSED + weeklyFeatureFunctionalityData.callsByStatus.FAILED;
+    this.weeklyFeatureFunctionality.p2p = weeklyFeatureFunctionalityData.callsByType.p2p;
+    this.weeklyFeatureFunctionality.onNet = weeklyFeatureFunctionalityData.callsByType.onNet;
+    this.weeklyFeatureFunctionality.offNet = weeklyFeatureFunctionalityData.callsByType.offNet;
 
     // Weekly Calling Reliability
     const weeklyCallingReliabilityData = res[1];
@@ -245,6 +251,10 @@ export class DashboardPocComponent implements OnInit{
         type: "column",
       }
     ];
+    this.weeklyCallingReliability.total = weeklyCallingReliabilityData.callsByStatus.PASSED + weeklyCallingReliabilityData.callsByStatus.FAILED;
+    this.weeklyCallingReliability.p2p = weeklyCallingReliabilityData.callsByType.p2p;
+    this.weeklyCallingReliability.onNet = weeklyCallingReliabilityData.callsByType.onNet;
+    this.weeklyCallingReliability.offNet = weeklyCallingReliabilityData.callsByType.offNet;
   }
 
   navigateToDetailedTable(metric: string) {

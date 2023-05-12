@@ -222,12 +222,15 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <mat-icon>timer</mat-icon>
-                            <label class="ps-1">Execution time period: 4/15/2023 00:02:07 AM UTC to 4/21/2023 16:54:31
-                                PM UTC</label>
+                            <div class="footer-text">
+                                <mat-icon>timer</mat-icon>
+                                <label class="ps-1">Execution time period: {{ weeklyFeatureFunctionality.period }}</label>
+                            </div>
                             <br>
-                            <mat-icon>call</mat-icon>
-                            <label class="ps-1">Number of calls: 828</label>
+                            <div class="footer-text">
+                                <mat-icon>call</mat-icon>
+                                <label class="ps-1">Number of calls: {{ weeklyFeatureFunctionality.calls }} | P2P: {{weeklyFeatureFunctionality.p2pCalls}} | On-net: {{weeklyFeatureFunctionality.onNetCalls}} | Off-net: {{weeklyFeatureFunctionality.offNetCalls}}</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -258,12 +261,15 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <mat-icon>timer</mat-icon>
-                            <label class="ps-1">Execution time period: 4/15/2023 00:02:07 AM UTC to 4/21/2023 16:54:31
-                                PM UTC</label>
+                            <div class="footer-text">
+                                <mat-icon>timer</mat-icon>
+                                <label class="ps-1">Execution time period: {{ weeklyCallingReliability.period }}</label>
+                            </div>
                             <br>
-                            <mat-icon>call</mat-icon>
-                            <label class="ps-1">Number of calls: 828</label>
+                            <div class="footer-text">
+                                <mat-icon>call</mat-icon>
+                                <label class="ps-1">Number of calls: {{ weeklyCallingReliability.calls }} | P2P: {{weeklyCallingReliability.p2pCalls}} | On-net: {{weeklyCallingReliability.onNetCalls}} | Off-net: {{weeklyCallingReliability.offNetCalls}}</label>
+                            </div>
                         </div>
                     </div>
                 </div>
