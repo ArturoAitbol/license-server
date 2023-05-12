@@ -72,8 +72,10 @@ public class TekvLSGetCtaasMapSummary {
         }
 
         String sql = "SELECT er.fromcity as from_city, er.fromstate as from_state, er.fromcountry as from_country," +
-                "       er.tocity as to_city, er.tostate as to_state, er.tocountry as to_contry," +
-                "       TO_CHAR(ms.last_modified_date, 'YYYY-MM-DD')                                                      as date," +
+                "       er.tocity as to_city, er.tostate as to_state, er.tocountry as to_country," +
+        "               count(distinct sr.id) as total_calls,\n" +
+                "       count(distinct sr.id) FILTER (WHERE sr.status = 'PASSED') as passed,\n" +
+                "       count(distinct sr.id) FILTER (WHERE sr.status = 'FAILED') as failed," +
                 "       max(case" +
                 "               when ms.parameter_name = 'Received Jitter'" +
                 "                   then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]', '', 'g'), '') AS numeric) end) as \"Received Jitter\"," +
@@ -108,8 +110,7 @@ public class TekvLSGetCtaasMapSummary {
         SelectQueryBuilder locationsQB = new SelectQueryBuilder(sql, true);
         locationsQB.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
         locationsQB.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
-        locationsQB.appendGroupByMany("date, fromcountry, fromstate, fromcity, tocountry, tostate, tocity");
-        locationsQB.appendOrderBy("date", SelectQueryBuilder.ORDER_DIRECTION.ASC);
+        locationsQB.appendGroupByMany("fromcountry, fromstate, fromcity, tocountry, tostate, tocity");
 
         // Build SQL statement to get the TAP URL
         SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
@@ -175,12 +176,14 @@ public class TekvLSGetCtaasMapSummary {
                 toObj.put("country", entryArr.getString(5));
                 toObj.put("location", MapClient.getMapCoordinates(entryArr.getString(3), entryArr.getString(4), entryArr.getString(5), context));
                 res.put("to", toObj);
-                res.put("date", entryArr.get(6));
-                res.put("receivedJitter", entryArr.get(7));
-                res.put("receivedPacketLoss", entryArr.get(8));
-                res.put("roundTripTime", entryArr.get(9));
-                res.put("sentBitrate", entryArr.get(10));
-                res.put("polqa", entryArr.get(11    ));
+                res.put("totalCalls", entryArr.get(6));
+                res.put("passed", entryArr.get(7));
+                res.put("failed", entryArr.get(8));
+                res.put("receivedJitter", entryArr.get(9));
+                res.put("receivedPacketLoss", entryArr.get(10));
+                res.put("roundTripTime", entryArr.get(11));
+                res.put("sentBitrate", entryArr.get(12));
+                res.put("polqa", entryArr.get(13));
                 result.put(res);
             }
             return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(result.toString()).build();
