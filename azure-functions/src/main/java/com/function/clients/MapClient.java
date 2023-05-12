@@ -19,7 +19,7 @@ public class MapClient {
             HashMap<String, String> headers = new HashMap<>();
             JSONObject response = HttpClient.get(url, headers);
             if (response.has("error")) {
-                throw new Exception(response.getString("error"));
+                throw new Exception(response.get("error").toString());
             }
             context.getLogger().fine("Received info from the geoCode API");
             if (!response.getJSONArray("candidates").isEmpty()) {
