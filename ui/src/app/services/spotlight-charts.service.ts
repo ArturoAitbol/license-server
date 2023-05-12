@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { environment } from "../../environments/environment";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
-import { SubAccountService } from "./sub-account.service";
 import { Observable } from "rxjs";
 import { Moment } from "moment";
 
@@ -20,8 +19,8 @@ export class SpotlightChartsService {
      * @param user DID of the user
      * @param subaccountId Subaccount ID
      */
-    public getCustomerNetworkQualityData(startDate: Moment, endDate: Moment, user: string, subaccountId: string) {
-        return this.getNetworkQualityData(startDate, endDate, 'POLQA,Received Jitter,Received packet loss,Round trip time', user, subaccountId);
+    public getCustomerNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, user: string, subaccountId: string) {
+        return this.getNetworkQualityData(startDate, endDate, region, 'POLQA,Received Jitter,Received packet loss,Round trip time', user, subaccountId);
     }
 
     /**
@@ -31,36 +30,42 @@ export class SpotlightChartsService {
      * @param user DID of the user
      * @param subaccountId Subaccount ID
      */
-    public getCustomerNetworkTrendsData(startDate: Moment, endDate: Moment, user: string, subaccountId: string) {
-        return this.getNetworkQualityData(startDate, endDate, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', user, subaccountId);
+    public getCustomerNetworkTrendsData(startDate: Moment, endDate: Moment, region:  { country: string, state: string, city: string }, user: string, subaccountId: string) {
+        return this.getNetworkQualityData(startDate, endDate, region, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', user, subaccountId);
     }
 
-    private getNetworkQualityData(startDate: Moment, endDate: Moment, metric: string, user: string, subaccountId: string): Observable<any> {
+    private getNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, metric: string, user: string, subaccountId: string): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('metric', metric);
         params = params.set('subaccountId', subaccountId);
         if (user) params = params.set('user', user);
+        if (region.country) params = params.set('country',region.country);
+        if (region.state) params = params.set('state',region.state);
+        if (region.city) params = params.set('city',region.city);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'networkQualityChart', { headers, params });
     }
 
-    public getCustomerNetworkQualitySummary(startDate: Moment, endDate: Moment, user: string, subaccountId: string) {
-        return this.getNetworkQualitySummary(startDate, endDate, 'POLQA,Received Jitter,Received packet loss,Round trip time', user, subaccountId)
+    public getCustomerNetworkQualitySummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, user: string, subaccountId: string) {
+        return this.getNetworkQualitySummary(startDate, endDate, region, 'POLQA,Received Jitter,Received packet loss,Round trip time', user, subaccountId)
     }
 
-    public getNetworkQualityTrendsSummary(startDate: Moment, endDate: Moment, user: string, subaccountId: string) {
-        return this.getNetworkQualitySummary(startDate, endDate, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', user, subaccountId)
+    public getNetworkQualityTrendsSummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, user: string, subaccountId: string) {
+        return this.getNetworkQualitySummary(startDate, endDate, region, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', user, subaccountId)
     }
 
-    private getNetworkQualitySummary(startDate: Moment, endDate: Moment, metric: string, user: string, subaccountId: string) {
+    private getNetworkQualitySummary(startDate: Moment, endDate: Moment,  region: { country: string, state: string, city: string }, metric: string, user: string, subaccountId: string) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('metric', metric);
         params = params.set('subaccountId', subaccountId);
         if (user) params = params.set('user', user);
+        if (region.country) params = params.set('country',region.country);
+        if (region.state) params = params.set('state',region.state);
+        if (region.city) params = params.set('city',region.city);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'networkQualitySummary', { headers, params });
     }
@@ -97,7 +102,7 @@ export class SpotlightChartsService {
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('subaccountId', subaccountId);
         if (region.country) params = params.set('country', region.country);
-        if (region.state) params = params.set('state)', region.state);
+        if (region.state) params = params.set('state', region.state);
         if (region.city) params = params.set('city', region.city);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'callsStatusSummary', { headers, params });
@@ -116,16 +121,22 @@ export class SpotlightChartsService {
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('subaccountId', subaccountId);
         if (region.country) params = params.set('country', region.country);
-        if (region.state) params = params.set('state)', region.state);
+        if (region.state) params = params.set('state', region.state);
         if (region.city) params = params.set('city', region.city);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'voiceQualityChart', { headers, params });
     }
 
-    public getFilterOptions(subaccountId: string) {
+    public getFilterOptions(subaccountId: string,filter?: string, region?: { country: string, state: string, city: string }) {
         const headers = this.getHeaders();
         let params = new HttpParams();
         params = params.set('subaccountId', subaccountId);
+        if(filter) params = params.set('filter', filter);
+        if(region) {
+            if (region.country) params = params.set('country', region.country);
+            if (region.state) params = params.set('state', region.state);
+            if (region.city) params = params.set('city', region.city);
+        }
         return this.httpClient.get(this.API_URL + 'getFilterOptions', { headers, params });
     }
 

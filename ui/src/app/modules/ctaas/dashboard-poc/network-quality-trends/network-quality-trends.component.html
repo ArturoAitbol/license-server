@@ -5,25 +5,27 @@
                 <h1>Network Quality Trends</h1>
             </div>
             <div class="card-body container-fluid">
-                <form [formGroup]="filters" class="row justify-content-center mt-2 mb-2">
-                    <div class="col-2">
-                        <mat-form-field appearance="outline">
-                            <mat-label>User</mat-label>
-                            <input type="text"
-                                   placeholder="User"
-                                   matInput
-                                   formControlName="user"
-                                   [matAutocomplete]="userAuto">
-                            <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete">
-                                <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
-                                    {{user}}
-                                </mat-option>
-                            </mat-autocomplete>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-auto align-items-start">
-                        <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
-                                id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
+                <form [formGroup]="filters">
+                    <div class="justify-content-center" style="align-items: center; white-space: nowrap;">
+                        <div style="display: inline-block; padding-right: 15px;">
+                            <mat-form-field appearance="outline">
+                                <mat-label>User</mat-label>
+                                <input type="text"
+                                placeholder="User"
+                                matInput
+                                formControlName="user"
+                                [matAutocomplete]="userAuto">
+                                <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete">
+                                    <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                                        {{user}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+                        <div style="display: inline-block; padding-right: 15px; margin-top: 8px;">
+                            <button class="apply-bttn" *lcCheckAccessFor="'addCustomer'" mat-raised-button
+                            id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
+                        </div>
                     </div>
                 </form> 
                 <div *ngIf="isChartLoading else charts" style="height: 600px; position: relative;">
@@ -40,30 +42,38 @@
                 <div class="mt-2">
                     <div class="network-quality">
                         <div class="summary row mt-3">
-                            <div class="col-3 p-2 border">
-                                <mat-icon>call_quality</mat-icon>
-                                <p>{{ summary.packetLoss }}</p>
+                            <div class="col-md-3 p-2 border metrics">
+                                <div class="metrics-values">
+                                    <mat-icon>call_quality</mat-icon>
+                                    <p>{{ summary.packetLoss }}</p>
+                                </div>
                                 <label class="blue-label">Max. Packet Loss Rate (%)</label>
                             </div>
-                            <div class="col-3 p-2 border">
-                                <mat-icon>waves</mat-icon>
-                                <p>{{ summary.jitter }}</p>
+                            <div class="col-md-3 p-2 border metrics">
+                                <div class="metrics-values">
+                                    <mat-icon>waves</mat-icon>
+                                    <p>{{ summary.jitter }}</p>
+                                </div>
                                 <label class="blue-label">Max. Jitter (ms)</label>
                             </div>
-                            <div class="col-3 p-2 border">
-                                <mat-icon>multiple_stop</mat-icon>
-                                <p>{{ summary.sendBitrate | number }}</p>
+                            <div class="col-md-3 p-2 border metrics">
+                                <div class="metrics-values">
+                                    <mat-icon>multiple_stop</mat-icon>
+                                    <p>{{ summary.sendBitrate | number }}</p>
+                                </div>
                                 <label class="blue-label">Avg. Send Bitrate (kbps)</label>
                             </div>
-                            <div class="col-3 p-2 border">
-                                <mat-icon>update</mat-icon>
-                                <p>{{ summary.roundTripTime }}</p>
+                            <div class="col-md-3 p-2 border metrics">
+                                <div class="metrics-values">
+                                    <mat-icon>update</mat-icon>
+                                    <p>{{ summary.roundTripTime }}</p>
+                                </div>
                                 <label class="blue-label">Max. Round Trip Time (ms)</label>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-6 mt-3" style="height: 300px">
+                        <div class="col-md-6 mt-3" style="height: 300px">
                             <apx-chart
                                     [series]="receivedPacketLossChartOptions.series"
                                     [title]="receivedPacketLossChartOptions.title"
@@ -79,7 +89,7 @@
                                     [colors]="receivedPacketLossChartOptions.colors">
                             </apx-chart>
                         </div>
-                        <div class="col-6 mt-3" style="height: 300px">
+                        <div class="col-md-6 mt-3" style="height: 300px">
                             <apx-chart
                                     [series]="jitterChartOptions.series"
                                     [title]="jitterChartOptions.title"
@@ -97,7 +107,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-6 mt-3" style="height: 300px">
+                        <div class="col-md-6 mt-3" style="height: 300px">
                             <apx-chart
                                     [series]="sentBitrateChartOptions.series"
                                     [title]="sentBitrateChartOptions.title"
@@ -113,7 +123,7 @@
                                     [colors]="sentBitrateChartOptions.colors">
                             </apx-chart>
                         </div>
-                        <div class="col-6 mt-3" style="height: 300px">
+                        <div class="col-md-6 mt-3" style="height: 300px">
                             <apx-chart
                                     [series]="roundTripChartOptions.series"
                                     [title]="roundTripChartOptions.title"

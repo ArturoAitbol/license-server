@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 import {
   defaultJitterChartOptions,
@@ -23,8 +23,10 @@ import { ReportType } from "../../../../helpers/report-type";
 export class NetworkQualityTrendsComponent implements OnInit {
 
   @Input() date: Moment;
-  @Input() user: string;
   @Input() users: string[] = [];
+  @Input() region;
+  @Output() chartStatus = new EventEmitter<boolean>();
+
 
   // Customer Network Trends variables
   receivedPacketLossChartOptions: Partial<ChartOptions>;
@@ -55,6 +57,10 @@ export class NetworkQualityTrendsComponent implements OnInit {
     this.loadCharts();
   }
 
+  chartLoadCompleted() {
+    this.chartStatus.emit(true);
+  }
+
   
   public initAutocompletes() {
     this.filteredUsers = this.filters.get('user').valueChanges.pipe(
@@ -80,8 +86,8 @@ export class NetworkQualityTrendsComponent implements OnInit {
     const selectedUser = this.filters.get("user").value;
     const obs = [];
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.date, this.date, selectedUser, subaccountId));
-    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.date, this.date, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.date, this.date,this.region, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.date, this.date, this.region, selectedUser, subaccountId));
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       this.commonChartOptions.xAxis.categories = trendsData.categories.map(category => category.split(" ")[1]);
@@ -110,6 +116,11 @@ export class NetworkQualityTrendsComponent implements OnInit {
       this.summary.packetLoss = summary.maxPacketLoss;
 
       this.isChartLoading = false;
+      this.privateIsLoading = false;
+      this.chartLoadCompleted();
+    }, error => {
+      console.error(error);
+      this.chartLoadCompleted();
       this.privateIsLoading = false;
     });
   }

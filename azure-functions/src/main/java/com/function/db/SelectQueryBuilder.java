@@ -39,7 +39,7 @@ public class SelectQueryBuilder implements QueryBuilder{
      */
     public void appendEqualsCondition(String columnName, String value, String dataType) {
         appendSeparator();
-        query.append(columnName).append(" = ?::").append(dataType);
+        query.append(columnName).append(" = CAST(? AS ").append(dataType).append(")");
         queue.add(value);
     }
 
