@@ -369,6 +369,32 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
     }
 };
 
+const defaultWeeklyCallsStatusChartOptions : Partial<ChartOptions> = {
+    series: [],
+    chart: {
+      height: 350,
+      type: "heatmap"
+    },
+    dataLabels: {
+      enabled: true
+    },
+    colors: ["#5089c7"],
+    plotOptions: {
+      heatmap: {
+        shadeIntensity: 0.3,
+        colorScale: {
+          ranges: [
+            {
+              from: 0,
+              color: "#5089c7",
+              foreColor: "#000000"
+            }
+          ]
+        }
+      }
+    }
+};
+
 const defaultVqChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'bar',
@@ -491,6 +517,7 @@ export {
     defaultPolqaChartOptions,
     defaultWeeklyFeatureFunctionalityChartOptions,
     defaultWeeklyCallingReliabilityChartOptions,
+    defaultWeeklyCallsStatusChartOptions,
     defaultVqChartOptions,
     defaultFailedCallsChartOptions
 }
