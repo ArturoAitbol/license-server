@@ -112,7 +112,7 @@ describe('table options', () => {
             "path": "visualization",
             "active": true,
             "materialIcon": "dashboard"
-        }],spy);
+        }],spy, "82c0e4f2-171e-4073-98f8-6c7bb23c5613");
         expect(Utility.getNavbarOptions).toHaveBeenCalled();
     });
 
@@ -124,7 +124,7 @@ describe('table options', () => {
             "path": "visualization",
             "active": true,
             "materialIcon": "dashboard"
-        }],spy);
+        }],spy, "82c0e4f2-171e-4073-98f8-6c7bb23c5613");
         expect(Utility.getNavbarOptions).toHaveBeenCalled();
     });
 });
