@@ -29,6 +29,7 @@ import { NetworkQualityTrendsComponent } from './dashboard-poc/network-quality-t
 import { CallbackComponent } from './callback/callback.component';
 import { MapPocComponent } from './map-poc/map-poc.component';
 import { CallbackTimerComponent } from './callback/callback-timer/callback-timer.component';
+import { NodeDetailComponent } from './map-poc/node-detail/node-detail.component';
 
 
 @NgModule({
@@ -55,6 +56,7 @@ import { CallbackTimerComponent } from './callback/callback-timer/callback-timer
     CallbackComponent,
     MapPocComponent,
     CallbackTimerComponent,
+    NodeDetailComponent,
   ],
   imports: [
     CommonModule,

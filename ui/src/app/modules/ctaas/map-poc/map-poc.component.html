@@ -1,14 +1,86 @@
 <!-- Load Leaflet from CDN-->
 <app-banner [stylesflag]="'notes'" *lcCheckAccessFor="'showBanner'"></app-banner>
-<div>
-  <div class="banner-container" style="padding-bottom: 1%; padding-top: 1%;">
+<div style="padding-top: 2%;">
       <mat-button-toggle-group  aria-label="Font Style"
         (change)="onChangeButtonToggle()">
         <mat-button-toggle [value]="LINKED">{{LINKED | titlecase}}</mat-button-toggle>
         <mat-button-toggle [value]="HEAT">{{HEAT | titlecase}}</mat-button-toggle>
       </mat-button-toggle-group>
-  </div>
+</div>
+<div [formGroup]="filterForm" class="row align-items-center col-auto" style="padding-bottom: 2%; padding-top: 1%;">
+  <!-- <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+    <mat-label id="date-label">Select date range</mat-label>
+    <mat-date-range-input #rangeFilter [disabled]="filterForm.disabled" [rangePicker]="picker">
+        <input matStartDate formControlName="startDateFilterControl" placeholder="Start date"  >
+        <input matEndDate formControlName="endDateFilterControl" placeholder="End date"  >
+    </mat-date-range-input>
+    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+    <button *ngIf="filterForm.get('startDateFilterControl').value || filterForm.get('endDateFilterControl').value"
+        matSuffix mat-icon-button aria-label="Clear"> 
+        <mat-icon>close</mat-icon>
+    </button>
+</mat-form-field> -->
+  <mat-form-field  style="margin-bottom: -1.25em" class="col" appearance="outline">
+    <mat-label>Date</mat-label>
+    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="startDateFilterControl">
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+    <mat-datepicker #dp></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+    <mat-label id="from-region-label">From region</mat-label>
+    <mat-select formControlName="fromRegionFilterControl" >
+        <mat-option>None</mat-option>
+        <mat-option *ngFor="let fromRegion of fromRegions" [value]="fromRegion">
+            {{fromRegion}}
+        </mat-option>
+    </mat-select>
+    <button *ngIf="filterForm.get('fromRegionFilterControl').value" matSuffix mat-icon-button
+            aria-label="Clear">
+        <mat-icon>close</mat-icon>
+    </button>
+</mat-form-field>
+  <mat-form-field style="margin-bottom: -1.25em" class="col" appearance="outline">
+      <mat-label id="to-region-label">To region</mat-label>
+      <mat-select formControlName="toRegionFilterControl" >
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let toRegion of toRegions" [value]="toRegion">
+              {{toRegion}}
+          </mat-option>
+      </mat-select>
+      <button *ngIf="filterForm.get('toRegionFilterControl').value" matSuffix mat-icon-button
+              aria-label="Clear">
+          <mat-icon>close</mat-icon>
+      </button>
+  </mat-form-field>
+</div>
+<div>
+  <div class="row justify-content-center" style="">
+    <h1 class="text-center">Daily Report</h1>
+  </div> 
   <div id="map"></div>
+  <div class="banner-container" style="margin-top: 1%;">
+    <ul class="breadcrumb d-flex align-content-center">
+        <li class="breadcrumb-item" style="color: white;"> Overall Summary  </li>
+    </ul>
+  </div>
+  <section class="table-section">
+    <div id="map-table" class="table-container mat-elevation-z8" [style.max-height.px]="tableMaxHeight">
+        <app-data-table 
+        [tableData]="mapData" 
+        [tableColumns]="displayedColumns" 
+        [isFilterable]="false"
+        [isPageable]="false" 
+        [paginationSizes]="[5,10,20]" 
+        [defaultPageSize]="5"
+        (sort)="sortData($event)">
+        </app-data-table>
+    </div>
+  </section>
 </div>
 
 
+<!-- [isLoadingResults]="isLoadingResults" 
+        [isRequestCompleted]="isRequestCompleted" -->

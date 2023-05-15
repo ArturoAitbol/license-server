@@ -1,0 +1,54 @@
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-start font-s">Node Summary</h1>
+        <mat-card class="card summary">
+            <mat-card-content class="summary-card-content">
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <div class="row-auto">
+                                <th>Originated calls</th>
+                            </div>
+                            <div class="row-auto">
+                                <th>Originiated calls passed</th>
+                                <td>{{data.callsOriginated.passed}}</td>
+                            </div>
+                            <div class="row-auto">
+                                <th>Originated calls failed</th>
+                                <td>{{data.callsOriginated.failed}}</td>
+                            </div>
+                            <div class="row-auto">
+                                <th>Voice Quality</th>
+                                <td>{{data.callsOriginated.polqa}}</td>
+                            </div>
+                            <div class="row-auto">
+                                 <th>Terminated calls</th>
+                            </div>
+                            <div class="row-auto">
+                                <th>Terminated calls passed</th>
+                                <td>{{data.callsTerminated.passed}}</td>
+                            </div>
+                            <div class="row-auto">
+                                <th>Terminated calls failed</th>
+                                <td>{{data.callsTerminated.failed}}</td>
+                            </div>
+                            <div class="row-auto">
+                                <th>Voice Quality</th>
+                                <td>{{data.callsTerminated.polqa}}</td>
+                            </div>
+                            <div class="row-auto">
+                                <th>Total Calls</th>
+                                <td>{{data.totalCalls}}</td>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+            </mat-card-content>
+        </mat-card>
+        <div class="row justify-content-end" style="padding-top: 3%;">
+            <div class="col-auto">
+                <button mat-stroked-button type="button" id="cancel-button" (click)="onCancel()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

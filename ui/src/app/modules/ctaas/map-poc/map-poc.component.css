@@ -1,3 +1,42 @@
 #map { 
-    height: 760px; 
+    height: 700px; 
+}
+
+.banner-container {
+    background: #7694B7;
+    /* background: lightgrey; */
+    padding: 6px 6px 6px 12px;
+}
+ul {
+    list-style-type: none;
+    /* display: inline-flex; */
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    text-align: center;
+}
+ul li {
+    display: inline-block;
+    color: #203c66;
+    font: 500 20px / 30px Roboto, "Helvetica Neue", sans-serif;
+    letter-spacing: normal;
+    /* margin: 0 0 16px; */
+}
+/* ul.breadcrumb li+li:before {
+    color: #203c66;
+    content: "/\00a0";
+} */
+.alignment {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+.breadcrumb-item{
+}
+@media (max-width: 600px) {
+    .banner-container {
+        padding: 0px 2px 0px 6px;
+    }
+    ul li {
+        font-size:calc(5px + 1.7vw);
+    }
 }
