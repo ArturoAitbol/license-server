@@ -22,11 +22,8 @@ export class MapPocComponent implements OnInit {
   toRegions: any[]= [];
   maxDate: any;
   map:any;
-  nodesMap:any = new Map()
-  fromArray: any[]=[]
-  nodesData: any[]=[];
-  fromRegion: string;
-  toRegion:string;
+  nodesMap:any = {};
+  linesMap:any = {};
   filterForm = this.fb.group({
     fromRegionFilterControl: [''],
     toRegionFilterControl: [''],
@@ -80,66 +77,72 @@ export class MapPocComponent implements OnInit {
     this.maxDate = moment.utc().format("YYYY-MM-DD[T]HH:mm:ss");
   }
   
-  drawFunction(fromToList: any){
+  processMapData(){
     for(let i=0 ; i < this.mapData.length; i++){
-      try{
-        let coordinatesArray = [];
-        coordinatesArray[0] = new L.LatLng(fromToList[i].from?.location?.y,fromToList[i].from?.location?.x);
-        coordinatesArray[1] = new L.LatLng(fromToList[i].to?.location?.y, fromToList[i].to?.location?.x);
-        //this.statusOfTheLines(this.map,this.GOOD_STATE,coordinatesArray);
-        
-        this.fromRegion = fromToList[i].from.location.y + ", " + fromToList[i].from.location.x;
-        this.toRegion = fromToList[i].to.location.y + ", " + fromToList[i].to.location.x;
-        if(!this.nodesMap.has(this.fromRegion)) {
-          let newRegionObj = {
-            region: fromToList[i].from,
-            totalCalls: fromToList[i].totalCalls,
-            callsOriginated: {passed: fromToList[i].passed,failed: fromToList[i].failed, total: fromToList[i].totalCalls, polqa: 0, callsTitle: 'Calls originated'},
-            callsTerminated: {passed: 0,failed: 0, total: 0, polqa: 0}
-          }
-          if(fromToList[i].polqa){
-            newRegionObj.callsOriginated.polqa = fromToList[i].polqa;
-          }
-          this.nodesMap.set(this.fromRegion, newRegionObj);
-        } else {
-          let fromRegionObj = this.nodesMap.get(this.fromRegion);
-          fromRegionObj.callsOriginated.passed += fromToList[i].passed;
-          fromRegionObj.callsOriginated.failed += fromToList[i].failed;
-          fromRegionObj.callsOriginated.total += fromToList[i].totalCalls;
-          if(fromRegionObj.callsOriginated.polqa > fromToList[i].polqa)
-            fromRegionObj.callsTerminated.polqa = fromToList[i].polqa;
-          fromRegionObj.totalCalls += fromToList[i].totalCalls;
-          this.nodesMap.set(this.fromRegion, fromRegionObj);
-        }
-        if(!this.nodesMap.has(this.toRegion)) {
-          let newRegionObj = {
-            region: fromToList[i].to,
-            totalCalls: fromToList[i].totalCalls,
-            callsOriginated: {passed: 0,failed: 0, total: 0, polqa: 0},
-            callsTerminated: {passed: fromToList[i].passed,failed: fromToList[i].failed, total: fromToList[i].totalCalls, polqa: 0,callsTitle: 'Calls Terminated'}
-          }
-          if(fromToList[i].polqa){
-            newRegionObj.callsTerminated.polqa = fromToList[i].polqa;
-          }
-          this.nodesMap.set(this.toRegion, newRegionObj);
-        } else {
-          let toRegionObj = this.nodesMap.get(this.toRegion);
-          toRegionObj.callsTerminated.passed += fromToList[i].passed;
-          toRegionObj.callsTerminated.failed += fromToList[i].failed;
-          toRegionObj.callsTerminated.total += fromToList[i].totalCalls;
-          if(toRegionObj.callsTerminated.polqa > fromToList[i].polqa)
-            toRegionObj.callsTerminated.polqa = fromToList[i].polqa;
-          if(this.fromRegion !== this.toRegion)
-            toRegionObj.totalCalls += fromToList[i].totalCalls;
-          this.nodesMap.set(this.fromRegion, toRegionObj);
-        }
-      }catch(error){
-        console.log(error)
+      try {
+        const fromRegion = this.mapData[i].from.location.y + ", " + this.mapData[i].from.location.x;
+        const toRegion = this.mapData[i].to.location.y + ", " + this.mapData[i].to.location.x;
+        this.getNodeData(i, fromRegion, toRegion);
+        this.getLineData(i, fromRegion, toRegion);
+      } catch(error) {
+        console.log(error);
       }
     }
-    console.log(this.nodesMap)
-    //this.drawLines(this.map);
-    this.drawNodesLatLong(this.map,this.GOOD_STATE);
+  }
+
+  private getNodeData(index, fromRegion, toRegion) {
+    if (!this.nodesMap[fromRegion]) {
+      let newRegionObj = {
+        region: this.mapData[index].from,
+        totalCalls: this.mapData[index].totalCalls,
+        callsOriginated: {passed: this.mapData[index].passed,failed: this.mapData[index].failed, total: this.mapData[index].totalCalls, polqa: 0, callsTitle: 'Calls Originated'},
+        callsTerminated: {passed: 0,failed: 0, total: 0, polqa: 0}
+      }
+      if (this.mapData[index].polqa)
+        newRegionObj.callsOriginated.polqa = this.mapData[index].polqa;
+      this.nodesMap[fromRegion] = newRegionObj;
+    } else {
+      this.nodesMap[fromRegion].callsOriginated.passed += this.mapData[index].passed;
+      this.nodesMap[fromRegion].callsOriginated.failed += this.mapData[index].failed;
+      this.nodesMap[fromRegion].callsOriginated.total += this.mapData[index].totalCalls;
+      if (this.mapData[index].polqa && this.nodesMap[fromRegion].callsOriginated.polqa > this.mapData[index].polqa)
+        this.nodesMap[fromRegion].callsOriginated.polqa = this.mapData[index].polqa;
+      this.nodesMap[fromRegion].totalCalls += this.mapData[index].totalCalls;
+    }
+    if (!this.nodesMap[toRegion]) {
+      let newRegionObj = {
+        region: this.mapData[index].to,
+        totalCalls: this.mapData[index].totalCalls,
+        callsOriginated: {passed: 0,failed: 0, total: 0, polqa: 0},
+        callsTerminated: {passed: this.mapData[index].passed,failed: this.mapData[index].failed, total: this.mapData[index].totalCalls, polqa: 0,callsTitle: 'Calls Terminated'}
+      }
+      if (this.mapData[index].polqa)
+        newRegionObj.callsTerminated.polqa = this.mapData[index].polqa;
+      this.nodesMap[toRegion] = newRegionObj;
+    } else {
+      this.nodesMap[toRegion].callsTerminated.passed += this.mapData[index].passed;
+      this.nodesMap[toRegion].callsTerminated.failed += this.mapData[index].failed;
+      this.nodesMap[toRegion].callsTerminated.total += this.mapData[index].totalCalls;
+      if (this.mapData[index].polqa && this.nodesMap[toRegion].callsTerminated.polqa > this.mapData[index].polqa)
+        this.nodesMap[toRegion].callsTerminated.polqa = this.mapData[index].polqa;
+      if (fromRegion !== toRegion)
+        this.nodesMap[toRegion].totalCalls += this.mapData[index].totalCalls;
+    }
+  }
+
+  private getLineData(index, fromRegion, toRegion) {
+    const fromTo = fromRegion + " - " + toRegion;
+    const toFrom = toRegion + " - " + fromRegion;
+    const uniqueKey = this.linesMap[fromTo]? fromTo : toFrom;
+    if (!this.linesMap[uniqueKey])
+      this.linesMap[uniqueKey] = this.mapData[index];
+    else {
+      this.linesMap[uniqueKey].passed += this.mapData[index].passed;
+      this.linesMap[uniqueKey].failed += this.mapData[index].failed;
+      this.linesMap[uniqueKey].totalCalls += this.mapData[index].totalCalls;
+      if (this.linesMap[uniqueKey].callsOriginated.polqa > this.mapData[index].polqa)
+        this.linesMap[uniqueKey].callsTerminated.polqa = this.mapData[index].polqa;
+    }
   }
 
   baseMap(map: any): void {
@@ -148,71 +151,35 @@ export class MapPocComponent implements OnInit {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
   }
-  statusOfTheLines(map: any, status: string, coordinatesArray:any[]):void {
-    let pointsOfPoly;
-    console.log("cord",coordinatesArray)
-    switch(status) {
-      case this.GOOD_STATE:
-          pointsOfPoly = new L.Polyline(coordinatesArray, {
-          color: this.GOOD_COLOR,
-          weight: this.LINE_WEIGHT,
-          smoothFactor: this.LINE_SMOOTH_FACTOR
-        });
-        pointsOfPoly.addTo(map);
-       this.drawNodesLatLong(map,this.GOOD_COLOR);
-        break;
-      case this.MID_STATE:
-          pointsOfPoly = new L.Polyline(coordinatesArray, {
-          color: this.MID_COLOR,
-          weight: this.LINE_WEIGHT,
-          smoothFactor: this.LINE_SMOOTH_FACTOR
-        });
-        pointsOfPoly.addTo(map);
-       // this.drawNodesLatLong(map,this.MID_COLOR);
-        break; 
-      case this.BAD_STATE:
-        pointsOfPoly = new L.Polyline(coordinatesArray, {
-        color: this.BAD_COLOR,
-        weight: this.LINE_WEIGHT,
-        smoothFactor: this.LINE_SMOOTH_FACTOR
-        });
-        //pointsOfPoly.bindPopup(locationMessage)
-        pointsOfPoly.addTo(map);
-       // this.drawNodesLatLong(map,this.BAD_COLOR);
-        break;
-      default:
-        break;
+
+  drawNodes():void {
+    for (const key in this.nodesMap) {
+      let latlong = new L.LatLng(this.nodesMap[key].region.location.y, this.nodesMap[key].region.location.x)
+      let node = L.circle(latlong, {
+        color: this.GOOD_COLOR,
+        fillColor: this.GOOD_COLOR,
+        fillOpacity: 0.1,
+        radius: 1000,
+      }).on('click', (e) =>{
+        this.nodeDetails(key);
+      });
+      node.addTo(this.map);
     }
   }
 
-  drawLines(map:any){
-    let pointsOfPoly;
-    let coordinatesArray = [];
-    coordinatesArray[0] = new L.LatLng(this.nodesMap.get(this.fromRegion).region.location.y,this.nodesMap.get(this.fromRegion).region.location.x);
-    coordinatesArray[1] = new L.LatLng(this.nodesMap.get(this.toRegion).region.location.y,this.nodesMap.get(this.toRegion).region.location.x);
-    console.log("coord2",coordinatesArray)
-    pointsOfPoly = new L.Polyline(coordinatesArray, {
-      color: this.GOOD_COLOR,
-      weight: this.LINE_WEIGHT,
-      smoothFactor: this.LINE_SMOOTH_FACTOR
-    });
-    pointsOfPoly.addTo(map);
-  }
-
-  drawNodesLatLong(map:any, color: string):void {
-    console.log("map:",this.nodesData)
-    for(const [key, value] of this.nodesMap){
-      console.log("value:",value)
-      let latlong = new L.LatLng(value.region.location.y, value.region.location.x)
-      let node = L.circle(latlong, {
-        color: color,
-        fillColor: color,
-        fillOpacity: 0.1,
-        radius: 1000,
-      }).addTo(map);
-      node.on('click', (e) =>{
-        this.testFunc(e)
-      })
+  drawLines() {
+    for (const key in this.linesMap) {
+      let coordinatesArray = [];
+      coordinatesArray[0] = new L.LatLng(this.linesMap[key].from.location.y, this.linesMap[key].from.location.x);
+      coordinatesArray[1] = new L.LatLng(this.linesMap[key].to.location.y, this.linesMap[key].to.location.x);
+      let line = new L.Polyline(coordinatesArray, {
+        color: this.GOOD_COLOR,
+        weight: this.LINE_WEIGHT,
+        smoothFactor: this.LINE_SMOOTH_FACTOR
+      }).on('click', (e) =>{
+        this.lineDetails(key);
+      });
+      line.addTo(this.map);
     }
   }
 
@@ -222,7 +189,9 @@ export class MapPocComponent implements OnInit {
     this.esriService.getMapSummary(moment("05-04-2023"),moment("05-08-2023"),subaccountId).subscribe(res=>{
       if(res){
         this.mapData = res;
-        this.drawFunction(this.mapData)
+        this.processMapData();
+        this.drawNodes();
+        this.drawLines();
         this.isLoadingResults = false;
       }
     });
@@ -236,13 +205,19 @@ export class MapPocComponent implements OnInit {
    
   }
 
-  testFunc(data:any){
-    console.log("1", this.nodesMap, data.target._latlng.lat,data.target._latlng.lng);
-    let nodeRegion = this.nodesMap.get(data.target._latlng.lat + ", " + data.target._latlng.lng);
+  nodeDetails(key:any){
     this.dialog.open(NodeDetailComponent, {
       width: '500px',
       disableClose: true,
-      data: nodeRegion
+      data: this.nodesMap[key]
+    });
+  }
+
+  lineDetails(key:any){
+    this.dialog.open(NodeDetailComponent, {
+      width: '500px',
+      disableClose: true,
+      data: this.linesMap[key]
     });
   }
 }
