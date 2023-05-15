@@ -117,3 +117,91 @@ mat-form-field {
     top: 70px;
     left: 23%;
   }
+
+.date-picker-form{
+    display: flex !important;
+    justify-content: space-evenly !important;
+    white-space: nowrap !important;
+}
+
+.date-field{
+    display: inline-block !important; 
+    width: 37%;
+    padding-right: 5%;
+}
+.region-field{
+    display: inline-block !important; 
+    width: 70%;
+    padding-right: 5%;
+}
+.apply-button {
+    display: inline-block !important; 
+    padding-left: 5%;
+    width: 27%;
+}
+.metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.metric-header label {
+    margin-bottom: 0;
+}
+.apply-bttn{
+    position: relative;
+    bottom: 5px;
+    right: -10px;
+}
+
+@media (max-width: 600px) {
+    .date-picker-form {
+        display: inline-block !important;
+        width: 100%;
+        align-items: center !important; 
+        /* white-space: nowrap !important; */
+        position: relative;
+    }
+    .date-field {
+        display: inline-block !important; 
+        width: 75%;
+        padding-right: 0%;
+    }
+    .region-field{
+        width: 100%;
+        padding-right: 0%;
+    }
+    .apply-button{
+        position: absolute;
+        bottom: 30px;
+        right: -10px;
+    }
+
+    .metrics-values{
+        display: flex;
+        justify-content: center !important;
+        align-items: center !important; 
+        margin-bottom: 8px;
+    }
+
+    .metrics-values mat-icon{
+        align-items: center;
+        margin-right: 3px;
+    }
+
+    .metrics-values p{
+        align-items: center;
+        margin-bottom: 0;
+        margin-left: 2px;
+    }
+
+    .metrics label{
+        clear: left;
+    }
+
+    .container-reverse {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}
