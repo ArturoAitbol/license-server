@@ -75,13 +75,18 @@ export class SpotlightChartsService {
      * @param startDate Start date in local time
      * @param endDate End date in local time
      * @param subaccountId Subaccount ID
+     * @param reportType
+     * @param region
      */
-    public getWeeklyComboBarChart(startDate: Moment, endDate: Moment, subaccountId: string, reportType: string): Observable<any> {
+    public getWeeklyComboBarChart(startDate: Moment, endDate: Moment, subaccountId: string, reportType: string, region: { country: string, state: string, city: string }): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('reportType', reportType);
         params = params.set('subaccountId', subaccountId);
+        if (region.country) params = params.set('country', region.country);
+        if (region.state) params = params.set('state', region.state);
+        if (region.city) params = params.set('city', region.city);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'collectionChart', { headers, params });
     }
@@ -91,12 +96,16 @@ export class SpotlightChartsService {
      * @param startDate Start date in local time
      * @param endDate End date in local time
      * @param subaccountId Subaccount ID
+     * @param region
      */
-    public getWeeklyCallsStatusHeatMap(startDate: Moment, endDate: Moment, subaccountId: string){
+    public getWeeklyCallsStatusHeatMap(startDate: Moment, endDate: Moment, subaccountId: string, region: { country: string, state: string, city: string }){
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('subaccountId', subaccountId);
+        if (region.country) params = params.set('country', region.country);
+        if (region.state) params = params.set('state', region.state);
+        if (region.city) params = params.set('city', region.city);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'callsStatusHeatMap', { headers, params });
     }
@@ -109,6 +118,17 @@ export class SpotlightChartsService {
      */
     public getDailyCallsStatusSummary(date: Moment, region: { country: string, state: string, city: string }, subaccountId: string): Observable<any> {
        return this.getCallsStatusSummary(date, date, region, subaccountId);
+    }
+
+    /**
+     *
+     * @param startDate date in local time
+     * @param endDate date in local time
+     * @param region Region
+     * @param subaccountId Subaccount ID
+     */
+    public getWeeklyCallsStatusSummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string): Observable<any> {
+        return this.getCallsStatusSummary(startDate, endDate, region, subaccountId);
     }
 
     private getCallsStatusSummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string) {

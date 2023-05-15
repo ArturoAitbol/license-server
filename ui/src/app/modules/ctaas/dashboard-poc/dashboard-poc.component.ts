@@ -27,52 +27,66 @@ import { CustomerNetworkQualityComponent } from './customer-network-quality/cust
 
 export class DashboardPocComponent implements OnInit{
   vqChartOptions: Partial<ChartOptions>;
+
+  // Weekly Feature Functionality variables
+  weeklyFeatureFunctionality = {timePeriod: '', numberCalls: 0, p2pCalls: 0, onNetCalls: 0, offNetCalls: 0};
   weeklyFeatureFunctionalityChartOptions: Partial<ChartOptions>;
+
+  // Weekly Calling Reliability variables
+  weeklyCallingReliability = {timePeriod: '', numberCalls: 0, p2pCalls: 0, onNetCalls: 0, offNetCalls: 0};
   weeklyCallingReliabilityChartOptions: Partial<ChartOptions>;
   weeklyCallsStatusChartOptions: Partial<ChartOptions>;
-  
+
   // Weekly calls status Heat Map variables
   weeklyCallsStatusHeatMap: { series:any , maxValues:any , summary:any };
   heatMapCallsSummary = { total: 0 , failed: 0 };
   selectedStatus = 'failed';
 
-  // Failed Calls chart variables
+  // Daily Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
   calls = { total: 0, failed: 0 };
 
-  // Calling Reliabilty gaguge variables
+  // Daily Calling Reliabilty gaguge variables
   callingReliability = { value: 0, total: 0, p2p:0, onNet:0, offNet:0, period: '' };
-  weeklyCallingReliability = { value: 0, total: 0, p2p:0, onNet:0, offNet:0, period: '' };
 
-  // Feature Functionality gaguge variables
+  // Daily Feature Functionality gaguge variables
   featureFunctionality = { value: 0, total: 0, p2p:0, onNet:0, offNet:0,  period: '' };
-  weeklyFeatureFunctionality = { value: 0, total: 0, p2p:0, onNet:0, offNet:0,  period: '' };
 
-  // Feature Functionality gaguge variables
+  // Daily Feature Functionality gaguge variables
   vq = { period: '', calls: 0, streams: 0 };
 
   //Selected graphs variables
   selectedPeriod = 'daily';
 
-  // Filters variables
+  //Daily filters variables
   filters = this.fb.group({
     date: [moment()],
     region: [""]
   });
+
+  //Weekly filters variables
+  weeklyFilters = this.fb.group({
+    startDate: [moment().utc().startOf('week')],
+    endDate: [moment().utc().endOf('week')],
+    region: [""]
+  });
+
   regions: { country: string, state: string, city: string, displayName: string }[] = [];
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
   filteredUsers: Observable<string[]>;
   maxDate = moment();
+  minDate = moment.utc('0001-01-01');
 
   selectedDate: Moment = null;
+  selectedRange: {start: Moment, end: Moment} = null;
   loadingTime = 0;
 
   isloading = true;
 
-  startTime: number = 0;
-  milliseconds: number = 0;
-  seconds: number = 0;
+  startTime = 0;
+  milliseconds = 0;
+  seconds = 0;
   timer: any;
   stopTimer$: Subject<void> = new Subject();
   timerIsRunning = false;
@@ -116,11 +130,11 @@ export class DashboardPocComponent implements OnInit{
     const startTime = performance.now();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
-    const selectedDate = this.filters.get('date').value;
-    const selectedRegion = this.filters.get('region').value;
-    this.selectedDate = this.filters.get('date').value.clone().utc();
 
     if (this.selectedPeriod == "daily") {
+      const selectedDate = this.filters.get('date').value;
+      const selectedRegion = this.filters.get('region').value;
+      this.selectedDate = this.filters.get('date').value.clone().utc();
       if (this.dailyNetworkTrends) {
         this.dailyNetworkTrends.isLoading = true;
         this.dailyNetworkTrends.loadCharts();
@@ -132,15 +146,20 @@ export class DashboardPocComponent implements OnInit{
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
     } else {
-      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId, 'FeatureFunctionality'));
-      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId, 'CallingReliability'));
-      obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId));
+      const selectedStartDate = this.weeklyFilters.get('startDate').value;
+      const selectedEndDate = this.weeklyFilters.get('endDate').value;
+      const selectedRegion = this.weeklyFilters.get('region').value;
+      this.selectedRange = {start: this.weeklyFilters.get('startDate').value.clone().utc(), end: this.weeklyFilters.get('endDate').value.clone().utc()};
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', selectedRegion));
+      obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', selectedRegion));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, selectedRegion));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, selectedRegion, subaccountId));
     }
     forkJoin(obs).subscribe((res: any) => {
       if (this.selectedPeriod == "daily")
-        this.processDailyData(res, selectedDate);
+        this.processDailyData(res);
       else {
-        this.processWeeklyData(res, selectedDate);
+        this.processWeeklyData(res);
         // this two this.chartsStatus(true) lines are to force timer to stop while we don't have weekly completed
         this.chartsStatus(true);
         this.chartsStatus(true);
@@ -154,11 +173,6 @@ export class DashboardPocComponent implements OnInit{
       if (this.customerNetworkQuality)
         this.customerNetworkQuality.isLoading = false;
       this.chartsStatus(true);
-      const region = this.filters.get('region').value;
-      if(region !== "")
-        this.reloadUserOptions(region);
-      else
-        this.reloadFilterOptions();
     }, error => {
       console.error(error);
       this.isloading = false;
@@ -170,7 +184,7 @@ export class DashboardPocComponent implements OnInit{
     });
   }
 
-  private processDailyData (res: any, selectedDate: any) {
+  private processDailyData (res: any) {
     // Daily Calling reliability
     const dailyCallingReliabiltyRes: any = res[0].callingReliability;
     let passedCalls = dailyCallingReliabiltyRes.callsByStatus.PASSED;
@@ -181,7 +195,7 @@ export class DashboardPocComponent implements OnInit{
     this.callingReliability.offNet = dailyCallingReliabiltyRes.callsByType.offNet;
     this.callingReliability.value = (passedCalls/this.callingReliability.total)*100;
 
-    this.callingReliability.period = selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    this.callingReliability.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
     
     this.calls.total = this.calls.total + this.callingReliability.total;
     this.calls.failed = this.calls.failed + dailyCallingReliabiltyRes.callsByStatus.FAILED;
@@ -196,7 +210,7 @@ export class DashboardPocComponent implements OnInit{
     this.featureFunctionality.offNet = dailyFeatureFunctionalityRes.callsByType.offNet;
     this.featureFunctionality.value = (passedCalls/this.featureFunctionality.total)*100;
 
-    this.featureFunctionality.period = selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    this.featureFunctionality.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
     
     this.calls.total = this.calls.total + this.featureFunctionality.total;
     this.calls.failed = this.calls.failed + dailyFeatureFunctionalityRes.callsByStatus.FAILED;
@@ -207,14 +221,21 @@ export class DashboardPocComponent implements OnInit{
     this.vq.streams = voiceQualityRes.summary.calls_stream;
     this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
     this.vqChartOptions.xAxis = { categories: voiceQualityRes.categories };
-    this.vq.period =selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    this.vq.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
     this.calls.total = this.calls.total + this.vq.calls;
 
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [(this.calls.failed / this.calls.total * 100 || 0)];
+
+    const region = this.filters.get('region').value;
+    if(region !== "")
+      this.reloadUserOptions(region);
+    else
+      this.reloadFilterOptions();
   }
 
-  private processWeeklyData (res: any, selectedDate: any) {
+  private processWeeklyData (res: any) {
+    console.log(res);
     // Weekly Feature Functionality
     const weeklyFeatureFunctionalityData = res[0];
     this.weeklyFeatureFunctionalityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
@@ -235,10 +256,6 @@ export class DashboardPocComponent implements OnInit{
         type: "column",
       }
     ];
-    this.weeklyFeatureFunctionality.total = weeklyFeatureFunctionalityData.callsByStatus.PASSED + weeklyFeatureFunctionalityData.callsByStatus.FAILED;
-    this.weeklyFeatureFunctionality.p2p = weeklyFeatureFunctionalityData.callsByType.p2p;
-    this.weeklyFeatureFunctionality.onNet = weeklyFeatureFunctionalityData.callsByType.onNet;
-    this.weeklyFeatureFunctionality.offNet = weeklyFeatureFunctionalityData.callsByType.offNet;
 
     // Weekly Calling Reliability
     const weeklyCallingReliabilityData = res[1];
@@ -260,21 +277,39 @@ export class DashboardPocComponent implements OnInit{
         type: "column",
       }
     ];
-    this.weeklyCallingReliability.total = weeklyCallingReliabilityData.callsByStatus.PASSED + weeklyCallingReliabilityData.callsByStatus.FAILED;
-    this.weeklyCallingReliability.p2p = weeklyCallingReliabilityData.callsByType.p2p;
-    this.weeklyCallingReliability.onNet = weeklyCallingReliabilityData.callsByType.onNet;
-    this.weeklyCallingReliability.offNet = weeklyCallingReliabilityData.callsByType.offNet;
 
     // Weekly Calls Status HeatMap
     this.weeklyCallsStatusHeatMap = res[2];
     this.heatMapCallsSummary.total = this.weeklyCallsStatusHeatMap.summary.totalCalls;
     this.heatMapCallsSummary.failed = this.weeklyCallsStatusHeatMap.summary.failedCalls;
     this.changeHeatMapData();
+
+    // Weekly CR and FF footer info
+    const weeklyCallStatus = res[3];
+    this.weeklyFeatureFunctionality.p2pCalls = weeklyCallStatus.featureFunctionality.callsByType.p2p;
+    this.weeklyFeatureFunctionality.onNetCalls = weeklyCallStatus.featureFunctionality.callsByType.onNet;
+    this.weeklyFeatureFunctionality.offNetCalls = weeklyCallStatus.featureFunctionality.callsByType.offNet;
+    this.weeklyFeatureFunctionality.numberCalls = weeklyCallStatus.featureFunctionality.callsByStatus.PASSED + weeklyCallStatus.featureFunctionality.callsByStatus.FAILED;
+
+    this.weeklyCallingReliability.p2pCalls = weeklyCallStatus.callingReliability.callsByType.p2p;
+    this.weeklyCallingReliability.onNetCalls = weeklyCallStatus.callingReliability.callsByType.onNet;
+    this.weeklyCallingReliability.offNetCalls = weeklyCallStatus.callingReliability.callsByType.offNet;
+    this.weeklyCallingReliability.numberCalls = weeklyCallStatus.callingReliability.callsByStatus.PASSED + weeklyCallStatus.callingReliability.callsByStatus.FAILED;
+
+    const timePeriod = this.selectedRange.start.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedRange.end.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    this.weeklyFeatureFunctionality.timePeriod = timePeriod;
+    this.weeklyCallingReliability.timePeriod = timePeriod;
+
+    const region = this.weeklyFilters.get('region').value;
+    if(region !== "")
+      this.reloadUserOptions(region);
+    else
+      this.reloadFilterOptions();
   }
 
   changeHeatMapData(){
     this.weeklyCallsStatusChartOptions.series = this.weeklyCallsStatusHeatMap.series[this.selectedStatus];
-    let maxValue = this.weeklyCallsStatusHeatMap.maxValues[this.selectedStatus];
+    const maxValue = this.weeklyCallsStatusHeatMap.maxValues[this.selectedStatus];
     this.weeklyCallsStatusChartOptions.plotOptions.heatmap.colorScale.ranges[0].to = maxValue;
   }
 
@@ -307,9 +342,10 @@ export class DashboardPocComponent implements OnInit{
   }
 
   private reloadFilterOptions() {
+    this.weeklyFilters.disable();
     this.filters.disable();
-    this.dailyNetworkTrends.filters.disable();
-    this.customerNetworkQuality.filters.disable();
+    this.dailyNetworkTrends?.filters.disable();
+    this.customerNetworkQuality?.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     this.spotlightChartsService.getFilterOptions(subaccountId).subscribe((res: any) => {
       const regions = [];
@@ -330,25 +366,26 @@ export class DashboardPocComponent implements OnInit{
       }).sort();
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();
-      this.dailyNetworkTrends.initAutocompletes();
-      this.customerNetworkQuality.initAutocompletes();
-      this.dailyNetworkTrends.filters.enable();
-      this.customerNetworkQuality.filters.enable();
+      this.weeklyFilters.enable();
+      this.dailyNetworkTrends?.initAutocompletes();
+      this.customerNetworkQuality?.initAutocompletes();
+      this.dailyNetworkTrends?.filters.enable();
+      this.customerNetworkQuality?.filters.enable();
     })
   }
 
   private reloadUserOptions(region?: any) {
     this.filters.disable();
-    this.dailyNetworkTrends.filters.disable();
-    this.customerNetworkQuality.filters.disable();
+    this.dailyNetworkTrends?.filters.disable();
+    this.customerNetworkQuality?.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     this.spotlightChartsService.getFilterOptions(subaccountId,"users",region ? region : null).subscribe((res: any) => {
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();
-      this.dailyNetworkTrends.initAutocompletes();
-      this.customerNetworkQuality.initAutocompletes();
-      this.dailyNetworkTrends.filters.enable();
-      this.customerNetworkQuality.filters.enable();
+      this.dailyNetworkTrends?.initAutocompletes();
+      this.customerNetworkQuality?.initAutocompletes();
+      this.dailyNetworkTrends?.filters.enable();
+      this.customerNetworkQuality?.filters.enable();
     })
   }
 

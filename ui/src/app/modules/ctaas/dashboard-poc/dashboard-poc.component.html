@@ -39,7 +39,7 @@
                             <div class="date-field">
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
-                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date">
+                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
                                     <mat-hint>MM/DD/YYYY</mat-hint>
                                     <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
                                     <mat-datepicker #dp></mat-datepicker>
@@ -63,7 +63,7 @@
                         </div>
                         <div class="align-items-start apply-button">
                             <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
-                                    id="add-customer-button" (click)="loadCharts()" [disabled]="filters.disabled">Apply</button>
+                                    id="reload-btn" (click)="loadCharts()" [disabled]="filters.disabled">Apply</button>
                         </div>
                     </div>
                 </form>
@@ -175,16 +175,19 @@
                 <h1 class="text-center">Weekly Report | {{ selectedDate.format('MMMM-DD-YYYY') }}</h1>
             </div>
             <div class="date-picker-form">
-                <form [formGroup]="filters">
+                <form [formGroup]="weeklyFilters">
                     <div class="date-picker-form justify-content-center mt-2 mb-2">
                         <div class="container-reverse">
-                            <div class="date-field">
+                            <div class="weekly-date-field">
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
-                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date">
-                                    <mat-hint>MM/DD/YYYY</mat-hint>
+                                    <mat-date-range-input [formGroup]="weeklyFilters" [rangePicker]="dp" [max]="maxDate">
+                                        <input matStartDate formControlName="startDate" placeholder="Start date" readonly>
+                                        <input matEndDate formControlName="endDate" placeholder="End date" readonly>
+                                    </mat-date-range-input>
+                                    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
                                     <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
-                                    <mat-datepicker #dp></mat-datepicker>
+                                    <mat-date-range-picker lcDateRange [maxDate]="maxDate.toDate()" [minDate]="minDate.toDate()" #dp></mat-date-range-picker>
                                 </mat-form-field>
                             </div>
                             <div class="region-field">
@@ -203,9 +206,9 @@
                                 </mat-form-field>
                             </div>
                         </div>
-                        <div class="align-items-start apply-button">
+                        <div class="align-items-start apply-button" style="padding-left: 22%">
                             <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
-                                    id="add-customer-button" (click)="loadCharts()" [disabled]="filters.disabled">Apply</button>
+                                    id="reload-btn-2" (click)="loadCharts()" [disabled]="weeklyFilters.disabled">Apply</button>
                         </div>
                     </div>
                 </form>
@@ -219,7 +222,7 @@
                         <div class="card-body container-fluid">
                             <div class="row">
                                 <div class="col">
-                                    <apx-chart #weeklyFeatureFunctionality
+                                    <apx-chart #weeklyFeatureFunctionalityChart
                                             [series]="weeklyFeatureFunctionalityChartOptions.series"
                                             [chart]="weeklyFeatureFunctionalityChartOptions.chart"
                                             [xaxis]="weeklyFeatureFunctionalityChartOptions.xAxis"
@@ -238,12 +241,15 @@
                         <div class="card-footer">
                             <div class="footer-text">
                                 <mat-icon>timer</mat-icon>
-                                <label class="ps-1">Execution time period: {{ weeklyFeatureFunctionality.period }}</label>
+                                <label class="ps-1">Execution time period: {{weeklyFeatureFunctionality.timePeriod}}</label>
                             </div>
                             <br>
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
-                                <label class="ps-1">Number of calls: {{ weeklyFeatureFunctionality.calls }} | P2P: {{weeklyFeatureFunctionality.p2pCalls}} | On-net: {{weeklyFeatureFunctionality.onNetCalls}} | Off-net: {{weeklyFeatureFunctionality.offNetCalls}}</label>
+                                <label class="ps-1">Number of calls: {{weeklyFeatureFunctionality.numberCalls}} |
+                                    P2P: {{weeklyFeatureFunctionality.p2pCalls}} |
+                                    On-net: {{weeklyFeatureFunctionality.onNetCalls}} |
+                                    Off-net: {{weeklyFeatureFunctionality.offNetCalls}}</label>
                             </div>
                         </div>
                     </div>
@@ -258,7 +264,7 @@
                         <div class="card-body container-fluid">
                             <div class="row">
                                 <div class="col">
-                                    <apx-chart #weeklyCallingReliability
+                                    <apx-chart #weeklyCallingReliabilityChart
                                             [series]="weeklyCallingReliabilityChartOptions.series"
                                             [chart]="weeklyCallingReliabilityChartOptions.chart"
                                             [xaxis]="weeklyCallingReliabilityChartOptions.xAxis"
@@ -277,12 +283,15 @@
                         <div class="card-footer">
                             <div class="footer-text">
                                 <mat-icon>timer</mat-icon>
-                                <label class="ps-1">Execution time period: {{ weeklyCallingReliability.period }}</label>
+                                <label class="ps-1">Execution time period: {{weeklyCallingReliability.timePeriod}}</label>
                             </div>
                             <br>
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
-                                <label class="ps-1">Number of calls: {{ weeklyCallingReliability.calls }} | P2P: {{weeklyCallingReliability.p2pCalls}} | On-net: {{weeklyCallingReliability.onNetCalls}} | Off-net: {{weeklyCallingReliability.offNetCalls}}</label>
+                                <label class="ps-1">Number of calls: {{weeklyCallingReliability.numberCalls}} |
+                                    P2P: {{weeklyCallingReliability.p2pCalls}} |
+                                    On-net: {{weeklyCallingReliability.onNetCalls}} |
+                                    Off-net: {{weeklyCallingReliability.offNetCalls}}</label>
                             </div>
                         </div>
                     </div>
@@ -323,13 +332,13 @@
                             <div class="row">
                                 <div class="col">
                                     <apx-chart
-                                    [series]="weeklyCallsStatusChartOptions.series"
-                                    [chart]="weeklyCallsStatusChartOptions.chart"
-                                    [dataLabels]="weeklyCallsStatusChartOptions.dataLabels"
-                                    [title]="weeklyCallsStatusChartOptions.title"
-                                    [colors]="weeklyCallsStatusChartOptions.colors"
-                                    [plotOptions]="weeklyCallsStatusChartOptions.plotOptions"
-                                  ></apx-chart>
+                                            [series]="weeklyCallsStatusChartOptions.series"
+                                            [chart]="weeklyCallsStatusChartOptions.chart"
+                                            [dataLabels]="weeklyCallsStatusChartOptions.dataLabels"
+                                            [title]="weeklyCallsStatusChartOptions.title"
+                                            [colors]="weeklyCallsStatusChartOptions.colors"
+                                            [plotOptions]="weeklyCallsStatusChartOptions.plotOptions"
+                                    ></apx-chart>
                                 </div>
                             </div>
                         </div>
