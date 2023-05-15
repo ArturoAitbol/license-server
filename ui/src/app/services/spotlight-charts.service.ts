@@ -88,6 +88,21 @@ export class SpotlightChartsService {
 
     /**
      *
+     * @param startDate Start date in local time
+     * @param endDate End date in local time
+     * @param subaccountId Subaccount ID
+     */
+    public getWeeklyCallsStatusHeatMap(startDate: Moment, endDate: Moment, subaccountId: string){
+        let params = new HttpParams();
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('subaccountId', subaccountId);
+        const headers = this.getHeaders();
+        return this.httpClient.get(this.API_URL + 'callsStatusHeatMap', { headers, params });
+    }
+
+    /**
+     *
      * @param date date in local time
      * @param region Region
      * @param subaccountId Subaccount ID

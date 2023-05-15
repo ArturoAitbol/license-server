@@ -4,7 +4,8 @@ import {
   defaultFailedCallsChartOptions,
   defaultVqChartOptions,
   defaultWeeklyFeatureFunctionalityChartOptions,
-  defaultWeeklyCallingReliabilityChartOptions
+  defaultWeeklyCallingReliabilityChartOptions,
+  defaultWeeklyCallsStatusChartOptions
 } from "./initial-chart-config";
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
@@ -28,6 +29,12 @@ export class DashboardPocComponent implements OnInit{
   vqChartOptions: Partial<ChartOptions>;
   weeklyFeatureFunctionalityChartOptions: Partial<ChartOptions>;
   weeklyCallingReliabilityChartOptions: Partial<ChartOptions>;
+  weeklyCallsStatusChartOptions: Partial<ChartOptions>;
+  
+  // Weekly calls status Heat Map variables
+  weeklyCallsStatusHeatMap: { series:any , maxValues:any , summary:any };
+  heatMapCallsSummary = { total: 0 , failed: 0 };
+  selectedStatus = 'failed';
 
   // Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
@@ -82,6 +89,7 @@ export class DashboardPocComponent implements OnInit{
     this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
     this.weeklyCallingReliabilityChartOptions = defaultWeeklyCallingReliabilityChartOptions;
     this.failedCallsChartOptions = defaultFailedCallsChartOptions;
+    this.weeklyCallsStatusChartOptions = defaultWeeklyCallsStatusChartOptions;
   }
 
   ngOnInit() {
@@ -126,6 +134,7 @@ export class DashboardPocComponent implements OnInit{
     } else {
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId, 'FeatureFunctionality'));
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId, 'CallingReliability'));
+      obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'), subaccountId));
     }
     forkJoin(obs).subscribe((res: any) => {
       if (this.selectedPeriod == "daily")
@@ -255,6 +264,18 @@ export class DashboardPocComponent implements OnInit{
     this.weeklyCallingReliability.p2p = weeklyCallingReliabilityData.callsByType.p2p;
     this.weeklyCallingReliability.onNet = weeklyCallingReliabilityData.callsByType.onNet;
     this.weeklyCallingReliability.offNet = weeklyCallingReliabilityData.callsByType.offNet;
+
+    // Weekly Calls Status HeatMap
+    this.weeklyCallsStatusHeatMap = res[2];
+    this.heatMapCallsSummary.total = this.weeklyCallsStatusHeatMap.summary.totalCalls;
+    this.heatMapCallsSummary.failed = this.weeklyCallsStatusHeatMap.summary.failedCalls;
+    this.changeHeatMapData();
+  }
+
+  changeHeatMapData(){
+    this.weeklyCallsStatusChartOptions.series = this.weeklyCallsStatusHeatMap.series[this.selectedStatus];
+    let maxValue = this.weeklyCallsStatusHeatMap.maxValues[this.selectedStatus];
+    this.weeklyCallsStatusChartOptions.plotOptions.heatmap.colorScale.ranges[0].to = maxValue;
   }
 
   navigateToDetailedTable(metric: string) {
