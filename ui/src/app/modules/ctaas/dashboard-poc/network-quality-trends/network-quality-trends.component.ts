@@ -7,7 +7,7 @@ import {
   trendsChartCommonOptions
 } from "./initial-chart-config";
 import { SpotlightChartsService } from "../../../../services/spotlight-charts.service";
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { forkJoin, Observable } from "rxjs";
 import { SubAccountService } from "../../../../services/sub-account.service";
 import { FormBuilder } from '@angular/forms';
@@ -22,9 +22,12 @@ import { ReportType } from "../../../../helpers/report-type";
 })
 export class NetworkQualityTrendsComponent implements OnInit {
 
-  @Input() date: Moment;
+  @Input() startDate: Moment;
+  @Input() endDate: Moment;
   @Input() users: string[] = [];
   @Input() region;
+  @Input() groupBy: string = 'hour';
+  @Input() isLoading: boolean;
   @Output() chartStatus = new EventEmitter<boolean>();
 
 
@@ -43,7 +46,6 @@ export class NetworkQualityTrendsComponent implements OnInit {
 
   summary = { packetLoss: 0, jitter: 0, sendBitrate: 0, roundTripTime: 0 };
 
-  isLoading = true;
   privateIsLoading = true;
   isChartLoading = false;
 
@@ -86,11 +88,17 @@ export class NetworkQualityTrendsComponent implements OnInit {
     const selectedUser = this.filters.get("user").value;
     const obs = [];
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.date, this.date,this.region, selectedUser, subaccountId));
-    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.date, this.date, this.region, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.region, selectedUser, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.startDate, this.endDate, this.region, selectedUser, subaccountId));
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
-      this.commonChartOptions.xAxis.categories = trendsData.categories.map(category => category.split(" ")[1]);
+      if(this.groupBy==='hour')
+        this.commonChartOptions.xAxis.categories = trendsData.categories.map(category => category.split(" ")[1]);
+      else{
+        this.commonChartOptions.xAxis.categories = trendsData.categories;
+        this.commonChartOptions.xAxis.title.text = 'Date';
+      }
+        
       this.initChartOptions();
       this.receivedPacketLossChartOptions.series = [{
         name: 'Received packet loss',
@@ -137,9 +145,16 @@ export class NetworkQualityTrendsComponent implements OnInit {
 
   navigateToCallingReliabilityDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
-    const [ startTime, endTime ] = category.split('-');
-    const startDate = this.date.clone().utc().startOf('day').hour(startTime.split(':')[0]);
-    const endDate = this.date.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
+    let startDate: Moment, endDate: Moment;
+    if(this.groupBy==='hour'){
+      const [ startTime, endTime ] = category.split('-');
+      startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
+      endDate = this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
+    }else{
+      startDate = moment(category).utc().hour(0);
+      endDate = moment(category).utc().hour(23).minutes(59).seconds(59);
+    }
+
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
     const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_CALLING_RELIABILITY }&start=${ parsedStartTime }&end=${ parsedEndTime }`;

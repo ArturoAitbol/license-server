@@ -2,14 +2,14 @@
 <div class="container-fluid">
     <div class="row mt-2">
         <div class="col">
-            <mat-button-toggle-group [(ngModel)]="selectedPeriod" name="periodSelector" (change)="loadCharts()">
+            <mat-button-toggle-group [(ngModel)]="selectedPeriod" name="periodSelector" (change)="reloadCharts()">
                 <mat-button-toggle value="daily">Daily</mat-button-toggle>
                 <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
             </mat-button-toggle-group>
         </div>
         <div *lcFeatureToggle="'powerbiRefreshFeature';subaccountId:getSubaccountId()" class="col-auto ms-auto timer">
             <p style="display: inline-block;">Elapsed Time: {{ seconds }}s {{ milliseconds | number: '3.0' }}ms&emsp;</p>
-            <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="loadCharts()">
+            <button class="refreshButton" mat-raised-button aria-label="Font Style" (click)="reloadCharts()">
                 <mat-icon>refresh</mat-icon>
             </button>
         </div>
@@ -63,7 +63,7 @@
                         </div>
                         <div class="align-items-start apply-button">
                             <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
-                                    id="reload-btn" (click)="loadCharts()" [disabled]="filters.disabled">Apply</button>
+                                    id="reload-btn" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
                         </div>
                     </div>
                 </form>
@@ -165,8 +165,20 @@
                 </div>
             </div>
         </ng-container>
-        <app-customer-network-quality #customerNetworkQuality [date]="this.filters.get('date').value" [region]="this.filters.get('region').value" [users]="this.users" (chartStatus)="chartsStatus($event)"></app-customer-network-quality>
-        <app-network-quality-trends #dailyNetworkTrends [date]="this.filters.get('date').value" [region]="this.filters.get('region').value" [users]="this.users" (chartStatus)="chartsStatus($event)"></app-network-quality-trends>
+        <app-customer-network-quality #customerNetworkQuality 
+            [startDate]="this.filters.get('date').value" 
+            [endDate]="this.filters.get('date').value" 
+            [region]="this.filters.get('region').value"
+            [users]="this.users" (chartStatus)="chartsStatus($event)"
+            [isLoading]="this.isloading">
+        </app-customer-network-quality>
+        <app-network-quality-trends #networkQualityTrends 
+            [startDate]="this.filters.get('date').value" 
+            [endDate]="this.filters.get('date').value" 
+            [region]="this.filters.get('region').value" 
+            [users]="this.users" (chartStatus)="chartsStatus($event)"
+            [isLoading]="this.isloading">
+        </app-network-quality-trends>
         <br>
     </ng-container>
     <ng-container *ngIf="selectedPeriod === 'weekly'">
@@ -208,7 +220,7 @@
                         </div>
                         <div class="align-items-start apply-button" style="padding-left: 22%">
                             <button class="mt-2" *lcCheckAccessFor="'addCustomer'" mat-raised-button
-                                    id="reload-btn-2" (click)="loadCharts()" [disabled]="weeklyFilters.disabled">Apply</button>
+                                    id="reload-btn-2" (click)="reloadCharts()" [disabled]="weeklyFilters.disabled">Apply</button>
                         </div>
                     </div>
                 </form>
@@ -322,7 +334,7 @@
                             <hr>
                             <div class="row">
                                 <div class="col-12 mt-2 mb-3">
-                                    <mat-button-toggle-group name="graphSelector" [(ngModel)]="selectedStatus" (ngModelChange)="changeHeatMapData()">
+                                    <mat-button-toggle-group [(ngModel)]="selectedStatus" (ngModelChange)="changeHeatMapData()">
                                         <mat-button-toggle value="failed">Failed</mat-button-toggle>
                                         <mat-button-toggle value="passed">Passed</mat-button-toggle>
                                         <mat-button-toggle value="total">Total</mat-button-toggle>
@@ -346,5 +358,22 @@
                 </div>
             </div>
         </ng-container>
+        <app-customer-network-quality #customerNetworkQuality
+            [startDate]="this.weeklyFilters.get('startDate').value"
+            [endDate]="this.weeklyFilters.get('endDate').value"
+            [groupBy]="'day'"
+            [region]="this.filters.get('region').value"
+            [users]="this.users" (chartStatus)="chartsStatus($event)"
+            [isLoading]="this.isloading">
+        </app-customer-network-quality>
+        <app-network-quality-trends #networkQualityTrends 
+            [startDate]="this.weeklyFilters.get('startDate').value" 
+            [endDate]="this.weeklyFilters.get('endDate').value" 
+            [groupBy]="'day'"
+            [region]="this.filters.get('region').value" 
+            [users]="this.users" (chartStatus)="chartsStatus($event)"
+            [isLoading]="this.isloading">
+        </app-network-quality-trends>
+        <br>
     </ng-container>
 </div>

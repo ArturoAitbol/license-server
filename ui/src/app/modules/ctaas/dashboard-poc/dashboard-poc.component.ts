@@ -93,7 +93,7 @@ export class DashboardPocComponent implements OnInit{
   isRefreshing = false;
   chartsLoaded = 0;
 
-  @ViewChild('dailyNetworkTrends') dailyNetworkTrends: NetworkQualityTrendsComponent;
+  @ViewChild('networkQualityTrends') networkQualityTrends: NetworkQualityTrendsComponent;
   @ViewChild('customerNetworkQuality') customerNetworkQuality: CustomerNetworkQualityComponent;
   
   constructor(private subaccountService: SubAccountService,
@@ -109,7 +109,6 @@ export class DashboardPocComponent implements OnInit{
   ngOnInit() {
     this.initAutocompletes();
     this.loadCharts();
-    this.startTimer();
   }
 
   chartsStatus(chartCompleted:boolean){
@@ -121,9 +120,15 @@ export class DashboardPocComponent implements OnInit{
     }
   }
 
+  reloadCharts(){
+    this.loadCharts();
+    this.customerNetworkQuality.loadCharts();
+    this.networkQualityTrends.loadCharts();
+  }
+
   loadCharts() {
-    this.chartsLoaded = 0;
     this.startTimer();
+    this.chartsLoaded = 0;
     this.calls.total = 0;
     this.calls.failed = 0;
     this.isloading = true;
@@ -135,14 +140,6 @@ export class DashboardPocComponent implements OnInit{
       const selectedDate = this.filters.get('date').value;
       const selectedRegion = this.filters.get('region').value;
       this.selectedDate = this.filters.get('date').value.clone().utc();
-      if (this.dailyNetworkTrends) {
-        this.dailyNetworkTrends.isLoading = true;
-        this.dailyNetworkTrends.loadCharts();
-      }
-      if (this.customerNetworkQuality) {
-        this.customerNetworkQuality.isLoading = true;
-        this.customerNetworkQuality.loadCharts();
-      }
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
     } else {
@@ -158,28 +155,16 @@ export class DashboardPocComponent implements OnInit{
     forkJoin(obs).subscribe((res: any) => {
       if (this.selectedPeriod == "daily")
         this.processDailyData(res);
-      else {
+      else
         this.processWeeklyData(res);
-        // this two this.chartsStatus(true) lines are to force timer to stop while we don't have weekly completed
-        this.chartsStatus(true);
-        this.chartsStatus(true);
-      }
       // common values
       const endTime = performance.now();
       this.loadingTime = (endTime - startTime) / 1000;
       this.isloading = false;
-      if (this.dailyNetworkTrends)
-        this.dailyNetworkTrends.isLoading = false;
-      if (this.customerNetworkQuality)
-        this.customerNetworkQuality.isLoading = false;
       this.chartsStatus(true);
     }, error => {
       console.error(error);
       this.isloading = false;
-      if (this.dailyNetworkTrends)
-        this.dailyNetworkTrends.isLoading = false;
-      if (this.customerNetworkQuality)
-        this.customerNetworkQuality.isLoading = false;
       this.chartsStatus(true);
     });
   }
@@ -235,7 +220,6 @@ export class DashboardPocComponent implements OnInit{
   }
 
   private processWeeklyData (res: any) {
-    console.log(res);
     // Weekly Feature Functionality
     const weeklyFeatureFunctionalityData = res[0];
     this.weeklyFeatureFunctionalityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
@@ -344,8 +328,8 @@ export class DashboardPocComponent implements OnInit{
   private reloadFilterOptions() {
     this.weeklyFilters.disable();
     this.filters.disable();
-    this.dailyNetworkTrends?.filters.disable();
-    this.customerNetworkQuality?.filters.disable();
+    this.networkQualityTrends.filters.disable();
+    this.customerNetworkQuality.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     this.spotlightChartsService.getFilterOptions(subaccountId).subscribe((res: any) => {
       const regions = [];
@@ -367,25 +351,30 @@ export class DashboardPocComponent implements OnInit{
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();
       this.weeklyFilters.enable();
-      this.dailyNetworkTrends?.initAutocompletes();
-      this.customerNetworkQuality?.initAutocompletes();
-      this.dailyNetworkTrends?.filters.enable();
-      this.customerNetworkQuality?.filters.enable();
+
+      this.networkQualityTrends.initAutocompletes();
+      this.customerNetworkQuality.initAutocompletes();
+
+      this.networkQualityTrends.filters.enable();
+      this.customerNetworkQuality.filters.enable();
     })
   }
 
   private reloadUserOptions(region?: any) {
     this.filters.disable();
-    this.dailyNetworkTrends?.filters.disable();
-    this.customerNetworkQuality?.filters.disable();
+    this.weeklyFilters.disable();
+    this.networkQualityTrends.filters.disable();
+    this.customerNetworkQuality.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     this.spotlightChartsService.getFilterOptions(subaccountId,"users",region ? region : null).subscribe((res: any) => {
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();
-      this.dailyNetworkTrends?.initAutocompletes();
-      this.customerNetworkQuality?.initAutocompletes();
-      this.dailyNetworkTrends?.filters.enable();
-      this.customerNetworkQuality?.filters.enable();
+      this.weeklyFilters.enable();
+
+      this.networkQualityTrends.initAutocompletes();
+      this.customerNetworkQuality.initAutocompletes();
+      this.networkQualityTrends.filters.enable();
+      this.customerNetworkQuality.filters.enable();
     })
   }
 

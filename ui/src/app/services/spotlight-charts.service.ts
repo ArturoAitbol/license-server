@@ -19,8 +19,8 @@ export class SpotlightChartsService {
      * @param user DID of the user
      * @param subaccountId Subaccount ID
      */
-    public getCustomerNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, user: string, subaccountId: string) {
-        return this.getNetworkQualityData(startDate, endDate, region, 'POLQA,Received Jitter,Received packet loss,Round trip time', user, subaccountId);
+    public getCustomerNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, user: string, subaccountId: string, groupBy: string) {
+        return this.getNetworkQualityData(startDate, endDate, region, 'POLQA,Received Jitter,Received packet loss,Round trip time', user, subaccountId, groupBy);
     }
 
     /**
@@ -30,16 +30,17 @@ export class SpotlightChartsService {
      * @param user DID of the user
      * @param subaccountId Subaccount ID
      */
-    public getCustomerNetworkTrendsData(startDate: Moment, endDate: Moment, region:  { country: string, state: string, city: string }, user: string, subaccountId: string) {
-        return this.getNetworkQualityData(startDate, endDate, region, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', user, subaccountId);
+    public getCustomerNetworkTrendsData(startDate: Moment, endDate: Moment, region:  { country: string, state: string, city: string }, user: string, subaccountId: string, groupBy: string) {
+        return this.getNetworkQualityData(startDate, endDate, region, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', user, subaccountId,groupBy);
     }
 
-    private getNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, metric: string, user: string, subaccountId: string): Observable<any> {
+    private getNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, metric: string, user: string, subaccountId: string, groupBy: string): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('metric', metric);
         params = params.set('subaccountId', subaccountId);
+        params = params.set('groupBy',groupBy);
         if (user) params = params.set('user', user);
         if (region.country) params = params.set('country',region.country);
         if (region.state) params = params.set('state',region.state);
