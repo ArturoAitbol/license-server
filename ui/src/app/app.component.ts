@@ -399,7 +399,11 @@ export class AppComponent implements OnInit, OnDestroy {
             const accountDetails = this.getAccountDetails();
             const { roles } = accountDetails.idTokenClaims; 
             // check for feature toggles, we can see the corresponding tabs on the side bar only when they are enabled
-            let featureToggleProtectedItems = [];
+            let featureToggleProtectedItems = [{
+                toggleName:"mapPocFeature",
+                subaccountId:this.subaccountId,
+                item:"map-poc"
+            },];
 
             let disabledItems:any[]=[];
             featureToggleProtectedItems.forEach(featureToggle => {

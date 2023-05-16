@@ -3,10 +3,10 @@ import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
 import moment from 'moment';
-import { Observable, zip } from 'rxjs';
 import { EsriServicesService } from 'src/app/services/map-poc.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
 import { NodeDetailComponent } from './node-detail/node-detail.component';
+import { LineDetailComponent } from './line-detail/line-detail.component';
 @Component({
   selector: 'app-map-poc',
   templateUrl: './map-poc.component.html',
@@ -24,6 +24,7 @@ export class MapPocComponent implements OnInit {
   map:any;
   nodesMap:any = {};
   linesMap:any = {};
+  nodeIcon:any;
   filterForm = this.fb.group({
     fromRegionFilterControl: [''],
     toRegionFilterControl: [''],
@@ -35,9 +36,6 @@ export class MapPocComponent implements OnInit {
     private subaccountService: SubAccountService,
     public dialog: MatDialog) { }
 
-  readonly GOOD_STATE: string  = "good";
-  readonly MID_STATE: string  = "mid";
-  readonly BAD_STATE: string  = "bad";
   readonly GOOD_COLOR: string = "green";
   readonly MID_COLOR: string = "orange";
   readonly BAD_COLOR: string = "red";
@@ -58,9 +56,8 @@ export class MapPocComponent implements OnInit {
 
   initColumns(): void {
     this.displayedColumns = [
-      { name: 'Country', dataKey: 'country', position: 'left', isSortable: true },
-      { name: 'From', dataKey: 'from', position: 'left', isSortable: true },
-      { name: 'To', dataKey: 'to', position: 'left', isSortable: true },
+      { name: 'From', dataKey: 'fromLocation', position: 'left', isSortable: true },
+      { name: 'To', dataKey: 'toLocation', position: 'left', isSortable: true },
       { name: 'No. of Calls', dataKey: 'totalCalls', position: 'left', isSortable: true },
       { name: 'Packet Lost', dataKey: 'receivedPacketLoss', position: 'left', isSortable: true },
       { name: 'Jitter', dataKey: 'receivedJitter', position:'left', isSortable:true},
@@ -153,14 +150,23 @@ export class MapPocComponent implements OnInit {
   }
 
   drawNodes():void {
+    let customIconUrl = '../../../../assets/images/goodMarker.svg';
     for (const key in this.nodesMap) {
+      let failed, polqa;
+      failed = this.nodesMap[key].callsOriginated.failed + this.nodesMap[key].callsTerminated.failed;
+      polqa = this.nodesMap[key].callsOriginated.polqa;
+      if(this.nodesMap[key].callsOriginated.polqa > this.nodesMap[key].callsTerminated.polqa)
+        polqa = this.nodesMap[key].callsTerminated.polqa;
+      if(failed > 1 && failed < 5 || polqa >=2 && polqa < 3)
+        customIconUrl = '../../../../assets/images/midMarker.svg';
+      if(failed > 5 || polqa < 2)
+        customIconUrl = '../../../../assets/images/badMarker.svg';
+      let customIcon = L.icon({
+        iconUrl: customIconUrl,
+        iconAnchor: [20, 29]
+      })
       let latlong = new L.LatLng(this.nodesMap[key].region.location.y, this.nodesMap[key].region.location.x)
-      let node = L.circle(latlong, {
-        color: this.GOOD_COLOR,
-        fillColor: this.GOOD_COLOR,
-        fillOpacity: 0.1,
-        radius: 1000,
-      }).on('click', (e) =>{
+      let node = L.marker(latlong, {icon:customIcon}).on('click', (e) =>{
         this.nodeDetails(key);
       });
       node.addTo(this.map);
@@ -169,11 +175,16 @@ export class MapPocComponent implements OnInit {
 
   drawLines() {
     for (const key in this.linesMap) {
+      let lineState = this.GOOD_COLOR;
       let coordinatesArray = [];
+      if(this.linesMap[key].failed > 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa < 3 && this.linesMap[key].polqa >= 2 )
+        lineState = this.MID_COLOR;
+      if(this.linesMap[key].failed > 5 || this.linesMap[key].polqa < 2)
+        lineState = this.BAD_COLOR
       coordinatesArray[0] = new L.LatLng(this.linesMap[key].from.location.y, this.linesMap[key].from.location.x);
       coordinatesArray[1] = new L.LatLng(this.linesMap[key].to.location.y, this.linesMap[key].to.location.x);
       let line = new L.Polyline(coordinatesArray, {
-        color: this.GOOD_COLOR,
+        color: lineState,
         weight: this.LINE_WEIGHT,
         smoothFactor: this.LINE_SMOOTH_FACTOR
       }).on('click', (e) =>{
@@ -186,9 +197,17 @@ export class MapPocComponent implements OnInit {
   getMapSummary(){
     this.isLoadingResults = true;
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    this.esriService.getMapSummary(moment("05-04-2023"),moment("05-08-2023"),subaccountId).subscribe(res=>{
+    this.esriService.getMapSummary(moment("05-04-2023"),moment("05-08-2023"),subaccountId).subscribe((res:any)=>{
       if(res){
-        this.mapData = res;
+        let parsedSummaryData = []
+        res.map((summaryData, index) => {
+          summaryData = {...summaryData, 
+          fromLocation: summaryData.from.city + ", " + summaryData.from.state + ", " + summaryData.from.country,
+          toLocation: summaryData.to.city + ", " + summaryData.to.state + ", " + summaryData.to.country
+        }
+        parsedSummaryData[index] = summaryData;
+        });
+        this.mapData = parsedSummaryData
         this.processMapData();
         this.drawNodes();
         this.drawLines();
@@ -214,7 +233,7 @@ export class MapPocComponent implements OnInit {
   }
 
   lineDetails(key:any){
-    this.dialog.open(NodeDetailComponent, {
+    this.dialog.open(LineDetailComponent, {
       width: '500px',
       disableClose: true,
       data: this.linesMap[key]

@@ -31,6 +31,7 @@ import { MapPocComponent } from './map-poc/map-poc.component';
 import { CustomerNetworkQualityComponent } from './dashboard-poc/customer-network-quality/customer-network-quality/customer-network-quality.component';
 import { CallbackTimerComponent } from './callback/callback-timer/callback-timer.component';
 import { NodeDetailComponent } from './map-poc/node-detail/node-detail.component';
+import { LineDetailComponent } from './map-poc/line-detail/line-detail.component';
 
 
 @NgModule({
@@ -59,6 +60,7 @@ import { NodeDetailComponent } from './map-poc/node-detail/node-detail.component
     CustomerNetworkQualityComponent,
     CallbackTimerComponent,
     NodeDetailComponent,
+    LineDetailComponent,
   ],
   imports: [
     CommonModule,

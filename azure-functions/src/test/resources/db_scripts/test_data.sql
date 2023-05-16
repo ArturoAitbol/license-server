@@ -234,6 +234,7 @@ COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 3c9d0d97-7878-4f1f-8ca5-18bf93069691	t	\N	Power Bi feature	powerbiFeature
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
 df6f5bc2-2687-49df-8dc0-beff88012235	t	\N	Test FT	testFT
+e83e94d8-563f-4a06-8aa8-b7bfbaeb7f15	f	vtorrico@tekvizionlabs.com	map poc 	mapPocFeature
 \.
 
 --
