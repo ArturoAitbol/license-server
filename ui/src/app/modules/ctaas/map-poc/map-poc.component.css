@@ -30,8 +30,7 @@ ul li {
     margin-left: 12px;
     margin-right: 12px;
 }
-.breadcrumb-item{
-}
+
 @media (max-width: 600px) {
     .banner-container {
         padding: 0px 2px 0px 6px;
