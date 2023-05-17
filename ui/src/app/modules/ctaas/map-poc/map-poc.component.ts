@@ -153,10 +153,6 @@ export class MapPocComponent implements OnInit {
     let customIconUrl = '../../../../assets/images/goodMarker.svg';
     for (const key in this.nodesMap) {
       let failed, polqa;
-      this.nodesMap[key].callsOriginated.failed = 0;
-      this.nodesMap[key].callsTerminated.failed = 0;
-      this.nodesMap[key].callsTerminated.polqa = 4;
-      this.nodesMap[key].callsOriginated.polqa = 5;
       failed = this.nodesMap[key].callsOriginated.failed + this.nodesMap[key].callsTerminated.failed;
       polqa = this.nodesMap[key].callsOriginated.polqa;
       if(this.nodesMap[key].callsOriginated.polqa > this.nodesMap[key].callsTerminated.polqa)
@@ -181,8 +177,6 @@ export class MapPocComponent implements OnInit {
     for (const key in this.linesMap) {
       let lineState = this.GOOD_COLOR;
       let coordinatesArray = [];
-      this.linesMap[key].failed = 0;
-      this.linesMap[key].polqa = 5;
       if(this.linesMap[key].failed > 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa < 3 && this.linesMap[key].polqa >= 2 )
         lineState = this.MID_COLOR;
       if(this.linesMap[key].failed > 5 || this.linesMap[key].polqa < 2)
