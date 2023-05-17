@@ -4,7 +4,6 @@ import com.function.auth.Resource;
 import com.function.clients.TAPClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
-import com.function.db.SelectQueryBuilder.ORDER_DIRECTION;
 import com.function.util.Constants;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
@@ -15,11 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,9 +78,8 @@ public class TekvLSGetCallsStatusHeatMap {
 				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
-				"WHERE sr.finalResult = true AND sr.status != 'ABORTED' AND sr.status != 'RUNNING' AND sr.status != 'QUEUED' AND sr.status != 'INTERRUPTED' " +
-				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
-				"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
+				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
+				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='')";
 
 		// Build region filter if present
 		if (!country.isEmpty() || !user.isEmpty()) {

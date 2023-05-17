@@ -450,7 +450,5 @@ class TekvLSGetAllSubaccountsTest extends TekvLSTest {
 
         JSONArray subaccountsArray = (JSONArray) subaccounts;
         assertTrue(subaccountsArray.length() > 0);
-
-        JSONObject device = subaccountsArray.getJSONObject(0);
     }
 }

@@ -2,7 +2,6 @@ package com.function;
 
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
-import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;

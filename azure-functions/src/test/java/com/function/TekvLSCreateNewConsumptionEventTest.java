@@ -17,7 +17,6 @@ import com.function.util.TekvLSTest;
 import com.microsoft.azure.functions.HttpResponseMessage;
 import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.HttpStatusType;
-import org.mockito.Mockito;
 
 public class TekvLSCreateNewConsumptionEventTest extends TekvLSTest {
 
