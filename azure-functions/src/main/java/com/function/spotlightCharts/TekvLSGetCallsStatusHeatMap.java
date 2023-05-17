@@ -79,8 +79,7 @@ public class TekvLSGetCallsStatusHeatMap {
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
-				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='' OR sr.failingerrortype = 'Routing Issue' OR sr.failingerrortype = 'Teams Client Issue' " +
-				"OR sr.failingerrortype = 'Media Quality' OR sr.failingerrortype = 'Media Routing')";
+				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='')";
 
 		// Build region filter if present
 		if (!country.isEmpty() || !user.isEmpty()) {
