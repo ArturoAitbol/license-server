@@ -21,12 +21,12 @@ import { NetworkQualityTrendsComponent } from "./network-quality-trends/network-
 import { Subject } from "rxjs/internal/Subject";
 import { CustomerNetworkQualityComponent } from './customer-network-quality/customer-network-quality/customer-network-quality.component';
 @Component({
-  selector: 'app-dashboard-poc',
-  templateUrl: './dashboard-poc.component.html',
-  styleUrls: ['./dashboard-poc.component.css']
+  selector: 'app-spotlight-dashboard',
+  templateUrl: './spotlight-dashboard.component.html',
+  styleUrls: ['./spotlight-dashboard.component.css']
 })
 
-export class DashboardPocComponent implements OnInit{
+export class SpotlightDashboardComponent implements OnInit{
   vqChartOptions: Partial<ChartOptions>;
 
   // Weekly Feature Functionality variables
@@ -185,7 +185,7 @@ export class DashboardPocComponent implements OnInit{
     this.callingReliability.p2p = dailyCallingReliabiltyRes.callsByType.p2p;
     this.callingReliability.onNet = dailyCallingReliabiltyRes.callsByType.onNet;
     this.callingReliability.offNet = dailyCallingReliabiltyRes.callsByType.offNet;
-    this.callingReliability.value = (passedCalls/this.callingReliability.total)*100;
+    this.callingReliability.value = (passedCalls / this.callingReliability.total) * 100 || 0;
 
     this.callingReliability.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
     
@@ -200,7 +200,7 @@ export class DashboardPocComponent implements OnInit{
     this.featureFunctionality.p2p = dailyFeatureFunctionalityRes.callsByType.p2p;
     this.featureFunctionality.onNet = dailyFeatureFunctionalityRes.callsByType.onNet;
     this.featureFunctionality.offNet = dailyFeatureFunctionalityRes.callsByType.offNet;
-    this.featureFunctionality.value = (passedCalls/this.featureFunctionality.total)*100;
+    this.featureFunctionality.value = (passedCalls / this.featureFunctionality.total) * 100 || 0;
 
     this.featureFunctionality.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
     
