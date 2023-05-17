@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DashboardPocComponent } from './dashboard-poc.component';
+import { SpotlightDashboardComponent } from './spotlight-dashboard.component';
 import { TestBedConfigBuilder } from 'src/test/mock/TestBedConfigHelper.mock';
 
-let dashboardPocComponentTestInstance: DashboardPocComponent;
-let fixture: ComponentFixture<DashboardPocComponent>;
+let dashboardPocComponentTestInstance: SpotlightDashboardComponent;
+let fixture: ComponentFixture<SpotlightDashboardComponent>;
 
 const beforeEachFunction = () => {
-    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(DashboardPocComponent);
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(SpotlightDashboardComponent);
     TestBed.configureTestingModule(configBuilder.getConfig());
-    fixture = TestBed.createComponent(DashboardPocComponent);
+    fixture = TestBed.createComponent(SpotlightDashboardComponent);
     dashboardPocComponentTestInstance = fixture.componentInstance;
 };
 

@@ -19,8 +19,8 @@ export class SpotlightChartsService {
      * @param user DID of the user
      * @param subaccountId Subaccount ID
      */
-    public getCustomerNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, user: string, subaccountId: string) {
-        return this.getNetworkQualityData(startDate, endDate, region, 'POLQA,Received Jitter,Received packet loss,Round trip time', user, subaccountId);
+    public getCustomerNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, user: string, subaccountId: string, groupBy: string) {
+        return this.getNetworkQualityData(startDate, endDate, region, 'POLQA,Received Jitter,Received packet loss,Round trip time', user, subaccountId, groupBy);
     }
 
     /**
@@ -30,16 +30,17 @@ export class SpotlightChartsService {
      * @param user DID of the user
      * @param subaccountId Subaccount ID
      */
-    public getCustomerNetworkTrendsData(startDate: Moment, endDate: Moment, region:  { country: string, state: string, city: string }, user: string, subaccountId: string) {
-        return this.getNetworkQualityData(startDate, endDate, region, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', user, subaccountId);
+    public getCustomerNetworkTrendsData(startDate: Moment, endDate: Moment, region:  { country: string, state: string, city: string }, user: string, subaccountId: string, groupBy: string) {
+        return this.getNetworkQualityData(startDate, endDate, region, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', user, subaccountId,groupBy);
     }
 
-    private getNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, metric: string, user: string, subaccountId: string): Observable<any> {
+    private getNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, metric: string, user: string, subaccountId: string, groupBy: string): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
         params = params.set('metric', metric);
         params = params.set('subaccountId', subaccountId);
+        params = params.set('groupBy',groupBy);
         if (user) params = params.set('user', user);
         if (region.country) params = params.set('country',region.country);
         if (region.state) params = params.set('state',region.state);
@@ -75,15 +76,39 @@ export class SpotlightChartsService {
      * @param startDate Start date in local time
      * @param endDate End date in local time
      * @param subaccountId Subaccount ID
+     * @param reportType
+     * @param region
      */
-    public getWeeklyCallingReliability(startDate: Moment, endDate: Moment, subaccountId: string): Observable<any> {
+    public getWeeklyComboBarChart(startDate: Moment, endDate: Moment, subaccountId: string, reportType: string, region: { country: string, state: string, city: string }): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
-        params = params.set('reportType', 'CallingReliability');
+        params = params.set('reportType', reportType);
         params = params.set('subaccountId', subaccountId);
+        if (region.country) params = params.set('country', region.country);
+        if (region.state) params = params.set('state', region.state);
+        if (region.city) params = params.set('city', region.city);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'collectionChart', { headers, params });
+    }
+
+    /**
+     *
+     * @param startDate Start date in local time
+     * @param endDate End date in local time
+     * @param subaccountId Subaccount ID
+     * @param region
+     */
+    public getWeeklyCallsStatusHeatMap(startDate: Moment, endDate: Moment, subaccountId: string, region: { country: string, state: string, city: string }){
+        let params = new HttpParams();
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('subaccountId', subaccountId);
+        if (region.country) params = params.set('country', region.country);
+        if (region.state) params = params.set('state', region.state);
+        if (region.city) params = params.set('city', region.city);
+        const headers = this.getHeaders();
+        return this.httpClient.get(this.API_URL + 'callsStatusHeatMap', { headers, params });
     }
 
     /**
@@ -94,6 +119,17 @@ export class SpotlightChartsService {
      */
     public getDailyCallsStatusSummary(date: Moment, region: { country: string, state: string, city: string }, subaccountId: string): Observable<any> {
        return this.getCallsStatusSummary(date, date, region, subaccountId);
+    }
+
+    /**
+     *
+     * @param startDate date in local time
+     * @param endDate date in local time
+     * @param region Region
+     * @param subaccountId Subaccount ID
+     */
+    public getWeeklyCallsStatusSummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string): Observable<any> {
+        return this.getCallsStatusSummary(startDate, endDate, region, subaccountId);
     }
 
     private getCallsStatusSummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string) {
@@ -114,8 +150,9 @@ export class SpotlightChartsService {
      * @param endDate End date in local time
      * @param region Region
      * @param subaccountId Subaccount ID
+     * @param weekly
      */
-    public getVoiceQualityChart(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string) {
+    public getVoiceQualityChart(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string, weekly = false) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
@@ -123,6 +160,7 @@ export class SpotlightChartsService {
         if (region.country) params = params.set('country', region.country);
         if (region.state) params = params.set('state', region.state);
         if (region.city) params = params.set('city', region.city);
+        if (weekly) params = params.set('reportPeriod', 'weekly');
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'voiceQualityChart', { headers, params });
     }
