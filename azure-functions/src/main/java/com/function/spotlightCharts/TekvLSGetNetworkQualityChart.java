@@ -29,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.

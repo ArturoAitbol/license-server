@@ -63,7 +63,6 @@ public class TekvLSDeleteSubaccountAdminEmail {
             context.getLogger().info("Execute SQL statement: " + subaccountIdStmt);
             ResultSet subaccountIdRs = subaccountIdStmt.executeQuery();
             if (subaccountIdRs.next()) {
-                String subaccountId = subaccountIdRs.getString("subaccount_id");
                 context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
 
                 if (FeatureToggleService.isFeatureActiveByName("ad-customer-user-creation")) {

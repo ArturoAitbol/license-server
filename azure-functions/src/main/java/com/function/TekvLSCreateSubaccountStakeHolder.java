@@ -14,7 +14,6 @@ import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.clients.EmailClient;
 import com.function.util.Constants;
-import com.function.util.FeatureToggleService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.function.auth.Resource;

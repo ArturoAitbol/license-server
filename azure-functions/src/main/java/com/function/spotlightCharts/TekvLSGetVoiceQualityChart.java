@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.function.auth.RoleAuthHandler.*;
-import static com.function.auth.Roles.*;
 
 /**
  * Azure Functions with HTTP Trigger.
