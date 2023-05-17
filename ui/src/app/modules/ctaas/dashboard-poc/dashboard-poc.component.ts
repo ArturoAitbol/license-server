@@ -5,7 +5,8 @@ import {
   defaultVqChartOptions,
   defaultWeeklyFeatureFunctionalityChartOptions,
   defaultWeeklyCallingReliabilityChartOptions,
-  defaultWeeklyCallsStatusChartOptions
+  defaultWeeklyCallsStatusChartOptions,
+  defaultWeeklyVQChartOptions
 } from "./initial-chart-config";
 import { SubAccountService } from "../../../services/sub-account.service";
 import { SpotlightChartsService } from "../../../services/spotlight-charts.service";
@@ -42,6 +43,10 @@ export class DashboardPocComponent implements OnInit{
   heatMapCallsSummary = { total: 0 , failed: 0 };
   selectedStatus = 'failed';
 
+  // Weekly VQ variables
+  weeklyVQ = {timePeriod: '', numberCalls: 0, numberStreams: 0};
+  weeklyVQChartOptions: Partial<ChartOptions>;
+
   // Daily Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
   calls = { total: 0, failed: 0 };
@@ -67,7 +72,7 @@ export class DashboardPocComponent implements OnInit{
   //Weekly filters variables
   weeklyFilters = this.fb.group({
     startDate: [moment().utc().startOf('week')],
-    endDate: [moment().utc().endOf('week')],
+    endDate: [moment().utc().endOf('day')],
     region: [""]
   });
 
@@ -104,6 +109,7 @@ export class DashboardPocComponent implements OnInit{
     this.weeklyCallingReliabilityChartOptions = defaultWeeklyCallingReliabilityChartOptions;
     this.failedCallsChartOptions = defaultFailedCallsChartOptions;
     this.weeklyCallsStatusChartOptions = defaultWeeklyCallsStatusChartOptions;
+    this.weeklyVQChartOptions = defaultWeeklyVQChartOptions;
   }
 
   ngOnInit() {
@@ -151,6 +157,7 @@ export class DashboardPocComponent implements OnInit{
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyCallsStatusSummary(selectedStartDate, selectedEndDate, selectedRegion, subaccountId));
+      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedStartDate, selectedEndDate, selectedRegion, subaccountId, true));
     }
     forkJoin(obs).subscribe((res: any) => {
       if (this.selectedPeriod == "daily")
@@ -203,7 +210,7 @@ export class DashboardPocComponent implements OnInit{
     // Daily Voice Quality
     const voiceQualityRes: any = res[1];
     this.vq.calls = voiceQualityRes.summary.calls;
-    this.vq.streams = voiceQualityRes.summary.calls_stream;
+    this.vq.streams = voiceQualityRes.summary.streams;
     this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
     this.vqChartOptions.xAxis = { categories: voiceQualityRes.categories };
     this.vq.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
@@ -283,6 +290,27 @@ export class DashboardPocComponent implements OnInit{
     const timePeriod = this.selectedRange.start.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedRange.end.format("MM-DD-YYYY 11:59:59") + " PM UTC";
     this.weeklyFeatureFunctionality.timePeriod = timePeriod;
     this.weeklyCallingReliability.timePeriod = timePeriod;
+
+    // Weekly VQ chart
+    console.log(res[4]);
+    const vqData = res[4];
+    this.weeklyVQ.timePeriod = timePeriod;
+    this.weeklyVQ.numberStreams = vqData.summary.streams;
+    this.weeklyVQ.numberCalls = vqData.summary.calls;
+    this.weeklyVQChartOptions.xAxis.categories = vqData.categories;
+    this.weeklyVQChartOptions.series = [ {
+      name: 'Excellent',
+      data: vqData.percentages.excellent,
+    }, {
+      name: 'Good',
+      data: vqData.percentages.good,
+    }, {
+      name: 'Fair',
+      data: vqData.percentages.fair,
+    }, {
+      name: 'Bad',
+      data: vqData.percentages.bad,
+    } ];
 
     const region = this.weeklyFilters.get('region').value;
     if(region !== "")

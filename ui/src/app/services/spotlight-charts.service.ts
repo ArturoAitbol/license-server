@@ -150,8 +150,9 @@ export class SpotlightChartsService {
      * @param endDate End date in local time
      * @param region Region
      * @param subaccountId Subaccount ID
+     * @param weekly
      */
-    public getVoiceQualityChart(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string) {
+    public getVoiceQualityChart(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string, weekly = false) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
@@ -159,6 +160,7 @@ export class SpotlightChartsService {
         if (region.country) params = params.set('country', region.country);
         if (region.state) params = params.set('state', region.state);
         if (region.city) params = params.set('city', region.city);
+        if (weekly) params = params.set('reportPeriod', 'weekly');
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'voiceQualityChart', { headers, params });
     }
