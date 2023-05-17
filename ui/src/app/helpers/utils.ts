@@ -117,7 +117,6 @@ export class Utility {
      * @return: any[]
      */
     public static getNavbarOptions(roles: string[], options: ISidebar[], featureToggleService: FeatureToggleService, subaccountId: string): any[] {
-        console.log(options)
         //new Set([]) is used to avoid repeated options when a user has multiple roles
         const set = new Set([]);
         options.forEach((item) => {
