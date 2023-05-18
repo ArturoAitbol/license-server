@@ -189,8 +189,8 @@ export class SpotlightDashboardComponent implements OnInit{
 
     this.callingReliability.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
     
-    this.calls.total = this.calls.total + this.callingReliability.total;
-    this.calls.failed = this.calls.failed + dailyCallingReliabiltyRes.callsByStatus.FAILED;
+    this.calls.total += this.callingReliability.total;
+    this.calls.failed += dailyCallingReliabiltyRes.callsByStatus.FAILED;
 
     // Daily Feature Functionality
     const dailyFeatureFunctionalityRes: any = res[0].featureFunctionality;
@@ -204,8 +204,8 @@ export class SpotlightDashboardComponent implements OnInit{
 
     this.featureFunctionality.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
     
-    this.calls.total = this.calls.total + this.featureFunctionality.total;
-    this.calls.failed = this.calls.failed + dailyFeatureFunctionalityRes.callsByStatus.FAILED;
+    this.calls.total += this.featureFunctionality.total;
+    this.calls.failed += dailyFeatureFunctionalityRes.callsByStatus.FAILED;
 
     // Daily Voice Quality
     const voiceQualityRes: any = res[1];
@@ -214,7 +214,6 @@ export class SpotlightDashboardComponent implements OnInit{
     this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
     this.vqChartOptions.xAxis = { categories: voiceQualityRes.categories };
     this.vq.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
-    this.calls.total = this.calls.total + this.vq.calls;
 
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [(this.calls.failed / this.calls.total * 100 || 0)];
