@@ -170,23 +170,6 @@ public class TekvLSModifyCtaasSetupById {
 
             JSONObject json = new JSONObject();
 
-            // Build JSONObject from customer details result set
-            JSONObject customerDetailsJsonObject = null;
-            if (customerAndSubAccountDetails != null) {
-                context.getLogger().info("info: found customer details by subaccount: " + jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib));
-                customerDetailsJsonObject = new JSONObject();
-                ResultSet customerAndSubQueryResult = customerAndSubAccountDetails.executeQuery();
-                ResultSetMetaData metaData = customerAndSubQueryResult.getMetaData();
-                int columnCount = metaData.getColumnCount();
-
-                while (customerAndSubQueryResult.next()) {
-                    for (int i = 1; i <= columnCount; i++) {
-                        String columnName = metaData.getColumnLabel(i);
-                        Object columnValue = customerAndSubQueryResult.getObject(i);
-                        customerDetailsJsonObject.put(columnName, columnValue);
-                    }
-                }
-            }
             if (licenseVerificationStatement != null) {
                 ResultSet licenseQueryResult = licenseVerificationStatement.executeQuery();
                 context.getLogger().info(licenseQueryResult.toString());
@@ -205,13 +188,33 @@ public class TekvLSModifyCtaasSetupById {
             context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
             statement.executeUpdate();
             context.getLogger().info("Ctaas_setup updated successfully.");
+            // check if TAP URL attribute exists
+            if (jobj.has(OPTIONAL_PARAMS.TAP_URL.jsonAttrib)) {
+                final String TAP_URL = jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib);
+                // Build JSONObject from customer details result set
+                JSONObject customerDetailsJsonObject = null;
+                if (customerAndSubAccountDetails != null) {
+                    context.getLogger().info("info: found customer details by subaccount: " + jobj.getString(OPTIONAL_PARAMS.SUBACCOUNT_ID.jsonAttrib));
+                    customerDetailsJsonObject = new JSONObject();
+                    ResultSet customerAndSubQueryResult = customerAndSubAccountDetails.executeQuery();
+                    ResultSetMetaData metaData = customerAndSubQueryResult.getMetaData();
+                    int columnCount = metaData.getColumnCount();
 
-            final String TAP_URL = jobj.getString(OPTIONAL_PARAMS.TAP_URL.jsonAttrib);
-            try {
-                // invoke Northbound API on TAP, to save Customer details.
-                TAPClient.saveCustomerDetailsOnTap(TAP_URL, customerDetailsJsonObject, context);
-            } catch (Exception e) {
-                context.getLogger().severe(e.getMessage());
+                    while (customerAndSubQueryResult.next()) {
+                        for (int i = 1; i <= columnCount; i++) {
+                            String columnName = metaData.getColumnLabel(i);
+                            Object columnValue = customerAndSubQueryResult.getObject(i);
+                            customerDetailsJsonObject.put(columnName, columnValue);
+                        }
+                    }
+                }
+                try {
+                    if (TAP_URL != null || TAP_URL.isEmpty())
+                        // invoke Northbound API on TAP, to save Customer details.
+                        TAPClient.saveCustomerDetailsOnTap(TAP_URL, customerDetailsJsonObject, context);
+                } catch (Exception e) {
+                    context.getLogger().severe(e.getMessage());
+                }
             }
             verifyMaintenance(jobj, userId, connection, context);
             if (isSetupReady) {
