@@ -494,21 +494,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
     private canRequestCallBack():boolean {
-        if (this.userProfileData.userProfile.name && this.userProfileData.userProfile.latestCallbackRequestDate === undefined)
+        if (this.userProfileData.userProfile.name && this.userProfileData.userProfile.latestCallbackRequest === undefined)
             return true;
-        const timeBetweenRequests = this.getTimeBetweenRequests(this.userProfileData);
-        return timeBetweenRequests > Constants.REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS;
-    }
-
-    private getTimeBetweenRequests(userProfileData){
-        return new Date().getTime() - new Date(userProfileData.userProfile.latestCallbackRequestDate).getTime();
+        return this.userProfileData.userProfile.latestCallbackRequest > Constants.REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS;
     }
 
     private preventCallbackRequest() {
         this.dialog.open(CallbackTimerComponent, {
             width: '500px',
             disableClose: false,
-            data: this.getTimeBetweenRequests(this.userProfileData) / 1000
+            data: this.userProfileData.userProfile.latestCallbackRequest
         });
     }
 
