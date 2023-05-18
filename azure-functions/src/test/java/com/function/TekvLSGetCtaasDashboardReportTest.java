@@ -176,7 +176,7 @@ class TekvLSGetCtaasDashboardReportTest extends TekvLSTest {
         JSONObject jsonBody = new JSONObject(body);
         assertTrue(jsonBody.has("error"));
 
-        String expectedMessage = "Report Type provided is invalid.";
+        String expectedMessage = "Error retrieving  detailed report from Automation Platform";
         assertEquals(expectedMessage, jsonBody.getString("error"));
     }
 
