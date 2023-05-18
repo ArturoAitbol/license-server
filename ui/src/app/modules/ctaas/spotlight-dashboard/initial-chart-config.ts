@@ -416,12 +416,14 @@ const defaultVqChartOptions: Partial<ChartOptions> = {
             horizontal: true,
             barHeight: '70%',
             columnWidth: '70%',
+            distributed: true,
         }
     },
     series: [ {
-        data: [ 85, 5, 5, 5 ]
+        data: []
     },
     ],
+    colors: [ "#82c86a", "#5fa5f7", "#fdbb57", "#D43A39" ],
     dataLabels: {
         enabled: true,
         formatter(val: string | number | number[], opts?: any): string | number {
@@ -430,17 +432,26 @@ const defaultVqChartOptions: Partial<ChartOptions> = {
     },
     xAxis: {
         categories: ['Excellent [4-5]', 'Good [3-4]', 'Fair [2-3]', 'Poor [1-2]'],
+        title: {
+            text: 'Percentage of call streams',
+        },
     },
     yAxis: {
         min: 0,
         max: 100,
         labels: {
             style: {
-                fontSize: '18px',
+                fontSize: '16px',
                 fontFamily: 'Helvetica, Arial, sans-serif',
                 fontWeight: 400,
             },
+        },
+        title: {
+            text: 'Quality'
         }
+    },
+    legend: {
+        show: false
     }
 };
 
