@@ -179,7 +179,7 @@ public class TekvLSGetVoiceQualityChart {
 				}
 				JSONArray categories = new JSONArray("['Excellent [4-5]','Good [3-4)','Fair [2-3)','Poor [0-2)']");
 				JSONObject summary = new JSONObject();
-				summary.put("calls_stream", streams);
+				summary.put("streams", streams);
 				summary.put("calls", totalCalls);
 
 				json.put("summary",summary);
