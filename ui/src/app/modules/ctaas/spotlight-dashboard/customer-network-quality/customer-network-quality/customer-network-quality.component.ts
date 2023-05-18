@@ -17,15 +17,16 @@ import { map, startWith } from 'rxjs/operators';
 })
 export class CustomerNetworkQualityComponent implements OnInit {
 
-  @Input() date: Moment;
+  @Input() startDate: Moment;
+  @Input() endDate: Moment;
   @Input() users: string[] = [];
   @Input() region;
+  @Input() groupBy: string = 'hour';
+  @Input() isLoading: boolean;
   @Output() chartStatus = new EventEmitter<boolean>();
 
   // Filters variables
   filters = this.fb.group({
-    date: [moment()],
-    region: [""],
     user: [""]
   });
 
@@ -44,9 +45,6 @@ export class CustomerNetworkQualityComponent implements OnInit {
   selectedGraph = 'jitter';
   selectedPeriod = 'daily';
 
-  selectedDate: Moment = null;
-
-  isLoading = true;
   privateIsLoading = true;
 
   constructor(private spotlightChartsService: SpotlightChartsService, private subaccountService: SubAccountService, private fb: FormBuilder) {
@@ -86,14 +84,19 @@ export class CustomerNetworkQualityComponent implements OnInit {
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
     const selectedUser = this.filters.get('user').value;
-    this.selectedDate = this.filters.get('date').value.clone().utc();
 
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.date, this.date, this.region, selectedUser, subaccountId));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(this.date, this.date, this.region, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.region, selectedUser, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(this.startDate, this.endDate, this.region, selectedUser, subaccountId));
     forkJoin(obs).subscribe((res: any) => {
       // Customer Network Quality
       this.customerNetworkQualityData = res[0];
-      this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
+      if(this.groupBy==='hour')
+        this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
+      else{
+        this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories;
+        this.polqaChartOptions.xAxis.title.text = 'Date';
+      }
+        
       this.polqaChartOptions.series = [
         {
           name: 'Received Jitter',
@@ -126,9 +129,16 @@ export class CustomerNetworkQualityComponent implements OnInit {
 
   navigateToPolqaDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
-    const [ startTime, endTime ] = category.split('-');
-    const startDate = this.selectedDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
-    const endDate = this.selectedDate.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
+    let startDate: Moment, endDate: Moment;
+    if(this.groupBy==='hour'){
+      const [ startTime, endTime ] = category.split('-');
+      startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
+      endDate = this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
+    }else{
+      startDate = moment(category).utc().hour(0);
+      endDate = moment(category).utc().hour(23).minutes(59).seconds(59);
+    }
+   
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
     const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;

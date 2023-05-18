@@ -94,7 +94,6 @@ public class TekvLSDeleteCustomerById
 						String adminEmail = resultSet.getString("admin_email");
 						String subaccountAdminCustomerId =  resultSet.getString("subaccount_customer_id");
 						String subaccountAdminEmail = resultSet.getString("subaccount_admin_email");
-						String subaccountId = resultSet.getString("subaccount_id");
 
 						// if adminCustomerId IS selected id AND (email IS NOT used as subaccount admin)
 						if(id.equals(adminCustomerId) && (subaccountAdminCustomerId == null)) {
