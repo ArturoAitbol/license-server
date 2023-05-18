@@ -75,9 +75,11 @@ public class TAPClient {
      * @throws Exception
      */
     static public JSONObject getDetailedReport(final String tapURL, String token, String type, String startDate,
-                                               String endDate, ExecutionContext context) throws Exception {
-        final String url = String.format("%s/%s/%s/report?startDate=%s&endDate=%s", tapURL,
+                                               String endDate, String status, ExecutionContext context) throws Exception {
+        String url = String.format("%s/%s/%s/report?startDate=%s&endDate=%s", tapURL,
                 Constants.SPOTLIGHT_API_PATH, type, startDate, endDate);
+        if (!type.isEmpty()) url = String.format("%s&type=%s", url, type);
+        if (!status.isEmpty()) url = String.format("%s&status=%s", url, status);
         context.getLogger().info("TAP detailed report endpoint: " + url);
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);

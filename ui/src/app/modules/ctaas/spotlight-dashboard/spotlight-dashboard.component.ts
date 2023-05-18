@@ -324,18 +324,19 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallsStatusChartOptions.plotOptions.heatmap.colorScale.ranges[0].to = maxValue;
   }
 
-  navigateToDetailedTable(metric: string) {
+  navigateToDetailedTable(reportType?: string) {
     const startDate = this.selectedDate.toDate();
     startDate.setHours(0, 0, 0, 0);
     const endDate = this.selectedDate.toDate();
     endDate.setHours(23, 59, 59, 999);
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&type=${metric}&start=${startTime}&end=${endTime}`;
+    const reportFilter = reportType? "type=" + reportType : "status=FAILED";
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}`;
     window.open(url);
   }
 
-  regionDisplayFn(region) {
+  regionDisplayFn(region: any) {
     return region.displayName;
   }
 
