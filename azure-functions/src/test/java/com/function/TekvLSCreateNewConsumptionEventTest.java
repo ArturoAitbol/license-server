@@ -452,4 +452,101 @@ public class TekvLSCreateNewConsumptionEventTest extends TekvLSTest {
         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
     }
+
+     @Test
+     public void invalidTypeSQLTest() {
+         // Given
+         String dutId = "6d05cf7b-fc29-4bd6-8cb0-0b3222d97925";
+         String bodyRequest = "{ " +
+                 "    'subaccountId': '"+subaccountId+"'," +
+                 "    'projectId': '"+projectId+"'," +
+                 "    'deviceId': '"+ deviceId +"'," +
+                 "    'dutId': '"+ dutId+ "'," +
+                 "    'callingPlatformId': '"+ callingPlatformId+"'," +
+                 "    'consumptionDate': '"+consumptionDate+"'," +
+                 "    'type': '"+type+"'," +
+                 "    'usageDays': "+usageDays+" }";
+         doReturn(Optional.of(bodyRequest)).when(request).getBody();
+         this.queryParams.remove("dutId");
+         // When
+         HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request, this.context);
+         this.context.getLogger().info(response.getBody().toString());
+         // Then
+         HttpStatusType actualStatus = response.getStatus();
+         HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+         assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+     }
+
+    @Test
+    public void invalidValueDutTypeSQLTest() {
+        // Given
+        String dutId = "4ae11b75-a3c9-463e-82e4-b0953dc7a72b";
+        String callingPlatformId = "7564aab0-5331-4ab5-85f7-e37acbdfd90d";
+        String bodyRequest = "{ " +
+                "    'subaccountId': '"+subaccountId+"'," +
+                "    'projectId': '"+projectId+"'," +
+                "    'deviceId': '"+ deviceId +"'," +
+                "    'dutId': '"+ dutId + "'," +
+                "    'callingPlatformId': '"+ callingPlatformId +"'," +
+                "    'consumptionDate': '"+consumptionDate+"'," +
+                "    'type': '"+type+"'," +
+                "    'usageDays': "+usageDays+" }";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        this.queryParams.remove("dutId");
+        // When
+        HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Test
+    public void createNewConsumptionWithBadUsageDaysEventTest() {
+        //Given
+        String bodyRequest = "{ " +
+                "    'subaccountId': '"+subaccountId+"'," +
+                "    'projectId': '"+projectId+"'," +
+                "    'deviceId': '"+ deviceId +"'," +
+                "    'dutId': '"+ dutId +"'," +
+                "    'callingPlatformId': '"+ callingPlatformId +"'," +
+                "    'consumptionDate': '"+consumptionDate+"'," +
+                "    'type': '"+type+"'," +
+                "    'usageDays': ['any'] }";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        // When
+        HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
+    @Test
+    public void invalidDutAndPlatformCombination() {
+        //Given
+        String dutId = "d28cf7d0-d5a8-4f8f-9002-ea40e8d2964a";
+        String callingPlatformId = "1ba09c6f-9a2a-4181-ac1e-b7217763df96";
+        String bodyRequest = "{ " +
+                "    'subaccountId': '"+subaccountId+"'," +
+                "    'projectId': '"+projectId+"'," +
+                "    'deviceId': '"+ deviceId +"'," +
+                "    'dutId': '"+ dutId +"'," +
+                "    'callingPlatformId': '"+ callingPlatformId +"'," +
+                "    'consumptionDate': '"+consumptionDate+"'," +
+                "    'type': '"+type+"'," +
+                "    'any': 'any'," +
+                "    'usageDays': [0] }";
+        doReturn(Optional.of(bodyRequest)).when(request).getBody();
+        // When
+        HttpResponseMessage response = tekvLSCreateNewTekvLSCreateNewConsumptionEvent.run(this.request, this.context);
+        this.context.getLogger().info(response.getBody().toString());
+        // Then
+        HttpStatusType actualStatus = response.getStatus();
+        HttpStatus expected = HttpStatus.INTERNAL_SERVER_ERROR;
+        assertEquals(expected, actualStatus, "HTTP status doesn't match with: ".concat(expected.toString()));
+    }
+
 }

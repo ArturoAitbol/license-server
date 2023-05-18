@@ -105,24 +105,26 @@ describe('table options', () => {
     });
 
     it('should call getNavbarOptions', () => {
+        const spy = jasmine.createSpyObj("FeatureToggleService",["isFeatureEnabled"]);
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions(['tekvizion.FullAdmin'], [{
             "name": "Dashboard",
             "path": "report-dashboards",
             "active": true,
             "materialIcon": "dashboard"
-        }]);
+        }],spy, "82c0e4f2-171e-4073-98f8-6c7bb23c5613");
         expect(Utility.getNavbarOptions).toHaveBeenCalled();
     });
 
     it('should call getNavbarOptions with a null role', () => {
+        const spy = jasmine.createSpyObj("FeatureToggleService",["isFeatureEnabled"]);
         spyOn(Utility, 'getNavbarOptions').and.callThrough();
         Utility.getNavbarOptions([null], [{
             "name": "Dashboard",
             "path": "report-dashboards",
             "active": true,
             "materialIcon": "dashboard"
-        }]);
+        }],spy, "82c0e4f2-171e-4073-98f8-6c7bb23c5613");
         expect(Utility.getNavbarOptions).toHaveBeenCalled();
     });
 });

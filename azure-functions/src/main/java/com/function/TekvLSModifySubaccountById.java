@@ -5,7 +5,6 @@ import com.function.clients.EmailClient;
 import com.function.db.QueryBuilder;
 import com.function.db.UpdateQueryBuilder;
 import com.function.util.Constants;
-import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -151,9 +150,7 @@ public class TekvLSModifySubaccountById
 					rs.next();
 					final String adminEmail = rs.getString("subaccount_admin_email");
 
-					if(FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", id)) {
-						EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
-					}
+					EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
 				}
 			}
 

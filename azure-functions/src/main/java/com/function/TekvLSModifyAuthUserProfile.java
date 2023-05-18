@@ -16,7 +16,6 @@ import com.function.clients.GraphAPIClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.db.UpdateQueryBuilder;
-import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -153,10 +152,6 @@ public class TekvLSModifyAuthUserProfile {
 	}
 	
 	private void updateADUser(String email, String subaccountId, JSONObject jobj, ExecutionContext context) throws Exception {
-		if(!FeatureToggleService.isFeatureActiveBySubaccountId("ad-subaccount-user-creation", subaccountId)) {
-			 context.getLogger().info("ad-subaccount-user-creation toggle is not active. Nothing to do at Azure AD");
-			 return;
-		}
 		try {
 			context.getLogger().info("Updating user profile at Azure AD : "+email);
 			GraphAPIClient.updateUserProfile(email, getValue(jobj, "name"), getValue(jobj, "jobTitle"),getValue(jobj, "companyName"), getValue(jobj, "phoneNumber"), context);

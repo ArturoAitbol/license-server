@@ -14,6 +14,8 @@ import ui.core.DriverManager;
 import ui.pages.*;
 import ui.pages.customer.*;
 import ui.pages.spotlight.Dashboard;
+import ui.pages.subaccounts.SubaccountForm;
+import ui.pages.subaccounts.SubaccountRow;
 import ui.utils.Environment;
 
 import java.util.Map;
@@ -23,13 +25,15 @@ public class CustomerSteps {
     private CustomerForm customerForm;
     private CustomerRow customerRow;
     private ActionMenu actionMenu;
-
-    private Dashboard customerDashboard;
     private String actualMessage = "none";
     private String customerName, type, subaccount;
     private AdminstratorEmails adminEmails;
     Environment environment = ConfigFactory.create(Environment.class);
     private String timeStamp = DriverManager.getInstance().getTimeStamp();
+    private String customerAdminEmail, subAdminEmail, adminEmail="";
+    private SubaccountForm subaccountForm;
+    private SubaccountRow subaccountRow;
+
 
     public CustomerSteps(Customers customers) {
         this.customers = customers;
@@ -45,12 +49,12 @@ public class CustomerSteps {
         Map<String, String> customer = customerTable.asMap(String.class, String.class);
         String customerName = customer.get("name");
         String type = customer.getOrDefault("type", "MSP");
-        String adminEmail = customer.getOrDefault("adminEmail", "");
+        this.customerAdminEmail = customer.getOrDefault("adminEmail", "");
         String subaccount = customer.getOrDefault("subaccount", "Default");
-        String subAdminEmail = customer.getOrDefault("subAdminEmail", "");
+        this.subAdminEmail = customer.getOrDefault("subAdminEmail", "");
         String spotlightPermission = customer.getOrDefault("spotlight", "no").toLowerCase();
         String testCustomer = customer.getOrDefault("testCustomer", "yes").toLowerCase();
-        this.customers = customerForm.createCustomer(customerName, type, adminEmail, subaccount, subAdminEmail,
+        this.customers = customerForm.createCustomer(customerName, type, customerAdminEmail, subaccount, subAdminEmail,
                 spotlightPermission, testCustomer);
         this.actualMessage = this.customers.getMessage();
         System.out.println("Message: " + this.actualMessage);
@@ -83,6 +87,24 @@ public class CustomerSteps {
                 actualCustomerName);
     }
 
+    @And("I verify {string} admin emails")
+    public void iVerifyAdminEmails(String adminType) {
+        String adminEmail = "";
+        this.actionMenu = this.customerRow.openActionMenu();
+        if(adminType.equals("customer")){
+            this.adminEmails = this.actionMenu.goToCustomerAdmins();
+            adminEmail = this.customerAdminEmail;
+        }
+        if(adminType.equals("subaccount")){
+            this.adminEmails = this.actionMenu.goToSubaccountAdmins();
+            adminEmail = this.subAdminEmail;
+        }
+        if (!this.adminEmail.isEmpty())     //For add customer/subAccount admin email
+            adminEmail = this.adminEmail;
+        if (!DriverManager.getInstance().getActiveDirectoryStatus() && this.adminEmail.isEmpty())
+            adminEmail = DriverManager.getInstance().addTimeStampToEmail(adminEmail);
+        this.adminEmails.verifyAdmin(adminEmail);
+    }
     @When("I delete the customer {string}")
     public void iDeleteTheCustomer(String customerName) {
         this.customerRow = this.customers.getCustomer(customerName);
@@ -90,13 +112,11 @@ public class CustomerSteps {
         this.actualMessage = this.actionMenu.delete("customer");
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
-
     @Then("I should see the message {string}")
     public void iShouldSeeTheMessage(String message) {
         this.actualMessage = DriverManager.getInstance().getMessage();
         assertEquals("This message was not displayed: ".concat(message), message, this.actualMessage);
     }
-
     @When("I edit the customer {string} with the following data")
     public void iEditTheCustomerWithTheFollowingData(String customerName, DataTable customerTable) {
         Map<String, String> customer = customerTable.asMap(String.class, String.class);
@@ -110,7 +130,6 @@ public class CustomerSteps {
         this.actualMessage = customerForm.editCustomer(this.customerName, this.type, this.subaccount);
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
-
     @Then("I should see the modified data in Customers table")
     public void iShouldSeeTheModifiedDataInCustomersTable() {
         String expectedCustomer = this.customerName + this.timeStamp;
@@ -125,17 +144,18 @@ public class CustomerSteps {
                 actualSubaccountName);
         assertEquals("Customer isn't this type: ".concat(this.type), this.type, actualType);
     }
-
     @And("I open the Customer Administrator Emails of {string}")
     public void iOpenTheCustomerAdministratorEmailsOf(String customerName) {
         this.customerRow = this.customers.getCustomer(customerName);
         this.actionMenu = this.customerRow.openActionMenu();
         this.adminEmails = this.actionMenu.goToCustomerAdmins();
     }
-
     @When("I add an administrator with email {string}")
     public void iAddAnAdministratorWithEmail(String adminEmail) {
-        this.actualMessage = this.adminEmails.addAdministrator(adminEmail);
+        this.adminEmail = adminEmail;
+        if (!DriverManager.getInstance().getActiveDirectoryStatus())
+            this.adminEmail = DriverManager.getInstance().addTimeStampToEmail(adminEmail);
+        this.actualMessage = this.adminEmails.addAdministrator(this.adminEmail);
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
 
@@ -147,7 +167,7 @@ public class CustomerSteps {
 
     @And("I open the Subaccount Administrator Emails of {string}")
     public void iOpenTheSubaccountAdministratorEmailsOf(String customerName) {
-        this.customerRow = this.customers.getCustomer(customerName);
+//        this.customerRow = this.customers.getCustomer(customerName);
         this.actionMenu = this.customerRow.openActionMenu();
         this.adminEmails = this.actionMenu.goToSubaccountAdmins();
     }
@@ -165,6 +185,7 @@ public class CustomerSteps {
         assertEquals(
                 String.format("Subaccount '%s' doesn't belong to the customer '%s'", expectedSubaccount, expectedCustomer),
                 expectedCustomer, actualCustomerName);
+        this.customerRow = this.customers.getSubaccount(customerName, subaccountName);
     }
 
     @Then("I should see the modified data in Subaccounts table")
@@ -181,7 +202,6 @@ public class CustomerSteps {
                 actualSubaccountName);
         assertEquals("Customer isn't this type: ".concat(this.type), this.type, actualType);
     }
-
     @When("I delete the subaccount {string} of the customer {string}")
     public void iDeleteTheSubaccount(String subaccountName, String customerName) {
         this.customerRow = this.customers.getCustomer(customerName);
@@ -189,15 +209,29 @@ public class CustomerSteps {
         this.actualMessage = this.actionMenu.delete("subaccount");
         DriverManager.getInstance().setMessage(this.actualMessage);
     }
-
     @When("I go to dashboard {string} tab")
     public void iGoToTheDashboardSubscriptionsTab(String tabName){
         SideBar sideBar = new SideBar();
         sideBar.clickOnOption(tabName);
     }
-
     @And("I should see the {string} placeholder")
     public void iSeeTheplaceholder(String placeholder){
         assertTrue(this.customers.isPlaceholderPresent(placeholder));
+    }
+    @Given("I open the Add Subaccount form")
+    public void iOpenTheAddSubbacountForm() {
+        this.subaccountForm = this.customers.openSubaccountForm();
+    }
+    @When("I create a subaccount with the following data")
+    public void iCreateASubaccountWithTheFollowingData(DataTable dataTable) {
+        Map<String, String> subaccount = dataTable.asMap(String.class, String.class);
+        String customer = subaccount.get("customer");
+        String subAccountName = subaccount.get("name");
+        this.subAdminEmail = subaccount.get("subAdminEmail");
+/*        if (!DriverManager.getInstance().getActiveDirectoryStatus())
+            this.subAdminEmail = DriverManager.getInstance().addTimeStampToEmail(subAdminEmail);*/
+        this.customers = this.subaccountForm.createSubaccount(customer, subAccountName, this.subAdminEmail);
+        this.actualMessage = this.customers.getMessage();
+        DriverManager.getInstance().setMessage(this.actualMessage);
     }
 }

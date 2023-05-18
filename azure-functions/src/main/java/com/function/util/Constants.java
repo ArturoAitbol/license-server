@@ -9,6 +9,13 @@ public abstract class Constants {
     public static String DEFAULT_CTAAS_DEVICE = "Base SpotLight platform ready";
     public static String DEFAULT_CONSUMPTION_TYPE = "Configuration";
     public static int STAKEHOLDERS_LIMIT_PER_SUBACCOUNT = 11;
+    public static String TEMP_ONPOINT_USERNAME = "administrator@tekvizion.com";
+    public static String TEMP_ONPOINT_PASSWORD = "admin123";
+    public static String SPOTLIGHT_API_PATH = "v1/spotlight";
+    public static String TEMP_ONPOINT_URL = "https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT";
+    public static String MESSAGE_FOR_INVALID_TAP_URL = "Unable to execute the query, invalid tap url";
+    public static String LOG_MESSAGE_FOR_INVALID_TAP_URL = "Invalid TAP URL";
+    public static long REQUEST_CALLBACK_MINUTES_BETWEEN_REQUESTS = 30;
 
     
     // ENUMS

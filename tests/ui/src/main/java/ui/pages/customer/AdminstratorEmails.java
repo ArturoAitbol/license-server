@@ -16,13 +16,15 @@ public class AdminstratorEmails extends AbstractPageObject {
     WebElement emailInput;
     @FindBy(css = "button#submit-button")
     WebElement submitButton;
+    @FindBy(css = "button#cancel-button")
+    WebElement cancelButton;
     By messageSelector = By.cssSelector(".cdk-overlay-container snack-bar-container");
     By spinnerSelector = By.cssSelector("svg[preserveAspectRatio]");
     Environment environment = ConfigFactory.create(Environment.class);
 
     public String addAdministrator(String adminEmail){
         this.action.click(this.addButton);
-        this.action.sendText(this.emailInput, DriverManager.getInstance().addTimeStampToEmail(adminEmail));
+        this.action.sendText(this.emailInput, adminEmail);
         this.action.click(this.submitButton);
         String text = this.action.getText(this.messageSelector);
         this.action.waitSpinner(this.spinnerSelector);
@@ -35,5 +37,11 @@ public class AdminstratorEmails extends AbstractPageObject {
         Modal confirmModal = new Modal();
         confirmModal.confirmAction();
         return this.action.getText(this.messageSelector);
+    }
+
+    public void verifyAdmin(String adminEmail) {
+        By adminSelector = By.cssSelector(String.format("div[title='%s']", adminEmail));
+        this.action.waitVisibilityElement(adminSelector);
+        this.action.click(cancelButton);
     }
 }

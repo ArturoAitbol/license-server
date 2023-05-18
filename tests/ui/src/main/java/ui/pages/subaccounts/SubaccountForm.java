@@ -22,7 +22,9 @@ public class SubaccountForm extends AbstractPageObject {
         By customerSelector = By.cssSelector(String.format("mat-option[title='%s']", customer + timeStamp));
         this.action.selectOption(this.customerName, customerSelector);
         this.action.sendText(this.subaccountName, subAccountName + timeStamp);
-        this.action.sendText(this.subAdminEmail, DriverManager.getInstance().addTimeStampToEmail(subAdminEmail));
+        if (!DriverManager.getInstance().getActiveDirectoryStatus())
+            subAdminEmail = DriverManager.getInstance().addTimeStampToEmail(subAdminEmail);
+        this.action.sendText(this.subAdminEmail, subAdminEmail);
         this.action.click(this.submitButton);
         return new Customers();
     }

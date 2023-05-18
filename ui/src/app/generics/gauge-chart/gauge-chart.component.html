@@ -1,0 +1,44 @@
+<div class="card text-center mt-2">
+    <div class="card-header">
+        <h1>{{title}}</h1>
+    </div>
+    <div class="card-body container-fluid">
+        <div class="row">
+            <ng-container *ngIf="this.chartOptions.series[0] === 100">
+                <div class="col">
+                    <label class="chart-label">Great! You had no failures</label>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="this.chartOptions.series[0] !== 100">
+                <div class="col">
+                    <label class="chart-label fail">Oops! There were some failures</label>
+                </div>
+            </ng-container>
+        </div>
+        <div class="row">
+            <div class="col">
+                <apx-chart #chart
+                           [series]="chartOptions.series"
+                           [chart]="chartOptions.chart"
+                           [plotOptions]="chartOptions.plotOptions"
+                           [labels]="chartOptions.labels"
+                           [fill]="chartOptions.fill"
+                           [grid]="chartOptions.grid"
+                           [states]="chartOptions.states">
+                </apx-chart>
+            </div>
+        </div>
+        <button class="viewDetail-button" mat-raised-button (click)="viewDetailedTableClicked()">View Detailed Table</button>
+    </div>
+    <div class="card-footer">
+        <div class="footer-text">
+            <mat-icon>timer</mat-icon>
+            <label class="ps-1">Execution time period: {{timePeriod}}</label>
+        </div>
+        <br>
+        <div class="footer-text">        
+            <mat-icon>call</mat-icon>
+            <label class="ps-1">Number of calls: {{numberCalls}} | P2P: {{p2pCalls}} | On-net: {{onNetCalls}} | Off-net: {{offNetCalls}}</label>
+        </div>
+    </div>
+</div>

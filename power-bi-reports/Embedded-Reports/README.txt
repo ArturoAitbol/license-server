@@ -1,15 +1,19 @@
-Embedded Dashboard Report Version - V41
-Release Date - 17-04-2023
-Fixes - 
+Embedded Dashboard Report Version - V45
+Release Date - 02-05-2023 (DD-MM-YYYY)
 
-Changes done:
-Daily and Weekly
-•	 All card blank should be "--"
-•	 View Detail and Overall Summary - Date consistent to mm-hh-yyyy hh:nn:ss
-•	 POLQA detail table to be filtered for only non-blank POLQA Values - Done.
-•	 Header icons to Slicer being shown - removed everywhere
-•	 Start date ascending for Overall Summary
-•	 Title fix for Daily and Weekly
+v45 Daily and Weekly Dashboards
+ What’s new:
+	In the detailed view, Failed Calls will have failure reasons and interrupted calls will have interrupted reasons.
+	In the region filter, only regions with the appropriate failing error type will be displayed.
+	The region filter will be populated from the transaction table.
+	If no further issues, the Region Master table will be removed.
+Changes:
+	Removed Interrupted from the status column.
+Bug Fixes:
+	Weekly Icons are not overlapping any text.
+	No header icons are displayed for any visual.
+	All Calls below/above Threshold metrics now report the count of unique call IDs.
+
 
 Changes need to do be done before publishing to Power BI Service Workspace:
 

@@ -23,7 +23,12 @@ import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detaile
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-consolidated-report/search-consolidated-report.component';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-
+import { SpotlightDashboardComponent } from './spotlight-dashboard/spotlight-dashboard.component';
+import { NgApexchartsModule } from "ng-apexcharts";
+import { NetworkQualityTrendsComponent } from './spotlight-dashboard/network-quality-trends/network-quality-trends.component';
+import { CallbackComponent } from './callback/callback.component';
+import { CustomerNetworkQualityComponent } from './spotlight-dashboard/customer-network-quality/customer-network-quality/customer-network-quality.component';
+import { CallbackTimerComponent } from './callback/callback-timer/callback-timer.component';
 
 
 @NgModule({
@@ -44,7 +49,12 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
     CtaasHistoricalDashboardComponent,
     DetailedReportsCompoment,
     CtaasTestReportsComponent,
-    SearchConsolidatedReportComponent
+    SearchConsolidatedReportComponent,
+    SpotlightDashboardComponent,
+    NetworkQualityTrendsComponent,
+    CallbackComponent,
+    CustomerNetworkQualityComponent,
+    CallbackTimerComponent,
   ],
   imports: [
     CommonModule,
@@ -53,7 +63,8 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
     MaterialModule,
     SharedModule,
     FormsModule,
-    NgxMatTimepickerModule
+    NgxMatTimepickerModule,
+    NgApexchartsModule,
   ],
   entryComponents: [
     OnboardWizardComponent,

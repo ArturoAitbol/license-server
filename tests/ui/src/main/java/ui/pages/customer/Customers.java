@@ -44,8 +44,12 @@ public class Customers extends AbstractPageObject {
         return new CustomerRow(customer);
     }
 
-    public SubaccountRow getSubaccount(String subaccountName) {
-        return new SubaccountRow(subaccountName);
+    public CustomerRow getSubaccount(String customerName, String subaccountName) {
+        String customer = customerName + DriverManager.getInstance().getTimeStamp();
+        String subaccount = subaccountName + DriverManager.getInstance().getTimeStamp();
+        CustomerRow customerRow = new CustomerRow(customer);
+        customerRow.getSubaccountRow(customer, subaccount);
+        return customerRow;
     }
 
     public SubaccountForm openSubaccountForm() {

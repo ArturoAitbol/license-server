@@ -42,6 +42,7 @@ public class TekvLSGetAuthUserProfile {
 			final ExecutionContext context) 
 	{
 		Claims tokenClaims = getTokenClaimsFromHeader(request,context);
+		String authEmail = getEmailFromToken(tokenClaims,context);
 		JSONArray roles = getRolesFromToken(tokenClaims,context);
 		if(roles.isEmpty()){
 			JSONObject json = new JSONObject();
@@ -62,7 +63,6 @@ public class TekvLSGetAuthUserProfile {
 
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder("SELECT * FROM subaccount_admin");
-		String authEmail = getEmailFromToken(tokenClaims,context);
 		queryBuilder.appendEqualsCondition("subaccount_admin_email", authEmail, QueryBuilder.DATA_TYPE.VARCHAR);
 
 		// Connect to the database
@@ -85,6 +85,7 @@ public class TekvLSGetAuthUserProfile {
 				item.put("email", rs.getString("subaccount_admin_email"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
 				item.put("notifications", rs.getString("notifications"));
+				item.put("latestCallbackRequestDate", rs.getString("latest_callback_request_date"));
 			}
 
 			if(!authEmail.isEmpty() && item==null){

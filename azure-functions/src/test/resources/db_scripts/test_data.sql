@@ -198,6 +198,15 @@ COPY public.historical_report (id, subaccount_id, note_id, report_type, start_da
 \.
 
 --
+-- Data for Name: subaccount_admin_device; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.subaccount_admin_device (subaccount_admin_email, device_token) FROM stdin;
+test-customer-subaccount-admin@tekvizionlabs.com	" "
+test-customer-subaccount-admin@tekvizionlabs.com	cKUMnpi7QDeoMplcjK_Xj_:APA91bFdl5ST1y6dwel2ZsLk-tK7OoEx1PbbN7C6kDxUKzY9ZpHtjWszGWUEDOEn4H7zZfd_xw3MM9VFzN6d1ygpi94YxUecRnKRJL4Mu9aopBjUHYb3RpH4Q-jLasqOKe03C-BN8Te_
+\.
+
+--
 -- Data for Name: device; Type: TABLE DATA; Schema: public; Owner: -
 --
 COPY public.device (id, vendor, product, version, type, granularity, tokens_to_consume, start_date, deprecated_date, subaccount_id, support_type) FROM stdin;
@@ -220,12 +229,10 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	Test	Alcatel Lucent OXO	v032/021.001	CPaaS	
 
 COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 34859fba-9987-4a1c-b176-14569b331653	f	pfernandez@tekvizionlabs.com	Subaccount User Creation For License Service	ad-license-service-user-creation
-6826a94e-c4da-46e9-8001-668df24877ec	f	ogonzalez@tekvizionlabs.com	Subaccount User Creation	ad-subaccount-user-creation
 950f47c7-a477-455b-b65b-331ecacc88dd	f	ogonzalez@tekvizionlabs.com	Customer User Creation	ad-customer-user-creation
 74edbbe4-b8c9-4acc-9d18-32d8b1bc71bb	t	vtorrico@tekvizionlabs.com	Portal Callback	callback
 3c9d0d97-7878-4f1f-8ca5-18bf93069691	t	\N	Power Bi feature	powerbiFeature
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
-63f1d301-2d99-448a-9334-5dd10fe98c24	t	\N	Ctaas features	ctaasFeature
 df6f5bc2-2687-49df-8dc0-beff88012235	t	\N	Test FT	testFT
 \.
 
@@ -234,7 +241,6 @@ df6f5bc2-2687-49df-8dc0-beff88012235	t	\N	Test FT	testFT
 --
 
 COPY public.feature_toggle_exception (feature_toggle_id, subaccount_id, status) FROM stdin;
-6826a94e-c4da-46e9-8001-668df24877ec	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	f
 950f47c7-a477-455b-b65b-331ecacc88dd	f5a609c0-8b70-4a10-9dc8-9536bdb5652c	f
 df6f5bc2-2687-49df-8dc0-beff88012235	96234b32-32d3-45a4-af26-4c912c0d6a06	f
 \.
