@@ -1046,6 +1046,9 @@ ALTER TABLE IF EXISTS public.subaccount
 ALTER TABLE IF EXISTS public.subaccount_admin
     ADD COLUMN IF NOT EXISTS notifications character varying;
 
+ALTER TABLE IF EXISTS public.subaccount_admin
+    ADD COLUMN IF NOT EXISTS latest_callback_request_date timestamp without time zone;
+
 ALTER TABLE ONLY public.feature_toggle
     ADD CONSTRAINT feature_toggle_pkey PRIMARY KEY (id);
 
