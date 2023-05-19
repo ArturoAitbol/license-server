@@ -19,11 +19,11 @@ export class EsriServicesService {
     return this.httpClient.get(`${this.ESRI_API_URL}=${zipCodeAndAddress}&maxLocations=1&f=json&token=${this.ESRI_API_KEY}`, {headers});
   }
   
-  getMapSummary(startDate: Moment,endDate: Moment, subaccountId:string){
+  getMapSummary(startDate: string, subaccountId:string){
     let params = new HttpParams();
-    params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+    params = params.set('startDate', startDate);
     params = params.set('subaccountId', subaccountId);
-    params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+    //params = params.set('endDate', endDate);
     // params = params.set('from', from);
     // params = params.set('to', to);
     const headers = this.getHeaders();

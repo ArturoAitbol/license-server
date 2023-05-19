@@ -4,8 +4,14 @@
         <mat-card class="card summary">
             <mat-card-content class="summary-card-content">
                 <table class="table">
-                    <tbody>
-                        <tr>
+                    <tbody class="row-auto">
+                        <div class="row-auto">
+                            <div class="col-5" style="margin-left: 4%;">
+                                <th class="total-calls-data">Total Calls</th>
+                                <td class="total-calls-data">{{data.totalCalls}}</td>
+                            </div>
+                        </div>
+                        <tr class="col-6 originated-column-data">
                             <div class="row-auto">
                                 <div class="col-12">
                                     <th>Originated calls</th>
@@ -23,45 +29,75 @@
                                      <th>Originated calls failed</th>
                                      <td>{{data.callsOriginated.failed}}</td>
                                  </div>
-                                </div>
+                            </div>
                             <div class="row-auto">
                                  <div class="col-12">
                                      <th>Voice Quality</th>
                                      <td>{{data.callsOriginated.polqa}}</td>
-                                 </div>
                                 </div>
-                            <div class="row-auto">
-                                 <div class="col-12">
-                                     <th>Terminated calls</th>     
-                                     <td>{{data.callsTerminated.total}}</td>
-                                 </div>
-                                </div>
-                            <div class="row-auto">
-                                 <div class="col-12">
-                                    <th>Terminated calls passed</th>
-                                    <td>{{data.callsTerminated.passed}}</td>
-                                 </div>
-                                </div>
-                            <div class="row-auto">
-                                 <div class="col-12">
-                                     <th>Terminated calls failed</th>
-    
-                                     <td>{{data.callsTerminated.failed}}</td>
-                                 </div>
-                                </div>
-                            <div class="row-auto">
-                                 <div class="col-12">
-                                     <th>Voice Quality</th>
-    
-                                     <td>{{data.callsTerminated.polqa}}</td>
-                                 </div>
-                                </div>
-                            <div class="row-auto">
-                                 <div class="col-12">
-                                     <th>Total Calls</th>
-                                     <td>{{data.totalCalls}}</td>
-                                 </div>
                             </div>
+                            <div class="row-auto">
+                                <div class="col-12">
+                                    <th>Jitter</th>
+                                    <td>{{data.callsOriginated.receivedJitter}}</td>
+                               </div>
+                           </div>
+                           <div class="row-auto">
+                            <div class="col-12">
+                                    <th>Round trip time (ms)</th>
+                                    <td>{{data.callsOriginated.roundTripTime}}</td>
+                                </div>
+                            </div>
+                            <div class="row-auto">
+                                <div class="col-12">
+                                    <th>Packet Lost</th>
+                                    <td>{{data.callsOriginated.receivedPacketLoss}}</td>
+                               </div>
+                           </div>
+                        </tr>
+                        <tr class="col-6 terminated-column-data">
+                            <div class="row-auto">
+                                <div class="col-12">
+                                    <th>Terminated calls</th>     
+                                    <td>{{data.callsTerminated.total}}</td>
+                               </div>
+                           </div>
+                           <div class="row-auto">
+                                <div class="col-12">
+                                   <th>Terminated calls passed</th>
+                                   <td>{{data.callsTerminated.passed}}</td>
+                               </div>
+                           </div>
+                            <div class="row-auto">
+                                <div class="col-12">
+                                    <th>Terminated calls failed</th>
+                                    <td>{{data.callsTerminated.failed}}</td>
+                               </div>
+                           </div>
+                           <div class="row-auto">
+                                <div class="col-12">
+                                    <th>Voice Quality</th>
+                                    <td>{{data.callsTerminated.polqa}}</td>
+                               </div>
+                           </div>
+                           <div class="row-auto">
+                               <div class="col-12">
+                                   <th>Jitter</th>
+                                   <td>{{data.callsTerminated.receivedJitter}}</td>
+                              </div>
+                          </div>
+                          <div class="row-auto">
+                           <div class="col-12">
+                                   <th>Round trip time (ms)</th>
+                                   <td>{{data.callsTerminated.roundTripTime}}</td>
+                               </div>
+                           </div>
+                           <div class="row-auto">
+                               <div class="col-12">
+                                   <th>Packet Lost</th>
+                                   <td>{{data.callsTerminated.receivedPacketLoss}}</td>
+                              </div>
+                          </div>
                         </tr>
                     </tbody>
                 </table>

@@ -14,7 +14,6 @@ export class NodeDetailComponent implements OnInit {
     public dialogRef: MatDialogRef<NodeDetailComponent>) { }
 
   ngOnInit(): void {
-    console.log(this.data)
   }
 
   onCancel(type?: string): void {

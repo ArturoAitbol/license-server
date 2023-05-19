@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
 import moment from 'moment';
@@ -18,17 +18,18 @@ export class MapPocComponent implements OnInit {
   isRequestCompleted = false;
   tableMaxHeight: number;
   mapData: any = [];
-  fromRegions: any[] = [];
-  toRegions: any[]= [];
   maxDate: any;
   map:any;
   nodesMap:any = {};
   linesMap:any = {};
   nodeIcon:any;
+  startDate:any;
+  endDate:any;
+  mapStartView: any[] = [];
   filterForm = this.fb.group({
-    fromRegionFilterControl: [''],
-    toRegionFilterControl: [''],
-    startDateFilterControl: [''],
+    // fromRegionFilterControl: [''],
+    // toRegionFilterControl: [''],
+    startDateFilterControl: ['',[Validators.required]],
     endDateFilterControl: [''],
 });
   constructor(private esriService: EsriServicesService, 
@@ -66,64 +67,108 @@ export class MapPocComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.map = L.map('map').setView([39.09973,-94.57857], 5); 
-    this.baseMap(this.map);
+    this.startDate = moment.utc().format("YYYY-MM-DDT00:00:00")+'Z';
+    //this.endDate =  moment.utc().format("YYYY-MM-DDTHH:mm:ss")+'Z'
     this.initColumns();
     this.calculateTableHeight();
     this.getMapSummary();
+    this.map = L.map('map'); 
     this.maxDate = moment.utc().format("YYYY-MM-DD[T]HH:mm:ss");
   }
   
   processMapData(){
     for(let i=0 ; i < this.mapData.length; i++){
       try {
-        const fromRegion = this.mapData[i].from.location.y + ", " + this.mapData[i].from.location.x;
-        const toRegion = this.mapData[i].to.location.y + ", " + this.mapData[i].to.location.x;
+        let fromRegion; 
+        let toRegion;
+        if(this.mapData[i].from.location) {
+          fromRegion = this.mapData[i].from.location?.y + ", " + this.mapData[i].from.location?.x;
+          this.mapStartView.push([this.mapData[i].from.location.y,this.mapData[i].from.location.x]);
+        }
+        if(this.mapData[i].to.location) {
+          toRegion = this.mapData[i].to.location?.y + ", " + this.mapData[i].to.location?.x;
+          this.mapStartView.push([this.mapData[i].to.location.y,this.mapData[i].to.location.x]);
+        }
         this.getNodeData(i, fromRegion, toRegion);
-        this.getLineData(i, fromRegion, toRegion);
+        if(fromRegion && toRegion)
+          this.getLineData(i, fromRegion, toRegion);
       } catch(error) {
         console.log(error);
       }
     }
+    this.map.fitBounds(this.mapStartView);
+    this.baseMap(this.map);
   }
 
   private getNodeData(index, fromRegion, toRegion) {
-    if (!this.nodesMap[fromRegion]) {
-      let newRegionObj = {
-        region: this.mapData[index].from,
-        totalCalls: this.mapData[index].totalCalls,
-        callsOriginated: {passed: this.mapData[index].passed,failed: this.mapData[index].failed, total: this.mapData[index].totalCalls, polqa: 0, callsTitle: 'Calls Originated'},
-        callsTerminated: {passed: 0,failed: 0, total: 0, polqa: 0}
+    if(fromRegion) {
+      if (!this.nodesMap[fromRegion]) {
+        let newRegionObj = {
+          region: this.mapData[index].from,
+          totalCalls: this.mapData[index].totalCalls,
+          callsOriginated: {
+            passed: this.mapData[index].passed,
+            failed: this.mapData[index].failed,
+            total: this.mapData[index].totalCalls, 
+            polqa: 0,
+            receivedJitter: 0,
+            roundTripTime: 0,
+            receivedPacketLoss: 0
+          },
+          callsTerminated: {passed: 0,failed: 0, total: 0, polqa: 0, receivedJitter: 0, roundTripTime: 0, receivedPacketLoss: 0}
+        }
+        if (this.mapData[index].polqa)
+          newRegionObj.callsOriginated.polqa = this.mapData[index].polqa;
+        this.nodesMap[fromRegion] = newRegionObj;
+      } else {
+        this.nodesMap[fromRegion].callsOriginated.passed += this.mapData[index].passed;
+        this.nodesMap[fromRegion].callsOriginated.failed += this.mapData[index].failed;
+        this.nodesMap[fromRegion].callsOriginated.total += this.mapData[index].totalCalls;
+        if (this.mapData[index].polqa && this.nodesMap[fromRegion].callsOriginated.polqa > this.mapData[index].polqa)
+          this.nodesMap[fromRegion].callsOriginated.polqa = this.mapData[index].polqa;
+        if(this.nodesMap[fromRegion].callsOriginated.receivedJitter < this.mapData[index].receivedJitter)
+          this.nodesMap[fromRegion].callsOriginated.receivedJitter = this.mapData[index].receivedJitter;
+        if(this.nodesMap[fromRegion].callsOriginated.roundTripTime < this.mapData[index].roundTripTime)
+          this.nodesMap[fromRegion].callsOriginated.roundTripTime = this.mapData[index].roundTripTime;
+        if(this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
+          this.nodesMap[fromRegion].callsOriginated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
+        this.nodesMap[fromRegion].totalCalls += this.mapData[index].totalCalls;
       }
-      if (this.mapData[index].polqa)
-        newRegionObj.callsOriginated.polqa = this.mapData[index].polqa;
-      this.nodesMap[fromRegion] = newRegionObj;
-    } else {
-      this.nodesMap[fromRegion].callsOriginated.passed += this.mapData[index].passed;
-      this.nodesMap[fromRegion].callsOriginated.failed += this.mapData[index].failed;
-      this.nodesMap[fromRegion].callsOriginated.total += this.mapData[index].totalCalls;
-      if (this.mapData[index].polqa && this.nodesMap[fromRegion].callsOriginated.polqa > this.mapData[index].polqa)
-        this.nodesMap[fromRegion].callsOriginated.polqa = this.mapData[index].polqa;
-      this.nodesMap[fromRegion].totalCalls += this.mapData[index].totalCalls;
     }
-    if (!this.nodesMap[toRegion]) {
-      let newRegionObj = {
-        region: this.mapData[index].to,
-        totalCalls: this.mapData[index].totalCalls,
-        callsOriginated: {passed: 0,failed: 0, total: 0, polqa: 0},
-        callsTerminated: {passed: this.mapData[index].passed,failed: this.mapData[index].failed, total: this.mapData[index].totalCalls, polqa: 0,callsTitle: 'Calls Terminated'}
+    if(toRegion) {
+      if (!this.nodesMap[toRegion]) {
+        let newRegionObj = {
+          region: this.mapData[index].to,
+          totalCalls: this.mapData[index].totalCalls,
+          callsOriginated: {passed: 0,failed: 0, total: 0, polqa: 0, receivedJitter: 0,roundTripTime: 0, receivedPacketLoss: 0},
+          callsTerminated: {
+            passed: this.mapData[index].passed,
+            failed: this.mapData[index].failed,
+            total: this.mapData[index].totalCalls, 
+            polqa: 0,
+            receivedJitter: 0,
+            roundTripTime: 0,
+            receivedPacketLoss: 0
+          }
+        }
+        if (this.mapData[index].polqa)
+          newRegionObj.callsTerminated.polqa = this.mapData[index].polqa;
+        this.nodesMap[toRegion] = newRegionObj;
+      } else {
+        this.nodesMap[toRegion].callsTerminated.passed += this.mapData[index].passed;
+        this.nodesMap[toRegion].callsTerminated.failed += this.mapData[index].failed;
+        this.nodesMap[toRegion].callsTerminated.total += this.mapData[index].totalCalls;
+        if (this.mapData[index].polqa && this.nodesMap[toRegion].callsTerminated.polqa > this.mapData[index].polqa)
+          this.nodesMap[toRegion].callsTerminated.callsTerminated.polqa = this.mapData[index].polqa;
+        if(this.nodesMap[toRegion].callsTerminated.receivedJitter < this.mapData[index].receivedJitter)
+          this.nodesMap[toRegion].callsTerminated.receivedJitter = this.mapData[index].receivedJitter;
+        if(this.nodesMap[toRegion].callsTerminated.roundTripTime < this.mapData[index].roundTripTime)
+          this.nodesMap[toRegion].callsTerminated.roundTripTime = this.mapData[index].roundTripTime;
+        if(this.nodesMap[toRegion].callsTerminated.receivedPacketLoss < this.mapData[index].receivedPacketLoss)
+          this.nodesMap[toRegion].callsTerminated.receivedPacketLoss = this.mapData[index].receivedPacketLoss;
+        if (fromRegion !== toRegion)
+          this.nodesMap[toRegion].totalCalls += this.mapData[index].totalCalls;
       }
-      if (this.mapData[index].polqa)
-        newRegionObj.callsTerminated.polqa = this.mapData[index].polqa;
-      this.nodesMap[toRegion] = newRegionObj;
-    } else {
-      this.nodesMap[toRegion].callsTerminated.passed += this.mapData[index].passed;
-      this.nodesMap[toRegion].callsTerminated.failed += this.mapData[index].failed;
-      this.nodesMap[toRegion].callsTerminated.total += this.mapData[index].totalCalls;
-      if (this.mapData[index].polqa && this.nodesMap[toRegion].callsTerminated.polqa > this.mapData[index].polqa)
-        this.nodesMap[toRegion].callsTerminated.polqa = this.mapData[index].polqa;
-      if (fromRegion !== toRegion)
-        this.nodesMap[toRegion].totalCalls += this.mapData[index].totalCalls;
     }
   }
 
@@ -131,14 +176,23 @@ export class MapPocComponent implements OnInit {
     const fromTo = fromRegion + " - " + toRegion;
     const toFrom = toRegion + " - " + fromRegion;
     const uniqueKey = this.linesMap[fromTo]? fromTo : toFrom;
-    if (!this.linesMap[uniqueKey])
+
+    if (!this.linesMap[uniqueKey]){
       this.linesMap[uniqueKey] = this.mapData[index];
+      this.linesMap[uniqueKey].polqa = 0;
+    }
     else {
       this.linesMap[uniqueKey].passed += this.mapData[index].passed;
       this.linesMap[uniqueKey].failed += this.mapData[index].failed;
       this.linesMap[uniqueKey].totalCalls += this.mapData[index].totalCalls;
-      if (this.linesMap[uniqueKey].callsOriginated.polqa > this.mapData[index].polqa)
-        this.linesMap[uniqueKey].callsTerminated.polqa = this.mapData[index].polqa;
+      if (this.linesMap[uniqueKey].polqa && this.linesMap[uniqueKey].polqa > this.mapData[index].polqa)
+        this.linesMap[uniqueKey].polqa = this.mapData[index].polqa;
+      if(this.linesMap[uniqueKey].receivedJitter < this.mapData[index].receivedJitter)
+        this.linesMap[uniqueKey].receivedJitter = this.mapData[index].receivedJitter;
+      if(this.linesMap[uniqueKey].roundTripTime < this.mapData[index].roundTripTime)
+        this.linesMap[uniqueKey].roundTripTime = this.mapData[index].roundTripTime;
+      if(this.linesMap[uniqueKey].receivedPacketLoss < this.mapData[index].receivedPacketLoss)
+        this.linesMap[uniqueKey].receivedPacketLoss = this.mapData[index].receivedPacketLoss;
     }
   }
 
@@ -177,7 +231,7 @@ export class MapPocComponent implements OnInit {
     for (const key in this.linesMap) {
       let lineState = this.GOOD_COLOR;
       let coordinatesArray = [];
-      if(this.linesMap[key].failed > 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa < 3 && this.linesMap[key].polqa >= 2 )
+      if(this.linesMap[key].failed > 1 && this.linesMap[key].failed < 5 || this.linesMap[key].polqa >= 2  && this.linesMap[key].polqa < 3)
         lineState = this.MID_COLOR;
       if(this.linesMap[key].failed > 5 || this.linesMap[key].polqa < 2)
         lineState = this.BAD_COLOR
@@ -195,9 +249,14 @@ export class MapPocComponent implements OnInit {
   }
 
   getMapSummary(){
+    this.mapData = [];
+    this.mapStartView = [];
+    this.linesMap = {};
+    this.nodesMap = {};
     this.isLoadingResults = true;
+    this.isRequestCompleted = false;
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    this.esriService.getMapSummary(moment("05-04-2023"),moment("05-08-2023"),subaccountId).subscribe((res:any)=>{
+    this.esriService.getMapSummary(this.startDate,subaccountId).subscribe((res:any)=>{
       if(res){
         let parsedSummaryData = []
         res.map((summaryData, index) => {
@@ -212,10 +271,24 @@ export class MapPocComponent implements OnInit {
         this.drawNodes();
         this.drawLines();
         this.isLoadingResults = false;
+        this.isRequestCompleted = true;
       }
     });
   }
   
+  dateFilter(){
+    this.isLoadingResults = true;
+    if(this.filterForm.get('startDateFilterControl').value !== ''){
+      let selectedStartDate = moment.utc(this.filterForm.get('startDateFilterControl').value).format('YYYY-MM-DDT00:00:00')+'Z';
+      //let selectedEndDate = moment.utc(this.filterForm.get('endDateFilterControl').value).format('YYYY-MM-DDT23:59:59')+'Z';
+      this.startDate = selectedStartDate;
+      //this.endDate = selectedEndDate;
+      this.getMapSummary();
+      this.isRequestCompleted = false;
+    }
+    this.isRequestCompleted = false;
+  }
+
   sortData(option: any){
 
   }
@@ -226,7 +299,7 @@ export class MapPocComponent implements OnInit {
 
   nodeDetails(key:any){
     this.dialog.open(NodeDetailComponent, {
-      width: '500px',
+      width: '800px',
       disableClose: true,
       data: this.nodesMap[key]
     });

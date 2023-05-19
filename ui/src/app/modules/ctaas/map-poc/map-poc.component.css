@@ -38,4 +38,16 @@ ul li {
     ul li {
         font-size:calc(5px + 1.7vw);
     }
+    .date-picker-form {
+        display: inline-block !important;
+        width: 100%;
+        align-items: center !important; 
+        /* white-space: nowrap !important; */
+        position: relative;
+    }
+}
+
+.date-picker-form{
+    display: flex !important;
+    white-space: nowrap !important;
 }

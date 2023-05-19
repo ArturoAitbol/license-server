@@ -6,3 +6,15 @@ td {
 th{
    width: 100%;
 }
+
+.terminated-column-data {
+    float: right;
+}
+
+.originated-column-data {
+    float: left;
+}
+
+.total-calls-data {
+    border-bottom: 0;
+}
