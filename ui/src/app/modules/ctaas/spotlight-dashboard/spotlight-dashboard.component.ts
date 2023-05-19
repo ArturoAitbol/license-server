@@ -212,7 +212,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.vq.calls = voiceQualityRes.summary.calls;
     this.vq.streams = voiceQualityRes.summary.streams;
     this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
-    this.vqChartOptions.xAxis = { categories: voiceQualityRes.categories };
+    this.vqChartOptions.xAxis.categories = voiceQualityRes.categories;
     this.vq.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
 
     // Daily Failed Calls Chart
@@ -291,7 +291,6 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallingReliability.timePeriod = timePeriod;
 
     // Weekly VQ chart
-    console.log(res[4]);
     const vqData = res[4];
     this.weeklyVQ.timePeriod = timePeriod;
     this.weeklyVQ.numberStreams = vqData.summary.streams;
