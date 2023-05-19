@@ -234,16 +234,12 @@ COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 3c9d0d97-7878-4f1f-8ca5-18bf93069691	t	\N	Power Bi feature	powerbiFeature
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
 df6f5bc2-2687-49df-8dc0-beff88012235	t	\N	Test FT	testFT
-<<<<<<< HEAD
-e83e94d8-563f-4a06-8aa8-b7bfbaeb7f15	f	vtorrico@tekvizionlabs.com	map poc 	mapPocFeature
-=======
 b66edd36-ee7f-42e7-bfb4-41810ea69fe6	f	\N	Refresh button for Power Bi Dashboard	powerbiRefreshFeature
 7f6c9fec-978f-41a6-ba38-117611f0dfa3	f	\N	By enabling this feature toggle will have 2 more toggles buttons in PowerBi Dashboard.	powerbiTestReport
 1ba09c6f-9a2a-4181-ac1e-b7217763df96	f	\N	Power Bi mobile feature	powerbiMobileFeature
 0e709699-3dab-47f1-a710-ebd2ae78d57b	t	\N	Maintenance Mode	maintenanceMode
 ea00b987-0f14-4888-a0ce-f963d1eb7592	t	\N	Native Dashboard	spotlight-dashboard
 866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	t	\N	Lights animation while the dashboard is loading	dashboardLoadingLights
->>>>>>> 3e9565b5b46bc84e277e233618b3ab158a5e0cea
 \.
 
 --
