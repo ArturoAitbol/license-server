@@ -116,7 +116,7 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
 const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
     series: [
         {
-            name: "Percentage",
+            name: "Success %",
             data: [ 100, 100, 97.6, 50, 90.3, 100, 80.9 ],
             type: "line"
         },
@@ -183,7 +183,7 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
     },
     yAxis: [
         {
-            seriesName: "Percentage",
+            seriesName: "Success %",
             opposite: true,
             axisTicks: {
                 show: true
@@ -244,7 +244,7 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
 const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
     series: [
         {
-            name: "Percentage",
+            name: "Success %",
             data: [ 100, 100, 97.6, 50, 90.3, 100, 80.9 ],
             type: "line"
         },
@@ -311,7 +311,7 @@ const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
     },
     yAxis: [
         {
-            seriesName: "Percentage",
+            seriesName: "Success %",
             opposite: true,
             axisTicks: {
                 show: true
