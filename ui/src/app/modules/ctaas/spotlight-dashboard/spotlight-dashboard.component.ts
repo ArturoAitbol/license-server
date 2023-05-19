@@ -72,7 +72,7 @@ export class SpotlightDashboardComponent implements OnInit{
   //Weekly filters variables
   weeklyFilters = this.fb.group({
     startDate: [moment().utc().startOf('week')],
-    endDate: [moment().utc().endOf('day')],
+    endDate: [moment().utc()],
     region: [""]
   });
 
@@ -149,8 +149,15 @@ export class SpotlightDashboardComponent implements OnInit{
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
     } else {
-      const selectedStartDate = this.weeklyFilters.get('startDate').value;
-      const selectedEndDate = this.weeklyFilters.get('endDate').value;
+      
+      const selectedStartDate: Moment = this.weeklyFilters.get('startDate').value;
+      const selectedEndDate: Moment = this.weeklyFilters.get('endDate').value.endOf("day");
+    
+      const today = moment().utc();
+      if(selectedEndDate.format("MM-DD-YYYY") === today.format("MM-DD-YYYY")){
+        selectedEndDate.hour(today.get("hour")).minute(today.get("minute")).seconds(today.get("seconds"));
+      }
+
       const selectedRegion = this.weeklyFilters.get('region').value;
       this.selectedRange = {start: this.weeklyFilters.get('startDate').value.clone().utc(), end: this.weeklyFilters.get('endDate').value.clone().utc()};
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', selectedRegion));
@@ -177,6 +184,7 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   private processDailyData (res: any) {
+    const executionTime = this.formatExecutionTime(this.selectedDate,this.selectedDate);
     // Daily Calling reliability
     const dailyCallingReliabiltyRes: any = res[0].callingReliability;
     let passedCalls = dailyCallingReliabiltyRes.callsByStatus.PASSED;
@@ -187,7 +195,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.callingReliability.offNet = dailyCallingReliabiltyRes.callsByType.offNet;
     this.callingReliability.value = (passedCalls / this.callingReliability.total) * 100 || 0;
 
-    this.callingReliability.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    this.callingReliability.period = executionTime;
     
     this.calls.total = this.calls.total + this.callingReliability.total;
     this.calls.failed = this.calls.failed + dailyCallingReliabiltyRes.callsByStatus.FAILED;
@@ -202,7 +210,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.featureFunctionality.offNet = dailyFeatureFunctionalityRes.callsByType.offNet;
     this.featureFunctionality.value = (passedCalls / this.featureFunctionality.total) * 100 || 0;
 
-    this.featureFunctionality.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    this.featureFunctionality.period = executionTime;
     
     this.calls.total = this.calls.total + this.featureFunctionality.total;
     this.calls.failed = this.calls.failed + dailyFeatureFunctionalityRes.callsByStatus.FAILED;
@@ -213,7 +221,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.vq.streams = voiceQualityRes.summary.streams;
     this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
     this.vqChartOptions.xAxis.categories = voiceQualityRes.categories;
-    this.vq.period = this.selectedDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedDate.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    this.vq.period = executionTime;
     this.calls.total = this.calls.total + this.vq.calls;
 
     // Daily Failed Calls Chart
@@ -287,7 +295,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallingReliability.offNetCalls = weeklyCallStatus.callingReliability.callsByType.offNet;
     this.weeklyCallingReliability.numberCalls = weeklyCallStatus.callingReliability.callsByStatus.PASSED + weeklyCallStatus.callingReliability.callsByStatus.FAILED;
 
-    const timePeriod = this.selectedRange.start.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + this.selectedRange.end.format("MM-DD-YYYY 11:59:59") + " PM UTC";
+    const timePeriod = this.formatExecutionTime(this.selectedRange.start,this.selectedRange.end);
     this.weeklyFeatureFunctionality.timePeriod = timePeriod;
     this.weeklyCallingReliability.timePeriod = timePeriod;
 
@@ -316,6 +324,10 @@ export class SpotlightDashboardComponent implements OnInit{
       this.reloadUserOptions(region);
     else
       this.reloadFilterOptions();
+  }
+
+  formatExecutionTime(startDate: Moment,endDate): string{
+    return startDate.format("MM-DD-YYYY 00:00:00") + " AM UTC to " + endDate.format("MM-DD-YYYY HH:mm:ss A") + " UTC";
   }
 
   changeHeatMapData(){
