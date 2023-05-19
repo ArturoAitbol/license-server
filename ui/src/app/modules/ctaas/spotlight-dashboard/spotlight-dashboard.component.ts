@@ -65,7 +65,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
   //Daily filters variables
   filters = this.fb.group({
-    date: [moment()],
+    date: [moment().utc()],
     region: [""]
   });
 
@@ -143,6 +143,7 @@ export class SpotlightDashboardComponent implements OnInit{
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
+      console.log(this.filters.get('date').value);
       const selectedDate = this.setHoursOfDate(this.filters.get('date').value);
       const selectedRegion = this.filters.get('region').value;
       this.selectedDate = this.filters.get('date').value.clone().utc();
