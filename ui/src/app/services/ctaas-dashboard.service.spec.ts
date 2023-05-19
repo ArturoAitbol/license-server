@@ -40,9 +40,9 @@ describe(' Ctaas dashboard http request test', () => {
             endDate:'230227054902'
         }
         let params = new HttpParams();
-        params = params.set('reportType', dashboardData.reportType);
         params = params.set('startDate', dashboardData.startDate);
         params = params.set('endDate', dashboardData.endDate);
+        params = params.set('reportType', dashboardData.reportType);
 
         httpClientSpy.get.and.returnValue(CtaasDashboardServiceMock.getCtaasDashboardDetailedReport());
         ctaasDashboardService.getCtaasDashboardDetailedReport(dashboardData.subAccountId, dashboardData.reportType, dashboardData.startDate, dashboardData.endDate, '').subscribe({
