@@ -249,7 +249,7 @@ public class TekvLSGetNetworkQualityChart {
 					JSONArray increasedSerie = series.getJSONArray(metric);
 					// override metric's array with new value
 					increasedSerie.put(entryValue!=null && entryValue.has(metric) ?
-							Float.parseFloat(df.format(entryValue.getFloat(metric))) : 0);
+							Float.parseFloat(df.format(entryValue.getFloat(metric))) : null);
 					series.put(metric, increasedSerie);
 				}
 			});

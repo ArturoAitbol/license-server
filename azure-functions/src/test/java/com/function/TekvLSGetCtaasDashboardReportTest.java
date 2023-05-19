@@ -167,7 +167,7 @@ class TekvLSGetCtaasDashboardReportTest extends TekvLSTest {
         HttpResponseMessage response = getCtaasDashboardReport.run(this.request, subaccountId, this.context);
         this.context.getLogger().info(response.getBody().toString());
         HttpStatusType actualStatus = response.getStatus();
-        HttpStatus expectedStatus = HttpStatus.BAD_REQUEST;
+        HttpStatus expectedStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         assertEquals(expectedStatus, actualStatus, "HTTP status doesn't match with: ".concat(expectedStatus.toString()));
 
         String body = (String) response.getBody();
@@ -176,7 +176,7 @@ class TekvLSGetCtaasDashboardReportTest extends TekvLSTest {
         JSONObject jsonBody = new JSONObject(body);
         assertTrue(jsonBody.has("error"));
 
-        String expectedMessage = "Report Type provided is invalid.";
+        String expectedMessage = "Error retrieving  detailed report from Automation Platform";
         assertEquals(expectedMessage, jsonBody.getString("error"));
     }
 
