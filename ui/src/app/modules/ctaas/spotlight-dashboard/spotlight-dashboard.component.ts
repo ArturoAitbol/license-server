@@ -49,7 +49,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
   // Daily Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
-  calls = { total: 0, failed: 0, onNetCalls:0, offNetCalls:0, p2pCalls: 0 };
+  calls = {timePeriod: '', total: 0, failed: 0, onNetCalls:0, offNetCalls:0, p2pCalls: 0 };
 
   // Daily Calling Reliabilty gaguge variables
   callingReliability = { value: 0, total: 0, p2p:0, onNet:0, offNet:0, period: '' };
@@ -205,6 +205,8 @@ export class SpotlightDashboardComponent implements OnInit{
     this.calls.onNetCalls += this.callingReliability.onNet;
     this.calls.offNetCalls += this.callingReliability.offNet;
 
+    this.calls.timePeriod = executionTime;
+
     // Daily Feature Functionality
     const dailyFeatureFunctionalityRes: any = res[0].featureFunctionality;
     passedCalls = dailyFeatureFunctionalityRes.callsByStatus.PASSED;
@@ -247,7 +249,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyFeatureFunctionalityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
     this.weeklyFeatureFunctionalityChartOptions.series = [
       {
-        name: "Percentage",
+        name: "Success %",
         data: weeklyFeatureFunctionalityData.series['percentage'],
         type: "line"
       },
@@ -268,7 +270,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallingReliabilityChartOptions.xAxis.categories = weeklyCallingReliabilityData.categories;
     this.weeklyCallingReliabilityChartOptions.series = [
       {
-        name: "Percentage",
+        name: "Success %",
         data: weeklyCallingReliabilityData.series['percentage'],
         type: "line"
       },
