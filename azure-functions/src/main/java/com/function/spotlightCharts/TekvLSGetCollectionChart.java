@@ -82,13 +82,10 @@ public class TekvLSGetCollectionChart {
 			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='')";
 		switch (reportType) {
 			case "CallingReliability":
-				query += " AND tp.name='STS'";
+				query += " AND tp.name='STS' AND tp.name='POLQA'";
 				break;
 			case "FeatureFunctionality":
 				query += " AND tp.name='LTS'";
-				break;
-			case "VQ":
-				query += " AND tp.name='POLQA'";
 				break;
 		}
 		
