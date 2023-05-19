@@ -65,7 +65,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
   //Daily filters variables
   filters = this.fb.group({
-    date: [moment()],
+    date: [moment().utc()],
     region: [""]
   });
 
