@@ -14,10 +14,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -25,20 +26,20 @@ import static com.function.auth.RoleAuthHandler.*;
 /**
  * Azure Functions with HTTP Trigger.
  */
-public class TekvLSGetCollectionChart {
+public class TekvLSGetCallsStatusHeatMap {
 	/**
-	 * This function listens at endpoint "/v1.0/spotlightCharts/simpleChart". Two ways to invoke it using "curl" command in bash:
-	 * 1. curl -d "HTTP Body" {your host}/v1.0/spotlightCharts/simpleChart
-	 * 2. curl "{your host}/v1.0/spotlightCharts/simpleChart"
+	 * This function listens at endpoint "/v1.0/spotlightCharts/callsStatusHeatMap". Two ways to invoke it using "curl" command in bash:
+	 * 1. curl -d "HTTP Body" {your host}/v1.0/spotlightCharts/callsStatusHeatMap
+	 * 2. curl "{your host}/v1.0/spotlightCharts/callsStatusHeatMap"
 	 */
 
-	@FunctionName("TekvLSGetCollectionChart")
+	@FunctionName("TekvLSGetCallsStatusHeatMap")
 	public HttpResponseMessage run(
 				@HttpTrigger(
 				name = "req",
 				methods = {HttpMethod.GET},
 				authLevel = AuthorizationLevel.ANONYMOUS,
-				route = "spotlightCharts/collectionChart")
+				route = "spotlightCharts/callsStatusHeatMap")
 				HttpRequestMessage<Optional<String>> request,
 				final ExecutionContext context) 
 	{
@@ -58,11 +59,10 @@ public class TekvLSGetCollectionChart {
 			return request.createResponseBuilder(HttpStatus.FORBIDDEN).body(json.toString()).build();
 		}
 
-		context.getLogger().info("Entering TekvLSGetCollectionChart Azure function");
+		context.getLogger().info("Entering TekvLSGetCallsStatusHeatMap Azure function");
 		// Get query parameters
 		context.getLogger().info("URL parameters are: " + request.getQueryParameters());
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
-		String reportType = request.getQueryParameters().getOrDefault("reportType", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 
@@ -72,26 +72,15 @@ public class TekvLSGetCollectionChart {
 
 		String user = request.getQueryParameters().getOrDefault("user", "");
 
-		String query = "SELECT CAST(sr.startdate AS DATE) as date, sr.status, COUNT(sr.status) as status_counter " +
-			"FROM sub_result sr " +
-			"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
-			"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
-			"LEFT JOIN project p ON r.projectid = p.id " +
-			"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
-			"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " + 
-			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='')";
-		switch (reportType) {
-			case "CallingReliability":
-				query += " AND tp.name='STS'";
-				break;
-			case "FeatureFunctionality":
-				query += " AND tp.name='LTS'";
-				break;
-			case "VQ":
-				query += " AND tp.name='POLQA'";
-				break;
-		}
-		
+		String query = "SELECT sr.status, CAST(sr.startDate AS DATE) AS date, TO_CHAR(sr.startDate,'HH24:00') AS hour, COUNT(sr.status) as status_counter " +
+				"FROM sub_result sr " +
+				"LEFT JOIN test_result tr ON sr.testresultid = tr.id " +
+				"LEFT JOIN run_instance r ON tr.runinstanceid = r.id " +
+				"LEFT JOIN project p ON r.projectid = p.id " +
+				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
+				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
+				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='')";
+
 		// Build region filter if present
 		if (!country.isEmpty() || !user.isEmpty()) {
 			query += " AND sr.id IN (SELECT sr2.id FROM test_result_resource trr LEFT JOIN sub_result sr2 ON trr.subresultid = sr2.id WHERE";
@@ -108,12 +97,12 @@ public class TekvLSGetCollectionChart {
 				query += " AND trr.city = CAST('" + city + "' AS varchar)";
 			query += ")";
 		}
-		
+
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
 		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
-		queryBuilder.appendGroupByMany("date,sr.status");
+		queryBuilder.appendGroupByMany("sr.status, date, hour");
 		queryBuilder.appendOrderBy("date", SelectQueryBuilder.ORDER_DIRECTION.ASC);
 
 		// Build SQL statement to get the TAP URL
@@ -123,7 +112,7 @@ public class TekvLSGetCollectionChart {
 		// Build SQL statement to verify the role
 		String email = getEmailFromToken(tokenClaims, context);
 		SelectQueryBuilder verificationQueryBuilder = getCustomerRoleVerificationQuery(subaccountId,roles,email);
-		
+
 		// Connect to the database
 		String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses" + System.getenv("POSTGRESQL_SECURITY_MODE")
 				+ "&user=" + System.getenv("POSTGRESQL_USER")
@@ -165,64 +154,90 @@ public class TekvLSGetCollectionChart {
 
 			// Retrieve all data.
 			context.getLogger().info("Execute SQL statement: " + statement);
-			JSONArray resultSet = TAPClient.executeQuery(tapURL,statement,context);
+			JSONArray resultSet = TAPClient.executeQuery(tapURL, statement, context);
 
 			LocalDate startLocalDate = LocalDate.parse(startDate.split(" ")[0]);
 			LocalDate endLocalDate = LocalDate.parse(endDate.split(" ")[0]);
-			TreeMap<String,JSONObject> dates = getDatesBetween(startLocalDate,endLocalDate);
-
+			JSONObject statusTypes = new JSONObject();
+			List<String> allowedStatus = Arrays.asList("failed","passed","total");
+			for(String status : allowedStatus){
+				statusTypes.put(status,getDatesBetween(startLocalDate, endLocalDate));
+			}
+			int totalCallsCounter = 0;
+			int totalFailedCallsCounter = 0;
 			for (Object resultElement : resultSet) {
 				JSONArray values = (JSONArray) resultElement;
-				JSONObject date = dates.get(values.getString(0));
-				date.put(values.getString(1),values.getInt(2));
+				String status = values.getString(0);
+				String date = values.getString(1);
+				String hour = values.getString(2);
+				int calls = values.getInt(3);
+
+				JSONObject datesObject = statusTypes.getJSONObject(status.toLowerCase());
+				JSONObject dateObject = datesObject.getJSONObject(date);
+				dateObject.put(hour, calls);
+
+				JSONObject datesTotal = statusTypes.getJSONObject("total");
+				JSONObject dateTotal = datesTotal.getJSONObject(date);
+				int totalCalls = dateTotal.getInt(hour);
+				dateTotal.put(hour, totalCalls + calls);
+
+				if(status.equals("FAILED"))
+					totalFailedCallsCounter += calls;
+				totalCallsCounter += calls;
 			}
-			JSONArray categories = new JSONArray();
 
-			JSONObject seriesObject = new JSONObject();
-			seriesObject.put("PERCENTAGE",new JSONArray());
+			JSONObject series = new JSONObject();
+			JSONObject maxValues = new JSONObject();
 
-			Set<Map.Entry<String, JSONObject> > entries = dates.entrySet();
-			DecimalFormat df = new DecimalFormat("#.00");
+			//get dates an hours in order
+			LocalTime initialHour = LocalTime.parse("00:00");
+			List<String> hoursInOrder = IntStream.iterate(0, i -> i + 1)
+					.limit(24)
+					.mapToObj(i -> initialHour.plusHours(i).toString())
+					.collect(Collectors.toList());
 
-			entries.forEach(entry -> {
-				categories.put(entry.getKey());
+			long numOfDaysBetween = ChronoUnit.DAYS.between(startLocalDate, endLocalDate)+1;
+			List<String> datesInOrder = IntStream.iterate(0, i -> i + 1)
+					.limit(numOfDaysBetween)
+					.mapToObj(i->startLocalDate.plusDays(i).toString())
+					.collect(Collectors.toList());
 
-				JSONObject object = entry.getValue();
 
-				float total = 0;
-				float pass = 0;
+			for (String status:statusTypes.keySet()) {
 
-				for (String key:object.keySet()) {
-					if(!seriesObject.has(key)){
-						seriesObject.put(key,new JSONArray());
+				JSONObject dates = statusTypes.getJSONObject(status);
+				JSONArray statusArray = new JSONArray();
+				int maxValue = 0;
+				for (String date : datesInOrder) {
+					JSONObject dateObject = dates.getJSONObject(date);
+					JSONArray array = new JSONArray();
+					for (String hour : hoursInOrder) {
+						int value = dateObject.getInt(hour);
+						maxValue = Math.max(value, maxValue);
+
+						JSONObject data = new JSONObject();
+						LocalTime nextHour = LocalTime.parse(hour).plusHours(1);
+						data.put("x", hour + "-" + nextHour);
+						data.put("y", value);
+						array.put(data);
 					}
 
-					JSONArray array = seriesObject.getJSONArray(key);
-					int value = object.getInt(key);
-					array.put(value);
-
-					total += value;
-					if(key.equals("PASSED"))
-						pass+=value;
+					JSONObject statusSeries = new JSONObject();
+					statusSeries.put("name",date);
+					statusSeries.put("data",array);
+					statusArray.put(statusSeries);
 				}
-				JSONArray percentageArray = seriesObject.getJSONArray("PERCENTAGE");
-				percentageArray.put(Float.valueOf(df.format(total>0 ? (pass*100)/total:0)));
-			});
 
-			JSONArray failedArray = seriesObject.getJSONArray("FAILED");
-			JSONArray interruptedArray = seriesObject.getJSONArray("INTERRUPTED");
-			for (int i = 0; i < failedArray.length(); i++) {
-				int number = failedArray.getInt(i)+ interruptedArray.getInt(i);
-				failedArray.put(i,number);
+				series.put(status,statusArray);
+				maxValues.put(status,maxValue);
 			}
+			JSONObject summary = new JSONObject();
+			summary.put("totalCalls",totalCallsCounter);
+			summary.put("failedCalls",totalFailedCallsCounter);
 
-
-			JSONObject seriesObject_1 = new JSONObject();
-			seriesObject_1.put("failed",failedArray);
-			seriesObject_1.put("passed",seriesObject.getJSONArray("PASSED"));
-			seriesObject_1.put("percentage",seriesObject.getJSONArray("PERCENTAGE"));
-			json.put("categories",categories);
-			json.put("series", seriesObject_1);
+			json.put("series", series);
+			json.put("maxValues",maxValues);
+			json.put("summary",summary);
 			return request.createResponseBuilder(HttpStatus.OK).header("Content-Type", "application/json").body(json.toString()).build();
 		}
 		catch (SQLException e) {
@@ -248,8 +263,17 @@ public class TekvLSGetCollectionChart {
 		IntStream.iterate(0, i -> i + 1)
 				.limit(numOfDaysBetween)
 				.mapToObj(i->startDate.plusDays(i).toString())
-				.forEach(i -> map.put(i, new JSONObject("{PASSED:0,FAILED:0,INTERRUPTED:0}")));
+				.forEach(i -> map.put(i,getHoursOfADay()));
+		return map;
+	}
+	public JSONObject getHoursOfADay() {
 
+		JSONObject map = new JSONObject();
+		LocalTime hour = LocalTime.parse("00:00");
+		IntStream.iterate(0, i -> i + 1)
+				.limit(24)
+				.mapToObj(i->hour.plusHours(i).toString())
+				.forEach(i -> map.put(i,0));
 		return map;
 	}
 }

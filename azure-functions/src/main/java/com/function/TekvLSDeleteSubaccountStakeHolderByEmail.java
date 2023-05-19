@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 import com.function.auth.Resource;
 import com.function.clients.GraphAPIClient;
-import com.function.util.FeatureToggleService;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -72,7 +71,6 @@ public class TekvLSDeleteSubaccountStakeHolderByEmail {
             context.getLogger().info("Execute SQL statement (User: "+ userId + "): " + subaccountIdStmt);
             ResultSet subaccountIdRs = subaccountIdStmt.executeQuery();
             if (subaccountIdRs.next()) {
-                String subaccountId = subaccountIdRs.getString("subaccount_id");
                 statement.setString(1, email);
 
                 // Delete stakeholder

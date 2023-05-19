@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
 
@@ -183,7 +182,6 @@ class TekvLSCreateCallbackTest extends TekvLSTest {
     public void forbiddenTest() {
         // Given - Arrange
         this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("devicesAdmin"));
-        String name = "customerTest" + LocalDateTime.now();
         String bodyRequest = "{'name':'Test name','companyName':'Test company name','phoneNumber':'+591 78524565','email':'testMail@tekvizion.com'}";
         doReturn(Optional.of(bodyRequest)).when(request).getBody();
 

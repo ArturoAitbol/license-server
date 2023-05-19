@@ -241,6 +241,166 @@ const defaultWeeklyFeatureFunctionalityChartOptions: Partial<ChartOptions> = {
     }
 };
 
+const defaultWeeklyCallingReliabilityChartOptions: Partial<ChartOptions> = {
+    series: [
+        {
+            name: "Percentage",
+            data: [ 100, 100, 97.6, 50, 90.3, 100, 80.9 ],
+            type: "line"
+        },
+        {
+            name: "Passed",
+            data: [ 110, 213, 40, 14, 167, 47, 165],
+            type: "column",
+        },
+        {
+            name: "Failed",
+            data: [ 0, 0, 1, 14, 18, 0, 39],
+            type: "column",
+        },
+    ],
+    chart: {
+        type: "bar",
+        stacked: true,
+        height: 450,
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        }
+    },
+    colors: [ "#7694B7", "#83C96B", "#CE5A5B" ],
+    dataLabels: {
+        enabled: true,
+        style: {
+            colors: ["#000000", "#FFFFFF", "#FFFFFF"]
+        },
+        formatter(val: string | number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
+            if (opts.seriesIndex === 0) {
+                return val + "%"
+            } else return val;
+        }
+    },
+    stroke: {
+        curve: "straight",
+        width: 2
+    },
+    grid: {
+        row: {
+            colors: [ "#f3f3f3", "transparent" ], // takes an array which will be repeated on columns
+            opacity: 0.5
+        }
+    },
+    xAxis: {
+        title: {
+            text: "Date",
+            style: {
+                color: "#000000"
+            },
+        },
+        categories: [
+            "Apr-15-2023",
+            "Apr-16-2023",
+            "Apr-17-2023",
+            "Apr-18-2023",
+            "Apr-19-2023",
+            "Apr-20-2023",
+            "Apr-21-2023",
+        ]
+    },
+    yAxis: [
+        {
+            seriesName: "Percentage",
+            opposite: true,
+            axisTicks: {
+                show: true
+            },
+            axisBorder: {
+                show: true,
+                color: "#7694B7"
+            },
+            labels: {
+                style: {
+                    colors: "#7694B7"
+                }
+            },
+            title: {
+                text: "Success %",
+                style: {
+                    color: "#7694B7"
+                }
+            },
+            min: 0,
+            max: 100,
+        },
+        {
+            axisTicks: {
+                show: true
+            },
+            axisBorder: {
+                show: true,
+                color: "#7694B7"
+            },
+            labels: {
+                style: {
+                    colors: "#7694B7"
+                }
+            },
+            title: {
+                text: "Number of calls",
+                style: {
+                    color: "#000000"
+                }
+            }
+        },
+        {
+            seriesName: "Passed",
+            show: false
+        }
+    ],
+    markers: {
+        size: 4,
+        colors: [ "#7694B7", "#83C96B", "#CE5A5B" ],
+    },
+    legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+    }
+};
+
+const defaultWeeklyCallsStatusChartOptions: Partial<ChartOptions> = {
+    series: [],
+    chart: {
+        height: 350,
+        type: "heatmap",
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        }
+    },
+    dataLabels: {
+        enabled: true
+    },
+    colors: [ "#5089c7" ],
+    plotOptions: {
+        heatmap: {
+            shadeIntensity: 0.3,
+            colorScale: {
+                ranges: [
+                    {
+                        from: 0,
+                        color: "#5089c7",
+                        foreColor: "#000000"
+                    }
+                ]
+            }
+        }
+    }
+};
+
 const defaultVqChartOptions: Partial<ChartOptions> = {
     chart: {
         type: 'bar',
@@ -256,12 +416,14 @@ const defaultVqChartOptions: Partial<ChartOptions> = {
             horizontal: true,
             barHeight: '70%',
             columnWidth: '70%',
+            distributed: true,
         }
     },
     series: [ {
-        data: [ 85, 5, 5, 5 ]
+        data: []
     },
     ],
+    colors: [ "#82c86a", "#5fa5f7", "#fdbb57", "#D43A39" ],
     dataLabels: {
         enabled: true,
         formatter(val: string | number | number[], opts?: any): string | number {
@@ -270,17 +432,26 @@ const defaultVqChartOptions: Partial<ChartOptions> = {
     },
     xAxis: {
         categories: ['Excellent [4-5]', 'Good [3-4]', 'Fair [2-3]', 'Poor [1-2]'],
+        title: {
+            text: 'Percentage of call streams',
+        },
     },
     yAxis: {
         min: 0,
         max: 100,
         labels: {
             style: {
-                fontSize: '18px',
+                fontSize: '16px',
                 fontFamily: 'Helvetica, Arial, sans-serif',
                 fontWeight: 400,
             },
+        },
+        title: {
+            text: 'Quality'
         }
+    },
+    legend: {
+        show: false
     }
 };
 
@@ -359,4 +530,88 @@ const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
     }
 };
 
-export { defaultPolqaChartOptions, defaultWeeklyFeatureFunctionalityChartOptions, defaultVqChartOptions, defaultFailedCallsChartOptions }
+const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
+    series: [],
+    chart: {
+        type: "bar",
+        stacked: true,
+        height: 450,
+        zoom: {
+            enabled: false
+        },
+        toolbar: {
+            show: false
+        }
+    },
+    colors: [ "#82c86a", "#5fa5f7", "#fdbb57", "#D43A39" ],
+    dataLabels: {
+        enabled: true,
+        style: {
+            colors: ["#000000", "#FFFFFF", "#FFFFFF"]
+        },
+        formatter(val: number, opts?: { seriesIndex, dataPointIndex, w }): string | number {
+            return val.toFixed(2) + "%"
+        }
+    },
+    grid: {
+        row: {
+            colors: [ "#f3f3f3", "transparent" ], // takes an array which will be repeated on columns
+            opacity: 0.5
+        }
+    },
+    xAxis: {
+        title: {
+            text: "Date",
+            style: {
+                color: "#000000"
+            },
+        },
+        categories: []
+    },
+    yAxis: [
+        {
+            decimalsInFloat: 2,
+            axisTicks: {
+                show: true
+            },
+            axisBorder: {
+                show: true,
+                color: "#000000"
+            },
+            labels: {
+                style: {
+                    colors: "#000000"
+                },
+                formatter(val: number, opts?: any): string | string[] {
+                    return val + '%';
+                }
+            },
+            title: {
+                text: "Percentage of streams",
+                style: {
+                    color: "#000000"
+                }
+            },
+            min: 0,
+            max: 100,
+        },
+    ],
+    markers: {
+        size: 4,
+        colors: [ "#5089c7"],
+    },
+    legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+    }
+};
+
+export {
+    defaultPolqaChartOptions,
+    defaultWeeklyFeatureFunctionalityChartOptions,
+    defaultWeeklyCallingReliabilityChartOptions,
+    defaultWeeklyCallsStatusChartOptions,
+    defaultVqChartOptions,
+    defaultFailedCallsChartOptions,
+    defaultWeeklyVQChartOptions
+}

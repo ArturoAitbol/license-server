@@ -23,12 +23,12 @@ import { DetailedReportsCompoment } from './ctaas-detailed-reports/ctaas-detaile
 import { CtaasTestReportsComponent } from './ctaas-test-reports/ctaas-test-reports.component';
 import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-consolidated-report/search-consolidated-report.component';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { DashboardPocComponent } from './dashboard-poc/dashboard-poc.component';
+import { SpotlightDashboardComponent } from './spotlight-dashboard/spotlight-dashboard.component';
 import { NgApexchartsModule } from "ng-apexcharts";
-import { NetworkQualityTrendsComponent } from './dashboard-poc/network-quality-trends/network-quality-trends.component';
+import { NetworkQualityTrendsComponent } from './spotlight-dashboard/network-quality-trends/network-quality-trends.component';
 import { CallbackComponent } from './callback/callback.component';
 import { MapPocComponent } from './map-poc/map-poc.component';
-import { CustomerNetworkQualityComponent } from './dashboard-poc/customer-network-quality/customer-network-quality/customer-network-quality.component';
+import { CustomerNetworkQualityComponent } from './spotlight-dashboard/customer-network-quality/customer-network-quality/customer-network-quality.component';
 import { CallbackTimerComponent } from './callback/callback-timer/callback-timer.component';
 import { NodeDetailComponent } from './map-poc/node-detail/node-detail.component';
 import { LineDetailComponent } from './map-poc/line-detail/line-detail.component';
@@ -53,7 +53,7 @@ import { LineDetailComponent } from './map-poc/line-detail/line-detail.component
     DetailedReportsCompoment,
     CtaasTestReportsComponent,
     SearchConsolidatedReportComponent,
-    DashboardPocComponent,
+    SpotlightDashboardComponent,
     NetworkQualityTrendsComponent,
     CallbackComponent,
     MapPocComponent,

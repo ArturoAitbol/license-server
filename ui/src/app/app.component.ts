@@ -61,7 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
             },
             {
                 name: 'Native Dashboard',
-                path: 'dashboard-poc',
+                path: 'spotlight-dashboard',
                 active: false,
                 materialIcon: 'analytics',
                 baseUrl: '/spotlight/',
@@ -194,7 +194,7 @@ export class AppComponent implements OnInit, OnDestroy {
     readonly SPOTLIGHT_TEST_REPORTS: string = '/spotlight/reports';
     readonly MAIN_DASHBOARD = '/dashboard';
     readonly SUBSCRIPTIONS_OVERVIEW = '/subscriptions-overview';
-    readonly DASHBOARD_POC_ROUTE_PATH = '/spotlight/dashboard-poc';
+    readonly SPOTLIGHT_DASHBOARD_ROUTE_PATH = '/spotlight/spotlight-dashboard';
     private subaccountId: any;
     readonly DEVICES = '/devices';
     readonly CONSUMPTION_MATRIX = '/consumption-matrix';
@@ -304,7 +304,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     case this.CTAAS_SETUP_PATH:
                     case this.SPOTLIGHT_NOTES_PATH:
                     case this.SPOTLIGHT_TEST_REPORTS:
-                    case this.DASHBOARD_POC_ROUTE_PATH:
+                    case this.SPOTLIGHT_DASHBOARD_ROUTE_PATH:
                         this.tabName = Constants.CTAAS_TOOL_BAR;
                         this.hideToolbar = false;
                         if (this.previousDisplayedItemsSubscription) {
@@ -312,6 +312,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
                             this.displayedSideBarItems = res;
+                            console.log(res);
                             this.validateSideBarItem();
                         });
                         this.enableSidebar();
@@ -499,21 +500,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
     private canRequestCallBack():boolean {
-        if (this.userProfileData.userProfile.name && this.userProfileData.userProfile.latestCallbackRequestDate === undefined)
+        if (this.userProfileData.userProfile.name && this.userProfileData.userProfile.latestCallbackRequest === undefined)
             return true;
-        const timeBetweenRequests = this.getTimeBetweenRequests(this.userProfileData);
-        return timeBetweenRequests > Constants.REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS;
-    }
-
-    private getTimeBetweenRequests(userProfileData){
-        return new Date().getTime() - new Date(userProfileData.userProfile.latestCallbackRequestDate).getTime();
+        return this.userProfileData.userProfile.latestCallbackRequest > Constants.REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS;
     }
 
     private preventCallbackRequest() {
         this.dialog.open(CallbackTimerComponent, {
             width: '500px',
             disableClose: false,
-            data: this.getTimeBetweenRequests(this.userProfileData) / 1000
+            data: this.userProfileData.userProfile.latestCallbackRequest
         });
     }
 
