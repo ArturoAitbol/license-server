@@ -587,7 +587,7 @@ const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {
                 }
             },
             title: {
-                text: "Percentage of streams",
+                text: "Percentage of call streams",
                 style: {
                     color: "#000000"
                 }
