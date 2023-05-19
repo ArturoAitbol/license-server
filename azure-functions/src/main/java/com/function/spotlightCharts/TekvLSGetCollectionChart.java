@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -179,7 +180,9 @@ public class TekvLSGetCollectionChart {
 			seriesObject.put("PERCENTAGE",new JSONArray());
 
 			Set<Map.Entry<String, JSONObject> > entries = dates.entrySet();
-			DecimalFormat df = new DecimalFormat("#.00");
+			DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+			symbols.setDecimalSeparator('.');
+			DecimalFormat df = new DecimalFormat("#.00", symbols);
 
 			entries.forEach(entry -> {
 				categories.put(entry.getKey());
