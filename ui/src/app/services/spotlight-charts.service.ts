@@ -37,7 +37,7 @@ export class SpotlightChartsService {
     private getNetworkQualityData(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, metric: string, user: string, subaccountId: string, groupBy: string): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         params = params.set('metric', metric);
         params = params.set('subaccountId', subaccountId);
         params = params.set('groupBy',groupBy);
@@ -60,7 +60,7 @@ export class SpotlightChartsService {
     private getNetworkQualitySummary(startDate: Moment, endDate: Moment,  region: { country: string, state: string, city: string }, metric: string, user: string, subaccountId: string) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         params = params.set('metric', metric);
         params = params.set('subaccountId', subaccountId);
         if (user) params = params.set('user', user);
@@ -82,7 +82,7 @@ export class SpotlightChartsService {
     public getWeeklyComboBarChart(startDate: Moment, endDate: Moment, subaccountId: string, reportType: string, region: { country: string, state: string, city: string }): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         params = params.set('reportType', reportType);
         params = params.set('subaccountId', subaccountId);
         if (region.country) params = params.set('country', region.country);
@@ -102,7 +102,7 @@ export class SpotlightChartsService {
     public getWeeklyCallsStatusHeatMap(startDate: Moment, endDate: Moment, subaccountId: string, region: { country: string, state: string, city: string }){
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         params = params.set('subaccountId', subaccountId);
         if (region.country) params = params.set('country', region.country);
         if (region.state) params = params.set('state', region.state);
@@ -135,7 +135,7 @@ export class SpotlightChartsService {
     private getCallsStatusSummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         params = params.set('subaccountId', subaccountId);
         if (region.country) params = params.set('country', region.country);
         if (region.state) params = params.set('state', region.state);
@@ -155,7 +155,7 @@ export class SpotlightChartsService {
     public getVoiceQualityChart(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, subaccountId: string, weekly = false) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
-        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD 23:59:59"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         params = params.set('subaccountId', subaccountId);
         if (region.country) params = params.set('country', region.country);
         if (region.state) params = params.set('state', region.state);
