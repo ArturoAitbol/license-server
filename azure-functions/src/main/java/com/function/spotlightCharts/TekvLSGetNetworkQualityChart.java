@@ -17,6 +17,7 @@ import com.microsoft.azure.functions.annotation.HttpTrigger;
 
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -204,6 +205,7 @@ public class TekvLSGetNetworkQualityChart {
 				LocalDateTime endLocalDate = LocalDateTime.parse(endDate,formatter);
 				datesObject = getHoursBetween(startLocalDate,endLocalDate);
 			}
+			context.getLogger().info("Result set  " + resultSet);
 
 			for (Object resultElement : resultSet) {
 				JSONArray values = (JSONArray) resultElement;
@@ -229,8 +231,9 @@ public class TekvLSGetNetworkQualityChart {
 			for (String statistic : statisticsLabels) {
 				series.put(statistic, new JSONArray());
 			}
-
-			DecimalFormat df = new DecimalFormat("#.00");
+			DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+			symbols.setDecimalSeparator('.');
+			DecimalFormat df = new DecimalFormat("#.00", symbols);
 			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 			entries.forEach(entry -> {
