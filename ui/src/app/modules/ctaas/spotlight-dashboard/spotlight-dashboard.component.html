@@ -318,6 +318,46 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
+                            <h1>Voice Quality (POLQA)</h1>
+                        </div>
+                        <div class="card-body container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <apx-chart #weeklyVQChart
+                                               [series]="weeklyVQChartOptions.series"
+                                               [chart]="weeklyVQChartOptions.chart"
+                                               [xaxis]="weeklyVQChartOptions.xAxis"
+                                               [yaxis]="weeklyVQChartOptions.yAxis"
+                                               [dataLabels]="weeklyVQChartOptions.dataLabels"
+                                               [grid]="weeklyVQChartOptions.grid"
+                                               [stroke]="weeklyVQChartOptions.stroke"
+                                               [title]="weeklyVQChartOptions.title"
+                                               [markers]="weeklyVQChartOptions.markers"
+                                               [legend]="weeklyVQChartOptions.legend"
+                                               [colors]="weeklyVQChartOptions.colors">
+                                    </apx-chart>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-text">
+                                <mat-icon>timer</mat-icon>
+                                <label class="ps-1">Execution time period: {{ weeklyVQ.timePeriod }}</label>
+                            </div>
+                            <br>
+                            <div class="footer-text">
+                                <mat-icon>call</mat-icon>
+                                <label class="ps-1">Number of calls: {{ weeklyVQ.numberCalls }} | Number of
+                                    streams: {{ weeklyVQ.numberStreams }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card text-center mt-2">
+                        <div class="card-header">
                             <h1>Call Status History</h1>
                         </div>
                         <div class="card-body container-fluid">
@@ -357,46 +397,6 @@
                                             [plotOptions]="weeklyCallsStatusChartOptions.plotOptions"
                                     ></apx-chart>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="card text-center mt-2">
-                        <div class="card-header">
-                            <h1>Voice Quality (POLQA)</h1>
-                        </div>
-                        <div class="card-body container-fluid">
-                            <div class="row">
-                                <div class="col">
-                                    <apx-chart #weeklyVQChart
-                                               [series]="weeklyVQChartOptions.series"
-                                               [chart]="weeklyVQChartOptions.chart"
-                                               [xaxis]="weeklyVQChartOptions.xAxis"
-                                               [yaxis]="weeklyVQChartOptions.yAxis"
-                                               [dataLabels]="weeklyVQChartOptions.dataLabels"
-                                               [grid]="weeklyVQChartOptions.grid"
-                                               [stroke]="weeklyVQChartOptions.stroke"
-                                               [title]="weeklyVQChartOptions.title"
-                                               [markers]="weeklyVQChartOptions.markers"
-                                               [legend]="weeklyVQChartOptions.legend"
-                                               [colors]="weeklyVQChartOptions.colors">
-                                    </apx-chart>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="footer-text">
-                                <mat-icon>timer</mat-icon>
-                                <label class="ps-1">Execution time period: {{ weeklyVQ.timePeriod }}</label>
-                            </div>
-                            <br>
-                            <div class="footer-text">
-                                <mat-icon>call</mat-icon>
-                                <label class="ps-1">Number of calls: {{ weeklyVQ.numberCalls }} | Number of
-                                    streams: {{ weeklyVQ.numberStreams }}</label>
                             </div>
                         </div>
                     </div>
