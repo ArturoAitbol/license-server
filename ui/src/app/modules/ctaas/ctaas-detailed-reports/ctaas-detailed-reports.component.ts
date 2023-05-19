@@ -18,6 +18,7 @@ export class DetailedReportsCompoment implements OnInit {
   filename: string = '';
   tableMaxHeight: number;
   type: string = '';
+  status: string = '';
   startDateStr: string = '';
   endDateStr: string = '';
   loggedInUserRoles: string[] = [];
@@ -70,7 +71,8 @@ export class DetailedReportsCompoment implements OnInit {
     this.loggedInUserRoles = roles;
     this.route.queryParams.subscribe((params: any) => {
       this.subaccountDetails.id = params.subaccountId;
-      this.type = params.type;
+      if (params.type) this.type = params.type;
+      if (params.status) this.status = params.status;
       this.startDateStr = params.start;
       this.endDateStr = params.end;
       this.fetchDashboardReportDetails();
@@ -87,7 +89,7 @@ export class DetailedReportsCompoment implements OnInit {
     this.isLoadingResults = true;
     const PARSED_REPORT_TYPE = this.type === this.FEATURE_FUNCTIONALITY ? 'LTS' :
       (this.type === this.CALL_RELIABILITY) ? 'STS' : (this.type === this.DAILY_VQ) ? 'POLQA' : this.type;
-    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr)
+    this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr, this.status)
       .subscribe((res: any) => {
         this.isRequestCompleted = true;
         this.isLoadingResults = false;

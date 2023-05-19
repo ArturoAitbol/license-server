@@ -157,11 +157,11 @@ ea00b987-0f14-4888-a0ce-f963d1eb7592	9285ca9e-04c3-49df-9d59-085322a13319	2022-0
 \.
 
 COPY public.ctaas_setup (id, azure_resource_group, tap_url, status, on_boarding_complete, subaccount_id) FROM stdin;
-836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
+836c9f23-fd61-4aa5-a5b9-17a9333d6dca	az_tap_rg	https://tekvizion-ap-tap-peerless-customer1.centralindia.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	f5a609c0-8b70-4a10-9dc8-9536bdb5652c
 2981256a-b5b0-4f9c-aac6-dd7c3aa61ea3	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	ac7a78c2-d0b2-4c81-9538-321562d426c7
 39b5ed3f-9ab2-4feb-a2ac-9c450db181a0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	8acb6997-4d6a-4427-ba2c-7bf463fa08ec
 78346e8a-b4bf-41f4-a7cf-47e7020bcbd0	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	cebe6542-2032-4398-882e-ffb44ade169d
-b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981
+b079c3a9-66c7-424f-aa1b-fdc2565d614a	az_tap_rg	https://tekvizion-ap-tap-peerless-customer1.centralindia.cloudapp.azure.com:8443/onPOINT	SETUP_INPROGRESS	true	b5b91753-4c2b-43f5-afa0-feb00cefa981
 a079c3a9-66c7-424f-aa1b-fdc2565d615a	\N	\N	SETUP_INPROGRESS	false	b5b91753-4c2b-43f5-afa0-feb22cefa901
 b079c3a9-66c7-424f-aa1b-fdc2565d616a	\N	\N	SETUP_INPROGRESS	false	0e2038ec-2b9b-493b-b3f2-6702e60b5b90
 c079c3a9-66c7-424f-aa1b-fdc2565d617a	az_tap_rg	https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT	SETUP_READY	true	2c8e386b-d1bd-48b3-b73a-12bfa5d00805
@@ -234,6 +234,12 @@ COPY public.feature_toggle (id, status, author, description, name) FROM stdin;
 3c9d0d97-7878-4f1f-8ca5-18bf93069691	t	\N	Power Bi feature	powerbiFeature
 d43815a7-8927-4c8d-a75f-49e080493827	f	\N	Notification feature	notificationFeature
 df6f5bc2-2687-49df-8dc0-beff88012235	t	\N	Test FT	testFT
+b66edd36-ee7f-42e7-bfb4-41810ea69fe6	f	\N	Refresh button for Power Bi Dashboard	powerbiRefreshFeature
+7f6c9fec-978f-41a6-ba38-117611f0dfa3	f	\N	By enabling this feature toggle will have 2 more toggles buttons in PowerBi Dashboard.	powerbiTestReport
+1ba09c6f-9a2a-4181-ac1e-b7217763df96	f	\N	Power Bi mobile feature	powerbiMobileFeature
+0e709699-3dab-47f1-a710-ebd2ae78d57b	t	\N	Maintenance Mode	maintenanceMode
+ea00b987-0f14-4888-a0ce-f963d1eb7592	t	\N	Native Dashboard	spotlight-dashboard
+866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	t	\N	Lights animation while the dashboard is loading	dashboardLoadingLights
 \.
 
 --

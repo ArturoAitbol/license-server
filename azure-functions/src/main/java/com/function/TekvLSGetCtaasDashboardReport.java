@@ -63,6 +63,7 @@ public class TekvLSGetCtaasDashboardReport {
 
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String reportType = request.getQueryParameters().getOrDefault("reportType", "");
+        String status = request.getQueryParameters().getOrDefault("status", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
         String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 
@@ -71,13 +72,6 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info(MESSAGE_SUBACCOUNT_ID_NOT_FOUND + subaccountId);
             JSONObject json = new JSONObject();
             json.put("error", MESSAGE_SUBACCOUNT_ID_NOT_FOUND);
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
-        }
-        // Check if reportType is empty
-        if (reportType.isEmpty() || reportType == null) {
-            context.getLogger().info(MESSAGE_FOR_INVALID_REPORT_TYPE + " | Report Type: " + reportType);
-            JSONObject json = new JSONObject();
-            json.put("error", MESSAGE_FOR_INVALID_REPORT_TYPE);
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
         }
         // Check if start date is null
@@ -172,9 +166,9 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info("Requesting TAP for detailed report. URL: " + tapURL);
             // Make a http call to TAP and get the access token
             String accessToken = TAPClient.getAccessToken(tapURL, context);
-            context.getLogger().info("Report Type: " + reportType + " | Start Date: " + startDate + " | End Date: " + endDate);
+            context.getLogger().info("Report Type: " + reportType + " | Status: " + status + " | Start Date: " + startDate + " | End Date: " + endDate);
             // Make a http call to North Bound API to fetch detailed test report by reportType
-            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, reportType, startDate, endDate, context);
+            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, reportType, startDate, endDate, status, context);
             if (response == null) {
                 json.put("error", "Error with fetching detailed test report from Automation Platform");
                 context.getLogger().info("Error with fetching detailed test report from Automation Platform");
@@ -182,6 +176,7 @@ public class TekvLSGetCtaasDashboardReport {
                 context.getLogger().info("Received detailed test report response from Automation Platform");
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("reportType", reportType);
+                jsonObject.put("status", status);
                 jsonObject.put("report", response);
                 json.put("response", jsonObject);
             }
