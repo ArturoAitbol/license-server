@@ -143,7 +143,7 @@ export class SpotlightDashboardComponent implements OnInit{
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
-      const selectedDate = this.filters.get('date').value;
+      const selectedDate = this.setHoursOfDate(this.filters.get('date').value);
       const selectedRegion = this.filters.get('region').value;
       this.selectedDate = this.filters.get('date').value.clone().utc();
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
@@ -151,13 +151,7 @@ export class SpotlightDashboardComponent implements OnInit{
     } else {
       
       const selectedStartDate: Moment = this.weeklyFilters.get('startDate').value;
-      const selectedEndDate: Moment = this.weeklyFilters.get('endDate').value.endOf("day");
-    
-      const today = moment().utc();
-      if(selectedEndDate.format("MM-DD-YYYY") === today.format("MM-DD-YYYY")){
-        selectedEndDate.hour(today.get("hour")).minute(today.get("minute")).seconds(today.get("seconds"));
-      }
-
+      const selectedEndDate: Moment = this.setHoursOfDate(this.weeklyFilters.get('endDate').value);
       const selectedRegion = this.weeklyFilters.get('region').value;
       this.selectedRange = {start: this.weeklyFilters.get('startDate').value.clone().utc(), end: this.weeklyFilters.get('endDate').value.clone().utc()};
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', selectedRegion));
@@ -182,6 +176,14 @@ export class SpotlightDashboardComponent implements OnInit{
       this.chartsStatus(true);
     });
   }
+
+  setHoursOfDate(date){
+    const today = moment().utc();
+    if(date.format("MM-DD-YYYY") === today.format("MM-DD-YYYY"))
+      return date.hour(today.get("hour")).minute(today.get("minute")).seconds(today.get("seconds"));
+    return date.endOf("day");
+  }
+  
 
   private processDailyData (res: any) {
     const executionTime = this.formatExecutionTime(this.selectedDate,this.selectedDate);
