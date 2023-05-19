@@ -45,7 +45,7 @@ describe(' Ctaas dashboard http request test', () => {
         params = params.set('endDate', dashboardData.endDate);
 
         httpClientSpy.get.and.returnValue(CtaasDashboardServiceMock.getCtaasDashboardDetailedReport());
-        ctaasDashboardService.getCtaasDashboardDetailedReport(dashboardData.subAccountId, dashboardData.reportType, dashboardData.startDate, dashboardData.endDate).subscribe({
+        ctaasDashboardService.getCtaasDashboardDetailedReport(dashboardData.subAccountId, dashboardData.reportType, dashboardData.startDate, dashboardData.endDate, '').subscribe({
             next: () => { done(); },
             error: done.fail
         });
