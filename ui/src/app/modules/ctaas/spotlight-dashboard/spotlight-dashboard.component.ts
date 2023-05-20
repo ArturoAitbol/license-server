@@ -41,7 +41,7 @@ export class SpotlightDashboardComponent implements OnInit{
   // Weekly calls status Heat Map variables
   weeklyCallsStatusHeatMap: { series:any , maxValues:any , summary:any };
   heatMapCallsSummary = { total: 0 , failed: 0 };
-  selectedStatus = 'failed';
+  selectedStatus = 'total';
 
   // Weekly VQ variables
   weeklyVQ = {timePeriod: '', numberCalls: 0, numberStreams: 0};
@@ -49,7 +49,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
   // Daily Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
-  calls = { total: 0, failed: 0 };
+  calls = {timePeriod: '', total: 0, failed: 0, onNetCalls:0, offNetCalls:0, p2pCalls: 0 };
 
   // Daily Calling Reliabilty gaguge variables
   callingReliability = { value: 0, total: 0, p2p:0, onNet:0, offNet:0, period: '' };
@@ -201,6 +201,11 @@ export class SpotlightDashboardComponent implements OnInit{
     
     this.calls.total += this.callingReliability.total;
     this.calls.failed += dailyCallingReliabiltyRes.callsByStatus.FAILED;
+    this.calls.p2pCalls += this.callingReliability.p2p;
+    this.calls.onNetCalls += this.callingReliability.onNet;
+    this.calls.offNetCalls += this.callingReliability.offNet;
+
+    this.calls.timePeriod = executionTime;
 
     // Daily Feature Functionality
     const dailyFeatureFunctionalityRes: any = res[0].featureFunctionality;
@@ -216,6 +221,9 @@ export class SpotlightDashboardComponent implements OnInit{
     
     this.calls.total += this.featureFunctionality.total;
     this.calls.failed += dailyFeatureFunctionalityRes.callsByStatus.FAILED;
+    this.calls.p2pCalls += this.featureFunctionality.p2p;
+    this.calls.onNetCalls += this.featureFunctionality.onNet;
+    this.calls.offNetCalls += this.featureFunctionality.offNet;
 
     // Daily Voice Quality
     const voiceQualityRes: any = res[1];
@@ -241,7 +249,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyFeatureFunctionalityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
     this.weeklyFeatureFunctionalityChartOptions.series = [
       {
-        name: "Percentage",
+        name: "Success %",
         data: weeklyFeatureFunctionalityData.series['percentage'],
         type: "line"
       },
@@ -262,7 +270,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallingReliabilityChartOptions.xAxis.categories = weeklyCallingReliabilityData.categories;
     this.weeklyCallingReliabilityChartOptions.series = [
       {
-        name: "Percentage",
+        name: "Success %",
         data: weeklyCallingReliabilityData.series['percentage'],
         type: "line"
       },

@@ -92,13 +92,15 @@ export class NetworkQualityTrendsComponent implements OnInit {
     obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.startDate, this.endDate, this.region, selectedUser, subaccountId));
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
-      if(this.groupBy==='hour')
+      if(this.groupBy==='hour'){
         this.commonChartOptions.xAxis.categories = trendsData.categories.map(category => category.split(" ")[1]);
+        this.commonChartOptions.xAxis.title.text = 'Hour';
+      }
       else{
         this.commonChartOptions.xAxis.categories = trendsData.categories;
         this.commonChartOptions.xAxis.title.text = 'Date';
       }
-        
+
       this.initChartOptions();
       this.receivedPacketLossChartOptions.series = [{
         name: 'Received packet loss',

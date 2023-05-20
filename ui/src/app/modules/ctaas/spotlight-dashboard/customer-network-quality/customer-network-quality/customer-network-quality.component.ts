@@ -90,13 +90,15 @@ export class CustomerNetworkQualityComponent implements OnInit {
     forkJoin(obs).subscribe((res: any) => {
       // Customer Network Quality
       this.customerNetworkQualityData = res[0];
-      if(this.groupBy==='hour')
+      if(this.groupBy==='hour') {
         this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories.map((category: string) => category.split(" ")[1]);
+        this.polqaChartOptions.xAxis.title.text = 'Hour';
+      }
       else{
         this.polqaChartOptions.xAxis.categories = this.customerNetworkQualityData.categories;
         this.polqaChartOptions.xAxis.title.text = 'Date';
       }
-        
+
       this.polqaChartOptions.series = [
         {
           name: 'Received Jitter',
