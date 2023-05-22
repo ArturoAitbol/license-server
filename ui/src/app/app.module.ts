@@ -40,7 +40,7 @@ import { AddFeatureToggleModalComponent } from './modules/feature-toggles/add-fe
 import { AddFeatureToggleExceptionModalComponent } from './modules/feature-toggles/add-feature-toggle-exception-modal/add-feature-toggle-exception-modal.component';
 import { AlertBannerComponent } from './generics/alert-banner/alert-banner.component';
 import { AcceptComponent } from './dialogs/accept/accept.component';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
 @NgModule({
     declarations: [
         AppComponent,
@@ -75,6 +75,7 @@ import { AcceptComponent } from './dialogs/accept/accept.component';
         FormsModule,
         ReactiveFormsModule,
         FlexLayoutModule,
+        MatTooltipModule,
         MsalModule.forRoot(new PublicClientApplication({
             auth: {
                 clientId: environment.UI_CLIENT_ID,

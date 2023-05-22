@@ -17,6 +17,7 @@ export class GaugeChartComponent {
   @Input() onNetCalls: number;
   @Input() offNetCalls: number;
   @Input() timePeriod: string;
+  @Input() description: string;
   @Input() set value(value: number) {
     this.chartOptions.series = [Number(value.toFixed(2))];
   }
