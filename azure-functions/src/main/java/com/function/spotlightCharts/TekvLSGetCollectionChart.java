@@ -86,7 +86,7 @@ public class TekvLSGetCollectionChart {
 				query += "AND tp.name='LTS'";
 				break;
 			case "CallingReliability":
-				query += "AND tp.name='STS' AND tp.name='POLQA'";
+				query += "AND (tp.name='STS' OR tp.name='POLQA')";
 				break;
 			default:
 				query += "AND tp.name IN ('LTS','STS','POLQA')";
