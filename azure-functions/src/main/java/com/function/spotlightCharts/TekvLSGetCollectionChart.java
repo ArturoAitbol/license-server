@@ -80,13 +80,16 @@ public class TekvLSGetCollectionChart {
 			"LEFT JOIN project p ON r.projectid = p.id " +
 			"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 			"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " + 
-			"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='')";
+			"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') ";
 		switch (reportType) {
-			case "CallingReliability":
-				query += " AND tp.name='STS' AND tp.name='POLQA'";
-				break;
 			case "FeatureFunctionality":
-				query += " AND tp.name='LTS'";
+				query += "AND tp.name='LTS'";
+				break;
+			case "CallingReliability":
+				query += "AND tp.name='STS' AND tp.name='POLQA'";
+				break;
+			default:
+				query += "AND tp.name IN ('LTS','STS','POLQA')";
 				break;
 		}
 		
