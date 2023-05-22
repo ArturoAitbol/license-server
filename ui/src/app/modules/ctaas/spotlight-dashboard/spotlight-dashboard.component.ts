@@ -80,7 +80,7 @@ export class SpotlightDashboardComponent implements OnInit{
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
   filteredUsers: Observable<string[]>;
-  maxDate = moment();
+  maxDate = moment().utc();
   minDate = moment.utc('0001-01-01');
 
   selectedDate: Moment = null;
@@ -380,7 +380,14 @@ export class SpotlightDashboardComponent implements OnInit{
     this.networkQualityTrends.filters.disable();
     this.customerNetworkQuality.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    this.spotlightChartsService.getFilterOptions(subaccountId).subscribe((res: any) => {
+    let startDate, endDate;
+    if (this.selectedPeriod == "daily") {
+      startDate = endDate = this.selectedDate;
+    }else{
+      startDate = this.selectedRange.start;
+      endDate = this.selectedRange.end;
+    }
+    this.spotlightChartsService.getFilterOptions(subaccountId,startDate,endDate).subscribe((res: any) => {
       const regions = [];
       res.regions.map(region => {
         if (region.country !== null){
@@ -415,7 +422,14 @@ export class SpotlightDashboardComponent implements OnInit{
     this.networkQualityTrends.filters.disable();
     this.customerNetworkQuality.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    this.spotlightChartsService.getFilterOptions(subaccountId,"users",region ? region : null).subscribe((res: any) => {
+    let startDate, endDate;
+    if (this.selectedPeriod == "daily") {
+      startDate = endDate = this.selectedDate;
+    }else{
+      startDate = this.selectedRange.start;
+      endDate = this.selectedRange.end;
+    }
+    this.spotlightChartsService.getFilterOptions(subaccountId,startDate,endDate,"users",region ? region : null).subscribe((res: any) => {
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();
       this.weeklyFilters.enable();
