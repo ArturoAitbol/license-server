@@ -346,10 +346,10 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   navigateToDetailedTable(reportType?: string) {
-    const startDate = this.selectedDate.toDate();
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = this.selectedDate.toDate();
-    endDate.setHours(23, 59, 59, 999);
+    const startDate = this.selectedDate.clone().utc();
+    startDate.hours(0).minutes(0).seconds(0);
+    const endDate = this.selectedDate.clone().utc();
+    endDate.hours(23).minutes(59).seconds(59).milliseconds(999);
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
     const reportFilter = reportType? "type=" + reportType : "status=FAILED";

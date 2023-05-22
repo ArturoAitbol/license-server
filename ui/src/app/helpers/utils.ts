@@ -1,6 +1,7 @@
 import { ISidebar } from "../model/sidebar.model";
 import { permissions } from "./role-permissions";
 import { FeatureToggleService } from "../services/feature-toggle.service";
+import { Moment } from "moment";
 
 export class Utility {
 
@@ -158,18 +159,18 @@ export class Utility {
         return sortedData;
     }
     
-    public static parseReportDate(incomingDate: Date): string {
+    public static parseReportDate(incomingDate: Moment): string {
         let parsedDate = "";
-        const parsedYear = incomingDate.getFullYear().toString().slice(-2);
-        let parsedMonth: any = incomingDate.getMonth() + 1;
+        const parsedYear = incomingDate.year().toString().slice(-2);
+        let parsedMonth: any = incomingDate.month() + 1;
         parsedMonth = parsedMonth > 9 ? parsedMonth : '0' + parsedMonth.toString();
-        let parsedDay: any = incomingDate.getDate();
+        let parsedDay: any = incomingDate.date();
         parsedDay = parsedDay > 9 ? parsedDay : '0' + parsedDay.toString();
-        let parsedHours: any = incomingDate.getHours();
+        let parsedHours: any = incomingDate.hours();
         parsedHours = parsedHours > 9 ? parsedHours : '0' + parsedHours.toString();
-        let parsedMinutes: any = incomingDate.getMinutes();
+        let parsedMinutes: any = incomingDate.minutes();
         parsedMinutes = parsedMinutes > 9 ? parsedMinutes : '0' + parsedMinutes.toString();
-        let parsedSeconds: any = incomingDate.getSeconds();
+        let parsedSeconds: any = incomingDate.seconds();
         parsedSeconds = parsedSeconds > 9 ? parsedSeconds : '0' + parsedSeconds.toString();
         parsedDate = `${parsedYear}${parsedMonth}${parsedDay}${parsedHours}${parsedMinutes}${parsedSeconds}`;
         return parsedDate;
