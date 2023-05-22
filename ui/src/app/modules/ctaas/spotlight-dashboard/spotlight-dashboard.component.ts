@@ -150,10 +150,10 @@ export class SpotlightDashboardComponent implements OnInit{
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
     } else {
       
-      const selectedStartDate: Moment = this.weeklyFilters.get('startDate').value;
+      const selectedStartDate: Moment = this.weeklyFilters.get('endDate').value.clone().utc().subtract(6, "days");
       const selectedEndDate: Moment = this.setHoursOfDate(this.weeklyFilters.get('endDate').value);
       const selectedRegion = this.weeklyFilters.get('region').value;
-      this.selectedRange = {start: this.weeklyFilters.get('startDate').value.clone().utc(), end: this.weeklyFilters.get('endDate').value.clone().utc()};
+      this.selectedRange = {start: this.weeklyFilters.get('endDate').value.clone().utc().subtract(6, "days"), end: this.setHoursOfDate(this.weeklyFilters.get('endDate').value)};
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, selectedRegion));
