@@ -85,7 +85,7 @@ public class TekvLSGetCallsStatusSummary {
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
 				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype)='')" +
-				"AND tp.name IN ('STS','LTS')";
+				"AND tp.name IN ('STS','LTS','POLQA')";
 		
 		// Build region filter if present
 		if (!country.isEmpty() || !user.isEmpty()) {
@@ -168,10 +168,12 @@ public class TekvLSGetCallsStatusSummary {
 			HashMap<String,String> reportTypes = new HashMap<>();
 			reportTypes.put("STS","callingReliability");
 			reportTypes.put("LTS","featureFunctionality");
-
-			reportTypes.forEach((tpName,reportType) ->{
+			// first fill json object with callingReliability and featureFunctionality arrays
+			reportTypes.forEach((tpName, reportType) -> {
 				json.put(reportType, new JSONObject("{ callsByType: {p2p:0,onNet:0,offNet:0}, callsByStatus: {PASSED:0,FAILED:0}}"));
 			});
+			// then add the POLQA mapping to callingReliability
+			reportTypes.put("POLQA","callingReliability");
 
 			for(Object resultElement : resultSet) {
 				JSONArray values = (JSONArray) resultElement;

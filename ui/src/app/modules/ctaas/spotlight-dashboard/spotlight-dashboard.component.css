@@ -214,3 +214,9 @@ mat-form-field {
         flex-direction: column-reverse;
     }
 }
+
+.full-col {
+    display: flex;
+    flex-flow: column;
+    height: calc(100% - 8px);
+}

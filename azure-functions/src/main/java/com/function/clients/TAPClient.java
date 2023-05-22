@@ -25,9 +25,8 @@ public class TAPClient {
      * @throws Exception
      */
     static public String getAccessToken(String tapURL, ExecutionContext context) throws Exception {
-        return getAccessToken(tapURL,null,null,context);
+        return getAccessToken(tapURL, null, null, context);
     }
-
 
     /**
      * Method to get the access token to access TAP API
@@ -40,8 +39,8 @@ public class TAPClient {
     static public String getAccessToken(String tapURL,String username,String password, ExecutionContext context) throws Exception {
         String url = tapURL + "/api/login";
         JSONObject body = new JSONObject();
-        body.put("username", username!=null ? username : System.getenv("TAP_USERNAME"));
-        body.put("password", password!=null ? password : System.getenv("TAP_PASSWORD"));
+        body.put("username", username != null ? username : System.getenv("TAP_USERNAME"));
+        body.put("password", password != null ? password : System.getenv("TAP_PASSWORD"));
         String bodyAsString = body.toString();
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
@@ -76,8 +75,11 @@ public class TAPClient {
      * @throws Exception
      */
     static public JSONObject getDetailedReport(final String tapURL, String token, String type, String startDate,
-                                               String endDate, ExecutionContext context) throws Exception {
-        final String url = String.format("%s/%s/%s/report?startDate=%s&endDate=%s", tapURL,Constants.SPOTLIGHT_API_PATH, type,startDate,endDate);
+                                               String endDate, String status, ExecutionContext context) throws Exception {
+        String url = String.format("%s/%s/%s/report?startDate=%s&endDate=%s", tapURL,
+                Constants.SPOTLIGHT_API_PATH, type, startDate, endDate);
+        if (!type.isEmpty()) url = String.format("%s&type=%s", url, type);
+        if (!status.isEmpty()) url = String.format("%s&status=%s", url, status);
         context.getLogger().info("TAP detailed report endpoint: " + url);
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);
@@ -103,11 +105,12 @@ public class TAPClient {
      * @throws Exception
      */
     static public JSONArray executeQuery(final String tapURL, String query, ExecutionContext context) throws Exception {
-        String token = TAPClient.getAccessToken(tapURL,Constants.TEMP_ONPOINT_USERNAME,Constants.TEMP_ONPOINT_PASSWORD,context);
+        String token = TAPClient.getAccessToken(tapURL, Constants.TEMP_ONPOINT_USERNAME,
+                Constants.TEMP_ONPOINT_PASSWORD, context);
 
         String resource = "/query/data";
         String queryParam = "queryString=" + URLEncoder.encode(query, "UTF-8");
-        final String url = String.format("%s/%s/%s?%s",tapURL,Constants.SPOTLIGHT_API_PATH,resource,queryParam);
+        final String url = String.format("%s/%s/%s?%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource, queryParam);
         context.getLogger().info("TAP data query endpoint: " + url);
 
         HashMap<String, String> headers = new HashMap<>();
@@ -124,9 +127,29 @@ public class TAPClient {
         return response.getJSONArray("resultSet");
     }
 
+    static public JSONObject saveCustomerDetailsOnTap(String tapURL, JSONObject request, ExecutionContext context)
+            throws Exception {
+        String token = TAPClient.getAccessToken(tapURL, context);
+        final String resource = "/customerInfo";
+        final String url = String.format("%s%s%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource);
+        context.getLogger().info("TAP Customer Info endpoint: " + url);
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + token);
+        // disable SSL host verification
+        TAPClient.disableSslVerification(context);
+        JSONObject response = HttpClient.post(url, request.toString(), headers);
+        if (response != null && !response.getBoolean("success")) {
+            context.getLogger()
+                    .severe("Error occurred while updating customer details to the Automation Platform: " + response);
+            throw new ADException("Error occurred while updating customer details to the Automation Platform");
+        }
+        context.getLogger().info("Updated customer details to the Automation Platform successfully.");
+        return response;
+    }
 
     /**
      * disable SSL host name
+     *
      * @param context: ExecutionContext
      */
     public static void disableSslVerification(ExecutionContext context) {

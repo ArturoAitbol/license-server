@@ -23,7 +23,7 @@
                         </mat-form-field>
                     </div>
                     <div style="display: inline-block; padding-right: 15px; margin-top: 8px;">
-                        <button class="apply-bttn" *lcCheckAccessFor="'addCustomer'" mat-raised-button
+                        <button class="apply-bttn" mat-raised-button
                                 id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">Apply</button>
                     </div>
                 </div> 
@@ -55,15 +55,15 @@
                             <h2 class="mb-3">Calls Above Threshold Metrics</h2>
                             <div class="col-md-4 p-2 border metrics">
                                 <p>{{ customerNetworkQualitySummary.aboveThreshold.jitter }}</p>
-                                <label class="blue-label">Jitter (> 30ms)</label>
+                                <label class="blue-label">Jitter (> 30 ms)</label>
                             </div>
                             <div class="col-md-4 p-2 border metrics">
                                 <p>{{ customerNetworkQualitySummary.aboveThreshold.packetLoss }}</p>
-                                <label class="blue-label">Packet Loss(> 2%)</label>
+                                <label class="blue-label">Packet Loss (> 2%)</label>
                             </div>
                             <div class="col-md-4 p-2 border metrics">
                                 <p>{{ customerNetworkQualitySummary.aboveThreshold.roundTripTime }}</p>
-                                <label class="blue-label">Round Trip Time</label>
+                                <label class="blue-label">Round Trip Time (> 200 ms)</label>
                             </div>
                         </div>
                         <div class="row mt-3">

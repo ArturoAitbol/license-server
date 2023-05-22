@@ -14,7 +14,7 @@ export class CallbackTimerComponent implements OnInit {
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any,
     ) {
-        this.secondsRemaining = Constants.REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS / 1000 - data;
+        this.secondsRemaining = Math.floor((Constants.REQUEST_CALLBACK_TIME_BETWEEN_REQUESTS_MS - data)/1000);
     }
 
     ngOnInit() {
@@ -22,7 +22,8 @@ export class CallbackTimerComponent implements OnInit {
     }
 
     tick(){
-        this.secondsRemaining--;
+        if (this.secondsRemaining > 0)
+            this.secondsRemaining--;
         if (this.secondsRemaining === 0){
             clearInterval(this.interval);
         }

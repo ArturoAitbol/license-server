@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Optional;
 
+import com.function.util.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -85,7 +86,10 @@ public class TekvLSGetAuthUserProfile {
 				item.put("email", rs.getString("subaccount_admin_email"));
 				item.put("subaccountId", rs.getString("subaccount_id"));
 				item.put("notifications", rs.getString("notifications"));
-				item.put("latestCallbackRequestDate", rs.getString("latest_callback_request_date"));
+				if (rs.getString("latest_callback_request_date") != null)
+					item.put("latestCallbackRequest", Utils.millisecondsSinceDate(Utils.getDateFromString(rs.getString("latest_callback_request_date"))));
+				else
+					item.put("latestCallbackRequest", rs.getString("latest_callback_request_date"));
 			}
 
 			if(!authEmail.isEmpty() && item==null){
