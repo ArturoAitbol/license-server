@@ -222,9 +222,13 @@ mat-form-field {
         flex-direction: column-reverse;
     }
 }
+.full-col {
+    display: flex;
+    flex-flow: column;
+    height: calc(100% - 8px);
+}
 
 ::ng-deep .mat-tooltip {
     background-color: rgb(22,53,89);
-    /* color: red; */
-    font-size: 16px;
+    font-size: 14px;
   }

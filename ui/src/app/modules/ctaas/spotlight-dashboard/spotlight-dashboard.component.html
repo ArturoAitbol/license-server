@@ -96,7 +96,7 @@
                 <div class="col-md-6">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Voice Quality sadfas<mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm.">info_outline</mat-icon> </h1>
+                            <h1>Voice Quality (POLQA)<mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm.">info_outline</mat-icon> </h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -133,7 +133,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card text-center mt-2">
+                    <div class="card text-center mt-2 full-col">
                         <div class="card-header">
                             <h1>Failed Calls <mat-icon matTooltip = "Represents the calls failed due to routing or client issues.">info_outline</mat-icon></h1>
                         </div>
@@ -165,6 +165,23 @@
                                             [states]="failedCallsChartOptions.states">
                                     </apx-chart>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-text">
+                                <mat-icon>timer</mat-icon>
+                                <label class="ps-1">Execution time period: {{ calls.timePeriod }}</label>
+                            </div>
+                            <br>
+                            <div class="footer-text">
+                                <mat-icon>calls</mat-icon>
+                                <label class="ps-1">
+                                    Number of calls: {{ calls.total }} |
+                                    Failed calls: {{ calls.failed }} |
+                                    P2P: {{ calls.p2pCalls }} |
+                                    On-net: {{ calls.onNetCalls }} |
+                                    Off-net: {{ calls.offNetCalls }}
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -319,6 +336,46 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
+                            <h1>Voice Quality (POLQA) <mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm">info_outline</mat-icon></h1>
+                        </div>
+                        <div class="card-body container-fluid">
+                            <div class="row">
+                                <div class="col">
+                                    <apx-chart #weeklyVQChart
+                                               [series]="weeklyVQChartOptions.series"
+                                               [chart]="weeklyVQChartOptions.chart"
+                                               [xaxis]="weeklyVQChartOptions.xAxis"
+                                               [yaxis]="weeklyVQChartOptions.yAxis"
+                                               [dataLabels]="weeklyVQChartOptions.dataLabels"
+                                               [grid]="weeklyVQChartOptions.grid"
+                                               [stroke]="weeklyVQChartOptions.stroke"
+                                               [title]="weeklyVQChartOptions.title"
+                                               [markers]="weeklyVQChartOptions.markers"
+                                               [legend]="weeklyVQChartOptions.legend"
+                                               [colors]="weeklyVQChartOptions.colors">
+                                    </apx-chart>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="footer-text">
+                                <mat-icon>timer</mat-icon>
+                                <label class="ps-1">Execution time period: {{ weeklyVQ.timePeriod }}</label>
+                            </div>
+                            <br>
+                            <div class="footer-text">
+                                <mat-icon>call</mat-icon>
+                                <label class="ps-1">Number of calls: {{ weeklyVQ.numberCalls }} | Number of
+                                    streams: {{ weeklyVQ.numberStreams }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card text-center mt-2">
+                        <div class="card-header">
                             <h1>Call Status History <mat-icon matTooltip="Represents the time and date of failed calls">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
@@ -358,46 +415,6 @@
                                             [plotOptions]="weeklyCallsStatusChartOptions.plotOptions"
                                     ></apx-chart>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <div class="card text-center mt-2">
-                        <div class="card-header">
-                            <h1>Voice Quality (POLQA) <mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm">info_outline</mat-icon></h1>
-                        </div>
-                        <div class="card-body container-fluid">
-                            <div class="row">
-                                <div class="col">
-                                    <apx-chart #weeklyVQChart
-                                               [series]="weeklyVQChartOptions.series"
-                                               [chart]="weeklyVQChartOptions.chart"
-                                               [xaxis]="weeklyVQChartOptions.xAxis"
-                                               [yaxis]="weeklyVQChartOptions.yAxis"
-                                               [dataLabels]="weeklyVQChartOptions.dataLabels"
-                                               [grid]="weeklyVQChartOptions.grid"
-                                               [stroke]="weeklyVQChartOptions.stroke"
-                                               [title]="weeklyVQChartOptions.title"
-                                               [markers]="weeklyVQChartOptions.markers"
-                                               [legend]="weeklyVQChartOptions.legend"
-                                               [colors]="weeklyVQChartOptions.colors">
-                                    </apx-chart>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="footer-text">
-                                <mat-icon>timer</mat-icon>
-                                <label class="ps-1">Execution time period: {{ weeklyVQ.timePeriod }}</label>
-                            </div>
-                            <br>
-                            <div class="footer-text">
-                                <mat-icon>call</mat-icon>
-                                <label class="ps-1">Number of calls: {{ weeklyVQ.numberCalls }} | Number of
-                                    streams: {{ weeklyVQ.numberStreams }}</label>
                             </div>
                         </div>
                     </div>

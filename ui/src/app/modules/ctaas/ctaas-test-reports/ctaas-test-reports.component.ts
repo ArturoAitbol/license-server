@@ -36,6 +36,7 @@ export class CtaasTestReportsComponent implements OnInit {
   searchFlag: boolean = true;
   todaySearchFlag: boolean = true;
   submitDisabled = false;
+  buttonFlag: boolean = true;
   readonly CALLING: string = 'Calling Reliability';
   readonly FEATURE: string = 'Feature Functionality';
   readonly VOICE: string = 'Voice Quality (POLQA)';
@@ -228,10 +229,13 @@ export class CtaasTestReportsComponent implements OnInit {
         break;
       case 'Feature Functionality':
         this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_FEATURE_FUNCTIONALITY);
+        this.buttonFlag = false;
         break;
       case 'Voice Quality (POLQA)':
         this.dateListBK = this.dateList.filter(res => res.report === ReportType.DAILY_VQ);
-    }      
+        this.buttonFlag = false;
+        break;
+    }    
   }
 
   ngOnDestroy() {
