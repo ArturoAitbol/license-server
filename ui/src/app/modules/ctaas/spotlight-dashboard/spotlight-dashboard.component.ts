@@ -42,7 +42,7 @@ export class SpotlightDashboardComponent implements OnInit{
   // Weekly calls status Heat Map variables
   weeklyCallsStatusHeatMap: { series:any , maxValues:any , summary:any };
   heatMapCallsSummary = { total: 0 , failed: 0 };
-  selectedStatus = 'failed';
+  selectedStatus = 'total';
 
   // Weekly VQ variables
   weeklyVQ = {timePeriod: '', numberCalls: 0, numberStreams: 0};
@@ -50,7 +50,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
   // Daily Failed Calls chart variables
   failedCallsChartOptions: Partial<ChartOptions>;
-  calls = { total: 0, failed: 0 };
+  calls = {timePeriod: '', total: 0, failed: 0, onNetCalls:0, offNetCalls:0, p2pCalls: 0 };
 
   // Daily Calling Reliabilty gaguge variables
   callingReliability = { value: 0, total: 0, p2p:0, onNet:0, offNet:0, period: '' };
@@ -66,7 +66,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
   //Daily filters variables
   filters = this.fb.group({
-    date: [""],
+    date: [moment().utc()],
     region: [""]
   });
 
@@ -81,7 +81,7 @@ export class SpotlightDashboardComponent implements OnInit{
   users: string[] = [];
   filteredRegions: Observable<{ country: string, state: string, city: string, displayName: string }[]>;
   filteredUsers: Observable<string[]>;
-  maxDate = moment();
+  maxDate = moment().utc();
   minDate = moment.utc('0001-01-01');
 
   selectedDate: Moment = null;
@@ -222,6 +222,11 @@ export class SpotlightDashboardComponent implements OnInit{
     
     this.calls.total += this.callingReliability.total;
     this.calls.failed += dailyCallingReliabiltyRes.callsByStatus.FAILED;
+    this.calls.p2pCalls += this.callingReliability.p2p;
+    this.calls.onNetCalls += this.callingReliability.onNet;
+    this.calls.offNetCalls += this.callingReliability.offNet;
+
+    this.calls.timePeriod = executionTime;
 
     // Daily Feature Functionality
     const dailyFeatureFunctionalityRes: any = res[0].featureFunctionality;
@@ -237,6 +242,9 @@ export class SpotlightDashboardComponent implements OnInit{
     
     this.calls.total += this.featureFunctionality.total;
     this.calls.failed += dailyFeatureFunctionalityRes.callsByStatus.FAILED;
+    this.calls.p2pCalls += this.featureFunctionality.p2p;
+    this.calls.onNetCalls += this.featureFunctionality.onNet;
+    this.calls.offNetCalls += this.featureFunctionality.offNet;
 
     // Daily Voice Quality
     const voiceQualityRes: any = res[1];
@@ -262,7 +270,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyFeatureFunctionalityChartOptions.xAxis.categories = weeklyFeatureFunctionalityData.categories;
     this.weeklyFeatureFunctionalityChartOptions.series = [
       {
-        name: "Percentage",
+        name: "Success %",
         data: weeklyFeatureFunctionalityData.series['percentage'],
         type: "line"
       },
@@ -283,7 +291,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.weeklyCallingReliabilityChartOptions.xAxis.categories = weeklyCallingReliabilityData.categories;
     this.weeklyCallingReliabilityChartOptions.series = [
       {
-        name: "Percentage",
+        name: "Success %",
         data: weeklyCallingReliabilityData.series['percentage'],
         type: "line"
       },
@@ -393,7 +401,14 @@ export class SpotlightDashboardComponent implements OnInit{
     this.networkQualityTrends.filters.disable();
     this.customerNetworkQuality.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    this.spotlightChartsService.getFilterOptions(subaccountId).subscribe((res: any) => {
+    let startDate, endDate;
+    if (this.selectedPeriod == "daily") {
+      startDate = endDate = this.selectedDate;
+    }else{
+      startDate = this.selectedRange.start;
+      endDate = this.selectedRange.end;
+    }
+    this.spotlightChartsService.getFilterOptions(subaccountId,startDate,endDate).subscribe((res: any) => {
       const regions = [];
       res.regions.map(region => {
         if (region.country !== null){
@@ -428,7 +443,14 @@ export class SpotlightDashboardComponent implements OnInit{
     this.networkQualityTrends.filters.disable();
     this.customerNetworkQuality.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    this.spotlightChartsService.getFilterOptions(subaccountId,"users",region ? region : null).subscribe((res: any) => {
+    let startDate, endDate;
+    if (this.selectedPeriod == "daily") {
+      startDate = endDate = this.selectedDate;
+    }else{
+      startDate = this.selectedRange.start;
+      endDate = this.selectedRange.end;
+    }
+    this.spotlightChartsService.getFilterOptions(subaccountId,startDate,endDate,"users",region ? region : null).subscribe((res: any) => {
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();
       this.weeklyFilters.enable();

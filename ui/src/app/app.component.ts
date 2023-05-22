@@ -312,7 +312,6 @@ export class AppComponent implements OnInit, OnDestroy {
                         }
                         this.previousDisplayedItemsSubscription = this.allowedSideBarItems.spotlight.subscribe(res => {
                             this.displayedSideBarItems = res;
-                            console.log(res);
                             this.validateSideBarItem();
                         });
                         this.enableSidebar();

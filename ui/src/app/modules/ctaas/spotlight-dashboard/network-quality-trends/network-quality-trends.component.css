@@ -6,6 +6,14 @@
 .card-header h1{
     margin-bottom: 8px;
     margin-top: 8px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+.card-header mat-icon {
+    margin-left: 15px;
 }
 
 .summary {
