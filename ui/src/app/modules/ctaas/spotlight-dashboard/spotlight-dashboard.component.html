@@ -30,7 +30,8 @@
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Daily Report | {{ selectedDate.format('MMMM-DD-YYYY') }}</h1>
+                <h1 class="text-center">Daily Report | {{ selectedDate.format('MMMM-DD-YYYY') }}
+                </h1>
             </div>
             <div class="date-picker-form">
                 <form [formGroup]="filters">
@@ -71,15 +72,18 @@
             <div class="row">
                 <div class="col-md-6">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
+                                     [description]="'Represents the status of call routing across the selected regions.'"
                                      [timePeriod]="callingReliability.period"
                                      [numberCalls]="callingReliability.total"
                                      [p2pCalls]="callingReliability.p2p"
                                      [onNetCalls]="callingReliability.onNet"
                                      [offNetCalls]="callingReliability.offNet"
-                                     (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)"></app-gauge-chart>
+                                     (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)">
+                                    </app-gauge-chart>
                 </div>
                 <div class="col-md-6">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
+                                     [description]="'Represents the status of various call features.'"
                                      [timePeriod]="featureFunctionality.period"
                                      [numberCalls]="featureFunctionality.total"
                                      [p2pCalls]="featureFunctionality.p2p"
@@ -92,7 +96,7 @@
                 <div class="col-md-6">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Voice Quality (POLQA)</h1>
+                            <h1>Voice Quality (POLQA)<mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm.">info_outline</mat-icon> </h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -131,7 +135,7 @@
                 <div class="col-md-6">
                     <div class="card text-center mt-2 full-col">
                         <div class="card-header">
-                            <h1>Failed Calls</h1>
+                            <h1>Failed Calls <mat-icon matTooltip = "Represents the calls failed due to routing or client issues.">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row justify-content-center failed-calls-body">
@@ -162,9 +166,6 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">View
-                                Detailed Table
-                            </button>
                         </div>
                         <div class="card-footer">
                             <div class="footer-text">
@@ -251,7 +252,7 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Feature Functionality</h1>
+                            <h1>Feature Functionality <mat-icon matTooltip="Represents the status of various call features">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -293,7 +294,7 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Calling Reliability</h1>
+                            <h1>Calling Reliability <mat-icon matTooltip="Represents the status of call routing across the selected regions.">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -335,7 +336,7 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Voice Quality (POLQA)</h1>
+                            <h1>Voice Quality (POLQA) <mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -375,7 +376,7 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Call Status History</h1>
+                            <h1>Call Status History <mat-icon matTooltip="Represents the time and date of failed calls">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row justify-content-center failed-calls-body">
