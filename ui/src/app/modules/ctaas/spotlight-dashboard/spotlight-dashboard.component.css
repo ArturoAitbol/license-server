@@ -12,6 +12,14 @@
 .card-header h1{
     margin-bottom: 8px;
     margin-top: 8px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+.card-header mat-icon {
+    margin-left: 15px;
 }
 
 .card-footer {
@@ -214,3 +222,9 @@ mat-form-field {
         flex-direction: column-reverse;
     }
 }
+
+::ng-deep .mat-tooltip {
+    background-color: rgb(22,53,89);
+    /* color: red; */
+    font-size: 16px;
+  }
