@@ -9,9 +9,14 @@
                     <label class="chart-label">Great! You had no failures</label>
                 </div>
             </ng-container>
-            <ng-container *ngIf="this.chartOptions.series[0] !== 100">
+            <ng-container *ngIf="this.chartOptions.series[0] < 100 && this.chartOptions.series[0] > 0">
                 <div class="col">
                     <label class="chart-label fail">Oops! There were some failures</label>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="this.chartOptions.series[0] === 0">
+                <div class="col">
+                    <label class="chart-label fail">No Tests Done</label>
                 </div>
             </ng-container>
         </div>
