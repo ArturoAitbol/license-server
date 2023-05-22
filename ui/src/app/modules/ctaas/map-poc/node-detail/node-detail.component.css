@@ -18,3 +18,15 @@ th{
 .total-calls-data {
     border-bottom: 0;
 }
+
+.viewDetail-button {
+    color: #243C66;
+    width: 20%;
+}
+
+
+@media (max-width: 600px) {
+ .summary-card-content{
+        overflow-x: auto;
+    }
+}

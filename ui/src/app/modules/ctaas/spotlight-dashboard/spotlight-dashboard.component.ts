@@ -20,6 +20,7 @@ import { map, startWith } from "rxjs/operators";
 import { NetworkQualityTrendsComponent } from "./network-quality-trends/network-quality-trends.component";
 import { Subject } from "rxjs/internal/Subject";
 import { CustomerNetworkQualityComponent } from './customer-network-quality/customer-network-quality/customer-network-quality.component';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -65,7 +66,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
   //Daily filters variables
   filters = this.fb.group({
-    date: [moment()],
+    date: [""],
     region: [""]
   });
 
@@ -103,7 +104,8 @@ export class SpotlightDashboardComponent implements OnInit{
   
   constructor(private subaccountService: SubAccountService,
               private spotlightChartsService: SpotlightChartsService,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private route: ActivatedRoute) {
     this.vqChartOptions = defaultVqChartOptions;
     this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
     this.weeklyCallingReliabilityChartOptions = defaultWeeklyCallingReliabilityChartOptions;
@@ -143,11 +145,30 @@ export class SpotlightDashboardComponent implements OnInit{
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
-      const selectedDate = this.setHoursOfDate(this.filters.get('date').value);
-      const selectedRegion = this.filters.get('region').value;
-      this.selectedDate = this.filters.get('date').value.clone().utc();
-      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
-      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
+      let selectedDate;
+      let selectedRegion = this.filters.get('region').value;
+      this.route.queryParams.subscribe((params: any) => {
+        if(params.date && this.filters.get('date').value === "") {
+          let nodeDate = params.date.split('T')[0]
+          selectedDate = this.setHoursOfDate(moment.utc(nodeDate));
+          this.filters.controls['date'].setValue(moment.utc(nodeDate));
+        }
+        if(this.filters.get('date').value !== "") {
+          selectedDate = this.setHoursOfDate(this.filters.get('date').value);
+          this.filters.controls['date'].setValue(this.filters.get('date').value);
+        } else {
+          selectedDate = this.setHoursOfDate(moment());
+          this.filters.controls['date'].setValue(moment());
+        }
+      });
+      try{
+
+        this.selectedDate = this.filters.get('date').value.clone().utc();
+        obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
+        obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
+      }catch(e) {
+        console.log(e)
+      }
     } else {
       
       const selectedStartDate: Moment = this.weeklyFilters.get('startDate').value;

@@ -547,18 +547,20 @@ export class MapPocComponent implements OnInit {
   }
 
   nodeDetails(key:any){
+    let nodeData = {...this.nodesMap[key], date: this.startDate};
     this.dialog.open(NodeDetailComponent, {
       width: '800px',
       disableClose: true,
-      data: this.nodesMap[key]
+      data: nodeData
     });
   }
 
   lineDetails(key:any){
+    let lineData = {...this.linesMap[key], date: this.startDate};
     this.dialog.open(LineDetailComponent, {
       width: '500px',
       disableClose: true,
-      data: this.linesMap[key]
+      data: lineData
     });
   }
 }

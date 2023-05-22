@@ -22,3 +22,8 @@ th{
 .text-right {
     margin-left: 10px; /* Adjust the spacing as needed */
 }
+
+.viewDetail-button {
+    color: #243C66;
+    width: 40%;
+}
