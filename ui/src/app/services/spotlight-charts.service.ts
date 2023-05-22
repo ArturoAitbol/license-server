@@ -165,10 +165,12 @@ export class SpotlightChartsService {
         return this.httpClient.get(this.API_URL + 'voiceQualityChart', { headers, params });
     }
 
-    public getFilterOptions(subaccountId: string,filter?: string, region?: { country: string, state: string, city: string }) {
+    public getFilterOptions(subaccountId: string, startDate: Moment, endDate: Moment, filter?: string, region?: { country: string, state: string, city: string }) {
         const headers = this.getHeaders();
         let params = new HttpParams();
         params = params.set('subaccountId', subaccountId);
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         if(filter) params = params.set('filter', filter);
         if(region) {
             if (region.country) params = params.set('country', region.country);
