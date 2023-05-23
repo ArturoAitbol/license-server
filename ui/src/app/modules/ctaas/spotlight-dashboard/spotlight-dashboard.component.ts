@@ -71,8 +71,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
   //Weekly filters variables
   weeklyFilters = this.fb.group({
-    startDate: [moment().utc().startOf('week')],
-    endDate: [moment().utc()],
+    date: [moment().utc()],
     region: [""]
   });
 
@@ -110,11 +109,23 @@ export class SpotlightDashboardComponent implements OnInit{
     this.failedCallsChartOptions = defaultFailedCallsChartOptions;
     this.weeklyCallsStatusChartOptions = defaultWeeklyCallsStatusChartOptions;
     this.weeklyVQChartOptions = defaultWeeklyVQChartOptions;
+    this.setWeeklyRange();
   }
 
   ngOnInit() {
     this.initAutocompletes();
     this.loadCharts();
+  }
+
+  getStartWeekDate(): Moment{
+    return this.weeklyFilters.get('date').value.clone().subtract(6, 'days').startOf('day');
+  }
+  getEndWeekDate(): Moment{
+    return this.setHoursOfDate(this.weeklyFilters.get('date').value.clone())
+  }
+
+  setWeeklyRange(){
+    this.selectedRange = { start: this.getStartWeekDate(), end: this.getEndWeekDate() };
   }
 
   chartsStatus(chartCompleted:boolean){
@@ -145,15 +156,14 @@ export class SpotlightDashboardComponent implements OnInit{
     if (this.selectedPeriod == "daily") {
       const selectedDate = this.setHoursOfDate(this.filters.get('date').value);
       const selectedRegion = this.filters.get('region').value;
-      this.selectedDate = this.filters.get('date').value.clone().utc();
+      this.selectedDate = selectedDate.clone().utc();
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
     } else {
-      
-      const selectedStartDate: Moment = this.weeklyFilters.get('endDate').value.clone().utc().subtract(6, "days");
-      const selectedEndDate: Moment = this.setHoursOfDate(this.weeklyFilters.get('endDate').value);
+      this.setWeeklyRange();
+      const selectedStartDate: Moment = this.selectedRange.start.clone();
+      const selectedEndDate: Moment = this.selectedRange.end.clone();
       const selectedRegion = this.weeklyFilters.get('region').value;
-      this.selectedRange = {start: this.weeklyFilters.get('endDate').value.clone().utc().subtract(6, "days"), end: this.setHoursOfDate(this.weeklyFilters.get('endDate').value)};
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, selectedRegion));

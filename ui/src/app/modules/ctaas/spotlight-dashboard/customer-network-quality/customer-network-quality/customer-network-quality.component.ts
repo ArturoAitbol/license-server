@@ -84,10 +84,8 @@ export class CustomerNetworkQualityComponent implements OnInit {
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
     const selectedUser = this.filters.get('user').value;
-    const selectedStartDate: Moment = this.endDate.clone().utc().subtract(6, "days");
-    const selectedEndDate: Moment = this.setHoursOfDate(this.endDate);
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(selectedStartDate, selectedEndDate, this.region, selectedUser, subaccountId, this.groupBy));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(selectedStartDate,selectedEndDate, this.region, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.region, selectedUser, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(this.startDate,this.endDate, this.region, selectedUser, subaccountId));
     forkJoin(obs).subscribe((res: any) => {
       // Customer Network Quality
       this.customerNetworkQualityData = res[0];
@@ -130,12 +128,6 @@ export class CustomerNetworkQualityComponent implements OnInit {
     });
   }
 
-  setHoursOfDate(date){
-    const today = moment().utc();
-    if(date.format("MM-DD-YYYY") === today.format("MM-DD-YYYY"))
-      return date.hour(today.get("hour")).minute(today.get("minute")).seconds(today.get("seconds"));
-    return date.endOf("day");
-  }
 
   navigateToPolqaDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];

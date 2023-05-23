@@ -216,7 +216,7 @@
                             <div class="weekly-date-field">
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
-                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="endDate" readonly>
+                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
                                     <mat-hint>MM/DD/YYYY</mat-hint>
                                     <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
                                     <mat-datepicker #dp></mat-datepicker>
@@ -422,16 +422,16 @@
             </div>
         </ng-container>
         <app-customer-network-quality #customerNetworkQuality
-            [startDate]="this.weeklyFilters.get('startDate').value"
-            [endDate]="this.weeklyFilters.get('endDate').value"
+            [startDate]="getStartWeekDate()"
+            [endDate]="getEndWeekDate()"
             [groupBy]="'day'"
             [region]="this.filters.get('region').value"
             [users]="this.users" (chartStatus)="chartsStatus($event)"
             [isLoading]="this.isloading">
         </app-customer-network-quality>
         <app-network-quality-trends #networkQualityTrends 
-            [startDate]="this.weeklyFilters.get('startDate').value" 
-            [endDate]="this.weeklyFilters.get('endDate').value" 
+            [startDate]="getStartWeekDate()"
+            [endDate]="getEndWeekDate()"
             [groupBy]="'day'"
             [region]="this.filters.get('region').value" 
             [users]="this.users" (chartStatus)="chartsStatus($event)"
