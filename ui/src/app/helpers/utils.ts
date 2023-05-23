@@ -1,7 +1,7 @@
 import { ISidebar } from "../model/sidebar.model";
 import { permissions } from "./role-permissions";
 import { FeatureToggleService } from "../services/feature-toggle.service";
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 
 export class Utility {
 
@@ -174,6 +174,20 @@ export class Utility {
         parsedSeconds = parsedSeconds > 9 ? parsedSeconds : '0' + parsedSeconds.toString();
         parsedDate = `${parsedYear}${parsedMonth}${parsedDay}${parsedHours}${parsedMinutes}${parsedSeconds}`;
         return parsedDate;
+    }
+
+    public static setHoursOfDate(date){
+        const today = moment().utc();
+        if(date.format("MM-DD-YYYY") === today.format("MM-DD-YYYY"))
+            return date.hour(today.get("hour")).minute(today.get("minute")).seconds(today.get("seconds"));
+        return date.endOf("day");
+    }
+
+    public static setMinutesOfDate(date){
+        const today = moment().utc();
+        if(date.format("MM-DD-YYYY HH") === today.format("MM-DD-YYYY HH"))
+            return date.minute(today.get("minute")).seconds(today.get("seconds"));
+        return date.endOf("hour");
     }
 
 }

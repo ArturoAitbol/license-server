@@ -9,6 +9,7 @@ import { defaultPolqaChartOptions } from '../../initial-chart-config';
 import { environment } from 'src/environments/environment';
 import { ReportType } from 'src/app/helpers/report-type';
 import { map, startWith } from 'rxjs/operators';
+import { Utility } from 'src/app/helpers/utils';
 
 @Component({
   selector: 'app-customer-network-quality',
@@ -135,10 +136,10 @@ export class CustomerNetworkQualityComponent implements OnInit {
     if(this.groupBy==='hour'){
       const [ startTime, endTime ] = category.split('-');
       startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
-      endDate = this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
+      endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
     }else{
       startDate = moment(category).utc().hour(0);
-      endDate = moment(category).utc().hour(23).minutes(59).seconds(59);
+      endDate = Utility.setHoursOfDate(moment(category).utc());
     }
    
     const parsedStartTime = startDate.format('YYMMDDHHmmss');

@@ -121,7 +121,7 @@ export class SpotlightDashboardComponent implements OnInit{
     return this.weeklyFilters.get('date').value.clone().subtract(6, 'days').startOf('day');
   }
   getEndWeekDate(): Moment{
-    return this.setHoursOfDate(this.weeklyFilters.get('date').value.clone())
+    return Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
   }
 
   setWeeklyRange(){
@@ -154,7 +154,7 @@ export class SpotlightDashboardComponent implements OnInit{
     const obs = [];
 
     if (this.selectedPeriod == "daily") {
-      const selectedDate = this.setHoursOfDate(this.filters.get('date').value);
+      const selectedDate = Utility.setHoursOfDate(this.filters.get('date').value);
       const selectedRegion = this.filters.get('region').value;
       this.selectedDate = selectedDate.clone().utc();
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
@@ -185,13 +185,6 @@ export class SpotlightDashboardComponent implements OnInit{
       this.isloading = false;
       this.chartsStatus(true);
     });
-  }
-
-  setHoursOfDate(date){
-    const today = moment().utc();
-    if(date.format("MM-DD-YYYY") === today.format("MM-DD-YYYY"))
-      return date.hour(today.get("hour")).minute(today.get("minute")).seconds(today.get("seconds"));
-    return date.endOf("day");
   }
   
 
