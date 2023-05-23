@@ -58,7 +58,7 @@ export class SpotlightDashboardComponent implements OnInit{
   featureFunctionality = { value: 0, total: 0, p2p:0, onNet:0, offNet:0,  period: '' };
 
   // Daily Feature Functionality gaguge variables
-  vq = { period: '', calls: 0, streams: 0 };
+  vq = { period: '', calls: 0, streams: 0, numericValues: [] };
 
   //Selected graphs variables
   selectedPeriod = 'daily';
@@ -239,9 +239,10 @@ export class SpotlightDashboardComponent implements OnInit{
     const voiceQualityRes: any = res[1];
     this.vq.calls = voiceQualityRes.summary.calls;
     this.vq.streams = voiceQualityRes.summary.streams;
-    this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
+    this.vqChartOptions.series = [ { name: 'percentages', data: voiceQualityRes.percentages }];
     this.vqChartOptions.xAxis.categories = voiceQualityRes.categories;
     this.vq.period = executionTime;
+    this.vq.numericValues = voiceQualityRes.numericValues;
 
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [(this.calls.failed / this.calls.total * 100 || 0)];
