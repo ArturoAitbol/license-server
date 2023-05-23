@@ -27,7 +27,6 @@ import { SpotlightDashboardComponent } from './spotlight-dashboard/spotlight-das
 import { NgApexchartsModule } from "ng-apexcharts";
 import { NetworkQualityComponent } from './spotlight-dashboard/network-quality/network-quality.component';
 import { CallbackComponent } from './callback/callback.component';
-import { CustomerNetworkQualityComponent } from './spotlight-dashboard/customer-network-quality/customer-network-quality/customer-network-quality.component';
 import { CallbackTimerComponent } from './callback/callback-timer/callback-timer.component';
 
 
@@ -53,7 +52,6 @@ import { CallbackTimerComponent } from './callback/callback-timer/callback-timer
     SpotlightDashboardComponent,
     NetworkQualityComponent,
     CallbackComponent,
-    CustomerNetworkQualityComponent,
     CallbackTimerComponent,
   ],
   imports: [
