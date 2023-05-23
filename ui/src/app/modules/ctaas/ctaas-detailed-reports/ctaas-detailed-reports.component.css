@@ -31,7 +31,6 @@ table {
 
 .table-section {
   /* margin-top: 5%; */
-  overflow-x: auto;
 }
 
 th.mat-sort-header-sorted {
@@ -47,7 +46,6 @@ th.mat-sort-header-sorted {
 .table-container {
   position: relative;
   min-height: 200px;
-  overflow: auto;
 }
 
 .no-data-found {
@@ -77,6 +75,7 @@ mat-card {
   margin: 0px;
   padding: 0px;
   overflow: auto;
+  justify-content: center;
 }
 
 ::ng-deep tr.mat-header-row {
@@ -106,6 +105,9 @@ mat-card {
   background: lightgray;
 }
 
+.mat-expansion-panel-header {
+  margin: 0;
+}
 .inner-accor {
   list-style-type: none !important;
   display: flex !important;
@@ -125,3 +127,14 @@ mat-card {
   padding: 1%;
 }
 
+@media (max-width: 1281px) {
+  .custom-col{
+    padding-left: 4%;
+  }
+}
+
+@media (max-width: 600px) {
+  .column-content{
+    overflow: auto !important;
+  }
+}

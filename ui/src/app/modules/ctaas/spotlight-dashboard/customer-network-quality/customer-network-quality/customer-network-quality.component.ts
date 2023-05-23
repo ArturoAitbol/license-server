@@ -84,9 +84,8 @@ export class CustomerNetworkQualityComponent implements OnInit {
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
     const selectedUser = this.filters.get('user').value;
-
     obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.region, selectedUser, subaccountId, this.groupBy));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(this.startDate, this.endDate, this.region, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualitySummary(this.startDate,this.endDate, this.region, selectedUser, subaccountId));
     forkJoin(obs).subscribe((res: any) => {
       // Customer Network Quality
       this.customerNetworkQualityData = res[0];
@@ -128,6 +127,7 @@ export class CustomerNetworkQualityComponent implements OnInit {
       this.privateIsLoading = false;
     });
   }
+
 
   navigateToPolqaDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
