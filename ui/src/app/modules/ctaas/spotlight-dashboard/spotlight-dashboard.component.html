@@ -207,7 +207,7 @@
     <ng-container *ngIf="selectedPeriod === 'weekly'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Weekly Report | {{ selectedDate.format('MMMM-DD-YYYY') }}</h1>
+                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MMMM-DD-YYYY')}} – {{selectedRange.end.format('MMMM-DD-YYYY')}}</span></h1>
             </div>
             <div class="date-picker-form">
                 <form [formGroup]="weeklyFilters">
@@ -216,13 +216,10 @@
                             <div class="weekly-date-field">
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
-                                    <mat-date-range-input [formGroup]="weeklyFilters" [rangePicker]="dp" [max]="maxDate">
-                                        <input matStartDate formControlName="startDate" placeholder="Start date" readonly>
-                                        <input matEndDate formControlName="endDate" placeholder="End date" readonly>
-                                    </mat-date-range-input>
-                                    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="endDate" readonly>
+                                    <mat-hint>MM/DD/YYYY</mat-hint>
                                     <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
-                                    <mat-date-range-picker lcDateRange [maxDate]="maxDate.toDate()" [minDate]="minDate.toDate()" #dp></mat-date-range-picker>
+                                    <mat-datepicker #dp></mat-datepicker>
                                 </mat-form-field>
                             </div>
                             <div class="region-field">
@@ -248,6 +245,9 @@
                     </div>
                 </form>
             </div>
+            <!-- <div class="row text-center">
+                <h2 *ngIf="selectedRange!==null">{{selectedRange.start.format('MMMM-DD-YYYY')}} – {{selectedRange.end.format('MMMM-DD-YYYY')}}</h2>
+            </div> -->
             <div class="row">
                 <div class="col-12">
                     <div class="card text-center mt-2">
