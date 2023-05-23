@@ -20,6 +20,7 @@ import { PowerBIReportEmbedComponent } from 'powerbi-client-angular';
 import { BannerService } from "../../../services/alert-banner.service";
 import { FeatureToggleService } from 'src/app/services/feature-toggle.service';
 import { Subject } from "rxjs/internal/Subject";
+import { Utility } from 'src/app/helpers/utils';
 
 @Component({
     selector: 'app-ctaas-dashboard',
@@ -51,9 +52,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     readonly WEEKLY: string = 'weekly';
     readonly TEST1: string = 'test1';
     readonly TEST2: string = 'test2';
-    readonly FEATURE_FUNCTIONALITY_NAME: string = 'Feature Functionality';
-    readonly CALLING_RELIABILITY_NAME: string = 'Calling Reliability';
-    readonly VQ_NAME: string = 'Voice Quality User Experience';
     featureToggleKey: string = 'daily';
     // embedded power bi changes
     // CSS Class to be passed to the wrapper
@@ -126,6 +124,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     readonly LEGACY_MODE: string = 'legacy_view';
     readonly POWERBI_MODE: string = 'powerbi_view';
     readonly REPORT_TYPE: string = 'report';
+    readonly ReportType = ReportType;
     viewMode = new FormControl(this.LEGACY_MODE);
     powerbiReportResponse: IPowerBiReponse;
     enableEmbedTokenCache: boolean = true;
@@ -139,6 +138,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     timerIsRunning = false;
     tabChanged = false;
     @ViewChild('reportEmbed') reportContainerDivElement: any;
+
     constructor(
         private dialog: MatDialog,
         private msalService: MsalService,
@@ -305,9 +305,9 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
                     const resultant = { daily: [], weekly: [] };
                     result.forEach((e) => {
                         if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                            resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType), startDate: e.startDateStr, endDate: e.endDateStr });
+                            resultant.daily.push({ imageBase64: e.imageBase64, reportType: Utility.getReportNameByReportTypeOrTestPlan(e.reportType), startDate: e.startDateStr, endDate: e.endDateStr });
                         } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
-                            resultant.weekly.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
+                            resultant.weekly.push({ imageBase64: e.imageBase64, reportType: Utility.getReportNameByReportTypeOrTestPlan(e.reportType) });
                         }
                     });
                     this.ctaasDashboardService.setReports(result);
@@ -330,33 +330,6 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
             console.error('Error loading dashboard reports | ', e.error);
             this.snackBarService.openSnackBar('Error loading dashboard, please connect tekVizion admin', 'Ok');
         });
-    }
-
-    /**
-     * show/hide last updated element by condition
-     * @param index: string 
-     * @returns: boolean 
-     */
-    // showLastUpdatedTSByCondition(index: string): boolean {
-    //     return this.lastModifiedDate && (+index) === 0;
-    // }
-    /**
-     * get report name by report type
-     * @param reportType: string 
-     * @returns: string 
-     */
-    getReportNameByType(reportType: string): string {
-        switch (reportType) {
-            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
-            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
-                return this.FEATURE_FUNCTIONALITY_NAME;
-            case ReportType.DAILY_CALLING_RELIABILITY:
-            case ReportType.WEEKLY_CALLING_RELIABILITY:
-                return this.CALLING_RELIABILITY_NAME;
-            case ReportType.DAILY_VQ:
-            case ReportType.WEEKLY_VQ:
-                return this.VQ_NAME;
-        }
     }
 
     /**

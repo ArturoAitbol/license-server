@@ -1,6 +1,7 @@
 import { ISidebar } from "../model/sidebar.model";
 import { permissions } from "./role-permissions";
 import { FeatureToggleService } from "../services/feature-toggle.service";
+import { ReportType } from "./report-type";
 
 export class Utility {
 
@@ -173,6 +174,52 @@ export class Utility {
         parsedSeconds = parsedSeconds > 9 ? parsedSeconds : '0' + parsedSeconds.toString();
         parsedDate = `${parsedYear}${parsedMonth}${parsedDay}${parsedHours}${parsedMinutes}${parsedSeconds}`;
         return parsedDate;
+    }
+    
+    /**
+     * get report name by report type
+     * @param reportType: string 
+     * @returns: string 
+     */
+    public static getReportNameByReportTypeOrTestPlan(reportType: string): string {
+        switch (reportType) {
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
+            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
+            case ReportType.TAP_FEATURE_FUNCTIONALITY:
+                return ReportType.FEATURE_FUNCTIONALITY_NAME;
+            case ReportType.DAILY_CALLING_RELIABILITY:
+            case ReportType.WEEKLY_CALLING_RELIABILITY:
+            case ReportType.TAP_CALLING_RELIABILITY:
+                return ReportType.CALLING_RELIABILITY_NAME;
+            case ReportType.DAILY_VQ:
+            case ReportType.WEEKLY_VQ:
+            case ReportType.TAP_VQ:
+                return ReportType.VQ_NAME;
+        }
+    }
+    
+    /**
+     * get report name by report type
+     * @param tag: string 
+     * @returns: string 
+     */
+    public static getTAPTestPlaNameByReportTypeOrName(tag: string): string {
+        switch (tag) {
+            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
+            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
+            case ReportType.FEATURE_FUNCTIONALITY_NAME:
+                return ReportType.TAP_FEATURE_FUNCTIONALITY;
+            case ReportType.DAILY_CALLING_RELIABILITY:
+            case ReportType.WEEKLY_CALLING_RELIABILITY:
+            case ReportType.CALLING_RELIABILITY_NAME:
+                return ReportType.TAP_CALLING_RELIABILITY;
+            case ReportType.DAILY_VQ:
+            case ReportType.WEEKLY_VQ:
+            case ReportType.VQ_NAME:
+                return ReportType.TAP_VQ;
+            default:
+                return tag;
+        }
     }
 
 }

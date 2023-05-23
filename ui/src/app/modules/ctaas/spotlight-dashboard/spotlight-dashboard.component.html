@@ -89,7 +89,8 @@
                                      [p2pCalls]="featureFunctionality.p2p"
                                      [onNetCalls]="featureFunctionality.onNet"
                                      [offNetCalls]="featureFunctionality.offNet"
-                                     (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY)"></app-gauge-chart>
+                                     (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.TAP_CALLING_RELIABILITY+','+ReportType.TAP_VQ)">
+                    </app-gauge-chart>
                 </div>
             </div>
             <div class="row">
@@ -166,6 +167,9 @@
                                     </apx-chart>
                                 </div>
                             </div>
+                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">View
+                                Detailed Report
+                            </button>
                         </div>
                         <div class="card-footer">
                             <div class="footer-text">
