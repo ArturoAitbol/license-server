@@ -150,10 +150,10 @@ export class SpotlightDashboardComponent implements OnInit{
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
     } else {
       
-      const selectedStartDate: Moment = this.weeklyFilters.get('startDate').value;
+      const selectedStartDate: Moment = this.weeklyFilters.get('endDate').value.clone().utc().subtract(6, "days");
       const selectedEndDate: Moment = this.setHoursOfDate(this.weeklyFilters.get('endDate').value);
       const selectedRegion = this.weeklyFilters.get('region').value;
-      this.selectedRange = {start: this.weeklyFilters.get('startDate').value.clone().utc(), end: this.weeklyFilters.get('endDate').value.clone().utc()};
+      this.selectedRange = {start: this.weeklyFilters.get('endDate').value.clone().utc().subtract(6, "days"), end: this.setHoursOfDate(this.weeklyFilters.get('endDate').value)};
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, selectedRegion));
@@ -346,10 +346,10 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   navigateToDetailedTable(reportType?: string) {
-    const startDate = this.selectedDate.toDate();
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = this.selectedDate.toDate();
-    endDate.setHours(23, 59, 59, 999);
+    const startDate = this.selectedDate.clone().utc();
+    startDate.hours(0).minutes(0).seconds(0);
+    const endDate = this.selectedDate.clone().utc();
+    endDate.hours(23).minutes(59).seconds(59).milliseconds(999);
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
     const reportFilter = reportType? "type=" + reportType : "status=FAILED";
