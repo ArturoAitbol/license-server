@@ -2,7 +2,7 @@
     <div class="col-12 p-0">
         <div class="card text-center mt-2">
             <div class="card-header">
-                <h1>Network Quality Trends</h1>
+                <h1>Network Quality Trends <mat-icon matTooltip="Represents detailed insight into the overall health of network with the detailed reports of received packet loss , round trip time , jitter and sent bit rate.">info_outline</mat-icon></h1>
             </div>
             <div class="card-body container-fluid">
                 <form [formGroup]="filters">
@@ -44,7 +44,7 @@
                         <div class="summary row mt-3">
                             <div class="col-md-3 p-2 border metrics">
                                 <div class="metrics-values">
-                                    <mat-icon>call_quality</mat-icon>
+                                    <mat-icon>power_off</mat-icon>
                                     <p>{{ summary.packetLoss }}</p>
                                 </div>
                                 <label class="blue-label">Max. Packet Loss Rate (%)</label>

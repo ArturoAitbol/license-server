@@ -189,8 +189,8 @@ export class CtaasTestReportsComponent implements OnInit {
     }
     const startDate = moment.utc().format('YYYY-MM-DD 00:00:00');
     const endDate = moment.utc().format('YYYY-MM-DD HH:mm:ss');
-    const featureParsedStartTime = Utility.parseReportDate(new Date(startDate));
-    const featureParsedEndTime = Utility.parseReportDate(new Date(endDate));
+    const featureParsedStartTime = Utility.parseReportDate(moment.utc(startDate));
+    const featureParsedEndTime = Utility.parseReportDate(moment.utc(endDate));
     const featureUrl = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${featureParsedStartTime}&end=${featureParsedEndTime}`;
     window.open(featureUrl);
   }
@@ -210,8 +210,8 @@ export class CtaasTestReportsComponent implements OnInit {
   onClickMoreDetails(selectedReport: any): void {
     const startDate = selectedReport.startDate.split('UTC')[0];
     const endDate = selectedReport.endDate.split('UTC')[0];
-    const startTime = Utility.parseReportDate(new Date(startDate));
-    const endTime = Utility.parseReportDate(new Date(endDate));
+    const startTime = Utility.parseReportDate(moment(startDate));
+    const endTime = Utility.parseReportDate(moment(endDate));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${selectedReport.report}&start=${startTime}&end=${endTime}`;
     window.open(url);
 }
