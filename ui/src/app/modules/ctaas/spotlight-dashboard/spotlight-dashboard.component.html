@@ -192,20 +192,20 @@
                 </div>
             </div>
         </ng-container>
-        <app-customer-network-quality #customerNetworkQuality 
-            [startDate]="this.filters.get('date').value" 
-            [endDate]="this.filters.get('date').value" 
+<!--        <app-customer-network-quality #customerNetworkQuality -->
+<!--            [startDate]="this.filters.get('date').value" -->
+<!--            [endDate]="this.filters.get('date').value" -->
+<!--            [region]="this.filters.get('region').value"-->
+<!--            [users]="this.users" (chartStatus)="chartsStatus($event)"-->
+<!--            [isLoading]="this.isloading">-->
+<!--        </app-customer-network-quality>-->
+        <app-network-quality #networkQuality
+            [startDate]="this.filters.get('date').value"
+            [endDate]="this.filters.get('date').value"
             [region]="this.filters.get('region').value"
             [users]="this.users" (chartStatus)="chartsStatus($event)"
             [isLoading]="this.isloading">
-        </app-customer-network-quality>
-        <app-network-quality-trends #networkQualityTrends 
-            [startDate]="this.filters.get('date').value" 
-            [endDate]="this.filters.get('date').value" 
-            [region]="this.filters.get('region').value" 
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-network-quality-trends>
+        </app-network-quality>
         <br>
     </ng-container>
     <ng-container *ngIf="selectedPeriod === 'weekly'">
@@ -425,22 +425,22 @@
                 </div>
             </div>
         </ng-container>
-        <app-customer-network-quality #customerNetworkQuality
-            [startDate]="getStartWeekDate()"
-            [endDate]="getEndWeekDate()"
-            [groupBy]="'day'"
-            [region]="this.filters.get('region').value"
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-customer-network-quality>
-        <app-network-quality-trends #networkQualityTrends 
+<!--        <app-customer-network-quality #customerNetworkQuality-->
+<!--            [startDate]="getStartWeekDate()"-->
+<!--            [endDate]="getEndWeekDate()"-->
+<!--            [groupBy]="'day'"-->
+<!--            [region]="this.filters.get('region').value"-->
+<!--            [users]="this.users" (chartStatus)="chartsStatus($event)"-->
+<!--            [isLoading]="this.isloading">-->
+<!--        </app-customer-network-quality>-->
+        <app-network-quality #networkQuality
             [startDate]="getStartWeekDate()"
             [endDate]="getEndWeekDate()"
             [groupBy]="'day'"
             [region]="this.filters.get('region').value" 
             [users]="this.users" (chartStatus)="chartsStatus($event)"
             [isLoading]="this.isloading">
-        </app-network-quality-trends>
+        </app-network-quality>
         <br>
     </ng-container>
 </div>
