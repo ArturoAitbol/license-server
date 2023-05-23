@@ -72,7 +72,13 @@ const defaultGaugeChartOptions: Partial<ChartOptions> = {
                 type: 'none',
             }
         },
-    }
+    },
+    tooltip: {
+        enabled: true,
+        fillSeriesColor: false,
+    },
+    colors: ['#83C96B'],
+    labels: []
 };
 
 export { defaultGaugeChartOptions }
