@@ -107,22 +107,6 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please connect tekVizion admin', 'Ok');
   });
 
-  it('should get the name of a given report when calling getReportNameByType()',()=>{
-
-    let reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_FEATURE_FUNCTIONALITY);
-    expect(reportName).toBe("Feature Functionality");
-
-    reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_CALLING_RELIABILITY);
-    expect(reportName).toBe("Calling Reliability");
-
-    // as media injection is not ready yet, hence disabling VQ for now.
-    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_VQ);
-    // expect(reportName).toBe("VQ");
-
-    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.WEEKLY_VQ);
-    // expect(reportName).toBe("VQ");
-  })
-
   it('should heck whether dashboard has any data to display or not when calling checkForDashboardDetails()',()=>{
     ctaasHistoricalDashboardComponentTestInstance.resultantImagesList.length = 0;
     expect(ctaasHistoricalDashboardComponentTestInstance.checkForDashboardDetails()).toBeFalse();

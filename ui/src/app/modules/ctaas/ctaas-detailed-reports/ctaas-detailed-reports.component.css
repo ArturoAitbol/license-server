@@ -96,6 +96,11 @@ mat-card {
   font-weight: 700;
 }
 
+.text-s2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
 .accordian-container .mat-expanded .mat-expansion-panel-header {
   background: lightgray;
 }

@@ -37,11 +37,11 @@ describe (' UI test of more-details component', () => {
         spyOn(console, 'error').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
 
-        onboardWizardComponentInstance.type = null;
+        onboardWizardComponentInstance.types = null;
         fixture.detectChanges();
         onboardWizardComponentInstance.fetchDashboardReportDetails();
 
-        expect(onboardWizardComponentInstance.type).toEqual(null);
+        expect(onboardWizardComponentInstance.types).toEqual(null);
     });
 
     it('it should set variables when reports are empty', () => {

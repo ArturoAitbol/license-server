@@ -238,7 +238,7 @@ export class SpotlightDashboardComponent implements OnInit{
     this.vq.numericValues = voiceQualityRes.numericValues;
 
     // Daily Failed Calls Chart
-    this.failedCallsChartOptions.series = [(this.calls.failed / this.calls.total * 100 || 0)];
+    this.failedCallsChartOptions.series = [Number((this.calls.failed / this.calls.total * 100 || 0).toFixed(2))];
 
     const region = this.filters.get('region').value;
     if(region !== "")

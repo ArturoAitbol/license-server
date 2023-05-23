@@ -160,7 +160,7 @@ export class NetworkQualityTrendsComponent implements OnInit {
 
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_CALLING_RELIABILITY }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
     window.open(url);
   }
 
