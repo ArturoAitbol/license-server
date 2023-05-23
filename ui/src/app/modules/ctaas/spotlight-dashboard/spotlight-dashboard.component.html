@@ -76,6 +76,7 @@
                                      [p2pCalls]="callingReliability.p2p"
                                      [onNetCalls]="callingReliability.onNet"
                                      [offNetCalls]="callingReliability.offNet"
+                                     [seriesName]="'Pass'"
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)"></app-gauge-chart>
                 </div>
                 <div class="col-md-6">
@@ -85,6 +86,7 @@
                                      [p2pCalls]="featureFunctionality.p2p"
                                      [onNetCalls]="featureFunctionality.onNet"
                                      [offNetCalls]="featureFunctionality.offNet"
+                                     [seriesName]="'Pass'"
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY)"></app-gauge-chart>
                 </div>
             </div>
@@ -106,6 +108,7 @@
                                                [markers]="vqChartOptions.markers"
                                                [plotOptions]="vqChartOptions.plotOptions"
                                                [legend]="vqChartOptions.legend"
+                                               [tooltip]="vqChartOptions.tooltip"
                                                [colors]="vqChartOptions.colors">
                                     </apx-chart>
                                 </div>
@@ -158,6 +161,8 @@
                                             [labels]="failedCallsChartOptions.labels"
                                             [fill]="failedCallsChartOptions.fill"
                                             [grid]="failedCallsChartOptions.grid"
+                                            [tooltip]="failedCallsChartOptions.tooltip"
+                                            [colors]="failedCallsChartOptions.colors"
                                             [states]="failedCallsChartOptions.states">
                                     </apx-chart>
                                 </div>
