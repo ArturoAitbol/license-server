@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute} from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
+import moment from 'moment';
 import { ReportType } from 'src/app/helpers/report-type';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
@@ -30,6 +31,7 @@ export class DetailedReportsCompoment implements OnInit {
   canDisableDownloadBtn: boolean = false;
   detailedTestReport: any = [];
   openFlag: any = false;
+  lowerDate: any;
   obj: any = {};
   fromMediaTimeStampsList: string[] = [];
   toMediaTimeStampsList: string[] = [];
@@ -112,8 +114,35 @@ export class DetailedReportsCompoment implements OnInit {
           } else {
             this.reportResponse.endpoints = [];
           }
+
+          this.reportResponse.summary.summaryStartTime =  this.reportResponse.results[0].startTime;
+          this.reportResponse.summary.summaryEndTime =  this.reportResponse.results[this.reportResponse.results.length -1].endTime;
+
           this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
           this.detailedTestReport.forEach((obj: any) => {
+            let fromCount = 0;
+            let toCount = 0;
+            let fromSumarize = 0, toSumarize = 0;
+            for(let i=0 ; i< obj.from.mediaStats.length; i ++) {
+              if(obj.from.mediaStats[i].data.POLQA && obj.from.mediaStats[i].data.POLQA !== 0) {
+                let fromPolqaSum = parseFloat(obj.from.mediaStats[i].data.POLQA);
+                fromSumarize += fromPolqaSum;
+                fromCount++;
+              }
+              if(obj.to.mediaStats[i].data.POLQA && obj.to.mediaStats[i].data.POLQA !== 0) {
+                let toPolqaSum = parseFloat(obj.to.mediaStats[i].data.POLQA);
+                toSumarize += toPolqaSum;
+                toCount++;
+              }
+            }
+            if(fromSumarize !== 0 && fromCount !== 0 ) {
+              let fromAvg = (fromSumarize / fromCount).toFixed(2);
+              obj.fromPolqaAvg = fromAvg;
+            }
+            if(toSumarize !== 0 && toCount !== 0) {
+              let toAvg = (toSumarize / toCount).toFixed(2);
+              obj.toPolqaAvg = toAvg;
+            }
             obj.closeKey = false;
             obj.fromnoDataFoundFlag = false;
             obj.tonoDataFoundFlag = false;
@@ -282,8 +311,8 @@ export class DetailedReportsCompoment implements OnInit {
       { header: 'Test Cases Executed', value: 'total' },
       { header: 'Passed', value: 'passed' },
       { header: 'Failed', value: 'failed' },
-      { header: 'Start Time', value: 'startTime' },
-      { header: 'End Time', value: 'endTime' }
+      { header: 'Start Time', value: 'summaryStartTime' },
+      { header: 'End Time', value: 'summaryEndTime' }
     ];
 
     this.detailedTestFeatureandCallReliability = [
