@@ -101,6 +101,9 @@ mat-card {
   background: lightgray;
 }
 
+.mat-expansion-panel-header {
+  margin: 0;
+}
 .inner-accor {
   list-style-type: none !important;
   display: flex !important;

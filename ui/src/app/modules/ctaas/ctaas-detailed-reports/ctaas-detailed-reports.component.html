@@ -66,9 +66,9 @@
             <mat-accordion class="row">
                 <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
                     <mat-expansion-panel-header class="row">
-                        <mat-panel-title  class="col-lg-1 col-md-1 col-sm-1 col-xs-2" style="color: black;font-weight: 500;"> Test Case
+                        <mat-panel-title  class="col-lg-1 col-md-1 col-sm-1 col-xs-2" style="color: black;font-weight: 500; margin-right: 8.5%;"> Test Case
                         </mat-panel-title>
-                        <mat-panel-title class="col-lg-1 col-md-1 col-sm-1 col-xs-2" style="color: black;font-weight: 500;"> Start Date
+                        <mat-panel-title class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="color: black;font-weight: 500;"> Start Date
                         </mat-panel-title>
                         <mat-panel-title class="col-lg-1 col-md-1 col-sm-1 col-xs-2" style="color: black;font-weight: 500"> From
                         </mat-panel-title>
@@ -76,7 +76,7 @@
                         </mat-panel-title>
                         <mat-panel-title class="col-lg-1 col-md-1 col-sm-1 col-xs-2" style="color: black;font-weight: 500"> To
                         </mat-panel-title>
-                        <mat-panel-title class="col-lg-2 col-md-2 col-sm-1 col-xs-2" style="color: black;font-weight: 500"> To POLQA
+                        <mat-panel-title class="col-lg-1 col-md-1 col-sm-1 col-xs-2" style="color: black;font-weight: 500"> To POLQA
                         </mat-panel-title>
                         <mat-panel-title class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="color: black;font-weight: 500;"> Status
                         </mat-panel-title>
@@ -96,12 +96,12 @@
                             class="accordian-container ">
                             <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
                                 <mat-expansion-panel-header class="" style="height: auto; min-height: 50px;" >
-                                    <mat-panel-title class="col-lg-2  col-md-2 col-sm-2 col-xs-2" >
+                                    <mat-panel-title class="col-lg-2  col-md-1 col-sm-2 col-xs-2">
                                         <span class="testcasename " [title]="item.testCaseName">
                                             {{item.testCaseName | na}}
                                         </span>
                                     </mat-panel-title>
-                                    <mat-panel-title class="col-lg-1  col-md-1 col-sm-1 col-xs-2">
+                                    <mat-panel-title class="col-lg-2  col-md-2 col-sm-2 col-xs-2">
                                         {{item.startTime | na}}
                                     </mat-panel-title>
                                     <mat-panel-title class="col-lg-1  col-md-1 col-sm-1 col-xs-2">
