@@ -88,10 +88,8 @@ export class NetworkQualityTrendsComponent implements OnInit {
     const selectedUser = this.filters.get("user").value;
     const obs = [];
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    const selectedStartDate: Moment = this.endDate.clone().utc().subtract(6, "days");
-    const selectedEndDate: Moment = this.setHoursOfDate(this.endDate);
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(selectedStartDate, selectedEndDate,this.region, selectedUser, subaccountId, this.groupBy));
-    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(selectedStartDate, selectedEndDate, this.region, selectedUser, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.region, selectedUser, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getNetworkQualityTrendsSummary(this.startDate, this.endDate, this.region, selectedUser, subaccountId));
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
@@ -135,13 +133,6 @@ export class NetworkQualityTrendsComponent implements OnInit {
       this.chartLoadCompleted();
       this.privateIsLoading = false;
     });
-  }
-
-  setHoursOfDate(date){
-    const today = moment().utc();
-    if(date.format("MM-DD-YYYY") === today.format("MM-DD-YYYY"))
-      return date.hour(today.get("hour")).minute(today.get("minute")).seconds(today.get("seconds"));
-    return date.endOf("day");
   }
 
   private initChartOptions() {
