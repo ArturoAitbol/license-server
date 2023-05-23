@@ -124,12 +124,12 @@ export class DetailedReportsCompoment implements OnInit {
             let toCount = 0;
             let fromSumarize = 0, toSumarize = 0;
             for(let i=0 ; i< obj.from.mediaStats.length; i ++) {
-              if(obj.from.mediaStats[i].data.POLQA && obj.from.mediaStats[i].data.POLQA !== 0) {
+              if(obj.from.mediaStats[i]?.data.POLQA && obj.from.mediaStats[i]?.data.POLQA !== 0) {
                 let fromPolqaSum = parseFloat(obj.from.mediaStats[i].data.POLQA);
                 fromSumarize += fromPolqaSum;
                 fromCount++;
               }
-              if(obj.to.mediaStats[i].data.POLQA && obj.to.mediaStats[i].data.POLQA !== 0) {
+              if(obj.to.mediaStats[i]?.data.POLQA && obj.to.mediaStats[i]?.data.POLQA !== 0) {
                 let toPolqaSum = parseFloat(obj.to.mediaStats[i].data.POLQA);
                 toSumarize += toPolqaSum;
                 toCount++;
