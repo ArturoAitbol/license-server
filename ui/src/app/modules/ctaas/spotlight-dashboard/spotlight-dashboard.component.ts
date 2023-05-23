@@ -58,7 +58,7 @@ export class SpotlightDashboardComponent implements OnInit{
   featureFunctionality = { value: 0, total: 0, p2p:0, onNet:0, offNet:0,  period: '' };
 
   // Daily Feature Functionality gaguge variables
-  vq = { period: '', calls: 0, streams: 0 };
+  vq = { period: '', calls: 0, streams: 0, numericValues: [] };
 
   //Selected graphs variables
   selectedPeriod = 'daily';
@@ -71,8 +71,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
   //Weekly filters variables
   weeklyFilters = this.fb.group({
-    startDate: [moment().utc().startOf('week')],
-    endDate: [moment().utc()],
+    date: [moment().utc()],
     region: [""]
   });
 
@@ -110,11 +109,23 @@ export class SpotlightDashboardComponent implements OnInit{
     this.failedCallsChartOptions = defaultFailedCallsChartOptions;
     this.weeklyCallsStatusChartOptions = defaultWeeklyCallsStatusChartOptions;
     this.weeklyVQChartOptions = defaultWeeklyVQChartOptions;
+    this.setWeeklyRange();
   }
 
   ngOnInit() {
     this.initAutocompletes();
     this.loadCharts();
+  }
+
+  getStartWeekDate(): Moment{
+    return this.weeklyFilters.get('date').value.clone().subtract(6, 'days').startOf('day');
+  }
+  getEndWeekDate(): Moment{
+    return this.setHoursOfDate(this.weeklyFilters.get('date').value.clone())
+  }
+
+  setWeeklyRange(){
+    this.selectedRange = { start: this.getStartWeekDate(), end: this.getEndWeekDate() };
   }
 
   chartsStatus(chartCompleted:boolean){
@@ -145,15 +156,14 @@ export class SpotlightDashboardComponent implements OnInit{
     if (this.selectedPeriod == "daily") {
       const selectedDate = this.setHoursOfDate(this.filters.get('date').value);
       const selectedRegion = this.filters.get('region').value;
-      this.selectedDate = this.filters.get('date').value.clone().utc();
+      this.selectedDate = selectedDate.clone().utc();
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, selectedRegion, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, selectedRegion, subaccountId));
     } else {
-      
-      const selectedStartDate: Moment = this.weeklyFilters.get('endDate').value.clone().utc().subtract(6, "days");
-      const selectedEndDate: Moment = this.setHoursOfDate(this.weeklyFilters.get('endDate').value);
+      this.setWeeklyRange();
+      const selectedStartDate: Moment = this.selectedRange.start.clone();
+      const selectedEndDate: Moment = this.selectedRange.end.clone();
       const selectedRegion = this.weeklyFilters.get('region').value;
-      this.selectedRange = {start: this.weeklyFilters.get('endDate').value.clone().utc().subtract(6, "days"), end: this.setHoursOfDate(this.weeklyFilters.get('endDate').value)};
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'FeatureFunctionality', selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyComboBarChart(selectedStartDate, selectedEndDate, subaccountId, 'CallingReliability', selectedRegion));
       obs.push(this.spotlightChartsService.getWeeklyCallsStatusHeatMap(selectedStartDate, selectedEndDate, subaccountId, selectedRegion));
@@ -229,9 +239,10 @@ export class SpotlightDashboardComponent implements OnInit{
     const voiceQualityRes: any = res[1];
     this.vq.calls = voiceQualityRes.summary.calls;
     this.vq.streams = voiceQualityRes.summary.streams;
-    this.vqChartOptions.series = [ { data: voiceQualityRes.percentages } ];
+    this.vqChartOptions.series = [ { name: 'percentages', data: voiceQualityRes.percentages }];
     this.vqChartOptions.xAxis.categories = voiceQualityRes.categories;
     this.vq.period = executionTime;
+    this.vq.numericValues = voiceQualityRes.numericValues;
 
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [(this.calls.failed / this.calls.total * 100 || 0)];
@@ -346,10 +357,8 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   navigateToDetailedTable(reportType?: string) {
-    const startDate = this.selectedDate.clone().utc();
-    startDate.hours(0).minutes(0).seconds(0);
+    const startDate = this.selectedDate.clone().utc().startOf('day');
     const endDate = this.selectedDate.clone().utc();
-    endDate.hours(23).minutes(59).seconds(59).milliseconds(999);
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
     const reportFilter = reportType? "type=" + reportType : "status=FAILED";
