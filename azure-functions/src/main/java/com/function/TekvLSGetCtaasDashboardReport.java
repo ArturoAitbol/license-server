@@ -4,6 +4,7 @@ import com.function.auth.Resource;
 import com.function.clients.TAPClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
+import com.function.util.Constants.ReportTypes;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
@@ -62,7 +63,8 @@ public class TekvLSGetCtaasDashboardReport {
         context.getLogger().info("Entering TekvLSGetCtaasDashboardReport Azure function");
 
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
-        String reportType = request.getQueryParameters().getOrDefault("reportType", "");
+        String types = request.getQueryParameters().getOrDefault("reportType", 
+            ReportTypes.FEATURE_FUNCTIONALITY.value() + "," + ReportTypes.CALLING_RELIABILITY.value() + "," + ReportTypes.POLQA.value()); // LTS,STS,POLQA
         String status = request.getQueryParameters().getOrDefault("status", "");
         String startDate = request.getQueryParameters().getOrDefault("startDate", "");
         String endDate = request.getQueryParameters().getOrDefault("endDate", "");
@@ -166,16 +168,16 @@ public class TekvLSGetCtaasDashboardReport {
             context.getLogger().info("Requesting TAP for detailed report. URL: " + tapURL);
             // Make a http call to TAP and get the access token
             String accessToken = TAPClient.getAccessToken(tapURL, context);
-            context.getLogger().info("Report Type: " + reportType + " | Status: " + status + " | Start Date: " + startDate + " | End Date: " + endDate);
-            // Make a http call to North Bound API to fetch detailed test report by reportType
-            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, reportType, startDate, endDate, status, context);
+            context.getLogger().info("Report Types: " + types + " | Status: " + status + " | Start Date: " + startDate + " | End Date: " + endDate);
+            // Make a http call to North Bound API to fetch detailed test report by types
+            JSONObject response = TAPClient.getDetailedReport(tapURL, accessToken, types, startDate, endDate, status, context);
             if (response == null) {
                 json.put("error", "Error with fetching detailed test report from Automation Platform");
                 context.getLogger().info("Error with fetching detailed test report from Automation Platform");
             } else {
                 context.getLogger().info("Received detailed test report response from Automation Platform");
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("reportType", reportType);
+                jsonObject.put("reportType", types);
                 jsonObject.put("status", status);
                 jsonObject.put("report", response);
                 json.put("response", jsonObject);

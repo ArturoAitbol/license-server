@@ -16,12 +16,11 @@
 <!-- report view -->
 <ng-template #reportView>
     <div class="row mt-3">
-        <div class="col-4">
-            <h1 class="text-start text-s" *ngIf="type===CALL_RELIABILITY">Calling Reliability</h1>
-            <h1 class="text-start text-s" id="title" *ngIf="type===FEATURE_FUNCTIONALITY">Feature Functionality</h1>
-            <h1 class="text-start text-s" id="title" *ngIf="type===DAILY_VQ">Voice Quality (POLQA)</h1>
+        <div class="col-8">
+            <h1 class="text-start text-s" id="title">{{title}}</h1>
+            <h2 class="text-start text-s2" *ngIf="status!=''" id="subtitle">Filtered Status: {{status}}</h2>
         </div>
-        <div class="col-8 text-right">
+        <div class="col-4 text-right">
             <button mat-raised-button [disabled]="canDisableDownloadBtn" (click)="downloadDetailedTestReportByType()">
                 Download Report
                 <mat-icon>download</mat-icon>
