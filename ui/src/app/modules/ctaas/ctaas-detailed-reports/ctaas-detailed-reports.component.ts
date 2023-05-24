@@ -1,5 +1,4 @@
-import { ConsoleLogger } from '@angular/compiler-cli/private/localize';
-import { Component, ComponentFactoryResolver, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute} from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { ReportName } from 'src/app/helpers/report-type';
