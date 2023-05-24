@@ -7,7 +7,7 @@ import { ICtaasSetup } from 'src/app/model/ctaas-setup.model';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { SubAccountService } from 'src/app/services/sub-account.service';
-import { ReportType } from 'src/app/helpers/report-type';
+import { ReportType, ReportName } from 'src/app/helpers/report-type';
 import { forkJoin, interval, Observable, Subscription } from 'rxjs';
 import { Constants } from 'src/app/helpers/constants';
 import { FormControl } from '@angular/forms';
@@ -124,7 +124,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
     readonly LEGACY_MODE: string = 'legacy_view';
     readonly POWERBI_MODE: string = 'powerbi_view';
     readonly REPORT_TYPE: string = 'report';
-    readonly ReportType = ReportType;
+    readonly ReportName = ReportName;
     viewMode = new FormControl(this.LEGACY_MODE);
     powerbiReportResponse: IPowerBiReponse;
     enableEmbedTokenCache: boolean = true;
@@ -348,7 +348,7 @@ export class CtaasDashboardComponent implements OnInit, OnDestroy {
         const obj = this.resultantImagesList[0];
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
-        const type = (reportType === 'Feature Functionality') ? ReportType.DAILY_FEATURE_FUNCTIONALITY : (reportType === 'Calling Reliability') ? ReportType.DAILY_CALLING_RELIABILITY : '';
+        const type = Utility.getTAPTestPlaNameByReportTypeOrName(reportType);
         const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
     }

@@ -2,7 +2,6 @@ import { TitleCasePipe } from '@angular/common';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { throwError } from 'rxjs';
-import { ReportType } from 'src/app/helpers/report-type';
 import { CtaasDashboardServiceMock } from 'src/test/mock/services/ctaas-dashboard-service.mock';
 import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard.component';

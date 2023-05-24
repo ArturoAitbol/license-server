@@ -2,7 +2,7 @@ import { ISidebar } from "../model/sidebar.model";
 import { permissions } from "./role-permissions";
 import { FeatureToggleService } from "../services/feature-toggle.service";
 import moment, { Moment } from "moment";
-import { ReportType } from "./report-type";
+import { ReportName, ReportType } from "./report-type";
 
 export class Utility {
 
@@ -186,16 +186,16 @@ export class Utility {
         switch (reportType) {
             case ReportType.DAILY_FEATURE_FUNCTIONALITY:
             case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
-            case ReportType.TAP_FEATURE_FUNCTIONALITY:
-                return ReportType.FEATURE_FUNCTIONALITY_NAME;
+            case ReportName.TAP_FEATURE_FUNCTIONALITY:
+                return ReportName.FEATURE_FUNCTIONALITY_NAME;
             case ReportType.DAILY_CALLING_RELIABILITY:
             case ReportType.WEEKLY_CALLING_RELIABILITY:
-            case ReportType.TAP_CALLING_RELIABILITY:
-                return ReportType.CALLING_RELIABILITY_NAME;
+            case ReportName.TAP_CALLING_RELIABILITY:
+                return ReportName.CALLING_RELIABILITY_NAME;
             case ReportType.DAILY_VQ:
             case ReportType.WEEKLY_VQ:
-            case ReportType.TAP_VQ:
-                return ReportType.VQ_NAME;
+            case ReportName.TAP_VQ:
+                return ReportName.VQ_NAME;
         }
     }
     
@@ -208,16 +208,16 @@ export class Utility {
         switch (tag) {
             case ReportType.DAILY_FEATURE_FUNCTIONALITY:
             case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
-            case ReportType.FEATURE_FUNCTIONALITY_NAME:
-                return ReportType.TAP_FEATURE_FUNCTIONALITY;
+            case ReportName.FEATURE_FUNCTIONALITY_NAME:
+                return ReportName.TAP_FEATURE_FUNCTIONALITY;
             case ReportType.DAILY_CALLING_RELIABILITY:
             case ReportType.WEEKLY_CALLING_RELIABILITY:
-            case ReportType.CALLING_RELIABILITY_NAME:
-                return ReportType.TAP_CALLING_RELIABILITY;
+            case ReportName.CALLING_RELIABILITY_NAME:
+                return ReportName.TAP_CALLING_RELIABILITY;
             case ReportType.DAILY_VQ:
             case ReportType.WEEKLY_VQ:
-            case ReportType.VQ_NAME:
-                return ReportType.TAP_VQ;
+            case ReportName.VQ_NAME:
+                return ReportName.TAP_VQ;
             default:
                 return tag;
         }

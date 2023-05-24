@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute} from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import moment from 'moment';
-import { ReportType } from 'src/app/helpers/report-type';
+import { ReportName } from 'src/app/helpers/report-type';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -18,7 +17,7 @@ export class DetailedReportsCompoment implements OnInit {
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
-  title: string = ReportType.FEATURE_FUNCTIONALITY_NAME + " + " + ReportType.CALLING_RELIABILITY_NAME + " + " + ReportType.VQ_NAME;
+  title: string = ReportName.FEATURE_FUNCTIONALITY_NAME + " + " + ReportName.CALLING_RELIABILITY_NAME + " + " + ReportName.VQ_NAME;
   types: string = '';
   status: string = '';
   startDateStr: string = '';
@@ -101,7 +100,7 @@ export class DetailedReportsCompoment implements OnInit {
    * fetch detailed dashboard report
    */
   private parseTestPlanNames(): string {
-    if (this.types.includes(",")) {
+    if (this.types && this.types.includes(",")) {
       let testPlanNames = "";
       const typesArray = this.types.split(",");
       testPlanNames = Utility.getTAPTestPlaNameByReportTypeOrName(typesArray[0]);

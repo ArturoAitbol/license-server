@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { ReportType } from 'src/app/helpers/report-type';
+import { ReportName } from 'src/app/helpers/report-type';
 import { Utility } from 'src/app/helpers/utils';
 import { IDashboardImageResponse, IImage } from 'src/app/model/dashboard-image-response.model';
 import { Note } from 'src/app/model/note.model';
@@ -31,7 +31,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
     reports: any;
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
-    readonly ReportType = ReportType;
+    readonly ReportName = ReportName;
 
     constructor(
         private subaccountService: SubAccountService,
@@ -120,18 +120,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
         const obj = this.resultantImagesList[0];
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
-        let type
-        switch(reportType){
-            case 'Feature Functionality':
-                type = ReportType.DAILY_FEATURE_FUNCTIONALITY;
-                break;
-            case 'Calling Reliability':
-                type = ReportType.DAILY_CALLING_RELIABILITY;
-                break;
-            case 'Voice Quality User Experience':
-                type = ReportType.DAILY_VQ;
-                break;
-        }
+        const type = Utility.getTAPTestPlaNameByReportTypeOrName(reportType);
         const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
     }

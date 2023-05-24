@@ -75,7 +75,7 @@
                 <mat-card-content>
                 <img [src]="image.imageBase64" class="img-fluid header-image" [id]="i">
                 <mat-card-actions>
-                  <a *ngIf="item.reportType===DAILY && image.reportType!==ReportType.VQ_NAME" class="clickable-item" (click)="onClickMoreDetails(i1)">Click here for detailed report</a>
+                  <a *ngIf="item.reportType===DAILY && image.reportType!==ReportName.VQ_NAME" class="clickable-item" (click)="onClickMoreDetails(i1)">Click here for detailed report</a>
                 </mat-card-actions>
                 </mat-card-content>
                 
