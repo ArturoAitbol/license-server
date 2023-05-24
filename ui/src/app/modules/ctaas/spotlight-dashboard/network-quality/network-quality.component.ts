@@ -15,6 +15,7 @@ import { map, startWith } from 'rxjs/operators';
 import { environment } from "../../../../../environments/environment";
 import { ReportType } from "../../../../helpers/report-type";
 import { defaultPolqaChartOptions } from "../initial-chart-config";
+import { Utility } from 'src/app/helpers/utils';
 
 @Component({
   selector: 'app-network-quality',
@@ -66,6 +67,7 @@ export class NetworkQualityComponent implements OnInit {
       markerClick: this.navigateToPolqaDetailedTableFromPoint.bind(this)
     };
   }
+  
 
   ngOnInit(): void {
     this.loadCharts();
@@ -186,15 +188,15 @@ export class NetworkQualityComponent implements OnInit {
     if(this.groupBy==='hour'){
       const [ startTime, endTime ] = category.split('-');
       startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
-      endDate = this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
+      endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
     }else{
       startDate = moment(category).utc().hour(0);
-      endDate = moment(category).utc().hour(23).minutes(59).seconds(59);
+      endDate = Utility.setHoursOfDate(moment(category).utc());
     }
 
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_CALLING_RELIABILITY }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
     window.open(url);
   }
 
@@ -204,12 +206,12 @@ export class NetworkQualityComponent implements OnInit {
     if(this.groupBy==='hour'){
       const [ startTime, endTime ] = category.split('-');
       startDate = this.startDate.clone().utc().startOf('day').hour(startTime.split(':')[0]);
-      endDate = this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]).minutes(59).seconds(59);
+      endDate = Utility.setMinutesOfDate(this.endDate.clone().utc().startOf('day').hour(startTime.split(':')[0]));
     }else{
       startDate = moment(category).utc().hour(0);
-      endDate = moment(category).utc().hour(23).minutes(59).seconds(59);
+      endDate = Utility.setHoursOfDate(moment(category).utc());
     }
-
+   
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
     const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&type=${ ReportType.DAILY_VQ }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
