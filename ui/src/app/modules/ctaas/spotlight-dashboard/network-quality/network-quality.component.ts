@@ -140,6 +140,9 @@ export class NetworkQualityComponent implements OnInit {
       this.summary.overall.roundTripTime = summary.maxRoundTripTime;
       this.summary.overall.packetLoss = summary.maxPacketLoss;
       this.summary.overall.polqa = summary.minPolqa;
+      this.summary.aboveThreshold.jitter = summary.jitterAboveThld;
+      this.summary.aboveThreshold.packetLoss = summary.packetLossAboveThld;
+      this.summary.aboveThreshold.roundTripTime = summary.roundTripTimeAboveThld;
 
       this.customerNetworkQualityData = res[2];
       if(this.groupBy==='hour') {
