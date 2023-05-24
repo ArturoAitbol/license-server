@@ -132,8 +132,8 @@ public class TAPClient {
     static public JSONObject saveCustomerDetailsOnTap(String tapURL, JSONObject request, ExecutionContext context)
             throws Exception {
         String token = TAPClient.getAccessToken(tapURL, context);
-        final String resource = "/customerInfo";
-        final String url = String.format("%s/%s%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource);
+        final String resource = "customerInfo";
+        final String url = String.format("%s/%s/%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource);
         context.getLogger().info("TAP Customer Info endpoint: " + url);
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);

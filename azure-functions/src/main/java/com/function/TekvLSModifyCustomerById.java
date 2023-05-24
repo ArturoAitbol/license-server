@@ -15,8 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static com.function.auth.RoleAuthHandler.*;
@@ -74,8 +72,8 @@ public class TekvLSModifyCustomerById {
         }
 
         int optionalParamsFound = 0;
-        SelectQueryBuilder selectQueryBuilder = new SelectQueryBuilder(
-                "SELECT subaccount.id AS \"lsSubAccountId\", subaccount.name AS \"lsSubAccountName\", customer.id AS \"lsCustomerId\", customer.name AS \"lsCustomerName\", ctaas_setup.tap_url AS \"url\" FROM customer JOIN subaccount ON customer.id = subaccount.customer_id JOIN ctaas_setup ON subaccount.id = ctaas_setup.subaccount_id");
+        SelectQueryBuilder customerDetailsQueryBuilder = new SelectQueryBuilder(
+                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\", cs.tap_url AS \"url\" FROM customer c JOIN subaccount s ON c.id = s.customer_id JOIN ctaas_setup cs ON s.id = cs.subaccount_id");
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("customer");
 
         for (OPTIONAL_PARAMS param : OPTIONAL_PARAMS.values()) {
@@ -92,7 +90,9 @@ public class TekvLSModifyCustomerById {
             return request.createResponseBuilder(HttpStatus.OK).build();
 
         queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
-        selectQueryBuilder.appendEqualsCondition(" subaccount.customer_id", id, QueryBuilder.DATA_TYPE.UUID);
+
+        customerDetailsQueryBuilder.appendEqualsCondition(" s.customer_id", id, QueryBuilder.DATA_TYPE.UUID);
+        customerDetailsQueryBuilder.appendCustomCondition("cs.tap_url IS NOT NULL AND cs.tap_url != ?", "");
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"
                 + System.getenv("POSTGRESQL_SECURITY_MODE")
@@ -100,7 +100,7 @@ public class TekvLSModifyCustomerById {
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 PreparedStatement statement = queryBuilder.build(connection);
-                PreparedStatement customerDetailStatement = selectQueryBuilder.build(connection)) {
+                PreparedStatement customerDetailStatement = customerDetailsQueryBuilder.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
             String userId = getUserIdFromToken(tokenClaims, context);
@@ -109,45 +109,27 @@ public class TekvLSModifyCustomerById {
             context.getLogger().info("Customer updated successfully.");
             context.getLogger().info("Execute SQL statement: " + customerDetailStatement);
             // Build JSONObject from customer details result set
-            List<JSONObject> customerAndSubList = new ArrayList<>();
             if (customerDetailStatement != null) {
-                context.getLogger().info("info: found customer & subaccount details by customerId: " + id);
                 ResultSet customerAndSubQueryResult = customerDetailStatement.executeQuery();
-                ResultSetMetaData metaData = customerAndSubQueryResult.getMetaData();
-                int columnCount = metaData.getColumnCount();
-                context.getLogger().info("columnCount: " + columnCount);
+                // iterate through list of customer with subaccount details
                 while (customerAndSubQueryResult.next()) {
-                    JSONObject customerDetailsJsonObject = new JSONObject();
-                    JSONObject detailJsonObject = new JSONObject();
-                    for (int i = 1; i <= columnCount; i++) {
-                        String columnName = metaData.getColumnLabel(i);
-                        Object columnValue = customerAndSubQueryResult.getObject(i);
-                        if (i != columnCount)
-                            detailJsonObject.put(columnName, columnValue);
-                        else
-                            customerDetailsJsonObject.put(columnName, columnValue);
-                    }
-                    customerDetailsJsonObject.put("customerDetails", detailJsonObject);
-                    customerAndSubList.add(customerDetailsJsonObject);
-                }
-            }
-            // iterate through customer subacconut details
-            customerAndSubList.forEach(x -> {
-                context.getLogger().info("x: " + x.toString());
-                // check for url not null
-                if (x.has("url") && x.getString("url") != null) {
-                    context.getLogger().info("url " + x.get("url").toString());
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("url", customerAndSubQueryResult.getString("url"));
+                    JSONObject customerJsonObject = new JSONObject();
+                    customerJsonObject.put("lsSubAccountId", customerAndSubQueryResult.getString("lsSubAccountId"));
+                    customerJsonObject.put("lsSubAccountName", customerAndSubQueryResult.getString("lsSubAccountName"));
+                    customerJsonObject.put("lsCustomerName", customerAndSubQueryResult.getString("lsCustomerName"));
+                    customerJsonObject.put("lsCustomerId", customerAndSubQueryResult.getString("lsCustomerId"));
+                    jsonObject.put("customerDetails", customerJsonObject);
+                    // Update customer details on respective TAP client
                     try {
-                        JSONObject dObject = (JSONObject) x.getJSONObject("customerDetails");
-                        context.getLogger().info("dObject " + dObject);
-                        TAPClient.saveCustomerDetailsOnTap(x.get("url").toString(),
-                                dObject,
-                                context);
+                        JSONObject dObject = (JSONObject) jsonObject.get("customerDetails");
+                        TAPClient.saveCustomerDetailsOnTap(jsonObject.get("url").toString(), dObject, context);
                     } catch (Exception e) {
                         context.getLogger().info("Caught exception: " + e.getMessage());
                     }
                 }
-            });
+            }
             return request.createResponseBuilder(HttpStatus.OK).build();
         } catch (SQLException e) {
             context.getLogger().info("SQL exception: " + e.getMessage());

@@ -79,7 +79,7 @@ public class TekvLSModifySubaccountById {
 			return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body(json.toString()).build();
 		}
 		SelectQueryBuilder selectQueryBuilder = new SelectQueryBuilder(
-				"SELECT subaccount.id AS \"lsSubAccountId\", subaccount.name AS \"lsSubAccountName\", customer.id AS \"lsCustomerId\", customer.name AS \"lsCustomerName\", ctaas_setup.tap_url AS \"url\" FROM subaccount JOIN customer ON customer.id = subaccount.customer_id JOIN ctaas_setup ON subaccount.id = ctaas_setup.subaccount_id");
+				"SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\", cs.tap_url AS \"url\" FROM subaccount s JOIN customer c ON c.id = s.customer_id JOIN ctaas_setup cs ON s.id = cs.subaccount_id");
 		// Build the sql query
 		UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("subaccount");
 		int optionalParamsFound = 0;
@@ -96,7 +96,8 @@ public class TekvLSModifySubaccountById {
 		if (optionalParamsFound == 0) {
 			return request.createResponseBuilder(HttpStatus.OK).build();
 		}
-		selectQueryBuilder.appendEqualsCondition("subaccount.id", id, QueryBuilder.DATA_TYPE.UUID);
+		selectQueryBuilder.appendEqualsCondition("s.id", id, QueryBuilder.DATA_TYPE.UUID);
+		selectQueryBuilder.appendCustomCondition("cs.tap_url IS NOT NULL AND cs.tap_url != ?", "");
 		queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
 		String verifyCtassSetupSql = "SELECT count(*) FROM ctaas_setup WHERE subaccount_id=?::uuid;";
@@ -122,38 +123,6 @@ public class TekvLSModifySubaccountById {
 			context.getLogger().info("Execute SQL statement (User: " + userId + "): " + statement);
 			statement.executeUpdate();
 			context.getLogger().info("Subaccount updated successfully.");
-			context.getLogger().info("Execute SQL statement (User: " + userId + "): " + customerDetailStatement);
-			ResultSet customResultSet = customerDetailStatement.executeQuery();
-
-			JSONObject jsonObject = new JSONObject();
-			if (customResultSet.next()) {
-				ResultSetMetaData metaData = customResultSet.getMetaData();
-				int columnCount = metaData.getColumnCount();
-				context.getLogger().info("columnCount: " + columnCount);
-				JSONObject detailJsonObject = new JSONObject();
-				for (int i = 1; i <= columnCount; i++) {
-					String columnName = metaData.getColumnLabel(i);
-					Object columnValue = customResultSet.getObject(i);
-					if (i != columnCount)
-						detailJsonObject.put(columnName, columnValue);
-					else
-						jsonObject.put(columnName, columnValue);
-				}
-				jsonObject.put("customerDetails", detailJsonObject);
-			}
-			context.getLogger().info("customer details jsonObject: " + jsonObject);
-			if (jsonObject.has("url") && jsonObject.getString("url") != null) {
-				context.getLogger().info("url " + jsonObject.get("url").toString());
-				try {
-					JSONObject dObject = (JSONObject) jsonObject.getJSONObject("customerDetails");
-					context.getLogger().info("dObject " + dObject);
-					TAPClient.saveCustomerDetailsOnTap(jsonObject.get("url").toString(),
-							dObject,
-							context);
-				} catch (Exception e) {
-					context.getLogger().info("Caught exception: " + e.getMessage());
-				}
-			}
 
 			if (jobj.has("services")
 					&& jobj.getString("services").contains(Constants.SubaccountServices.SPOTLIGHT.value())) {
@@ -182,6 +151,27 @@ public class TekvLSModifySubaccountById {
 					final String adminEmail = rs.getString("subaccount_admin_email");
 
 					EmailClient.sendSpotlightWelcomeEmail(adminEmail, customerName, context);
+				}
+				context.getLogger().info("Execute SQL statement (User: " + userId + "): " + customerDetailStatement);
+				ResultSet customerAndSubQueryResult = customerDetailStatement.executeQuery();
+
+				JSONObject jsonObject = new JSONObject();
+				
+				if (customerAndSubQueryResult.next()) {
+					jsonObject.put("url", customerAndSubQueryResult.getString("url"));
+					JSONObject customerJsonObject = new JSONObject();
+					customerJsonObject.put("lsSubAccountId", customerAndSubQueryResult.getString("lsSubAccountId"));
+					customerJsonObject.put("lsSubAccountName", customerAndSubQueryResult.getString("lsSubAccountName"));
+					customerJsonObject.put("lsCustomerName", customerAndSubQueryResult.getString("lsCustomerName"));
+					customerJsonObject.put("lsCustomerId", customerAndSubQueryResult.getString("lsCustomerId"));
+					jsonObject.put("customerDetails", customerJsonObject);
+				}
+				// Update customer details on respective TAP client
+				try {
+					JSONObject dObject = (JSONObject) jsonObject.getJSONObject("customerDetails");
+					TAPClient.saveCustomerDetailsOnTap(jsonObject.get("url").toString(), dObject, context);
+				} catch (Exception e) {
+					context.getLogger().info("Caught exception: " + e.getMessage());
 				}
 			}
 
