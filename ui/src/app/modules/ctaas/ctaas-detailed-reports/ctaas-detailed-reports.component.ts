@@ -120,10 +120,8 @@ export class DetailedReportsCompoment implements OnInit {
   public fetchDashboardReportDetails(): void {
     this.isRequestCompleted = false;
     this.hasDashboardDetails = false;
-    let minorTime;
     let minorTimestamp;
     let minorTimeIndex = 0;
-    let majorTime;
     let majorTimestamp;
     let majorTimeIndex = 0;
     this.isLoadingResults = true;
@@ -151,10 +149,8 @@ export class DetailedReportsCompoment implements OnInit {
           } else {
             this.reportResponse.endpoints = [];
           }
-          minorTime =  this.reportResponse.results[0].startTime;
-          minorTimestamp = new Date(minorTime).getTime();
-          majorTime = this.reportResponse.results[this.reportResponse.results.length -1].endTime;
-          majorTimestamp = new Date(majorTime).getTime();
+          minorTimestamp = new Date(this.reportResponse.results[0].startTime).getTime();
+          majorTimestamp = new Date(this.reportResponse.results[this.reportResponse.results.length -1].endTime).getTime();
 
           this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
           this.detailedTestReport.forEach((obj: any, index) => {
