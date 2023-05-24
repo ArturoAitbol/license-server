@@ -29,10 +29,6 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
         curve: "straight",
         width: 2
     },
-    title: {
-        text: "Max. Jitter vs Min. POLQA",
-        align: "left"
-    },
     grid: {
         row: {
             colors: [ "#f3f3f3", "transparent" ], // takes an array which will be repeated on columns
@@ -452,11 +448,25 @@ const defaultVqChartOptions: Partial<ChartOptions> = {
     },
     legend: {
         show: false
-    }
+    },
+    labels: [ 'Excellent [4-5]', 'Good [3-4]', 'Fair [2-3]', 'Poor [1-2]' ],
+    tooltip: {
+        enabled: true,
+        y: {
+            formatter(val: number, opts?: any): string {
+                return val + '%'
+            },
+            title: {
+                formatter(seriesName: string): string {
+                    return "Percentage of call streams: "
+                }
+            }
+        }
+    },
 };
 
 const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
-    series: [100],
+    series: [],
     chart: {
         type: "radialBar",
         offsetY: -20,
@@ -491,7 +501,7 @@ const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
         }
     },
     fill: {
-        colors: ['#83C96B'],
+        colors: ['#bb2426'],
         type: "gradient",
         gradient: {
             shade: "light",
@@ -527,7 +537,13 @@ const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
                 type: 'none',
             }
         },
-    }
+    },
+    labels: ['Failed'],
+    tooltip: {
+        enabled: true,
+        fillSeriesColor: false,
+    },
+    colors: ['#bb2426'],
 };
 
 const defaultWeeklyVQChartOptions: Partial<ChartOptions> = {

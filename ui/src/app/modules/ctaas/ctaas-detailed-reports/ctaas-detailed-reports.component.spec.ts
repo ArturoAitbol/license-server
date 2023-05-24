@@ -29,7 +29,7 @@ const beforeEachFunction = () => {
     fixture.detectChanges();
 }
 
-describe (' UI test of more-details component', () => {
+describe (' UI test of ctaas-detailed-reports component', () => {
     beforeEach(beforeEachFunction)
 
     it('should throw a error message if something went wrong while fetching data from dashboard', () => {
@@ -37,11 +37,11 @@ describe (' UI test of more-details component', () => {
         spyOn(console, 'error').and.callThrough();
         spyOn(SnackBarServiceMock, 'openSnackBar').and.callThrough();
 
-        onboardWizardComponentInstance.type = null;
+        onboardWizardComponentInstance.types = null;
         fixture.detectChanges();
         onboardWizardComponentInstance.fetchDashboardReportDetails();
 
-        expect(onboardWizardComponentInstance.type).toEqual(null);
+        expect(onboardWizardComponentInstance.types).toEqual(null);
     });
 
     it('it should set variables when reports are empty', () => {
@@ -54,14 +54,6 @@ describe (' UI test of more-details component', () => {
         expect(onboardWizardComponentInstance.hasDashboardDetails).toBeFalse();
         expect(onboardWizardComponentInstance.reportResponse).toEqual({})
     });
-
-    // it('should return a empty array if results is null', () => {
-    //    spyOn(CtaasDashboardServiceMock, 'getCtaasDashboardDetailedReport').and.returnValue(of(CtaasDashboardServiceMock.detailedReportWithoutResults));
-
-    //    fixture.detectChanges();
-
-    //     expect(onboardWizardComponentInstance.detailedTestReport).toEqual([]);
-    // });
 
     it('it should set variables when endpoints are empty',() => {
         spyOn(CtaasDashboardServiceMock, 'getCtaasDashboardDetailedReport').and.returnValue(of(CtaasDashboardServiceMock.dashboardDetailedReportsWithEmptyEndpoints));

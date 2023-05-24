@@ -32,6 +32,20 @@ public abstract class Constants {
         }
     }
 
+    public enum ReportTypes {
+        FEATURE_FUNCTIONALITY("LTS"),
+        CALLING_RELIABILITY("STS"),
+        POLQA("POLQA");
+
+        private final String value;
+        ReportTypes(String value){
+            this.value = value;
+        }
+        public String value() {
+            return this.value;
+        }
+    }
+
     public enum SubaccountServices {
         TOKEN_CONSUMPTION("tokenConsumption"),
         SPOTLIGHT("spotlight");
