@@ -120,6 +120,12 @@ export class DetailedReportsCompoment implements OnInit {
   public fetchDashboardReportDetails(): void {
     this.isRequestCompleted = false;
     this.hasDashboardDetails = false;
+    let minorTime;
+    let minorTimestamp;
+    let minorTimeIndex = 0;
+    let majorTime;
+    let majorTimestamp;
+    let majorTimeIndex = 0;
     this.isLoadingResults = true;
     const PARSED_REPORT_TYPE = this.parseTestPlanNames();
     this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr, this.status)
@@ -145,12 +151,13 @@ export class DetailedReportsCompoment implements OnInit {
           } else {
             this.reportResponse.endpoints = [];
           }
-
-          this.reportResponse.summary.summaryStartTime =  this.reportResponse.results[0].startTime;
-          this.reportResponse.summary.summaryEndTime =  this.reportResponse.results[this.reportResponse.results.length -1].endTime;
+          minorTime =  this.reportResponse.results[0].startTime;
+          minorTimestamp = new Date(minorTime).getTime();
+          majorTime = this.reportResponse.results[this.reportResponse.results.length -1].endTime;
+          majorTimestamp = new Date(majorTime).getTime();
 
           this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
-          this.detailedTestReport.forEach((obj: any) => {
+          this.detailedTestReport.forEach((obj: any, index) => {
             let fromCount = 0;
             let toCount = 0;
             let fromSumarize = 0, toSumarize = 0;
@@ -174,6 +181,17 @@ export class DetailedReportsCompoment implements OnInit {
               let toAvg = (toSumarize / toCount).toFixed(2);
               obj.toPolqaAvg = toAvg;
             }
+            let startTimeTimeStamp = new Date(obj.startTime).getTime();
+            let endTimeTimeStamp = new Date(obj.endTime).getTime();
+            
+            if(startTimeTimeStamp < minorTimestamp){
+              minorTimestamp = startTimeTimeStamp;
+              minorTimeIndex = index;
+            }
+            if(endTimeTimeStamp >= majorTimestamp){
+              majorTimestamp = endTimeTimeStamp;
+              majorTimeIndex = index;
+            }
             obj.closeKey = false;
             obj.fromnoDataFoundFlag = false;
             obj.tonoDataFoundFlag = false;
@@ -186,6 +204,8 @@ export class DetailedReportsCompoment implements OnInit {
             // filter the array without media stats details 
             obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
+          this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime;
+          this.reportResponse.summary.summaryEndTime =  this.reportResponse.results[majorTimeIndex].endTime;
         } else {
           this.hasDashboardDetails = false;
           this.reportResponse = {};
