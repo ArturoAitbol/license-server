@@ -49,7 +49,7 @@
                                 <mat-form-field appearance="outline">
                                     <mat-label>Region</mat-label>
                                     <input type="text"
-                                    placeholder="Region"
+                                    placeholder="City/State/Country"
                                     matInput
                                     formControlName="region"
                                     [matAutocomplete]="regionAuto">
@@ -90,7 +90,7 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card text-center mt-2">
+                    <div class="card text-center mt-2 full-col">
                         <div class="card-header">
                             <h1>Voice Quality (POLQA)</h1>
                         </div>
@@ -150,7 +150,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col">
+                                <div class="col top-spacing-1" style="transform: scale(1.4);">
                                     <apx-chart
                                             [series]="failedCallsChartOptions.series"
                                             [chart]="failedCallsChartOptions.chart"
@@ -162,25 +162,28 @@
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">View
-                                Detailed Table
+                            <br>
+                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable()">View Detailed Report
                             </button>
                         </div>
                         <div class="card-footer">
-                            <div class="footer-text">
-                                <mat-icon>timer</mat-icon>
-                                <label class="ps-1">Execution time period: {{ calls.timePeriod }}</label>
-                            </div>
-                            <br>
-                            <div class="footer-text">
-                                <mat-icon>calls</mat-icon>
-                                <label class="ps-1">
-                                    Number of calls: {{ calls.total }} |
-                                    Failed calls: {{ calls.failed }} |
-                                    P2P: {{ calls.p2pCalls }} |
-                                    On-net: {{ calls.onNetCalls }} |
-                                    Off-net: {{ calls.offNetCalls }}
-                                </label>
+                            <div style="visibility: hidden">
+                                <div class="footer-text">
+                                    <mat-icon>timer</mat-icon>
+                                    <label class="ps-1">Execution time period: {{ calls.timePeriod }}</label>
+                                </div>
+                                <br>
+                                <div class="footer-text">
+                                    <mat-icon>calls</mat-icon>
+                                    <label class="ps-1" style="margin-right: 15px; margin-left: 5px">
+                                        Number of calls: {{ calls.total }}
+                                    </label>
+                                    <label class="ps-1">|</label>
+                                    <mat-icon style="margin-left: 15px">phone_disabled</mat-icon>
+                                    <label class="ps-1" style="margin-left: 5px">
+                                        Failed calls: {{ calls.failed }}
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
