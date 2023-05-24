@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NetworkQualityTrendsComponent } from './network-quality-trends.component';
+import { NetworkQualityComponent } from './network-quality.component';
 import { TestBedConfigBuilder } from 'src/test/mock/TestBedConfigHelper.mock';
 
-let networkQualityTrendsComponentTestInstance: NetworkQualityTrendsComponent;
-let fixture: ComponentFixture<NetworkQualityTrendsComponent>;
+let networkQualityTrendsComponentTestInstance: NetworkQualityComponent;
+let fixture: ComponentFixture<NetworkQualityComponent>;
 
 const beforeEachFunction = () => {
-    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(NetworkQualityTrendsComponent);
+    const configBuilder = new TestBedConfigBuilder().useDefaultConfig(NetworkQualityComponent);
     TestBed.configureTestingModule(configBuilder.getConfig());
-    fixture = TestBed.createComponent(NetworkQualityTrendsComponent);
+    fixture = TestBed.createComponent(NetworkQualityComponent);
     networkQualityTrendsComponentTestInstance = fixture.componentInstance;
 };
 

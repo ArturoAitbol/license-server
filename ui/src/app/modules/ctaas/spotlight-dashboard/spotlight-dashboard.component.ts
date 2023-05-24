@@ -17,9 +17,8 @@ import { environment } from "../../../../environments/environment";
 import { ReportType } from "../../../helpers/report-type";
 import { FormBuilder } from "@angular/forms";
 import { map, startWith } from "rxjs/operators";
-import { NetworkQualityTrendsComponent } from "./network-quality-trends/network-quality-trends.component";
+import { NetworkQualityComponent } from "./network-quality/network-quality.component";
 import { Subject } from "rxjs/internal/Subject";
-import { CustomerNetworkQualityComponent } from './customer-network-quality/customer-network-quality/customer-network-quality.component';
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -97,8 +96,8 @@ export class SpotlightDashboardComponent implements OnInit{
   isRefreshing = false;
   chartsLoaded = 0;
 
-  @ViewChild('networkQualityTrends') networkQualityTrends: NetworkQualityTrendsComponent;
-  @ViewChild('customerNetworkQuality') customerNetworkQuality: CustomerNetworkQualityComponent;
+  @ViewChild('networkQuality') networkQuality: NetworkQualityComponent;
+  // @ViewChild('customerNetworkQuality') customerNetworkQuality: CustomerNetworkQualityComponent;
   
   constructor(private subaccountService: SubAccountService,
               private spotlightChartsService: SpotlightChartsService,
@@ -131,7 +130,7 @@ export class SpotlightDashboardComponent implements OnInit{
   chartsStatus(chartCompleted:boolean){
     if(chartCompleted)
       this.chartsLoaded++;
-    if(this.chartsLoaded==3){
+    if(this.chartsLoaded==2){
       this.stopTimer();
       this.chartsLoaded = 0;
     }
@@ -139,8 +138,8 @@ export class SpotlightDashboardComponent implements OnInit{
 
   reloadCharts(){
     this.loadCharts();
-    this.customerNetworkQuality.loadCharts();
-    this.networkQualityTrends.loadCharts();
+    // this.customerNetworkQuality.loadCharts();
+    this.networkQuality.loadCharts();
   }
 
   loadCharts() {
@@ -379,8 +378,7 @@ export class SpotlightDashboardComponent implements OnInit{
   private reloadFilterOptions() {
     this.weeklyFilters.disable();
     this.filters.disable();
-    this.networkQualityTrends.filters.disable();
-    this.customerNetworkQuality.filters.disable();
+    this.networkQuality.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
@@ -410,19 +408,16 @@ export class SpotlightDashboardComponent implements OnInit{
       this.filters.enable();
       this.weeklyFilters.enable();
 
-      this.networkQualityTrends.initAutocompletes();
-      this.customerNetworkQuality.initAutocompletes();
+      this.networkQuality.initAutocompletes();
 
-      this.networkQualityTrends.filters.enable();
-      this.customerNetworkQuality.filters.enable();
+      this.networkQuality.filters.enable();
     })
   }
 
   private reloadUserOptions(region?: any) {
     this.filters.disable();
     this.weeklyFilters.disable();
-    this.networkQualityTrends.filters.disable();
-    this.customerNetworkQuality.filters.disable();
+    this.networkQuality.filters.disable();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     let startDate, endDate;
     if (this.selectedPeriod == "daily") {
@@ -436,10 +431,8 @@ export class SpotlightDashboardComponent implements OnInit{
       this.filters.enable();
       this.weeklyFilters.enable();
 
-      this.networkQualityTrends.initAutocompletes();
-      this.customerNetworkQuality.initAutocompletes();
-      this.networkQualityTrends.filters.enable();
-      this.customerNetworkQuality.filters.enable();
+      this.networkQuality.initAutocompletes();
+      this.networkQuality.filters.enable();
     })
   }
 
