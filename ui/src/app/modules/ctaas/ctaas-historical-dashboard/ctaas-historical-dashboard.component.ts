@@ -2,7 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { ReportType } from 'src/app/helpers/report-type';
+import { ReportName } from 'src/app/helpers/report-type';
+import { Utility } from 'src/app/helpers/utils';
 import { IDashboardImageResponse, IImage } from 'src/app/model/dashboard-image-response.model';
 import { Note } from 'src/app/model/note.model';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
@@ -16,7 +17,6 @@ import { environment } from 'src/environments/environment';
     styleUrls: ['./ctaas-historical-dashboard.component.css']
 })
 export class CtaasHistoricalDashboardComponent implements OnInit {
-
     subaccountId = '';
     hasDashboardDetails = false;
     isLoadingResults = false;
@@ -29,13 +29,9 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
     resultantImagesListBk: IDashboardImageResponse[] = [];
     resultant: any;
     reports: any;
-
     readonly DAILY: string = 'daily';
     readonly WEEKLY: string = 'weekly';
-    readonly FEATURE_FUNCTIONALITY_NAME: string = 'Feature Functionality';
-    readonly CALLING_RELIABILITY_NAME: string = 'Calling Reliability';
-    readonly VQ_NAME: string = 'Voice Quality User Experience';
-
+    readonly ReportName = ReportName;
 
     constructor(
         private subaccountService: SubAccountService,
@@ -80,9 +76,9 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
                 const resultant = { daily: [], weekly: [] };
                 result.forEach((e) => {
                     if (e.reportType.toLowerCase().includes(this.DAILY)) {
-                        resultant.daily.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType), startDate: e.startDateStr, endDate: e.endDateStr });
+                        resultant.daily.push({ imageBase64: e.imageBase64, reportType: Utility.getReportNameByReportTypeOrTestPlan(e.reportType), startDate: e.startDateStr, endDate: e.endDateStr });
                     } else if (e.reportType.toLowerCase().includes(this.WEEKLY)) {
-                        resultant.weekly.push({ imageBase64: e.imageBase64, reportType: this.getReportNameByType(e.reportType) });
+                        resultant.weekly.push({ imageBase64: e.imageBase64, reportType: Utility.getReportNameByReportTypeOrTestPlan(e.reportType) });
                     }
                 });
                 const { daily, weekly } = resultant;
@@ -105,24 +101,6 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
         });
     }
     /**
-     * get report name by report type
-     * @param reportType: string 
-     * @returns: string 
-     */
-    getReportNameByType(reportType: string): string {
-        switch (reportType) {
-            case ReportType.DAILY_FEATURE_FUNCTIONALITY:
-            case ReportType.WEEKLY_FEATURE_FUNCTIONALITY:
-                return this.FEATURE_FUNCTIONALITY_NAME;
-            case ReportType.DAILY_CALLING_RELIABILITY:
-            case ReportType.WEEKLY_CALLING_RELIABILITY:
-                return this.CALLING_RELIABILITY_NAME;
-            case ReportType.DAILY_VQ:
-            case ReportType.WEEKLY_VQ:
-                return this.VQ_NAME;
-        }
-    }
-    /**
      * check whether dashboard has any data to display or not
      * @returns: boolean 
      */
@@ -142,18 +120,7 @@ export class CtaasHistoricalDashboardComponent implements OnInit {
         const obj = this.resultantImagesList[0];
         const { imagesList } = obj;
         const { reportType, startDate, endDate } = imagesList[index];
-        let type
-        switch(reportType){
-            case 'Feature Functionality':
-                type = ReportType.DAILY_FEATURE_FUNCTIONALITY;
-                break;
-            case 'Calling Reliability':
-                type = ReportType.DAILY_CALLING_RELIABILITY;
-                break;
-            case 'Voice Quality User Experience':
-                type = ReportType.DAILY_VQ;
-                break;
-        }
+        const type = Utility.getTAPTestPlaNameByReportTypeOrName(reportType);
         const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountId}&type=${type}&start=${startDate}&end=${endDate}`;
         window.open(url);
     }

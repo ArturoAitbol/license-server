@@ -1,18 +1,17 @@
-Embedded Dashboard Report Version - V45
-Release Date - 02-05-2023 (DD-MM-YYYY)
+Embedded Dashboard Report Version - V47
+Release Date - 16-05-2023 (DD-MM-YYYY)
 
-v45 Daily and Weekly Dashboards
+v47 Daily and Weekly Dashboards
  What’s new:
-	In the detailed view, Failed Calls will have failure reasons and interrupted calls will have interrupted reasons.
-	In the region filter, only regions with the appropriate failing error type will be displayed.
-	The region filter will be populated from the transaction table.
-	If no further issues, the Region Master table will be removed.
+	Clear separation between the two sections (‘Calls above threshold’ and ‘Metric vs POLQA’) for Customer Network Quality Report Page.
+	.Execution Type and Call Type added to ‘Failed Call Detailed page’ and ‘POLQA detailed Page’ respectively.
 Changes:
-	Removed Interrupted from the status column.
+	All the parameters (Jitter, Round Trip Time etc) are taken as an average at call Level.
+	For CNQ the values for Jitter, Round trip Time, Packet loss rate, POLQA replaced with max Jitter, Max Round Trip Time, Max Packet loss rate, and Least POLQA.
+	For NQT Jitter, Round Trip Time, Received Packet loss Rate, Sent Bitrate replaced with Max Jitter, Max Round Trip Time, Max Received packet loss rate, Average Sent Bitrate.  
 Bug Fixes:
-	Weekly Icons are not overlapping any text.
-	No header icons are displayed for any visual.
-	All Calls below/above Threshold metrics now report the count of unique call IDs.
+	All Column header names for Execution Summary are consistent for CNQ and NQT.
+
 
 
 Changes need to do be done before publishing to Power BI Service Workspace:

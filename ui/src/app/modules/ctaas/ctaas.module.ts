@@ -25,10 +25,9 @@ import { SearchConsolidatedReportComponent } from './ctaas-test-reports/search-c
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { SpotlightDashboardComponent } from './spotlight-dashboard/spotlight-dashboard.component';
 import { NgApexchartsModule } from "ng-apexcharts";
-import { NetworkQualityTrendsComponent } from './spotlight-dashboard/network-quality-trends/network-quality-trends.component';
+import { NetworkQualityComponent } from './spotlight-dashboard/network-quality/network-quality.component';
 import { CallbackComponent } from './callback/callback.component';
 import { MapPocComponent } from './map-poc/map-poc.component';
-import { CustomerNetworkQualityComponent } from './spotlight-dashboard/customer-network-quality/customer-network-quality/customer-network-quality.component';
 import { CallbackTimerComponent } from './callback/callback-timer/callback-timer.component';
 import { NodeDetailComponent } from './map-poc/node-detail/node-detail.component';
 import { LineDetailComponent } from './map-poc/line-detail/line-detail.component';
@@ -54,10 +53,9 @@ import { LineDetailComponent } from './map-poc/line-detail/line-detail.component
     CtaasTestReportsComponent,
     SearchConsolidatedReportComponent,
     SpotlightDashboardComponent,
-    NetworkQualityTrendsComponent,
+    NetworkQualityComponent,
     CallbackComponent,
     MapPocComponent,
-    CustomerNetworkQualityComponent,
     CallbackTimerComponent,
     NodeDetailComponent,
     LineDetailComponent,

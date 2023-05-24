@@ -2,7 +2,6 @@ import { TitleCasePipe } from '@angular/common';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { throwError } from 'rxjs';
-import { ReportType } from 'src/app/helpers/report-type';
 import { CtaasDashboardServiceMock } from 'src/test/mock/services/ctaas-dashboard-service.mock';
 import { SnackBarServiceMock } from 'src/test/mock/services/snack-bar-service.mock';
 import { CtaasHistoricalDashboardComponent } from './ctaas-historical-dashboard.component';
@@ -106,22 +105,6 @@ describe("Historical-Dashboard data collection and parsing tests",()=>{
     expect(CtaasDashboardServiceMock.getCtaasHistoricalDashboardDetails).toHaveBeenCalled();
     expect(SnackBarServiceMock.openSnackBar).toHaveBeenCalledWith('Error loading dashboard, please connect tekVizion admin', 'Ok');
   });
-
-  it('should get the name of a given report when calling getReportNameByType()',()=>{
-
-    let reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_FEATURE_FUNCTIONALITY);
-    expect(reportName).toBe("Feature Functionality");
-
-    reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_CALLING_RELIABILITY);
-    expect(reportName).toBe("Calling Reliability");
-
-    // as media injection is not ready yet, hence disabling VQ for now.
-    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.DAILY_VQ);
-    // expect(reportName).toBe("VQ");
-
-    // reportName = ctaasHistoricalDashboardComponentTestInstance.getReportNameByType(ReportType.WEEKLY_VQ);
-    // expect(reportName).toBe("VQ");
-  })
 
   it('should heck whether dashboard has any data to display or not when calling checkForDashboardDetails()',()=>{
     ctaasHistoricalDashboardComponentTestInstance.resultantImagesList.length = 0;
