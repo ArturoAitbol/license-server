@@ -185,13 +185,6 @@
                 </div>
             </div>
         </ng-container>
-<!--        <app-customer-network-quality #customerNetworkQuality -->
-<!--            [startDate]="this.filters.get('date').value" -->
-<!--            [endDate]="this.filters.get('date').value" -->
-<!--            [region]="this.filters.get('region').value"-->
-<!--            [users]="this.users" (chartStatus)="chartsStatus($event)"-->
-<!--            [isLoading]="this.isloading">-->
-<!--        </app-customer-network-quality>-->
         <app-network-quality #networkQuality
             [startDate]="this.filters.get('date').value"
             [endDate]="this.filters.get('date').value"
@@ -242,9 +235,6 @@
                     </div>
                 </form>
             </div>
-            <!-- <div class="row text-center">
-                <h2 *ngIf="selectedRange!==null">{{selectedRange.start.format('MMMM-DD-YYYY')}} – {{selectedRange.end.format('MMMM-DD-YYYY')}}</h2>
-            </div> -->
             <div class="row">
                 <div class="col-12">
                     <div class="card text-center mt-2">
@@ -403,14 +393,6 @@
                 </div>
             </div>
         </ng-container>
-<!--        <app-customer-network-quality #customerNetworkQuality-->
-<!--            [startDate]="getStartWeekDate()"-->
-<!--            [endDate]="getEndWeekDate()"-->
-<!--            [groupBy]="'day'"-->
-<!--            [region]="this.filters.get('region').value"-->
-<!--            [users]="this.users" (chartStatus)="chartsStatus($event)"-->
-<!--            [isLoading]="this.isloading">-->
-<!--        </app-customer-network-quality>-->
         <app-network-quality #networkQuality
             [startDate]="getStartWeekDate()"
             [endDate]="getEndWeekDate()"
