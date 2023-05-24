@@ -538,7 +538,7 @@ const defaultFailedCallsChartOptions: Partial<ChartOptions> = {
             }
         },
     },
-    labels: ['Fail'],
+    labels: ['Failed'],
     tooltip: {
         enabled: true,
         fillSeriesColor: false,
