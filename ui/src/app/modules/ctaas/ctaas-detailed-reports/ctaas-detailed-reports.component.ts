@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute} from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
-import moment from 'moment';
-import { ReportType } from 'src/app/helpers/report-type';
+import { ReportName } from 'src/app/helpers/report-type';
 import { Utility } from 'src/app/helpers/utils';
 import { CtaasDashboardService } from 'src/app/services/ctaas-dashboard.service';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
@@ -18,7 +17,8 @@ export class DetailedReportsCompoment implements OnInit {
   endpointDisplayedColumns: any = [];
   filename: string = '';
   tableMaxHeight: number;
-  type: string = '';
+  title: string = ReportName.FEATURE_FUNCTIONALITY_NAME + " + " + ReportName.CALLING_RELIABILITY_NAME + " + " + ReportName.VQ_NAME;
+  types: string = '';
   status: string = '';
   startDateStr: string = '';
   endDateStr: string = '';
@@ -45,15 +45,9 @@ export class DetailedReportsCompoment implements OnInit {
   fromMediaStats: any;
   toMediaStats: any;
   otherpartyMediaStat: any;
- 
-
   public readonly NO_MEDIA_STATS_MSG: string = 'No media stats to display';
-  public readonly FEATURE_FUNCTIONALITY: string = ReportType.DAILY_FEATURE_FUNCTIONALITY;
-  public readonly CALL_RELIABILITY: string = ReportType.DAILY_CALLING_RELIABILITY;
-  public readonly DAILY_VQ: string = ReportType.DAILY_VQ;
 
-  constructor(
-    private msalService: MsalService,
+  constructor(private msalService: MsalService,
     private ctaasDashboardService: CtaasDashboardService,
     private route: ActivatedRoute,
     private snackBarService: SnackBarService,
@@ -73,24 +67,67 @@ export class DetailedReportsCompoment implements OnInit {
     this.loggedInUserRoles = roles;
     this.route.queryParams.subscribe((params: any) => {
       this.subaccountDetails.id = params.subaccountId;
-      if (params.type) this.type = params.type;
+      if (params.type) this.types = params.type;
       if (params.status) this.status = params.status;
       this.startDateStr = params.start;
       this.endDateStr = params.end;
+      this.parseTitle();
       this.fetchDashboardReportDetails();
     });
     this.initColumns();
     this.calculateTableHeight();
   }
+  
+  /**
+   * fetch detailed dashboard report
+   */
+  private parseTitle(): void {
+    if (this.types == "")
+      return;
+    if (this.types.includes(",")) {
+      const typesArray = this.types.split(",");
+      this.title = Utility.getReportNameByReportTypeOrTestPlan(typesArray[0]);
+      for (let i = 1; i < typesArray.length; i++) {
+        const type = typesArray[i].trim();
+        if (type != "")
+          this.title += " + " + Utility.getReportNameByReportTypeOrTestPlan(type);
+      }
+    } else
+      this.title = Utility.getReportNameByReportTypeOrTestPlan(this.types);
+  }
+  
+  /**
+   * fetch detailed dashboard report
+   */
+  private parseTestPlanNames(): string {
+    if (this.types && this.types.includes(",")) {
+      let testPlanNames = "";
+      const typesArray = this.types.split(",");
+      testPlanNames = Utility.getTAPTestPlaNameByReportTypeOrName(typesArray[0]);
+      for (let i = 1; i < typesArray.length; i++) {
+        const type = typesArray[i].trim();
+        if (type != "")
+          testPlanNames += "," + Utility.getTAPTestPlaNameByReportTypeOrName(type);
+      }
+      return testPlanNames;
+    } else
+      return Utility.getTAPTestPlaNameByReportTypeOrName(this.types);
+  }
+
   /**
    * fetch detailed dashboard report
    */
   public fetchDashboardReportDetails(): void {
     this.isRequestCompleted = false;
     this.hasDashboardDetails = false;
+    let minorTime;
+    let minorTimestamp;
+    let minorTimeIndex = 0;
+    let majorTime;
+    let majorTimestamp;
+    let majorTimeIndex = 0;
     this.isLoadingResults = true;
-    const PARSED_REPORT_TYPE = this.type === this.FEATURE_FUNCTIONALITY ? 'LTS' :
-      (this.type === this.CALL_RELIABILITY) ? 'STS' : (this.type === this.DAILY_VQ) ? 'POLQA' : this.type;
+    const PARSED_REPORT_TYPE = this.parseTestPlanNames();
     this.ctaasDashboardService.getCtaasDashboardDetailedReport(this.subaccountDetails.id, PARSED_REPORT_TYPE, this.startDateStr, this.endDateStr, this.status)
       .subscribe((res: any) => {
         this.isRequestCompleted = true;
@@ -98,7 +135,7 @@ export class DetailedReportsCompoment implements OnInit {
         if (res.response.report && res.response.reportType) {
           this.reportResponse = res.response.report;
           const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
-          detailedResponseObj[this.type] = JSON.parse(JSON.stringify(res.response.report));
+          detailedResponseObj[this.types] = JSON.parse(JSON.stringify(res.response.report));
           this.ctaasDashboardService.setDetailedReportObject(detailedResponseObj);
           this.filename = res.response.reportType;
           this.hasDashboardDetails = true;
@@ -114,12 +151,13 @@ export class DetailedReportsCompoment implements OnInit {
           } else {
             this.reportResponse.endpoints = [];
           }
-
-          this.reportResponse.summary.summaryStartTime =  this.reportResponse.results[0].startTime;
-          this.reportResponse.summary.summaryEndTime =  this.reportResponse.results[this.reportResponse.results.length -1].endTime;
+          minorTime =  this.reportResponse.results[0].startTime;
+          minorTimestamp = new Date(minorTime).getTime();
+          majorTime = this.reportResponse.results[this.reportResponse.results.length -1].endTime;
+          majorTimestamp = new Date(majorTime).getTime();
 
           this.detailedTestReport = (this.reportResponse.results && this.reportResponse.results.length > 0) ? this.reportResponse.results : [];
-          this.detailedTestReport.forEach((obj: any) => {
+          this.detailedTestReport.forEach((obj: any, index) => {
             let fromCount = 0;
             let toCount = 0;
             let fromSumarize = 0, toSumarize = 0;
@@ -143,6 +181,17 @@ export class DetailedReportsCompoment implements OnInit {
               let toAvg = (toSumarize / toCount).toFixed(2);
               obj.toPolqaAvg = toAvg;
             }
+            let startTimeTimeStamp = new Date(obj.startTime).getTime();
+            let endTimeTimeStamp = new Date(obj.endTime).getTime();
+            
+            if(startTimeTimeStamp < minorTimestamp){
+              minorTimestamp = startTimeTimeStamp;
+              minorTimeIndex = index;
+            }
+            if(endTimeTimeStamp >= majorTimestamp){
+              majorTimestamp = endTimeTimeStamp;
+              majorTimeIndex = index;
+            }
             obj.closeKey = false;
             obj.fromnoDataFoundFlag = false;
             obj.tonoDataFoundFlag = false;
@@ -155,6 +204,8 @@ export class DetailedReportsCompoment implements OnInit {
             // filter the array without media stats details 
             obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
+          this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime;
+          this.reportResponse.summary.summaryEndTime =  this.reportResponse.results[majorTimeIndex].endTime;
         } else {
           this.hasDashboardDetails = false;
           this.reportResponse = {};
@@ -346,7 +397,7 @@ export class DetailedReportsCompoment implements OnInit {
     const hh = currentDate.getHours();
     const mm = currentDate.getMinutes();
     const ss = currentDate.getSeconds();
-    const name = `${this.type}-${month}-${date}-${year} ${hh}.${mm}.${ss}.xlsx`;
+    const name = `${this.types}-${month}-${date}-${year} ${hh}.${mm}.${ss}.xlsx`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
     a.download = name;
@@ -361,7 +412,7 @@ export class DetailedReportsCompoment implements OnInit {
       this.canDisableDownloadBtn = true;
       this.snackBarService.openSnackBar('Downloading report is in progress.Please wait');
       const detailedResponseObj = this.ctaasDashboardService.getDetailedReportyObject();
-      const reportResponse = detailedResponseObj[this.type];
+      const reportResponse = detailedResponseObj[this.types];
       if (reportResponse) {
         this.ctaasDashboardService.downloadCtaasDashboardDetailedReport(reportResponse)
           .subscribe((res: any) => {

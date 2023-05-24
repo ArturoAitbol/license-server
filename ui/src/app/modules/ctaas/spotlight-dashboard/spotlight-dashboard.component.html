@@ -78,8 +78,8 @@
                                      [p2pCalls]="callingReliability.p2p"
                                      [onNetCalls]="callingReliability.onNet"
                                      [offNetCalls]="callingReliability.offNet"
-                                     (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)">
-                                    </app-gauge-chart>
+                                     [seriesName]="'Passed'"
+                                     (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)"></app-gauge-chart>
                 </div>
                 <div class="col-md-6">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
@@ -89,6 +89,7 @@
                                      [p2pCalls]="featureFunctionality.p2p"
                                      [onNetCalls]="featureFunctionality.onNet"
                                      [offNetCalls]="featureFunctionality.offNet"
+                                     [seriesName]="'Passed'"
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY)"></app-gauge-chart>
                 </div>
             </div>
@@ -110,12 +111,13 @@
                                                [markers]="vqChartOptions.markers"
                                                [plotOptions]="vqChartOptions.plotOptions"
                                                [legend]="vqChartOptions.legend"
+                                               [tooltip]="vqChartOptions.tooltip"
                                                [colors]="vqChartOptions.colors">
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">View
-                                Detailed Table
+                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">
+                                View Detailed Report
                             </button>
                         </div>
                         <div class="card-footer">
@@ -157,10 +159,15 @@
                                             [labels]="failedCallsChartOptions.labels"
                                             [fill]="failedCallsChartOptions.fill"
                                             [grid]="failedCallsChartOptions.grid"
+                                            [tooltip]="failedCallsChartOptions.tooltip"
+                                            [colors]="failedCallsChartOptions.colors"
                                             [states]="failedCallsChartOptions.states">
                                     </apx-chart>
                                 </div>
                             </div>
+                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable()">
+                                View Detailed Report
+                            </button>
                         </div>
                         <div class="card-footer">
                             <div class="footer-text">
@@ -178,20 +185,13 @@
                 </div>
             </div>
         </ng-container>
-        <app-customer-network-quality #customerNetworkQuality 
-            [startDate]="this.filters.get('date').value" 
-            [endDate]="this.filters.get('date').value" 
+        <app-network-quality #networkQuality
+            [startDate]="this.filters.get('date').value"
+            [endDate]="this.filters.get('date').value"
             [region]="this.filters.get('region').value"
             [users]="this.users" (chartStatus)="chartsStatus($event)"
             [isLoading]="this.isloading">
-        </app-customer-network-quality>
-        <app-network-quality-trends #networkQualityTrends 
-            [startDate]="this.filters.get('date').value" 
-            [endDate]="this.filters.get('date').value" 
-            [region]="this.filters.get('region').value" 
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-network-quality-trends>
+        </app-network-quality>
         <br>
     </ng-container>
     <ng-container *ngIf="selectedPeriod === 'weekly'">
@@ -206,7 +206,7 @@
                             <div class="weekly-date-field">
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
-                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="endDate" readonly>
+                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
                                     <mat-hint>MM/DD/YYYY</mat-hint>
                                     <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
                                     <mat-datepicker #dp></mat-datepicker>
@@ -235,9 +235,6 @@
                     </div>
                 </form>
             </div>
-            <!-- <div class="row text-center">
-                <h2 *ngIf="selectedRange!==null">{{selectedRange.start.format('MMMM-DD-YYYY')}} – {{selectedRange.end.format('MMMM-DD-YYYY')}}</h2>
-            </div> -->
             <div class="row">
                 <div class="col-12">
                     <div class="card text-center mt-2">
@@ -396,22 +393,14 @@
                 </div>
             </div>
         </ng-container>
-        <app-customer-network-quality #customerNetworkQuality
-            [startDate]="this.weeklyFilters.get('startDate').value"
-            [endDate]="this.weeklyFilters.get('endDate').value"
-            [groupBy]="'day'"
-            [region]="this.filters.get('region').value"
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-customer-network-quality>
-        <app-network-quality-trends #networkQualityTrends 
-            [startDate]="this.weeklyFilters.get('startDate').value" 
-            [endDate]="this.weeklyFilters.get('endDate').value" 
+        <app-network-quality #networkQuality
+            [startDate]="getStartWeekDate()"
+            [endDate]="getEndWeekDate()"
             [groupBy]="'day'"
             [region]="this.filters.get('region').value" 
             [users]="this.users" (chartStatus)="chartsStatus($event)"
             [isLoading]="this.isloading">
-        </app-network-quality-trends>
+        </app-network-quality>
         <br>
     </ng-container>
 </div>
