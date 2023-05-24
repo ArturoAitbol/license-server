@@ -30,7 +30,8 @@
     <ng-container *ngIf="selectedPeriod === 'daily'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Daily Report | {{ selectedDate.format('MMMM-DD-YYYY') }}</h1>
+                <h1 class="text-center">Daily Report | {{ selectedDate.format('MMMM-DD-YYYY') }}
+                </h1>
             </div>
             <div class="date-picker-form">
                 <form [formGroup]="filters">
@@ -71,20 +72,24 @@
             <div class="row">
                 <div class="col-md-6">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
+                                     [description]="'Represents the status of call routing across the selected regions.'"
                                      [timePeriod]="callingReliability.period"
                                      [numberCalls]="callingReliability.total"
                                      [p2pCalls]="callingReliability.p2p"
                                      [onNetCalls]="callingReliability.onNet"
                                      [offNetCalls]="callingReliability.offNet"
+                                     [seriesName]="'Passed'"
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)"></app-gauge-chart>
                 </div>
                 <div class="col-md-6">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
+                                     [description]="'Represents the status of various call features.'"
                                      [timePeriod]="featureFunctionality.period"
                                      [numberCalls]="featureFunctionality.total"
                                      [p2pCalls]="featureFunctionality.p2p"
                                      [onNetCalls]="featureFunctionality.onNet"
                                      [offNetCalls]="featureFunctionality.offNet"
+                                     [seriesName]="'Passed'"
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY)"></app-gauge-chart>
                 </div>
             </div>
@@ -92,7 +97,7 @@
                 <div class="col-md-6">
                     <div class="card text-center mt-2 full-col">
                         <div class="card-header">
-                            <h1>Voice Quality (POLQA)</h1>
+                            <h1>Voice Quality (POLQA)<mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm.">info_outline</mat-icon> </h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -106,20 +111,16 @@
                                                [markers]="vqChartOptions.markers"
                                                [plotOptions]="vqChartOptions.plotOptions"
                                                [legend]="vqChartOptions.legend"
+                                               [tooltip]="vqChartOptions.tooltip"
                                                [colors]="vqChartOptions.colors">
                                     </apx-chart>
                                 </div>
                             </div>
-                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">View
-                                Detailed Table
+                            <button  class="viewDetail-button" mat-raised-button (click)="navigateToDetailedTable(ReportType.DAILY_VQ)">
+                                View Detailed Report
                             </button>
                         </div>
                         <div class="card-footer">
-                            <div class="footer-text">
-                                <mat-icon>timer</mat-icon>
-                                <label class="ps-1">Execution time period: {{ vq.period }}</label>
-                            </div>
-                            <br>
                             <div class="footer-text">
                                 <mat-icon>call</mat-icon>
                                 <label class="ps-1">Number of calls: {{ vq.calls }} | Number of
@@ -131,7 +132,7 @@
                 <div class="col-md-6">
                     <div class="card text-center mt-2 full-col">
                         <div class="card-header">
-                            <h1>Failed Calls</h1>
+                            <h1>Failed Calls <mat-icon matTooltip = "Represents the calls failed due to routing or client issues.">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row justify-content-center failed-calls-body">
@@ -158,12 +159,15 @@
                                             [labels]="failedCallsChartOptions.labels"
                                             [fill]="failedCallsChartOptions.fill"
                                             [grid]="failedCallsChartOptions.grid"
+                                            [tooltip]="failedCallsChartOptions.tooltip"
+                                            [colors]="failedCallsChartOptions.colors"
                                             [states]="failedCallsChartOptions.states">
                                     </apx-chart>
                                 </div>
                             </div>
                             <br>
-                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable()">View Detailed Report
+                            <button  class="viewDetail-button top-spacing-3" mat-raised-button (click)="navigateToDetailedTable()">
+                                View Detailed Report
                             </button>
                         </div>
                         <div class="card-footer">
@@ -190,26 +194,19 @@
                 </div>
             </div>
         </ng-container>
-        <app-customer-network-quality #customerNetworkQuality 
-            [startDate]="this.filters.get('date').value" 
-            [endDate]="this.filters.get('date').value" 
+        <app-network-quality #networkQuality
+            [startDate]="this.filters.get('date').value"
+            [endDate]="this.filters.get('date').value"
             [region]="this.filters.get('region').value"
             [users]="this.users" (chartStatus)="chartsStatus($event)"
             [isLoading]="this.isloading">
-        </app-customer-network-quality>
-        <app-network-quality-trends #networkQualityTrends 
-            [startDate]="this.filters.get('date').value" 
-            [endDate]="this.filters.get('date').value" 
-            [region]="this.filters.get('region').value" 
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-network-quality-trends>
+        </app-network-quality>
         <br>
     </ng-container>
     <ng-container *ngIf="selectedPeriod === 'weekly'">
         <ng-container *ngIf="!isloading">
             <div class="row">
-                <h1 class="text-center">Weekly Report | {{ selectedDate.format('MMMM-DD-YYYY') }}</h1>
+                <h1 class="text-center">Weekly Report | <span *ngIf="selectedRange!==null">{{selectedRange.start.format('MMMM-DD-YYYY')}} – {{selectedRange.end.format('MMMM-DD-YYYY')}}</span></h1>
             </div>
             <div class="date-picker-form">
                 <form [formGroup]="weeklyFilters">
@@ -218,13 +215,10 @@
                             <div class="weekly-date-field">
                                 <mat-form-field appearance="outline">
                                     <mat-label>Date</mat-label>
-                                    <mat-date-range-input [formGroup]="weeklyFilters" [rangePicker]="dp" [max]="maxDate">
-                                        <input matStartDate formControlName="startDate" placeholder="Start date" readonly>
-                                        <input matEndDate formControlName="endDate" placeholder="End date" readonly>
-                                    </mat-date-range-input>
-                                    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                                    <input [max]="maxDate" matInput [matDatepicker]="dp" formControlName="date" readonly>
+                                    <mat-hint>MM/DD/YYYY</mat-hint>
                                     <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
-                                    <mat-date-range-picker lcDateRange [maxDate]="maxDate.toDate()" [minDate]="minDate.toDate()" #dp></mat-date-range-picker>
+                                    <mat-datepicker #dp></mat-datepicker>
                                 </mat-form-field>
                             </div>
                             <div class="region-field">
@@ -254,7 +248,7 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Feature Functionality</h1>
+                            <h1>Feature Functionality <mat-icon matTooltip="Represents the status of various call features">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -277,11 +271,6 @@
                         </div>
                         <div class="card-footer">
                             <div class="footer-text">
-                                <mat-icon>timer</mat-icon>
-                                <label class="ps-1">Execution time period: {{weeklyFeatureFunctionality.timePeriod}}</label>
-                            </div>
-                            <br>
-                            <div class="footer-text">
                                 <mat-icon>call</mat-icon>
                                 <label class="ps-1">Number of calls: {{weeklyFeatureFunctionality.numberCalls}} |
                                     P2P: {{weeklyFeatureFunctionality.p2pCalls}} |
@@ -296,7 +285,7 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Calling Reliability</h1>
+                            <h1>Calling Reliability <mat-icon matTooltip="Represents the status of call routing across the selected regions.">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -319,11 +308,6 @@
                         </div>
                         <div class="card-footer">
                             <div class="footer-text">
-                                <mat-icon>timer</mat-icon>
-                                <label class="ps-1">Execution time period: {{weeklyCallingReliability.timePeriod}}</label>
-                            </div>
-                            <br>
-                            <div class="footer-text">
                                 <mat-icon>call</mat-icon>
                                 <label class="ps-1">Number of calls: {{weeklyCallingReliability.numberCalls}} |
                                     P2P: {{weeklyCallingReliability.p2pCalls}} |
@@ -338,7 +322,7 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Voice Quality (POLQA)</h1>
+                            <h1>Voice Quality (POLQA) <mat-icon matTooltip="Represents the voice quality of different call streams measured using ITU defined POLQA algorithm">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row">
@@ -361,11 +345,6 @@
                         </div>
                         <div class="card-footer">
                             <div class="footer-text">
-                                <mat-icon>timer</mat-icon>
-                                <label class="ps-1">Execution time period: {{ weeklyVQ.timePeriod }}</label>
-                            </div>
-                            <br>
-                            <div class="footer-text">
                                 <mat-icon>call</mat-icon>
                                 <label class="ps-1">Number of calls: {{ weeklyVQ.numberCalls }} | Number of
                                     streams: {{ weeklyVQ.numberStreams }}</label>
@@ -378,7 +357,7 @@
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
-                            <h1>Call Status History</h1>
+                            <h1>Call Status History <mat-icon matTooltip="Represents the time and date of failed calls">info_outline</mat-icon></h1>
                         </div>
                         <div class="card-body container-fluid">
                             <div class="row justify-content-center failed-calls-body">
@@ -423,22 +402,14 @@
                 </div>
             </div>
         </ng-container>
-        <app-customer-network-quality #customerNetworkQuality
-            [startDate]="this.weeklyFilters.get('startDate').value"
-            [endDate]="this.weeklyFilters.get('endDate').value"
-            [groupBy]="'day'"
-            [region]="this.filters.get('region').value"
-            [users]="this.users" (chartStatus)="chartsStatus($event)"
-            [isLoading]="this.isloading">
-        </app-customer-network-quality>
-        <app-network-quality-trends #networkQualityTrends 
-            [startDate]="this.weeklyFilters.get('startDate').value" 
-            [endDate]="this.weeklyFilters.get('endDate').value" 
+        <app-network-quality #networkQuality
+            [startDate]="getStartWeekDate()"
+            [endDate]="getEndWeekDate()"
             [groupBy]="'day'"
             [region]="this.filters.get('region').value" 
             [users]="this.users" (chartStatus)="chartsStatus($event)"
             [isLoading]="this.isloading">
-        </app-network-quality-trends>
+        </app-network-quality>
         <br>
     </ng-container>
 </div>

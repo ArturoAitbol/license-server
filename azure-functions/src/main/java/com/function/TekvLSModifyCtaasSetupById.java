@@ -209,7 +209,7 @@ public class TekvLSModifyCtaasSetupById {
                     }
                 }
                 try {
-                    if (TAP_URL != null || TAP_URL.isEmpty())
+                    if (TAP_URL != null && !TAP_URL.isEmpty())
                         // invoke Northbound API on TAP, to save Customer details.
                         TAPClient.saveCustomerDetailsOnTap(TAP_URL, customerDetailsJsonObject, context);
                 } catch (Exception e) {
