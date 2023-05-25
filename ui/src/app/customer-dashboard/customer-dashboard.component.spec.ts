@@ -263,7 +263,12 @@ describe('routes to spotlight dashboard', () => {
         selectedOption: 'selectedTestOption', 
         selectedIndex: '0' }; 
         spyOn(dashboardComponentTestInstance, 'rowAction').and.callThrough();
-        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callThrough();
+        spyOn(FeatureToggleServiceMock, "isFeatureEnabled").and.callFake((ftName, subaccountId) => {
+            if (ftName === 'powerbiFeature')
+                return true;
+            if (ftName === 'spotlight-dashboard')
+                return false;
+        });
         spyOn(RouterMock, 'navigate').and.callThrough();
         spyOn(window, 'open').and.returnValue(null);
 
