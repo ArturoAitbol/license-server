@@ -67,19 +67,21 @@ public class TAPClient {
      *
      * @param tapURL
      * @param token
-     * @param type
+     * @param types
      * @param startDate
      * @param endDate
      * @param context
      * @return
      * @throws Exception
      */
-    static public JSONObject getDetailedReport(final String tapURL, String token, String type, String startDate,
-                                               String endDate, String status, ExecutionContext context) throws Exception {
-        String url = String.format("%s/%s/%s/report?startDate=%s&endDate=%s", tapURL,
-                Constants.SPOTLIGHT_API_PATH, type, startDate, endDate);
-        if (!type.isEmpty()) url = String.format("%s&type=%s", url, type);
-        if (!status.isEmpty()) url = String.format("%s&status=%s", url, status);
+    static public JSONObject getDetailedReport(final String tapURL, String token, String types, String startDate, 
+        String endDate, String status, ExecutionContext context) throws Exception {
+        String url = tapURL + "/" + Constants.SPOTLIGHT_API_PATH;
+        if (!types.contains(",") && status.isEmpty())
+            url += "/" + types;
+        url = String.format("%s/report?startDate=%s&endDate=%s", url, startDate, endDate);
+        if (!types.isEmpty()) url += "&types=" + types;
+        if (!status.isEmpty()) url += "&status=" + status;
         context.getLogger().info("TAP detailed report endpoint: " + url);
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);
@@ -89,7 +91,7 @@ public class TAPClient {
         if (response != null && (response.has("error"))) {
             context.getLogger()
                     .severe("Error while retrieving detailed test report from Automation Platform: " + response);
-            throw new ADException("Error retrieving " + type + " detailed report from Automation Platform");
+            throw new ADException("Error retrieving " + types + " detailed report from Automation Platform");
         }
         context.getLogger().info("Received detailed test report response from Automation Platform");
         return response;
@@ -130,8 +132,8 @@ public class TAPClient {
     static public JSONObject saveCustomerDetailsOnTap(String tapURL, JSONObject request, ExecutionContext context)
             throws Exception {
         String token = TAPClient.getAccessToken(tapURL, context);
-        final String resource = "/customerInfo";
-        final String url = String.format("%s%s%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource);
+        final String resource = "customerInfo";
+        final String url = String.format("%s/%s/%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource);
         context.getLogger().info("TAP Customer Info endpoint: " + url);
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);

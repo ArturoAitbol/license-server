@@ -49,19 +49,12 @@ export class SpotlightChartsService {
         return this.httpClient.get(this.API_URL + 'networkQualityChart', { headers, params });
     }
 
-    public getCustomerNetworkQualitySummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, user: string, subaccountId: string) {
-        return this.getNetworkQualitySummary(startDate, endDate, region, 'POLQA,Received Jitter,Received packet loss,Round trip time', user, subaccountId)
-    }
 
-    public getNetworkQualityTrendsSummary(startDate: Moment, endDate: Moment, region: { country: string, state: string, city: string }, user: string, subaccountId: string) {
-        return this.getNetworkQualitySummary(startDate, endDate, region, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', user, subaccountId)
-    }
-
-    private getNetworkQualitySummary(startDate: Moment, endDate: Moment,  region: { country: string, state: string, city: string }, metric: string, user: string, subaccountId: string) {
+    public getNetworkQualitySummary(startDate: Moment, endDate: Moment,  region: { country: string, state: string, city: string }, user: string, subaccountId: string) {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
-        params = params.set('metric', metric);
+        params = params.set('metric', 'Received Jitter,Received packet loss,Round trip time,Sent bitrate,POLQA');
         params = params.set('subaccountId', subaccountId);
         if (user) params = params.set('user', user);
         if (region.country) params = params.set('country',region.country);
@@ -165,10 +158,12 @@ export class SpotlightChartsService {
         return this.httpClient.get(this.API_URL + 'voiceQualityChart', { headers, params });
     }
 
-    public getFilterOptions(subaccountId: string,filter?: string, region?: { country: string, state: string, city: string }) {
+    public getFilterOptions(subaccountId: string, startDate: Moment, endDate: Moment, filter?: string, region?: { country: string, state: string, city: string }) {
         const headers = this.getHeaders();
         let params = new HttpParams();
         params = params.set('subaccountId', subaccountId);
+        params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
+        params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         if(filter) params = params.set('filter', filter);
         if(region) {
             if (region.country) params = params.set('country', region.country);
