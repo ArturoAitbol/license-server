@@ -433,8 +433,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 case this.VIEW_CTAAS_DASHBOARD:
                     const hasCtaasService = object.selectedRow.services && object.selectedRow.services.includes(tekVizionServices.SpotLight);
                     if (hasCtaasService) {
-                        const routePath = this.featureToggleService.isFeatureEnabled("powerbiFeature", this.selectedSubaccount.id) ? '/spotlight/visualization' : '/spotlight/report-dashboards';
+                        const routePath = this.featureToggleService.isFeatureEnabled("powerbiFeature", this.selectedSubaccount.id) ? '/spotlight/visualization' : '/spotlight/spotlight-dashboard';
                         const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
+                        console.log(routePath);
                         window.open(url);
                     } else this.snackBarService.openSnackBar('Spotlight service is not available for this Subaccount', '');
                     break;
