@@ -154,21 +154,20 @@ public class TekvLSModifySubaccountById {
 				}
 				context.getLogger().info("Execute SQL statement (User: " + userId + "): " + customerDetailStatement);
 				ResultSet customerAndSubQueryResult = customerDetailStatement.executeQuery();
-
-				JSONObject customerJsonObject = new JSONObject();
-				String TAP_URL = null;
 				if (customerAndSubQueryResult.next()) {
+					JSONObject customerJsonObject = new JSONObject();
+					String TAP_URL = null;
 					TAP_URL = customerAndSubQueryResult.getString("url");
 					customerJsonObject.put("lsSubAccountId", customerAndSubQueryResult.getString("lsSubAccountId"));
 					customerJsonObject.put("lsSubAccountName", customerAndSubQueryResult.getString("lsSubAccountName"));
 					customerJsonObject.put("lsCustomerName", customerAndSubQueryResult.getString("lsCustomerName"));
 					customerJsonObject.put("lsCustomerId", customerAndSubQueryResult.getString("lsCustomerId"));
-				}
-				// Update customer details on respective TAP client
-				try {
-					TAPClient.saveCustomerDetailsOnTap(TAP_URL, customerJsonObject, context);
-				} catch (Exception e) {
-					context.getLogger().info("Caught exception: " + e.getMessage());
+					// Update customer details on respective TAP client
+					try {
+						TAPClient.saveCustomerDetailsOnTap(TAP_URL, customerJsonObject, context);
+					} catch (Exception e) {
+						context.getLogger().info("Caught exception: " + e.getMessage());
+					}
 				}
 			}
 
