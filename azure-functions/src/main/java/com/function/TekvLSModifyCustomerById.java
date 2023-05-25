@@ -113,18 +113,15 @@ public class TekvLSModifyCustomerById {
                 ResultSet customerAndSubQueryResult = customerDetailStatement.executeQuery();
                 // iterate through list of customer with subaccount details
                 while (customerAndSubQueryResult.next()) {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("url", customerAndSubQueryResult.getString("url"));
+                    String TAP_URL = customerAndSubQueryResult.getString("url");
                     JSONObject customerJsonObject = new JSONObject();
                     customerJsonObject.put("lsSubAccountId", customerAndSubQueryResult.getString("lsSubAccountId"));
                     customerJsonObject.put("lsSubAccountName", customerAndSubQueryResult.getString("lsSubAccountName"));
                     customerJsonObject.put("lsCustomerName", customerAndSubQueryResult.getString("lsCustomerName"));
                     customerJsonObject.put("lsCustomerId", customerAndSubQueryResult.getString("lsCustomerId"));
-                    jsonObject.put("customerDetails", customerJsonObject);
                     // Update customer details on respective TAP client
                     try {
-                        JSONObject dObject = (JSONObject) jsonObject.get("customerDetails");
-                        TAPClient.saveCustomerDetailsOnTap(jsonObject.get("url").toString(), dObject, context);
+                        TAPClient.saveCustomerDetailsOnTap(TAP_URL, customerJsonObject, context);
                     } catch (Exception e) {
                         context.getLogger().info("Caught exception: " + e.getMessage());
                     }
