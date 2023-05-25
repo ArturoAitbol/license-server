@@ -193,7 +193,7 @@ export class SpotlightDashboardComponent implements OnInit{
     const dailyCallingReliabiltyRes: any = res[0].callingReliability;
     let passedCalls = dailyCallingReliabiltyRes.callsByStatus.PASSED;
     let failedCalls = dailyCallingReliabiltyRes.callsByStatus.FAILED;
-    const POLQA =  res[0].callingReliability.POLQA.callsByType;
+    const POLQA = res[0].POLQA.callsByType;
     this.callingReliability.total = passedCalls + failedCalls;
     this.callingReliability.p2p = dailyCallingReliabiltyRes.callsByType.p2p + POLQA.p2p;
     this.callingReliability.onNet = dailyCallingReliabiltyRes.callsByType.onNet + POLQA.onNet;
@@ -301,7 +301,7 @@ export class SpotlightDashboardComponent implements OnInit{
 
     // Weekly CR and FF footer info
     const weeklyCallStatus = res[3];
-    const POLQA =  res[3].callingReliability.POLQA.callsByType;
+    const POLQA = res[3].POLQA.callsByType;
     this.weeklyFeatureFunctionality.p2pCalls = weeklyCallStatus.featureFunctionality.callsByType.p2p;
     this.weeklyFeatureFunctionality.onNetCalls = weeklyCallStatus.featureFunctionality.callsByType.onNet;
     this.weeklyFeatureFunctionality.offNetCalls = weeklyCallStatus.featureFunctionality.callsByType.offNet;
