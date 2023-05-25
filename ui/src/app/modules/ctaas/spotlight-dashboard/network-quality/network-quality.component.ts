@@ -16,6 +16,8 @@ import { environment } from "../../../../../environments/environment";
 import { ReportType } from "../../../../helpers/report-type";
 import { defaultPolqaChartOptions } from "../initial-chart-config";
 import { Utility } from 'src/app/helpers/utils';
+import { MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: 'app-network-quality',
@@ -64,12 +66,22 @@ export class NetworkQualityComponent implements OnInit {
 
   constructor(private spotlightChartsService: SpotlightChartsService,
               private subaccountService: SubAccountService,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private matIconRegistry: MatIconRegistry,
+              private domSanitzer: DomSanitizer) {
     this.commonChartOptions = trendsChartCommonOptions;
     this.polqaChartOptions = defaultPolqaChartOptions;
     this.polqaChartOptions.chart.events = {
       markerClick: this.navigateToPolqaDetailedTableFromPoint.bind(this)
     };
+    this.matIconRegistry.addSvgIcon(
+        'packetloss',
+        this.domSanitzer.bypassSecurityTrustResourceUrl('assets/images/icons/packetloss.svg')
+    );
+    this.matIconRegistry.addSvgIcon(
+        'jitter',
+        this.domSanitzer.bypassSecurityTrustResourceUrl('assets/images/icons/jitter.svg')
+    );
   }
   
 
@@ -138,6 +150,7 @@ export class NetworkQualityComponent implements OnInit {
       }];
 
       const summary = res[1];
+      this.summary.totalCalls = summary.totalCalls;
       this.summary.overall.sendBitrate = summary.avgSentBitrate;
       this.summary.overall.jitter = summary.maxJitter;
       this.summary.overall.roundTripTime = summary.maxRoundTripTime;

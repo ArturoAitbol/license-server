@@ -13,7 +13,7 @@ export const FeatureToggleServiceMock = {
     clearPeriodicRefresh: () => {
         return;
     },
-    isFeatureEnabled: () => {
+    isFeatureEnabled: (ftName?, subaccountId?) => {
         return true;
     },
 };

@@ -222,10 +222,37 @@ mat-form-field {
         flex-direction: column-reverse;
     }
 }
+
 .full-col {
     display: flex;
     flex-flow: column;
     height: calc(100% - 8px);
+}
+
+.top-spacing-3 {
+    top: 3.5em;
+}
+
+.top-spacing-1 {
+    top: 1em;
+}
+
+@media only screen and (max-width: 1500px){
+    .top-spacing-3{
+        top: 1.5em;
+    }
+    .top-spacing-1 {
+        top: 1em;
+    }
+}
+
+@media only screen and (max-width: 1250px){
+    .top-spacing-3{
+        top: 0;
+    }
+    .top-spacing-1 {
+        top: 0;
+    }
 }
 
 ::ng-deep .mat-tooltip {
