@@ -208,7 +208,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             const subaccounts = subaccountsList.filter(s => s.customerId === customer.id);
             if (subaccounts.length > 0) {
                 subaccounts.forEach(subaccount => {
-                    let customerWithDetails = { ...customer };
+                    const customerWithDetails = { ...customer };
                     customerWithDetails.subaccountName = subaccount.name;
                     customerWithDetails.subaccountId = subaccount.id;
                     const subaccountLicenses = licences.filter((l: License) => (l.subaccountId === subaccount.id));
@@ -433,7 +433,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 case this.VIEW_CTAAS_DASHBOARD:
                     const hasCtaasService = object.selectedRow.services && object.selectedRow.services.includes(tekVizionServices.SpotLight);
                     if (hasCtaasService) {
-                        const routePath = this.featureToggleService.isFeatureEnabled("powerbiFeature", this.selectedSubaccount.id) ? '/spotlight/visualization' : '/spotlight/spotlight-dashboard';
+                        let routePath = '/spotlight/stakeholders';
+                        if(this.featureToggleService.isFeatureEnabled("powerbiFeature", this.selectedSubaccount.id))
+                            routePath = '/spotlight/visualization';
+                        if(this.featureToggleService.isFeatureEnabled("spotlight-dashboard", this.selectedSubaccount.id))
+                            routePath = '/spotlight/spotlight-dashboard';
                         const url = `${environment.BASE_URL}/#${routePath}?subaccountId=${this.selectedSubaccount.id}`;
                         console.log(routePath);
                         window.open(url);
