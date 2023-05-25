@@ -135,6 +135,7 @@ export class NetworkQualityComponent implements OnInit {
       }];
 
       const summary = res[1];
+      this.summary.totalCalls = summary.totalCalls;
       this.summary.overall.sendBitrate = summary.avgSentBitrate;
       this.summary.overall.jitter = summary.maxJitter;
       this.summary.overall.roundTripTime = summary.maxRoundTripTime;
