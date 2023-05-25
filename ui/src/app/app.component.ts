@@ -60,7 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 isPreview: false
             },
             {
-                name: 'Native Dashboard',
+                name: 'Dashboard',
                 path: 'spotlight-dashboard',
                 active: false,
                 materialIcon: 'analytics',

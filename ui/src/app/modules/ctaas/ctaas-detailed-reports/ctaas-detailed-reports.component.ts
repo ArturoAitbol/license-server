@@ -161,17 +161,29 @@ export class DetailedReportsCompoment implements OnInit {
             let fromCount = 0;
             let toCount = 0;
             let fromSumarize = 0, toSumarize = 0;
-            for(let i=0 ; i< obj.from.mediaStats.length; i ++) {
-              if(obj.from.mediaStats[i]?.data.POLQA && obj.from.mediaStats[i]?.data.POLQA !== 0) {
-                let fromPolqaSum = parseFloat(obj.from.mediaStats[i].data.POLQA);
-                fromSumarize += fromPolqaSum;
-                fromCount++;
+            if(obj.from?.mediaStats){
+              for(let i=0 ; i< obj.from.mediaStats.length; i ++) {
+                if(obj.from?.mediaStats[i]?.data?.POLQA && obj.from?.mediaStats[i]?.data?.POLQA !== 0 ) {
+                  let fromPolqaSum = parseFloat(obj.from.mediaStats[i].data.POLQA);
+                  fromSumarize += fromPolqaSum;
+                  fromCount++;
+                }
               }
-              if(obj.to.mediaStats[i]?.data.POLQA && obj.to.mediaStats[i]?.data.POLQA !== 0) {
-                let toPolqaSum = parseFloat(obj.to.mediaStats[i].data.POLQA);
-                toSumarize += toPolqaSum;
-                toCount++;
+              obj.from.mediaStats.sort((a, b) => {
+                return a.timestamp - b.timestamp
+              })
+            }
+            if(obj.to?.mediaStats){
+              for(let i=0 ; i< obj.to.mediaStats.length; i ++) {
+                if(obj.to?.mediaStats[i]?.data?.POLQA && obj.to?.mediaStats[i]?.data?.POLQA !== 0) {
+                  let toPolqaSum = parseFloat(obj.to.mediaStats[i].data.POLQA);
+                  toSumarize += toPolqaSum;
+                  toCount++;
+                }
               }
+              obj.to.mediaStats.sort((a, b) => {
+                return a.timestamp - b.timestamp
+              })
             }
             if(fromSumarize !== 0 && fromCount !== 0 ) {
               let fromAvg = (fromSumarize / fromCount).toFixed(2);
@@ -183,7 +195,6 @@ export class DetailedReportsCompoment implements OnInit {
             }
             let startTimeTimeStamp = new Date(obj.startTime).getTime();
             let endTimeTimeStamp = new Date(obj.endTime).getTime();
-            
             if(startTimeTimeStamp < minorTimestamp){
               minorTimestamp = startTimeTimeStamp;
               minorTimeIndex = index;
@@ -198,10 +209,6 @@ export class DetailedReportsCompoment implements OnInit {
             obj.otherPartynoDataFoundFlag = false;
             obj.panelOpenState = true;
             obj.callType = obj.otherParties.length > 0  ? null : obj.callType
-            obj.from.mediaStats.sort((a, b) => {
-              return a.timestamp - b.timestamp
-            })
-            // filter the array without media stats details 
             obj.otherParties = (obj.otherParties && obj.otherParties.length > 0) ? obj.otherParties.filter(e => e.hasOwnProperty('mediaStats')) : [];
           });
           this.reportResponse.summary.summaryStartTime = this.reportResponse.results[minorTimeIndex].startTime;
@@ -382,7 +389,8 @@ export class DetailedReportsCompoment implements OnInit {
       { header: 'Received Jitter', value: 'Received Jitter' },
       { header: 'Sent codec', value: 'Sent codec' },
       { header: 'Round trip time', value: 'Round trip time' },
-      { header: 'Received packets', value: 'Received packets' }
+      { header: 'Received packets', value: 'Received packets' },
+      { header: 'POLQA', value: 'POLQA'}
     ]
   }
   /**
