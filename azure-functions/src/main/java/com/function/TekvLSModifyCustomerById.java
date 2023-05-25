@@ -5,6 +5,7 @@ import com.function.clients.TAPClient;
 import com.function.db.QueryBuilder;
 import com.function.db.SelectQueryBuilder;
 import com.function.db.UpdateQueryBuilder;
+import com.function.util.Constants;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.BindingName;
@@ -92,6 +93,7 @@ public class TekvLSModifyCustomerById {
         queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
         customerDetailsQueryBuilder.appendEqualsCondition(" s.customer_id", id, QueryBuilder.DATA_TYPE.UUID);
+        customerDetailsQueryBuilder.appendCustomCondition("s.services LIKE '%?%'", Constants.SubaccountServices.SPOTLIGHT.value());
         customerDetailsQueryBuilder.appendCustomCondition("cs.tap_url IS NOT NULL AND cs.tap_url != ?", "");
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"

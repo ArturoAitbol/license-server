@@ -139,13 +139,18 @@ public class TAPClient {
         headers.put("Authorization", "Bearer " + token);
         // disable SSL host verification
         TAPClient.disableSslVerification(context);
-        JSONObject response = HttpClient.post(url, request.toString(), headers);
-        if (response != null && !response.getBoolean("success")) {
-            context.getLogger()
-                    .severe("Error occurred while updating customer details to the Automation Platform: " + response);
-            throw new ADException("Error occurred while updating customer details to the Automation Platform");
+        JSONObject response = null;
+        try {
+            response = HttpClient.post(url, request.toString(), headers);
+            if (response != null && !response.getBoolean("success")) {
+                context.getLogger().severe("Error occurred while updating customer details to the Automation Platform: " + response);
+                throw new Exception("Error occurred while updating customer details to the Automation Platform");
+            }
+            context.getLogger().info("Updated customer details to the Automation Platform successfully.");
+        } catch (Exception e) {
+            context.getLogger().info("Error updating customer details to Automation Platform with URL=" + url);
+			context.getLogger().info("Caught exception: " + e.getMessage());
         }
-        context.getLogger().info("Updated customer details to the Automation Platform successfully.");
         return response;
     }
 
