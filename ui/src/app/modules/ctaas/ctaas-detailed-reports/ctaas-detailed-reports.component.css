@@ -138,3 +138,38 @@ mat-card {
     overflow: auto !important;
   }
 }
+
+mat-panel-title {
+  white-space: nowrap;
+  flex-shrink: 0; /* Evita que los títulos se encojan al reducir el espacio disponible */
+}
+
+/* @media (max-width: 600px) { 
+  mat-panel-title {
+    min-width: 200px; 
+    overflow: hidden;
+    text-overflow: ellipsis
+  }
+} */
+
+.panel-title-container {
+  white-space: nowrap;
+  overflow-x: auto;
+  display: flex;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-left: 25px;
+  padding-right: 0%;
+}
+
+.table-cell {
+  flex-shrink: 0;
+  padding: 10px;
+  color: black;
+  font-weight: 500;
+  flex-grow: 1;
+}

@@ -62,7 +62,7 @@
 <ng-template #viewTestDetailedReport>
     <section class="table-section">
         <mat-card class="card" style="height: 400px;overflow: auto;">
-            <mat-accordion class="row">
+            <!-- <mat-accordion class="row">
                 <mat-expansion-panel hideToggle disabled style="background-color: #e4e5e5;">
                     <mat-expansion-panel-header class="row">
                         <mat-panel-title  class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="color: black;font-weight: 500; margin-right: 8.5%;"> Test Case
@@ -81,20 +81,29 @@
                         </mat-panel-title>
                         <mat-panel-title class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="color: black;font-weight: 500;"> Call Type
                         </mat-panel-title>
-                        <!-- <mat-panel-title class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="color: black;font-weight: 500"> Error Category
-                        </mat-panel-title> -->
                         <mat-panel-title class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="color: black;font-weight: 500">
                         </mat-panel-title>
                     </mat-expansion-panel-header>
                 </mat-expansion-panel>
-            </mat-accordion>
-            <mat-card-content  class="row">
+            </mat-accordion> -->
+            <div class="panel-title-container">
+                <mat-card-content  class="row">
                 <div>
                     <ng-container class="column-content" *ngIf="detailedTestReport.length > 0" >
+                        <div class="table-header">
+                            <div class="table-cell col-lg-1 col-md-1 col-sm-1 col-xs-1">Test Case</div>
+                            <div class="table-cell col-lg-2 col-md-2 col-sm-2 col-xs-2">Start Date</div>
+                            <div class="table-cell col-lg-1 col-md-1 col-sm-1 col-xs-1">From</div>
+                            <div class="table-cell col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">From POLQA</div>
+                            <div class="table-cell col-lg-1 col-md-1 col-sm-1 col-xs-1">To</div>
+                            <div class="table-cell col-lg-1 col-md-1 col-sm-1 col-xs-1 custom-col">To POLQA</div>
+                            <div class="table-cell col-lg-1 col-md-1 col-sm-1 col-xs-1">Status</div>
+                            <div class="table-cell col-lg-1 col-md-1 col-sm-1 col-xs-1">Call Type</div>
+                        </div>
                         <mat-accordion *ngFor="let item of detailedTestReport; let i = index"
                             class="accordian-container ">
                             <mat-expansion-panel (opened)="open(i)" (closed)="close(i)" hideToggle>
-                                <mat-expansion-panel-header class="column-content" style="height: auto; min-height: 50px;" >
+                                <mat-expansion-panel-header>
                                     <mat-panel-title class="col-lg-2  col-md-2 col-sm-1 col-xs-1">
                                         <span class="testcasename " [title]="item.testCaseName">
                                             {{item.testCaseName | na}}
@@ -312,6 +321,7 @@
                     <h3 class="no-data-found" *ngIf="detailedTestReport.length === 0">No Data to display</h3>
                 </div>
             </mat-card-content>
+        </div>
         </mat-card>
     </section>
 </ng-template>
