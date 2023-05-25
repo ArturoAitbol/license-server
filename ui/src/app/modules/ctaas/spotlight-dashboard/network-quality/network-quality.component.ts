@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 import {
   defaultJitterChartOptions,
@@ -27,7 +27,7 @@ export class NetworkQualityComponent implements OnInit {
   @Input() startDate: Moment;
   @Input() endDate: Moment;
   @Input() users: string[] = [];
-  @Input() region;
+  @Input() regions;
   @Input() groupBy = 'hour';
   @Input() isLoading: boolean;
   @Output() chartStatus = new EventEmitter<boolean>();
@@ -42,6 +42,10 @@ export class NetworkQualityComponent implements OnInit {
   roundTripChartOptions: Partial<ChartOptions>;
   commonChartOptions: Partial<ChartOptions>;
   filteredUsers: Observable<string[]>;
+  selectedUsers = [];
+
+  @ViewChild('userInput') userInput: ElementRef<HTMLInputElement>;
+
  
 
     filters = this.fb.group({
@@ -99,12 +103,11 @@ export class NetworkQualityComponent implements OnInit {
 
   loadCharts(isReload?) {
     if (!isReload) this.privateIsLoading = true;
-    const selectedUser = this.filters.get("user").value;
     const obs = [];
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.region, selectedUser, subaccountId, this.groupBy));
-    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.region, selectedUser, subaccountId));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.region, selectedUser, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.regions, this.selectedUsers, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy));
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
@@ -260,6 +263,24 @@ export class NetworkQualityComponent implements OnInit {
       ];
       this.polqaChartOptions.yAxis[0].title.text = 'Round Trip Time';
     }
+  }
+
+  remove(user: string): void {
+    const index = this.selectedUsers.indexOf(user);
+    if (index >= 0) {
+      this.selectedUsers.splice(index, 1);
+    }
+  }
+
+  selected(): void {
+    this.selectedUsers.push(this.filters.get('user').value);
+    this.userInput.nativeElement.value = '';
+    this.filters.get('user').setValue("");
+    this.initAutocompletes();
+  }
+
+  clearUsersFilter(){
+    this.selectedUsers=[];
   }
 
 }

@@ -52,9 +52,10 @@
                                     <input type="text"
                                     placeholder="Region"
                                     matInput
+                                    #regionInput
                                     formControlName="region"
                                     [matAutocomplete]="regionAuto">
-                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn">
+                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="selected()">
                                         <mat-option *ngFor="let region of filteredRegions | async" [value]="region">
                                             {{region.displayName}}
                                         </mat-option>
@@ -68,6 +69,25 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="row" *ngIf="this.selectedRegions.length>0">
+                <div class="col-md-12">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
+                                <button [disabled]="this.selectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                        </div>
+                        <mat-chip-list aria-label="Region selection">
+                            <mat-chip
+                              *ngFor="let region of selectedRegions"
+                              (removed)="remove(region)">
+                              {{region.displayName}}
+                              <button matChipRemove>
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip>
+                        </mat-chip-list>
+                    <hr>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
@@ -188,7 +208,7 @@
         <app-network-quality #networkQuality
             [startDate]="this.filters.get('date').value"
             [endDate]="this.filters.get('date').value"
-            [region]="this.filters.get('region').value"
+            [regions]="this.selectedRegions"
             [users]="this.users" (chartStatus)="chartsStatus($event)"
             [isLoading]="this.isloading">
         </app-network-quality>
@@ -218,10 +238,11 @@
                                     <input type="text"
                                     placeholder="Region"
                                     matInput
+                                    #regionInput
                                     formControlName="region"
                                     [matAutocomplete]="regionAuto">
-                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn">
-                                        <mat-option *ngFor="let region of filteredRegions | async" [value]="region">
+                                    <mat-autocomplete autoActiveFirstOption #regionAuto="matAutocomplete" [displayWith]="regionDisplayFn" (optionSelected)="selected()">
+                                        <mat-option *ngFor="let region of weeklyFilteredRegions | async" [value]="region">
                                             {{region.displayName}}
                                         </mat-option>
                                     </mat-autocomplete>
@@ -234,6 +255,25 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="row" *ngIf="this.weeklySelectedRegions.length>0">
+                <div class="col-md-12">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h2 class="mb-0">Selected Region(s)&nbsp;</h2>
+                                <button [disabled]="this.weeklySelectedRegions.length===0" (click)="clearRegionsFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                        </div>
+                        <mat-chip-list aria-label="Region selection">
+                            <mat-chip
+                              *ngFor="let region of weeklySelectedRegions"
+                              (removed)="remove(region)">
+                              {{region.displayName}}
+                              <button matChipRemove>
+                                <mat-icon>cancel</mat-icon>
+                              </button>
+                            </mat-chip>
+                        </mat-chip-list>
+                    <hr>
+                </div>
             </div>
             <div class="row">
                 <div class="col-12">
@@ -397,7 +437,7 @@
             [startDate]="getStartWeekDate()"
             [endDate]="getEndWeekDate()"
             [groupBy]="'day'"
-            [region]="this.filters.get('region').value" 
+            [regions]="this.weeklySelectedRegions" 
             [users]="this.users" (chartStatus)="chartsStatus($event)"
             [isLoading]="this.isloading">
         </app-network-quality>
