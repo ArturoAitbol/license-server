@@ -28,7 +28,8 @@ export class LineDetailComponent implements OnInit {
   openNaviteDashboardWithSelectedData(){
     const startDate = this.data.date;
     const location = this.data.from.city + ", " + this.data.from.state + ", " + this.data.from.country;
-    const url = `${environment.BASE_URL}/#/spotlight/spotlight-dashboard?subaccountId=${this.selectedSubaccount.id}&location=${location}&date=${startDate}`;
+    const toLocation = this.data.to.city + ", " + this.data.to.state + ", " + this.data.to.country;
+    const url = `${environment.BASE_URL}/#/spotlight/spotlight-dashboard?subaccountId=${this.selectedSubaccount.id}&location=${location}&toLocation=${toLocation}&date=${startDate}`;
     window.open(url);
   }
 }
