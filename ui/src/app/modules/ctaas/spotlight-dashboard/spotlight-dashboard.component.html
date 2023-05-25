@@ -69,7 +69,7 @@
                 </form>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6" id="daily-calling-reliability">
                     <app-gauge-chart [title]="'Calling Reliability'" [value]="callingReliability.value"
                                      [timePeriod]="callingReliability.period"
                                      [numberCalls]="callingReliability.total"
@@ -78,7 +78,7 @@
                                      [offNetCalls]="callingReliability.offNet"
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_CALLING_RELIABILITY)"></app-gauge-chart>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6" id="daily-feature-functionality">
                     <app-gauge-chart [title]="'Feature Functionality'" [value]="featureFunctionality.value"
                                      [timePeriod]="featureFunctionality.period"
                                      [numberCalls]="featureFunctionality.total"
@@ -88,9 +88,9 @@
                                      (viewDetailedTableEvent)="navigateToDetailedTable(ReportType.DAILY_FEATURE_FUNCTIONALITY)"></app-gauge-chart>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card text-center mt-2">
+            <div class="row" >
+                <div class="col-md-6" >
+                    <div class="card text-center mt-2" id="daily-voice-quality">
                         <div class="card-header">
                             <h1>Voice Quality (POLQA)</h1>
                         </div>
@@ -114,7 +114,7 @@
                                 Detailed Table
                             </button>
                         </div>
-                        <div class="card-footer">
+                        <div class="card-footer" id="daily-voice-quality-footer">
                             <div class="footer-text">
                                 <mat-icon>timer</mat-icon>
                                 <label class="ps-1">Execution time period: {{ vq.period }}</label>
@@ -247,7 +247,7 @@
                     </div>
                 </form>
             </div>
-            <div class="row">
+            <div class="row" id="weekly-feature-functionality">
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
@@ -289,7 +289,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" id="weekly-calling-reliability">
                 <div class="col-12">
                     <div class="card text-center mt-2">
                         <div class="card-header">
@@ -332,8 +332,8 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
-                    <div class="card text-center mt-2">
+                <div class="col-12" >
+                    <div class="card text-center mt-2" id="weekly-voice-quality">
                         <div class="card-header">
                             <h1>Voice Quality (POLQA)</h1>
                         </div>
