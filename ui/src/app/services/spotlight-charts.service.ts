@@ -3,6 +3,7 @@ import { environment } from "../../environments/environment";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Moment } from "moment";
+import { ReportName } from "../helpers/report-type";
 
 @Injectable({
     providedIn: 'root'
@@ -20,7 +21,7 @@ export class SpotlightChartsService {
      * @param subaccountId Subaccount ID
      */
     public getCustomerNetworkQualityData(startDate: Moment, endDate: Moment, regions: { country: string, state: string, city: string }[], users: string[], subaccountId: string, groupBy: string) {
-        return this.getNetworkQualityData(startDate, endDate, regions, 'POLQA,Received Jitter,Received packet loss,Round trip time', users, subaccountId, groupBy);
+        return this.getNetworkQualityData(startDate, endDate, ReportName.TAP_VQ, regions, 'POLQA,Received Jitter,Received packet loss,Round trip time', users, subaccountId, groupBy);
     }
 
     /**
@@ -31,18 +32,19 @@ export class SpotlightChartsService {
      * @param subaccountId Subaccount ID
      */
     public getCustomerNetworkTrendsData(startDate: Moment, endDate: Moment, regions:  { country: string, state: string, city: string }[], users: string[], subaccountId: string, groupBy: string) {
-        return this.getNetworkQualityData(startDate, endDate, regions, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', users, subaccountId,groupBy);
+        return this.getNetworkQualityData(startDate, endDate, null, regions, 'Received Jitter,Received packet loss,Round trip time,Sent bitrate', users, subaccountId,groupBy);
     }
 
-    private getNetworkQualityData(startDate: Moment, endDate: Moment, regions: { country: string, state: string, city: string }[], metric: string, users: string[], subaccountId: string, groupBy: string): Observable<any> {
+    private getNetworkQualityData(startDate: Moment, endDate: Moment, testPlan: string, regions: { country: string, state: string, city: string }[], metric: string, users: string[], subaccountId: string, groupBy: string): Observable<any> {
         let params = new HttpParams();
         params = params.set('startDate', startDate.utc().format("YYYY-MM-DD 00:00:00"));
         params = params.set('endDate', endDate.utc().format("YYYY-MM-DD HH:mm:ss"));
         params = params.set('metric', metric);
         params = params.set('subaccountId', subaccountId);
         params = params.set('groupBy',groupBy);
-        if(users.length>0) params = params.set('users', users.join(','));
-        if(regions.length>0) params = params.set('regions', JSON.stringify(regions));
+        if (users.length>0) params = params.set('users', users.join(','));
+        if (regions.length>0) params = params.set('regions', JSON.stringify(regions));
+        if (testPlan) params = params.set('testPlan', testPlan);
         const headers = this.getHeaders();
         return this.httpClient.get(this.API_URL + 'networkQualityChart', { headers, params });
     }
