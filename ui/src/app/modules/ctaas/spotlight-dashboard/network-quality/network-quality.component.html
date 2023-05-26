@@ -17,9 +17,10 @@
                                 <input type="text"
                                        placeholder="User"
                                        matInput
+                                       #userInput
                                        formControlName="user"
                                        [matAutocomplete]="userAuto">
-                                <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete">
+                                <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete" (optionSelected)="selected()">
                                     <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
                                         {{user}}
                                     </mat-option>
@@ -34,6 +35,24 @@
                         </div>
                     </div>
                 </form>
+                <div class="row" *ngIf="this.selectedUsers.length>0">
+                    <div class="col-md-12">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h2 class="mb-0">Selected User(s)&nbsp;</h2>
+                                    <button [disabled]="this.selectedUsers.length===0" (click)="clearUsersFilter()" class="clear-button text-center" mat-raised-button><small>Clear All</small></button>
+                            </div>
+                            <mat-chip-list #chipList aria-label="Region selection">
+                                <mat-chip
+                                  *ngFor="let user of selectedUsers"
+                                  (removed)="remove(user)">
+                                  {{user}}
+                                  <button matChipRemove>
+                                    <mat-icon>cancel</mat-icon>
+                                  </button>
+                                </mat-chip>
+                            </mat-chip-list>
+                    </div>
+                </div>
                 <div *ngIf="isChartLoading else charts" style="height: 600px; position: relative;">
                     <div class="lights-container">
                         <div>

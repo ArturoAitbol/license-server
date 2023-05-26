@@ -120,11 +120,7 @@ public class TekvLSModifyCustomerById {
                     customerJsonObject.put("lsCustomerName", customerAndSubQueryResult.getString("lsCustomerName"));
                     customerJsonObject.put("lsCustomerId", customerAndSubQueryResult.getString("lsCustomerId"));
                     // Update customer details on respective TAP client
-                    try {
-                        TAPClient.saveCustomerDetailsOnTap(TAP_URL, customerJsonObject, context);
-                    } catch (Exception e) {
-                        context.getLogger().info("Caught exception: " + e.getMessage());
-                    }
+                    TAPClient.saveCustomerDetailsOnTap(TAP_URL, customerJsonObject, context);
                 }
             }
             return request.createResponseBuilder(HttpStatus.OK).build();
