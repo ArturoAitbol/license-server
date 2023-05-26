@@ -67,11 +67,10 @@ public class TekvLSGetCollectionChart {
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
 
-		String country = request.getQueryParameters().getOrDefault("country", "");
-		String state = request.getQueryParameters().getOrDefault("state", "");
-		String city = request.getQueryParameters().getOrDefault("city", "");
+		String regions = request.getQueryParameters().getOrDefault("regions","");
 
-		String user = request.getQueryParameters().getOrDefault("user", "");
+		String users = request.getQueryParameters().getOrDefault("users", "");
+		String usersClause = users.replace(",","', '");
 
 		String query = "SELECT CAST(sr.startdate AS DATE) as date, sr.status, COUNT(sr.status) as status_counter " +
 			"FROM sub_result sr " +
@@ -94,20 +93,22 @@ public class TekvLSGetCollectionChart {
 		}
 		
 		// Build region filter if present
-		if (!country.isEmpty() || !user.isEmpty()) {
-			query += " AND sr.id IN (SELECT sr2.id FROM test_result_resource trr LEFT JOIN sub_result sr2 ON trr.subresultid = sr2.id WHERE";
-			if (user.isEmpty())
-				query += " trr.country = CAST('" + country + "' AS varchar)";
-			else {
-				query += " trr.did = CAST('" + user + "' AS varchar)";
-				if (!country.isEmpty())
-					query += " AND trr.country = CAST('" + country + "' AS varchar)";
+		if (!regions.isEmpty() || !users.isEmpty()) {
+			StringBuilder innerQueryBuilder = new StringBuilder("SELECT sr2.id FROM test_result_resource trr LEFT JOIN sub_result sr2 ON trr.subresultid = sr2.id WHERE ");
+			List<String> conditions = new ArrayList<>();
+			if (!users.isEmpty())
+				conditions.add("trr.did IN ('"+ usersClause +"')");
+			if (!regions.isEmpty()){
+				StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
+				if(regionCondition != null)
+					conditions.add(regionCondition.toString());
 			}
-			if (!state.isEmpty())
-				query += " AND trr.state = CAST('" + state + "' AS varchar)";
-			if (!city.isEmpty())
-				query += " AND trr.city = CAST('" + city + "' AS varchar)";
-			query += ")";
+			for (int i=0;i<conditions.size();i++){
+				if(i!=0)
+					innerQueryBuilder.append(" AND ");
+				innerQueryBuilder.append(conditions.get(i));
+			}
+			query += " AND sr.id IN (" + innerQueryBuilder + ")";
 		}
 		
 		// Build SQL statement

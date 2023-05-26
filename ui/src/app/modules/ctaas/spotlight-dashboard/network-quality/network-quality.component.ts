@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 import {
   defaultJitterChartOptions,
@@ -16,6 +16,8 @@ import { environment } from "../../../../../environments/environment";
 import { ReportType } from "../../../../helpers/report-type";
 import { defaultPolqaChartOptions } from "../initial-chart-config";
 import { Utility } from 'src/app/helpers/utils';
+import { MatIconRegistry } from "@angular/material/icon";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: 'app-network-quality',
@@ -27,7 +29,7 @@ export class NetworkQualityComponent implements OnInit {
   @Input() startDate: Moment;
   @Input() endDate: Moment;
   @Input() users: string[] = [];
-  @Input() region;
+  @Input() regions;
   @Input() groupBy = 'hour';
   @Input() isLoading: boolean;
   @Output() chartStatus = new EventEmitter<boolean>();
@@ -42,6 +44,10 @@ export class NetworkQualityComponent implements OnInit {
   roundTripChartOptions: Partial<ChartOptions>;
   commonChartOptions: Partial<ChartOptions>;
   filteredUsers: Observable<string[]>;
+  selectedUsers = [];
+
+  @ViewChild('userInput') userInput: ElementRef<HTMLInputElement>;
+
  
 
     filters = this.fb.group({
@@ -60,12 +66,22 @@ export class NetworkQualityComponent implements OnInit {
 
   constructor(private spotlightChartsService: SpotlightChartsService,
               private subaccountService: SubAccountService,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private matIconRegistry: MatIconRegistry,
+              private domSanitzer: DomSanitizer) {
     this.commonChartOptions = trendsChartCommonOptions;
     this.polqaChartOptions = defaultPolqaChartOptions;
     this.polqaChartOptions.chart.events = {
       markerClick: this.navigateToPolqaDetailedTableFromPoint.bind(this)
     };
+    this.matIconRegistry.addSvgIcon(
+        'packetloss',
+        this.domSanitzer.bypassSecurityTrustResourceUrl('assets/images/icons/packetloss.svg')
+    );
+    this.matIconRegistry.addSvgIcon(
+        'jitter',
+        this.domSanitzer.bypassSecurityTrustResourceUrl('assets/images/icons/jitter.svg')
+    );
   }
   
 
@@ -99,12 +115,11 @@ export class NetworkQualityComponent implements OnInit {
 
   loadCharts(isReload?) {
     if (!isReload) this.privateIsLoading = true;
-    const selectedUser = this.filters.get("user").value;
     const obs = [];
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.region, selectedUser, subaccountId, this.groupBy));
-    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.region, selectedUser, subaccountId));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.region, selectedUser, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.regions, this.selectedUsers, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy));
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
@@ -261,6 +276,24 @@ export class NetworkQualityComponent implements OnInit {
       ];
       this.polqaChartOptions.yAxis[0].title.text = 'Round Trip Time';
     }
+  }
+
+  remove(user: string): void {
+    const index = this.selectedUsers.indexOf(user);
+    if (index >= 0) {
+      this.selectedUsers.splice(index, 1);
+    }
+  }
+
+  selected(): void {
+    this.selectedUsers.push(this.filters.get('user').value);
+    this.userInput.nativeElement.value = '';
+    this.filters.get('user').setValue("");
+    this.initAutocompletes();
+  }
+
+  clearUsersFilter(){
+    this.selectedUsers=[];
   }
 
 }
