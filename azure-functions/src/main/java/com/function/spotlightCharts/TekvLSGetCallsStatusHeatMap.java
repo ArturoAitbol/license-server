@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -225,7 +226,9 @@ public class TekvLSGetCallsStatusHeatMap {
 					}
 
 					JSONObject statusSeries = new JSONObject();
-					statusSeries.put("name",date);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					LocalDate dateKey = LocalDate.parse(date);
+					statusSeries.put("name",dateKey.format(formatter));
 					statusSeries.put("data",array);
 					statusArray.put(statusSeries);
 				}
