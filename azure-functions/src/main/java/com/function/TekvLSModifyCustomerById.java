@@ -74,16 +74,14 @@ public class TekvLSModifyCustomerById {
 
         int optionalParamsFound = 0;
         SelectQueryBuilder customerDetailsQueryBuilder = new SelectQueryBuilder(
-                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\", cs.tap_url AS \"url\" FROM customer c JOIN subaccount s ON c.id = s.customer_id JOIN ctaas_setup cs ON s.id = cs.subaccount_id");
+                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\", cs.tap_url AS \"url\" " +
+                "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id");
         UpdateQueryBuilder queryBuilder = new UpdateQueryBuilder("customer");
 
         for (OPTIONAL_PARAMS param : OPTIONAL_PARAMS.values()) {
-            try {
-                queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib),
-                        param.dataType);
+            if (jobj.has(param.jsonAttrib)) {
+                queryBuilder.appendValueModification(param.columnName, jobj.getString(param.jsonAttrib), param.dataType);
                 optionalParamsFound++;
-            } catch (Exception e) {
-                context.getLogger().info("Ignoring exception: " + e);
             }
         }
 
@@ -93,7 +91,7 @@ public class TekvLSModifyCustomerById {
         queryBuilder.appendWhereStatement("id", id, QueryBuilder.DATA_TYPE.UUID);
 
         customerDetailsQueryBuilder.appendEqualsCondition(" s.customer_id", id, QueryBuilder.DATA_TYPE.UUID);
-        customerDetailsQueryBuilder.appendCustomCondition("s.services LIKE '%?%'", Constants.SubaccountServices.SPOTLIGHT.value());
+        customerDetailsQueryBuilder.appendCustomCondition("s.services LIKE ?", "%" + Constants.SubaccountServices.SPOTLIGHT.value() + "%");
         customerDetailsQueryBuilder.appendCustomCondition("cs.tap_url IS NOT NULL AND cs.tap_url != ?", "");
         // Connect to the database
         String dbConnectionUrl = "jdbc:postgresql://" + System.getenv("POSTGRESQL_SERVER") + "/licenses"
@@ -101,8 +99,8 @@ public class TekvLSModifyCustomerById {
                 + "&user=" + System.getenv("POSTGRESQL_USER")
                 + "&password=" + System.getenv("POSTGRESQL_PWD");
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
-                PreparedStatement statement = queryBuilder.build(connection);
-                PreparedStatement customerDetailStatement = customerDetailsQueryBuilder.build(connection)) {
+            PreparedStatement statement = queryBuilder.build(connection);
+            PreparedStatement customerDetailStatement = customerDetailsQueryBuilder.build(connection)) {
 
             context.getLogger().info("Successfully connected to: " + System.getenv("POSTGRESQL_SERVER"));
             String userId = getUserIdFromToken(tokenClaims, context);
