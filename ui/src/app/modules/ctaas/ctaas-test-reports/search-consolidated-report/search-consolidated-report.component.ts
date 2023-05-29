@@ -69,8 +69,8 @@ export class SearchConsolidatedReportComponent implements OnInit {
     }
     const parsedStartTime = moment.utc(details.startDate).format("MM-DD-YYYY") + ' ' + details.startTime + ':00';
     const parsedEndTime = moment.utc(details.endDate).format("MM-DD-YYYY") + ' ' + details.endTime + ':59'; 
-    const parsedStartDate = Utility.parseReportDate(new Date(parsedStartTime));
-    const parsedEndDate = Utility.parseReportDate(new Date(parsedEndTime));
+    const parsedStartDate = Utility.parseReportDate(moment.utc(parsedStartTime));
+    const parsedEndDate = Utility.parseReportDate(moment.utc(parsedEndTime));
     const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountDetails.id}&type=${reportType}&start=${parsedStartDate}&end=${parsedEndDate}`;
     window.open(url);
   }

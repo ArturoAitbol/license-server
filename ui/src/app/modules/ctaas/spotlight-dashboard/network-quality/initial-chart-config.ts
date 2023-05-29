@@ -55,7 +55,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
         }
     },
     title: {
-        text: "Received Packet Loss (%)",
+        text: "Max. Received Packet Loss (%)",
         align: "center",
         style: {
             color: '#7694B7'
@@ -64,12 +64,13 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     colors: ["#7694B7"],
     series: [
         {
-            name: 'Jitter',
+            name: 'Received Packet Loss',
             data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
         },
     ],
-    yAxis: [
-        {
+    yAxis: {
+            // min: 0,
+            // tickAmount: 4,
             axisTicks: {
                 show: true
             },
@@ -93,7 +94,6 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
                 }
             },
         },
-    ],
     markers: {
         size: 4,
         colors: ["#7694B7"],
@@ -122,7 +122,7 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
         }
     },
     title: {
-        text: "Jitter (ms)",
+        text: "Max. Jitter (ms)",
         align: "center",
         style: {
             color: '#7694B7'
@@ -135,8 +135,10 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
             data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
         },
     ],
-    yAxis: [
+    yAxis:
         {
+            // min: 0,
+            // tickAmount: 4,
             axisTicks: {
                 show: true
             },
@@ -157,7 +159,6 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
                 }
             }
         },
-    ],
     markers: {
         size: 4,
         colors: ["#E66C37"],
@@ -186,7 +187,7 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
         }
     },
     title: {
-        text: "Sent Bitrate (kbps)",
+        text: "Avg. Sent Bitrate (kbps)",
         align: "center",
         style: {
             color: '#7694B7'
@@ -199,8 +200,10 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
             data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
         },
     ],
-    yAxis: [
+    yAxis:
         {
+            // min: 0,
+            // tickAmount: 4,
             axisTicks: {
                 show: true
             },
@@ -221,7 +224,6 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
                 }
             }
         },
-    ],
     markers: {
         size: 4,
         colors: ["#079398"],
@@ -251,7 +253,7 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
         }
     },
     title: {
-        text: "Round Trip Time (ms)",
+        text: "Max. Round Trip Time (ms)",
         align: "center",
         style: {
             color: '#7694B7'
@@ -264,8 +266,10 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
             data: [ 77.77, 69.00, 67.67, 84.98, 92.75, 80.38, 72.90, 55.08, 73.10, 87.66, 70.70 ]
         },
     ],
-    yAxis: [
+    yAxis:
         {
+            // min: 0,
+            // tickAmount: 4,
             axisTicks: {
                 show: true
             },
@@ -286,7 +290,6 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
                 }
             }
         },
-    ],
     markers: {
         size: 4,
         colors: [ "#570798" ],

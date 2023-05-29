@@ -65,11 +65,10 @@ public class TekvLSGetVoiceQualityChart {
 		String startDateStr = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDateStr = request.getQueryParameters().getOrDefault("endDate", "");
 
-		String country = request.getQueryParameters().getOrDefault("country", "");
-		String state = request.getQueryParameters().getOrDefault("state", "");
-		String city = request.getQueryParameters().getOrDefault("city", "");
+		String regions = request.getQueryParameters().getOrDefault("regions","");
 
-		String user = request.getQueryParameters().getOrDefault("user", "");
+		String users = request.getQueryParameters().getOrDefault("users", "");
+		String usersClause = users.replace(",","', '");
 
 		String reportPeriod = request.getQueryParameters().getOrDefault("reportPeriod", "daily");
 
@@ -82,21 +81,23 @@ public class TekvLSGetVoiceQualityChart {
 				"LEFT JOIN project p ON r.projectid = p.id " +
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalresult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
-				"AND (sr.failingerrortype IS NULL OR trim(sr.failingerrortype) = '') " +
+				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
 				"AND tp.name='POLQA' AND ms.parameter_name = 'POLQA'";
+
+		if (!users.isEmpty()){
+			innerQuery += " AND trr.did IN ('"+ usersClause +"')";
+		}
+
+		if(!regions.isEmpty()){
+			StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
+			if(regionCondition != null)
+				innerQuery += "AND " + regionCondition;
+		}
 
 		// Build SQL statement
 		SelectQueryBuilder innerQueryBuilder = new SelectQueryBuilder(innerQuery, true);
 		innerQueryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDateStr);
 		innerQueryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDateStr);
-		if (!country.isEmpty())
-			innerQueryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
-		if (!state.isEmpty())
-			innerQueryBuilder.appendCustomCondition("trr.state = CAST(? AS varchar)", state);
-		if (!city.isEmpty())
-			innerQueryBuilder.appendCustomCondition("trr.city = CAST(? AS varchar)", city);
-		if (!user.isEmpty())
-			innerQueryBuilder.appendCustomCondition("trr.did = CAST(? AS varchar)", user);
 		innerQueryBuilder.appendGroupByMany("sr.id, trr.did");
 
 		SelectQueryBuilder outerQuery = new SelectQueryBuilder(

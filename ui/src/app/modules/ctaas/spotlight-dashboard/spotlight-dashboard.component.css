@@ -5,13 +5,21 @@
 }
 
 .card-header {
-    background: #7694B7;
+    background: #2d5186;  /* previus color #7694B7; */
     color: white;
 }
 
 .card-header h1{
     margin-bottom: 8px;
     margin-top: 8px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+.card-header mat-icon {
+    margin-left: 15px;
 }
 
 .card-footer {
@@ -219,4 +227,40 @@ mat-form-field {
     display: flex;
     flex-flow: column;
     height: calc(100% - 8px);
+}
+
+.top-spacing-3 {
+    top: 3.5em;
+}
+
+.top-spacing-1 {
+    top: 1em;
+}
+
+@media only screen and (max-width: 1500px){
+    .top-spacing-3{
+        top: 1.5em;
+    }
+    .top-spacing-1 {
+        top: 1em;
+    }
+}
+
+@media only screen and (max-width: 1250px){
+    .top-spacing-3{
+        top: 0;
+    }
+    .top-spacing-1 {
+        top: 0;
+    }
+}
+
+::ng-deep .mat-tooltip {
+    background-color: #7694B7;  /* previus color rgb(22,53,89) */
+    font-size: 14px;
+}
+
+.clear-button{
+    height: auto;
+    padding: 0px;
 }

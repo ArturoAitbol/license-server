@@ -207,13 +207,8 @@ public class TekvLSModifyCtaasSetupById {
                             customerDetailsJsonObject.put(columnName, columnValue);
                         }
                     }
-                }
-                try {
-                    if (TAP_URL != null || TAP_URL.isEmpty())
-                        // invoke Northbound API on TAP, to save Customer details.
+                    if (TAP_URL != null && !TAP_URL.isEmpty()) // invoke Northbound API on TAP, to save Customer details.
                         TAPClient.saveCustomerDetailsOnTap(TAP_URL, customerDetailsJsonObject, context);
-                } catch (Exception e) {
-                    context.getLogger().severe(e.getMessage());
                 }
             }
             verifyMaintenance(jobj, userId, connection, context);

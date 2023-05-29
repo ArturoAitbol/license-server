@@ -54,17 +54,35 @@ public class TekvLSGetFilterOptions {
         context.getLogger().info("URL parameters are: " + request.getQueryParameters());
         String subaccountId = request.getQueryParameters().getOrDefault("subaccountId","");
         String filter = request.getQueryParameters().getOrDefault("filter","");
+        String regions = request.getQueryParameters().getOrDefault("regions","");
+        String startDate = request.getQueryParameters().getOrDefault("startDate","");
+        String endDate = request.getQueryParameters().getOrDefault("endDate","");
 
         // Build SQL statements to get filter options
-        String regionsQuery = "SELECT country, state, city FROM test_result_resource GROUP BY country, state, city;";
-        SelectQueryBuilder usersQueryBuilder = new SelectQueryBuilder("SELECT did FROM test_result_resource");
+        SelectQueryBuilder regionsQueryBuilder = new SelectQueryBuilder("SELECT country, state, city FROM test_result_resource trr JOIN sub_result sr ON trr.subresultid = sr.id");
 
-        for(REGION_PARAMS regionParam : REGION_PARAMS.values()){
-            String value = request.getQueryParameters().getOrDefault(regionParam.value,"");
-            if(!value.isEmpty())
-                usersQueryBuilder.appendEqualsCondition(regionParam.value,value);
+        String userQuery = "SELECT did FROM test_result_resource trr JOIN sub_result sr ON trr.subresultid = sr.id";
+        SelectQueryBuilder usersQueryBuilder;
+        if(!regions.isEmpty()){
+            StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
+            if(regionCondition != null)
+                userQuery += " WHERE " + regionCondition;
+            usersQueryBuilder = new SelectQueryBuilder(userQuery,true);
+        }else{
+            usersQueryBuilder = new SelectQueryBuilder(userQuery);
         }
+
+
+        if(!startDate.isEmpty() && !endDate.isEmpty()){
+            regionsQueryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+            regionsQueryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
+
+            usersQueryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
+            usersQueryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
+        }
+        
         usersQueryBuilder.appendGroupBy("did");
+        regionsQueryBuilder.appendGroupByMany("country, state, city");
 
         // Build SQL statement to get the TAP URL
         SelectQueryBuilder tapUrlQueryBuilder = new SelectQueryBuilder("SELECT tap_url FROM ctaas_setup");
@@ -113,6 +131,7 @@ public class TekvLSGetFilterOptions {
 
             // Retrieve all data.
             if(filter.isEmpty() || filter.equals("regions")){
+                String regionsQuery = regionsQueryBuilder.getQuery();
                 context.getLogger().info("Execute SQL statement: " + regionsQuery);
                 JSONArray regionsRs = TAPClient.executeQuery(tapURL, regionsQuery, context);
                 JSONArray regionsJson = new JSONArray();
@@ -142,17 +161,4 @@ public class TekvLSGetFilterOptions {
             return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR).body(json.toString()).build();
         }
     }
-
-    private enum REGION_PARAMS {
-        COUNTRY("country"),
-        STATE("state"),
-        CITY("city");
-
-        private final String value;
-
-        REGION_PARAMS(String value){
-            this.value = value;
-        }
-    }
-
 }

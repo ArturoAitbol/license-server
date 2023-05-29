@@ -1,6 +1,5 @@
 package com.function.clients;
 
-import com.function.exceptions.ADException;
 import com.function.util.Constants;
 import com.microsoft.azure.functions.ExecutionContext;
 import org.json.JSONArray;
@@ -50,13 +49,13 @@ public class TAPClient {
         if (response.has("error") || (response.has("success") && !response.getBoolean("success"))) {
             context.getLogger().severe("Request params: " + bodyAsString);
             context.getLogger().severe("Error response: " + response);
-            throw new ADException("Error retrieving token from Automation Platform");
+            throw new Exception("Error retrieving token from Automation Platform");
         }
         JSONObject responseObj = (JSONObject) response.get("response");
         if (!responseObj.has("accessToken")) {
             context.getLogger().severe("Request body: " + bodyAsString);
             context.getLogger().severe("Error response: " + response);
-            throw new ADException("Error retrieving token from Automation Platform");
+            throw new Exception("Error retrieving token from Automation Platform");
         }
         context.getLogger().info("Received Bearer token from Automation Platform");
         return responseObj.get("accessToken").toString();
@@ -67,19 +66,21 @@ public class TAPClient {
      *
      * @param tapURL
      * @param token
-     * @param type
+     * @param types
      * @param startDate
      * @param endDate
      * @param context
      * @return
      * @throws Exception
      */
-    static public JSONObject getDetailedReport(final String tapURL, String token, String type, String startDate,
-                                               String endDate, String status, ExecutionContext context) throws Exception {
-        String url = String.format("%s/%s/%s/report?startDate=%s&endDate=%s", tapURL,
-                Constants.SPOTLIGHT_API_PATH, type, startDate, endDate);
-        if (!type.isEmpty()) url = String.format("%s&type=%s", url, type);
-        if (!status.isEmpty()) url = String.format("%s&status=%s", url, status);
+    static public JSONObject getDetailedReport(final String tapURL, String token, String types, String startDate, 
+        String endDate, String status, ExecutionContext context) throws Exception {
+        String url = tapURL + "/" + Constants.SPOTLIGHT_API_PATH;
+        if (!types.contains(",") && status.isEmpty())
+            url += "/" + types;
+        url = String.format("%s/report?startDate=%s&endDate=%s", url, startDate, endDate);
+        if (!types.isEmpty()) url += "&types=" + types;
+        if (!status.isEmpty()) url += "&status=" + status;
         context.getLogger().info("TAP detailed report endpoint: " + url);
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + token);
@@ -87,9 +88,8 @@ public class TAPClient {
         TAPClient.disableSslVerification(context);
         JSONObject response = HttpClient.get(url, headers);
         if (response != null && (response.has("error"))) {
-            context.getLogger()
-                    .severe("Error while retrieving detailed test report from Automation Platform: " + response);
-            throw new ADException("Error retrieving " + type + " detailed report from Automation Platform");
+            context.getLogger().severe("Error while retrieving detailed test report from Automation Platform: " + response);
+            throw new Exception("Error retrieving " + types + " detailed report from Automation Platform");
         }
         context.getLogger().info("Received detailed test report response from Automation Platform");
         return response;
@@ -127,23 +127,28 @@ public class TAPClient {
         return response.getJSONArray("resultSet");
     }
 
-    static public JSONObject saveCustomerDetailsOnTap(String tapURL, JSONObject request, ExecutionContext context)
-            throws Exception {
-        String token = TAPClient.getAccessToken(tapURL, context);
-        final String resource = "/customerInfo";
-        final String url = String.format("%s%s%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource);
-        context.getLogger().info("TAP Customer Info endpoint: " + url);
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + token);
-        // disable SSL host verification
-        TAPClient.disableSslVerification(context);
-        JSONObject response = HttpClient.post(url, request.toString(), headers);
-        if (response != null && !response.getBoolean("success")) {
-            context.getLogger()
-                    .severe("Error occurred while updating customer details to the Automation Platform: " + response);
-            throw new ADException("Error occurred while updating customer details to the Automation Platform");
+    static public JSONObject saveCustomerDetailsOnTap(String tapURL, JSONObject request, ExecutionContext context) {
+        // throws Exception {
+        JSONObject response = null;
+        try {
+            String token = TAPClient.getAccessToken(tapURL, context);
+            final String resource = "customerInfo";
+            final String url = String.format("%s/%s/%s", tapURL, Constants.SPOTLIGHT_API_PATH, resource);
+            context.getLogger().info("TAP Customer Info endpoint: " + url);
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put("Authorization", "Bearer " + token);
+            // disable SSL host verification
+            TAPClient.disableSslVerification(context);
+            response = HttpClient.post(url, request.toString(), headers);
+            if (response != null && !response.getBoolean("success")) {
+                context.getLogger().severe("Error occurred while updating customer details to the Automation Platform: " + response);
+                // throw new Exception("Error occurred while updating customer details to the Automation Platform");
+            }
+            context.getLogger().info("Updated customer details to the Automation Platform successfully.");
+        } catch (Exception e) {
+            context.getLogger().info("Error updating customer details to Automation Platform with URL=" + tapURL);
+			context.getLogger().info("Caught exception: " + e.getMessage());
         }
-        context.getLogger().info("Updated customer details to the Automation Platform successfully.");
         return response;
     }
 

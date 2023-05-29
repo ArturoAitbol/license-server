@@ -1,17 +1,25 @@
 .chart-label {
     color: #42a948;
-    font-weight: bold;
+    font-weight: normal;
     font-size: 18px;
 }
 
 .card-header {
-    background: #7694B7;
+    background: #2d5186;  /* previus color #7694B7; */
     color: white;
 }
 
 .card-header h1{
     margin-bottom: 8px;
     margin-top: 8px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+}
+
+.card-header mat-icon {
+    margin-left: 15px;
 }
 
 .card-footer {
