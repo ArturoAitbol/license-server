@@ -38,7 +38,7 @@ Feature: CtaasSetup
     And I go to the spotlight "Configuration" tab
     When I edit the setup details with the following data
       | azureResourceGroup  | az_tap_rg                                  |
-      | tapUrl              | http://tekvizionTap.com                    |
+      | tapUrl              | https://tekvizion-ap-spotlight-dan-env-01.eastus2.cloudapp.azure.com:8443/onPOINT   |
       | status              | READY                                      |
     Then I should see the modified data in spotlight configuration view
 

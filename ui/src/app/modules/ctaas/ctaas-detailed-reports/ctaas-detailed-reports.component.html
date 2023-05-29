@@ -18,7 +18,7 @@
     <div class="row mt-3">
         <div class="col-8">
             <h1 class="text-start text-s" id="title">{{title}}</h1>
-            <h2 class="text-start text-s2" *ngIf="status!=''" id="subtitle">Filtered Status: {{status}}</h2>
+            <h2 class="text-start text-s2" *ngIf="status!=''" id="subtitle">Status: {{status}}</h2>
         </div>
         <div class="col-4 text-right">
             <button mat-raised-button [disabled]="canDisableDownloadBtn" (click)="downloadDetailedTestReportByType()">

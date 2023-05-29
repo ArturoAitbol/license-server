@@ -73,15 +73,15 @@ public class TekvLSGetNetworkQualityChart {
 		String subaccountId = request.getQueryParameters().getOrDefault("subaccountId", "");
 		String startDate = request.getQueryParameters().getOrDefault("startDate", "");
 		String endDate = request.getQueryParameters().getOrDefault("endDate", "");
+		String regions = request.getQueryParameters().getOrDefault("regions","");
 
-		String country = request.getQueryParameters().getOrDefault("country", "");
-		String state = request.getQueryParameters().getOrDefault("state", "");
-		String city = request.getQueryParameters().getOrDefault("city", "");
-
-		String user = request.getQueryParameters().getOrDefault("user", "");
+		String users = request.getQueryParameters().getOrDefault("users", "");
+		String usersClause = users.replace(",","', '");
 		
 		String groupByIndicator = request.getQueryParameters().getOrDefault("groupBy", "hour");
 		String groupByClause = groupByIndicator.equals("day") ? "YYYY-MM-DD" : "YYYY-MM-DD HH24:00";
+		
+		String testPlans = request.getQueryParameters().getOrDefault("testPlan", "LTS','STS','POLQA");
 
 		String metrics = request.getQueryParameters().getOrDefault("metric", "POLQA");
 		String metricsClause = metrics.replace(",", "', '");
@@ -127,20 +127,22 @@ public class TekvLSGetNetworkQualityChart {
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
 				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
-				"AND tp.name in ('LTS','STS','POLQA') AND ms.parameter_name IN ('" + metricsClause + "')";
-		
+				"AND tp.name in ('" + testPlans + "') AND ms.parameter_name IN ('" + metricsClause + "')";
+
+		if (!users.isEmpty()){
+			query += " AND trr.did IN ('"+ usersClause +"')";
+		}
+
+		if(!regions.isEmpty()){
+			StringBuilder regionCondition = Utils.getRegionSQLCondition(regions);
+			if(regionCondition != null)
+				query += " AND " + regionCondition;
+		}
+
 		// Build SQL statement
 		SelectQueryBuilder queryBuilder = new SelectQueryBuilder(query, true);
 		queryBuilder.appendCustomCondition("sr.startdate >= CAST(? AS timestamp)", startDate);
 		queryBuilder.appendCustomCondition("sr.startdate <= CAST(? AS timestamp)", endDate);
-		if (!country.isEmpty())
-			queryBuilder.appendCustomCondition("trr.country = CAST(? AS varchar)", country);
-		if (!state.isEmpty())
-			queryBuilder.appendCustomCondition("trr.state = CAST(? AS varchar)", state);
-		if (!city.isEmpty())
-			queryBuilder.appendCustomCondition("trr.city = CAST(? AS varchar)", city);
-		if (!user.isEmpty())
-			queryBuilder.appendCustomCondition("trr.did = CAST(? AS varchar)", user);
 		queryBuilder.appendGroupByMany("date_hour");
 		queryBuilder.appendOrderBy("date_hour", ORDER_DIRECTION.ASC);
 

@@ -78,6 +78,9 @@ const defaultPolqaChartOptions: Partial<ChartOptions> = {
             }
         },
         {
+            // min: 0,
+            // max: 5,
+            // tickAmount: 5,
             opposite: true,
             axisTicks: {
                 show: true
