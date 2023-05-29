@@ -17,6 +17,7 @@ import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -189,7 +190,9 @@ public class TekvLSGetCollectionChart {
 			DecimalFormat df = new DecimalFormat("#.00", symbols);
 
 			entries.forEach(entry -> {
-				categories.put(entry.getKey());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+				LocalDate dateKey = LocalDate.parse(entry.getKey());
+				categories.put(dateKey.format(formatter));
 
 				JSONObject object = entry.getValue();
 
