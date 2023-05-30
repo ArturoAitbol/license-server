@@ -265,13 +265,13 @@ export class SpotlightDashboardComponent implements OnInit{
     const executionTime = this.formatExecutionTime(this.selectedDate,this.selectedDate);
     // Daily Calling reliability
     const dailyCallingReliabiltyRes: any = res[0].callingReliability;
-    let passedCalls = dailyCallingReliabiltyRes.callsByStatus.PASSED;
-    let failedCalls = dailyCallingReliabiltyRes.callsByStatus.FAILED;
-    const POLQA = res[0].POLQA.callsByType;
+    const POLQA = res[0].POLQA;
+    let passedCalls = dailyCallingReliabiltyRes.callsByStatus.PASSED + POLQA.callsByStatus.PASSED;
+    let failedCalls = dailyCallingReliabiltyRes.callsByStatus.FAILED + POLQA.callsByStatus.FAILED;
     this.callingReliability.total = passedCalls + failedCalls;
-    this.callingReliability.p2p = dailyCallingReliabiltyRes.callsByType.p2p + POLQA.p2p;
-    this.callingReliability.onNet = dailyCallingReliabiltyRes.callsByType.onNet + POLQA.onNet;
-    this.callingReliability.offNet = dailyCallingReliabiltyRes.callsByType.offNet + POLQA.offNet;
+    this.callingReliability.p2p = dailyCallingReliabiltyRes.callsByType.p2p + POLQA.callsByType.p2p;
+    this.callingReliability.onNet = dailyCallingReliabiltyRes.callsByType.onNet + POLQA.callsByType.onNet;
+    this.callingReliability.offNet = dailyCallingReliabiltyRes.callsByType.offNet + POLQA.callsByType.offNet;
     this.callingReliability.value = (passedCalls / this.callingReliability.total) * 100 || 0;
 
     this.callingReliability.period = executionTime;
@@ -374,16 +374,17 @@ export class SpotlightDashboardComponent implements OnInit{
 
     // Weekly CR and FF footer info
     const weeklyCallStatus = res[3];
-    const POLQA = res[3].POLQA.callsByType;
+    const POLQA = res[3].POLQA;
     this.weeklyFeatureFunctionality.p2pCalls = weeklyCallStatus.featureFunctionality.callsByType.p2p;
     this.weeklyFeatureFunctionality.onNetCalls = weeklyCallStatus.featureFunctionality.callsByType.onNet;
     this.weeklyFeatureFunctionality.offNetCalls = weeklyCallStatus.featureFunctionality.callsByType.offNet;
     this.weeklyFeatureFunctionality.numberCalls = weeklyCallStatus.featureFunctionality.callsByStatus.PASSED + weeklyCallStatus.featureFunctionality.callsByStatus.FAILED;
 
-    this.weeklyCallingReliability.p2pCalls = weeklyCallStatus.callingReliability.callsByType.p2p + POLQA.p2p;
-    this.weeklyCallingReliability.onNetCalls = weeklyCallStatus.callingReliability.callsByType.onNet + POLQA.onNet;
-    this.weeklyCallingReliability.offNetCalls = weeklyCallStatus.callingReliability.callsByType.offNet + POLQA.offNet;
-    this.weeklyCallingReliability.numberCalls = weeklyCallStatus.callingReliability.callsByStatus.PASSED + weeklyCallStatus.callingReliability.callsByStatus.FAILED;
+    this.weeklyCallingReliability.p2pCalls = weeklyCallStatus.callingReliability.callsByType.p2p + POLQA.callsByType.p2p;
+    this.weeklyCallingReliability.onNetCalls = weeklyCallStatus.callingReliability.callsByType.onNet + POLQA.callsByType.onNet;
+    this.weeklyCallingReliability.offNetCalls = weeklyCallStatus.callingReliability.callsByType.offNet + POLQA.callsByType.offNet;
+    this.weeklyCallingReliability.numberCalls = weeklyCallStatus.callingReliability.callsByStatus.PASSED + weeklyCallStatus.callingReliability.callsByStatus.FAILED
+        + POLQA.callsByStatus.PASSED + POLQA.callsByStatus.FAILED;
 
     const timePeriod = this.formatExecutionTime(this.selectedRange.start,this.selectedRange.end);
     this.weeklyFeatureFunctionality.timePeriod = timePeriod;

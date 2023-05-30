@@ -204,7 +204,9 @@ public class TekvLSGetVoiceQualityChart {
 				int totalCalls = 0;
 				Map<String, JSONArray> percentagesMap = getPercentagesMap(resultSet);
 				for (String date : dates) {
-					categories.put(date);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					LocalDate dateKey = LocalDate.parse(date);
+					categories.put(dateKey.format(formatter));
 					if (percentagesMap.containsKey(date)) {
 						JSONArray values = percentagesMap.get(date);
 						float streams = values.getInt(5);

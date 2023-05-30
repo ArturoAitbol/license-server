@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Utils {
-
+    public static String DEFAULT_TEST_PLAN_NAMES = "LTS','STS','POLQA"; // Feature Functionality, Calling Reliability and Voice Quality (POLQA)
     public static StringBuilder getRegionSQLCondition(String regions){
         JSONArray regionsArray = new JSONArray(regions);
         StringBuilder regionCondition = null;
@@ -44,6 +44,22 @@ public class Utils {
 
         REGION_PARAMS(String value){
             this.value = value;
+        }
+    }
+
+    public enum MetricsThresholds {
+        received_jitter("30"),
+        round_trip_time("500"),
+        packet_loss("10");
+
+        private final String value;
+
+        MetricsThresholds(String value){
+            this.value = value;
+        }
+
+        public String value() {
+            return this.value;
         }
     }
 }

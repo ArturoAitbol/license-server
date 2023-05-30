@@ -242,10 +242,14 @@ public class TekvLSGetNetworkQualityChart {
 			entries.forEach(entry -> {
 				String date = entry.getKey();
 				if(groupByIndicator.equals("day")){
-					datesArray.put(date);
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					LocalDate dateKey = LocalDate.parse(date);
+					datesArray.put(dateKey.format(formatter));
 				}else{
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+					LocalDateTime dateKey = LocalDateTime.parse(date.replace(" ", "T"));
 					int nextHour = LocalDateTime.parse(date,format).plusHours(1).getHour();
-					datesArray.put(date+ "-" + String.format("%02d", nextHour) +":00");
+					datesArray.put(dateKey.format(formatter) + "-" + String.format("%02d", nextHour) +":00");
 				}
 
 
