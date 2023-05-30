@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "3864aba3-9da5-422a-b451-b89ffdfdffc3",
+		"_postman_id": "63317536-40d0-4bad-a582-ef63cb5537b9",
 		"name": "LicenseServerAPIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "14372515"
+		"_exporter_id": "26252928"
 	},
 	"item": [
 		{
@@ -1576,9 +1576,52 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const tokenUrl = pm.variables.get(\"AUTHORIZATION_URL\");",
+							"",
+							"const clientId = pm.variables.get(\"CLIENTID_IGESADMIN\");",
+							"const clientSecret = pm.variables.get(\"CLIENTSECRET_IGESADMIN\");",
+							"const grantType = pm.variables.get(\"grant_type\");",
+							"const scope = pm.variables.get(\"SCOPE\");",
+							"",
+							"const getTokenRequest = {",
+							"  method: 'POST',",
+							"  url: tokenUrl,",
+							"  body: {",
+							"      mode: 'formdata',",
+							"      formdata: [",
+							"          { key: 'client_id', value: clientId },",
+							"          { key: 'client_secret', value: clientSecret },",
+							"          { key: 'grant_type', value: grantType },",
+							"          { key: 'scope', value: scope}",
+							"      ]",
+							"  }",
+							"};",
+							"",
+							"pm.sendRequest(getTokenRequest, (err, response) => {",
+							"  pm.collectionVariables.set('access_token_IGES', response.json().access_token);",
+							"  console.log(\"Success\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token_IGES}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -2555,6 +2598,10 @@
 		},
 		{
 			"key": "todayDate",
+			"value": ""
+		},
+		{
+			"key": "access_token_IGES",
 			"value": ""
 		}
 	]
