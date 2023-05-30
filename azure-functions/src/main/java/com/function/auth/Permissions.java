@@ -38,6 +38,7 @@ public class Permissions {
                         // READ
                         GET_ALL_CUSTOMERS,
                         GET_ALL_SUBACCOUNTS,
+                        GET_REPORTABLE_SUBACCOUNTS,
                         GET_ALL_LICENSES,
                         GET_ALL_DEVICES,
                         GET_ALL_DEVICE_TYPES,

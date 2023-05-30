@@ -501,6 +501,17 @@ public class RBACVerifier {
                                 true,
                                 true,
                                 true));
+                verifiers.put(GET_REPORTABLE_SUBACCOUNTS, new ExpectedPermissions(
+                                true,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false));
                 verifiers.put(GET_CONSUMPTION_USAGE_DETAILS, new ExpectedPermissions(
                                 true,
                                 true,
@@ -784,16 +795,16 @@ public class RBACVerifier {
                                 false,
                                 false));
                 verifiers.put(MODIFY_FEATURE_TOGGLE_EXCEPTION, new ExpectedPermissions(
-                        false,
-                        false,
-                        false,
-                        true,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false));
+                                false,
+                                false,
+                                false,
+                                true,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false));
                 verifiers.put(MODIFY_CONSUMPTION_MATRIX, new ExpectedPermissions(
                                 false,
                                 false,
@@ -817,15 +828,15 @@ public class RBACVerifier {
                                 false,
                                 false));
                 verifiers.put(CREATE_CALLBACK, new ExpectedPermissions(
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        true,
-                        true));
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                true,
+                                true));
         }
 }
