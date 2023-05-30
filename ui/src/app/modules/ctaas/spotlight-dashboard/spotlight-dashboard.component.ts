@@ -65,13 +65,13 @@ export class SpotlightDashboardComponent implements OnInit{
 
   //Daily filters variables
   filters = this.fb.group({
-    date: [""],
+    date: [moment().utc()],
     region: [""]
   });
 
   //Weekly filters variables
   weeklyFilters = this.fb.group({
-    date: [""],
+    date: [moment().utc()],
     region: [""]
   });
 
@@ -118,39 +118,18 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   ngOnInit() {
+    this.loadChartsWithQueryParams();
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
     this.loadCharts();
   }
 
   getStartWeekDate(): Moment{
-    let currentStartDate;
-    this.route.queryParams.subscribe((params: any) => {
-      if(params.date) {
-        let parsedParamsDate  =  params.date.split('T')[0];
-        currentStartDate = moment.utc(parsedParamsDate).clone().subtract(6, 'days').startOf('day');
-       
-      } else {
-        this.weeklyFilters.controls['date'].setValue(moment.utc());
-        currentStartDate = this.weeklyFilters.get('date').value.clone().subtract(6, 'days').startOf('day');
-      }
-    })
-    return currentStartDate;
+    return this.weeklyFilters.get('date').value.clone().subtract(6, 'days').startOf('day');
   }
   
   getEndWeekDate(): Moment{
-    let currentEndDate;
-    this.route.queryParams.subscribe((params: any) => {
-      if(params.date) {
-        let parsedDate = params.date.split('T')[0]
-        currentEndDate = Utility.setHoursOfDate(moment.utc(parsedDate));
-        this.weeklyFilters.controls['date'].setValue(currentEndDate);
-      } else {
-        currentEndDate = Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
-        this.weeklyFilters.controls['date'].setValue(currentEndDate)
-      }
-    })
-    return currentEndDate;
+    return Utility.setHoursOfDate(this.weeklyFilters.get('date').value.clone());
   }
 
   setWeeklyRange(){
@@ -199,6 +178,45 @@ export class SpotlightDashboardComponent implements OnInit{
     this.networkQuality.loadCharts();
   }
 
+  loadChartsWithQueryParams() {
+    const obs = [];
+    let selectedDate;
+    let selectedRegion;
+    const subaccountId = this.subaccountService.getSelectedSubAccount().id;
+
+    this.route.queryParams.subscribe((params: any) => {
+      if(params.date && this.filters.get('date').value !== "") {
+        let nodeDate = params.date.split('T')[0]
+        selectedDate = Utility.setHoursOfDate(moment.utc(nodeDate));
+        this.filters.controls['date'].setValue(moment.utc(nodeDate));
+      }
+      if(params.location && this.selectedRegions.length === 0) {
+        this.selectedRegions.push({
+          city:params.location.split(',')[0], 
+          state:'Texas',
+          country:params.location.split(', ')[2],
+          displayName: params.location
+        });
+        if(params.toLocation){
+          this.selectedRegions.push({
+            city:params.toLocation.split(',')[0], 
+            state:'Texas',
+            country:params.toLocation.split(', ')[2],
+            displayName: params.toLocation
+          })
+        }
+        this.weeklySelectedRegions = this.selectedRegions;
+        this.weeklyFilters.controls['region'].setValue(selectedRegion)
+        this.filters.controls['region'].setValue(selectedRegion);
+      }
+    });
+    if (this.selectedPeriod == "daily" && selectedDate && this.selectedRegions) {
+      this.selectedDate = selectedDate.clone().utc();
+      obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, this.selectedRegions, subaccountId));
+      obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, this.selectedRegions, subaccountId));
+    }
+  }
+
   loadCharts() {
     this.startTimer();
     this.chartsLoaded = 0;
@@ -208,43 +226,10 @@ export class SpotlightDashboardComponent implements OnInit{
     const startTime = performance.now();
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
     const obs = [];
-    let selectedDate;
-    let selectedRegion;
-    let selectedWeeklyRegion;
 
-    this.route.queryParams.subscribe((params: any) => {
-      if(params.date && this.filters.get('date').value === "") {
-        let nodeDate = params.date.split('T')[0]
-        selectedDate = Utility.setHoursOfDate(moment.utc(nodeDate));
-        this.filters.controls['date'].setValue(moment.utc(nodeDate));
-      }
-      if(this.filters.get('date').value !== "") {
-        selectedDate = Utility.setHoursOfDate(this.filters.get('date').value);
-        this.filters.controls['date'].setValue(this.filters.get('date').value);
-      } else {
-        selectedDate = Utility.setHoursOfDate(moment());
-        this.filters.controls['date'].setValue(moment());
-      }
-      if(params.location){
-        selectedRegion = {
-          city:params.location.split(',')[0], 
-          state:'Texas',
-          country:params.location.split(', ')[2],
-          displayName: params.location
-        };
-        selectedWeeklyRegion = selectedRegion;
-        this.weeklyFilters.controls['region'].setValue(selectedRegion)
-        this.filters.controls['region'].setValue(selectedRegion);
-      } else {
-        selectedRegion  = this.filters.get('region').value;
-        selectedWeeklyRegion = this.weeklyFilters.get('region').value;
-      }
-    });
     if (this.selectedPeriod == "daily") {
-      // this.selectedDate = this.filters.get('date').value.clone().utc();
-      // selectedDate = Utility.setHoursOfDate(this.filters.get('date').value);
-      selectedRegion = this.filters.get('region').value;
-      //const selectedDate = Utility.setHoursOfDate(this.filters.get('date').value);
+      const selectedDate = Utility.setHoursOfDate(this.filters.get('date').value);
+      this.selectedDate = selectedDate.clone().utc();
       this.selectedDate = selectedDate.clone().utc();
       obs.push(this.spotlightChartsService.getDailyCallsStatusSummary(selectedDate, this.selectedRegions, subaccountId));
       obs.push(this.spotlightChartsService.getVoiceQualityChart(selectedDate, selectedDate, this.selectedRegions, subaccountId));
@@ -332,7 +317,7 @@ export class SpotlightDashboardComponent implements OnInit{
     // Daily Failed Calls Chart
     this.failedCallsChartOptions.series = [Number((this.calls.failed / this.calls.total * 100 || 0).toFixed(2))];
 
-    if(this.selectedRegions.length>0)
+    if(this.selectedRegions.length > 0)
       this.reloadUserOptions(this.selectedRegions);
     else
       this.reloadFilterOptions();
@@ -427,6 +412,15 @@ export class SpotlightDashboardComponent implements OnInit{
       data: vqData.percentages.bad,
     } ];
 
+    let currentEndDate;
+    this.route.queryParams.subscribe((params: any) => {
+      if(params.date && this.weeklyFilters.get('date').value !== "") {
+        let parsedDate = params.date.split('T')[0];
+        currentEndDate = Utility.setHoursOfDate(moment.utc(parsedDate));
+        this.weeklyFilters.controls['date'].setValue(currentEndDate);
+      } 
+    });
+     
     if(this.weeklySelectedRegions.length>0)
       this.reloadUserOptions(this.weeklySelectedRegions);
     else
@@ -528,6 +522,11 @@ export class SpotlightDashboardComponent implements OnInit{
       startDate = this.selectedRange.start;
       endDate = this.selectedRange.end;
     }
+    this.route.queryParams.subscribe((params: any) => {
+      if(params.location || params.toLocation) {
+        this.reloadFilterOptions();
+      }
+    })
     this.spotlightChartsService.getFilterOptions(subaccountId,startDate,endDate,"users",regions ? regions : null).subscribe((res: any) => {
       this.users = res.users.filter(user => user !== null);
       this.filters.enable();
