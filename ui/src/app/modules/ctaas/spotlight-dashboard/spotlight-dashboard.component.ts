@@ -133,7 +133,6 @@ export class SpotlightDashboardComponent implements OnInit{
           this.note = res.notes[0];
           this.filters.get('date').setValue(moment(this.note.openDate).utc());
           this.weeklyFilters.get('date').setValue(moment(this.note.openDate).utc());
-          console.log(this.note.openDate, this.filters.get('date').value, this.weeklyFilters.get('date').value);
           this.isHistoricalView = true;
           this.loadCharts();
         });
