@@ -75,19 +75,19 @@ public class TekvLSGetNetworkQualitySummary {
 			switch (metric){
 				case "Received Jitter":
 					statistics.append("max(case when ms.parameter_name = 'Received Jitter' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxJitter, ");
-					statistics.append("count(*) FILTER (WHERE ms.parameter_name = 'Received Jitter' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > 30) AS jitterAboveThld, ");
+					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = 'Received Jitter' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.MetricsThresholds.received_jitter.value() + ") AS jitterAboveThld, ");
 					statisticsLabels.add("maxJitter");
 					statisticsLabels.add("jitterAboveThld");
 					break;
 				case "Received packet loss":
 					statistics.append("max(case when ms.parameter_name = 'Received packet loss' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxPacketLoss, ");
-					statistics.append("count(*) FILTER (WHERE ms.parameter_name = 'Received packet loss' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > 2) AS packetLossAboveThld, ");
+					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = 'Received packet loss' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.MetricsThresholds.packet_loss.value() + ") AS packetLossAboveThld, ");
 					statisticsLabels.add("maxPacketLoss");
 					statisticsLabels.add("packetLossAboveThld");
 					break;
 				case "Round trip time":
 					statistics.append("max(case when ms.parameter_name = 'Round trip time' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as maxRoundTripTime, ");
-					statistics.append("count(*) FILTER (WHERE ms.parameter_name = 'Round trip time' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > 200) AS roundTripTimeAboveThld, ");
+					statistics.append("count(Distinct sr.id) FILTER (WHERE ms.parameter_name = 'Round trip time' AND CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) > " + Utils.MetricsThresholds.round_trip_time.value() + ") AS roundTripTimeAboveThld, ");
 					statisticsLabels.add("maxRoundTripTime");
 					statisticsLabels.add("roundTripTimeAboveThld");
 					break;
@@ -114,7 +114,7 @@ public class TekvLSGetNetworkQualitySummary {
 				"LEFT JOIN test_plan tp ON p.testplanid = tp.id " +
 				"WHERE sr.finalResult = true AND (sr.status = 'PASSED' OR sr.status = 'FAILED') " +
 				"AND (sr.failingerrortype IS NULL or trim(sr.failingerrortype) = '' or sr.failingerrortype = 'Routing Issue' or sr.failingerrortype = 'Teams Client Issue' or sr.failingerrortype = 'Media Quality' or sr.failingerrortype = 'Media Routing') " +
-				"AND tp.name in ('LTS','STS','POLQA') AND ms.parameter_name IN ('" + metricsClause + "')";
+				"AND tp.name in ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "') AND ms.parameter_name IN ('" + metricsClause + "')";
 
 		if (!users.isEmpty()){
 			query += " AND trr.did IN ('"+ usersClause +"')";
