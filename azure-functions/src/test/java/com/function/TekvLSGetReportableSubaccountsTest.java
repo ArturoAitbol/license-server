@@ -24,7 +24,7 @@ public class TekvLSGetReportableSubaccountsTest extends TekvLSTest {
     @BeforeEach
     public void setup() {
         this.initTestParameters();
-        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("fullAdmin"));
+        this.headers.put("authorization", "Bearer " + Config.getInstance().getToken("IGESAdmin"));
         this.getReportableSubaccountsApi = new TekvLSGetReportableSubaccounts();
     }
 

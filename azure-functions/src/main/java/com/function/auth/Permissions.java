@@ -38,7 +38,6 @@ public class Permissions {
                         // READ
                         GET_ALL_CUSTOMERS,
                         GET_ALL_SUBACCOUNTS,
-                        GET_REPORTABLE_SUBACCOUNTS,
                         GET_ALL_LICENSES,
                         GET_ALL_DEVICES,
                         GET_ALL_DEVICE_TYPES,
@@ -264,6 +263,7 @@ public class Permissions {
         public static final EnumSet<Resource> SubAccountStakeholderPermissions = EnumSet.of(
                         // CREATE
                         CREATE_SUBACCOUNT_ADMIN_DEVICE,
+        
                         CREATE_CALLBACK,
                         // DELETE
                         DELETE_SUBACCOUNT_ADMIN_DEVICE,
@@ -280,4 +280,7 @@ public class Permissions {
                         GET_CHARTS,
                         // MODIFY
                         MODIFY_AUTH_USER_PROFILE);
+            public static final EnumSet<Resource> IGESAdminPermissions = EnumSet.of(                
+                        GET_REPORTABLE_SUBACCOUNTS
+            );
 }

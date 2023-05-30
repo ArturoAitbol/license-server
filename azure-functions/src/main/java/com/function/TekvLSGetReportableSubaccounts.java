@@ -55,12 +55,10 @@ public class TekvLSGetReportableSubaccounts {
 
         context.getLogger().info("Entering TekvLSGetReportableCustomers Azure function");
 
-        SelectQueryBuilder selectStmnt = new SelectQueryBuilder(
-                "SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" "
-                        +
-                        "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id");
-        selectStmnt.appendEqualsCondition(" cs.status", Constants.CTaaSSetupStatus.READY.value(),
-                QueryBuilder.DATA_TYPE.VARCHAR);
+        SelectQueryBuilder selectStmnt = new SelectQueryBuilder("SELECT s.id AS \"lsSubAccountId\", s.name AS \"lsSubAccountName\", c.id AS \"lsCustomerId\", c.name AS \"lsCustomerName\" " +
+            "FROM ctaas_setup cs LEFT JOIN subaccount s ON s.id = cs.subaccount_id LEFT JOIN customer c ON c.id = s.customer_id");
+        selectStmnt.appendCustomCondition("s.services LIKE ?", "%" + Constants.SubaccountServices.SPOTLIGHT.value() + "%");
+        selectStmnt.appendEqualsCondition(" cs.status", Constants.CTaaSSetupStatus.READY.value(), QueryBuilder.DATA_TYPE.VARCHAR);
 
         try (Connection connection = DriverManager.getConnection(dbConnectionUrl);
                 PreparedStatement selectStmt = selectStmnt.build(connection)) {
