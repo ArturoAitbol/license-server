@@ -89,7 +89,7 @@ public class TekvLSGetCollectionChart {
 				query += "AND (tp.name='STS' OR tp.name='POLQA')";
 				break;
 			default:
-				query += "AND tp.name IN ('LTS','STS','POLQA')";
+				query += "AND tp.name IN ('" + Utils.DEFAULT_TEST_PLAN_NAMES + "')";
 				break;
 		}
 		

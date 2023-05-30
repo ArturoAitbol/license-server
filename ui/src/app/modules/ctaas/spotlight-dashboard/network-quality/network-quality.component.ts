@@ -18,6 +18,7 @@ import { defaultPolqaChartOptions } from "../initial-chart-config";
 import { Utility } from 'src/app/helpers/utils';
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
+import { MetricsThresholds } from 'src/app/helpers/metrics';
 
 @Component({
   selector: 'app-network-quality',
@@ -47,12 +48,10 @@ export class NetworkQualityComponent implements OnInit {
   selectedUsers = [];
 
   @ViewChild('userInput') userInput: ElementRef<HTMLInputElement>;
-
- 
-
-    filters = this.fb.group({
-      user: [""]
-    });
+  
+  filters = this.fb.group({
+    user: [""]
+  });
 
   summary = {
     totalCalls: 0,
@@ -63,6 +62,8 @@ export class NetworkQualityComponent implements OnInit {
   privateIsLoading = true;
   isChartLoading = false;
   selectedGraph = 'jitter';
+
+  readonly MetricsThresholds = MetricsThresholds;
 
   constructor(private spotlightChartsService: SpotlightChartsService,
               private subaccountService: SubAccountService,
