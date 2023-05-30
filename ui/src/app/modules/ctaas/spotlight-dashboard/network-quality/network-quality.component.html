@@ -11,27 +11,42 @@
             <div class="card-body container-fluid">
                 <form [formGroup]="filters">
                     <div class="justify-content-center" style="align-items: center; white-space: nowrap;">
-                        <div style="display: inline-block; padding-right: 15px;">
-                            <mat-form-field appearance="outline">
-                                <mat-label>User</mat-label>
-                                <input type="text"
-                                       placeholder="User"
-                                       matInput
-                                       #userInput
-                                       formControlName="user"
-                                       [matAutocomplete]="userAuto">
-                                <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete" (optionSelected)="selected()">
-                                    <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
-                                        {{user}}
-                                    </mat-option>
-                                </mat-autocomplete>
-                            </mat-form-field>
-                        </div>
-                        <div style="display: inline-block; padding-right: 15px; margin-top: 8px;">
-                            <button class="apply-bttn" mat-raised-button
-                                    id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">
-                                Apply
-                            </button>
+                        <div style="display: inline-block; padding-right: 5px;">
+                            <div class="row justify-content-center">
+                                <div class="col-auto">
+                                    <mat-form-field style="margin-bottom: -1.25em" appearance="outline">
+                                        <mat-label id="type-filter-label">Selected Value:</mat-label>
+                                        <mat-select formControlName="selectedValue" [value]="defaultValue" [(ngModel)]="defaultValue" (selectionChange)="onChangeValue($event.value)">
+                                            <mat-option *ngFor="let value of filterNetworkQualityForm" [value]="value">
+                                                {{value}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-auto">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>User</mat-label>
+                                        <input type="text"
+                                               placeholder="User"
+                                               matInput
+                                               formControlName="user"
+                                               [matAutocomplete]="userAuto">
+                                        <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete">
+                                            <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                                                {{user}}
+                                            </mat-option>
+                                        </mat-autocomplete>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-auto">
+                                    <div style="display: inline-block; padding-right: 15px; margin-top: 16px;">
+                                        <button class="apply-bttn" mat-raised-button
+                                                id="add-customer-button" (click)="reloadCharts()" [disabled]="filters.disabled">
+                                            Apply
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -109,35 +124,35 @@
                                         <mat-icon class="custom-icon" svgIcon="packetloss"></mat-icon>
                                         <p>{{ summary.overall.packetLoss }}</p>
                                     </div>
-                                    <label class="blue-label">Max. Packet Loss Rate (%)</label>
+                                    <label class="blue-label">{{maxLabel}} Packet Loss Rate (%)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon class="custom-icon" svgIcon="jitter"></mat-icon>
                                         <p>{{ summary.overall.jitter }}</p>
                                     </div>
-                                    <label class="blue-label">Max. Jitter (ms)</label>
+                                    <label class="blue-label">{{maxLabel}} Jitter (ms)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon>update</mat-icon>
                                         <p>{{ summary.overall.roundTripTime }}</p>
                                     </div>
-                                    <label class="blue-label">Max. Round Trip Time (ms)</label>
+                                    <label class="blue-label">{{maxLabel}} Round Trip Time (ms)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon>network_check</mat-icon>
                                         <p>{{ summary.overall.polqa }}</p>
                                     </div>
-                                    <label class="blue-label">Min. POLQA</label>
+                                    <label class="blue-label">{{minLabel}} POLQA</label>
                                 </div>
                                 <div class="col-md-3 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon>multiple_stop</mat-icon>
                                         <p>{{ summary.overall.sendBitrate | number }}</p>
                                     </div>
-                                    <label class="blue-label">Avg. Send Bitrate (kbps)</label>
+                                    <label class="blue-label">{{avgLabel}} Send Bitrate (kbps)</label>
                                 </div>
                             </div>
                         </div>
@@ -147,17 +162,17 @@
                             </div>
                             <div class="justify-content-center mt-4">
                                 <div class="subtitle">
-                                    <h2 *ngIf="selectedGraph==='jitter'">Max. Jitter vs Min. POLQA 
+                                    <h2 *ngIf="selectedGraph==='jitter'">{{maxLabel}} Jitter vs {{minLabel}} POLQA 
                                         <mat-icon matTooltip="Maximum Jitter versus Minimum POLQA histogram in Voice Quality (POLQA) tests.">
                                             info_outline
                                         </mat-icon>
                                     </h2>
-                                    <h2 *ngIf="selectedGraph==='packetLoss'">Max. Packet Loss vs Min. POLQA 
+                                    <h2 *ngIf="selectedGraph==='packetLoss'">{{maxLabel}} Packet Loss vs {{minLabel}} POLQA 
                                         <mat-icon matTooltip="Maximum Received Packet Loss versus Minimum POLQA histogram in Voice Quality (POLQA) tests.">
                                             info_outline
                                         </mat-icon>
                                     </h2>
-                                    <h2 *ngIf="selectedGraph==='roundTripTime'">Max. Round Trip vs Min. POLQA 
+                                    <h2 *ngIf="selectedGraph==='roundTripTime'">{{maxLabel}} Round Trip vs {{minLabel}} POLQA 
                                         <mat-icon matTooltip="Maximum Round Trip Time versus Minimum POLQA histogram in Voice Quality (POLQA) tests.">
                                             info_outline
                                         </mat-icon>
