@@ -122,28 +122,28 @@
                                 <div class="col-md-3 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon class="custom-icon" svgIcon="packetloss"></mat-icon>
-                                        <p>{{ summary.overall.packetLoss }}</p>
+                                        <p>{{ summary.overall.packetLoss | number }}</p>
                                     </div>
                                     <label class="blue-label">{{maxLabel}} Packet Loss Rate (%)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon class="custom-icon" svgIcon="jitter"></mat-icon>
-                                        <p>{{ summary.overall.jitter }}</p>
+                                        <p>{{ summary.overall.jitter | number }}</p>
                                     </div>
                                     <label class="blue-label">{{maxLabel}} Jitter (ms)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon>update</mat-icon>
-                                        <p>{{ summary.overall.roundTripTime }}</p>
+                                        <p>{{ summary.overall.roundTripTime | number }}</p>
                                     </div>
                                     <label class="blue-label">{{maxLabel}} Round Trip Time (ms)</label>
                                 </div>
                                 <div class="col-md-2 p-2 border metrics">
                                     <div class="metrics-values">
                                         <mat-icon>network_check</mat-icon>
-                                        <p>{{ summary.overall.polqa }}</p>
+                                        <p>{{ summary.overall.polqa | number }}</p>
                                     </div>
                                     <label class="blue-label">{{minLabel}} POLQA</label>
                                 </div>
