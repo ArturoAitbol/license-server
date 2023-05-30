@@ -19,6 +19,9 @@ import { FormBuilder } from "@angular/forms";
 import { map, startWith } from "rxjs/operators";
 import { NetworkQualityComponent } from "./network-quality/network-quality.component";
 import { Subject } from "rxjs/internal/Subject";
+import { ActivatedRoute } from "@angular/router";
+import { Note } from "../../../model/note.model";
+import { NoteService } from "../../../services/notes.service";
 @Component({
   selector: 'app-spotlight-dashboard',
   templateUrl: './spotlight-dashboard.component.html',
@@ -97,7 +100,11 @@ export class SpotlightDashboardComponent implements OnInit{
   isRefreshing = false;
   chartsLoaded = 0;
   selectedRegions = [];
-  weeklySelectedRegions = []
+  weeklySelectedRegions = [];
+
+  // Historical view variables
+  isHistoricalView = false;
+  note: Note;
 
   @ViewChild('regionInput') regionInput: ElementRef<HTMLInputElement>;
 
@@ -105,6 +112,8 @@ export class SpotlightDashboardComponent implements OnInit{
 
   constructor(private subaccountService: SubAccountService,
               private spotlightChartsService: SpotlightChartsService,
+              private noteService: NoteService,
+              private route: ActivatedRoute,
               private fb: FormBuilder) {
     this.vqChartOptions = defaultVqChartOptions;
     this.weeklyFeatureFunctionalityChartOptions = defaultWeeklyFeatureFunctionalityChartOptions;
@@ -118,7 +127,18 @@ export class SpotlightDashboardComponent implements OnInit{
   ngOnInit() {
     this.initAutocompletes();
     this.initWeeklyAutocompletes();
-    this.loadCharts();
+    this.route.queryParams.subscribe(params => {
+      if (params?.noteId) {
+        this.noteService.getNoteList(this.subaccountService.getSelectedSubAccount().id, params.noteId).subscribe(res => {
+          this.note = res.notes[0];
+          this.filters.get('date').setValue(moment(this.note.openDate).utc());
+          this.weeklyFilters.get('date').setValue(moment(this.note.openDate).utc());
+          console.log(this.note.openDate, this.filters.get('date').value, this.weeklyFilters.get('date').value);
+          this.isHistoricalView = true;
+          this.loadCharts();
+        });
+      } else this.loadCharts();
+    });
   }
 
   getStartWeekDate(): Moment{
@@ -170,6 +190,8 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   reloadCharts(){
+    if (this.filters.get('date').dirty || this.weeklyFilters.get('date').dirty)
+      this.isHistoricalView = false;
     this.loadCharts();
     this.networkQuality.loadCharts();
   }
