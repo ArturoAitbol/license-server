@@ -1,3 +1,4 @@
+import { MetricsThresholds } from "src/app/helpers/metrics";
 import { ChartOptions } from "../../../../helpers/chart-options-type";
 
 const trendsChartCommonOptions: Partial<ChartOptions> = {
@@ -100,7 +101,7 @@ const defaultReceivedPacketLossChartOptions: Partial<ChartOptions> = {
     },
     annotations: {
         yaxis: [{
-            y:2,
+            y: MetricsThresholds.receivedPacketLoss,
             borderColor: '#B80000',
             fillColor: '#B80000',
             strokeDashArray: 8,
@@ -165,7 +166,7 @@ const defaultJitterChartOptions: Partial<ChartOptions> = {
     },
     annotations: {
         yaxis: [{
-            y:30,
+            y: MetricsThresholds.receivedJitter,
             borderColor: '#B80000',
             fillColor: '#B80000',
             strokeDashArray: 8,
@@ -230,8 +231,8 @@ const defaultSentBitrateChartOptions: Partial<ChartOptions> = {
     },
     annotations: {
         yaxis: [{
-            y:25,
-            y2: 125,
+            y: MetricsThresholds.minBitrate,
+            y2: MetricsThresholds.maxBitrate,
             borderColor: '#22b800',
             fillColor: '#22b800',
             strokeDashArray: 8,
@@ -296,7 +297,7 @@ const defaultRoundtripTimeChartOptions: Partial<ChartOptions> = {
     },
     annotations: {
         yaxis: [{
-            y:200,
+            y: MetricsThresholds.roundTripTime,
             borderColor: '#B80000',
             fillColor: '#B80000',
             strokeDashArray: 8,

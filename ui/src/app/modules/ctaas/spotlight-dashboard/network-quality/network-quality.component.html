@@ -85,15 +85,15 @@
                                 </div>
                                 <div class="col-md-4 p-2 border metrics">
                                     <p>{{ summary.aboveThreshold.jitter }}</p>
-                                    <label class="blue-label">Jitter (> 30 ms)</label>
+                                    <label class="blue-label">Jitter (> {{ MetricsThresholds.receivedJitter }} ms)</label>
                                 </div>
                                 <div class="col-md-4 p-2 border metrics">
                                     <p>{{ summary.aboveThreshold.packetLoss }}</p>
-                                    <label class="blue-label">Packet Loss (> 2%)</label>
+                                    <label class="blue-label">Packet Loss (> {{ MetricsThresholds.receivedPacketLoss }}%)</label>
                                 </div>
                                 <div class="col-md-4 p-2 border metrics">
                                     <p>{{ summary.aboveThreshold.roundTripTime }}</p>
-                                    <label class="blue-label">Round Trip Time (> 200 ms)</label>
+                                    <label class="blue-label">Round Trip Time (> {{ MetricsThresholds.roundTripTime }} ms)</label>
                                 </div>
                             </div>
                             <div class="row justify-content-center mt-3">
