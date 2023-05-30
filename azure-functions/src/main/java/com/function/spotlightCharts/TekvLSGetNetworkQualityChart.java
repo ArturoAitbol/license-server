@@ -110,7 +110,7 @@ public class TekvLSGetNetworkQualityChart {
 					statisticsLabels.add("Round trip time");
 					break;
 				case "Sent bitrate":
-					// here the average is always the most meaningful value
+					// here the average is always the most representative value
 					statistics.append(selector + "(case when ms.parameter_name = 'Sent bitrate' then CAST(NULLIF(regexp_replace(ms.parameter_value, '[^\\.\\d]','','g'), '') AS numeric) end) as \"Sent bitrate\" ");
 					statisticsLabels.add("Sent bitrate");
 					break;
