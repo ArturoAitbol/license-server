@@ -16,6 +16,7 @@ import { BannerServiceMock } from "../../../../test/mock/services/alert-banner-s
 import { BannerComponent } from "../banner/banner.component";
 import { TestBedConfigBuilder } from '../../../../test/mock/TestBedConfigHelper.mock';
 import { Constants } from "src/app/helpers/constants";
+import { FeatureToggleServiceMock } from "../../../../test/mock/services/feature-toggle-service.mock";
 
 let ctaasNotesComponent: CtaasNotesComponent;
 let fixture : ComponentFixture<CtaasNotesComponent>;
@@ -175,8 +176,9 @@ describe('Notes dialog calls and interactions', ()=>{
         spyOn(ctaasNotesComponent,'fetchNoteList');
         spyOn(ctaasNotesComponent,'viewDashboard').and.callThrough();
         spyOn(ctaasNotesComponent,'openDialog').and.callThrough();
+        spyOn(FeatureToggleServiceMock,'isFeatureEnabled').and.returnValue(false);
         const note: Note = NoteServiceMock.mockNoteA;
-
+        ctaasNotesComponent.fetchNoteList();
         ctaasNotesComponent.viewDashboard(note);
 
         expect(ctaasNotesComponent.openDialog).toHaveBeenCalledWith(ctaasNotesComponent.VIEW_DASHBOARD,note);
