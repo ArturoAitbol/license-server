@@ -198,6 +198,10 @@ public class Config {
                 break;
             case "test":
                 return getConfig("testRoleToken");
+            case "IGESAdmin":                
+                roleId = "IGESAdminId";
+                roleSecret = "IGESAdminSecret";
+                break;
             default:
                 logger.severe("Error retrieving token using the role: " + role);
                 throw new RuntimeException();

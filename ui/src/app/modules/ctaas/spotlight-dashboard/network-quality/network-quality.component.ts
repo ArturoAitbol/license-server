@@ -18,6 +18,7 @@ import { defaultPolqaChartOptions } from "../initial-chart-config";
 import { Utility } from 'src/app/helpers/utils';
 import { MatIconRegistry } from "@angular/material/icon";
 import { DomSanitizer } from "@angular/platform-browser";
+import { MetricsThresholds } from 'src/app/helpers/metrics';
 
 @Component({
   selector: 'app-network-quality',
@@ -47,11 +48,18 @@ export class NetworkQualityComponent implements OnInit {
   selectedUsers = [];
 
   @ViewChild('userInput') userInput: ElementRef<HTMLInputElement>;
+  
 
- 
-
+  filterNetworkQualityForm: any[] = ['Most Representative', 'Average'];
+  defaultValue: string = this.filterNetworkQualityForm[0];
+  selectedFilter: boolean = false;
+  avgFlag: boolean = false;
+  maxLabel: string = 'Max.';
+  minLabel: string = 'Min.';
+  avgLabel: string = 'Avg.'
     filters = this.fb.group({
-      user: [""]
+      user: [""],
+      selectedValue: [""]
     });
 
   summary = {
@@ -63,6 +71,8 @@ export class NetworkQualityComponent implements OnInit {
   privateIsLoading = true;
   isChartLoading = false;
   selectedGraph = 'jitter';
+
+  readonly MetricsThresholds = MetricsThresholds;
 
   constructor(private spotlightChartsService: SpotlightChartsService,
               private subaccountService: SubAccountService,
@@ -112,14 +122,32 @@ export class NetworkQualityComponent implements OnInit {
     this.loadCharts(true);
   }
 
+  onChangeValue(event:any){
+    console.log(event)
+    if(event === 'Most Representative')
+      this.selectedFilter = false;
+    if(event === 'Average')
+      this.selectedFilter = true;
+  }
 
   loadCharts(isReload?) {
     if (!isReload) this.privateIsLoading = true;
     const obs = [];
+    if(this.selectedFilter === false) {
+      this.selectedFilter = false;
+      this.maxLabel = "Max."
+      this.minLabel = "Min."
+      this.avgLabel = "Avg."
+    }
+    if(this.selectedFilter === true) {
+      this.maxLabel = ""
+      this.minLabel = ""
+      this.avgLabel = ""
+    }
     const subaccountId = this.subaccountService.getSelectedSubAccount().id;
-    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.regions, this.selectedUsers, subaccountId, this.groupBy));
-    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId));
-    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy));
+    obs.push(this.spotlightChartsService.getCustomerNetworkTrendsData(this.startDate, this.endDate,this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter));
+    obs.push(this.spotlightChartsService.getNetworkQualitySummary(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId,this.selectedFilter));
+    obs.push(this.spotlightChartsService.getCustomerNetworkQualityData(this.startDate, this.endDate, this.regions, this.selectedUsers, subaccountId, this.groupBy, this.selectedFilter));
     forkJoin(obs).subscribe((res: any) => {
       const trendsData = res[0];
       if(this.groupBy==='hour'){
@@ -151,12 +179,12 @@ export class NetworkQualityComponent implements OnInit {
 
       const summary = res[1];
       this.summary.totalCalls = summary.totalCalls;
-      this.summary.overall.sendBitrate = summary.avgSentBitrate;
-      this.summary.overall.jitter = summary.maxJitter;
-      this.summary.overall.roundTripTime = summary.maxRoundTripTime;
-      this.summary.overall.packetLoss = summary.maxPacketLoss;
-      this.summary.overall.polqa = summary.minPolqa;
-      this.summary.aboveThreshold.jitter = summary.jitterAboveThld;
+      this.summary.overall.sendBitrate = summary.avgSentBitrate.toFixed(2);
+      this.summary.overall.jitter = summary.maxJitter.toFixed(2);
+      this.summary.overall.roundTripTime = summary.maxRoundTripTime.toFixed(2);
+      this.summary.overall.packetLoss = summary.maxPacketLoss.toFixed(2);
+      this.summary.overall.polqa = summary.minPolqa.toFixed(2);
+      this.summary.aboveThreshold.jitter = summary.jitterAboveThld.toFixed(2);
       this.summary.aboveThreshold.packetLoss = summary.packetLossAboveThld;
       this.summary.aboveThreshold.roundTripTime = summary.roundTripTimeAboveThld;
 
@@ -192,6 +220,10 @@ export class NetworkQualityComponent implements OnInit {
   }
 
   private initChartOptions() {
+    defaultReceivedPacketLossChartOptions.title.text = this.maxLabel + ' Received Packet Loss (%)';
+    defaultJitterChartOptions.title.text = this.maxLabel + ' Jitter (ms)';
+    defaultSentBitrateChartOptions.title.text =this.avgLabel + ' Sent Bitrate (kbps)';
+    defaultRoundtripTimeChartOptions.title.text = this.maxLabel +' Round Trip Time (ms)';
     this.receivedPacketLossChartOptions = { ...this.commonChartOptions, ...defaultReceivedPacketLossChartOptions };
     this.jitterChartOptions = { ...this.commonChartOptions, ...defaultJitterChartOptions };
     this.sentBitrateChartOptions = {...this.commonChartOptions, ...defaultSentBitrateChartOptions };
