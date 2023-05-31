@@ -386,12 +386,15 @@ export class SpotlightDashboardComponent implements OnInit{
   }
 
   navigateToDetailedTable(reportType?: string) {
+    let regions = ""
     const startDate = this.selectedDate.clone().utc().startOf('day');
     const endDate = this.selectedDate.clone().utc();
     const startTime = Utility.parseReportDate(startDate);
     const endTime = Utility.parseReportDate(endDate);
     const reportFilter = reportType? "type=" + reportType : "status=FAILED";
-    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}`;
+    if(this.selectedRegions.length > 0)
+      regions = JSON.stringify(this.selectedRegions);
+    const url = `${environment.BASE_URL}/#/spotlight/details?subaccountId=${this.subaccountService.getSelectedSubAccount().id}&${reportFilter}&start=${startTime}&end=${endTime}&regions=${regions}`;
     window.open(url);
   }
 

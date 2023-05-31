@@ -235,6 +235,8 @@ export class NetworkQualityComponent implements OnInit {
 
   navigateToCallingReliabilityDetailedTableFromPoint(event, chartContext, { seriesIndex, dataPointIndex, config}) {
     const category = chartContext.opts.xaxis.categories[dataPointIndex];
+    let regions = '';
+    let users = ''
     let startDate: Moment, endDate: Moment;
     if(this.groupBy==='hour'){
       const [ startTime, endTime ] = category.split('-');
@@ -244,10 +246,13 @@ export class NetworkQualityComponent implements OnInit {
       startDate = moment(category).utc().hour(0);
       endDate = Utility.setHoursOfDate(moment(category).utc());
     }
-
+    if(this.regions.length > 0)
+      regions = JSON.stringify(this.regions);
+    if(this.selectedUsers.length > 0)
+      users = JSON.stringify(this.selectedUsers)
     const parsedStartTime = startDate.format('YYMMDDHHmmss');
     const parsedEndTime = endDate.format('YYMMDDHHmmss');
-    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }`;
+    const url = `${ environment.BASE_URL }/#/spotlight/details?subaccountId=${ this.subaccountService.getSelectedSubAccount().id }&start=${ parsedStartTime }&end=${ parsedEndTime }&regions=${regions}&users=${users}`;
     window.open(url);
   }
 
