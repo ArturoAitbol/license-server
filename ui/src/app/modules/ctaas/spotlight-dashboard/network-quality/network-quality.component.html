@@ -29,9 +29,10 @@
                                         <input type="text"
                                                placeholder="User"
                                                matInput
+                                               #userInput
                                                formControlName="user"
                                                [matAutocomplete]="userAuto">
-                                        <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete">
+                                        <mat-autocomplete autoActiveFirstOption #userAuto="matAutocomplete" (optionSelected)="selected()">
                                             <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
                                                 {{user}}
                                             </mat-option>

@@ -240,7 +240,8 @@ b66edd36-ee7f-42e7-bfb4-41810ea69fe6	f	\N	Refresh button for Power Bi Dashboard	
 1ba09c6f-9a2a-4181-ac1e-b7217763df96	f	\N	Power Bi mobile feature	powerbiMobileFeature
 0e709699-3dab-47f1-a710-ebd2ae78d57b	t	\N	Maintenance Mode	maintenanceMode
 ea00b987-0f14-4888-a0ce-f963d1eb7592	t	\N	Native Dashboard	spotlight-dashboard
-866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	t	\N	Lights animation while the dashboard is loading	dashboardLoadingLights
+866dbb8d-4e11-47c6-b26b-3ddbdc7e50e6	t	\N	Historical Native Dashboard for Notes	spotlight-historical-dashboard
+7564aab0-5331-4ab5-85f7-e37acbdfd90d	t	\N	Lights animation while the dashboard is loading	dashboardLoadingLights
 \.
 
 --
